@@ -1,12 +1,11 @@
 (ns quo2.components.notifications.toast
-  (:require
-   [i18n.i18n                                       :as i18n]
-   [quo2.components.icon                            :as icon]
-   [quo2.components.markdown.text                   :as text]
-   [quo2.components.notifications.count-down-circle :as count-down-circle]
-   [quo2.foundations.colors                         :as colors]
-   [quo2.theme                                      :as theme]
-   [react-native.core                               :as rn]))
+  (:require [i18n.i18n :as i18n]
+            [quo2.components.icon :as icon]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.notifications.count-down-circle :as count-down-circle]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def ^:private themes
   {:container        {:light {:background-color colors/white-opa-70}

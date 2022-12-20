@@ -2,21 +2,22 @@
   (:require [quo.design-system.colors :as colors]))
 
 (def container
-  {:flex             1})
+  {:flex 1})
 
 (def switch-container
-  {:height           52})
+  {:height 52})
 
 (def details
-  {:margin-right     16
-   :margin-left      16
-   :margin-top       8
-   :margin-bottom    16})
+  {:margin-right  16
+   :margin-left   16
+   :margin-top    8
+   :margin-bottom 16})
 
 (def use-mobile-data-text
   {:color colors/gray})
 
-(defn settings-separator []
+(defn settings-separator
+  []
   {:align-self       :stretch
    :height           1
    :background-color colors/gray-lighter})

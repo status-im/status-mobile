@@ -1,127 +1,122 @@
 (ns status-im.ui.screens.screens
-  (:require [quo.design-system.colors :as colors]
-            [status-im.add-new.core :as new-chat.events]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.add-new.new-chat.views :as new-chat]
-            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.screens.advanced-settings.views :as advanced-settings]
-            [status-im.ui.screens.appearance.views :as appearance]
-            [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
-             :as
-             edit-bootnode]
-            [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
-            [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
-            [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
-            [status-im.ui.screens.browser.tabs.views :as browser.tabs]
-            [status-im.ui.screens.browser.views :as browser]
-            [status-im.ui.screens.bug-report :as bug-report]
-            [status-im.ui.screens.chat.pinned-messages :as pin-messages]
-            [status-im.ui.screens.communities.channel-details :as communities.channel-details]
-            [status-im.ui.screens.communities.community :as community]
-            [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
-            [status-im.ui.screens.communities.create :as communities.create]
-            [status-im.ui.screens.communities.create-category :as create-category]
-            [status-im.ui.screens.communities.create-channel :as create-channel]
-            [status-im.ui.screens.communities.edit :as community.edit]
-            [status-im.ui.screens.communities.edit-channel :as edit-channel]
-            [status-im.ui.screens.communities.import :as communities.import]
-            [status-im.ui.screens.communities.invite :as communities.invite]
-            [status-im.ui.screens.communities.members :as members]
-            [status-im.ui.screens.communities.membership :as membership]
-            [status-im.ui.screens.communities.profile :as community.profile]
-            [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
-            [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
-            [status-im.ui.screens.communities.select-category :as select-category]
-            [status-im.ui.screens.communities.views :as communities]
-            [status-im.ui.screens.contacts-list.views :as contacts-list]
-            [status-im.ui.screens.currency-settings.views :as currency-settings]
-            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
-            [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
-            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
-            [status-im.ui.screens.wallet.account.views :as wallet.account]
-            [status-im.ui.screens.wallet.add-new.views :as add-account]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [status-im.ui.screens.wallet.swap.views :as wallet.swap]
-            [status-im.ui.screens.status.views :as status.views]
-            [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.ens.views :as ens]
-            [status-im.ui.screens.fleet-settings.views :as fleet-settings]
-            [status-im.ui.screens.glossary.view :as glossary]
-            [status-im.ui.screens.group.views :as group-chat]
-            [status-im.ui.screens.help-center.views :as help-center]
-            [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
-            [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
-            [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
-            [status-im.ui.screens.keycard.pin.views :as keycard.pin]
-            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
-            [status-im.ui.screens.keycard.settings.views :as keycard.settings]
-            [status-im.ui.screens.keycard.views :as keycard]
-            [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
-            [status-im.ui.screens.log-level-settings.views :as log-level-settings]
-            [status-im.ui.screens.mobile-network-settings.view
-             :as
-             mobile-network-settings]
-            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
-            [status-im.ui.screens.multiaccounts.login.views :as login]
-            [status-im.ui.screens.multiaccounts.views :as multiaccounts]
-            [status-im.ui.screens.network-info.views :as network-info]
-            [status-im.ui.screens.network.edit-network.views :as edit-network]
-            [status-im.ui.screens.network.network-details.views :as network-details]
-            [status-im.ui.screens.network.views :as network]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
-             :as
-             edit-mailserver]
-            [status-im.ui.screens.offline-messaging-settings.views
-             :as
-             offline-messaging-settings]
-            [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
-            [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
-            [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
-            [status-im.ui.screens.onboarding.password.views :as onboarding.password]
-            [status-im.ui.screens.onboarding.phrase.view :as onboarding.phrase]
-            [status-im.ui.screens.onboarding.storage.views :as onboarding.storage]
-            [status-im.ui.screens.onboarding.welcome.views :as onboarding.welcome]
-            [status-im.ui.screens.pairing.views :as pairing]
-            [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
-            [status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as messages-from-contacts-only]
-            [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
-            [status-im.ui.screens.profile.contact.views :as contact]
-            [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
-            [status-im.ui.screens.profile.seed.views :as profile.seed]
-            [status-im.ui.screens.progress.views :as progress]
-            [status-im.ui.screens.qr-scanner.views :as qr-scanner]
-            [status-im.ui.screens.backup-settings.view :as backup-settings]
-            [status-im.ui.screens.reset-password.views :as reset-password]
-            [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
-            [status-im.ui.screens.peers-stats :as peers-stats]
-            [status-im.ui.screens.status.new.views :as status.new]
-            [status-im.ui.screens.stickers.views :as stickers]
-            [status-im.ui.screens.sync-settings.views :as sync-settings]
-            [status-im.ui.screens.terms-of-service.views :as terms-of-service]
-            [status-im.ui.screens.wakuv2-settings.edit-node.views
-             :as
-             edit-wakuv2-node]
-            [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-            [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
-            [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
-            [status-im.ui.screens.wallet.recipient.views :as recipient]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
-            [status-im.ui2.screens.chat.group-details.view :as group-details]
-            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [status-im.add-new.core :as new-chat.events]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.screens.about-app.views :as about-app]
+   [status-im.ui.screens.add-new.new-chat.views :as new-chat]
+   [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
+   [status-im.ui.screens.advanced-settings.views :as advanced-settings]
+   [status-im.ui.screens.appearance.views :as appearance]
+   [status-im.ui.screens.backup-settings.view :as backup-settings]
+   [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
+   [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
+   [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
+   [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
+   [status-im.ui.screens.browser.tabs.views :as browser.tabs]
+   [status-im.ui.screens.browser.views :as browser]
+   [status-im.ui.screens.bug-report :as bug-report]
+   [status-im.ui.screens.chat.pinned-messages :as pin-messages]
+   [status-im.ui.screens.communities.channel-details :as communities.channel-details]
+   [status-im.ui.screens.communities.community :as community]
+   [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as
+    community-emoji-thumbnail-picker]
+   [status-im.ui.screens.communities.create :as communities.create]
+   [status-im.ui.screens.communities.create-category :as create-category]
+   [status-im.ui.screens.communities.create-channel :as create-channel]
+   [status-im.ui.screens.communities.edit :as community.edit]
+   [status-im.ui.screens.communities.edit-channel :as edit-channel]
+   [status-im.ui.screens.communities.import :as communities.import]
+   [status-im.ui.screens.communities.invite :as communities.invite]
+   [status-im.ui.screens.communities.members :as members]
+   [status-im.ui.screens.communities.membership :as membership]
+   [status-im.ui.screens.communities.profile :as community.profile]
+   [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
+   [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
+   [status-im.ui.screens.communities.select-category :as select-category]
+   [status-im.ui.screens.communities.views :as communities]
+   [status-im.ui.screens.contacts-list.views :as contacts-list]
+   [status-im.ui.screens.currency-settings.views :as currency-settings]
+   [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+   [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
+   [status-im.ui.screens.ens.views :as ens]
+   [status-im.ui.screens.fleet-settings.views :as fleet-settings]
+   [status-im.ui.screens.glossary.view :as glossary]
+   [status-im.ui.screens.group.views :as group-chat]
+   [status-im.ui.screens.help-center.views :as help-center]
+   [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
+   [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
+   [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
+   [status-im.ui.screens.keycard.pin.views :as keycard.pin]
+   [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
+   [status-im.ui.screens.keycard.settings.views :as keycard.settings]
+   [status-im.ui.screens.keycard.views :as keycard]
+   [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
+   [status-im.ui.screens.log-level-settings.views :as log-level-settings]
+   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+   [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
+   [status-im.ui.screens.multiaccounts.login.views :as login]
+   [status-im.ui.screens.multiaccounts.views :as multiaccounts]
+   [status-im.ui.screens.network-info.views :as network-info]
+   [status-im.ui.screens.network.edit-network.views :as edit-network]
+   [status-im.ui.screens.network.network-details.views :as network-details]
+   [status-im.ui.screens.network.views :as network]
+   [status-im.ui.screens.notifications-settings.views :as notifications-settings]
+   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
+   [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
+   [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
+   [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
+   [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
+   [status-im.ui.screens.onboarding.password.views :as onboarding.password]
+   [status-im.ui.screens.onboarding.phrase.view :as onboarding.phrase]
+   [status-im.ui.screens.onboarding.storage.views :as onboarding.storage]
+   [status-im.ui.screens.onboarding.welcome.views :as onboarding.welcome]
+   [status-im.ui.screens.pairing.views :as pairing]
+   [status-im.ui.screens.peers-stats :as peers-stats]
+   [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
+   [status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as
+    messages-from-contacts-only]
+   [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
+   [status-im.ui.screens.profile.contact.views :as contact]
+   [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
+   [status-im.ui.screens.profile.seed.views :as profile.seed]
+   [status-im.ui.screens.profile.user.views :as profile.user]
+   [status-im.ui.screens.progress.views :as progress]
+   [status-im.ui.screens.qr-scanner.views :as qr-scanner]
+   [status-im.ui.screens.reset-password.views :as reset-password]
+   [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
+   [status-im.ui.screens.status.new.views :as status.new]
+   [status-im.ui.screens.status.views :as status.views]
+   [status-im.ui.screens.stickers.views :as stickers]
+   [status-im.ui.screens.sync-settings.views :as sync-settings]
+   [status-im.ui.screens.terms-of-service.views :as terms-of-service]
+   [status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
+   [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
+   [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+   [status-im.ui.screens.wallet.account.views :as wallet.account]
+   [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
+   [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+   [status-im.ui.screens.wallet.add-new.views :as add-account]
+   [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
+   [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
+   [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
+   [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
+   [status-im.ui.screens.wallet.recipient.views :as recipient]
+   [status-im.ui.screens.wallet.send.views :as wallet.send]
+   [status-im.ui.screens.wallet.settings.views :as wallet-settings]
+   [status-im.ui.screens.wallet.swap.views :as wallet.swap]
+   [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+   [status-im.ui2.screens.chat.group-details.view :as group-details]
+   [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]))
 
-(defn right-button-options [id icon]
+(defn right-button-options
+  [id icon]
   {:id   id
    :icon (icons/icon-source icon)})
 
-(defn screens []
+(defn screens
+  []
   [;;INTRO, ONBOARDING, LOGIN
 
    ;Multiaccounts
@@ -132,7 +127,7 @@
     :right-handler multiaccounts/topbar-button
     :component     multiaccounts/multiaccounts}
 
-                                ;Login
+   ;Login
    {:name          :login
     :insets        {:bottom true}
     :options       {:topBar {:rightButtons (right-button-options :login :more)}}
@@ -142,17 +137,17 @@
    {:name      :progress
     :component progress/progress}
 
-                                ;[Onboarding]
+   ;[Onboarding]
    {:name      :intro
     :insets    {:bottom true}
     :component onboarding.intro/intro}
 
-                                ;[Onboarding]
+   ;[Onboarding]
    {:name      :get-your-keys
     :insets    {:bottom true}
     :component onboarding.keys/get-your-keys}
 
-                                ;[Onboarding]
+   ;[Onboarding]
    {:name      :choose-name
     :options   {:topBar             {:visible false}
                 :popGesture         false
@@ -161,7 +156,7 @@
     :insets    {:bottom true}
     :component onboarding.keys/choose-a-chat-name}
 
-                                ;[Onboarding]
+   ;[Onboarding]
    {:name      :select-key-storage
     :insets    {:bottom true}
     :options   {:popGesture         false
@@ -169,7 +164,7 @@
                                      :popStackOnPress     false}}
     :component onboarding.storage/select-key-storage}
 
-                                ;[Onboarding] Create Password
+   ;[Onboarding] Create Password
    {:name      :create-password
     :options   {:popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -177,7 +172,7 @@
     :insets    {:bottom true}
     :component onboarding.password/screen}
 
-                                ;[Onboarding] Welcome
+   ;[Onboarding] Welcome
    {:name      :welcome
     :options   {:popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -185,7 +180,7 @@
     :insets    {:bottom true}
     :component onboarding.welcome/welcome}
 
-                                ;[Onboarding] Notification
+   ;[Onboarding] Notification
    {:name      :onboarding-notification
     :options   {:popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -193,7 +188,7 @@
     :insets    {:bottom true}
     :component onboarding.notifications/notifications-onboarding}
 
-                                ;[Onboarding] Recovery
+   ;[Onboarding] Recovery
    {:name      :recover-multiaccount-enter-phrase
     :insets    {:bottom true}
     :component onboarding.phrase/enter-phrase}
@@ -205,9 +200,9 @@
     :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
-                                ;Pinned messages
+   ;Pinned messages
    {:name      :chat-pinned-messages
-                                ;TODO custom subtitle
+    ;TODO custom subtitle
     :options   {:topBar {:visible false}}
     :component pin-messages/pinned-messages}
 
@@ -567,38 +562,38 @@
 
    ;;MODALS
 
-                                ;[Chat] New Chat
+   ;[Chat] New Chat
    {:name      :new-chat
     :on-focus  [::new-chat.events/new-chat-focus]
     ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component new-chat/new-chat}
 
-                                ;[Chat] New Public chat
+   ;[Chat] New Public chat
    {:name      :new-public-chat
     :insets    {:bottom true}
     :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
     :component new-public-chat/new-public-chat}
 
-                                ;[Chat] Link preview settings
+   ;[Chat] Link preview settings
    {:name      :link-preview-settings
     :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
     :component link-previews-settings/link-previews-settings}
 
-                                ;[Chat] Edit nickname
+   ;[Chat] Edit nickname
    {:name      :nickname
     :insets    {:bottom true}
     ;;TODO dyn subtitle
     :options   {:topBar {:visible false}}
     :component contact/nickname}
 
-                                ;[Group chat] Edit group chat name
+   ;[Group chat] Edit group chat name
    {:name      :edit-group-chat-name
     :insets    {:bottom true}
     :options   {:topBar {:title {:text (i18n/label :t/edit-group)}}}
     :component group-chat/edit-group-chat-name}
 
-                                ;[Group chat] Add participants
+   ;[Group chat] Add participants
    {:name      :add-participants-toggle-list
     :on-focus  [:group/add-participants-toggle-list]
     :insets    {:bottom true}
@@ -606,34 +601,34 @@
     :options   {:topBar {:visible false}}
     :component group-chat/add-participants-toggle-list}
 
-                                ;[Communities] Invite people
+   ;[Communities] Invite people
    {:name      :invite-people-community
     ;;TODO dyn title
     :options   {:topBar {:visible false}}
     :component communities.invite/invite
     :insets    {:bottom true}}
 
-                                ;New Contact
+   ;New Contact
    {:name      :new-contact
     :on-focus  [::new-chat.events/new-chat-focus]
     ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component new-chat/new-contact}
 
-                                ;[Wallet] Recipient
+   ;[Wallet] Recipient
    {:name      :recipient
     :insets    {:bottom true}
     ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component recipient/recipient}
 
-                                ;[Wallet] New favourite
+   ;[Wallet] New favourite
    {:name      :new-favourite
     :insets    {:bottom true}
     :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}}
     :component recipient/new-favourite}
 
-                                ;QR Scanner
+   ;QR Scanner
    {:name      :qr-scanner
     :insets    {:top false :bottom false}
     ;;TODO custom topbar
@@ -644,7 +639,7 @@
     :component qr-scanner/qr-scanner}
 
    ;;TODO WHY MODAL?
-                                ;[Profile] Notifications settings
+   ;[Profile] Notifications settings
    {:name      :notifications-settings
     :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                 :popGesture         false
@@ -654,7 +649,7 @@
     :component notifications-settings/notifications-settings}
 
    ;;TODO WHY MODAL?
-                                ;[Profile] Notifications Advanced settings
+   ;[Profile] Notifications Advanced settings
    {:name      :notifications-advanced-settings
     :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                 :popGesture         false
@@ -663,7 +658,7 @@
     :insets    {:bottom true}
     :component notifications-settings/notifications-advanced-settings}
 
-                                ;[Wallet] Prepare Transaction
+   ;[Wallet] Prepare Transaction
    {:name        :prepare-send-transaction
     :insets      {:bottom true}
     :on-dissmiss [:wallet/cancel-transaction-command]
@@ -672,7 +667,7 @@
                   :hardwareBackButton {:dismissModalOnPress false}}
     :component   wallet.send/prepare-send-transaction}
 
-                                ;[Wallet] Request Transaction
+   ;[Wallet] Request Transaction
    {:name        :request-transaction
     :insets      {:bottom true}
     :on-dissmiss [:wallet/cancel-transaction-command]
@@ -681,12 +676,12 @@
                   :hardwareBackButton {:dismissModalOnPress false}}
     :component   wallet.send/request-transaction}
 
-                                ;[Wallet] Buy crypto
+   ;[Wallet] Buy crypto
    {:name      :buy-crypto
     :insets    {:bottom true}
     :component wallet.buy-crypto/container}
 
-                                ;[Wallet] Buy crypto website
+   ;[Wallet] Buy crypto website
    {:name      :buy-crypto-website
     :insets    {:bottom true}
     ;;TODO subtitle
@@ -699,34 +694,34 @@
     :options   {:topBar {:visible false}}
     :component wallet.collectibles/nft-details-modal}
 
-                                ;My Status
+   ;My Status
    {:name      :my-status
     :insets    {:bottom true}
     :options   {:topBar {:title {:text (i18n/label :t/my-status)}}}
     :component status.new/my-status}
 
-                                ;[Browser] New bookmark
+   ;[Browser] New bookmark
    {:name      :new-bookmark
     :insets    {:bottom true}
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component bookmarks/new-bookmark}
 
-                                ;Profile
+   ;Profile
    {:name      :profile
     :insets    {:bottom true}
     ;;TODO custom toolbar
     :options   {:topBar {:visible false}}
     :component contact/profile}
 
-                                ;KEYCARD
-   {:name         :keycard-onboarding-intro
-    :insets       {:bottom true}
-    :options      {:topBar             {:visible false}
-                   :popGesture         false
-                   :hardwareBackButton {:dismissModalOnPress false
-                                        :popStackOnPress     false}}
-    :component    keycard.onboarding/intro}
+   ;KEYCARD
+   {:name      :keycard-onboarding-intro
+    :insets    {:bottom true}
+    :options   {:topBar             {:visible false}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.onboarding/intro}
    {:name      :keycard-onboarding-puk-code
     :insets    {:bottom true}
     :options   {:topBar             {:visible false}

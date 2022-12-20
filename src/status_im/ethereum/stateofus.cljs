@@ -1,8 +1,8 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
-            [status-im.utils.config :as config]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.utils.config :as config]))
 
 (def domain "stateofus.eth")
 
@@ -22,7 +22,8 @@
       username
       (subdomain username))))
 
-(defn username [name]
+(defn username
+  [name]
   (when (and name (string/ends-with? name domain))
     (first (string/split name "."))))
 
@@ -34,7 +35,8 @@
 
 (def registrars-cache (atom {}))
 
-(defn get-registrar [chain callback]
+(defn get-registrar
+  [chain callback]
   (if-let [contract (get @registrars-cache chain)]
     (callback contract)
     (ens/owner
@@ -45,19 +47,23 @@
          (swap! registrars-cache assoc chain addr)
          (callback addr))))))
 
-(defn get-cached-registrar [chain]
+(defn get-cached-registrar
+  [chain]
   (get @registrars-cache chain (get old-registrars chain)))
 
-(defn lower-case? [s]
+(defn lower-case?
+  [s]
   (when s
     (= s (string/lower-case s))))
 
-(defn valid-username? [username]
+(defn valid-username?
+  [username]
   (boolean
    (and (lower-case? username)
         (re-find #"^[a-z0-9]+$" username))))
 
-(defn ens-name-parse [contact-identity]
+(defn ens-name-parse
+  [contact-identity]
   (when (string? contact-identity)
     (string/lower-case
      (if (ens/is-valid-eth-name? contact-identity)

@@ -1,23 +1,24 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
+            [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [cljs.spec.alpha :as spec]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [status-im.ethereum.core :as ethereum]
-            [utils.security.core :as security]
-            [clojure.string :as string]
-            [quo.core :as quo]))
+            [utils.security.core :as security]))
 
-(defn add-account-topbar [type]
+(defn add-account-topbar
+  [type]
   (let [title (case type
                 :generate :t/generate-an-account
                 :watch    :t/add-watch-account
@@ -32,7 +33,8 @@
                  :on-press #(re-frame/dispatch [:wallet.add-new/qr-scanner
                                                 {:handler :wallet.add-new/qr-scanner-result}])}]}))]))
 
-(defn common-settings [account]
+(defn common-settings
+  [account]
   [react/view {:margin-horizontal 16}
    [quo/text-input
     {:label               (i18n/label :t/account-name)
@@ -50,14 +52,22 @@
                              (re-frame/dispatch [:set-in [:add-account :account :color] new-color])
                              (re-frame/dispatch [:hide-popover]))]
                    :style {:max-height "60%"}}])}
-    [react/view {:height      52        :margin-top      12      :background-color (:color account) :border-radius 8
-                 :align-items :flex-end :justify-content :center :padding-right    12}
+    [react/view
+     {:height           52
+      :margin-top       12
+      :background-color (:color account)
+      :border-radius    8
+      :align-items      :flex-end
+      :justify-content  :center
+      :padding-right    12}
      [icons/icon :main-icons/dropdown {:color colors/white}]]]])
 
-(defn settings [{:keys [type scanned-address password-error account-error]}
-                entered-password]
-  [react/view {:padding-horizontal 16
-               :padding-vertical   16}
+(defn settings
+  [{:keys [type scanned-address password-error account-error]}
+   entered-password]
+  [react/view
+   {:padding-horizontal 16
+    :padding-vertical   16}
    (if (= type :watch)
      [quo/text-input
       {:label               (i18n/label :t/wallet-key-title)
@@ -96,7 +106,8 @@
         :on-change-text
         #(do
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
-           (re-frame/dispatch [:set-in [:add-account :seed] (security/mask-data (string/lower-case %))]))}]])
+           (re-frame/dispatch [:set-in [:add-account :seed]
+                               (security/mask-data (string/lower-case %))]))}]])
    (when (= type :key)
      [react/view {:margin-top 30}
       [quo/text-input
@@ -114,17 +125,19 @@
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
            (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}]])])
 
-(defview pin []
+(defview pin
+  []
   (letsubs [pin           [:keycard/pin]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
             retry-counter [:keycard/retry-counter]]
-    [react/keyboard-avoiding-view {:style {:flex 1}
-                                   :ignore-offset true}
+    [react/keyboard-avoiding-view
+     {:style         {:flex 1}
+      :ignore-offset true}
      [topbar/topbar
-      {:navigation :none
+      {:navigation        :none
        :right-accessories
-       [{:label   (i18n/label :t/cancel)
+       [{:label    (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
      [pin.views/pin-view
       {:pin               pin
@@ -135,16 +148,19 @@
        :error-label       error-label
        :step              :export-key}]]))
 
-(defview add-account []
+(defview add-account
+  []
   (letsubs [{:keys [type account] :as add-account} [:add-account]
-            add-account-disabled? [:add-account-disabled?]
-            entered-password      (reagent/atom "")
-            keycard?              [:keycard-multiaccount?]]
-    [react/keyboard-avoiding-view {:style {:flex 1}
-                                   :ignore-offset true}
+            add-account-disabled?                  [:add-account-disabled?]
+            entered-password                       (reagent/atom "")
+            keycard?                               [:keycard-multiaccount?]]
+    [react/keyboard-avoiding-view
+     {:style         {:flex 1}
+      :ignore-offset true}
      [add-account-topbar type]
-     [react/scroll-view {:keyboard-should-persist-taps :handled
-                         :style                        {:flex 1 :padding-top 20}}
+     [react/scroll-view
+      {:keyboard-should-persist-taps :handled
+       :style                        {:flex 1 :padding-top 20}}
       (when (or (not keycard?)
                 (= type :watch))
         [settings add-account entered-password])

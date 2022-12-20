@@ -1,5 +1,4 @@
-(ns ^{:doc "Whisper API and events for managing keys and posting messages"}
- status-im.transport.shh
+(ns ^{:doc "Whisper API and events for managing keys and posting messages"} status-im.transport.shh
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]))
@@ -18,7 +17,8 @@
                   :on-success on-success
                   :on-error   on-error}))
 
-(defn log-error [error]
+(defn log-error
+  [error]
   (log/error :shh/get-new-sym-key-error error))
 
 (re-frame/reg-fx

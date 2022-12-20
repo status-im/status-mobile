@@ -1,18 +1,20 @@
 (ns status-im.wallet.prices
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.prices :as prices]
+  (:require [clojure.set :as set]
+            [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.currency :as currency]
-            [clojure.set :as set]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.prices :as prices]
+            [status-im.wallet.utils :as wallet.utils]
             [taoensso.timbre :as log]))
 
-(defn assoc-error-message [db error-type err]
+(defn assoc-error-message
+  [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
-(defn clear-error-message [db error-type]
+(defn clear-error-message
+  [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
 
 (defn tokens-symbols
@@ -33,7 +35,7 @@
   {:events [::update-prices-success]}
   [{:keys [db]} prices]
   {:db (assoc db
-              :prices prices
+              :prices          prices
               :prices-loading? false)})
 
 (fx/defn on-update-prices-fail
@@ -48,7 +50,10 @@
   {:events [:wallet.ui/pull-to-refresh]}
   [{{:keys [network-status :wallet/all-tokens]
      {:keys [currency :wallet/visible-tokens]
-      :or   {currency :usd}} :multiaccount :as db} :db}]
+      :or   {currency :usd}}
+     :multiaccount
+     :as db}
+    :db}]
   (let [chain    (ethereum/chain-keyword db)
         mainnet? (= :mainnet chain)
         assets   (get visible-tokens chain #{})

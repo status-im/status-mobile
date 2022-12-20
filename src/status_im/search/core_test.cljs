@@ -2,23 +2,24 @@
   (:require [cljs.test :refer-macros [deftest testing is]]
             [status-im2.subs.search :as search.subs]))
 
-(defn extract-chat-attributes [chat]
+(defn extract-chat-attributes
+  [chat]
   (let [{:keys [name alias tags]} (val chat)]
     (into [name alias] tags)))
 
 (deftest filter-chats
-  (let [chats {:chat-1 {:name "name1"
+  (let [chats {:chat-1 {:name  "name1"
                         :alias "alias1"
-                        :tags #{"tag1"}}
-               :chat-2 {:name "name2"
+                        :tags  #{"tag1"}}
+               :chat-2 {:name  "name2"
                         :alias "alias2"
-                        :tags #{"tag2" "tag3"}}
-               :chat-3 {:name "name3"
+                        :tags  #{"tag2" "tag3"}}
+               :chat-3 {:name  "name3"
                         :alias "alias3"
-                        :tags #{}}
-               :chat-4 {:name "name4"
+                        :tags  #{}}
+               :chat-4 {:name  "name4"
                         :alias "alias4"
-                        :tags #{"tag4"}}}]
+                        :tags  #{"tag4"}}}]
     (testing "no search filter"
       (is (= (count chats)
              (count (search.subs/apply-filter ""

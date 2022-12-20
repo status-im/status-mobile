@@ -1,14 +1,15 @@
 (ns status-im.ui.components.qr-code-viewer.views
-  (:require [cljs-bean.core :as bean]
+  (:require ["qrcode" :as qr-code-js]
+            ["react-native-svg" :refer (SvgXml)]
+            [cljs-bean.core :as bean]
             [reagent.core :as reagent]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
-            [status-im.ui.components.react :as react]
-            ["qrcode" :as qr-code-js]
-            ["react-native-svg" :refer (SvgXml)]))
+            [status-im.ui.components.react :as react]))
 
 (def svgxml (reagent/adapt-react-class SvgXml))
 
-(defn qr-code [{:keys [size value]}]
+(defn qr-code
+  [{:keys [size value]}]
   (let [uri (reagent/atom nil)]
     (.toString
      qr-code-js
@@ -24,7 +25,9 @@
   Note: `size` includes frame with `styles/qr-code-padding.`"
   [size value]
   (when (and size value)
-    [react/view {:style               (styles/qr-code-container size)
-                 :accessibility-label :qr-code-image}
-     [qr-code {:value value
-               :size  (- size (* styles/qr-code-padding 2))}]]))
+    [react/view
+     {:style               (styles/qr-code-container size)
+      :accessibility-label :qr-code-image}
+     [qr-code
+      {:value value
+       :size  (- size (* styles/qr-code-padding 2))}]]))

@@ -12,14 +12,14 @@
 (def main-account-id "0x0Fbd")
 
 (def accounts
-  [{:address    "0x0Fbd"
-    :name       "Main account"
-    :hidden     false
-    :removed    false}
-   {:address    "0x5B03"
-    :name       "Secondary account"
-    :hidden     false
-    :removed    false}])
+  [{:address "0x0Fbd"
+    :name    "Main account"
+    :hidden  false
+    :removed false}
+   {:address "0x5B03"
+    :name    "Secondary account"
+    :hidden  false
+    :removed false}])
 
 (def wallet
   {:accounts {main-account-id
@@ -56,8 +56,8 @@
 (h/deftest-sub :balances
   [sub-name]
   (swap! rf-db/app-db assoc
-         :multiaccount/accounts accounts
-         :wallet wallet)
+    :multiaccount/accounts accounts
+    :wallet                wallet)
   (is (= [{:ETH money-eth
            :SNT money-snt}
           {:ETH money-eth
@@ -94,18 +94,18 @@
                                    {:balance {:ETH money-zero
                                               :SNT money-zero}}}}]
       (swap! rf-db/app-db assoc
-             :multiaccount/accounts accounts
-             :prices prices
-             :wallet empty-wallet
-             :wallet/all-tokens tokens)
+        :multiaccount/accounts accounts
+        :prices                prices
+        :wallet                empty-wallet
+        :wallet/all-tokens     tokens)
       (is (= "0" (rf/sub [sub-name])))))
 
   (testing "returns formatted value in the default USD currency"
     (swap! rf-db/app-db assoc
-           :multiaccount/accounts accounts
-           :prices prices
-           :wallet wallet
-           :wallet/all-tokens tokens)
+      :multiaccount/accounts accounts
+      :prices                prices
+      :wallet                wallet
+      :wallet/all-tokens     tokens)
     (is (= "20,550.76" (rf/sub [sub-name])))))
 
 (h/deftest-sub :account-portfolio-value
@@ -118,16 +118,16 @@
                                    {:balance {:ETH money-zero
                                               :SNT money-zero}}}}]
       (swap! rf-db/app-db assoc
-             :multiaccount/accounts accounts
-             :prices prices
-             :wallet empty-wallet
-             :wallet/all-tokens tokens)
+        :multiaccount/accounts accounts
+        :prices                prices
+        :wallet                empty-wallet
+        :wallet/all-tokens     tokens)
       (is (= "0" (rf/sub [sub-name main-account-id])))))
 
   (testing "returns formatted value in the default USD currency"
     (swap! rf-db/app-db assoc
-           :multiaccount/accounts accounts
-           :prices prices
-           :wallet wallet
-           :wallet/all-tokens tokens)
+      :multiaccount/accounts accounts
+      :prices                prices
+      :wallet                wallet
+      :wallet/all-tokens     tokens)
     (is (= "10,275.38" (rf/sub [sub-name main-account-id])))))

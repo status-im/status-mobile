@@ -1,20 +1,20 @@
 (ns status-im.keycard.mnemonic
-  (:require [status-im2.navigation.events :as navigation]
+  (:require [status-im.keycard.common :as common]
+            status-im.keycard.fx
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            [status-im.keycard.common :as common]
-            status-im.keycard.fx))
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn set-mnemonic
   [{:keys [db] :as cofx}]
   (log/debug "[keycard] set-mnemonic")
   (let [selected-id (get-in db [:intro-wizard :selected-id])
-        mnemonic (reduce
-                  (fn [_ {:keys [id mnemonic]}]
-                    (when (= selected-id id)
-                      (reduced mnemonic)))
-                  nil
-                  (get-in db [:intro-wizard :multiaccounts]))]
+        mnemonic    (reduce
+                     (fn [_ {:keys [id mnemonic]}]
+                       (when (= selected-id id)
+                         (reduced mnemonic)))
+                     nil
+                     (get-in db [:intro-wizard :multiaccounts]))]
     (fx/merge
      cofx
      {:db (-> db

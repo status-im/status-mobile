@@ -1,12 +1,11 @@
 (ns status-im2.common.toasts.view
-  (:require
-   [quo2.core               :as quo2]
-   [react-native.core       :as rn]
-   [react-native.gesture    :as gesture]
-   [react-native.reanimated :as reanimated]
-   [reagent.core            :as reagent]
-   [status-im.utils.utils   :as utils.utils]
-   [utils.re-frame          :as rf]))
+  (:require [quo2.core :as quo2]
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]
+            [status-im.utils.utils :as utils.utils]
+            [utils.re-frame :as rf]))
 
 (def ^:private slide-out-up-animation
   (-> reanimated/slide-out-up-animation
@@ -44,35 +43,35 @@
                                                                      duration)))
                pan
                (->
-                (gesture/gesture-pan)
+                 (gesture/gesture-pan)
                  ;; remove timer on pan start
-                (gesture/on-start clear-timer)
-                (gesture/on-update
-                 (fn [evt]
-                   (let [evt-translation-y (.-translationY evt)]
-                     (cond
+                 (gesture/on-start clear-timer)
+                 (gesture/on-update
+                  (fn [evt]
+                    (let [evt-translation-y (.-translationY evt)]
+                      (cond
                         ;; reset translate y on pan down
-                       (> evt-translation-y 100)
-                       (reanimated/animate-shared-value-with-spring translate-y
-                                                                    0
-                                                                    {:mass      1
-                                                                     :damping   20
-                                                                     :stiffness 300})
+                        (> evt-translation-y 100)
+                        (reanimated/animate-shared-value-with-spring translate-y
+                                                                     0
+                                                                     {:mass      1
+                                                                      :damping   20
+                                                                      :stiffness 300})
                         ;; dismiss on pan up
-                       (< evt-translation-y -30)
-                       (do (reanimated/animate-shared-value-with-spring
-                            translate-y
-                            -500
-                            {:mass 1 :damping 20 :stiffness 300})
-                           (reset! dismissed-locally? true)
-                           (close!))
-                       :else
-                       (reanimated/set-shared-value translate-y
-                                                    evt-translation-y)))))
-                (gesture/on-end (fn [_]
-                                  (when-not @dismissed-locally?
-                                    (reanimated/set-shared-value translate-y 0)
-                                    (create-timer)))))]
+                        (< evt-translation-y -30)
+                        (do (reanimated/animate-shared-value-with-spring
+                             translate-y
+                             -500
+                             {:mass 1 :damping 20 :stiffness 300})
+                            (reset! dismissed-locally? true)
+                            (close!))
+                        :else
+                        (reanimated/set-shared-value translate-y
+                                                     evt-translation-y)))))
+                 (gesture/on-end (fn [_]
+                                   (when-not @dismissed-locally?
+                                     (reanimated/set-shared-value translate-y 0)
+                                     (create-timer)))))]
            ;; create auto dismiss timer, clear timer when unmount or duration changed
            (rn/use-effect (fn [] (create-timer) clear-timer) [duration])
            (rn/use-unmount on-dismissed)

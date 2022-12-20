@@ -2,21 +2,23 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def colors-map
-  {:secondary-container-bg-color   colors/neutral-95
-   :title-color                    colors/white
-   :subtitle-color                 colors/neutral-40
-   :last-message-text-color        colors/white
-   :close-button-bg-color          colors/neutral-80-opa-40
-   :close-button-icon-color        colors/white
-   :community-channel              colors/white})
+  {:secondary-container-bg-color colors/neutral-95
+   :title-color                  colors/white
+   :subtitle-color               colors/neutral-40
+   :last-message-text-color      colors/white
+   :close-button-bg-color        colors/neutral-80-opa-40
+   :close-button-icon-color      colors/white
+   :community-channel            colors/white})
 
-(defn base-container [background-color]
+(defn base-container
+  [background-color]
   {:width            160
    :height           160
    :border-radius    16
    :background-color (colors/alpha background-color 0.4)})
 
-(defn empty-card []
+(defn empty-card
+  []
   (merge
    (base-container nil)
    {:background-color colors/neutral-95}))
@@ -41,13 +43,14 @@
    :margin-horizontal 12
    :color             (:subtitle-color colors-map)})
 
-(defn content-container [new-notifications?]
-  {:position          :absolute
-   :max-width         (if new-notifications? 108 136)
-   :flex-shrink       1
-   :bottom            12
-   :margin-left       12
-   :margin-right      (if new-notifications? 8 12)})
+(defn content-container
+  [new-notifications?]
+  {:position     :absolute
+   :max-width    (if new-notifications? 108 136)
+   :flex-shrink  1
+   :bottom       12
+   :margin-left  12
+   :margin-right (if new-notifications? 8 12)})
 
 (def notification-container
   {:position        :absolute
@@ -80,7 +83,8 @@
    :align-items     :center
    :position        :absolute})
 
-(defn unread-dot [background-color]
+(defn unread-dot
+  [background-color]
   {:width            8
    :height           8
    :border-radius    4
@@ -97,7 +101,8 @@
    :height        24
    :border-radius 8})
 
-(defn community-avatar [customization-color]
+(defn community-avatar
+  [customization-color]
   {:width            48
    :height           48
    :border-radius    24

@@ -1,12 +1,12 @@
 (ns status-im2.subs.wallet.wallet
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.money :as money]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.utils.currency :as currency]
-            [clojure.string :as string]))
+            [status-im.utils.money :as money]))
 
 (re-frame/reg-sub
  :balance
@@ -63,11 +63,14 @@
   [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
                (if-let [price (get-in prices [symbol currency :price])]
-                 (+ acc (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
-                                    ^js (money/crypto->fiat price)
-                                    .toNumber)
-                            0))
-                 acc)) 0 balance))
+                 (+ acc
+                    (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
+                                ^js (money/crypto->fiat price)
+                                .toNumber)
+                        0))
+                 acc))
+             0
+             balance))
 
 (re-frame/reg-sub
  :wallet/token->decimals
@@ -84,7 +87,10 @@
  (fn [[balances prices currency token->decimals]]
    (if (and balances prices)
      (let [currency-key        (-> currency :code keyword)
-           balance-total-value (apply + (map #(get-balance-total-value % prices currency-key token->decimals) balances))]
+           balance-total-value (apply
+                                +
+                                (map #(get-balance-total-value % prices currency-key token->decimals)
+                                     balances))]
        (if (pos? balance-total-value)
          (-> balance-total-value
              (money/with-precision 2)
@@ -124,7 +130,8 @@
  :<- [:wallet/visible-tokens-symbols]
  (fn [[all-tokens visible-tokens]]
    (let [vt-set (set visible-tokens)]
-     (group-by :custom? (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
+     (group-by :custom?
+               (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
 
 (re-frame/reg-sub
  :wallet/fetching-tx-history?
@@ -184,7 +191,8 @@
  (fn [[balance visible-assets]]
    (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
 
-(defn update-value [prices currency]
+(defn update-value
+  [prices currency]
   (fn [{:keys [symbol decimals amount] :as token}]
     (let [price (get-in prices [symbol (-> currency :code keyword) :price])]
       (assoc token
@@ -204,11 +212,12 @@
     (re-frame/subscribe [:wallet/currency])])
  (fn [[assets prices currency]]
    (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
-         tokens-with-values (map (update-value prices currency) tokens)]
+         tokens-with-values    (map (update-value prices currency) tokens)]
      {:tokens tokens-with-values
       :nfts   nfts})))
 
-(defn get-asset-amount [balances sym]
+(defn get-asset-amount
+  [balances sym]
   (reduce #(if-let [^js bl (get %2 sym)]
              (.plus ^js (or ^js %1 ^js (money/bignumber 0)) bl)
              %1)
@@ -229,7 +238,7 @@
  :<- [:wallet/currency]
  (fn [[assets prices currency]]
    (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
-         tokens-with-values (map (update-value prices currency) tokens)]
+         tokens-with-values    (map (update-value prices currency) tokens)]
      {:tokens tokens-with-values
       :nfts   nfts})))
 

@@ -3,11 +3,13 @@
 
 (def timeout (atom {}))
 
-(defn clear [event-key]
+(defn clear
+  [event-key]
   (when-let [event-timeout (get @timeout event-key)]
     (js/clearTimeout event-timeout)))
 
-(defn clear-all []
+(defn clear-all
+  []
   (doseq [[_ v] @timeout]
     (js/clearTimeout v)))
 

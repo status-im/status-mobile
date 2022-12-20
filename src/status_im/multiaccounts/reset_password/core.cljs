@@ -1,23 +1,23 @@
 (ns status-im.multiaccounts.reset-password.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [clojure.string :as string]
-            [utils.security.core :as security]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.popover.core :as popover]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.popover.core :as popover]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.types :as types]
+            [utils.security.core :as security]))
 
 (fx/defn on-input-change
   {:events [::handle-input-change]}
   [{:keys [db]} input-id value]
   (let [new-password (get-in db [:multiaccount/reset-password-form-vals :new-password])
-        error (when (and (= input-id :confirm-new-password)
-                         (pos? (count new-password))
-                         (pos? (count value))
-                         (not= value new-password))
-                :t/password-mismatch)]
+        error        (when (and (= input-id :confirm-new-password)
+                                (pos? (count new-password))
+                                (pos? (count value))
+                                (not= value new-password))
+                       :t/password-mismatch)]
     {:db (-> db
              (assoc-in [:multiaccount/reset-password-form-vals input-id] value)
              (assoc-in [:multiaccount/reset-password-errors input-id] error))}))
@@ -49,7 +49,8 @@
               (when (= auth-method keychain/auth-method-biometric)
                 (keychain/save-user-password key-uid new-password)))))
 
-(defn change-db-password-cb [res]
+(defn change-db-password-cb
+  [res]
   (let [{:keys [error]} (types/json->clj res)]
     (if (not (string/blank? error))
       (re-frame/dispatch [::password-reset-error error])
@@ -70,12 +71,14 @@
   (let [{:keys [key-uid name]} (:multiaccount db)]
     (fx/merge cofx
               {::change-db-password [key-uid form-vals]
-               :db (assoc db
-                          :multiaccount/resetting-password? true)}
+               :db                  (assoc db
+                                           :multiaccount/resetting-password?
+                                           true)}
               (popover/show-popover {:view             :password-reset-popover
                                      :prevent-closing? true}))))
 
-(defn handle-verification [form-vals result]
+(defn handle-verification
+  [form-vals result]
   (let [{:keys [error]} (types/json->clj result)]
     (if (not (string/blank? error))
       (re-frame/dispatch [::handle-verification-error :t/wrong-password])
@@ -83,9 +86,10 @@
 
 (re-frame/reg-fx
  ::validate-current-password-and-reset
- (fn  [{:keys [address current-password] :as form-vals}]
+ (fn [{:keys [address current-password] :as form-vals}]
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data current-password))]
-     (status/verify address hashed-pass
+     (status/verify address
+                    hashed-pass
                     (partial handle-verification form-vals)))))
 
 (fx/defn reset

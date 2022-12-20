@@ -1,11 +1,11 @@
 (ns status-im2.subs.general
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.build :as build]
-            [status-im2.common.constants :as constants]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.mobile-sync :as mobile-network-utils]))
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.utils.build :as build]
+            [status-im.utils.mobile-sync :as mobile-network-utils]
+            [status-im2.common.constants :as constants]))
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update
@@ -169,7 +169,8 @@
  (fn [search]
    (get search :token-filter)))
 
-(defn- node-version [web3-node-version]
+(defn- node-version
+  [web3-node-version]
   (or web3-node-version "N/A"))
 
 (re-frame/reg-sub
@@ -253,26 +254,27 @@
    (merge {:mobile (mobile-network-utils/cellular? network-type)
            :sync   syncing-on-mobile-network?
            :peers  :online}
-          (cond (= network-status :offline)
-                {:peers :offline
-                 :node  :offline}
+          (cond
+            (= network-status :offline)
+            {:peers :offline
+             :node  :offline}
 
-                (not use-mailservers?)
-                {:node :disabled}
+            (not use-mailservers?)
+            {:node :disabled}
 
-                (or mailserver-connection-error? mailserver-connecting?)
-                {:node :connecting}
+            (or mailserver-connection-error? mailserver-connecting?)
+            {:node :connecting}
 
-                mailserver-request-error?
-                {:node :error}
+            mailserver-request-error?
+            {:node :error}
 
-                disconnected?
-                {:peers :offline
-                 :node  :offline}
+            disconnected?
+            {:peers :offline
+             :node  :offline}
 
-                :else
-                {:peers :online
-                 :node  :online}))))
+            :else
+            {:peers :online
+             :node  :online}))))
 
 (re-frame/reg-sub
  :mnemonic

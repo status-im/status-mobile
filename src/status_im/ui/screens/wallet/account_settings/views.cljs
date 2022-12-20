@@ -1,24 +1,26 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
+  (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.copyable-text :as copyable-text]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [quo.core :as quo]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.copyable-text :as copyable-text]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [utils.security.core :as security]))
 
-(defn not-valid-password? [password]
+(defn not-valid-password?
+  [password]
   (< (count (security/safe-unmask-data password)) 6))
 
-(defn delete-account [_]
-  (let [password (reagent/atom nil)
+(defn delete-account
+  [_]
+  (let [password       (reagent/atom nil)
         text-input-ref (atom nil)
-        error (reagent/atom nil)]
+        error          (reagent/atom nil)]
     (fn [account]
       (when (and @text-input-ref error (not @password))
         (.clear ^js @text-input-ref))
@@ -37,18 +39,20 @@
                               (if (= :wrong-password @error)
                                 (i18n/label :t/wrong-password)
                                 (str @error)))}]
-       [quo/button {:on-press            (fn []
-                                           (re-frame/dispatch [:wallet.accounts/delete-key
-                                                               account
-                                                               @password
-                                                               #(reset! error :wrong-password)])
-                                           (reset! password nil))
-                    :theme               :negative
-                    :accessibility-label :delete-account-confirm
-                    :disabled            (not-valid-password? @password)}
+       [quo/button
+        {:on-press            (fn []
+                                (re-frame/dispatch [:wallet.accounts/delete-key
+                                                    account
+                                                    @password
+                                                    #(reset! error :wrong-password)])
+                                (reset! password nil))
+         :theme               :negative
+         :accessibility-label :delete-account-confirm
+         :disabled            (not-valid-password? @password)}
         (i18n/label :t/delete)]])))
 
-(defview colors-popover [selected-color on-press]
+(defview colors-popover
+  [selected-color on-press]
   (letsubs [width [:dimensions/window-width]]
     [react/view {:flex 1 :padding-bottom 16}
      [react/scroll-view {:style {:margin 16}}
@@ -56,43 +60,60 @@
        (for [color colors/account-colors]
          ^{:key color}
          [react/touchable-highlight {:on-press #(on-press color)}
-          [react/view {:height          52 :background-color color :border-radius 8 :width (* 0.7 width)
-                       :justify-content :center :padding-left 12 :margin-bottom 16}
-           [react/view {:height           32 :width 32 :border-radius 20 :align-items :center :justify-content :center
-                        :background-color colors/black-transparent}
+          [react/view
+           {:height           52
+            :background-color color
+            :border-radius    8
+            :width            (* 0.7 width)
+            :justify-content  :center
+            :padding-left     12
+            :margin-bottom    16}
+           [react/view
+            {:height           32
+             :width            32
+             :border-radius    20
+             :align-items      :center
+             :justify-content  :center
+             :background-color colors/black-transparent}
             (when (= selected-color color)
               [icons/icon :main-icons/check {:color colors/white}])]]]))]
      [toolbar/toolbar
       {:center
-       [quo/button {:on-press #(re-frame/dispatch [:hide-popover])
-                    :type     :secondary}
+       [quo/button
+        {:on-press #(re-frame/dispatch [:hide-popover])
+         :type     :secondary}
         (i18n/label :t/cancel)]}]]))
 
-(defn property [label value]
+(defn property
+  [label value]
   [react/view {:margin-top 28}
    [react/text {:style {:color colors/gray}} label]
    (if (string? value)
      [react/text {:style {:margin-top 6}} value]
      value)])
 
-(defview account-settings []
+(defview account-settings
+  []
   (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
-            new-account (reagent/atom nil)
-            keycard? [:keycard-multiaccount?]]
-    [react/keyboard-avoiding-view {:style         {:flex 1}
-                                   :ignore-offset true}
+            new-account                                   (reagent/atom nil)
+            keycard?                                      [:keycard-multiaccount?]]
+    [react/keyboard-avoiding-view
+     {:style         {:flex 1}
+      :ignore-offset true}
      [topbar/topbar
       (cond-> {:title (i18n/label :t/account-settings)}
         (and @new-account (not= "" (:name @new-account)))
-        (assoc :right-accessories [{:label (i18n/label :t/apply)
-                                    :on-press
-                                    #(do
-                                       (re-frame/dispatch [:wallet.accounts/save-account
-                                                           account
-                                                           @new-account])
-                                       (reset! new-account nil))}]))]
-     [react/scroll-view {:keyboard-should-persist-taps :handled
-                         :style                        {:flex 1}}
+        (assoc :right-accessories
+               [{:label    (i18n/label :t/apply)
+                 :on-press
+                 #(do
+                    (re-frame/dispatch [:wallet.accounts/save-account
+                                        account
+                                        @new-account])
+                    (reset! new-account nil))}]))]
+     [react/scroll-view
+      {:keyboard-should-persist-taps :handled
+       :style                        {:flex 1}}
       [react/view {:padding-bottom 28 :padding-top 10}
        [react/view {:margin-horizontal 16}
         [quo/text-input
@@ -109,27 +130,34 @@
                                                     (swap! new-account assoc :color new-color)
                                                     (re-frame/dispatch [:hide-popover]))]
                                           :style {:max-height "60%"}}])}
-         [react/view {:height        52 :margin-top 12 :background-color (or (:color @new-account) color)
-                      :border-radius 8
-                      :align-items   :flex-end :justify-content :center :padding-right 12}
+         [react/view
+          {:height           52
+           :margin-top       12
+           :background-color (or (:color @new-account) color)
+           :border-radius    8
+           :align-items      :flex-end
+           :justify-content  :center
+           :padding-right    12}
           [icons/icon :main-icons/dropdown {:color colors/white}]]]
         [property (i18n/label :t/type)
          (case type
-           :watch (i18n/label :t/watch-only)
+           :watch       (i18n/label :t/watch-only)
            (:key :seed) (i18n/label :t/off-status-tree)
            (i18n/label :t/on-status-tree))]
         [property (i18n/label :t/wallet-address)
          [copyable-text/copyable-text-view
           {:copied-text address}
-          [quo/text {:style     {:margin-top 6}
-                     :monospace true}
+          [quo/text
+           {:style     {:margin-top 6}
+            :monospace true}
            address]]]
         (when-not (= type :watch)
           [property (i18n/label :t/derivation-path)
            [copyable-text/copyable-text-view
             {:copied-text path}
-            [quo/text {:style     {:margin-top 6}
-                       :monospace true} path]]])
+            [quo/text
+             {:style     {:margin-top 6}
+              :monospace true} path]]])
         (when-not (= type :watch)
           [property (i18n/label :t/storage)
            (i18n/label (if keycard?

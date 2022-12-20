@@ -1,12 +1,12 @@
 (ns status-im2.subs.wallet.signing
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.money :as money]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.tokens :as tokens]
-            [clojure.string :as string]
-            [status-im.wallet.db :as wallet.db]
-            [status-im.signing.gas :as signing.gas]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.signing.gas :as signing.gas]
+            [status-im.utils.money :as money]
+            [status-im.wallet.db :as wallet.db]))
 
 (re-frame/reg-sub
  ::send-transaction
@@ -68,13 +68,17 @@
  (fn [[latest-tip slow normal fast]]
    (reduce
     (fn [acc [k fees]]
-      (assoc acc k (reduce
-                    (fn [acc [k fee]]
-                      (assoc acc k (-> fee
-                                       money/wei->gwei
-                                       (money/to-fixed 2))))
-                    {}
-                    fees)))
+      (assoc acc
+             k
+             (reduce
+              (fn [acc [k fee]]
+                (assoc acc
+                       k
+                       (-> fee
+                           money/wei->gwei
+                           (money/to-fixed 2))))
+              {}
+              fees)))
     {}
     (signing.gas/get-fee-options latest-tip slow normal fast))))
 
@@ -91,14 +95,15 @@
  :<- [:prices]
  (fn [[sign wallet-accounts prices]]
    (if (= :pinless (:type sign))
-     (let [message (get-in sign [:formatted-data :message])
+     (let [message    (get-in sign [:formatted-data :message])
            wallet-acc (some #(when (= (:address %) (:receiver message)) %) wallet-accounts)]
        (cond-> sign
          (and (:amount message) (:currency message))
          (assoc :fiat-amount
                 (money/fiat-amount-value (:amount message)
                                          (:currency message)
-                                         :USD prices)
+                                         :USD
+                                         prices)
                 :fiat-currency "USD")
          (and (:receiver message) wallet-acc)
          (assoc :account wallet-acc)))
@@ -111,7 +116,8 @@
   (let [^js bn (money/bignumber amount)]
     (not (.eq bn (.round bn decimals)))))
 
-(defn get-amount-error [amount decimals]
+(defn get-amount-error
+  [amount decimals]
   (when (and (seq amount) decimals)
     (let [normalized-amount (money/normalize amount)
           value             (money/bignumber normalized-amount)]
@@ -122,23 +128,25 @@
         (too-precise-amount? normalized-amount decimals)
         {:amount-error (i18n/label :t/validation-amount-is-too-precise {:decimals decimals})}
 
-        :else nil))))
+        :else                                            nil))))
 
 (defn get-sufficient-funds-error
   [balance symbol amount]
   (when-not (money/sufficient-funds? amount (get balance symbol))
     {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
 
-(defn gas-required-exceeds-allowance? [gas-error-message]
-  (and gas-error-message (string/starts-with?
-                          gas-error-message
-                          "gas required exceeds allowance")))
+(defn gas-required-exceeds-allowance?
+  [gas-error-message]
+  (and gas-error-message
+       (string/starts-with?
+        gas-error-message
+        "gas required exceeds allowance")))
 
 (defn get-sufficient-gas-error
   [gas-error-message balance symbol amount ^js gas ^js gasPrice]
   (if (and gas gasPrice)
-    (let [^js fee (.times gas gasPrice)
-          ^js available-ether (money/bignumber (get balance :ETH 0))
+    (let [^js fee               (.times gas gasPrice)
+          ^js available-ether   (money/bignumber (get balance :ETH 0))
           ^js available-for-gas (if (= :ETH symbol)
                                   (.minus available-ether (money/bignumber amount))
                                   available-ether)]
@@ -161,10 +169,14 @@
  (fn [[{:keys [amount token gas gasPrice maxFeePerGas approve? gas-error-message]} balance]]
    (let [gas-price (or maxFeePerGas gasPrice)]
      (if (and amount token (not approve?))
-       (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
+       (let [amount-bn    (money/formatted->internal (money/bignumber amount)
+                                                     (:symbol token)
+                                                     (:decimals token))
              amount-error (or (get-amount-error amount (:decimals token))
                               (get-sufficient-funds-error balance (:symbol token) amount-bn))]
-         (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gas-price)))
+         (merge
+          amount-error
+          (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gas-price)))
        (get-sufficient-gas-error gas-error-message balance nil nil gas gas-price)))))
 
 (re-frame/reg-sub
@@ -176,19 +188,19 @@
  :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
-         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
-         amount  (money/formatted->internal value symbol decimals)
+   (let [balance                                    (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token}               (tokens/asset-for all-tokens current-network symbol)
+         {:keys [value error]}                      (wallet.db/parse-amount amount-text decimals)
+         amount                                     (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
          (merge transaction
                 {:amount-error error}
                 (when amount
                   (get-sufficient-funds-error balance symbol amount)))]
      (assoc transaction-new
-            :amount amount
-            :balance balance
-            :token (assoc token :amount (get balance (:symbol token)))
+            :amount        amount
+            :balance       balance
+            :token         (assoc token :amount (get balance (:symbol token)))
             :sign-enabled? (and to
                                 (nil? amount-error)
                                 (not (nil? amount))
@@ -203,16 +215,16 @@
  :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
-         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
-         amount  (money/formatted->internal value symbol decimals)
+   (let [balance                                    (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token}               (tokens/asset-for all-tokens current-network symbol)
+         {:keys [value error]}                      (wallet.db/parse-amount amount-text decimals)
+         amount                                     (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
          (assoc transaction :amount-error error)]
      (assoc transaction-new
-            :amount amount
-            :balance balance
-            :token (assoc token :amount (get balance (:symbol token)))
+            :amount        amount
+            :balance       balance
+            :token         (assoc token :amount (get balance (:symbol token)))
             :sign-enabled? (and to
                                 from
                                 (nil? amount-error)

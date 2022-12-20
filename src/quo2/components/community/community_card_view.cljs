@@ -1,18 +1,18 @@
 (ns quo2.components.community.community-card-view
-  (:require
-   [quo2.components.community.community-view :as community-view]
-   [quo2.components.community.style :as style]
-   [react-native.core :as rn]))
+  (:require [quo2.components.community.community-view :as community-view]
+            [quo2.components.community.style :as style]
+            [react-native.core :as rn]))
 
 (defn community-card-view-item
   [{:keys [name description locked
            status tokens cover tags width]} on-press]
   [rn/touchable-opacity {:on-press on-press}
    [rn/view {:style (style/community-card 20)}
-    [rn/view {:style    {:width         width
-                         :height        230
-                         :border-radius 20}
-              :on-press on-press}
+    [rn/view
+     {:style    {:width         width
+                 :height        230
+                 :border-radius 20}
+      :on-press on-press}
      [rn/view
       {:flex 1}
       [rn/view (style/community-cover-container 40)
@@ -27,9 +27,10 @@
        ;[communities.icon/community-icon-redesign community 48]]
        (when (= status :gated)
          [rn/view (style/permission-tag-styles)
-          [community-view/permission-tag-container {:locked locked
-                                                    :status status
-                                                    :tokens tokens}]])
+          [community-view/permission-tag-container
+           {:locked locked
+            :status status
+            :tokens tokens}]])
        [community-view/community-title
         {:title       name
          :description description}]

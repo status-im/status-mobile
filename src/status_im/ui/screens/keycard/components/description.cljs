@@ -4,7 +4,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.components.style :as styles]))
 
-(defn text-block-style [animated]
+(defn text-block-style
+  [animated]
   {:height        66
    :margin-bottom 8
    :opacity       (animation/interpolate animated
@@ -18,7 +19,8 @@
 
 (defonce animating (atom nil))
 
-(defn animate-description [animated]
+(defn animate-description
+  [animated]
   (when-not @animating
     (reset! animating true)
     ;; TODO; Animate exit
@@ -30,7 +32,8 @@
                         :easing  easing})
      #(reset! animating false))))
 
-(defn animated-description []
+(defn animated-description
+  []
   (let [current-text   (reagent/atom nil)
         animated-value (animation/create-value 0)]
     (fn [{:keys [title description]}]
@@ -38,9 +41,11 @@
         (reset! current-text [title description])
         (animate-description animated-value))
       [react/animated-view {:style (text-block-style animated-value)}
-       [react/text {:style           styles/title-style
-                    :number-of-lines 1}
+       [react/text
+        {:style           styles/title-style
+         :number-of-lines 1}
         title]
-       [react/text {:style           styles/helper-text-style
-                    :number-of-lines 2}
+       [react/text
+        {:style           styles/helper-text-style
+         :number-of-lines 2}
         description]])))

@@ -53,11 +53,11 @@
    {:margin-left 64}))
 
 (styles/def section-header
-  {:font-size       14
-   :color           colors/gray
-   :margin-left     16
-   :margin-top      16
-   :android         {:margin-bottom 3}
-   :ios             {:margin-bottom 10}})
+  {:font-size   14
+   :color       colors/gray
+   :margin-left 16
+   :margin-top  16
+   :android     {:margin-bottom 3}
+   :ios         {:margin-bottom 10}})
 
 (def section-header-container {})

@@ -1,13 +1,14 @@
 (ns status-im.ui.components.webview
-  (:require [reagent.core :as reagent]
+  (:require ["react-native-webview" :default rn-webview]
+            [reagent.core :as reagent]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
-            ["react-native-webview" :default rn-webview]))
+            [status-im.utils.platform :as platform]))
 
 (def webview-class
   (reagent/adapt-react-class rn-webview))
 
-(defn webview [{:keys [dapp?] :as opts}]
+(defn webview
+  [{:keys [dapp?] :as opts}]
   (if (and config/cached-webviews-enabled? platform/android? dapp?)
     (reagent/create-class
      (let [dapp-name-sent? (reagent/atom false)]
@@ -16,7 +17,8 @@
           ;; unfortunately it's impossible to pass some initial params
           ;; to view, that's why we have to pass dapp-name to the module
           ;; before showing webview
-          #_(.setCurrentDapp (module) dapp-name
+          #_(.setCurrentDapp (module)
+                             dapp-name
                              (fn [] (reset! dapp-name-sent? true))))
         :reagent-render
         (fn [opts]

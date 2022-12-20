@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [quo2.theme :as theme]))
 
-(defn alpha [value opacity]
+(defn alpha
+  [value opacity]
   (when value
     (if (string/starts-with? value "#")
       (let [hex (string/replace value #"#" "")
@@ -13,7 +14,8 @@
       (let [rgb (string/split value #",")]
         (str (string/join "," (butlast rgb)) "," opacity ")")))))
 
-(defn- alpha-opaque [value opacity]
+(defn- alpha-opaque
+  [value opacity]
   (when value
     (if (string/starts-with? value "#")
       (let [hex (string/replace value #"#" "")
@@ -57,11 +59,11 @@
 (def neutral-100 "#09101C")
 
 ;;Blur
-(def neutral-5-opa-70  (alpha neutral-5 0.7))
+(def neutral-5-opa-70 (alpha neutral-5 0.7))
 (def neutral-90-opa-70 (alpha neutral-90 0.7))
 
 ;;80 with transparency
-(def neutral-80-opa-5  (alpha neutral-80 0.05))
+(def neutral-80-opa-5 (alpha neutral-80 0.05))
 (def neutral-80-opa-10 (alpha neutral-80 0.1))
 (def neutral-80-opa-15 (alpha neutral-80 0.15))
 (def neutral-80-opa-20 (alpha neutral-80 0.2))
@@ -190,10 +192,12 @@
    :beige     {50 "#CAAE93"
                60 "#AA927C"}})
 
-(def colors-map (merge {:danger  {50 danger-50
-                                  60 danger-60}
-                        :success {50 success-50
-                                  60 success-60}} customization))
+(def colors-map
+  (merge {:danger  {50 danger-50
+                    60 danger-60}
+          :success {50 success-50
+                    60 success-60}}
+         customization))
 
 (def custom-color
   "(custom-color color suffix opacity)
@@ -222,7 +226,7 @@
      (custom-color color suffix-dark opacity-dark)
      (custom-color color suffix-light opacity-light))))
 
-(def shadow  "rgba(9,16,28,0.04)")
+(def shadow "rgba(9,16,28,0.04)")
 
 ;;General
 

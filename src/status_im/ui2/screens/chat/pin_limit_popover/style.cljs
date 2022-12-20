@@ -1,7 +1,8 @@
 (ns status-im.ui2.screens.chat.pin-limit-popover.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn pin-popover [width]
+(defn pin-popover
+  [width]
   {:position         :absolute
    :width            (- width 16)
    :left             8
@@ -10,7 +11,8 @@
    :border-radius    16
    :padding          12})
 
-(defn pin-alert-container []
+(defn pin-alert-container
+  []
   {:background-color (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40)
    :width            36
    :height           36
