@@ -5,7 +5,7 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]
-            [status-im.utils.security :as security]))
+            [utils.security.core :as security]))
 
 (fx/defn change-credentials-pressed
   {:events [:keycard-settings.ui/change-credentials-pressed]}

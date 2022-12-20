@@ -16,7 +16,7 @@
             [status-im.ui.components.accordion :as accordion]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts.views]
             [status-im.ui.screens.multiaccounts.key-storage.styles :as styles]
-            [status-im.utils.security]))
+            [utils.security.core]))
 
 (defn local-topbar [subtitle action]
   [topbar/topbar (merge {:title   (i18n/label :t/key-managment)
@@ -214,7 +214,7 @@
       [quo/text-input
        {:secure-text-entry   true
         :placeholder         (i18n/label :t/current-password)
-        :on-change-text      #(re-frame/dispatch [::multiaccounts.key-storage/password-changed (status-im.utils.security/mask-data %)])
+        :on-change-text      #(re-frame/dispatch [::multiaccounts.key-storage/password-changed (utils.security.core/mask-data %)])
         :accessibility-label :enter-password-input
         :auto-capitalize     :none
         :error               migration-password-error
@@ -325,20 +325,20 @@
     ;; Enter seed phrase
 
     ;; invalid seed shape
-    #_(re-frame/dispatch [::multiaccounts.key-storage/seed-phrase-input-changed (status-im.utils.security/mask-data "h h h h h h h h h h h h")])
+    #_(re-frame/dispatch [::multiaccounts.key-storage/seed-phrase-input-changed (utils.security.core/mask-data "h h h h h h h h h h h h")])
 
     ;; valid seed for Trusty Candid Bighornedsheep
     ;; If you try to select Dim Venerated Yaffle, but use this seed instead, validate-seed-against-key-uid will fail miserably
     #_(re-frame/dispatch [::multiaccounts.key-storage/seed-phrase-input-changed
-                          (status-im.utils.security/mask-data "disease behave roof exile ghost head carry item tumble census rocket champion")])
+                          (utils.security.core/mask-data "disease behave roof exile ghost head carry item tumble census rocket champion")])
 
     ;; valid seed for Swiffy Warlike Seagull
     #_(re-frame/dispatch [::multiaccounts.key-storage/seed-phrase-input-changed
-                          (status-im.utils.security/mask-data "dirt agent garlic merge tuna leaf congress hedgehog absent dish pizza scrap")])
+                          (utils.security.core/mask-data "dirt agent garlic merge tuna leaf congress hedgehog absent dish pizza scrap")])
 
     ;; valid seed for Dim Venerated Yaffle (this is just a test account, okay to leak seed)
     (re-frame/dispatch [::multiaccounts.key-storage/seed-phrase-input-changed
-                        (status-im.utils.security/mask-data "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo")])
+                        (utils.security.core/mask-data "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo")])
 
     ;; Click choose storage
     (re-frame/dispatch [::multiaccounts.key-storage/choose-storage-pressed])

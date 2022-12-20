@@ -4,7 +4,7 @@
             [quo.design-system.colors :as colors]
             [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [quo.core :as quo]
             [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.onboarding.views :as ui]

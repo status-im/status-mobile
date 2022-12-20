@@ -1,6 +1,6 @@
 (ns status-im2.contexts.syncing.events
   (:require [utils.re-frame :as rf]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
             [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]))

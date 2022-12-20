@@ -1,4 +1,4 @@
-(ns status-im.utils.security-html
+(ns utils.security.security-html
   (:require [clojure.string :as string]))
 
 ; Taken from https://github.com/sindresorhus/is-html

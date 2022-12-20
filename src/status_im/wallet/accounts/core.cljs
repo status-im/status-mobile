@@ -15,7 +15,7 @@
             [status-im.utils.types :as types]
             [status-im.wallet.core :as wallet]
             [clojure.string :as string]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ethereum.mnemonic :as mnemonic]
             [taoensso.timbre :as log]

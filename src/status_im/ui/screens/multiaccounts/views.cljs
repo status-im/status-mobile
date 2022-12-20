@@ -6,7 +6,7 @@
             [status-im.ui.screens.multiaccounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]

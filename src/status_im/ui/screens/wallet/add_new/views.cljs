@@ -13,7 +13,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [clojure.string :as string]
             [quo.core :as quo]))
 

@@ -4,7 +4,7 @@
             [status-im.ui.components.react :as react]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.utils :as status.utils]
-            [status-im.utils.security]
+            [utils.security.core]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.ui.components.icons.icons :as icons]

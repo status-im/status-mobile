@@ -11,7 +11,7 @@
             [status-im2.navigation.events :as navigation]
             [status-im.popover.core :as popover]
             [status-im.utils.fx :as fx]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.types :as types]

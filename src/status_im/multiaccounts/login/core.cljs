@@ -21,7 +21,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im2.setup.log :as logging]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]

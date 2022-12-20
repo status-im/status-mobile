@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [clojure.string :as string]
             [status-im.multiaccounts.key-storage.core :as models]
-            [status-im.utils.security :as security]))
+            [utils.security.core :as security]))
 
 (deftest move-keystore-checked
   (testing "Checks checkbox on-press"

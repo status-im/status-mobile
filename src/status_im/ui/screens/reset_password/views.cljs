@@ -6,7 +6,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.multiaccounts.reset-password.core :as reset-password]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.ui.components.toolbar :as toolbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

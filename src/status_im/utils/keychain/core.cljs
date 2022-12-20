@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [clojure.string :as string]

@@ -17,7 +17,7 @@
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
             [status-im.utils.types :as types]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]))
 

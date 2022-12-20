@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.multiaccounts.recover.core :as models]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.utils.security :as security]))
+            [utils.security.core :as security]))
 
 ;;;; helpers
 
