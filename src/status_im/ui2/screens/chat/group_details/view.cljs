@@ -180,7 +180,7 @@
                        :accessibility-label :save
                        :on-press (fn []
                                    (rf/dispatch [:group-chats.ui/add-members-pressed])
-                                   (rf/dispatch [:group-chats.ui/remove-members-pressed])
+                                   (js/setTimeout #(rf/dispatch [:group-chats.ui/remove-members-pressed]) 500)
                                    (rf/dispatch [:bottom-sheet/hide]))
                        :disabled (and (zero? (count selected-participants)) (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])

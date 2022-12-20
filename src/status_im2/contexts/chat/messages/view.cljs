@@ -57,9 +57,23 @@
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
+<<<<<<< HEAD
 (defn chat-render []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
+=======
+(defn chat-render
+  []
+  (let [;;we want to react only on these fields, do not use full chat map here
+<<<<<<< HEAD
+        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])
+        mutual-contact-requests-enabled?       (rf/sub [:mutual-contact-requests/enabled?])]
+=======
+        show-input? (not (rf/sub [:group-chat/removed-from-current-chat?]))
+        {:keys [chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
+        mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])]
+>>>>>>> a909675bf... qa fixes
+>>>>>>> 1f22b54b4... qa fixes
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
      [not-implemented/not-implemented
