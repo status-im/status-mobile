@@ -25,14 +25,14 @@
  (fn []
    (reset! load-chat-stack? true)
    (reanimated/animate-shared-value-with-delay
-    @chat-stack-left-position 0 300 :linear 300)))
+    @chat-stack-left-position 0 200 :ease-out 300)))
 
 
 (re-frame/reg-fx
  :shell/navigate-from-chat-stack-fx
  (fn []
    (reanimated/animate-shared-value-with-timing
-    @chat-stack-left-position @window-width-value 500 :linear)))
+    @chat-stack-left-position @window-width-value 200 :ease-out)))
 
 (defn chat-stack []
   (when @load-chat-stack?

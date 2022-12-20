@@ -29,10 +29,11 @@
 ;; Easings
 (def bezier (.-bezier ^js Easing))
 
-(def easings {:linear  (bezier 0 0 1 1)
-              :easing1 (bezier 0.25 0.1 0.25 1) ;; TODO(parvesh) - rename easing functions, (design team input)
-              :easing2 (bezier 0 0.3 0.6 0.9)
-              :easing3 (bezier 0.3 0.3 0.3 0.9)})
+(def easings {:linear   (bezier 0 0 1 1)
+              :easing1  (bezier 0.25 0.1 0.25 1)
+              :easing2  (bezier 0 0.3 0.6 0.9)
+              :easing3  (bezier 0.3 0.3 0.3 0.9)
+              :ease-out (bezier 0 0 0.58 1)})
 
 ;; Helper functions
 (defn get-shared-value [anim]
