@@ -17,14 +17,20 @@
 
 (fx/defn open-activity-center
   {:events [:activity-center/open]}
-  [_]
-  (rf/dispatch [:show-popover
-                {:view                       :activity-center
-                 :style                      {:margin 0}
-                 :disable-touchable-overlay? true
-                 :blur-view?                 true
-                 :blur-view-props            {:blur-amount 20
-                                              :blur-type   :dark}}]))
+  [{:keys [db]} {:keys [filter-type filter-status]}]
+  {:db       (cond-> db
+               filter-status
+               (assoc-in [:activity-center :filter :status] filter-status)
+
+               filter-type
+               (assoc-in [:activity-center :filter :type] filter-type))
+   :dispatch [:show-popover
+              {:view                       :activity-center
+               :style                      {:margin 0}
+               :disable-touchable-overlay? true
+               :blur-view?                 true
+               :blur-view-props            {:blur-amount 20
+                                            :blur-type   :dark}}]})
 
 ;;;; Misc
 

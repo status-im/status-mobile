@@ -6,6 +6,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent] ;; TODO move to status-im2
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
+            [status-im2.contexts.activity-center.notification-types :as notification-types]
             [status-im2.contexts.chat.home.contact-request.style :as style]
             [utils.re-frame :as rf]))
 
@@ -64,8 +65,9 @@
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       (fn []
-                      (rf/dispatch [:bottom-sheet/show-sheet
-                                    {:content (fn [] [contact-requests-sheet requests])}]))
+                      (rf/dispatch [:activity-center/open
+                                    {:filter-status :unread
+                                     :filter-type   notification-types/contact-request}]))
     :style          style/contact-requests}
    [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
