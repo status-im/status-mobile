@@ -4,37 +4,9 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [reagent.core :as reagent] ;; TODO move to status-im2
-            [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
             [status-im2.contexts.activity-center.notification-types :as notification-types]
             [status-im2.contexts.chat.home.contact-request.style :as style]
             [utils.re-frame :as rf]))
-
-(defn contact-requests-sheet
-  [received-requests]
-  (let [selected-requests-tab (reagent/atom :received)]
-    (fn []
-      (let [sent-requests []]
-        [rn/view {:style {:margin-left 20}}
-         [rn/touchable-opacity
-          {:on-press #(rf/dispatch [:bottom-sheet/hide])
-           :style    (style/contact-requests-sheet)}
-          [quo/icon :i/close]]
-         [rn/text {:size :heading-1 :weight :semi-bold}
-          (i18n/label :t/pending-requests)]
-         [quo/tabs
-          {:style          {:margin-top 12 :margin-bottom 20}
-           :size           32
-           :on-change      #(reset! selected-requests-tab %)
-           :default-active :received
-           :data           [{:id    :received
-                             :label (i18n/label :t/received)}
-                            {:id    :sent
-                             :label (i18n/label :t/sent)}]}]
-         [rn/flat-list
-          {:key-fn    :chat-id
-           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-           :render-fn received-cr-item/received-cr-item}]]))))
 
 (defn get-display-name
   [{:keys [chat-id message]}]
