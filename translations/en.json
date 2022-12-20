@@ -1911,18 +1911,7 @@
     "try-your-luck-again": "Try your luck again!",
     "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
     "show-existing-keys": "Show Existing Keys",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "scan-sync-code": "Scan Sync Code",
-    "confirm-selection": "Confirm selection"
-=======
-    "scan-sync-code": "Scan Sync Code"
-=======
+    "confirm-selection": "Confirm selection",
     "online": "Online"
->>>>>>> babab2fb0... qa fixes
->>>>>>> 4b3899532... qa fixes
-=======
-    "scan-sync-code": "Scan Sync Code",
-    "online": "Online"
->>>>>>> e0a0e1d3d... rebase
 }
