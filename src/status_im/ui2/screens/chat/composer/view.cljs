@@ -244,7 +244,8 @@
               (quo.react/effect!
                #(do
                   (when (and @keyboard-was-shown? (not keyboard-shown))
-                    (swap! context assoc :state :min))
+                    (swap! context assoc :state :min)
+                    (set-bg-opacity 0))
                   (when (and blank-composer? (not (seq images)) (not edit))
                     (clean-and-minimize-composer-fn false))
                   (when (seq images)
