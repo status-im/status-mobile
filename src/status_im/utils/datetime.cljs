@@ -116,7 +116,7 @@
 (defn- to-str
   [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date      (t.coerce/from-long ms)
-        local     (t/plus date time-zone-offset) ; TODO: this is wrong, it uses the current timezone offset,
+        local     (t/plus date time-zone-offset) ; NOTE(edge-case): this is wrong, it uses the current timezone offset,
                                                  ; regardless of DST
         today     (t/minus (t/today-at-midnight) time-zone-offset)
         yesterday (t/plus today (t/days -1))]

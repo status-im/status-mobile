@@ -186,7 +186,7 @@
     (array-seq (.-values message-list))
     []))
 
-;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
+;; NOTE(performance): this is too expensive, probably we could mark message somehow and just hide it in the UI
 (fx/defn rebuild-message-list
   [{:keys [db]} chat-id]
   {:db (assoc-in db [:message-lists chat-id]

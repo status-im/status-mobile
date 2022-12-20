@@ -6,9 +6,9 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
-;; TODO (19/12/22 yqrashawn) this namespace has been moved to the status-im2.common.json-rpc.events
-;; namespace, we keep this only for old (status 1.0) code,
-;; can be removed with old code later
+;; NOTE(19/12/22 yqrashawn) this namespace has been moved to the
+;; status-im2.common.json-rpc.events namespace,
+;; we keep this only for old (status 1.0) code, can be removed with old code later
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]
   (if (pos? number-of-retries)
