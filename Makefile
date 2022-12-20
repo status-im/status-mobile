@@ -305,6 +305,14 @@ test-watch: ##@ Watch tests and re-run no changes to cljs files
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
 
+test-watch-for-repl: export TARGET := clojure
+test-watch-for-repl: ##@ Watch tests and support REPL connections
+	yarn install
+	rm -f target/test/test.js
+	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
+		'yarn shadow-cljs compile mocks && yarn shadow-cljs watch test --verbose' \
+		'until [ -f ./target/test/test.js ] ; do sleep 1 ; done ; node --require ./test-resources/override.js ./target/test/test.js --repl'
+
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS
 	# Here we create the gyp bindings for nodejs

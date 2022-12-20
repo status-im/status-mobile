@@ -89,6 +89,7 @@
     "@testing-library/jest-native": "^5.0.0",
     "@testing-library/react-native": "^11.2.0",
     "@types/jest": "^28.1.6",
+    "concurrently": "^7.6.0",
     "detox": "^19.9.1",
     "jest": "^25.1.0",
     "jest-circus": "^26.0.0",
