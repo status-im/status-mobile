@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.117.1a",
     "commit-sha1": "b4bdfd3df6cf5fb91ab2d0e9f3b38e8d1b9703e5",
     "src-sha256": "1s50q53p1j5ysnbj88c52zb2rh1ms21pnf6bjc7wja8gzcpih2wl"
@@ -79,4 +80,9 @@
     "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
     "src-sha256": "1ml22627jadj150y9yj7p9z91vx49min6hzvsg88i3nhx4153nia"
 >>>>>>> 7889555c1... lint
+=======
+    "version": "e02245f46e278b010b077dc6dd63da8a2511844a",
+    "commit-sha1": "e02245f46e278b010b077dc6dd63da8a2511844a",
+    "src-sha256": "0pgwyhpjzlmdwr4wqdliz9d0qvgpywbnwjh7qzhdi8yl6jmfzabc"
+>>>>>>> 9f353eb82... qa fixes
 }

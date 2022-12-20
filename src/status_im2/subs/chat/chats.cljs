@@ -167,8 +167,13 @@
  :<- [:contacts/contacts]
  :<- [:chat/inputs]
  :<- [:mutual-contact-requests/enabled?]
+<<<<<<< HEAD
  (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts
        inputs mutual-contact-requests-enabled?]]
+=======
+ (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts inputs mutual-contact-requests-enabled?]]
+   (println "WTFFF"  (group-chats.db/member? my-public-key current-chat) (chat.models/group-chat? current-chat))
+>>>>>>> a909675bf... qa fixes
    (when current-chat
      (cond-> current-chat
        (chat.models/public-chat? current-chat)

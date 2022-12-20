@@ -58,8 +58,14 @@
 (defn chat-render
   []
   (let [;;we want to react only on these fields, do not use full chat map here
+<<<<<<< HEAD
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled?       (rf/sub [:mutual-contact-requests/enabled?])]
+=======
+        show-input? (not (rf/sub [:group-chat/removed-from-current-chat?]))
+        {:keys [chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
+        mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])]
+>>>>>>> a909675bf... qa fixes
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
      ;; TODO (flexsurfer) this should be in-app notification component in quo2

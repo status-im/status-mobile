@@ -50,8 +50,12 @@
   {::json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                      :params      [nil chat-id member]
                      :js-response true
+<<<<<<< HEAD
                      :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
 >>>>>>> bc7bcd83f... refactor
+=======
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
+>>>>>>> 3f450a328... qa fixes
 
 (fx/defn remove-members
   {:events [:group-chats.ui/remove-members-pressed]}
@@ -59,9 +63,7 @@
   {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
                      :params      [nil current-chat-id deselected-members]
                      :js-response true
-                     :on-success  #(do
-                                     (println "RESXX" deselected-members)
-                                     (re-frame/dispatch [:chat-updated % true]))
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])
                      :on-error #()}]})
 
 (fx/defn join-chat
