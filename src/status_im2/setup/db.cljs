@@ -1,7 +1,15 @@
 (ns status-im2.setup.db
+<<<<<<< HEAD
   (:require [react-native.core :as rn] ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [status-im.fleet.core :as fleet]
             [status-im.wallet.db :as wallet.db]))
+=======
+  (:require
+   [react-native.core :as rn]
+    ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
+   [status-im.fleet.core :as fleet]
+   [status-im.wallet.db :as wallet.db]))
+>>>>>>> af161249e... refactor
 
 ;; initial state of app-db
 <<<<<<< HEAD
@@ -48,8 +56,8 @@
              :group/selected-contacts            #{}
              :chats                              {}
              :current-chat-id                    nil
-             :group-chat/selected-participants              #{}
-             :group-chat/deselected-members                 #{}
+             :group-chat/selected-participants   #{}
+             :group-chat/deselected-members      #{}
              :sync-state                         :done
              :link-previews-whitelist            []
              :app-state                          "active"

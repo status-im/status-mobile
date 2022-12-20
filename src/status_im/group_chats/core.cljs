@@ -59,9 +59,9 @@
 
 (fx/defn remove-members
   {:events [:group-chats.ui/remove-members-pressed]}
-  [{{:keys [current-chat-id]} :db :as cofx}]
+  [{{:keys [current-chat-id] :group-chat/keys [deselected-members]} :db :as cofx}]
   {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
-                     :params      [nil current-chat-id (get-in cofx [:db :group-chat/deselected-members])]
+                     :params      [nil current-chat-id deselected-members]
                      :js-response true
                      :on-success  #(re-frame/dispatch [:chat-updated % true])
                      :on-error #()}]})
@@ -105,6 +105,7 @@
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
 <<<<<<< HEAD
+<<<<<<< HEAD
   [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
 <<<<<<< HEAD
   {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
@@ -115,8 +116,11 @@
 =======
   [{{:keys [current-chat-id]} :db :as cofx}]
 >>>>>>> 607d25f47... refactor
+=======
+  [{{:keys [current-chat-id] :group-chat/keys [selected-participants]} :db :as cofx}]
+>>>>>>> 1c0bdec11... refactor
   {::json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                     :params      [nil current-chat-id (get-in cofx [:db :group-chat/selected-participants])]
+                     :params      [nil current-chat-id selected-participants]
                      :js-response true
 <<<<<<< HEAD
 <<<<<<< HEAD
