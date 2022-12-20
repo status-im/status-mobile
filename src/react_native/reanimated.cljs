@@ -1,10 +1,15 @@
 (ns react-native.reanimated
   (:require ["react-native" :as rn]
-            [reagent.core :as reagent]
-            [clojure.string :as string]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-reanimated" :default reanimated
-             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring withRepeat Easing Keyframe cancelAnimation)]))
+             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring withRepeat Easing Keyframe cancelAnimation SlideInUp SlideOutUp LinearTransition)]
+            [clojure.string :as string]
+            [reagent.core :as reagent]))
+
+;; Animations
+(def slide-in-up-animation SlideInUp)
+(def slide-out-up-animation SlideOutUp)
+(def linear-transition LinearTransition)
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
@@ -95,3 +100,8 @@
                            #js {:duration duration
                                 :easing   (get easings easing)})
                          number-of-repetitions reverse?)))))
+
+(defn animate-shared-value-with-spring [anim val {:keys [mass stiffness damping]}]
+  (set-shared-value anim (with-spring val (js-obj "mass" mass
+                                                  "damping" damping
+                                                  "stiffness" stiffness))))

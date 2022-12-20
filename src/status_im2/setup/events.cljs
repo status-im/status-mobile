@@ -1,17 +1,18 @@
 (ns status-im2.setup.events
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.setup.db :as db]
-            [status-im2.common.theme.core :as theme]
             [quo2.theme :as quo2.theme]
-            [utils.re-frame :as rf]
-
+            [re-frame.core :as re-frame]
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [quo.theme :as quo.theme]
             [status-im.native-module.core :as status]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.utils.keychain.core :as keychain]
-            [status-im2.navigation.events :as navigation]))
+
+            [status-im2.common.theme.core :as theme]
+            [status-im2.common.toasts.events]
+            [status-im2.navigation.events :as navigation]
+            [status-im2.setup.db :as db]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :setup/open-multiaccounts

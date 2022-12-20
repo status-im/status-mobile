@@ -7,6 +7,7 @@
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.config :as config]
             [status-im2.setup.hot-reload :as reloader]
+            [status-im2.common.toasts.view :as toasts]
 
     ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
             [status-im.ui.screens.popover.views :as popover]
@@ -91,6 +92,13 @@
       [popover/popover]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
+
+(def toasts-comp
+  (reagent/reactify-component
+   (fn []
+     ;; DON'T wrap this in safe-area-provider, it makes it unable to click through toasts
+     ^{:key (str "toasts" @reloader/cnt)}
+     [toasts/toasts])))
 
 (def visibility-status-popover-comp
   (reagent/reactify-component

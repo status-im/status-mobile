@@ -4,6 +4,20 @@
   (:require [status-im.utils.test :as utils.test])
   (:require [status-im.chat.default-chats :refer (default-chats)]))
 
+;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and return itself
+;; For the convenience to mock eg.
+;; (-> reanimated/slide-out-up-animation .springify (.damping 20) (.stiffness 300))
+;; (-> reanimated/slide-out-up-animation (.damping 20) .springify (.stiffness 300))
+(js/eval "
+var globalThis
+if (typeof window === \"undefined\") {
+  globalThis = global
+} else {
+  globalThis = window
+}
+globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return () => globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__}})
+")
+
 (def action-button          #js {:default #js {:Item #js {}}})
 (def config                 #js {:default #js {}})
 (def camera                 #js {:RNCamera #js {:Constants #js {}}})
@@ -111,7 +125,9 @@
 (def react-native-shake  #js {})
 (def react-native-share #js {:default {}})
 (def react-native-svg #js {:SvgUri #js {:render identity}
-                           :SvgXml #js {:render identity}})
+                           :SvgXml #js {:render identity}
+                           :default #js {:render identity}
+                           :Path #js {:render identity}})
 (def react-native-webview #js {:default {}})
 (def react-native-audio-toolkit #js {:MediaStates {}})
 (def net-info  #js {})
@@ -207,7 +223,10 @@
                                   :withTiming             (fn [])
                                   :withDelay              (fn [])
                                   :Easing                 #js {:bezier identity}
-                                  :Keyframe               (fn [])})
+                                  :Keyframe               (fn [])
+                                  :SlideOutUp             js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
+                                  :SlideInUp              js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
+                                  :LinearTransition       js/__STATUS_MOBILE_JS_IDENTITY_PROXY__})
 (def react-native-gesture-handler #js {:default                  #js {}
                                        :State                    #js {:BEGAN        nil
                                                                       :ACTIVE       nil
