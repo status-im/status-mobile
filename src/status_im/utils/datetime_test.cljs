@@ -23,14 +23,14 @@
 ;; 1970-01-03 00:00:00 UTC
 (def epoch-plus-3d 172800000)
 
-(deftest is24Hour-locale-en-test
-  (is (= (#'status-im.utils.datetime/is24Hour-locsym (i18n/locale-symbols "en")) false)))
+(deftest is-24-hour-locale-en-test
+  (is (= (#'status-im.utils.datetime/is-24-hour-locsym (i18n/locale-symbols "en")) false)))
 
-(deftest is24Hour-locale-it-test
-  (is (= (#'status-im.utils.datetime/is24Hour-locsym (i18n/locale-symbols "it")) true)))
+(deftest is-24-hour-locale-it-test
+  (is (= (#'status-im.utils.datetime/is-24-hour-locsym (i18n/locale-symbols "it")) true)))
 
-(deftest is24Hour-locale-nb-test
-  (is (= (#'status-im.utils.datetime/is24Hour-locsym (i18n/locale-symbols "nb-NO")) true)))
+(deftest is-24-hour-locale-nb-test
+  (is (= (#'status-im.utils.datetime/is-24-hour-locsym (i18n/locale-symbols "nb-NO")) true)))
 
 (deftest to-short-str-today-test
   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
@@ -40,14 +40,14 @@
 
 #_((deftest to-short-str-today-force-24H-test
      (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is24Hour (constantly true)
+                   d/is-24-hour (constantly true)
                    d/time-fmt (i18n-module/mk-fmt "us" d/short-time-format)
                    d/time-zone-offset (t/period :hours 0)]
        (is (= (d/to-short-str epoch-plus-3d) "00:00"))))
 
    (deftest to-short-str-today-force-AMPM-test
      (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is24Hour (constantly false)
+                   d/is-24-hour (constantly false)
                    d/time-fmt (i18n-module/mk-fmt "it" d/short-time-format)
                    d/time-zone-offset (t/period :hours 0)]
        (is (= (d/to-short-str epoch-plus-3d) "12:00 AM")))))
@@ -135,7 +135,7 @@
   ;; Today is Monday, 1975-03-10 15:15:45Z
   (with-redefs [t/*ms-fn*          (constantly 163696545000)
                 d/time-zone-offset (t/period :hours 0)
-                d/is24Hour         (constantly false)]
+                d/is-24-hour       (constantly false)]
     (testing "formats previous years"
       ;; 1974-12-31 23:59:59Z
       (is (= "Dec 31, 1974" (d/timestamp->relative 157766399000)))
@@ -165,14 +165,14 @@
 
 #_((deftest day-relative-before-yesterday-force-24H-test
      (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is24Hour (constantly true)
+                   d/is-24-hour (constantly true)
                    d/time-zone-offset (t/period :hours 0)
                    d/date-fmt (i18n-module/mk-fmt "us" #'status-im.utils.datetime/medium-date-time-format)]
        (is (= (d/day-relative epoch) "Jan 1, 1970, 00:00:00"))))
 
    (deftest day-relative-before-yesterday-force-AMPM-test
      (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is24Hour (constantly false)
+                   d/is-24-hour (constantly false)
                    d/time-zone-offset (t/period :hours 0)
                    d/date-fmt (i18n-module/mk-fmt "it" #'status-im.utils.datetime/medium-date-time-format)]
        (is (= (d/day-relative epoch) "01 gen 1970, 12:00:00 AM")))))

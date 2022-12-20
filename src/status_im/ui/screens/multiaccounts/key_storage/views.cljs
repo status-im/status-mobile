@@ -127,19 +127,6 @@
                                        :after    :main-icons/next}
                                       (i18n/label (if creating-backup? :t/next :t/choose-storage))]}]]))
 
-(defn keycard-subtitle []
-  [react/view
-   [react/text {:style {:color colors/gray}} (i18n/label :t/empty-keycard-required)]
-   [react/view {:flex-direction :row
-                :align-items    :center}
-    [react/text {:style               {:color colors/blue}
-                 :accessibility-label :learn-more
-                 :on-press #(js/alert :press)}
-     (i18n/label :learn-more)]
-    [icons/icon :main-icons/tiny-external {:color  colors/blue
-                                           :width  16
-                                           :height 16}]]])
-
 (defn keycard-upsell-banner []
   [react/view {:background-color (if (colors/dark?) "#2C5955" "#DDF8F4")
                :border-radius 16 :padding-left 12 :padding-right 50 :margin 16}

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.activity-center.events
   (:require [re-frame.core :as rf]
             [status-im.data-store.activities :as data-store.activities]
-            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im.utils.fx :as fx]
             [status-im2.contexts.activity-center.notification-types :as types]
             [taoensso.timbre :as log]))
