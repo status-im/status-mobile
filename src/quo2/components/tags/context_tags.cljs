@@ -60,11 +60,11 @@
 (defn context-tag
   [_ _]
   (fn [params photo name channel-name]
-    (let [text-style  (params :text-style)
+    (let [text-style  (:text-style params)
           text-params {:weight :medium
                        :size   :paragraph-2
                        :style  (assoc text-style :justify-content :center)}
-          icon-color   (colors/theme-colors colors/neutral-50 colors/neutral-40)]
+          icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40)]
       [base-tag (assoc-in params [:style :padding-left] 3)
        [rn/image
         {:style {:width 20
