@@ -15,7 +15,7 @@
             [quo.react]
             ["react-native" :as react-native]
             [status-im.ui.components.react :as react]
-            [utils.types :as types]
+            [utils.transforms :as transforms]
             [oops.core :as oops]))
 
 (defonce input-texts (atom {}))
@@ -322,7 +322,7 @@
                                         (reset! selection-event nil))))
               on-selection        (fn [event]
                                     (let [native-event (.-nativeEvent event)
-                                          native-event (types/js->clj native-event)
+                                          native-event (transforms/js->clj native-event)
                                           {:keys [eventType content selectionStart selectionEnd]} native-event
                                           full-text    (:input-text (<sub [:chats/current-chat-inputs]))]
                                       (on-menu-item-touched {:first-level       first-level

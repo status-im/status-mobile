@@ -4,7 +4,7 @@
             [react-native.background-timer :as background-timer]
             [status-im.native-module.core :as status]
             [taoensso.timbre :as log]
-            [utils.types :as types]))
+            [utils.transforms :as transforms]))
 
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]
@@ -30,19 +30,19 @@
                      (on-error-retry call arg)
                      #(log/warn :json-rpc/error method :error % :params params))]
     (status/call-private-rpc
-     (types/clj->json {:jsonrpc "2.0"
-                       :id      1
-                       :method  method
-                       :params  params})
+     (transforms/clj->json {:jsonrpc "2.0"
+                            :id      1
+                            :method  method
+                            :params  params})
      (fn [response]
        (if (string/blank? response)
          (on-error {:message "Blank response"})
-         (let [response-js (types/json->js response)]
+         (let [response-js (transforms/json->js response)]
            (if (.-error response-js)
-             (on-error (types/js->clj (.-error response-js)))
+             (on-error (transforms/js->clj (.-error response-js)))
              (on-success (if js-response
                            (.-result response-js)
-                           (types/js->clj (.-result response-js)))))))))))
+                           (transforms/js->clj (.-result response-js)))))))))))
 
 (re-frame/reg-fx
  ::call
