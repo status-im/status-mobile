@@ -1,4 +1,3 @@
-
 (ns status-im.ui2.screens.chat.composer.view
   (:require [clojure.string :as string]
             [i18n.i18n :as i18n]
@@ -57,16 +56,10 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-<<<<<<< HEAD
-(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply images edit]
-  (let [y               (calculate-y context min-y max-y added-value chat-id)
-        y               (+ y (when (seq images) 80))
-=======
-(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit set-bg-opacity]
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit images set-bg-opacity]
   (let [y               (calculate-y context min-y max-y added-value chat-id set-bg-opacity)
->>>>>>> 5a2716172 (Test fix for 14536)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
-    (+ y (when (seq suggestions) y-with-mentions) (when edit 38))))
+    (+ y (when (seq suggestions) y-with-mentions) (when (seq images) 80) (when edit 38))))
 
 (defn- clean-and-minimize-composer
   ([context chat-id refs min-y]
@@ -201,6 +194,13 @@
                                                                 ; of input box
                                                                 ; needed when reply
                   min-y                                    (+ min-y (when (or edit reply) 38))
+                  bg-opacity                               (reanimated/use-shared-value 0)
+                  bg-bottom                                (reanimated/use-shared-value (-
+                                                                                         window-height))
+                  set-bg-opacity
+                  (fn [value]
+                    (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   y                                        (get-y-value
                                                             context
                                                             min-y
@@ -210,19 +210,13 @@
                                                             chat-id
                                                             suggestions
                                                             reply
+                                                            edit
                                                             images
-                                                            edit)
+                                                            set-bg-opacity)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
-                  bg-opacity                               (reanimated/use-shared-value 0)
                   clean-and-minimize-composer-fn
                   #(clean-and-minimize-composer context chat-id refs min-y %)
-                  bg-bottom                                (reanimated/use-shared-value (-
-                                                                                         window-height))
-                  set-bg-opacity
-                  (fn [value]
-                    (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   blank-composer?                          (string/blank? (get @input/input-texts
                                                                                chat-id))
                   initial-value                            (or (get @input/input-texts chat-id) nil)
