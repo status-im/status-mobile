@@ -114,7 +114,7 @@
 
 (defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer? initial-value]
   (fn [evt]
-    (when-not (or blank-composer? initial-value)
+    (when-not (or blank-composer? (some? initial-value))
       (swap! context assoc :clear false))
     (if (:clear @context)
       (do
