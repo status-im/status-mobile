@@ -43,7 +43,7 @@
 
 (defn download-image-http [base64-uri on-success]
   (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?
-                                             :path temp-image-url}))
+                                             :path   temp-image-url}))
       (.fetch "GET" base64-uri)
       (.then #(on-success (.path %)))
       (.catch #(log/error "could not save image"))))
@@ -77,8 +77,8 @@
  (fn [chat-id]
    (react/show-image-picker
     (fn [^js images]
-      ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
-      ;; gallery, we just clean previous state and set all newly picked images
+        ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
+        ;; gallery, we just clean previous state and set all newly picked images
       (when (and platform/ios? (pos? (count images)))
         (re-frame/dispatch [:chat.ui/clear-sending-images chat-id]))
       (doseq [^js result (if platform/ios?
@@ -86,8 +86,8 @@
                            [images])]
         (resize-and-call (.-path result)
                          #(re-frame/dispatch [:chat.ui/image-selected chat-id (result->id result) %]))))
-    ;; NOTE(Ferossgp): On android you cannot set max limit on images, when a user
-    ;; selects too many images the app crashes.
+      ;; NOTE(Ferossgp): On android you cannot set max limit on images, when a user
+      ;; selects too many images the app crashes.
     {:media-type "photo"
      :multiple   platform/ios?})))
 
@@ -100,13 +100,16 @@
 
 (re-frame/reg-fx
  ::camera-roll-get-photos
- (fn [num]
+ (fn [[num end-cursor]]
    (permissions/request-permissions
     {:permissions [:read-external-storage]
      :on-allowed  (fn []
-                    (-> (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"})
-                        (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
-                        (.catch #(log/warn "could not get cameraroll photos"))))})))
+                    (-> (if end-cursor
+                          (.getPhotos CameraRoll #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
+                          (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"}))
+                        (.then #(let [response (types/js->clj %)]
+                                  (re-frame/dispatch [:on-camera-roll-get-photos (:edges response) (:page_info response) end-cursor])))
+                        (.catch #(log/warn "could not get camera roll photos"))))})))
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
@@ -117,15 +120,32 @@
                (not (get images uri)))
       {::image-selected [uri current-chat-id]})))
 
+(fx/defn on-end-reached
+  {:events [:camera-roll/on-end-reached]}
+  [_ end-cursor loading? has-next-page?]
+  (when (and (not loading?) has-next-page?)
+    (re-frame/dispatch [:chat.ui/camera-roll-loading-more true])
+    (re-frame/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
+
 (fx/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
-  [_ num]
-  {::camera-roll-get-photos num})
+  [_ num end-cursor]
+  {::camera-roll-get-photos [num end-cursor]})
+
+(fx/defn camera-roll-loading-more
+  {:events [:chat.ui/camera-roll-loading-more]}
+  [{:keys [db]} is-loading]
+  {:db (assoc db :camera-roll/loading-more is-loading)})
 
 (fx/defn on-camera-roll-get-photos
   {:events [:on-camera-roll-get-photos]}
-  [{db :db} photos]
-  {:db (assoc db :camera-roll-photos (mapv #(get-in % [:node :image :uri]) photos))})
+  [{:keys [db] :as cofx} photos page-info end-cursor]
+  (let [photos_x (when end-cursor (:camera-roll/photos db))]
+    {:db (-> db
+             (assoc :camera-roll/photos (concat photos_x (map #(get-in % [:node :image :uri]) photos)))
+             (assoc :camera-roll/end-cursor (:end_cursor page-info))
+             (assoc :camera-roll/has-next-page (:has_next_page page-info))
+             (assoc :camera-roll/loading-more false))}))
 
 (fx/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}

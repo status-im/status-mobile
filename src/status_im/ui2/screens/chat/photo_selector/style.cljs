@@ -1,22 +1,12 @@
 (ns status-im.ui2.screens.chat.photo-selector.style
-  (:require [quo2.foundations.colors :as colors]))
-
-(defn remove-photo-container []
-  {:width            14
-   :height           14
-   :border-radius    7
-   :background-color colors/neutral-50
-   :position         :absolute
-   :top              -7
-   :right            -7
-   :justify-content  :center
-   :align-items      :center})
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn gradient-container [safe-area]
   {:width    "100%"
-   :height   (+ (:bottom safe-area) 161)
+   :height   (+ (:bottom safe-area) 65)
    :position :absolute
-   :bottom   0})
+   :bottom   (if platform/ios? 0 80)})
 
 (defn buttons-container [safe-area]
   {:flex-direction     :row

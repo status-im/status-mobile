@@ -319,7 +319,7 @@ run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/Deriv
 run-visual-test-ios: APPLICATION_NAME := StatusIm-brfnruzfrkkycpbndmdoeyrigthc
 run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
 run-visual-test-ios: ##@test Run tests once in NodeJS
-	detox test --configuration ios.sim.debug 
+	detox test --configuration ios.sim.debug
 
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true

@@ -1911,5 +1911,6 @@
     "try-your-luck-again": "Try your luck again!",
     "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
     "show-existing-keys": "Show Existing Keys",
-    "scan-sync-code": "Scan Sync Code"
+    "scan-sync-code": "Scan Sync Code",
+    "confirm-selection": "Confirm selection"
 }
