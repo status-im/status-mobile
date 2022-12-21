@@ -27,8 +27,8 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-            [status-im2.contexts.chat.messages.message.delete-message-for-me.events]
-            [status-im2.contexts.chat.messages.message.delete-message.events]
+            [status-im2.contexts.chat.messages.delete-message-for-me.events]
+            [status-im2.contexts.chat.messages.delete-message.events]
             [utils.re-frame :as rf]
             [quo2.core :as quo])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))

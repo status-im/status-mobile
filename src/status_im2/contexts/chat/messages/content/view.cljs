@@ -81,7 +81,8 @@
                                       last-in-group? message-id]
                                :as   message-data}
                               {:keys [chat-id] :as context}]
-  [rn/view {:style (style/message-container in-pinned-view? pinned mentioned last-in-group?)}
+  [rn/view {:style (style/message-container in-pinned-view? pinned mentioned last-in-group?)
+            :accessibility-label :chat-item}
    (when pinned
      [pin/pinned-by-view pinned-by])
    (if (#{constants/content-type-system-text constants/content-type-community
