@@ -8,11 +8,12 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.state :as state]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.common.constants :as constants]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
+            [status-im.ui.screens.chat.message.gap :as message.gap]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -112,17 +113,16 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn [{:keys [type value] :as item}
-                 idx
-                 _
-                 {:keys [chat-id in-pinned-view?] :as context}]
-  [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
+(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+  [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
-     (if (= type :gap)
-       [gap/gap item idx messages-list-ref false chat-id]
-       [rn/view {:padding-horizontal 8}
-        [message/message-with-reactions item context]]))])
+     (if (or deleted? deleted-for-me?)
+       [content.deleted/deleted-message message-data]
+       (if (= content-type constants/content-type-gap)
+         [message.gap/gap message-data]
+         [rn/view {:padding-horizontal 8}
+          [message/message-with-reactions message-data context]])))])
 
 (defn messages-list [{:keys [chat
                              pan-responder

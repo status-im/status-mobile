@@ -6,7 +6,6 @@
             [status-im2.common.constants :as constants]
             [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
             [status-im2.contexts.chat.messages.content.text.view :as content.text]
-            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]
             [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
             [status-im2.contexts.chat.messages.content.status.view :as status]
@@ -17,18 +16,19 @@
             [status-im.ui2.screens.chat.messages.message :as old-message]))
 
 (defn avatar [{:keys [response-to last-in-group? pinned quoted-message from]}]
-  [rn/view {:padding-top 2 :width 32}
-   (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
-     (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-           contact (rf/sub [:contacts/contact-by-address from])
-           photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
-           online? (rf/sub [:visibility-status-updates/online? from])]
-       [quo/user-avatar {:full-name         display-name
-                         :profile-picture   photo-path
-                         :status-indicator? true
-                         :online?           online?
-                         :size              :small
-                         :ring?             false}]))])
+  [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
+   [rn/view {:padding-top 2 :width 32}
+    (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
+      (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+            contact (rf/sub [:contacts/contact-by-address from])
+            photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
+            online? (rf/sub [:visibility-status-updates/online? from])]
+        [quo/user-avatar {:full-name         display-name
+                          :profile-picture   photo-path
+                          :status-indicator? true
+                          :online?           online?
+                          :size              :small
+                          :ring?             false}]))]])
 
 (defn author [{:keys [response-to last-in-group? pinned quoted-message from timestamp]}]
   (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
@@ -78,16 +78,14 @@
      [status/status message-data]]]])
 
 (defn message-with-reactions [{:keys [pinned pinned-by mentioned in-pinned-view? content-type
-                                      last-in-group? deleted? deleted-for-me? message-id]
+                                      last-in-group? message-id]
                                :as   message-data}
                               {:keys [chat-id] :as context}]
-  (if (or deleted? deleted-for-me?)
-    [content.deleted/deleted-message message-data]
-    [rn/view {:style (style/message-container in-pinned-view? pinned mentioned last-in-group?)}
-     (when pinned
-       [pin/pinned-by-view pinned-by])
-     (if (#{constants/content-type-system-text constants/content-type-community
-            constants/content-type-contact-request} content-type)
-       [system-message-content message-data]
-       [user-message-content message-data context])
-     [reactions/message-reactions-row chat-id message-id]]))
+  [rn/view {:style (style/message-container in-pinned-view? pinned mentioned last-in-group?)}
+   (when pinned
+     [pin/pinned-by-view pinned-by])
+   (if (#{constants/content-type-system-text constants/content-type-community
+          constants/content-type-contact-request} content-type)
+     [system-message-content message-data]
+     [user-message-content message-data context])
+   [reactions/message-reactions-row chat-id message-id]])
