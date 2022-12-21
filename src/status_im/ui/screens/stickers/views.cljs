@@ -1,60 +1,51 @@
 (ns status-im.ui.screens.stickers.views
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.fast-image :as fast-image]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
+            [status-im.utils.money :as money]
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.utils.money :as money])
+            [status-im.ui.components.fast-image :as fast-image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn cache
-  [url]
+(defn cache [url]
   (str url "&download=true"))
 
-(defn- thumbnail-icon
-  [uri size]
-  [fast-image/fast-image
-   {:style  {:width size :height size :border-radius (/ size 2)}
-    :source {:uri (cache uri)}}])
+(defn- thumbnail-icon [uri size]
+  [fast-image/fast-image {:style  {:width size :height size :border-radius (/ size 2)}
+                          :source {:uri (cache uri)}}])
 
-(defn price-badge
-  [_]
-  (let [chain   (<sub [:ethereum/chain-keyword])
+(defn price-badge [_]
+  (let [chain (<sub [:ethereum/chain-keyword])
         balance (<sub [:balance-default])]
     (fn [{:keys [id price pending owned installed]}]
-      (let [snt             (if (= :mainnet chain) (:SNT balance) (:STT balance))
-            price           (money/bignumber price)
+      (let [snt (if (= :mainnet chain) (:SNT balance) (:STT balance))
+            price (money/bignumber price)
             not-enough-snt? (or (nil? snt) (money/equal-to snt 0) (money/greater-than price snt))
-            free            (money/equal-to price 0)]
+            free (money/equal-to price 0)]
         (if installed
           [react/view styles/installed-icon
            [icons/icon :main-icons/check {:color colors/white-persist :height 20 :width 20}]]
-          [react/touchable-highlight
-           {:on-press #(cond pending         nil
-                             (or owned free)
-                             (re-frame/dispatch [:stickers/install-pack id])
-                             not-enough-snt? nil
-                             :else           (re-frame/dispatch [:stickers/buy-pack id]))}
+          [react/touchable-highlight {:on-press #(cond pending nil
+                                                       (or owned free)
+                                                       (re-frame/dispatch [:stickers/install-pack id])
+                                                       not-enough-snt? nil
+                                                       :else (re-frame/dispatch [:stickers/buy-pack id]))}
            [react/view (styles/price-badge (and (not (or owned free)) not-enough-snt?))
             (when (and (not free) (not owned))
-              [icons/tiny-icon :tiny-icons/tiny-snt
-               {:color colors/white-persist :container-style {:margin-right 6}}])
+              [icons/tiny-icon :tiny-icons/tiny-snt {:color colors/white-persist :container-style {:margin-right 6}}])
             (if pending
-              [react/activity-indicator
-               {:animating true
-                :color     colors/white-persist}]
-              [react/text
-               {:style               {:color colors/white-persist}
-                :accessibility-label :sticker-pack-price}
+              [react/activity-indicator {:animating true
+                                         :color     colors/white-persist}]
+              [react/text {:style               {:color colors/white-persist}
+                           :accessibility-label :sticker-pack-price}
                (cond owned (i18n/label :t/install)
-                     free  (i18n/label :t/free)
+                     free (i18n/label :t/free)
                      :else (str (money/wei-> :eth price)))])]])))))
 
-(defn pack-badge
-  [{:keys [name author thumbnail preview id] :as pack}]
+(defn pack-badge [{:keys [name author thumbnail preview id] :as pack}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
     [fast-image/fast-image {:style {:height 200 :border-radius 20} :source {:uri (cache preview)}}]
@@ -62,13 +53,11 @@
      [thumbnail-icon thumbnail 40]
      [react/view {:padding-horizontal 16 :flex 1}
       [react/text {:accessibility-label :sticker-pack-name} name]
-      [react/text
-       {:style               {:color colors/gray :margin-top 6}
-        :accessibility-label :sticker-pack-author} author]]
+      [react/text {:style               {:color colors/gray :margin-top 6}
+                   :accessibility-label :sticker-pack-author} author]]
      [price-badge pack]]]])
 
-(defview packs
-  []
+(defview packs []
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
      [react/keyboard-avoiding-view {:flex 1}
@@ -83,8 +72,7 @@
 
 (def sticker-icon-size 60)
 
-(defview pack-main
-  []
+(defview pack-main []
   (letsubs [{:keys [name author thumbnail stickers]
              :as   pack}
             [:stickers/get-current-pack]]
@@ -102,12 +90,10 @@
           [react/view {:flex-direction :row :flex-wrap :wrap}
            (for [{:keys [url]} stickers]
              ^{:key url}
-             [fast-image/fast-image
-              {:style  (styles/sticker-image sticker-icon-size)
-               :source {:uri (cache url)}}])]]]]
+             [fast-image/fast-image {:style  (styles/sticker-image sticker-icon-size)
+                                     :source {:uri (cache url)}}])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 
-(defview pack
-  []
+(defview pack []
   [pack-main])

@@ -1,8 +1,8 @@
 (ns status-im.backup.core
   (:require [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [status-im.utils.fx :as fx]))
 
 (fx/defn handle-backup-failed
   {:events [::backup-failed]}
@@ -17,7 +17,7 @@
 (fx/defn handle-perform-backup-pressed
   {:events [:multiaccounts.ui/perform-backup-pressed]}
   [{:keys [db]}]
-  {:db             (assoc db :backup/performing-backup true)
+  {:db (assoc db :backup/performing-backup true)
    ::json-rpc/call [{:method     "wakuext_backupData"
                      :params     []
                      :on-error   #(do

@@ -1,8 +1,8 @@
 (ns utils.re-frame
   (:require-macros utils.re-frame)
-  (:require [re-frame.core :as re-frame]
-            [re-frame.interceptor :as interceptor]
-            [taoensso.timbre :as log])
+  (:require [taoensso.timbre :as log]
+            [re-frame.core :as re-frame]
+            [re-frame.interceptor :as interceptor])
   (:refer-clojure :exclude [merge reduce]))
 
 (def handler-nesting-level (atom 0))
@@ -27,20 +27,17 @@
     [debug-handlers-names (re-frame/inject-cofx :now) interceptors]
     handler)))
 
-(defn- update-db
-  [cofx fx]
+(defn- update-db [cofx fx]
   (if-let [db (:db fx)]
     (assoc cofx :db db)
     cofx))
 
 (def ^:private mergeable-keys (atom nil))
 
-(defn set-mergeable-keys
-  [val]
+(defn set-mergeable-keys [val]
   (reset! mergeable-keys val))
 
-(defn- safe-merge
-  [fx new-fx]
+(defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
     fx
     (clojure.core/reduce (fn [merged-fx [k v]]
@@ -68,8 +65,8 @@
   (when js/goog.DEBUG
     (swap! handler-nesting-level inc))
   (let [[first-arg & rest-args] args
-        initial-fxs?            (map? first-arg)
-        fx-fns                  (if initial-fxs? rest-args args)
+        initial-fxs? (map? first-arg)
+        fx-fns (if initial-fxs? rest-args args)
         res
         (clojure.core/reduce (fn [fxs fx-fn]
                                (let [updated-cofx (update-db cofx fxs)]

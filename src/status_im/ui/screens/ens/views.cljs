@@ -1,56 +1,53 @@
 (ns status-im.ui.screens.ens.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.checkbox.view :as checkbox]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.screens.wallet.send.sheets :as sheets]
+            [utils.debounce :as debounce]
+            [clojure.string :as string]
+            [status-im.ethereum.tokens :as tokens]
+            [quo.core :as quo]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.utils.utils :as utils]
-            [utils.debounce :as debounce])
+            [status-im.ui.screens.wallet.send.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link
   [{:keys [on-press]} label]
-  [react/touchable-opacity
-   {:on-press on-press
-    :style    {:justify-content :center}}
+  [react/touchable-opacity {:on-press on-press
+                            :style {:justify-content :center}}
    [react/text {:style {:color colors/blue}}
     label]])
 
 (defn- section
   [{:keys [title content]}]
-  [react/view
-   {:style {:margin-horizontal 16
-            :align-items       :flex-start}}
+  [react/view {:style {:margin-horizontal 16
+                       :align-items       :flex-start}}
    [react/text {:style {:color colors/gray :font-size 15}}
     title]
-   [react/view
-    {:margin-top         8
-     :padding-horizontal 16
-     :padding-vertical   12
-     :border-width       1
-     :border-radius      12
-     :border-color       colors/gray-lighter}
+   [react/view {:margin-top         8
+                :padding-horizontal 16
+                :padding-vertical   12
+                :border-width       1
+                :border-radius      12
+                :border-color       colors/gray-lighter}
     [quo/text {:monospace true}
      content]]])
 
@@ -68,15 +65,14 @@
 
 (defn- big-blue-icon
   [state]
-  [react/view
-   {:style {:margin-top       68
-            :margin-bottom    24
-            :width            60
-            :height           60
-            :border-radius    30
-            :background-color colors/blue
-            :align-items      :center
-            :justify-content  :center}}
+  [react/view {:style {:margin-top 68
+                       :margin-bottom 24
+                       :width 60
+                       :height 60
+                       :border-radius 30
+                       :background-color colors/blue
+                       :align-items :center
+                       :justify-content :center}}
    [icons/icon
     (case state
       (:available :connected :connected-with-different-key :owned)
@@ -90,17 +86,15 @@
 ;;; SEARCH SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- icon-wrapper
-  [color icon]
-  [react/view
-   {:style {:margin-right     16
-            :margin-top       11
-            :width            32
-            :height           32
-            :border-radius    25
-            :align-items      :center
-            :justify-content  :center
-            :background-color color}}
+(defn- icon-wrapper [color icon]
+  [react/view {:style {:margin-right 16
+                       :margin-top 11
+                       :width 32
+                       :height 32
+                       :border-radius 25
+                       :align-items :center
+                       :justify-content :center
+                       :background-color color}}
    icon])
 
 (defn- input-icon
@@ -121,20 +115,18 @@
 
 (defn help-message-text-element
   ([label]
-   [react/text
-    {:style {:flex              1
-             :margin-top        16
-             :margin-horizontal 16
-             :font-size         14
-             :text-align        :center}}
+   [react/text {:style {:flex 1
+                        :margin-top 16
+                        :margin-horizontal 16
+                        :font-size 14
+                        :text-align :center}}
     (i18n/label label)])
   ([label second-label]
-   [react/nested-text
-    {:style {:flex              1
-             :margin-top        16
-             :margin-horizontal 16
-             :font-size         14
-             :text-align        :center}}
+   [react/nested-text {:style {:flex 1
+                               :margin-top 16
+                               :margin-horizontal 16
+                               :font-size 14
+                               :text-align :center}}
     (i18n/label label) " "
     [{:style {:font-weight "700"}}
      (i18n/label second-label)]]))
@@ -200,8 +192,7 @@
         {:ref                    #(reset! input-ref %)
          :on-change-text         #(do
                                     (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                    (debounce/debounce-and-dispatch [::ens/set-username-candidate %]
-                                                                    600))
+                                    (debounce/debounce-and-dispatch [::ens/set-username-candidate %] 600))
          :on-submit-editing      #(re-frame/dispatch [::ens/input-submitted])
          :auto-capitalize        :none
          :auto-complete-type     "off"
@@ -216,49 +207,42 @@
                                   :padding-left 48}}]
        [input-icon state]])))
 
-(views/defview search
-  []
+(views/defview search []
   (views/letsubs [{:keys [state custom-domain? username]}
                   [:ens/search-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [react/scroll-view
-      {:style                     {:flex 1}
-       ;;NOTE required so that switching custom-domain
-       ;;works on first tap and persists keyboard
-       ;;instead of dismissing keyboard and requiring two taps
-       :keyboardShouldPersistTaps :always}
+     [react/scroll-view {:style {:flex 1}
+                         ;;NOTE required so that switching custom-domain
+                         ;;works on first tap and persists keyboard
+                         ;;instead of dismissing keyboard and requiring two taps
+                         :keyboardShouldPersistTaps :always}
       [react/view {:style {:flex 1}}
-       [react/view
-        {:style {:flex            1
-                 :align-items     :center
-                 :justify-content :center}}
+       [react/view {:style {:flex 1
+                            :align-items :center
+                            :justify-content :center}}
         [big-blue-icon state]
-        [username-input username state
-         (if custom-domain?
-           "vitalik94.domain.eth"
-           "vitalik94")]
-        [react/view
-         {:style {:height             36
-                  :align-items        :center
-                  :justify-content    :space-between
-                  :padding-horizontal 12
-                  :margin-top         24
-                  :margin-horizontal  16
-                  :border-color       colors/gray-lighter
-                  :border-radius      20
-                  :border-width       1
-                  :flex-direction     :row}}
-         [react/text
-          {:style {:font-size  13
-                   :typography :main-medium}}
+        [username-input username state (if custom-domain?
+                                         "vitalik94.domain.eth"
+                                         "vitalik94")]
+        [react/view {:style {:height 36
+                             :align-items :center
+                             :justify-content :space-between
+                             :padding-horizontal 12
+                             :margin-top 24
+                             :margin-horizontal 16
+                             :border-color colors/gray-lighter
+                             :border-radius 20
+                             :border-width 1
+                             :flex-direction :row}}
+         [react/text {:style {:font-size 13
+                              :typography :main-medium}}
           (domain-label custom-domain?)]
          [react/view {:flex 1 :min-width 24}]
          [react/touchable-highlight {:on-press #(re-frame/dispatch [::ens/switch-domain-type])}
-          [react/text
-           {:style           {:color      colors/blue
-                              :font-size  12
-                              :typography :main-medium}
-            :number-of-lines 2}
+          [react/text {:style {:color colors/blue
+                               :font-size 12
+                               :typography :main-medium}
+                       :number-of-lines 2}
            (domain-switch-label custom-domain?)]]]]
        [help-message state custom-domain?]]]]))
 
@@ -266,19 +250,16 @@
 ;;; CHECKOUT SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- agreement
-  [checked contract]
-  [react/view
-   {:flex-direction  :row
-    :margin-left     26                          ;; 10 for checkbox + 16
-    :margin-right    16
-    :margin-top      14
-    :align-items     :flex-start
-    :justify-content :center}
-   [checkbox/checkbox
-    {:checked?        @checked
-     :style           {:padding 0}
-     :on-value-change #(reset! checked %)}]
+(defn- agreement [checked contract]
+  [react/view {:flex-direction  :row
+               :margin-left     26                          ;; 10 for checkbox + 16
+               :margin-right    16
+               :margin-top      14
+               :align-items     :flex-start
+               :justify-content :center}
+   [checkbox/checkbox {:checked?        @checked
+                       :style           {:padding 0}
+                       :on-value-change #(reset! checked %)}]
    [react/nested-text {:style {:margin-left 10}}
     (i18n/label :t/ens-agree-to)
     [{:style    {:color colors/blue}
@@ -287,8 +268,7 @@
     "\n"
     (i18n/label :t/ens-understand)]])
 
-(defn render-account
-  [address]
+(defn render-account [address]
   (let [account @(re-frame/subscribe [:account-by-address address])]
     [quo/list-item
      {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
@@ -296,8 +276,7 @@
       :subtitle (utils/get-shortened-checksum-address (:address account))
       :chevron  true
       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                     {:content (fn [] [sheets/accounts-list :from
-                                                       ::ens/change-address])}])}]))
+                                     {:content (fn [] [sheets/accounts-list :from ::ens/change-address])}])}]))
 
 (defn- registration
   [checked contract address public-key]
@@ -306,45 +285,38 @@
     (i18n/label :t/wallet)]
    [render-account address]
    [react/view {:style {:margin-top 14}}
-    [section
-     {:title   (i18n/label :t/key)
-      :content public-key}]]
+    [section {:title   (i18n/label :t/key)
+              :content public-key}]]
    [agreement checked contract]])
 
-(defn checkout
-  []
-  (let [checked? (reagent/atom false)]
+(defn checkout []
+  (let  [checked? (reagent/atom false)]
     (fn []
       (let [{:keys [username address custom-domain? public-key
                     chain amount-label sufficient-funds?]}
             @(re-frame/subscribe [:ens/checkout-screen])]
         [react/keyboard-avoiding-view {:flex 1}
          [react/scroll-view {:style {:flex 1}}
-          [react/view
-           {:style {:flex            1
-                    :align-items     :center
-                    :justify-content :center}}
+          [react/view {:style {:flex            1
+                               :align-items     :center
+                               :justify-content :center}}
            [big-blue-icon nil]
-           [react/text
-            {:text-align :center
-             :style      {:flex               1
-                          :font-size          22
-                          :padding-horizontal 48}}
+           [react/text {:text-align :center
+                        :style      {:flex               1
+                                     :font-size          22
+                                     :padding-horizontal 48}}
             username]
-           [react/view
-            {:style {:height             36
-                     :align-items        :center
-                     :justify-content    :space-between
-                     :padding-horizontal 12
-                     :margin-top         24
-                     :margin-horizontal  16
-                     :border-color       colors/gray-lighter
-                     :border-radius      20
-                     :border-width       1
-                     :flex-direction     :row}}
-            [react/text
-             {:style {:font-size  13
-                      :typography :main-medium}}
+           [react/view {:style {:height             36
+                                :align-items        :center
+                                :justify-content    :space-between
+                                :padding-horizontal 12
+                                :margin-top         24
+                                :margin-horizontal  16
+                                :border-color       colors/gray-lighter :border-radius 20
+                                :border-width       1
+                                :flex-direction     :row}}
+            [react/text {:style {:font-size  13
+                                 :typography :main-medium}}
              (domain-label custom-domain?)]
             [react/view {:flex 1 :min-width 24}]]]
           [registration checked? (stateofus/get-cached-registrar chain) address public-key]]
@@ -352,9 +324,8 @@
           {:show-border? true
            :size         :large
            :left         [react/view {:flex-direction :row :align-items :center}
-                          [react/image
-                           {:source tokens/snt-icon-source
-                            :style  {:width 36 :height 36}}]
+                          [react/image {:source tokens/snt-icon-source
+                                        :style  {:width 36 :height 36}}]
                           [react/view {:flex-direction :column :margin 8}
                            [react/text {:style {:font-size 15}}
                             amount-label]
@@ -363,8 +334,7 @@
            :right        [react/view {:padding-horizontal 8}
                           [quo/button
                            {:disabled (or (not @checked?) (not sufficient-funds?))
-                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed address]
-                                                                    2000)}
+                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed address] 2000)}
                            (if sufficient-funds?
                              (i18n/label :t/ens-register)
                              (i18n/label :t/not-enough-snt))]]}]]))))
@@ -377,21 +347,11 @@
   [state]
   (case state
     :registration-failed
-    [react/view
-     {:style {:width            40
-              :height           40
-              :border-radius    30
-              :background-color colors/red-light
-              :align-items      :center
-              :justify-content  :center}}
+    [react/view {:style {:width       40      :height          40 :border-radius 30 :background-color colors/red-light
+                         :align-items :center :justify-content :center}}
      [icons/icon :main-icons/warning {:color colors/red}]]
-    [react/view
-     {:style {:width            40
-              :height           40
-              :border-radius    30
-              :background-color colors/gray-lighter
-              :align-items      :center
-              :justify-content  :center}}
+    [react/view {:style {:width       40      :height          40 :border-radius 30 :background-color colors/gray-lighter
+                         :align-items :center :justify-content :center}}
      [icons/icon :main-icons/check {:color colors/blue}]]))
 
 (defn- final-state-label
@@ -431,33 +391,29 @@
      (i18n/label :t/ens-registration-failed)]
     nil))
 
-(views/defview confirmation
-  []
+(views/defview confirmation []
   (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [react/view
-      {:style {:flex            1
-               :align-items     :center
-               :justify-content :center}}
+     [react/view {:style {:flex 1
+                          :align-items :center
+                          :justify-content :center}}
       [finalized-icon state]
-      [react/text
-       {:style {:typography        :header
-                :margin-top        32
-                :margin-horizontal 32
-                :text-align        :center}}
+      [react/text {:style {:typography :header
+                           :margin-top 32
+                           :margin-horizontal 32
+                           :text-align :center}}
        (final-state-label state username)]
-      [react/view
-       {:align-items       :center
-        :margin-horizontal 32
-        :margin-top        12
-        :margin-bottom     20
-        :justify-content   :center}
+      [react/view {:align-items :center
+                   :margin-horizontal 32
+                   :margin-top 12
+                   :margin-bottom 20
+                   :justify-content :center}
        [final-state-details state username]]
       (if (= state :registration-failed)
         [react/view
          [quo/button {:on-press #(re-frame/dispatch [::ens/retry-pressed])}
           (i18n/label :t/retry)]
-         [quo/button {:on-press #(re-frame/dispatch [::ens/cancel-pressed])}
+         [quo/button {:on-press    #(re-frame/dispatch [::ens/cancel-pressed])}
           (i18n/label :t/cancel)]]
         [quo/button {:on-press #(re-frame/dispatch [::ens/got-it-pressed])}
          (i18n/label :t/ens-got-it)])]]))
@@ -466,27 +422,20 @@
 ;;; TERMS SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- term-point
-  [content]
+(defn- term-point [content]
   [react/view {:style {:flex 1 :margin-top 24 :margin-horizontal 16 :flex-direction :row}}
    [react/view {:style {:width 16 :margin-top 8}}
     [react/view {:style {:background-color colors/gray :width 4 :height 4 :border-radius 25}}]]
    [react/text {:style {:flex 1 :font-size 15}}
     content]])
 
-(defn- etherscan-url
-  [address]
+(defn- etherscan-url [address]
   (str "https://etherscan.io/address/" address))
 
-(views/defview terms
-  []
+(views/defview terms []
   (views/letsubs [{:keys [contract]} [:get-screen-params :ens-terms]]
     [react/scroll-view {:style {:flex 1}}
-     [react/view
-      {:style {:height           136
-               :background-color colors/gray-lighter
-               :justify-content  :center
-               :align-items      :center}}
+     [react/view {:style {:height 136 :background-color colors/gray-lighter :justify-content :center :align-items :center}}
       [react/text {:style {:text-align :center :typography :header :letter-spacing -0.275}}
        (i18n/label :t/ens-terms-header)]]
      [react/view
@@ -515,8 +464,7 @@
       [term-point
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link
-        {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+       [link {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -525,12 +473,10 @@
 
 (def release-instructions-link "https://our.status.im/managing-your-ens-name-in-v1/")
 
-(defn open-release-instructions-link!
-  []
+(defn open-release-instructions-link! []
   (.openURL ^js react/linking release-instructions-link))
 
-(views/defview name-details
-  []
+(views/defview name-details []
   (views/letsubs [{:keys [name address custom-domain? public-key
                           expiration-date releasable? pending?]}
                   [:ens.name/screen]]
@@ -550,85 +496,68 @@
              (str (i18n/label :t/ens-10-SNT) ", deposit unlocked"))]]])
       [react/view {:style {:margin-top 22}}
        (when-not pending?
-         [section
-          {:title   (i18n/label :t/wallet-address)
-           :content (ethereum/normalized-hex address)}])
+         [section {:title   (i18n/label :t/wallet-address)
+                   :content (ethereum/normalized-hex address)}])
        (when-not pending?
          [react/view {:style {:margin-top 14}}
-          [section
-           {:title   (i18n/label :t/key)
-            :content public-key}]])
+          [section {:title   (i18n/label :t/key)
+                    :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
         ;;TODO this is temporary fix for accounts with failed txs
-        ;;we still need this for regular ens names (not pending) but we need to detach public key in the
-        ;;contract
+        ;;we still need this for regular ens names (not pending) but we need to detach public key in the contract
         (when pending?
-          [quo/list-item
-           {:title    (i18n/label :t/ens-remove-username)
-            ;:subtext       (i18n/label :t/ens-remove-hints)
-            :icon     :main-icons/close
-            :theme    :negative
-            :on-press #(re-frame/dispatch [::ens/remove-username name])}])
+          [quo/list-item {:title    (i18n/label :t/ens-remove-username)
+                                        ;:subtext       (i18n/label :t/ens-remove-hints)
+                          :icon     :main-icons/close
+                          :theme    :negative
+                          :on-press #(re-frame/dispatch [::ens/remove-username name])}])
         (when (and (not custom-domain?) (not pending?))
           [react/view {:style {:margin-top 18}}
-           [quo/list-item
-            {:title    (i18n/label :t/ens-release-username)
-             :theme    :accent
-             :disabled (not releasable?)
-             :subtitle (when (and expiration-date
-                                  (not releasable?))
-                         (i18n/label :t/ens-locked
-                                     {:date expiration-date}))
-             :icon     :main-icons/delete
-             :on-press #(open-release-instructions-link!)}]])]]]]))
+           [quo/list-item {:title    (i18n/label :t/ens-release-username)
+                           :theme    :accent
+                           :disabled (not releasable?)
+                           :subtitle (when (and expiration-date
+                                                (not releasable?))
+                                       (i18n/label :t/ens-locked
+                                                   {:date expiration-date}))
+                           :icon     :main-icons/delete
+                           :on-press #(open-release-instructions-link!)}]])]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; WELCOME SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- welcome-item
-  [{:keys [icon-label title]} content]
-  [react/view
-   {:style {:flex           1
-            :margin-top     24
-            :margin-left    16
-            :flex-direction :row}}
-   [react/view
-    {:style {:height          40
-             :width           40
-             :border-radius   25
-             :border-width    1
-             :border-color    colors/gray-lighter
-             :align-items     :center
-             :justify-content :center}}
+(defn- welcome-item [{:keys [icon-label title]} content]
+  [react/view {:style {:flex 1
+                       :margin-top 24
+                       :margin-left 16
+                       :flex-direction :row}}
+   [react/view {:style {:height 40
+                        :width 40
+                        :border-radius 25
+                        :border-width 1
+                        :border-color colors/gray-lighter
+                        :align-items :center
+                        :justify-content :center}}
     [react/text {:style {:typography :title}}
      icon-label]]
-   [react/view
-    {:style {:flex              1
-             :margin-horizontal 16}}
-    [react/text
-     {:style {:font-size  15
-              :typography :main-semibold}}
+   [react/view {:style {:flex 1
+                        :margin-horizontal 16}}
+    [react/text {:style {:font-size 15
+                         :typography :main-semibold}}
      title]
     content]])
 
-(defn- welcome
-  []
+(defn- welcome []
   (let [name (:name @(re-frame/subscribe [:multiaccount]))]
     [react/view {:style {:flex 1}}
      [react/scroll-view {:content-container-style {:align-items :center}}
-      [react/image
-       {:source (resources/get-theme-image :ens-header)
-        :style  {:margin-top 32}}]
+      [react/image {:source (resources/get-theme-image :ens-header)
+                    :style  {:margin-top 32}}]
       [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
        (i18n/label :t/ens-get-name)]
-      [react/text
-       {:style {:margin-top        8
-                :margin-bottom     24
-                :color             colors/gray
-                :font-size         15
-                :margin-horizontal 16
-                :text-align        :center}}
+      [react/text {:style {:margin-top 8 :margin-bottom 24 :color colors/gray :font-size 15 :margin-horizontal 16
+                           :text-align :center}}
        (i18n/label :t/ens-welcome-hints)]
       [welcome-item {:icon-label "1" :title (i18n/label :t/ens-welcome-point-customize-title)}
        [react/view {:flex-direction :row}
@@ -647,20 +576,16 @@
       [welcome-item {:icon-label "@" :title (i18n/label :t/ens-welcome-point-verify-title)}
        [react/text {:style {:color colors/gray}}
         (i18n/label :t/ens-welcome-point-verify)]]
-      [react/text
-       {:style
-        {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
+      [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
        (i18n/label :t/ens-powered-by)]]
      [toolbar/toolbar
       {:show-border? true
-       :right        [quo/button
-                      {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
-                       :type     :secondary
-                       :after    :main-icons/next}
+       :right        [quo/button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
+                                  :type     :secondary
+                                  :after    :main-icons/next}
                       (i18n/label :t/get-started)]}]]))
 
-(defn- name-item
-  [{:keys [name action subtitle]}]
+(defn- name-item [{:keys [name action subtitle]}]
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
     [quo/list-item
@@ -672,8 +597,7 @@
             (when action
               {:on-press action}))]))
 
-(defn- name-list
-  [names preferred-name]
+(defn- name-list [names preferred-name]
   [react/view {:style {:flex 1 :margin-top 16}}
    [react/view {:style {:margin-horizontal 16 :align-items :center :justify-content :center}}
     [react/nested-text
@@ -699,23 +623,20 @@
           :accessory           :radio
           :active              (= name preferred-name)}]))]])
 
-(views/defview in-progress-registrations
-  [registrations]
+(views/defview in-progress-registrations [registrations]
   [react/view {:style {:margin-top 8}}
    (for [[hash {:keys [state username]}] registrations
          :when                           (or (= state :submitted) (= state :failure))]
      ^{:key hash}
-     [name-item
-      {:name     username
-       :action   (when-not (= state :submitted)
-                   #(re-frame/dispatch [:clear-ens-registration hash]))
-       :subtitle (case state
-                   :submitted (i18n/label :t/ens-registration-in-progress)
-                   :failure   (i18n/label :t/ens-registration-failure)
-                   nil)}])])
+     [name-item {:name     username
+                 :action   (when-not (= state :submitted)
+                             #(re-frame/dispatch [:clear-ens-registration hash]))
+                 :subtitle (case state
+                             :submitted (i18n/label :t/ens-registration-in-progress)
+                             :failure   (i18n/label :t/ens-registration-failure)
+                             nil)}])])
 
-(views/defview my-name
-  []
+(views/defview my-name []
   (views/letsubs [contact-name [:multiaccount/preferred-name]]
     (when-not (string/blank? contact-name)
       (chat.utils/format-author-old {:names {:ens-name
@@ -723,8 +644,7 @@
                                                   (or (stateofus/username contact-name)
                                                       contact-name))}}))))
 
-(views/defview registered
-  [names {:keys [preferred-name] :as account} _ registrations]
+(views/defview registered [names {:keys [preferred-name] :as account} _ registrations]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
@@ -742,13 +662,10 @@
        [react/view {:style {:margin-top 8}}
         (for [name names]
           ^{:key name}
-          [name-item
-           {:name   name
-            :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
-       [react/text
-        {:style {:color             colors/gray
-                 :font-size         15
-                 :margin-horizontal 16}}
+          [name-item {:name   name
+                      :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
+       [react/text {:style {:color             colors/gray :font-size 15
+                            :margin-horizontal 16}}
         (i18n/label :t/ens-no-usernames)])]
     [react/view {:style {:padding-vertical 22 :border-color colors/gray-lighter :border-top-width 1}}
      (when (> (count names) 1)
@@ -774,8 +691,7 @@
          [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]
         [message/->message message {:on-long-press identity}]]])]])
 
-(views/defview main
-  []
+(views/defview main []
   (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      (if (or (seq names) registrations)

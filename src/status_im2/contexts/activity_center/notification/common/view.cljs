@@ -5,8 +5,7 @@
             [status-im2.contexts.activity-center.utils :as activity-center.utils]
             [utils.re-frame :as rf]))
 
-(defn user-avatar-tag
-  [user]
+(defn user-avatar-tag [user]
   (let [contact (rf/sub [:contacts/contact-by-identity user])]
     [quo/user-avatar-tag
      {:color          :purple

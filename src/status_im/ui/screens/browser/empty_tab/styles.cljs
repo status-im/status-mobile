@@ -9,8 +9,7 @@
   {:margin-horizontal 16
    :margin-vertical   10})
 
-(defn browser-icon-container
-  []
+(defn browser-icon-container []
   {:width            40
    :height           40
    :border-radius    20
@@ -18,8 +17,7 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn dapp-store-container
-  []
+(defn dapp-store-container []
   {:margin             16
    :border-color       colors/gray-lighter
    :margin-top         18
@@ -35,8 +33,7 @@
    :font-weight "500"
    :line-height 22})
 
-(defn dapps-account
-  [color]
+(defn dapps-account [color]
   {:flex-direction     :row
    :background-color   color
    :border-radius      36

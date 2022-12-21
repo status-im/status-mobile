@@ -2,8 +2,7 @@
   (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
-(defn default-chat-icon
-  [color]
+(defn default-chat-icon [color]
   {:margin           0
    :width            40
    :height           40
@@ -12,8 +11,7 @@
    :border-radius    20
    :background-color color})
 
-(defn default-chat-icon-redesign
-  [color size]
+(defn default-chat-icon-redesign [color size]
   {:margin           0
    :width            size
    :height           size
@@ -22,57 +20,49 @@
    :border-radius    (/ size 2)
    :background-color color})
 
-(defn default-chat-icon-chat-list
-  [color]
+(defn default-chat-icon-chat-list [color]
   (merge (default-chat-icon color)
          {:width         40
           :height        40
           :border-radius 20}))
 
-(defn default-list-chat-icon-redesign
-  [color size]
+(defn default-list-chat-icon-redesign [color size]
   (merge (default-chat-icon-redesign color size)
          {:width         size
           :height        size
           :border-radius (/ size 2)}))
 
-(defn default-community-icon-chat-list
-  [color]
+(defn default-community-icon-chat-list [color]
   (merge (default-chat-icon color)
          {:width         48
           :height        48
           :border-radius 48}))
 
-(defn default-token-icon-chat-list
-  [color]
+(defn default-token-icon-chat-list [color]
   (merge (default-chat-icon color)
          {:width         20
           :height        20
           :border-radius 20}))
 
-(defn default-chat-icon-chat-toolbar
-  [color size]
+(defn default-chat-icon-chat-toolbar [color size]
   (merge (default-chat-icon color)
          {:width         size
           :height        size
           :border-radius size}))
 
-(defn default-chat-icon-profile
-  [color size]
+(defn default-chat-icon-profile [color size]
   (merge (default-chat-icon color)
          {:width         size
           :height        size
           :border-radius (/ size 2)}))
 
-(defn default-chat-icon-text
-  [size]
+(defn default-chat-icon-text [size]
   {:color       colors/white-transparent-70-persist
    :font-weight "700"
    :font-size   (/ size 2)
    :line-height size})
 
-(defn emoji-chat-icon-text
-  [size]
+(defn emoji-chat-icon-text [size]
   {:font-size   (emoji-utils/emoji-font-size size)
    :line-height size
    :margin-top  (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
@@ -83,8 +73,7 @@
    :width         40
    :height        40})
 
-(defn chat-icon-redesign
-  [size]
+(defn chat-icon-redesign [size]
   {:margin        4
    :border-radius (/ size 2)
    :width         size
@@ -96,8 +85,7 @@
           :height 40
           :margin 0}))
 
-(defn community-status-icon
-  [size]
+(defn community-status-icon [size]
   {:margin        4
    :border-radius 10
    :width         size
@@ -109,15 +97,13 @@
           :height 48
           :margin 0}))
 
-(defn community-icon-chat-list-redesign
-  [size]
+(defn community-icon-chat-list-redesign [size]
   (merge (chat-icon size)
          {:width  size
           :height size
           :margin 0}))
 
-(defn community-status-chat-list-icon
-  [size]
+(defn community-status-chat-list-icon [size]
   (merge (community-status-icon size)
          {:width  size
           :height size
@@ -129,15 +115,13 @@
           :height 20
           :margin 0}))
 
-(defn chat-icon-chat-toolbar
-  [size]
+(defn chat-icon-chat-toolbar [size]
   (merge chat-icon
          {:width  size
           :height size
           :margin 0}))
 
-(defn custom-size-icon
-  [size]
+(defn custom-size-icon [size]
   (merge chat-icon
          {:width  size
           :height size
@@ -161,18 +145,15 @@
   {:width  48
    :height 48})
 
-(defn container-list-size
-  [size]
+(defn container-list-size [size]
   {:width  size
    :height size})
 
-(defn container-chat-toolbar
-  [size]
+(defn container-chat-toolbar [size]
   {:width  size
    :height size})
 
-(defn chat-icon-profile-edit
-  []
+(defn chat-icon-profile-edit []
   {:width            24
    :height           24
    :border-radius    12

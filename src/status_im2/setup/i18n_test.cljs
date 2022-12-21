@@ -1,22 +1,19 @@
 (ns status-im2.setup.i18n-test
-  (:require [cljs.spec.alpha :as spec]
-            [cljs.test :refer-macros [deftest is]]
-            [clojure.set :as set]
-            [clojure.string :as string]
+  (:require [cljs.test :refer-macros [deftest is]]
             [i18n.i18n :as i18n]
-            [status-im2.setup.i18n-resources :as i18n-resources]))
+            [status-im2.setup.i18n-resources :as i18n-resources]
+            [clojure.set :as set]
+            [cljs.spec.alpha :as spec]
+            [clojure.string :as string]))
 
 ;; english as source of truth
-(def labels
-  (set (keys (js->clj (:en i18n-resources/translations-by-locale)
-                      :keywordize-keys
-                      true))))
+(def labels (set (keys (js->clj (:en i18n-resources/translations-by-locale)
+                                :keywordize-keys true))))
 
 (spec/def ::label labels)
 (spec/def ::labels (spec/coll-of ::label :kind set? :into #{}))
 
-(defn labels-for-all-locales
-  []
+(defn labels-for-all-locales []
   (->> i18n-resources/translations-by-locale
        (mapcat #(-> % val (js->clj :keywordize-keys true) keys))
        set))
@@ -1002,25 +999,21 @@
 ;; NOTE: This defines the scope of each checkpoint. To support a checkpoint,
 ;;       change the var `checkpoint-to-consider-locale-supported` a few lines
 ;;       below.
-(def checkpoints-def
-  (spec/assert ::checkpoint-defs
-               {::checkpoint-1-0-0-rc1 checkpoint-1-0-0-rc1-labels}))
+(def checkpoints-def (spec/assert ::checkpoint-defs
+                                  {::checkpoint-1-0-0-rc1 checkpoint-1-0-0-rc1-labels}))
 (def checkpoints (set (keys checkpoints-def)))
 
 (spec/def ::checkpoint checkpoints)
 
 (def checkpoint-to-consider-locale-supported ::checkpoint-1-0-0-rc1)
 
-(defn checkpoint->labels
-  [checkpoint]
+(defn checkpoint->labels [checkpoint]
   (get checkpoints-def checkpoint))
 
-(defn checkpoint-val-to-compare
-  [c]
+(defn checkpoint-val-to-compare [c]
   (-> c name (string/replace #"^.*\|" "") js/parseInt))
 
-(defn >checkpoints
-  [& cs]
+(defn >checkpoints [& cs]
   (apply > (map checkpoint-val-to-compare cs)))
 
 ;; locales
@@ -1030,12 +1023,10 @@
 (spec/def ::locale locales)
 (spec/def ::locales (spec/coll-of ::locale :kind set? :into #{}))
 
-(defn locale->labels
-  [locale]
-  (-> i18n-resources/translations-by-locale (get locale) (js->clj :keywordize-keys true) keys set))
+(defn locale->labels [locale]
+  (-> i18n-resources/translations-by-locale (get locale)  (js->clj :keywordize-keys true) keys set))
 
-(defn locale->checkpoint
-  [locale]
+(defn locale->checkpoint [locale]
   (let [locale-labels (locale->labels locale)
         checkpoint    (->> checkpoints-def
                            (filter (fn [[_ checkpoint-labels]]
@@ -1043,43 +1034,38 @@
                            ffirst)]
     checkpoint))
 
-(defn locale-is-supported-based-on-translations?
-  [locale]
+(defn locale-is-supported-based-on-translations? [locale]
   (let [c (locale->checkpoint locale)]
-    (and c
-         (or (= c checkpoint-to-consider-locale-supported)
-             (>checkpoints checkpoint-to-consider-locale-supported c)))))
+    (and c (or (= c checkpoint-to-consider-locale-supported)
+               (>checkpoints checkpoint-to-consider-locale-supported c)))))
 
-(defn actual-supported-locales
-  []
+(defn actual-supported-locales []
   (->> locales
        (filter locale-is-supported-based-on-translations?)
        set))
 
 ;; NOTE: Add new locale keywords here to indicate support for them.
-#_(def supported-locales
-    (spec/assert ::locales
-                 #{:fr
-                   :zh
-                   :zh-hans
-                   :zh-hans-cn
-                   :zh-hans-mo
-                   :zh-hant
-                   :zh-hant-sg
-                   :zh-hant-hk
-                   :zh-hant-tw
-                   :zh-hant-mo
-                   :zh-hant-cn
-                   :sr-RS_#Cyrl
-                   :el
-                   :en
-                   :de
-                   :lt
-                   :sr-RS_#Latn
-                   :sr
-                   :sv
-                   :ja
-                   :uk}))
+#_(def supported-locales (spec/assert ::locales #{:fr
+                                                  :zh
+                                                  :zh-hans
+                                                  :zh-hans-cn
+                                                  :zh-hans-mo
+                                                  :zh-hant
+                                                  :zh-hant-sg
+                                                  :zh-hant-hk
+                                                  :zh-hant-tw
+                                                  :zh-hant-mo
+                                                  :zh-hant-cn
+                                                  :sr-RS_#Cyrl
+                                                  :el
+                                                  :en
+                                                  :de
+                                                  :lt
+                                                  :sr-RS_#Latn
+                                                  :sr
+                                                  :sv
+                                                  :ja
+                                                  :uk}))
 (def supported-locales (spec/assert ::locales #{:en}))
 
 (spec/def ::supported-locale supported-locales)
@@ -1093,9 +1079,7 @@
       (->> locales
            (remove #(spec/valid? ::labels (locale->labels %)))
            (map (fn [l]
-                  (str "Extra translations in locale "
-                       l
-                       "\n"
+                  (str "Extra translations in locale " l "\n"
                        (set/difference (locale->labels l) labels)
                        "\n\n")))
            (apply str))))
@@ -1105,9 +1089,7 @@
       (->> supported-locales
            (remove locale-is-supported-based-on-translations?)
            (map (fn [l]
-                  (str "Missing translations in supported locale "
-                       l
-                       "\n"
+                  (str "Missing translations in supported locale " l "\n"
                        (set/difference (checkpoint->labels checkpoint-to-consider-locale-supported)
                                        (locale->labels l))
                        "\n\n")))

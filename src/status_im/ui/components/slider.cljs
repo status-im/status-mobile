@@ -1,7 +1,7 @@
 (ns status-im.ui.components.slider
-  (:require ["@react-native-community/slider" :default Slider]
+  (:require [reagent.core :as reagent]
             ["react-native" :refer (Animated)]
-            [reagent.core :as reagent]))
+            ["@react-native-community/slider" :default Slider]))
 
 (def slider (reagent/adapt-react-class Slider))
 

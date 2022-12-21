@@ -1,8 +1,7 @@
 (ns status-im2.common.confirmation-drawer.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn context-container
-  []
+(defn context-container []
   {:flex-direction   :row
    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :border-radius    20

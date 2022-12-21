@@ -1,13 +1,13 @@
 (ns status-im2.subs.contact
-  (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.contact.db :as contact.db]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.utils.image-server :as image-server]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.image-server :as image-server]))
+            [status-im.ethereum.core :as ethereum]
+            [clojure.string :as string]
+            [i18n.i18n :as i18n]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -34,26 +34,19 @@
  (fn [multiaccount]
    (get multiaccount :profile-pictures-visibility)))
 
-(defn- replace-contact-image-uri
-  [contact port identity]
-  (let [identicon      (image-server/get-identicons-uri port identity)
+(defn- replace-contact-image-uri [contact port identity]
+  (let [identicon (image-server/get-identicons-uri port identity)
         contact-images (:images contact)
-        contact-images (reduce (fn [acc image]
-                                 (let [image-name (:type image)
-                                       ; We pass the clock so that we reload the image if the image is
-                                       ; updated
-                                       clock      (:clock image)
-                                       uri        (image-server/get-contact-image-uri port
-                                                                                      identity
-                                                                                      image-name
-                                                                                      clock)]
-                                   (assoc-in acc [(keyword image-name) :uri] uri)))
+        contact-images (reduce (fn [acc image] (let [image-name (:type image)
+                                                     ; We pass the clock so that we reload the image if the image is updated
+                                                     clock (:clock image)
+                                                     uri (image-server/get-contact-image-uri port identity image-name clock)]
+                                                 (assoc-in acc [(keyword image-name) :uri] uri)))
                                contact-images
                                (vals contact-images))]
     (assoc contact :identicon identicon :images contact-images)))
 
-(defn- reduce-contacts-image-uri
-  [contacts port]
+(defn- reduce-contacts-image-uri [contacts port]
   (reduce-kv (fn [acc public-key contact]
                (let [contact (replace-contact-image-uri contact port public-key)]
                  (assoc acc public-key contact)))
@@ -143,8 +136,7 @@
                         (string/lower-case search-filter))
                contacts)))))
 
-(defn- enrich-contact
-  [_ identity ens-name port]
+(defn- enrich-contact [_ identity ens-name port]
   (let [contact (contact.db/enrich-contact
                  (contact.db/public-key-and-ens-name->new-contact identity ens-name))]
     (replace-contact-image-uri contact port identity)))
@@ -187,8 +179,7 @@
    [(re-frame/subscribe [:contacts/contact-by-identity identity])
     (re-frame/subscribe [:multiaccount])])
  (fn [[contact current-multiaccount] [_ identity]]
-   (multiaccounts/contact-two-names-by-identity contact
-                                                current-multiaccount
+   (multiaccounts/contact-two-names-by-identity contact current-multiaccount
                                                 identity)))
 
 (re-frame/reg-sub
@@ -206,20 +197,20 @@
  (fn [[messages contacts current-multiaccount] [_ message-id]]
    (when-let [message (get messages message-id)]
      (let [identity (:from message)
-           me?      (= (:public-key current-multiaccount) identity)]
+           me? (= (:public-key current-multiaccount) identity)]
        (if me?
-         {:quote    {:from identity
-                     :text (get-in message [:content :text])}
+         {:quote       {:from  identity
+                        :text (get-in message [:content :text])}
           :ens-name (:preferred-name current-multiaccount)
-          :alias    (gfycat/generate-gfy identity)}
+          :alias (gfycat/generate-gfy identity)}
          (let [contact (or (contacts identity)
                            (contact.db/public-key->new-contact identity))]
-           {:quote    {:from identity
-                       :text (get-in message [:content :text])}
-            :ens-name (when (:ens-verified contact)
-                        (:name contact))
-            :alias    (or (:alias contact)
-                          (gfycat/generate-gfy identity))}))))))
+           {:quote     {:from  identity
+                        :text (get-in message [:content :text])}
+            :ens-name  (when (:ens-verified contact)
+                         (:name contact))
+            :alias (or (:alias contact)
+                       (gfycat/generate-gfy identity))}))))))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat
@@ -272,13 +263,11 @@
      contacts
      (->> contacts
           (map (fn [item]
-                 (update item
-                         :data
-                         (fn [data]
-                           (filter #(string/includes?
-                                     (string/lower-case (:alias %))
-                                     (string/lower-case query))
-                                   data)))))
+                 (update item :data (fn [data]
+                                      (filter #(string/includes?
+                                                (string/lower-case (:alias %))
+                                                (string/lower-case query))
+                                              data)))))
           (remove #(empty? (:data %)))))))
 
 (re-frame/reg-sub
@@ -289,8 +278,8 @@
          online  (filter #(and (not (:admin? %)) (:online? %)) members)
          offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
      (vals (cond-> {}
-             (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
-             (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
+             (seq admins) (assoc :owner {:title (i18n/label :t/owner) :data admins})
+             (seq online) (assoc :online {:title (i18n/label :t/online) :data online})
              (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
 
 

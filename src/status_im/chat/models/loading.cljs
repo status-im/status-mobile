@@ -1,20 +1,19 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
-            [status-im2.contexts.activity-center.events :as activity-center]
-            [taoensso.timbre :as log]))
+            [status-im.chat.models.message-list :as message-list]
+            [taoensso.timbre :as log]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im2.contexts.activity-center.events :as activity-center]))
 
 (defn cursor->clock-value
   [^js cursor]
   (js/parseInt (.substring cursor 51 64)))
 
-(defn clock-value->cursor
-  [clock-value]
+(defn clock-value->cursor [clock-value]
   (str "000000000000000000000000000000000000000000000000000"
        clock-value
        "0x0000000000000000000000000000000000000000000000000000000000000000"))
@@ -31,13 +30,12 @@
                       (update :chats-home-list conj chat-id)
                       :always
                       (assoc-in [:all-chats chat-id] chat))))
-                {:all-chats       {}
+                {:all-chats {}
                  :chats-home-list #{}}
                 new-chats-js)]
-    {:db (assoc db
-                :chats           all-chats
+    {:db (assoc db :chats all-chats
                 :chats-home-list chats-home-list
-                :chats/loading?  false)}))
+                :chats/loading? false)}))
 
 (fx/defn load-chat-success
   {:events [:chats-list/load-chat-success]}
@@ -47,10 +45,10 @@
 
 (fx/defn load-chat
   [_ chat-id]
-  {::json-rpc/call [{:method     "wakuext_chat"
-                     :params     [chat-id]
+  {::json-rpc/call [{:method "wakuext_chat"
+                     :params [chat-id]
                      :on-success #(re-frame/dispatch [:chats-list/load-chat-success %])
-                     :on-error   #(log/error "failed to fetch chats" 0 -1 %)}]})
+                     :on-error #(log/error "failed to fetch chats" 0 -1 %)}]})
 
 (fx/defn handle-failed-loading-messages
   {:events [::failed-loading-messages]}
@@ -61,12 +59,10 @@
 
 (defn mark-chat-all-read
   [db chat-id]
-  (update-in db
-             [:chats chat-id]
-             assoc
+  (update-in db [:chats chat-id] assoc
              :unviewed-messages-count 0
              :unviewed-mentions-count 0
-             :highlight               false))
+             :highlight false))
 
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
@@ -83,24 +79,23 @@
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
   [{db :db} chat-id]
-  {:db                          (mark-chat-all-read db chat-id)
-   :clear-message-notifications [[chat-id]
-                                 (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-   ::json-rpc/call              [{:method     "wakuext_markAllRead"
-                                  :params     [chat-id]
-                                  :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
+  {:db (mark-chat-all-read db chat-id)
+   :clear-message-notifications  [[chat-id]
+                                  (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+   ::json-rpc/call [{:method     "wakuext_markAllRead"
+                     :params     [chat-id]
+                     :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
 
 (fx/defn handle-mark-mark-all-read-in-community
   {:events [:chat.ui/mark-all-read-in-community-pressed]}
   [{db :db} community-id]
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
-    {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-     ::json-rpc/call              [{:method     "wakuext_markAllReadInCommunity"
-                                    :params     [community-id]
-                                    :on-success #(re-frame/dispatch
-                                                  [::mark-all-read-in-community-successful %])}]}))
+    {:clear-message-notifications  [community-chat-ids
+                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+     ::json-rpc/call [{:method     "wakuext_markAllReadInCommunity"
+                       :params     [community-id]
+                       :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]}))
 
 (fx/defn messages-loaded
   "Loads more messages for current chat"
@@ -109,7 +104,7 @@
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
-    (let [already-loaded-messages                              (get-in db [:messages chat-id])
+    (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
           {:keys [all-messages new-messages senders contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
@@ -129,11 +124,8 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
-          current-clock-value                                  (get-in db
-                                                                       [:pagination-info chat-id
-                                                                        :cursor-clock-value])
-          clock-value                                          (when cursor
-                                                                 (cursor->clock-value cursor))]
+          current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
+          clock-value (when cursor (cursor->clock-value cursor))]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
@@ -142,9 +134,7 @@
                                    %))
 
                      (update-in [:pagination-info chat-id :cursor]
-                                #(if (or (empty? cursor)
-                                         (not current-clock-value)
-                                         (< clock-value current-clock-value))
+                                #(if (or (empty? cursor) (not current-clock-value) (< clock-value current-clock-value))
                                    cursor
                                    %))
                      (assoc-in [:pagination-info chat-id :loading-messages?] false)
@@ -182,7 +172,7 @@
   [{:keys [db now] :as cofx} chat-id]
   (when-not (get-in db [:pagination-info chat-id :messages-initialized?])
     (fx/merge cofx
-              {:db                   (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
+              {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
                :utils/dispatch-later [{:ms 50 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}
                                       (when-not (get-in cofx [:db :chats chat-id :public?])
                                         {:ms 100 :dispatch [:pin-message/load-pin-messages chat-id]})]}

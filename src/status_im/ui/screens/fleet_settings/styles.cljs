@@ -3,7 +3,7 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex 1})
+  {:flex             1})
 
 (def fleet-item-inner
   {:padding-horizontal 16})
@@ -18,8 +18,7 @@
 (def fleet-item-name-text
   {:font-size 17})
 
-(defn fleet-icon-container
-  [current?]
+(defn fleet-icon-container [current?]
   {:width            40
    :height           40
    :border-radius    20
@@ -29,7 +28,6 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn fleet-icon
-  [current?]
+(defn fleet-icon [current?]
   (hash-map :color
             (if current? colors/white-persist colors/gray)))

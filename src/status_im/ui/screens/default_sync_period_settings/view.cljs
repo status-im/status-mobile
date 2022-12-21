@@ -1,29 +1,26 @@
 (ns status-im.ui.screens.default-sync-period-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+  (:require [status-im.ui.components.react :as react]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+            [status-im.constants :as constants]
+            [status-im.utils.config :as config]
+            [quo.core :as quo]
+            [re-frame.core :as re-frame]))
 
-(def titles
-  {constants/two-mins   (i18n/label :t/two-minutes)
-   constants/one-day    (i18n/label :t/one-day)
-   constants/three-days (i18n/label :t/three-days)
-   constants/one-week   (i18n/label :t/one-week)
-   constants/one-month  (i18n/label :t/one-month)})
+(def titles {constants/two-mins (i18n/label :t/two-minutes)
+             constants/one-day (i18n/label :t/one-day)
+             constants/three-days (i18n/label :t/three-days)
+             constants/one-week (i18n/label :t/one-week)
+             constants/one-month (i18n/label :t/one-month)})
 
-(defn radio-item
-  [id value]
+(defn radio-item [id value]
   [quo/list-item
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)
     :on-press  #(re-frame/dispatch [:multiaccounts.ui/default-sync-period-switched id])}])
 
-(views/defview default-sync-period-settings
-  []
+(views/defview default-sync-period-settings []
   (views/letsubs [{:keys [default-sync-period]
                    :or   {default-sync-period constants/one-day}}
                   [:multiaccount]]

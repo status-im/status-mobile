@@ -1,9 +1,9 @@
 (ns quo.components.animated.pressable
-  (:require [cljs-bean.core :as bean]
-            [quo.animated :as animated]
-            [quo.gesture-handler :as gesture-handler]
+  (:require [quo.animated :as animated]
             [quo.react :as react]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [cljs-bean.core :as bean]
+            [quo.gesture-handler :as gesture-handler]))
 
 (def long-press-duration 500)
 (def scale-down-small 0.95)
@@ -54,8 +54,7 @@
    :right    0
    :position :absolute})
 
-(defn pressable-hooks
-  [props]
+(defn pressable-hooks [props]
   (let [{background-color    :bgColor
          border-radius       :borderRadius
          border-color        :borderColor
@@ -70,24 +69,23 @@
          :or                 {border-radius 0
                               type          "primary"}}
         (bean/bean props)
-        long-press-ref (react/create-ref)
-        state (animated/use-value (:undetermined gesture-handler/states))
-        active (animated/eq state (:began gesture-handler/states))
-        gesture-handler (animated/use-gesture {:state state})
-        animation (react/use-memo
-                   (fn []
-                     (animated/with-timing-transition active
-                                                      {:duration (animated/cond* active time-in time-out)
-                                                       :easing   (:ease-in animated/easings)}))
-                   [])
+        long-press-ref       (react/create-ref)
+        state                (animated/use-value (:undetermined gesture-handler/states))
+        active               (animated/eq state (:began gesture-handler/states))
+        gesture-handler      (animated/use-gesture {:state state})
+        animation            (react/use-memo
+                              (fn []
+                                (animated/with-timing-transition active
+                                  {:duration (animated/cond* active time-in time-out)
+                                   :easing   (:ease-in animated/easings)}))
+                              [])
         {:keys [background
-                foreground]}
-        (react/use-memo
-         (fn []
-           (type->animation {:type      (keyword type)
-                             :animation animation}))
-         [type])
-        handle-press (fn [] (when on-press (on-press)))
+                foreground]} (react/use-memo
+                              (fn []
+                                (type->animation {:type      (keyword type)
+                                                  :animation animation}))
+                              [type])
+        handle-press         (fn [] (when on-press (on-press)))
         long-gesture-handler (react/callback
                               (fn [^js evt]
                                 (let [gesture-state (-> evt .-nativeEvent .-state)]
@@ -113,9 +111,8 @@
        :min-duration-ms         long-press-duration
        :max-dist                22
        :ref                     long-press-ref}
-      [animated/view
-       {:accessible          true
-        :accessibility-label accessibility-label}
+      [animated/view {:accessible          true
+                      :accessibility-label accessibility-label}
        [gesture-handler/tap-gesture-handler
         (merge gesture-handler
                {:shouldCancelWhenOutside true
@@ -123,13 +120,12 @@
                 :enabled                 (boolean (and (or on-press on-long-press on-press-start)
                                                        (not disabled)))})
         [animated/view
-         [animated/view
-          {:style (merge absolute-fill
-                         background
-                         {:background-color background-color
-                          :border-radius    border-radius
-                          :border-color     border-color
-                          :border-width     border-width})}]
+         [animated/view {:style (merge absolute-fill
+                                       background
+                                       {:background-color background-color
+                                        :border-radius    border-radius
+                                        :border-color     border-color
+                                        :border-width     border-width})}]
          (into [animated/view {:style foreground}]
                (react/get-children children))]]]])))
 

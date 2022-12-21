@@ -1,7 +1,7 @@
 (ns status-im2.common.alert.events
-  (:require [i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
-            [react-native.core :as rn]))
+  (:require [re-frame.core :as re-frame]
+            [react-native.core :as rn]
+            [i18n.i18n :as i18n]))
 
 (defn show-popup
   ([title content]
@@ -44,13 +44,13 @@
 (re-frame/reg-fx
  :utils/show-confirmation
  (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text extra-options]}]
-   (show-confirmation {:title               title
-                       :content             content
+   (show-confirmation {:title title
+                       :content content
                        :confirm-button-text confirm-button-text
-                       :cancel-button-text  cancel-button-text
-                       :on-accept           on-accept
-                       :on-cancel           on-cancel
-                       :extra-options       extra-options})))
+                       :cancel-button-text cancel-button-text
+                       :on-accept on-accept
+                       :on-cancel on-cancel
+                       :extra-options extra-options})))
 
 (defn show-question
   ([title content on-accept]

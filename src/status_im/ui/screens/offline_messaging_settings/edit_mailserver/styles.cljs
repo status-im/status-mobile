@@ -16,21 +16,19 @@
    :margin-horizontal 16})
 
 (def button
-  {:height          52
-   :align-items     :center
-   :justify-content :center
-   :border-radius   8
-   :ios             {:opacity 0.9}})
+  {:height           52
+   :align-items      :center
+   :justify-content  :center
+   :border-radius    8
+   :ios              {:opacity 0.9}})
 
 (styles/def connect-button
   (assoc button
-         :background-color
-         colors/blue))
+         :background-color colors/blue))
 
 (styles/def delete-button
   (assoc button
-         :background-color
-         colors/red))
+         :background-color colors/red))
 
 (def button-label
   {:color     colors/white

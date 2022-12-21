@@ -285,20 +285,16 @@ endif
 # Tests
 #--------------
 
-lint: export TARGET := default
+lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
-	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
-	zprint '{:search-config? true}' -fc $$TARGETS
+	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
+	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS
 
-lint-fix: export TARGET := default
+lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
-	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
-	clojure-lsp clean-ns --filenames $$(echo $$TARGETS | xargs | sed -e 's/ /,/g') && \
-	zprint '{:search-config? true}' -fw $$TARGETS && \
-	zprint '{:search-config? true}' -fw $$TARGETS
-
+	clojure -Scp "$$CLASS_PATH" -m cljfmt.main fix src --indents indentation.edn
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
@@ -308,14 +304,6 @@ test-watch: export TARGET := clojure
 test-watch: ##@ Watch tests and re-run no changes to cljs files
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
-
-test-watch-for-repl: export TARGET := clojure
-test-watch-for-repl: ##@ Watch tests and support REPL connections
-	yarn install
-	rm -f target/test/test.js
-	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs compile mocks && yarn shadow-cljs watch test --verbose' \
-		'until [ -f ./target/test/test.js ] ; do sleep 1 ; done ; node --require ./test-resources/override.js ./target/test/test.js --repl'
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS

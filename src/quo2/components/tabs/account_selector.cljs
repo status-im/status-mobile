@@ -1,47 +1,46 @@
 (ns quo2.components.tabs.account-selector
-  (:require [quo2.components.markdown.text :as quo2]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.theme :as theme]
+   [react-native.core :as rn]
+   [quo2.foundations.colors :as colors]
+   [quo2.components.markdown.text :as quo2]))
 
 (def themes
-  {:light {:default     {:bg           colors/neutral-10
-                         :account-text colors/neutral-100
-                         :label-text   colors/neutral-50}
-           :transparent {:bg           colors/neutral-80-opa-5
-                         :account-text colors/neutral-100
-                         :label-text   colors/neutral-80-opa-40}}
+  {:light {:default         {:bg            colors/neutral-10
+                             :account-text  colors/neutral-100
+                             :label-text    colors/neutral-50}
+           :transparent     {:bg            colors/neutral-80-opa-5
+                             :account-text  colors/neutral-100
+                             :label-text    colors/neutral-80-opa-40}}
 
-   :dark  {:default     {:bg           colors/neutral-80-opa-80
-                         :account-text colors/white
-                         :label-text   colors/neutral-40}
-           :transparent {:bg           colors/white-opa-5
-                         :account-text colors/white
-                         :label-text   colors/neutral-40}}})
+   :dark  {:default         {:bg            colors/neutral-80-opa-80
+                             :account-text  colors/white
+                             :label-text    colors/neutral-40}
+           :transparent     {:bg            colors/white-opa-5
+                             :account-text  colors/white
+                             :label-text    colors/neutral-40}}})
 
-(defn account-container-row
-  [background-color]
-  {:padding-vertical 4
-   :flex-direction   :row
-   :align-items      :center
-   :background-color background-color
-   :border-radius    12})
+(defn account-container-row [background-color]
+  {:padding-vertical  4
+   :flex-direction    :row
+   :align-items       :center
+   :background-color  background-color
+   :border-radius     12})
 
 (def account-emoji
-  {:height 16
-   :width  16})
+  {:height  16
+   :width   16})
 
 (def account-emoji-container
-  {:background-color (colors/custom-color :purple 50)
-   :padding          8
-   :justify-content  :center
-   :align-items      :center
-   :border-radius    10
-   :margin-left      4
-   :margin-right     8})
+  {:background-color  (colors/custom-color :purple 50)
+   :padding           8
+   :justify-content   :center
+   :align-items       :center
+   :border-radius     10
+   :margin-left       4
+   :margin-right      8})
 
-(defn get-color-by-type
-  [type key]
+(defn get-color-by-type [type key]
   (get-in themes [(theme/get-theme) type key]))
 
 (defn account-selector
@@ -58,19 +57,16 @@
         account-text-color (get-color-by-type (if transparent? :transparent :default) :account-text)
         label-text-color   (get-color-by-type (if transparent? :transparent :default) :label-text)]
     [rn/view {:style style}
-     (when show-label?
-       [quo2/text
-        {:weight :medium
-         :size   :paragraph-2
-         :style  {:color         label-text-color
-                  :margin-bottom 8}}
-        label-text])
+     (when show-label? [quo2/text {:weight  :medium
+                                   :size    :paragraph-2
+                                   :style   {:color label-text-color
+                                             :margin-bottom 8}}
+                        label-text])
      [rn/view {:style (account-container-row background-color)}
       [rn/view {:style account-emoji-container}
        [quo2/text account-emoji]]
-      [quo2/text
-       {:weight :medium
-        :size   :paragraph-1
-        :style  {:color account-text-color}}
+      [quo2/text {:weight :medium
+                  :size   :paragraph-1
+                  :style  {:color account-text-color}}
        account-text]]]))
 

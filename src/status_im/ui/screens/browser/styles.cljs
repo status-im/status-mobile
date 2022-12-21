@@ -3,8 +3,7 @@
 
 (def browser {:flex 1})
 
-(defn navbar
-  []
+(defn navbar []
   {:background-color   colors/white
    :height             51
    :flex-direction     :row
@@ -33,8 +32,7 @@
    :line-height 22
    :text-align  :center})
 
-(defn toolbar-content
-  []
+(defn toolbar-content []
   {:flex-direction     :row
    :flex               1
    :border-radius      8
@@ -71,16 +69,14 @@
    :right    0
    :left     0})
 
-(defn permissions-panel-background
-  [alpha-value]
+(defn permissions-panel-background [alpha-value]
   {:flex             1
    :background-color colors/black
    :opacity          alpha-value})
 
 (def panel-height 354)
 
-(defn permissions-panel
-  [bottom-anim-value]
+(defn permissions-panel [bottom-anim-value]
   {:height                  panel-height
    :position                :absolute
    :transform               [{:translateY bottom-anim-value}]

@@ -5,8 +5,7 @@
   {:flex           1
    :flex-direction :column})
 
-(defn no-contact-text
-  []
+(defn no-contact-text []
   {:margin-bottom     20
    :margin-horizontal 50
    :text-align        :center
@@ -15,24 +14,21 @@
 (def toolbar-header-container
   {:align-items :center})
 
-(defn toolbar-sub-header
-  []
+(defn toolbar-sub-header []
   {:color colors/gray})
 
 (def no-contacts
-  {:flex            1
+  {:flex 1
    :justify-content :center
-   :align-items     :center})
+   :align-items :center})
 
-(defn search-container
-  []
+(defn search-container []
   {:border-bottom-color colors/gray-lighter
    :border-bottom-width 1
    :padding-horizontal  16
    :padding-vertical    10})
 
-(defn members-title
-  []
+(defn members-title []
   {:color         colors/gray
    :margin-top    14
    :margin-bottom 4})

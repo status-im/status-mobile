@@ -1,12 +1,12 @@
 (ns quo.animated
   (:refer-clojure :exclude [abs set delay divide])
-  (:require ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
-            ["react-native-redash/lib/module/v1" :as redash]
-            [oops.core :refer [ocall oget]]
-            [quo.gesture-handler :as gh]
-            quo.react
+  (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
-            [reagent.core :as reagent])
+            [quo.gesture-handler :as gh]
+            [oops.core :refer [oget ocall]]
+            ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
+            ["react-native-redash/lib/module/v1" :as redash]
+            quo.react)
   (:require-macros [quo.react :refer [maybe-js-deps]]))
 
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent animated)))
@@ -15,10 +15,9 @@
 (def text (reagent/adapt-react-class (.-Text animated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView animated)))
 (def code (reagent/adapt-react-class (.-Code animated)))
-(def animated-flat-list (create-animated-component gh/flat-list-raw))
+(def animated-flat-list  (create-animated-component gh/flat-list-raw))
 
-(defn flat-list
-  [props]
+(defn flat-list [props]
   [animated-flat-list (rn/base-list-props props)])
 
 (def useCode (.-useCode animated))
@@ -59,42 +58,37 @@
 (def bezier (.-bezier ^js EasingNode))
 (def linear (.-linear ^js EasingNode))
 
-(def easings
-  {:linear      linear
-   :ease-in     (bezier 0.42 0 1 1)
-   :ease-out    (bezier 0 0 0.58 1)
-   :ease-in-out (bezier 0.42 0 0.58 1)
-   :cubic       (bezier 0.55 0.055 0.675 0.19)
-   :keyboard    (bezier 0.17 0.59 0.4 0.77)})
+(def easings {:linear      linear
+              :ease-in     (bezier 0.42 0 1 1)
+              :ease-out    (bezier 0 0 0.58 1)
+              :ease-in-out (bezier 0.42 0 0.58 1)
+              :cubic       (bezier 0.55 0.055 0.675 0.19)
+              :keyboard    (bezier 0.17 0.59 0.4 0.77)})
 
-(def springs
-  {:lazy {:damping           50
-          :mass              0.3
-          :stiffness         120
-          :overshootClamping true
-          :bouncyFactor      1}
-   :jump {:damping                   13
-          :mass                      0.5
-          :stiffness                 170
-          :overshootClamping         false
-          :bouncyFactor              1
-          :restSpeedThreshold        0.001
-          :restDisplacementThreshold 0.001}})
+(def springs {:lazy {:damping           50
+                     :mass              0.3
+                     :stiffness         120
+                     :overshootClamping true
+                     :bouncyFactor      1}
+              :jump {:damping                   13
+                     :mass                      0.5
+                     :stiffness                 170
+                     :overshootClamping         false
+                     :bouncyFactor              1
+                     :restSpeedThreshold        0.001
+                     :restDisplacementThreshold 0.001}})
 
-(defn set-value
-  [anim val]
+(defn set-value [anim val]
   (ocall anim "setValue" val))
 
 (def Value (oget animated "Value"))
 
-(defn value
-  [x]
+(defn value [x]
   (new Value x))
 
 (def Clock (oget animated "Clock"))
 
-(defn clock
-  []
+(defn clock []
   (new Clock))
 
 (def debug (oget animated "debug"))
@@ -106,10 +100,8 @@
   ([config options]
    (ocall animated "event" (clj->js config) (clj->js options))))
 
-(defn on-change
-  [state node]
-  (ocall animated
-         "onChange"
+(defn on-change [state node]
+  (ocall animated "onChange"
          state
          (if (vector? node)
            (clj->js node)
@@ -132,31 +124,24 @@
             (clj->js else-node)
             else-node))))
 
-(defn block
-  [opts]
+(defn block [opts]
   (.block ^js animated (to-array opts)))
 
-(defn interpolate
-  [anim-value config]
+(defn interpolate [anim-value config]
   (.interpolateNode ^js animated anim-value (clj->js config)))
 
-(defn call*
-  [args callback]
+(defn call* [args callback]
   (.call ^js animated (to-array args) callback))
 
-(defn timing
-  [clock-value opts config]
+(defn timing [clock-value opts config]
   (.timing ^js animated
            clock-value
            (clj->js opts)
            (clj->js config)))
 
-(defn spring
-  [clock-value opts config]
-  (.spring ^js animated
-           clock-value
-           (clj->js opts)
-           (clj->js config)))
+(defn spring [clock-value opts config]
+  (.spring ^js animated clock-value
+           (clj->js opts) (clj->js config)))
 
 (def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
 
@@ -165,48 +150,37 @@
 (def clamp (oget redash "clamp"))
 (def diff-clamp (.-diffClamp ^js redash))
 
-(defn with-spring
-  [config]
+(defn with-spring [config]
   (ocall redash "withSpring" (clj->js config)))
 
-(defn with-decay
-  [config]
+(defn with-decay [config]
   (.withDecay ^js redash (clj->js config)))
 
-(defn with-offset
-  [config]
+(defn with-offset [config]
   (.withOffset ^js redash (clj->js config)))
 
-(defn with-spring-transition
-  [val config]
+(defn with-spring-transition [val config]
   (.withSpringTransition ^js redash val (clj->js config)))
 
-(defn with-timing-transition
-  [val config]
+(defn with-timing-transition [val config]
   (.withTimingTransition ^js redash val (clj->js config)))
 
-(defn use-spring-transition
-  [val config]
+(defn use-spring-transition [val config]
   (.useSpringTransition ^js redash val (clj->js config)))
 
-(defn use-timing-transition
-  [val config]
+(defn use-timing-transition [val config]
   (.useTimingTransition ^js redash val (clj->js config)))
 
-(defn re-timing
-  [config]
+(defn re-timing [config]
   (.timing ^js redash (clj->js config)))
 
-(defn re-spring
-  [config]
+(defn re-spring [config]
   (.spring ^js redash (clj->js config)))
 
-(defn on-scroll
-  [opts]
+(defn on-scroll [opts]
   (ocall redash "onScrollEvent" (clj->js opts)))
 
-(defn on-gesture
-  [opts]
+(defn on-gesture [opts]
   (let [gesture-event (event #js [#js {:nativeEvent (clj->js opts)}])]
     {:onHandlerStateChange gesture-event
      :onGestureEvent       gesture-event}))
@@ -217,22 +191,19 @@
 
 (def delay (.-delay ^js redash))
 
-(defn loop*
-  [opts]
+(defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))
 
 (def use-value (.-useValue ^js redash))
 
 (def use-clock (.-useClock ^js redash))
 
-(defn use-gesture
-  [opts]
+(defn use-gesture [opts]
   (let [gesture (.useGestureHandler ^js redash (clj->js opts))]
     {:onHandlerStateChange (.-onHandlerStateChange ^js gesture)
      :onGestureEvent       (.-onGestureEvent ^js gesture)}))
 
-(defn snap-point
-  [value velocity snap-points]
+(defn snap-point [value velocity snap-points]
   (.snapPoint ^js redash value velocity (to-array snap-points)))
 
 (defn cancelable-loop
@@ -285,13 +256,12 @@
               (set position (add offset val))])
       (cond* (and* (eq state (:end gh/states))
                    (not* animation-over))
-             [(set position
-                   (re-timing
-                    {:clock    c
-                     :easing   easing
-                     :duration duration
-                     :from     position
-                     :to       to}))
+             [(set position (re-timing
+                             {:clock    c
+                              :easing   easing
+                              :duration duration
+                              :from     position
+                              :to       to}))
               (cond* (not* (clock-running c))
                      finish-animation)])
       position])))

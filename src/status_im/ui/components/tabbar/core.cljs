@@ -1,8 +1,7 @@
 (ns status-im.ui.components.tabbar.core
   (:require [status-im.utils.platform :as platform]))
 
-(defn get-height
-  []
+(defn get-height []
   (if platform/android?
     56
     (if platform/iphone-x?

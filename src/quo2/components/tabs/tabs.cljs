@@ -1,34 +1,31 @@
 (ns quo2.components.tabs.tabs
   (:require [oops.core :refer [oget]]
-            [quo2.components.notifications.notification-dot :refer [notification-dot]]
-            [quo2.components.tabs.tab :as tab]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.masked-view :as masked-view]
+            [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
+            [utils.number :as utils.number]
             [utils.collection :as utils.collection]
-            [utils.number :as utils.number]))
+            [quo2.foundations.colors :as colors]
+            [quo2.components.notifications.notification-dot :refer [notification-dot]]
+            [react-native.masked-view :as masked-view]
+            [react-native.linear-gradient :as linear-gradient]))
 
 (def default-tab-size 32)
 
-(defn indicator
-  []
-  [rn/view
-   {:position         :absolute
-    :z-index          1
-    :right            -2
-    :top              -2
-    :width            10
-    :height           10
-    :border-radius    5
-    :justify-content  :center
-    :align-items      :center
-    :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+(defn indicator []
+  [rn/view {:position         :absolute
+            :z-index          1
+            :right            -2
+            :top              -2
+            :width            10
+            :height           10
+            :border-radius    5
+            :justify-content  :center
+            :align-items      :center
+            :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
    [notification-dot]])
 
-(defn tabs
-  [{:keys [default-active on-change style]}]
+(defn tabs [{:keys [default-active on-change style]}]
   (let [active-tab-id (reagent/atom default-active)]
     (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
@@ -88,23 +85,22 @@
   (let [active-tab-id (reagent/atom default-active)
         fading        (reagent/atom {:fade-end-percentage fade-end-percentage})
         flat-list-ref (atom nil)]
-    (fn
-      [{:keys [data
-               fade-end-percentage
-               fade-end?
-               on-change
-               on-scroll
-               scroll-event-throttle
-               scroll-on-press?
-               size
-               blur?
-               override-theme]
-        :or   {fade-end-percentage   fade-end-percentage
-               fade-end?             false
-               scroll-event-throttle 64
-               scroll-on-press?      false
-               size                  default-tab-size}
-        :as   props}]
+    (fn [{:keys [data
+                 fade-end-percentage
+                 fade-end?
+                 on-change
+                 on-scroll
+                 scroll-event-throttle
+                 scroll-on-press?
+                 size
+                 blur?
+                 override-theme]
+          :or   {fade-end-percentage   fade-end-percentage
+                 fade-end?             false
+                 scroll-event-throttle 64
+                 scroll-on-press?      false
+                 size                  default-tab-size}
+          :as   props}]
       (let [maybe-mask-wrapper (if fade-end?
                                  [masked-view/masked-view
                                   {:mask-element
@@ -118,76 +114,54 @@
                                       :style          {:width  "100%"
                                                        :height "100%"}}])}]
                                  [:<>])]
-        (conj
-         maybe-mask-wrapper
-         [rn/flat-list
-          (merge
-           (dissoc props
-                   :default-active
-                   :fade-end-percentage
-                   :fade-end?
-                   :on-change
-                   :scroll-on-press?
-                   :size)
-           (when scroll-on-press?
-             {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
-           {:ref                               #(reset! flat-list-ref %)
-            :extra-data                        (str @active-tab-id)
-            :horizontal                        true
-            :scroll-event-throttle             scroll-event-throttle
-            :shows-horizontal-scroll-indicator false
-            :data                              data
-            :key-fn                            (comp str :id)
-            :on-scroll                         (fn [^js e]
-                                                 (when fade-end?
-                                                   (let [offset-x       (oget
-                                                                         e
-                                                                         "nativeEvent.contentOffset.x")
-                                                         content-width  (oget
-                                                                         e
-                                                                         "nativeEvent.contentSize.width")
-                                                         layout-width
-                                                         (oget e "nativeEvent.layoutMeasurement.width")
-                                                         new-percentage
-                                                         (calculate-fade-end-percentage
-                                                          {:offset-x            offset-x
-                                                           :content-width       content-width
-                                                           :layout-width        layout-width
-                                                           :max-fade-percentage fade-end-percentage})]
-                                                     ;; Avoid unnecessary re-rendering.
-                                                     (when (not= new-percentage
-                                                                 (get @fading :fade-end-percentage))
-                                                       (swap! fading assoc
-                                                         :fade-end-percentage
-                                                         new-percentage))))
-                                                 (when on-scroll
-                                                   (on-scroll e)))
-            :render-fn                         (fn [{:keys [id label]} index]
-                                                 [rn/view
-                                                  {:style {:margin-right  (if (= size default-tab-size)
-                                                                            12
-                                                                            8)
-                                                           :padding-right (when (= index
-                                                                                   (dec (count data)))
-                                                                            (get-in props
-                                                                                    [:style
-                                                                                     :padding-left]))}}
-                                                  [tab/tab
-                                                   {:id             id
-                                                    :size           size
-                                                    :override-theme override-theme
-                                                    :blur?          blur?
-                                                    :active         (= id @active-tab-id)
-                                                    :on-press       (fn [id]
-                                                                      (reset! active-tab-id id)
-                                                                      (when scroll-on-press?
-                                                                        (.scrollToIndex ^js
-                                                                                        @flat-list-ref
-                                                                                        #js
-                                                                                         {:animated true
-                                                                                          :index index
-                                                                                          :viewPosition
-                                                                                          0.5}))
-                                                                      (when on-change
-                                                                        (on-change id)))}
-                                                   label]])})])))))
+        (conj maybe-mask-wrapper
+              [rn/flat-list
+               (merge (dissoc props
+                              :default-active
+                              :fade-end-percentage
+                              :fade-end?
+                              :on-change
+                              :scroll-on-press?
+                              :size)
+                      (when scroll-on-press?
+                        {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
+                      {:ref                               #(reset! flat-list-ref %)
+                       :extra-data                        (str @active-tab-id)
+                       :horizontal                        true
+                       :scroll-event-throttle             scroll-event-throttle
+                       :shows-horizontal-scroll-indicator false
+                       :data                              data
+                       :key-fn                            (comp str :id)
+                       :on-scroll                         (fn [^js e]
+                                                            (when fade-end?
+                                                              (let [offset-x       (oget e "nativeEvent.contentOffset.x")
+                                                                    content-width  (oget e "nativeEvent.contentSize.width")
+                                                                    layout-width   (oget e "nativeEvent.layoutMeasurement.width")
+                                                                    new-percentage (calculate-fade-end-percentage {:offset-x            offset-x
+                                                                                                                   :content-width       content-width
+                                                                                                                   :layout-width        layout-width
+                                                                                                                   :max-fade-percentage fade-end-percentage})]
+                                                                ;; Avoid unnecessary re-rendering.
+                                                                (when (not= new-percentage (get @fading :fade-end-percentage))
+                                                                  (swap! fading assoc :fade-end-percentage new-percentage))))
+                                                            (when on-scroll
+                                                              (on-scroll e)))
+                       :render-fn                         (fn [{:keys [id label]} index]
+                                                            [rn/view {:style {:margin-right  (if (= size default-tab-size) 12 8)
+                                                                              :padding-right (when (= index (dec (count data)))
+                                                                                               (get-in props [:style :padding-left]))}}
+                                                             [tab/tab {:id             id
+                                                                       :size           size
+                                                                       :override-theme override-theme
+                                                                       :blur?          blur?
+                                                                       :active         (= id @active-tab-id)
+                                                                       :on-press       (fn [id]
+                                                                                         (reset! active-tab-id id)
+                                                                                         (when scroll-on-press?
+                                                                                           (.scrollToIndex ^js @flat-list-ref
+                                                                                                           #js {:animated     true
+                                                                                                                :index        index
+                                                                                                                :viewPosition 0.5}))
+                                                                                         (when on-change
+                                                                                           (on-change id)))}
+                                                              label]])})])))))

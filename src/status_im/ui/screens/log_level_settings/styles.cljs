@@ -3,7 +3,7 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex 1})
+  {:flex             1})
 
 (def log-level-item-inner
   {:padding-horizontal 16})
@@ -18,8 +18,7 @@
 (def log-level-item-name-text
   {:typography :title})
 
-(defn log-level-icon-container
-  [current?]
+(defn log-level-icon-container [current?]
   {:width            40
    :height           40
    :border-radius    20
@@ -29,7 +28,6 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn log-level-icon
-  [current?]
+(defn log-level-icon [current?]
   (hash-map :color
             (if current? colors/white-persist colors/gray)))

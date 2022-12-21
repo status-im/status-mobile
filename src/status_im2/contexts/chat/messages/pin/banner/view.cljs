@@ -2,11 +2,10 @@
   (:require [status-im.ui2.screens.chat.pinned-banner.view :as pinned-banner]
             [utils.re-frame :as rf]))
 
-(defn banner
-  [chat-id]
+(defn banner [chat-id]
   (let [pinned-messages (rf/sub [:chats/pinned chat-id])
         latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
-        pins-count      (count (seq pinned-messages))]
+        pins-count (count (seq pinned-messages))]
     (when (> pins-count 0)
       ;; TODO (flexsurfer) this should be banner component in quo2
       [pinned-banner/pinned-banner

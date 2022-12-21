@@ -24,11 +24,9 @@
    :margin-bottom 20})
 
 (def request-container2
-  {:flex            1
-   :flex-direction
-   :row
-   :align-items     :center
-   :justify-content :space-between})
+  {:flex             1 :flex-direction
+   :row :align-items :center
+   :justify-content  :space-between})
 
 (def request-icon
   {:height           32

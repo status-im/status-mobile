@@ -20,19 +20,17 @@
     (reset! !handler-set true)
     (let [original-error (.-error js/console)]
       (set! (.-error js/console)
-        (fn [& [head :as args]]
-          (if (and (string? head) (string/starts-with? head "Error rendering component"))
-            (apply (.-warn js/console) "Additional exception info:" args)
-            (apply original-error args)))))))
+            (fn [& [head :as args]]
+              (if (and (string? head) (string/starts-with? head "Error rendering component"))
+                (apply (.-warn js/console) "Additional exception info:" args)
+                (apply original-error args)))))))
 
-(defn format-error
-  [e]
+(defn format-error [e]
   (if (instance? js/Error e)
     {:name (.-name ^js e) :message (.-message ^js e) :stack (.-stack ^js e)}
     {:message (pr-str e)}))
 
-(defn handle-error
-  [e _]
+(defn handle-error [e _]
   (let [f (format-error e)]
     (js/console.log (str "PRETTY PRINTED EXCEPTION"
                          "\n\n***\nNAME: "
@@ -52,18 +50,14 @@
   (downgrade-reagent-errors!)
   (when-not @!error-handler-set?
     (reset! !error-handler-set? true)
-    (let [^js orig-handler (some-> js/ErrorUtils
-                                   ^js .-getGlobalHandler
-                                   (.call))]
+    (let [^js orig-handler (some-> js/ErrorUtils ^js .-getGlobalHandler (.call))]
       (js/ErrorUtils.setGlobalHandler
        (fn [^js e isFatal]
          (handle-error e isFatal)
          (if js/goog.DEBUG
-           (some-> orig-handler
-                   (.call nil e isFatal))
+           (some-> orig-handler (.call nil e isFatal))
            (alert/show-confirmation
             {:title               "Error"
              :content             (.-message e)
              :confirm-button-text (i18n/label :t/send-logs)
-             :on-accept           #(re-frame/dispatch [:logging/send-logs-on-error
-                                                       (.-message e)])})))))))
+             :on-accept           #(re-frame/dispatch [:logging/send-logs-on-error (.-message e)])})))))))

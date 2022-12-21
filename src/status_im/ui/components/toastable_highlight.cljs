@@ -1,12 +1,11 @@
 (ns status-im.ui.components.toastable-highlight
   "A wrapped touchable highlight that presents a toast when clicked"
-  (:require [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [status-im.ui.components.animation :as animation]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]))
 
-(defn hide-cue-atom
-  [anim-opacity anim-y cue-atom]
+(defn hide-cue-atom [anim-opacity anim-y cue-atom]
   (animation/start
    (animation/parallel
     [(animation/timing
@@ -25,8 +24,7 @@
        :useNativeDriver true})])
    #(reset! cue-atom false)))
 
-(defn show-cue-atom
-  [anim-opacity anim-y cue-atom y]
+(defn show-cue-atom [anim-opacity anim-y cue-atom y]
   (when @cue-atom
     (animation/start
      (animation/parallel
@@ -44,8 +42,7 @@
          :useNativeDriver true})])
      #(hide-cue-atom anim-opacity anim-y cue-atom))))
 
-(defn toast
-  [anim-opacity anim-y width cue-atom label]
+(defn toast [anim-opacity anim-y width cue-atom label]
   [react/animated-view
    {:style
     {:opacity          anim-opacity
@@ -105,7 +102,7 @@
                           (when on-press
                             (on-press)))]
           [react/view
-           {:style     (if container-style container-style {})
+           {:style (if container-style container-style {})
             :on-layout
             #(do
                (reset! width (-> ^js % .-nativeEvent .-layout .-width))

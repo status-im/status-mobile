@@ -1,10 +1,9 @@
 (ns status-im.ui.components.toolbar
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.react :as react]))
+  (:require [status-im.ui.components.react :as react]
+            [quo.design-system.colors :as colors]))
 
-(defn toolbar-container
-  [{:keys [show-border? size center?]
-    :or   {size :default}}]
+(defn toolbar-container [{:keys [show-border? size center?]
+                          :or   {size :default}}]
   (merge {:align-items        :center
           :padding-horizontal 8
           :width              "100%"
@@ -20,18 +19,15 @@
            {:height 52})))
 
 ;; TODO(Ferossgp): Allow components when moving to Quo
-(defn toolbar
-  [{:keys [center left right show-border? size]}]
+(defn toolbar [{:keys [center left right show-border? size]}]
   (if center
-    [react/view
-     {:style (toolbar-container {:show-border? show-border?
-                                 :center?      true
-                                 :size         size})}
+    [react/view {:style (toolbar-container {:show-border? show-border?
+                                            :center?      true
+                                            :size         size})}
      center]
-    [react/view
-     {:style (toolbar-container {:show-border? show-border?
-                                 :center?      false
-                                 :size         size})}
+    [react/view {:style (toolbar-container {:show-border? show-border?
+                                            :center?      false
+                                            :size         size})}
      [react/view {:flex-shrink 1}
       (when left left)]
      [react/view

@@ -1,8 +1,8 @@
 (ns status-im.utils.logging.core
-  (:require [clojure.string :as string]
+  (:require [react-native.mail :as react-native-mail]
+            [clojure.string :as string]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [react-native.mail :as react-native-mail]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
@@ -29,9 +29,9 @@
   "logs attached"
   [{:keys [:web3-node-version :mailserver/current-id
            :node-info :peers-summary :bug-report/details]}]
-  (let [build-number               build/build-no
-        build-version              (str build/version " (" build-number ")")
-        separator                  (string/join (take 40 (repeat "-")))
+  (let [build-number  build/build-no
+        build-version (str build/version " (" build-number ")")
+        separator (string/join (take 40 (repeat "-")))
         [enode-id ip-address port]
         (transport.utils/extract-url-components (:enode node-info))]
     (string/join
@@ -82,21 +82,19 @@
    {:db (dissoc db :bug-report/details)}
    (dialog-closed)
    (send-email
-    (cond-> {:subject    "Error report"
-             :recipients [report-email]
-             :body       (email-body db)}
+    (cond-> {:subject     "Error report"
+             :recipients  [report-email]
+             :body        (email-body db)}
 
       (not (nil? archive-uri))
-      (assoc :attachments
-             [{:uri  archive-uri
-               :type "zip"
-               :name "status_logs.zip"}]))
+      (assoc :attachments [{:uri archive-uri
+                            :type "zip"
+                            :name "status_logs.zip"}]))
     (fn [event]
       (when (= event "not_available")
         (re-frame/dispatch [:show-client-error]))))))
 
-(defn logs-enabled?
-  [db]
+(defn logs-enabled? [db]
   (not (string/blank? (get-in db [:multiaccount :log-level]))))
 
 (fx/defn send-logs
@@ -104,25 +102,23 @@
   [{:keys [db] :as cofx} transport]
   (if (logs-enabled? db)
     ;; TODO: Add message explaining db export
-    (let [db-json (types/clj->json (select-keys db
-                                                [:app-state
-                                                 :current-chat-id
-                                                 :network
-                                                 :network-status
-                                                 :peers-count
-                                                 :peers-summary
-                                                 :sync-state
-                                                 :view-id
-                                                 :chat/cooldown-enabled?
-                                                 :chat/cooldowns
-                                                 :chat/last-outgoing-message-sent-at
-                                                 :chat/spam-messages-frequency
-                                                 :chats/loading?
-                                                 :dimensions/window]))]
-      {:logs/archive-logs [db-json
-                           (if (= transport :email)
-                             ::send-email
-                             ::share-logs-file)]})
+    (let [db-json (types/clj->json (select-keys db [:app-state
+                                                    :current-chat-id
+                                                    :network
+                                                    :network-status
+                                                    :peers-count
+                                                    :peers-summary
+                                                    :sync-state
+                                                    :view-id
+                                                    :chat/cooldown-enabled?
+                                                    :chat/cooldowns
+                                                    :chat/last-outgoing-message-sent-at
+                                                    :chat/spam-messages-frequency
+                                                    :chats/loading?
+                                                    :dimensions/window]))]
+      {:logs/archive-logs [db-json (if (= transport :email)
+                                     ::send-email
+                                     ::share-logs-file)]})
     (send-email-event cofx nil)))
 
 (fx/defn send-logs-on-error
@@ -142,7 +138,7 @@
   {:events [:shake-event]}
   [{:keys [db]}]
   (when-not (:logging/dialog-shown? db)
-    {:db                      (assoc db :logging/dialog-shown? true)
+    {:db (assoc db :logging/dialog-shown? true)
      :utils/show-confirmation
      (cond-> {:title               (i18n/label :t/send-logs)
               :content             (i18n/label :t/send-logs-to
@@ -153,11 +149,10 @@
               :on-cancel           #(re-frame/dispatch [:logging/dialog-left])}
 
        platform/ios?
-       (assoc :extra-options
-              [{:text    (i18n/label :t/share-logs)
-                :onPress #(re-frame/dispatch
-                           [:logging.ui/send-logs-pressed :sharing])
-                :style   "default"}]))}))
+       (assoc :extra-options       [{:text    (i18n/label :t/share-logs)
+                                     :onPress #(re-frame/dispatch
+                                                [:logging.ui/send-logs-pressed :sharing])
+                                     :style   "default"}]))}))
 
 (re-frame/reg-fx
  :email/send
@@ -180,8 +175,8 @@
    cofx
    (dialog-closed)
    (share-archive
-    {:title "Archived logs"
-     :url   archive-uri})))
+    {:title   "Archived logs"
+     :url     archive-uri})))
 
 (fx/defn details
   {:events [:logging/report-details]}
@@ -192,8 +187,7 @@
 
 (def min-description-lenght 6)
 
-(defn validate-description
-  [db]
+(defn validate-description [db]
   (let [description (get-in db [:bug-report/details :description] "")]
     (when (> min-description-lenght
              (count (string/trim description)))
@@ -221,11 +215,11 @@
   (let [{:keys [steps description]}
         (get db :bug-report/details)
 
-        title                       (or description (i18n/label :t/bug-report-description-placeholder))
-        body                        (str title
-                                         "\n\n"
-                                         (or steps (i18n/label :t/bug-report-steps-placeholder)))
-        url                         (gstring/format gh-issue-url (js/escape title) (js/escape body))]
+        title (or description (i18n/label :t/bug-report-description-placeholder))
+        body  (str title
+                   "\n\n"
+                   (or steps (i18n/label :t/bug-report-steps-placeholder)))
+        url   (gstring/format gh-issue-url (js/escape title) (js/escape body))]
     {::open-url url}))
 
 (fx/defn submit-gh-issue

@@ -18,7 +18,7 @@
   (identity nil))
 
 (fx/defn hello4
-  {:doc    "this function is useless as well"
+  {:doc "this function is useless as well"
    :events [:test/valid1 :test/valid2]}
   [{:keys [db]} b]
   {:db (assoc db :a b) :b (:a db)})
@@ -44,15 +44,15 @@
                        (hello2 "b"))
              {:db {:c 2
                    :a "b"}
-              :b  "a"}))
+              :b "a"}))
       (testing "with initial fxs map"
         (is (= (fx/merge cofx
                          {:potatoe :potating}
                          (hello "a")
                          (hello2 "b"))
-               {:db      {:c 2
-                          :a "b"}
-                :b       "a"
+               {:db {:c 2
+                     :a "b"}
+                :b "a"
                 :potatoe :potating})
             "initial fxs map should be merged in the result"))
       (testing "with a nil producing function"
@@ -62,7 +62,7 @@
                          (hello2 "b"))
                {:db {:c 2
                      :a "b"}
-                :b  "a"})))
+                :b "a"})))
       (testing "with condition statement"
         (testing "false"
           (is (= (let [do-hello? false]
@@ -72,7 +72,7 @@
                              (hello2 "b")))
                  {:db {:c 2
                        :a "b"}
-                  :b  nil})
+                  :b nil})
               "the conditional statement should not apply"))
         (testing "true"
           (is (= (let [do-hello? true]
@@ -82,5 +82,5 @@
                              (hello2 "b")))
                  {:db {:c 2
                        :a "b"}
-                  :b  "a"})
+                  :b "a"})
               "the conditional statement should apply"))))))

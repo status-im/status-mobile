@@ -5,7 +5,7 @@
   {:events [:show-visibility-status-popover]}
   [_ value]
   {:show-visibility-status-popover nil
-   :dispatch-later                 [{:ms       250
+   :dispatch-later                 [{:ms 250
                                      :dispatch [:show-visibility-status-popover-db value]}]
    :dismiss-keyboard               nil})
 
@@ -17,5 +17,5 @@
 (fx/defn hide-visibility-status-popover
   {:events [:hide-visibility-status-popover]}
   [{:keys [db]}]
-  {:db                             (dissoc db :visibility-status-popover/popover)
+  {:db (dissoc db :visibility-status-popover/popover)
    :hide-visibility-status-popover nil})

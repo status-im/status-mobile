@@ -3,12 +3,9 @@
             [status-im.utils.http :as http]))
 
 (deftest url-sanitize-check
-  (testing
-    "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/818934.svg"
+  (testing "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/818934.svg"
     (testing "it returns true"
-      (is
-       (http/url-sanitized?
-        "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/818934.svg"))))
+      (is (http/url-sanitized? "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/818934.svg"))))
 
   (testing "https://www.cryptostrikers.com/assets/images/cards/017.svg"
     (testing "it returns true"
@@ -26,37 +23,21 @@
     (testing "it returns false"
       (is (not (http/url-sanitized? "xxx:x \\\\x0Aonerror=javascript:alert(1)")))))
 
-  (testing
-    "https://www.etheremon.com/assets/images/mons_origin/025.png'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;"
+  (testing "https://www.etheremon.com/assets/images/mons_origin/025.png'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;"
     (testing "it returns false"
-      (is
-       (not
-        (http/url-sanitized?
-         "https://www.etheremon.com/assets/images/mons_origin/025.png'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;")))))
+      (is (not (http/url-sanitized? "https://www.etheremon.com/assets/images/mons_origin/025.png'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;")))))
 
-  (testing
-    "https://www.etheremon.com/assets/images/mons'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;origin/025.png"
+  (testing "https://www.etheremon.com/assets/images/mons'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;origin/025.png"
     (testing "it returns false"
-      (is
-       (not
-        (http/url-sanitized?
-         "https://www.etheremon.com/assets/images/mons'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;origin/025.png")))))
+      (is (not (http/url-sanitized? "https://www.etheremon.com/assets/images/mons'&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;origin/025.png")))))
 
-  (testing
-    "https://www.etheremon.com/assets/images/mons_origin/025.png'><script>\\\\x3Bjavascript:alert(1)</script>"
+  (testing "https://www.etheremon.com/assets/images/mons_origin/025.png'><script>\\\\x3Bjavascript:alert(1)</script>"
     (testing "it returns false"
-      (is
-       (not
-        (http/url-sanitized?
-         "https://www.etheremon.com/assets/images/mons_origin/025.png'><script>\\\\x3Bjavascript:alert(1)</script>")))))
+      (is (not (http/url-sanitized? "https://www.etheremon.com/assets/images/mons_origin/025.png'><script>\\\\x3Bjavascript:alert(1)</script>")))))
 
-  (testing
-    "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"
+  (testing "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"
     (testing "it returns false"
-      (is
-       (not
-        (http/url-sanitized?
-         "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"))))))
+      (is (not (http/url-sanitized? "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"))))))
 
 (deftest url-host-check
   (testing "Extract host/domain from URL"

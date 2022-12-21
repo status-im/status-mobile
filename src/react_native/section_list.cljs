@@ -1,7 +1,7 @@
 (ns react-native.section-list
-  (:require ["react-native" :as react-native]
+  (:require [reagent.core :as reagent]
             [react-native.flat-list :as flat-list]
-            [reagent.core :as reagent]))
+            ["react-native" :as react-native]))
 
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
 
@@ -11,24 +11,18 @@
      (fn [^js data]
        (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))))
 
-(defn- wrap-render-section-header-fn
-  [f]
+(defn- wrap-render-section-header-fn [f]
   (fn [^js data]
     (let [^js section (.-section data)]
-      (reagent/as-element [f
-                           {:title (.-title section)
-                            :data  (.-data section)}]))))
+      (reagent/as-element [f {:title (.-title section)
+                              :data  (.-data section)}]))))
 
-(defn- wrap-per-section-render-fn
-  [props]
+(defn- wrap-per-section-render-fn [props]
   (update
    (if-let [f (:render-fn props)]
-     (assoc (dissoc props :render-fn :render-data)
-            :renderItem
-            (memo-wrap-render-fn f (:render-data props)))
+     (assoc (dissoc props :render-fn :render-data) :renderItem (memo-wrap-render-fn f (:render-data props)))
      props)
-   :data
-   to-array))
+   :data to-array))
 
 (defn section-list
   "A wrapper for SectionList.

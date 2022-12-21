@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.privacy-and-security-settings.events
-  (:require [clojure.string :as string]
+  (:require [status-im.utils.fx :as fx]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.security :as security]
             [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
+            [status-im.ethereum.core :as ethereum]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+            [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]))
 
-(defn safe-blank?
-  [s]
+(defn safe-blank? [s]
   (or (not s)
       (string/blank? s)))
 
@@ -40,7 +39,7 @@
   [{:keys [db] :as cofx} masked-password]
   (log/info "[delete-profile] delete")
   (let [{:keys [key-uid wallet-root-address]} (:multiaccount db)]
-    {:db              (dissoc db :delete-profile/error)
+    {:db (dissoc db :delete-profile/error)
      ::delete-profile
      {:masked-password masked-password
       :key-uid         key-uid

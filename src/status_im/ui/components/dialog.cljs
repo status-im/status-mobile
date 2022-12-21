@@ -1,15 +1,12 @@
 (ns status-im.ui.components.dialog
   (:require ["react-native-dialogs" :default dialogs]))
 
-(defn show
-  [{:keys [title options cancel-text on-cancel]}]
+(defn show [{:keys [title options cancel-text on-cancel]}]
   (.. dialogs
-      (showPicker title
-                  nil
-                  (clj->js {:items        (mapv #(select-keys % [:label])
-                                                options)
-                            :negativeText cancel-text
-                            :positiveText nil}))
+      (showPicker title nil (clj->js {:items        (mapv #(select-keys % [:label])
+                                                          options)
+                                      :negativeText cancel-text
+                                      :positiveText nil}))
       (then (fn [selected]
               (let [result (js->clj selected :keywordize-keys true)]
                 (if (not= (get result :action) "actionSelect")

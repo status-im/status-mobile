@@ -1,25 +1,23 @@
 (ns status-im.ui.components.emoji-thumbnail.styles
   (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
-(defn emoji-thumbnail-icon
-  [color size]
-  {:width               size
-   :height              size
-   :align-items         :center
-   :justify-content     :center
-   :border-radius       (/ size 2)
-   :background-color    color
-   :border-width        0.5
+(defn emoji-thumbnail-icon [color size]
+  {:width                size
+   :height               size
+   :align-items          :center
+   :justify-content      :center
+   :border-radius        (/ size 2)
+   :background-color     color
+   :border-width         0.5
    :border-color        "rgba(0,0,0,0.1)"
    :accessibility-label :thumbnail-container-circle})
 
-(defn emoji-thumbnail-icon-text
-  [size]
-  {:font-size   (emoji-utils/emoji-font-size size)
-   :line-height size
-   :margin-top  (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
+(defn emoji-thumbnail-icon-text [size]
+  {:font-size           (emoji-utils/emoji-font-size size)
+   :line-height         size
+   :margin-top          (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
 
 
 ;; Styles Related to Emoji Thumbnail Picker
@@ -29,20 +27,16 @@
 (def emoji-picker-upper-components-size
   (if platform/android? 350 405))
 
-(defn emoji-picker-gray-color
-  []
+(defn emoji-picker-gray-color []
   (if (colors/dark?) "#c3c3bc99" "#3C3C4399"))
 
-(defn emoji-picker-category-container
-  []
+(defn emoji-picker-category-container []
   (if (colors/dark?) "#110d0a" "#EEF2F5"))
 
-(defn emoji-picker-active-category-container
-  []
+(defn emoji-picker-active-category-container []
   (if (colors/dark?) "#87877f33" "#78788033"))
 
-(defn emoji-picker-active-category-color
-  []
+(defn emoji-picker-active-category-color []
   (if (colors/dark?) "#bbbbbb" "#000000"))
 
 (def emoji-thumbnail-preview
@@ -52,31 +46,26 @@
    :justify-content     :center
    :accessibility-label :emoji-preview})
 
-(defn emoji-picker-keyboard-container
-  []
+(defn emoji-picker-keyboard-container []
   {:border-radius    0
    :background-color (colors/get-color :ui-background)})
 
-(defn emoji-picker-search-bar
-  []
+(defn emoji-picker-search-bar []
   {:border-radius    10
    :height           36
    :background-color (:ui-01 @colors/theme)})
 
-(defn emoji-picker-search-bar-text
-  []
+(defn emoji-picker-search-bar-text []
   {:color (emoji-picker-gray-color)})
 
-(defn emoji-picker-header
-  []
+(defn emoji-picker-header []
   {:font-size     13
    :color         (emoji-picker-gray-color)
    :font-weight   "600"
    :margin-top    7
    :margin-bottom 0})
 
-(defn emoji-keyboard
-  [func]
+(defn emoji-keyboard [func]
   {:onEmojiSelected              func
    :emojiSize                    23
    :containerStyles              (emoji-picker-keyboard-container)
@@ -99,19 +88,18 @@
    :flex-grow       1})
 
 (def emoji-picker-row1-style
-  {:margin-top 10})
+  {:margin-top     10})
 
 (def emoji-picker-row2-style
-  {:margin-top    10
-   :margin-bottom 10
-   :margin-left   25
-   :margin-right  25})
+  {:margin-top     10
+   :margin-bottom  10
+   :margin-left    25
+   :margin-right   25})
 
 (def emoji-picker-row3-style
-  {:margin-bottom 10})
+  {:margin-bottom  10})
 
-(defn emoji-picker-color-border
-  [item_color color-selected?]
+(defn emoji-picker-color-border [item_color color-selected?]
   {:height          44
    :width           44
    :border-radius   22
@@ -120,14 +108,13 @@
    :align-items     :center
    :justify-content :center})
 
-(defn emoji-picker-color
-  [item_color]
-  {:height           36
-   :width            36
-   :border-radius    18
-   :border-width     0.5
+(defn emoji-picker-color [item_color]
+  {:height 36
+   :width 36
+   :border-radius 18
+   :border-width 0.5
    :background-color item_color
-   :border-color     "rgba(0,0,0,0.1)"})
+   :border-color        "rgba(0,0,0,0.1)"})
 
 (def emoji-picker-default-thumbnails
   [{:emoji "🐺" :color "#CCCCCC"}

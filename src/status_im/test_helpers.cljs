@@ -97,10 +97,10 @@
   [f]
   (let [logs (atom [])]
     (binding [log/*config* (assoc-in log/*config*
-                            [:appenders :test]
-                            {:enabled? true
-                             :fn       (fn [{:keys [vargs level]}]
-                                         (swap! logs conj {:args vargs :level level}))})]
+                                     [:appenders :test]
+                                     {:enabled? true
+                                      :fn       (fn [{:keys [vargs level]}]
+                                                  (swap! logs conj {:args vargs :level level}))})]
       (f logs))))
 
 (defn restore-app-db
@@ -113,4 +113,4 @@
     (try
       (f)
       (finally
-       (reset! rf-db/app-db original-db)))))
+        (reset! rf-db/app-db original-db)))))

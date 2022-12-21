@@ -1,22 +1,19 @@
 (ns status-im.ui.screens.keycard.pairing.views
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
-            [utils.security.core :as security]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.security :as security]
+            [quo.react-native :as rn]
+            [quo.core :as quo]))
 
-(defn validate-pairing-code
-  [pairing-code]
+(defn validate-pairing-code [pairing-code]
   (>= (count pairing-code) 1))
 
-(defn confirm-pairing-code
-  [pairing-code confirm]
+(defn confirm-pairing-code [pairing-code confirm]
   (= pairing-code confirm))
 
-(defn change-pairing-code
-  []
+(defn change-pairing-code []
   (let [pairing-code (reagent/atom nil)
         confirm      (reagent/atom nil)
         show-error   (reagent/atom nil)
@@ -30,64 +27,57 @@
                                        (re-frame/dispatch [:keycard/change-pairing-code @pairing-code]))
                                    (reset! show-error true)))]
         [rn/keyboard-avoiding-view {:flex 1}
-         [rn/scroll-view {:style {:flex 1}}
-          [rn/view
-           {:style {:flex               1
-                    :justify-content    :space-between
-                    :padding-vertical   16
-                    :padding-horizontal 16}}
+         [rn/scroll-view {:style {:flex               1}}
+          [rn/view {:style {:flex               1
+                            :justify-content    :space-between
+                            :padding-vertical   16
+                            :padding-horizontal 16}}
 
            [rn/view
-            [quo/text
-             {:weight :bold
-              :align  :center
-              :size   :x-large}
+            [quo/text {:weight :bold
+                       :align  :center
+                       :size   :x-large}
              (i18n/label :t/change-pairing-title)]]
            [rn/view
             [rn/view {:style {:padding 16}}
-             [quo/text-input
-              {:secure-text-entry   true
-               :auto-capitalize     :none
-               :auto-focus          true
-               :show-cancel         false
-               :accessibility-label :password-input
-               :placeholder         (i18n/label :t/pairing-code-placeholder)
-               :on-change-text      #(reset! pairing-code (security/mask-data %))
-               :return-key-type     :next
-               :on-submit-editing   #(when valid-pairing-code
-                                       (some-> ^js @confirm-ref
-                                               .focus))}]]
-            [rn/view
-             {:style {:padding 16
-                      :opacity (if-not valid-pairing-code 0.33 1)}}
-             [quo/text-input
-              {:secure-text-entry   true
-               :get-ref             #(reset! confirm-ref %)
-               :auto-capitalize     :none
-               :show-cancel         false
-               :accessibility-label :password-input
-               :editable            valid-pairing-code
-               :placeholder         (i18n/label :t/confirm-pairing-code-placeholder)
-               :return-key-type     :go
-               :error               (when @show-error (i18n/label :t/pairing-code_error1))
-               :blur-on-submit      true
-               :on-focus            #(reset! show-error false)
-               :on-submit-editing   on-submit
-               :on-change-text      #(do
-                                       (reset! confirm (security/mask-data %))
-                                       (cond
-                                         (> (count @pairing-code) (count @confirm))
-                                         (reset! show-error false)
+             [quo/text-input {:secure-text-entry   true
+                              :auto-capitalize     :none
+                              :auto-focus          true
+                              :show-cancel         false
+                              :accessibility-label :password-input
+                              :placeholder         (i18n/label :t/pairing-code-placeholder)
+                              :on-change-text      #(reset! pairing-code (security/mask-data %))
+                              :return-key-type     :next
+                              :on-submit-editing   #(when valid-pairing-code
+                                                      (some-> ^js @confirm-ref .focus))}]]
+            [rn/view {:style {:padding 16
+                              :opacity (if-not valid-pairing-code 0.33 1)}}
+             [quo/text-input {:secure-text-entry   true
+                              :get-ref             #(reset! confirm-ref %)
+                              :auto-capitalize     :none
+                              :show-cancel         false
+                              :accessibility-label :password-input
+                              :editable            valid-pairing-code
+                              :placeholder         (i18n/label :t/confirm-pairing-code-placeholder)
+                              :return-key-type     :go
+                              :error               (when @show-error (i18n/label :t/pairing-code_error1))
+                              :blur-on-submit      true
+                              :on-focus            #(reset! show-error false)
+                              :on-submit-editing   on-submit
+                              :on-change-text      #(do
+                                                      (reset! confirm (security/mask-data %))
+                                                      (cond
+                                                        (> (count @pairing-code) (count @confirm))
+                                                        (reset! show-error false)
 
-                                         (not (confirm-pairing-code @pairing-code @confirm))
-                                         (reset! show-error true)
+                                                        (not (confirm-pairing-code @pairing-code @confirm))
+                                                        (reset! show-error true)
 
-                                         :else (reset! show-error false)))}]]]
+                                                        :else (reset! show-error false)))}]]]
            [rn/view
-            [quo/text
-             {:color :secondary
-              :align :center
-              :size  :small}
+            [quo/text {:color :secondary
+                       :align :center
+                       :size  :small}
              (i18n/label :t/change-pairing-description)]]]]
          [toolbar/toolbar
           {:show-border? true

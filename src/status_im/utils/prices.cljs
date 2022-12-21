@@ -1,23 +1,19 @@
 (ns status-im.utils.prices
   (:require [status-im.ethereum.json-rpc :as json-rpc]))
 
-(defn- format-price-resp
-  [resp to mainnet?]
+(defn- format-price-resp [resp to mainnet?]
   (if mainnet?
     (when (seq resp)
-      (into {}
-            (for [[from price] resp]
-              {from {(keyword to) {:from  (name from)
-                                   :to    to
-                                   :price price}}})))
-    {:ETH (into {}
-                (for [[_ price] resp]
-                  {(keyword to) {:from  "ETH"
-                                 :to    to
-                                 :price price}}))}))
+      (into {} (for [[from price] resp]
+                 {from {(keyword to) {:from  (name from)
+                                      :to    to
+                                      :price price}}})))
+    {:ETH (into {} (for [[_ price] resp]
+                     {(keyword to) {:from  "ETH"
+                                    :to    to
+                                    :price price}}))}))
 
-(defn get-prices
-  [from to mainnet? on-success on-error]
+(defn get-prices [from to mainnet? on-success on-error]
   (let [to (first to)]
     (json-rpc/call {:method     "wallet_fetchPrices"
                     :params     [from to]

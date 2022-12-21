@@ -28,8 +28,7 @@
   (when s
     (string/replace (string/trim s) #"," ".")))
 
-(defn bignumber
-  [n]
+(defn bignumber [n]
   (when n
     (try
       (new BigNumber (normalize (str n)))
@@ -47,17 +46,14 @@
   [bn1 bn2]
   (.eq ^js bn1 bn2))
 
-(defn sub
-  [bn1 bn2]
+(defn sub [bn1 bn2]
   (.sub ^js bn1 bn2))
 
-(defn valid?
-  [^js bn]
+(defn valid? [^js bn]
   (when bn
     (greater-than-or-equals bn 0)))
 
-(defn from-decimal
-  [n]
+(defn from-decimal [n]
   (when n
     (str "1" (string/join (repeat n "0")))))
 
@@ -74,13 +70,11 @@
    :geth   (bignumber (from-decimal 27))
    :teth   (bignumber (from-decimal 30))})
 
-(defn wei->
-  [unit n]
+(defn wei-> [unit n]
   (when-let [^js bn (bignumber n)]
     (.dividedBy bn (eth-units unit))))
 
-(defn ->wei
-  [unit n]
+(defn ->wei [unit n]
   (when-let [^js bn (bignumber n)]
     (.times bn (eth-units unit))))
 
@@ -92,8 +86,7 @@
    (when bn
      (.toFixed bn b))))
 
-(defn to-number
-  [^js bn]
+(defn to-number [^js bn]
   (when bn
     (.toNumber bn)))
 
@@ -104,8 +97,7 @@
    (when bn
      (.toString bn base))))
 
-(defn to-hex
-  [^js bn]
+(defn to-hex [^js bn]
   (str "0x" (to-string bn 16)))
 
 (defn wei->str
@@ -113,70 +105,56 @@
    (str (to-fixed (wei-> unit n)) " " display-unit))
   ([unit n] (wei->str unit n (string/upper-case (name unit)))))
 
-(defn wei->ether
-  [n]
+(defn wei->ether [n]
   (wei-> :eth n))
 
-(defn wei->gwei
-  [n]
+(defn wei->gwei [n]
   (wei-> :gwei n))
 
-(defn ether->wei
-  [^js bn]
+(defn ether->wei [^js bn]
   (when bn
     (.times bn ^js (bignumber 1e18))))
 
-(defn token->unit
-  [n decimals]
+(defn token->unit [n decimals]
   (when-let [^js bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
       (.dividedBy bn ^js (bignumber d)))))
 
-(defn unit->token
-  [n decimals]
+(defn unit->token [n decimals]
   (when-let [^js bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
       (.times bn ^js (bignumber d)))))
 
-;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts:
-;;formatted and
-;; internal. Formatted representation is the one we show on screens and include in reports, whereas
-;; internal
+;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts: formatted and
+;; internal. Formatted representation is the one we show on screens and include in reports, whereas internal
 ;; representation is the one that we pass on to ethereum network for execution, transfer, etc.
-;; The difference between the two depends on the number of decimals, i.e. internal representation is
-;; expressed in terms
+;; The difference between the two depends on the number of decimals, i.e. internal representation is expressed in terms
 ;; of a whole number of smallest divisible parts of the formatted value.
 ;;
 ;; E.g. for Ether, it's smallest part is wei or 10^(-18) of 1 ether
 ;; for arbitrary ERC20 token the smallest part is 10^(-decimals) of 1 token
 ;;
-;; Different tokens can have different number of allowed decimals, so it's neccessary to include the
-;; decimals parameter
+;; Different tokens can have different number of allowed decimals, so it's neccessary to include the decimals parameter
 ;; to get the amount scale right.
 
-(defn formatted->internal
-  [n symbol decimals]
+(defn formatted->internal [n symbol decimals]
   (if (= :ETH symbol)
     (ether->wei n)
     (unit->token n decimals)))
 
-(defn internal->formatted
-  [n symbol decimals]
+(defn internal->formatted [n symbol decimals]
   (if (= :ETH symbol)
     (wei->ether n)
     (token->unit n decimals)))
 
-(defn fee-value
-  [gas gas-price]
+(defn fee-value [gas gas-price]
   (.times ^js (bignumber gas) ^js (bignumber gas-price)))
 
-(defn crypto->fiat
-  [crypto fiat-price]
+(defn crypto->fiat [crypto fiat-price]
   (when-let [^js bn (bignumber crypto)]
     (.times bn ^js (bignumber fiat-price))))
 
-(defn percent-change
-  [from to]
+(defn percent-change [from to]
   (let [^js bnf (bignumber from)
         ^js bnt (bignumber to)]
     (when (and bnf bnt)
@@ -184,18 +162,15 @@
           ^js (.minus 1)
           ^js (.times 100)))))
 
-(defn with-precision
-  [n decimals]
+(defn with-precision [n decimals]
   (when-let [^js bn (bignumber n)]
     (.round bn decimals)))
 
-(defn sufficient-funds?
-  [^js amount ^js balance]
+(defn sufficient-funds? [^js amount ^js balance]
   (when (and amount balance)
     (.greaterThanOrEqualTo balance amount)))
 
-(defn fiat-amount-value
-  [amount-str from to prices]
+(defn fiat-amount-value [amount-str from to prices]
   (-> amount-str
       (js/parseFloat)
       bignumber
@@ -203,28 +178,22 @@
       (with-precision 2)
       str))
 
-(defn add
-  [bn1 n2]
+(defn add [bn1 n2]
   (.add ^js bn1 n2))
 
-(defn mul
-  [bn1 bn2]
+(defn mul [bn1 bn2]
   (.mul ^js bn1 bn2))
 
-(defn mul-and-round
-  [bn1 bn2]
+(defn mul-and-round [bn1 bn2]
   (.round (.mul ^js bn1 bn2) 0))
 
-(defn div
-  [bn1 bn2]
+(defn div [bn1 bn2]
   (.dividedBy ^js bn1 bn2))
 
-(defn div-and-round
-  [bn1 bn2]
+(defn div-and-round [bn1 bn2]
   (.round (.dividedBy ^js bn1 bn2) 0))
 
-(defn format-members
-  [count]
+(defn format-members [count]
   (if (> count 1000000)
     (str (with-precision (/ count 1000000) 1) (i18n/label :t/M))
     (if (and (> count 999) (< count 1000000))

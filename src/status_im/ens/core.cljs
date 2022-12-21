@@ -2,19 +2,18 @@
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im2.navigation.events :as navigation]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.random :as random]
-            [status-im2.navigation.events :as navigation]))
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
-(defn fullname
-  [custom-domain? username]
+(defn fullname [custom-domain? username]
   (if custom-domain?
     username
     (stateofus/subdomain username)))
@@ -42,11 +41,9 @@
 (fx/defn update-ens-tx-state
   {:events [:update-ens-tx-state]}
   [{:keys [db]} new-state username custom-domain? tx-hash]
-  {:db (assoc-in db
-        [:ens/registrations tx-hash]
-        {:state          new-state
-         :username       username
-         :custom-domain? custom-domain?})})
+  {:db (assoc-in db [:ens/registrations tx-hash] {:state          new-state
+                                                  :username       username
+                                                  :custom-domain? custom-domain?})})
 
 (fx/defn redirect-to-ens-summary
   {:events [::redirect-to-ens-summary]}
@@ -82,34 +79,28 @@
 (fx/defn save-username
   {:events [::save-username]}
   [{:keys [db] :as cofx} custom-domain? username redirectToSummary]
-  (let [name      (fullname custom-domain? username)
-        names     (get-in db [:multiaccount :usernames] [])
+  (let [name   (fullname custom-domain? username)
+        names  (get-in db [:multiaccount :usernames] [])
         new-names (conj names name)]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
-               :usernames
-               new-names
+               :usernames new-names
                (when redirectToSummary
                  {:on-success #(re-frame/dispatch [::redirect-to-ens-summary])}))
               (when (empty? names)
                 (multiaccounts.update/multiaccount-update
-                 :preferred-name
-                 name
-                 {})))))
+                 :preferred-name name {})))))
 
 (fx/defn set-pub-key
   {:events [::set-pub-key]}
   [{:keys [db]}]
   (let [{:keys [username address custom-domain?]} (:ens/registration db)
-        address                                   (or address (ethereum/default-address db))
-        {:keys [public-key]}                      (:multiaccount db)
-        chain-id                                  (ethereum/chain-id db)
-        username                                  (fullname custom-domain? username)]
+        address (or address (ethereum/default-address db))
+        {:keys [public-key]} (:multiaccount db)
+        chain-id (ethereum/chain-id db)
+        username (fullname custom-domain? username)]
     (ens/set-pub-key-prepare-tx
-     chain-id
-     address
-     username
-     public-key
+     chain-id address username public-key
      #(re-frame/dispatch [:signing.ui/sign
                           {:tx-obj    %
                            :on-result [::save-username custom-domain? username true]
@@ -144,16 +135,14 @@
       (ens/pubkey
        chain-id
        (fullname custom-domain? username)
-       #(re-frame/dispatch
-         [::name-resolved username
-          (cond
-            (not public-key) :owned
-            (and (string/ends-with? % "0000000000000000000000000000000000000000000000000000000000000000")
-                 (not custom-domain?))
-            :invalid-ens
-            (= % public-key) :connected
-            :else :connected-with-different-key)
-          (eip55/address->checksum response)]))
+       #(re-frame/dispatch [::name-resolved username
+                            (cond
+                              (not public-key) :owned
+                              (and (string/ends-with? % "0000000000000000000000000000000000000000000000000000000000000000") (not custom-domain?))
+                              :invalid-ens
+                              (= % public-key) :connected
+                              :else :connected-with-different-key)
+                            (eip55/address->checksum response)]))
       :else
       (re-frame/dispatch [::name-resolved username :taken]))))
 
@@ -170,34 +159,27 @@
   (let [{:keys [username]}
         (:ens/registration db)
         {:keys [public-key]} (:multiaccount db)
-        chain-id             (ethereum/chain-id db)]
+        chain-id (ethereum/chain-id db)]
     (ens/register-prepare-tx
-     chain-id
-     address
-     username
-     public-key
+     chain-id address username public-key
      #(re-frame/dispatch [:signing.ui/sign
                           {:tx-obj    %
                            :on-result [:update-ens-tx-state-and-redirect :submitted username false]
                            :on-error  [::on-registration-failure]}]))))
 
-(defn- valid-custom-domain?
-  [username]
+(defn- valid-custom-domain? [username]
   (and (ens/is-valid-eth-name? username)
        (stateofus/lower-case? username)))
 
-(defn- valid-username?
-  [custom-domain? username]
+(defn- valid-username? [custom-domain? username]
   (if custom-domain?
     (valid-custom-domain? username)
     (stateofus/valid-username? username)))
 
-(defn- state
-  [custom-domain? username usernames]
+(defn- state [custom-domain? username usernames]
   (cond
     (or (string/blank? username)
-        (> 4 (count username)))
-    :too-short
+        (> 4 (count username))) :too-short
     (valid-username? custom-domain? username)
     (if (usernames (fullname custom-domain? username))
       :already-added
@@ -211,30 +193,23 @@
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
   (let [{:keys [custom-domain?]} (:ens/registration db)
-        usernames                (into #{} (get-in db [:multiaccount :usernames]))
-        state                    (state custom-domain? username usernames)]
+        usernames (into #{} (get-in db [:multiaccount :usernames]))
+        state (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
-     {:db (update db
-                  :ens/registration assoc
-                  :username         username
-                  :state            state)}
+     {:db (update db :ens/registration assoc
+                  :username username
+                  :state state)}
      (when (= state :searching)
        (let [{:keys [multiaccount]} db
-             {:keys [public-key]}   multiaccount
-             addresses              (ethereum/addresses-without-watch db)
-             chain-id               (ethereum/chain-id db)]
+             {:keys [public-key]} multiaccount
+             addresses (ethereum/addresses-without-watch db)
+             chain-id (ethereum/chain-id db)]
          {::resolve-owner [chain-id
                            (fullname custom-domain? username)
                            #(on-resolve-owner
-                             chain-id
-                             custom-domain?
-                             username
-                             addresses
-                             public-key
-                             %
-                             resolve-last-id
-                             @resolve-last-id)]})))))
+                             chain-id custom-domain? username addresses public-key %
+                             resolve-last-id @resolve-last-id)]})))))
 
 (fx/defn return-to-ens-main-screen
   {:events [::got-it-pressed ::cancel-pressed]}
@@ -244,9 +219,8 @@
             {:db (dissoc db :ens/registration)}
             ;; we reset navigation so that navigate back doesn't return
             ;; into the registration flow
-            (navigation/set-stack-root :profile-stack
-                                       [:my-profile
-                                        :ens-main])))
+            (navigation/set-stack-root :profile-stack [:my-profile
+                                                       :ens-main])))
 
 (fx/defn switch-domain-type
   {:events [::switch-domain-type]}
@@ -267,8 +241,7 @@
   {:events [::save-preferred-name]}
   [cofx name]
   (multiaccounts.update/multiaccount-update cofx
-                                            :preferred-name
-                                            name
+                                            :preferred-name name
                                             {}))
 
 (fx/defn on-registration-failure
@@ -328,12 +301,9 @@
         new-names      (remove #(= name %) names)]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
-               :usernames
-               new-names
+               :usernames new-names
                {})
               (when (= name preferred-name)
                 (multiaccounts.update/multiaccount-update
-                 :preferred-name
-                 (first new-names)
-                 {}))
+                 :preferred-name (first new-names) {}))
               (navigation/navigate-back))))

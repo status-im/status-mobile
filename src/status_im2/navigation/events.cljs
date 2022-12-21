@@ -1,8 +1,7 @@
 (ns status-im2.navigation.events
   (:require [utils.re-frame :as rf]))
 
-(defn- all-screens-params
-  [db view screen-params]
+(defn- all-screens-params [db view screen-params]
   (cond-> db
     (and (seq screen-params) (:screen screen-params) (:params screen-params))
     (all-screens-params (:screen screen-params) (:params screen-params))
@@ -40,11 +39,10 @@
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
   [_ tab])
-  ;{:change-tab-fx tab} ; TODO: effect needs to be implemented (may not be possible:
-  ;https://github.com/wix/react-native-navigation/issues/4837)
+  ;{:change-tab-fx tab} ; TODO: effect needs to be implemented (may not be possible: https://github.com/wix/react-native-navigation/issues/4837)
 
 (rf/defn navigate-replace
-  {:events [:navigate-replace]}
+  {:events       [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
              (seq screen-params)
@@ -97,26 +95,24 @@
 (rf/defn hide-wallet-connect-app-management-sheet
   {:events [:hide-wallet-connect-app-management-sheet]}
   [{:keys [db]}]
-  {:db                                       (-> db
-                                                 (assoc db
-                                                        :wallet-connect/showing-app-management-sheet?
-                                                        false)
-                                                 (dissoc :wallet-connect/session-managed))
+  {:db (-> db
+           (assoc db :wallet-connect/showing-app-management-sheet? false)
+           (dissoc :wallet-connect/session-managed))
    :hide-wallet-connect-app-management-sheet nil})
 
 ;; NAVIGATION 2
 (rf/defn reload-new-ui
   {:events [:reload-new-ui]}
   [_]
-  {:shell/reset-bottom-tabs nil
-   :dispatch                [:init-root :shell-stack]})
+  {:shell/reset-bottom-tabs  nil
+   :dispatch                 [:init-root :shell-stack]})
 
 (rf/defn navigate-to-nav2
   {:events [:navigate-to-nav2]}
   [cofx view-id screen-params from-shell?]
   (rf/merge
    cofx
-   {:dispatch [:shell/add-switcher-card view-id screen-params from-shell?]}
+   {:dispatch        [:shell/add-switcher-card view-id screen-params from-shell?]}
    (navigate-to-cofx view-id screen-params)))
 
 (rf/defn change-root-status-bar-style

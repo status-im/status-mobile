@@ -1,7 +1,7 @@
 (ns status-im2.subs.onboarding
   (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.recover.core :as recover]
-            [status-im2.common.constants :as constants]))
+            [status-im2.common.constants :as constants]
+            [status-im.multiaccounts.recover.core :as recover]))
 
 (re-frame/reg-sub
  :intro-wizard
@@ -26,11 +26,10 @@
  :intro-wizard/enter-phrase
  :<- [:intro-wizard]
  (fn [wizard-state]
-   (select-keys wizard-state
-                [:processing?
-                 :passphrase-word-count
-                 :next-button-disabled?
-                 :passphrase-error])))
+   (select-keys wizard-state [:processing?
+                              :passphrase-word-count
+                              :next-button-disabled?
+                              :passphrase-error])))
 
 (re-frame/reg-sub
  :intro-wizard/recovery-success

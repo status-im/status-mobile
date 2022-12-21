@@ -26,10 +26,10 @@
    :font-size    17})
 
 (def tx-time
-  {:flex-grow  1
-   :font-size  14
-   :text-align :right
-   :color      colors/blue})
+  {:flex-grow   1
+   :font-size   14
+   :text-align  :right
+   :color       colors/blue})
 
 (def address-row
   {:flex-direction :row
@@ -49,8 +49,7 @@
 (def address-hash
   {:flex-shrink 1})
 
-(defn transaction-icon-background
-  [color]
+(defn transaction-icon-background [color]
   {:justify-content  :center
    :align-items      :center
    :width            40
@@ -108,15 +107,13 @@
    :margin-vertical 10
    :height          2})
 
-(defn progress-bar-done
-  [done failed?]
+(defn progress-bar-done [done failed?]
   {:flex             done
    :background-color (if failed?
                        colors/red
                        colors/blue)})
 
-(defn progress-bar-todo
-  [todo failed?]
+(defn progress-bar-todo [todo failed?]
   {:flex             todo
    :background-color (if failed?
                        colors/red

@@ -1,8 +1,7 @@
 (ns status-im.ui.components.common.styles
   (:require [quo.design-system.colors :as colors]))
 
-(defn logo-container
-  [size]
+(defn logo-container [size]
   {:width            size
    :height           size
    :border-radius    size
@@ -10,15 +9,13 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn logo
-  [icon-size]
-  {:width           icon-size
-   :height          icon-size
-   :color           :none
+(defn logo [icon-size]
+  {:width  icon-size
+   :height icon-size
+   :color :none
    :container-style {}})
 
-(defn counter-container
-  [size]
+(defn counter-container [size]
   {:width            size
    :height           size
    :border-radius    (/ size 2)
@@ -26,8 +23,7 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn counter-label
-  [size]
+(defn counter-label [size]
   {:font-size  (inc (/ size 2))
    :typography :main-medium
    :color      colors/white-persist

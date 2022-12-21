@@ -15,14 +15,13 @@
    :flex            1
    :justify-content :flex-end})
 
-(defn backdrop
-  []
-  {:flex     1
-   :position :absolute
-   :left     0
-   :top      0
-   :right    0
-   :bottom   0})
+(defn backdrop []
+  {:flex             1
+   :position         :absolute
+   :left             0
+   :top              0
+   :right            0
+   :bottom           0})
 
 (defn content-container
   [window-height]

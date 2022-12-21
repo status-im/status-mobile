@@ -1,15 +1,15 @@
 (ns status-im.ui.components.tooltip.styles
   (:require [quo.design-system.colors :as colors]
-            [status-im.utils.config :as config]
-            [status-im.utils.styles :as styles]))
+            [status-im.utils.styles :as styles]
+            [status-im.utils.config :as config]))
 
 (def tooltip-container
   (merge
-   {:position    :absolute
-    :align-items :center
-    :left        0
-    :right       0
-    :top         0}
+   {:position       :absolute
+    :align-items    :center
+    :left           0
+    :right          0
+    :top            0}
    ;;we need this for e2e tests
    (when-not config/tooltip-events?
      {:pointer-events :none})))
@@ -22,8 +22,7 @@
    :ios         {:top 0}
    :android     {:top 30}})
 
-(defn tooltip-animated
-  [bottom-value opacity-value]
+(defn tooltip-animated [bottom-value opacity-value]
   (cond-> {:position    :absolute
            :align-items :center
            :left        0
@@ -35,10 +34,9 @@
     ;;we need this for e2e tests
     config/tooltip-events?
     (assoc :margin-top -20
-           :position   :relative)))
+           :position :relative)))
 
-(defn tooltip-text-container
-  [color]
+(defn tooltip-text-container [color]
   {:padding-horizontal 16
    :padding-vertical   6
    :elevation          3
@@ -60,11 +58,10 @@
    :background-color   colors/gray
    :border-radius      8})
 
-(defn tooltip-text
-  [font-size]
-  {:color       colors/red
-   :line-height 15
-   :font-size   font-size})
+(defn tooltip-text [font-size]
+  {:color        colors/red
+   :line-height  15
+   :font-size    font-size})
 
 (def bottom-tooltip-text
   {:color colors/white})

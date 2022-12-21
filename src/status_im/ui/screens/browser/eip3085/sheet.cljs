@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.browser.eip3085.sheet
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles])
+            [status-im.ui.screens.browser.styles :as styles]
+            [quo.design-system.colors :as colors]
+            [quo.core :as quo]
+            [status-im.ui.components.copyable-text :as copyable-text])
   (:require-macros [status-im.utils.views :as views]))
 
-(views/defview permissions-panel
-  [dapp-name message-id params]
+(views/defview permissions-panel [dapp-name message-id params]
   (views/letsubs [{:keys [dapp? dapp]} [:get-current-browser]]
     [react/view {}
      [react/view styles/permissions-panel-icons-container
@@ -37,8 +36,7 @@
        [icons/icon :main-icons/wallet {:color colors/white}]]]
      [react/text {:style styles/permissions-panel-title-label :number-of-lines 2}
       (str "\"" dapp-name "\" Allow this site to add a network?")]
-     [react/text {:style styles/permissions-panel-description-label :number-of-lines 4}
-      "This will allow this network to be used within Status.Status does not verify custom networks.Learn about scams and network security risks."]
+     [react/text {:style styles/permissions-panel-description-label :number-of-lines 4} "This will allow this network to be used within Status.Status does not verify custom networks.Learn about scams and network security risks."]
      [react/scroll-view
       [copyable-text/copyable-text-view
        {:copied-text (:name (:new-network params))}
@@ -64,21 +62,18 @@
          :title               "Chain ID"
          :accessory           :text
          :accessory-text      (str (get-in params [:new-network :config :NetworkId]))}]]]
-     [react/view
-      {:style {:flex-direction    :row
-               :justify-content   :center
-               :margin-horizontal 8
-               :margin-top        24}}
-      [react/view
-       {:flex              1
-        :margin-horizontal 8}
+     [react/view {:style {:flex-direction    :row
+                          :justify-content   :center
+                          :margin-horizontal 8
+                          :margin-top        24}}
+      [react/view {:flex              1
+                   :margin-horizontal 8}
        [quo/button
         {:theme    :negative
          :on-press #(re-frame/dispatch [:eip3085.ui/dapp-permission-denied message-id params])}
         (i18n/label :t/deny)]]
-      [react/view
-       {:flex              1
-        :margin-horizontal 8}
+      [react/view {:flex              1
+                   :margin-horizontal 8}
        [quo/button
         {:theme    :positive
          :style    {:margin-horizontal 8}

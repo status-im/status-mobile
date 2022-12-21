@@ -5,26 +5,25 @@
 
 (deftest message-stream-tests
   (testing "building the list"
-    (let [m1 {:from              "1"
-              :clock-value       1
-              :message-id        "message-1"
+    (let [m1 {:from "1"
+              :clock-value 1
+              :message-id "message-1"
               :whisper-timestamp 1
-              :outgoing          false}
-          m2 {:from              "2"
-              :clock-value       2
-              :message-id        "message-2"
+              :outgoing false}
+          m2 {:from "2"
+              :clock-value 2
+              :message-id "message-2"
               :whisper-timestamp 2
-              :outgoing          true}
-          m3 {:from              "2"
-              :clock-value       3
-              :message-id        "message-3"
+              :outgoing true}
+          m3 {:from "2"
+              :clock-value 3
+              :message-id "message-3"
               :whisper-timestamp 3
-              :outgoing          true}
+              :outgoing true}
           messages (shuffle [m1 m2 m3])
           [actual-m1
            actual-m2
-           actual-m3]
-          (s/->seq (s/add-many nil messages))]
+           actual-m3] (s/->seq (s/add-many nil messages))]
       (testing "it sorts them correclty"
         (is (= "message-3" (:message-id actual-m1)))
         (is (= "message-2" (:message-id actual-m2)))
@@ -50,113 +49,92 @@
         (is (:last-in-group? actual-m2))
         (is (:last-in-group? actual-m3))))))
 
-(def ascending-range
-  (mapv
-   #(let [i (+ 100000 %)]
-      {:clock-value       i
-       :whisper-timestamp i
-       :timestamp         i
-       :message-id        (str i)})
-   (range 2000)))
+(def ascending-range (mapv
+                      #(let [i (+ 100000 %)]
+                         {:clock-value i
+                          :whisper-timestamp i
+                          :timestamp i
+                          :message-id (str i)})
+                      (range 2000)))
 
 (def descending-range (reverse ascending-range))
 
 (def random-range (shuffle ascending-range))
 
-(defnp build-message-list
-       [messages]
-       (s/add-many nil messages))
+(defnp build-message-list [messages]
+  (s/add-many nil messages))
 
-(defnp append-to-message-list
-       [l message]
-       (s/add l message))
+(defnp append-to-message-list [l message]
+  (s/add l message))
 
-(defnp prepend-to-message-list
-       [l message]
-       (s/add l message))
+(defnp prepend-to-message-list [l message]
+  (s/add l message))
 
-(defnp insert-close-to-head-message-list
-       [l message]
-       (s/add l message))
+(defnp insert-close-to-head-message-list [l message]
+  (s/add l message))
 
-(defnp insert-middle-message-list
-       [l message]
-       (s/add l message))
+(defnp insert-middle-message-list [l message]
+  (s/add l message))
 
-(tufte/add-basic-println-handler! {:format-pstats-opts {:columns      [:n-calls :mean :min :max :clock
-                                                                       :total]
+(tufte/add-basic-println-handler! {:format-pstats-opts {:columns [:n-calls :mean :min :max :clock :total]
                                                         :format-id-fn name}})
 
 (deftest ^:benchmark benchmark-list
-  (let [messages   (sort-by
-                    :timestamp
-                    (mapv (fn [i]
-                            (let [i (+ 100000 i 1)]
-                              {:timestamp i :clock-value i :message-id (str i) :whisper-timestamp i}))
-                          (range 100)))
+  (let [messages (sort-by :timestamp (mapv (fn [i] (let [i (+ 100000 i 1)] {:timestamp i :clock-value i :message-id (str i) :whisper-timestamp i})) (range 100)))
         built-list (s/add-many nil messages)]
     (testing "prepending to list"
-      (profile {}
-               (dotimes [_ 10]
-                 (prepend-to-message-list
-                  built-list
-                  {:clock-value       200000
-                   :message-id        "200000"
-                   :whisper-timestamp 21
-                   :timestamp         21}))))
+      (profile {} (dotimes [_ 10] (prepend-to-message-list
+                                   built-list
+                                   {:clock-value 200000
+                                    :message-id "200000"
+                                    :whisper-timestamp 21
+                                    :timestamp 21}))))
     (testing "append to list"
-      (profile {}
-               (dotimes [_ 10]
-                 (append-to-message-list
-                  built-list
-                  {:clock-value       100000
-                   :message-id        "100000"
-                   :whisper-timestamp 100000
-                   :timestamp         100000}))))
+      (profile {} (dotimes [_ 10] (append-to-message-list
+                                   built-list
+                                   {:clock-value 100000
+                                    :message-id "100000"
+                                    :whisper-timestamp 100000
+                                    :timestamp 100000}))))
     (testing "insert close to head"
-      (profile {}
-               (dotimes [_ 10]
-                 (insert-close-to-head-message-list
-                  built-list
-                  {:clock-value       109970
-                   :message-id        "109970"
-                   :whisper-timestamp 1000
-                   :timestamp         1000}))))
+      (profile {} (dotimes [_ 10] (insert-close-to-head-message-list
+                                   built-list
+                                   {:clock-value 109970
+                                    :message-id "109970"
+                                    :whisper-timestamp 1000
+                                    :timestamp 1000}))))
     (testing "insert into the middle list"
-      (profile {}
-               (dotimes [_ 10]
-                 (insert-middle-message-list
-                  built-list
-                  {:clock-value       105000
-                   :message-id        "10500"
-                   :whisper-timestamp 1000
-                   :timestamp         1000}))))))
+      (profile {} (dotimes [_ 10] (insert-middle-message-list
+                                   built-list
+                                   {:clock-value 105000
+                                    :message-id "10500"
+                                    :whisper-timestamp 1000
+                                    :timestamp 1000}))))))
 
 (deftest message-list
-  (let [current-messages [{:clock-value       109
-                           :message-id        "109"
-                           :timestamp         9
+  (let [current-messages [{:clock-value 109
+                           :message-id "109"
+                           :timestamp 9
                            :whisper-timestamp 9}
-                          {:clock-value       106
-                           :message-id        "106"
-                           :timestamp         6
+                          {:clock-value 106
+                           :message-id "106"
+                           :timestamp 6
                            :whisper-timestamp 6}
-                          {:clock-value       103
-                           :message-id        "103"
-                           :timestamp         3
+                          {:clock-value 103
+                           :message-id "103"
+                           :timestamp 3
                            :whisper-timestamp 3}]
-        current-list     (s/add-many nil current-messages)]
+        current-list (s/add-many nil current-messages)]
     (testing "removing a message"
-      (let [updated-list (-> (s/remove-message current-list
-                                               {:clock-value 106
-                                                :message-id  "106"})
+      (let [updated-list (-> (s/remove-message current-list {:clock-value 106
+                                                             :message-id "106"})
                              (s/->seq))]
         (is (= 2 (count updated-list)))
         (is (= 103 (-> (nth updated-list 1) :clock-value)))))
     (testing "inserting a newer message"
-      (let [new-message {:timestamp         12
-                         :clock-value       112
-                         :message-id        "112"
+      (let [new-message {:timestamp 12
+                         :clock-value 112
+                         :message-id "112"
                          :whisper-timestamp 12}]
         (is (= 112
                (-> (s/add current-list new-message)
@@ -164,9 +142,9 @@
                    first
                    :clock-value)))))
     (testing "inserting an older message"
-      (let [new-message {:timestamp         0
-                         :clock-value       100
-                         :message-id        "100"
+      (let [new-message {:timestamp 0
+                         :clock-value 100
+                         :message-id "100"
                          :whisper-timestamp 0}]
         (is (= 100
                (-> (s/add current-list new-message)
@@ -174,9 +152,9 @@
                    last
                    :clock-value)))))
     (testing "inserting in the middle of the list"
-      (let [new-message {:timestamp         7
-                         :clock-value       107
-                         :message-id        "107"
+      (let [new-message {:timestamp 7
+                         :clock-value 107
+                         :message-id "107"
                          :whisper-timestamp 7}]
         (is (= 107
                (-> (s/add current-list new-message)
@@ -184,9 +162,9 @@
                    (nth 1)
                    :clock-value)))))
     (testing "inserting in the middle of the list, clock-value clash"
-      (let [new-message {:timestamp         6
-                         :clock-value       106
-                         :message-id        "106a"
+      (let [new-message {:timestamp 6
+                         :clock-value 106
+                         :message-id "106a"
                          :whisper-timestamp 6}]
         (is (= "106a"
                (-> (s/add current-list new-message)
@@ -197,28 +175,28 @@
 (deftest same-group-test
   (testing "two messages from the same author and close together"
     (is (s/same-group? {:whisper-timestamp 1
-                        :from              "1"}
+                        :from "1"}
                        {:whisper-timestamp 2
-                        :from              "1"})))
+                        :from "1"})))
   (testing "two messages from the same author, close together, first system-message"
     (is (not (s/same-group? {:whisper-timestamp 1
-                             :system-message?   true
-                             :from              "1"}
+                             :system-message? true
+                             :from "1"}
                             {:whisper-timestamp 2
-                             :from              "1"}))))
+                             :from "1"}))))
   (testing "two messages from the same author, close together, second system-message"
     (is (not (s/same-group? {:whisper-timestamp 1
-                             :from              "1"}
+                             :from "1"}
                             {:whisper-timestamp 2
-                             :system-message?   true
-                             :from              "1"}))))
+                             :system-message? true
+                             :from "1"}))))
   (testing "two messages from the same author and far apart"
     (is (not (s/same-group? {:whisper-timestamp 1
-                             :from              "1"}
+                             :from "1"}
                             {:whisper-timestamp 2000000
-                             :from              "1"}))))
+                             :from "1"}))))
   (testing "two messages not from the same author and close together"
     (is (not (s/same-group? {:whisper-timestamp 1
-                             :from              "2"}
+                             :from "2"}
                             {:whisper-timestamp 2
-                             :from              "1"})))))
+                             :from "1"})))))

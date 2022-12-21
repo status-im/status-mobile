@@ -1,18 +1,18 @@
 (ns status-im2.subs.chat.chats
-  (:require [clojure.string :as string]
+  (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
+            [status-im2.common.constants :as constants]
             [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.add-new.db :as db]
             [status-im.chat.models :as chat.models]
-            [status-im.chat.models.mentions :as mentions]
             [status-im.communities.core :as communities]
-            [status-im.group-chats.core :as group-chat]
-            [status-im.group-chats.db :as group-chats.db]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.config :as config]
             [status-im.utils.image-server :as image-server]
-            [status-im2.common.constants :as constants]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.group-chats.core :as group-chat]
+            [status-im.chat.models.mentions :as mentions]
+            [status-im.group-chats.db :as group-chats.db]
+            [status-im.utils.config :as config]
+            [status-im.add-new.db :as db]
+            [status-im.i18n.i18n :as i18n]))
 
 (re-frame/reg-sub
  :chats/chat
@@ -36,9 +36,7 @@
    [(re-frame/subscribe [:chats/by-community-id community-id])
     (re-frame/subscribe [:communities/community-chats community-id])])
  (fn [[chats comm-chats] [_ community-id]]
-   (filter #(string/blank? (get-in comm-chats
-                                   [(string/replace (:chat-id %) community-id "") :categoryID]))
-           chats)))
+   (filter #(string/blank? (get-in comm-chats [(string/replace (:chat-id %) community-id "") :categoryID])) chats)))
 
 (re-frame/reg-sub
  :chats/sorted-categories-by-community-id
@@ -46,17 +44,15 @@
    [(re-frame/subscribe [:chats/by-community-id community-id])
     (re-frame/subscribe [:communities/community-chats community-id])])
  (fn [[chats comm-chats] [_ community-id]]
-   (let [chat-cat (into {}
-                        (map (fn [{:keys [id categoryID position]}]
-                               {(str community-id id) {:categoryID categoryID
-                                                       :position   position}})
-                             (vals comm-chats)))]
-     (group-by :categoryID
-               (sort-by :position
-                        (map #(cond-> (merge % (chat-cat (:chat-id %)))
-                                (= community-id constants/status-community-id)
-                                (assoc :color colors/blue))
-                             chats))))))
+   (let [chat-cat (into {} (map (fn [{:keys [id categoryID position]}]
+                                  {(str community-id id) {:categoryID categoryID
+                                                          :position   position}})
+                                (vals comm-chats)))]
+     (group-by :categoryID (sort-by :position
+                                    (map #(cond-> (merge % (chat-cat (:chat-id %)))
+                                            (= community-id constants/status-community-id)
+                                            (assoc :color colors/blue))
+                                         chats))))))
 
 (re-frame/reg-sub
  :chats/category-by-chat-id
@@ -167,8 +163,7 @@
  :<- [:contacts/contacts]
  :<- [:chat/inputs]
  :<- [:mutual-contact-requests/enabled?]
- (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts
-       inputs mutual-contact-requests-enabled?]]
+ (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts inputs mutual-contact-requests-enabled?]]
    (when current-chat
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
@@ -177,7 +172,7 @@
        (and (chat.models/group-chat? current-chat)
             (group-chats.db/member? my-public-key current-chat))
        (assoc :show-input? true
-              :member?     true)
+              :member? true)
 
        (and (chat.models/community-chat? current-chat)
             (communities/can-post? community my-public-key (:chat-id current-chat)))
@@ -198,9 +193,7 @@
  :chats/current-chat-chat-view
  :<- [:chats/current-chat]
  (fn [current-chat]
-   (select-keys current-chat
-                [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color
-                 :chat-name :synced-to :synced-from :community-id :emoji])))
+   (select-keys current-chat [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color :chat-name :synced-to :synced-from :community-id :emoji])))
 
 (re-frame/reg-sub
  :current-chat/metadata
@@ -250,11 +243,11 @@
    (reduce (fn [{:keys [public other]} {:keys [unviewed-messages-count public?] :as chat}]
              (if (or public? (chat.models/community-chat? chat))
                {:public (+ public unviewed-messages-count)
-                :other  other}
-               {:other  (+ other unviewed-messages-count)
+                :other other}
+               {:other (+ other unviewed-messages-count)
                 :public public}))
            {:public 0
-            :other  0}
+            :other 0}
            chats)))
 
 (re-frame/reg-sub
@@ -305,8 +298,7 @@
  :<- [:chats/reply-message]
  :<- [:chats/edit-message]
  :<- [:chats/sending-contact-request]
- (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit
-       sending-contact-request]]
+ (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit sending-contact-request]]
    (let [sending-image (seq sending-image)]
      {:send          (not processing)
       :stickers      (and (or config/stickers-test-enabled? mainnet?)
@@ -354,8 +346,7 @@
  (fn [selected-participants]
    (count selected-participants)))
 
-(defn filter-contacts
-  [selected-contacts active-contacts]
+(defn filter-contacts [selected-contacts active-contacts]
   (filter #(selected-contacts (:public-key %)) active-contacts))
 
 (re-frame/reg-sub
@@ -371,7 +362,7 @@
    [(re-frame/subscribe [:chat-by-id chat-id])
     (re-frame/subscribe [:multiaccount/public-key])])
  (fn [[chat my-public-key]]
-   {:member?    (group-chats.db/member? my-public-key chat)
+   {:member? (group-chats.db/member? my-public-key chat)
     :inviter-pk (group-chats.db/get-inviter-pk my-public-key chat)}))
 
 (re-frame/reg-sub
@@ -403,10 +394,7 @@
  (fn [[{:keys [users community-id] :as chat} blocked all-contacts
        {:keys [public-key] :as current-multiaccount}]]
    (let [community-members @(re-frame/subscribe [:communities/community-members community-id])
-         mentionable-users (mentions/get-mentionable-users chat
-                                                           all-contacts
-                                                           current-multiaccount
-                                                           community-members)
+         mentionable-users (mentions/get-mentionable-users chat all-contacts current-multiaccount community-members)
          members-left      (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))]
      (apply dissoc mentionable-users (conj (concat blocked members-left) public-key)))))
 

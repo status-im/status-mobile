@@ -22,11 +22,8 @@
   (is (= ["one" "two" "three" "for" "five" "six" "seven" "height" "nine" "ten" "eleven" "twelve"]
          (mnemonic/passphrase->words "one two three for five six seven height nine ten eleven twelve"))
       (= ["one" "two" "three" "for" "five" "six" "seven" "height" "nine" "ten" "eleven" "twelve"]
-         (mnemonic/passphrase->words
-          "  one two three for five   six seven height nine ten eleven twelve "))))
+         (mnemonic/passphrase->words "  one two three for five   six seven height nine ten eleven twelve "))))
 
 (deftest status-generate-phrase?
-  (is (mnemonic/status-generated-phrase?
-       "game buzz method pretty olympic fat quit display velvet unveil marine crater"))
-  (is (not (mnemonic/status-generated-phrase?
-            "game buzz method pretty zeus fat quit display velvet unveil marine crater"))))
+  (is (mnemonic/status-generated-phrase? "game buzz method pretty olympic fat quit display velvet unveil marine crater"))
+  (is (not (mnemonic/status-generated-phrase? "game buzz method pretty zeus fat quit display velvet unveil marine crater"))))

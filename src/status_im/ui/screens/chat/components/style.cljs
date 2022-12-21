@@ -1,10 +1,9 @@
 (ns status-im.ui.screens.chat.components.style
-  (:require [quo.design-system.colors :as colors]
-            [quo.design-system.typography :as typography]
-            [quo.platform :as platform]))
+  (:require [quo.platform :as platform]
+            [quo.design-system.colors :as colors]
+            [quo.design-system.typography :as typography]))
 
-(defn toolbar
-  []
+(defn toolbar []
   {:min-height       52
    :padding-vertical 8
    :border-top-width 1
@@ -12,8 +11,7 @@
    :align-items      :flex-end
    :flex-direction   :row})
 
-(defn input-container
-  [contact-request]
+(defn input-container [contact-request]
   {:background-color           (:ui-01 @colors/theme)
    :flex                       1
    :height                     (when contact-request 44)
@@ -28,8 +26,7 @@
    :overflow       :hidden
    :align-items    :flex-end})
 
-(defn text-input-wrapper
-  []
+(defn text-input-wrapper []
   (merge {:flex-direction :row
           :align-items    :flex-start
           :flex           1
@@ -38,8 +35,7 @@
          (when platform/ios?
            {:padding-top 2})))
 
-(defn text-input
-  [contact-request]
+(defn text-input [contact-request]
   (merge typography/font-regular
          typography/base
          {:flex               1
@@ -54,36 +50,31 @@
            {:padding-top    (if contact-request 10 2)
             :padding-bottom (if contact-request 5 6)})))
 
-(defn actions-wrapper
-  [show-send]
+(defn actions-wrapper [show-send]
   (merge (when show-send
            {:width 0 :left -88})
          {:flex-direction :row
           :padding-left   4
           :min-height     34}))
 
-(defn touchable-icon
-  []
+(defn touchable-icon []
   {:padding-horizontal 10
    :padding-vertical   5
    :justify-content    :center
    :align-items        :center})
 
-(defn in-input-touchable-icon
-  []
+(defn in-input-touchable-icon []
   {:padding-horizontal 6
    :padding-vertical   5
    :justify-content    :center
    :align-items        :center})
 
-(defn icon
-  [active]
+(defn icon [active]
   {:color (if active
             (:icon-04 @colors/theme)
             (:icon-02 @colors/theme))})
 
-(defn reply-container-image
-  []
+(defn reply-container-image []
   {:border-top-left-radius     14
    :border-top-right-radius    14
    :border-bottom-right-radius 4
@@ -92,43 +83,35 @@
    :flex-direction             :row
    :background-color           (:ui-03 @colors/theme)})
 
-(defn reply-container
-  []
+(defn reply-container []
   {:flex-direction :row})
 
-(defn reply-content
-  []
+(defn reply-content []
   {:padding-vertical   6
    :padding-horizontal 10
    :flex               1})
 
-(defn quoted-message
-  [pin?]
+(defn quoted-message [pin?]
   (merge {:flex-direction :row
-          :align-items    :center
-          :width          "45%"}
-         (when-not pin?
-           {:position :absolute
-            :left     34
-            :top      3})))
+          :align-items :center
+          :width "45%"}
+         (when-not pin? {:position :absolute
+                         :left 34
+                         :top 3})))
 
-(defn contact-request-content
-  []
+(defn contact-request-content []
   {:flex            1
    :flex-direction  :row
    :justify-content :space-between})
 
-(defn close-button
-  []
+(defn close-button []
   {:margin-top 3})
 
-(defn send-message-button
-  []
+(defn send-message-button []
   {:margin-vertical   4
    :margin-horizontal 5})
 
-(defn send-message-container
-  [contact-request]
+(defn send-message-container [contact-request]
   {:background-color (:interactive-01 @colors/theme)
    :width            26
    :height           (if contact-request 44 26)
@@ -136,12 +119,10 @@
    :justify-content  :center
    :align-items      :center})
 
-(defn send-icon-color
-  []
+(defn send-icon-color []
   colors/white)
 
-(defn autocomplete-container
-  [bottom]
+(defn autocomplete-container [bottom]
   {:position         :absolute
    :left             0
    :right            0

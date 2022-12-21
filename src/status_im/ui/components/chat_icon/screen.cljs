@@ -1,32 +1,31 @@
 (ns status-im.ui.components.chat-icon.screen
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.profile.db :as profile.db]
-            [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.chat-icon.styles :as styles]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
+            [status-im.profile.db :as profile.db]
+            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+            [quo.react-native :as rn]))
 
 ;;TODO REWORK THIS NAMESPACE
 
 (def get-name-first-char
   (memoize
    (fn [name]
-     ;; TODO: for now we check if the first letter is a #
-     ;; which means it is most likely a public chat and
-     ;; use the second letter if that is the case
-     ;; a broader refactoring should clean up upstream params
-     ;; for default-chat-icon
+      ;; TODO: for now we check if the first letter is a #
+      ;; which means it is most likely a public chat and
+      ;; use the second letter if that is the case
+      ;; a broader refactoring should clean up upstream params
+      ;; for default-chat-icon
      (string/capitalize (if (and (= "#" (first name))
                                  (< 1 (count name)))
                           (second name)
                           (first name))))))
 
-(defn default-chat-icon
-  [name styles]
+(defn default-chat-icon [name styles]
   (when-not (string/blank? name)
     [rn/view (:default-chat-icon styles)
      [rn/text {:style (:default-chat-icon-text styles)}
@@ -40,35 +39,29 @@
      (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
        [photos/photo photo-path styles]))])
 
-(defn emoji-chat-icon
-  [emoji styles]
+(defn emoji-chat-icon [emoji styles]
   (when-not (string/blank? emoji)
     [rn/view (:default-chat-icon styles)
      [rn/text {:style (:default-chat-icon-text styles)} emoji]]))
 
 (defn profile-photo-plus-dot-view
   [{:keys [public-key photo-container photo-path community?]}]
-  (let [photo-path              (if (nil? photo-path)
-                                  @(re-frame.core/subscribe [:chats/photo-path public-key])
-                                  photo-path)
-        photo-container         (if (nil? photo-container)
-                                  styles/container-chat-list
-                                  photo-container)
+  (let [photo-path             (if (nil? photo-path)
+                                 @(re-frame.core/subscribe [:chats/photo-path public-key])
+                                 photo-path)
+        photo-container        (if (nil? photo-container)
+                                 styles/container-chat-list photo-container)
         size                    (:width photo-container)
         identicon?              (when photo-path (profile.db/base64-png? photo-path))
         dot-styles              (visibility-status-utils/icon-visibility-status-dot
-                                 public-key
-                                 size
-                                 identicon?)
+                                 public-key size identicon?)
         dot-accessibility-label (:accessibility-label dot-styles)]
-    [rn/view
-     {:style               photo-container
-      :accessibility-label :profile-photo}
+    [rn/view {:style                  photo-container
+              :accessibility-label :profile-photo}
      [photos/photo photo-path {:size size}]
      (when-not community?
-       [rn/view
-        {:style               dot-styles
-         :accessibility-label dot-accessibility-label}])]))
+       [rn/view {:style                  dot-styles
+                 :accessibility-label dot-accessibility-label}])]))
 
 (defn emoji-chat-icon-view
   [chat-id group-chat name emoji styles]
@@ -77,9 +70,8 @@
      (if (string/blank? emoji)
        [default-chat-icon name styles]
        [emoji-chat-icon emoji styles])
-     [profile-photo-plus-dot-view
-      {:public-key      chat-id
-       :photo-container (:default-chat-icon styles)}])])
+     [profile-photo-plus-dot-view {:public-key      chat-id
+                                   :photo-container (:default-chat-icon styles)}])])
 
 (defn chat-icon-view-toolbar
   [chat-id group-chat name color emoji size]
@@ -137,22 +129,19 @@
 (defn custom-icon-view-list
   [name color & [size]]
   [rn/view (styles/container-list-size (or size 40))
-   [default-chat-icon name
-    {:default-chat-icon      (styles/default-chat-icon-profile color (or size 40))
-     :default-chat-icon-text (styles/default-chat-icon-text (or size 40))}]])
+   [default-chat-icon name {:default-chat-icon      (styles/default-chat-icon-profile color (or size 40))
+                            :default-chat-icon-text (styles/default-chat-icon-text (or size 40))}]])
 
 (defn contact-icon-view
   [contact {:keys [container] :as styles}]
   [rn/view container
    [photos/photo (multiaccounts/displayed-photo contact) styles]])
 
-(defn contact-icon-contacts-tab
-  [photo-path]
+(defn contact-icon-contacts-tab [photo-path]
   [rn/view styles/container-chat-list
    [photos/photo photo-path {:size 40}]])
 
-(defn dapp-icon-permission
-  [contact size]
+(defn dapp-icon-permission [contact size]
   [contact-icon-view contact
    {:container              {:width size :height size}
     :size                   size
@@ -160,16 +149,14 @@
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
-(defn chat-intro-icon-view
-  [icon-text chat-id group-chat styles]
+(defn chat-intro-icon-view [icon-text chat-id group-chat styles]
   (if group-chat
     [default-chat-icon icon-text styles]
     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
       (when-not (string/blank? photo-path)
         [photos/photo photo-path styles]))))
 
-(defn emoji-chat-intro-icon-view
-  [icon-text chat-id group-chat emoji styles]
+(defn emoji-chat-intro-icon-view [icon-text chat-id group-chat emoji styles]
   (if group-chat
     (if (string/blank? emoji)
       [default-chat-icon icon-text styles]
@@ -186,15 +173,13 @@
                        :default-chat-icon      (styles/default-chat-icon-profile color size)
                        :default-chat-icon-text (if (string/blank? emoji)
                                                  (styles/default-chat-icon-text size)
-                                                 (styles/emoji-chat-icon-text size))}
-                      override-styles)]
+                                                 (styles/emoji-chat-icon-text size))} override-styles)]
     [rn/view (:container styles)
      (if (and photo-path (seq photo-path))
-       [profile-photo-plus-dot-view
-        {:photo-path      photo-path
-         :public-key      public-key
-         :photo-container (:container styles)
-         :community?      community?}]
+       [profile-photo-plus-dot-view {:photo-path      photo-path
+                                     :public-key      public-key
+                                     :photo-container (:container styles)
+                                     :community?      community?}]
        (if (string/blank? emoji)
          [default-chat-icon name styles]
          [emoji-chat-icon emoji styles]))

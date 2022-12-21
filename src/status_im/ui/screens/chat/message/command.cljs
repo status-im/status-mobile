@@ -1,45 +1,42 @@
 (ns status-im.ui.screens.chat.message.command
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
             [status-im.constants :as constants]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.utils.money :as money]
             [status-im.utils.utils :as utils]))
 
-(defn- final-status?
-  [command-state]
+(defn- final-status? [command-state]
   (or (= command-state constants/command-state-request-address-for-transaction-declined)
       (= command-state constants/command-state-request-transaction-declined)
       (= command-state constants/command-state-transaction-sent)))
 
 (defn- command-pending-status
   [command-state direction to transaction-type]
-  [react/view
-   {:style {:flex-direction     :row
-            :height             28
-            :align-items        :center
-            :border-width       1
-            :border-color       colors/gray-lighter
-            :border-radius      16
-            :padding-horizontal 8
-            :margin-right       12
-            :margin-bottom      2}}
+  [react/view {:style {:flex-direction :row
+                       :height 28
+                       :align-items :center
+                       :border-width 1
+                       :border-color colors/gray-lighter
+                       :border-radius 16
+                       :padding-horizontal 8
+                       :margin-right 12
+                       :margin-bottom 2}}
    [icons/icon :tiny-icons/tiny-pending
-    {:width           16
-     :height          16
-     :color           colors/gray
+    {:width 16
+     :height 16
+     :color colors/gray
      :container-style {:margin-right 6}}]
-   [react/text
-    {:style {:color        colors/gray
-             :font-weight  "500"
-             :line-height  16
-             :margin-right 4
-             :font-size    13}}
+   [react/text {:style {:color colors/gray
+                        :font-weight "500"
+                        :line-height 16
+                        :margin-right 4
+                        :font-size 13}}
     (if (and (or (= command-state constants/command-state-request-transaction)
                  (= command-state constants/command-state-request-address-for-transaction-accepted))
              (= direction :incoming))
@@ -58,70 +55,65 @@
                     (= command-state constants/command-state-transaction-sent)
                     (case transaction-type
                       :pending :t/status-pending
-                      :failed  :t/transaction-failed
+                      :failed :t/transaction-failed
                       :t/status-confirmed)
                     (= command-state constants/command-state-request-transaction)
                     :t/address-received)))]])
 
 (defn- command-final-status
   [command-state _ transaction-type]
-  [react/view
-   {:style {:flex-direction     :row
-            :height             28
-            :align-items        :center
-            :border-width       1
-            :border-color       colors/gray-lighter
-            :border-radius      16
-            :padding-horizontal 8
-            :margin-right       12
-            :margin-bottom      2}}
+  [react/view {:style {:flex-direction :row
+                       :height 28
+                       :align-items :center
+                       :border-width 1
+                       :border-color colors/gray-lighter
+                       :border-radius 16
+                       :padding-horizontal 8
+                       :margin-right 12
+                       :margin-bottom 2}}
    (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
            (= command-state constants/command-state-request-transaction-declined)
            (= :failed transaction-type))
      [icons/icon :tiny-icons/tiny-warning-background
-      {:width           16
-       :height          16
+      {:width 16
+       :height 16
        :container-style {:margin-right 6}}]
      (if (= :pending transaction-type)
        [icons/icon :tiny-icons/tiny-pending
-        {:color           colors/gray
-         :width           16
-         :height          16
+        {:color colors/gray
+         :width 16
+         :height 16
          :container-style {:margin-right 6}}]
        [icons/icon :tiny-icons/tiny-check
-        {:width           16
-         :height          16
+        {:width 16
+         :height 16
          :container-style {:margin-right 6}}]))
-   [react/text
-    {:style (merge {:margin-right 4
-                    :line-height  16
-                    :font-size    13}
-                   (if (= transaction-type :pending)
-                     {:color colors/gray}
-                     {:font-weight "500"}))}
-    (i18n/label
-     (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
-             (= command-state constants/command-state-request-transaction-declined))
-       :t/transaction-declined
-       (case transaction-type
-         :pending :t/status-pending
-         :failed  :t/transaction-failed
-         :t/status-confirmed)))]])
+   [react/text {:style (merge {:margin-right 4
+                               :line-height 16
+                               :font-size 13}
+                              (if (= transaction-type :pending)
+                                {:color colors/gray}
+                                {:font-weight "500"}))}
+    (i18n/label (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
+                        (= command-state constants/command-state-request-transaction-declined))
+                  :t/transaction-declined
+                  (case transaction-type
+                    :pending :t/status-pending
+                    :failed :t/transaction-failed
+                    :t/status-confirmed)))]])
 
 (defn- command-status-and-timestamp
   [command-state direction to timestamp-str transaction-type]
-  [react/view
-   {:style {:flex-direction  :row
-            :align-items     :flex-end
-            :justify-content :space-between}}
+  [react/view {:style {:flex-direction :row
+                       :align-items :flex-end
+                       :justify-content :space-between}}
    (if (final-status? command-state)
      [command-final-status command-state direction transaction-type]
      [command-pending-status command-state direction to transaction-type])
-   [react/text
-    {:style {:font-size           10
-             :line-height         12
-             :text-align-vertical :bottom
-             :color               colors/gray}}
+   [react/text {:style {:font-size 10
+                        :line-height 12
+                        :text-align-vertical :bottom
+                        :color colors/gray}}
     timestamp-str]])
 
 (defn- command-actions
@@ -130,31 +122,29 @@
    [react/touchable-highlight
     {:on-press #(do (react/dismiss-keyboard!)
                     (on-accept))
-     :style    {:border-color       colors/gray-lighter
-                :border-top-width   1
-                :margin-top         8
-                :margin-horizontal  -12
-                :padding-horizontal 15
-                :padding-vertical   10}}
-    [react/text
-     {:style {:text-align  :center
-              :color       colors/blue
-              :font-weight "500"
-              :font-size   15
-              :line-height 22}}
+     :style {:border-color colors/gray-lighter
+             :border-top-width 1
+             :margin-top 8
+             :margin-horizontal -12
+             :padding-horizontal 15
+             :padding-vertical 10}}
+    [react/text {:style {:text-align :center
+                         :color colors/blue
+                         :font-weight "500"
+                         :font-size 15
+                         :line-height 22}}
      (i18n/label accept-label)]]
    (when on-decline
      [react/touchable-highlight
       {:on-press on-decline
-       :style    {:border-color      colors/gray-lighter
-                  :border-top-width  1
-                  :margin-horizontal -12
-                  :padding-top       10}}
-      [react/text
-       {:style {:text-align  :center
-                :color       colors/blue
-                :font-size   15
-                :line-height 22}}
+       :style {:border-color colors/gray-lighter
+               :border-top-width 1
+               :margin-horizontal -12
+               :padding-top 10}}
+      [react/text {:style {:text-align :center
+                           :color colors/blue
+                           :font-size 15
+                           :line-height 22}}
        (i18n/label :t/decline)]])])
 
 (defn- command-transaction-info
@@ -171,52 +161,43 @@
         @(re-frame/subscribe [:wallet/currency])
         prices @(re-frame/subscribe [:prices])
         amount-fiat (money/fiat-amount-value amount symbol (keyword code) prices)]
-    [react/view
-     {:style {:flex-direction :row
-              :margin-top     8
-              :margin-bottom  12}}
+    [react/view {:style {:flex-direction :row
+                         :margin-top 8
+                         :margin-bottom 12}}
      (if icon
-       [react/image
-        (-> icon
-            (assoc-in [:style :height] 24)
-            (assoc-in [:style :width] 24))]
-       [react/view
-        {:style {:margin-right     14
-                 :padding-vertical 2
-                 :justify-content  :flex-start
-                 :max-width        40
-                 :align-items      :center
-                 :align-self       :stretch}}
+       [react/image (-> icon
+                        (assoc-in [:style :height] 24)
+                        (assoc-in [:style :width] 24))]
+       [react/view {:style {:margin-right     14
+                            :padding-vertical 2
+                            :justify-content  :flex-start
+                            :max-width        40
+                            :align-items      :center
+                            :align-self       :stretch}}
         [chat-icon/custom-icon-view-list (:name token) color 24]])
      [react/view {:style {:margin-left 6}}
-      [react/text
-       {:style {:margin-bottom 2
-                :font-size     20
-                :line-height   24}}
+      [react/text {:style {:margin-bottom 2
+                           :font-size 20
+                           :line-height 24}}
        (str (money/to-fixed amount) " " (name symbol))]
-      [react/text
-       {:style {:font-size   12
-                :line-height 16
-                :color       colors/gray}}
+      [react/text {:style {:font-size 12
+                           :line-height 16
+                           :color colors/gray}}
        (str amount-fiat " " code)]]]))
 
-(defn calculate-direction
-  [outgoing command-state]
+(defn calculate-direction [outgoing command-state]
   (if (#{constants/command-state-request-address-for-transaction-accepted
          constants/command-state-request-address-for-transaction-declined
-         constants/command-state-request-transaction}
-       command-state)
+         constants/command-state-request-transaction} command-state)
     (if outgoing :incoming :outgoing)
     (if outgoing :outgoing :incoming)))
 
 (defn command-content
-  [wrapper
-   {:keys [message-id
-           chat-id
-           outgoing
-           command-parameters
-           timestamp-str]
-    :as   message}]
+  [wrapper {:keys [message-id
+                   chat-id
+                   outgoing
+                   command-parameters
+                   timestamp-str] :as message}]
   (let [{:keys [contract value address command-state transaction-hash]} command-parameters
         direction (calculate-direction outgoing command-state)
         transaction (when transaction-hash
@@ -228,24 +209,21 @@
       {:on-press #(when (:address transaction)
                     (re-frame/dispatch [:wallet.ui/show-transaction-details
                                         transaction-hash (:address transaction)]))}
-      [react/view
-       {:padding-horizontal 12
-        :padding-bottom 10
-        :padding-top 10
-        :margin-top 4
-        :border-width 1
-        :border-color colors/gray-lighter
-        :border-radius 16
-        (case direction
-          :outgoing :border-bottom-right-radius
-          :incoming :border-bottom-left-radius)
-        4
-        :background-color colors/white}
-       [react/text
-        {:style {:font-size   13
-                 :line-height 18
-                 :font-weight "500"
-                 :color       colors/gray}}
+      [react/view {:padding-horizontal                     12
+                   :padding-bottom                         10
+                   :padding-top                            10
+                   :margin-top                             4
+                   :border-width                           1
+                   :border-color                           colors/gray-lighter
+                   :border-radius                          16
+                   (case direction
+                     :outgoing :border-bottom-right-radius
+                     :incoming :border-bottom-left-radius) 4
+                   :background-color                       colors/white}
+       [react/text {:style {:font-size   13
+                            :line-height 18
+                            :font-weight "500"
+                            :color       colors/gray}}
         (case direction
           :outgoing (str "↑ " (i18n/label :t/outgoing-transaction))
           :incoming (str "↓ " (i18n/label :t/incoming-transaction)))]

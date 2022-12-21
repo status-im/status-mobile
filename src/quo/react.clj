@@ -1,11 +1,9 @@
 (ns quo.react)
 
-(defmacro maybe-js-deps
-  [deps]
+(defmacro maybe-js-deps [deps]
   `(if ~deps (into-array ~deps) js/undefined))
 
-(defmacro with-deps-check
-  [[prev-deps] f deps]
+(defmacro with-deps-check [[prev-deps] f deps]
   `(let [~prev-deps (quo.react/ref ~deps)]
      (when (not= @~prev-deps ~deps)
        (reset! ~prev-deps ~deps))

@@ -1,51 +1,44 @@
 (ns status-im2.contexts.shell.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
+            [i18n.i18n :as i18n]
+            [utils.re-frame :as rf]
             [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
+            [quo2.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]
+            [status-im2.contexts.shell.style :as style]
             [status-im2.common.home.view :as common.home]
+            [react-native.linear-gradient :as linear-gradient]
             [status-im2.contexts.shell.animation :as animation]
+            [status-im2.contexts.shell.home-stack :as home-stack]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
             [status-im2.contexts.shell.cards.view :as switcher-cards]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.home-stack :as home-stack]
-            [status-im2.contexts.shell.style :as style]
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
-(defn placeholder
-  []
+(defn placeholder []
   [linear-gradient/linear-gradient
    {:colors [colors/neutral-100-opa-0 colors/neutral-100-opa-100]
-    :start  {:x 0 :y 0}
-    :end    {:x 0 :y 1}
-    :style  (style/placeholder-container (rn/status-bar-height))}
-   [rn/image
-    {:source nil ;; TODO(parvesh) - add placeholder image
-     :style  style/placeholder-image}]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :semi-bold
-     :style  style/placeholder-title}
+    :start {:x 0 :y 0}
+    :end   {:x 0 :y 1}
+    :style (style/placeholder-container (rn/status-bar-height))}
+   [rn/image {:source nil ;; TODO(parvesh) - add placeholder image
+              :style  style/placeholder-image}]
+   [quo/text {:size   :paragraph-1
+              :weight :semi-bold
+              :style  style/placeholder-title}
     (i18n/label :t/shell-placeholder-title)]
-   [quo/text
-    {:size   :paragraph-2
-     :weight :regular
-     :align  :center
-     :style  style/placeholder-subtitle}
+   [quo/text {:size   :paragraph-2
+              :weight :regular
+              :align  :center
+              :style  style/placeholder-subtitle}
     (i18n/label :t/shell-placeholder-subtitle)]])
 
-(defn jump-to-text
-  []
-  [quo/text
-   {:size   :heading-1
-    :weight :semi-bold
-    :style  (style/jump-to-text (rn/status-bar-height))}
+(defn jump-to-text []
+  [quo/text {:size   :heading-1
+             :weight :semi-bold
+             :style  (style/jump-to-text (rn/status-bar-height))}
    (i18n/label :t/jump-to)])
 
-(defn render-card
-  [{:keys [id type content] :as card}]
+(defn render-card [{:keys [id type content] :as card}]
   (let [card-data (case type
                     shell.constants/one-to-one-chat-card
                     (rf/sub [:shell/one-to-one-chat-card id])
@@ -65,8 +58,7 @@
 
 (def empty-cards (repeat 6 {:type shell.constants/empty-card}))
 
-(defn jump-to-list
-  [switcher-cards shell-margin]
+(defn jump-to-list [switcher-cards shell-margin]
   (let [data (if (seq switcher-cards) switcher-cards empty-cards)]
     [:<>
      [rn/flat-list
@@ -86,28 +78,24 @@
      (when-not (seq switcher-cards)
        [placeholder])]))
 
-(defn shell
-  []
+(defn shell []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
         shell-margin   (/ (- width 320) 3)] ;; 320 - two cards width
     [safe-area/consumer
      (fn [insets]
-       [rn/view
-        {:style {:top              0
-                 :left             0
-                 :right            0
-                 :bottom           -1
-                 :position         :absolute
-                 :background-color colors/neutral-100}}
-        [common.home/top-nav
-         {:type  :shell
-          :style {:margin-top (:top insets)
-                  :z-index    2}}]
+       [rn/view {:style {:top              0
+                         :left             0
+                         :right            0
+                         :bottom           -1
+                         :position         :absolute
+                         :background-color colors/neutral-100}}
+        [common.home/top-nav {:type  :shell
+                              :style {:margin-top (:top insets)
+                                      :z-index    2}}]
         [jump-to-list switcher-cards shell-margin]])]))
 
-(defn shell-stack
-  []
+(defn shell-stack []
   [:f>
    (fn []
      (let [shared-values (animation/calculate-shared-values)]
@@ -117,8 +105,7 @@
         [home-stack/home-stack]
         [quo/floating-shell-button
          {:jump-to {:on-press #(animation/close-home-stack true)
-                    :label    (i18n/label :t/jump-to)}}
+                    :label (i18n/label :t/jump-to)}}
          {:position :absolute
-          :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
-                                                                          ;; 5(padding on button)
+          :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 + 5(padding on button)
          (:home-stack-opacity shared-values)]]))])

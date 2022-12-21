@@ -11,11 +11,10 @@
     (not (.eq bn
               (.round bn decimals)))))
 
-(defn parse-amount
-  [amount decimals]
+(defn parse-amount [amount decimals]
   (when-not (empty? amount)
     (let [normalized-amount (money/normalize amount)
-          value             (money/bignumber normalized-amount)]
+          value (money/bignumber normalized-amount)]
       (cond
         (not (money/valid? value))
         {:error (i18n/label :t/validation-amount-invalid-number) :value value}
@@ -41,8 +40,7 @@
 (defn remove-transactions-since-block
   [accounts block]
   (reduce-kv (fn [acc account-address account]
-               (assoc acc
-                      account-address
+               (assoc acc account-address
                       (update account
                               :transactions
                               (fn [transactions]

@@ -4,14 +4,12 @@
 
 (def icon-path "./resources/images/icons/")
 
-(defn require-icon
-  [el]
+(defn require-icon [el]
   (let [s (str "../resources/images/icons/" el ".png")
         k (string/replace el "_" "-")]
     [k `(js/require ~s)]))
 
-(defmacro resolve-icons
-  []
+(defmacro resolve-icons []
   (let [files (->> (io/file icon-path)
                    file-seq
                    (filter #(string/ends-with? % "png"))

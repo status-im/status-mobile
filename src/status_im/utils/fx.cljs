@@ -1,13 +1,11 @@
 (ns status-im.utils.fx
   (:require-macros status-im.utils.fx)
   (:require [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.handlers :as handlers]
-            [status-im2.common.json-rpc.events :as json-rpc-status-im2]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [status-im.utils.handlers :as handlers])
   (:refer-clojure :exclude [merge reduce]))
 
-(defn- update-db
-  [cofx fx]
+(defn- update-db [cofx fx]
   (if-let [db (:db fx)]
     (assoc cofx :db db)
     cofx))
@@ -22,11 +20,9 @@
     :transport/confirm-messages-processed
     :group-chats/extract-membership-signature
     :utils/dispatch-later
-    ::json-rpc/call
-    ::json-rpc-status-im2/call})
+    ::json-rpc/call})
 
-(defn- safe-merge
-  [fx new-fx]
+(defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
     fx
     (clojure.core/reduce (fn [merged-fx [k v]]
@@ -54,8 +50,8 @@
   (when js/goog.DEBUG
     (swap! handlers/handler-nesting-level inc))
   (let [[first-arg & rest-args] args
-        initial-fxs?            (map? first-arg)
-        fx-fns                  (if initial-fxs? rest-args args)
+        initial-fxs? (map? first-arg)
+        fx-fns (if initial-fxs? rest-args args)
         res
         (clojure.core/reduce (fn [fxs fx-fn]
                                (let [updated-cofx (update-db cofx fxs)]

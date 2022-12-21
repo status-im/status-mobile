@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.chat.message.gap
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo2.core :as quo2]
+  (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
+            [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.chat.styles.input.gap :as style]
-            [status-im.utils.datetime :as datetime]))
+            [quo2.core :as quo2]))
 
 (defn on-press
   [chat-id gap-ids]
@@ -14,13 +14,13 @@
 
 (views/defview gap
   [{:keys [gap-ids chat-id gap-parameters public? community?]}]
-  (views/letsubs [in-progress?      [:chats/fetching-gap-in-progress?
-                                     gap-ids
-                                     chat-id]
-                  connected?        [:mailserver/connected?]
+  (views/letsubs [in-progress? [:chats/fetching-gap-in-progress?
+                                gap-ids
+                                chat-id]
+                  connected?   [:mailserver/connected?]
                   use-status-nodes? [:mailserver/use-status-nodes?]
-                  first-gap?        (= gap-ids #{:first-gap})
-                  window-height     [:dimensions/window-height]]
+                  first-gap?   (= gap-ids #{:first-gap})
+                  window-height [:dimensions/window-height]]
     (when (or (not first-gap?) public? community?)
       [react/view {:style (when-not in-progress? style/gap-container)}
        [react/touchable-highlight

@@ -6,13 +6,11 @@
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]))
 
-(defonce card
-         (if config/keycard-test-menu-enabled?
-           (simulated-keycard/SimulatedKeycard.)
-           (real-keycard/RealKeycard.)))
+(defonce card (if config/keycard-test-menu-enabled?
+                (simulated-keycard/SimulatedKeycard.)
+                (real-keycard/RealKeycard.)))
 
-(defn check-nfc-support
-  []
+(defn check-nfc-support []
   (log/debug "[keycard] check-nfc-support")
   (keycard/check-nfc-support
    card
@@ -22,8 +20,7 @@
       (re-frame/dispatch
        [:keycard.callback/check-nfc-support-success response]))}))
 
-(defn check-nfc-enabled
-  []
+(defn check-nfc-enabled []
   (log/debug "[keycard] check-nfc-enabled")
   (keycard/check-nfc-enabled
    card
@@ -33,33 +30,27 @@
       (re-frame/dispatch
        [:keycard.callback/check-nfc-enabled-success response]))}))
 
-(defn open-nfc-settings
-  []
+(defn open-nfc-settings []
   (log/debug "[keycard] open-nfc-settings")
   (keycard/open-nfc-settings card))
 
-(defn remove-event-listener
-  [event]
+(defn remove-event-listener [event]
   (log/debug "[keycard] remove-event-listener")
   (keycard/remove-event-listener card event))
 
-(defn on-card-disconnected
-  [callback]
+(defn on-card-disconnected [callback]
   (log/debug "[keycard] on-card-disconnected")
   (keycard/on-card-disconnected card callback))
 
-(defn on-card-connected
-  [callback]
+(defn on-card-connected [callback]
   (log/debug "[keycard] on-card-connected")
   (keycard/on-card-connected card callback))
 
-(defn remove-event-listeners
-  []
+(defn remove-event-listeners []
   (log/debug "[keycard] remove-event-listeners")
   (keycard/remove-event-listeners card))
 
-(defn register-card-events
-  []
+(defn register-card-events []
   (log/debug "[keycard] register-card-events")
   (keycard/register-card-events
    card
@@ -81,18 +72,15 @@
     :on-nfc-disabled
     #(re-frame/dispatch [:keycard.callback/check-nfc-enabled-success false])}))
 
-(defn- error-object->map
-  [^js object]
+(defn- error-object->map [^js object]
   {:code  (.-code object)
    :error (.-message object)})
 
-(defn set-pairings
-  [pairings]
+(defn set-pairings [pairings]
   (log/debug "[keycard] open-nfc-settings")
   (keycard/set-pairings card {:pairings pairings}))
 
-(defn get-application-info
-  [{:keys [on-success] :as args}]
+(defn get-application-info [{:keys [on-success] :as args}]
   (log/debug "[keycard] get-application-info")
   (keycard/get-application-info
    card
@@ -111,8 +99,7 @@
         [:keycard.callback/on-get-application-info-error
          (error-object->map response)]))})))
 
-(defn factory-reset
-  [{:keys [on-success] :as args}]
+(defn factory-reset [{:keys [on-success] :as args}]
   (log/debug "[keycard] factory-reset")
   (keycard/factory-reset
    card
@@ -131,8 +118,7 @@
         [:keycard.callback/on-get-application-info-error
          (error-object->map response)]))})))
 
-(defn install-applet
-  []
+(defn install-applet []
   (log/debug "[keycard] install-applet")
   (keycard/install-applet
    card
@@ -148,12 +134,11 @@
        [:keycard.callback/on-install-applet-error
         (error-object->map response)]))}))
 
-(defn init-card
-  [pin]
+(defn init-card [pin]
   (log/debug "[keycard] init-card")
   (keycard/init-card
    card
-   {:pin        pin
+   {:pin pin
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] init-card")
@@ -166,12 +151,11 @@
        [:keycard.callback/on-init-card-error
         (error-object->map response)]))}))
 
-(defn install-applet-and-init-card
-  [pin]
+(defn install-applet-and-init-card [pin]
   (log/debug "[keycard] install-applet-and-init-card")
   (keycard/install-applet-and-init-card
    card
-   {:pin        pin
+   {:pin pin
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] install-applet-and-init-card")
@@ -185,8 +169,7 @@
        [:keycard.callback/on-install-applet-and-init-card-error
         (error-object->map response)]))}))
 
-(defn pair
-  [args]
+(defn pair [args]
   (log/debug "[keycard] pair")
   (keycard/pair
    card
@@ -203,8 +186,7 @@
        (re-frame/dispatch
         [:keycard.callback/on-pair-error (error-object->map response)]))})))
 
-(defn generate-and-load-key
-  [args]
+(defn generate-and-load-key [args]
   (log/debug "[keycard] generate-and-load-key")
   (keycard/generate-and-load-key
    card
@@ -222,8 +204,7 @@
         [:keycard.callback/on-generate-and-load-key-error
          (error-object->map response)]))})))
 
-(defn unblock-pin
-  [args]
+(defn unblock-pin [args]
   (log/debug "[keycard] unblock-pin")
   (keycard/unblock-pin
    card
@@ -240,8 +221,7 @@
        (re-frame/dispatch [:keycard.callback/on-unblock-pin-error
                            (error-object->map response)]))})))
 
-(defn verify-pin
-  [args]
+(defn verify-pin [args]
   (log/debug "[keycard] verify-pin")
   (keycard/verify-pin
    card
@@ -259,8 +239,7 @@
         [:keycard.callback/on-verify-pin-error
          (error-object->map response)]))})))
 
-(defn change-pin
-  [args]
+(defn change-pin [args]
   (log/debug "[keycard] change-pin")
   (keycard/change-pin
    card
@@ -278,8 +257,7 @@
         [:keycard.callback/on-change-pin-error
          (error-object->map response)]))})))
 
-(defn change-puk
-  [args]
+(defn change-puk [args]
   (log/debug "[keycard] change-puk")
   (keycard/change-puk
    card
@@ -297,8 +275,7 @@
         [:keycard.callback/on-change-pin-error
          (error-object->map response)]))})))
 
-(defn change-pairing
-  [args]
+(defn change-pairing [args]
   (log/debug "[keycard] change-pairing")
   (keycard/change-pairing
    card
@@ -316,8 +293,7 @@
         [:keycard.callback/on-change-pin-error
          (error-object->map response)]))})))
 
-(defn unpair
-  [args]
+(defn unpair [args]
   (log/debug "[keycard] unpair")
   (keycard/unpair
    card
@@ -335,8 +311,7 @@
         [:keycard.callback/on-unpair-error
          (error-object->map response)]))})))
 
-(defn delete
-  []
+(defn delete []
   (log/debug "[keycard] delete")
   (keycard/delete
    card
@@ -352,8 +327,7 @@
        [:keycard.callback/on-delete-error
         (error-object->map response)]))}))
 
-(defn remove-key
-  [args]
+(defn remove-key [args]
   (log/debug "[keycard] remove-key")
   (keycard/remove-key
    card
@@ -370,8 +344,7 @@
        (re-frame/dispatch [:keycard.callback/on-remove-key-error
                            (error-object->map response)]))})))
 
-(defn remove-key-with-unpair
-  [args]
+(defn remove-key-with-unpair [args]
   (log/debug "[keycard] remove-key-with-unpair")
   (keycard/remove-key-with-unpair
    card
@@ -388,8 +361,7 @@
        (re-frame/dispatch [:keycard.callback/on-remove-key-error
                            (error-object->map response)]))})))
 
-(defn export-key
-  [args]
+(defn export-key [args]
   (log/debug "[keycard] export-key")
   (keycard/export-key
    card
@@ -406,8 +378,7 @@
        (re-frame/dispatch [:keycard.callback/on-export-key-error
                            (error-object->map response)]))})))
 
-(defn unpair-and-delete
-  [args]
+(defn unpair-and-delete [args]
   (log/debug "[keycard] unpair-and-delete")
   (keycard/unpair
    card
@@ -424,8 +395,7 @@
        (re-frame/dispatch [:keycard.callback/on-unpair-and-delete-error
                            (error-object->map response)]))})))
 
-(defn import-keys
-  [{:keys [on-success] :as args}]
+(defn import-keys [{:keys [on-success] :as args}]
   (log/debug "[keycard] import-keys")
   (keycard/import-keys
    card
@@ -444,8 +414,7 @@
       (re-frame/dispatch [:keycard.callback/on-get-keys-error
                           (error-object->map response)])))))
 
-(defn get-keys
-  [{:keys [on-success] :as args}]
+(defn get-keys [{:keys [on-success] :as args}]
   (log/debug "[keycard] get-keys")
   (keycard/get-keys
    card
@@ -464,8 +433,7 @@
       (re-frame/dispatch [:keycard.callback/on-get-keys-error
                           (error-object->map response)])))))
 
-(defn sign
-  [{:keys [on-success on-failure] :as args}]
+(defn sign [{:keys [on-success on-failure] :as args}]
   (log/debug "[keycard] sign")
   (keycard/sign
    card
@@ -486,8 +454,7 @@
           [:keycard.callback/on-sign-error
            (error-object->map response)])))})))
 
-(defn install-cash-applet
-  []
+(defn install-cash-applet []
   (log/debug "[keycard] install-cash-applet")
   (keycard/install-cash-applet
    card
@@ -508,7 +475,7 @@
   (log/debug "[keycard] sign-typed-data")
   (keycard/sign-typed-data
    card
-   {:hash       hash
+   {:hash hash
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] sign-typed-data")
@@ -521,30 +488,23 @@
        [:keycard.callback/on-sign-error
         (error-object->map response)]))}))
 
-(defn save-multiaccount-and-login
-  [args]
+(defn save-multiaccount-and-login [args]
   (keycard/save-multiaccount-and-login card args))
 
-(defn login
-  [args]
+(defn login [args]
   (keycard/login card args))
 
-(defn send-transaction-with-signature
-  [args]
+(defn send-transaction-with-signature [args]
   (keycard/send-transaction-with-signature card args))
 
-(defn start-nfc
-  [args]
+(defn start-nfc [args]
   (keycard/start-nfc card args))
 
-(defn stop-nfc
-  [args]
+(defn stop-nfc [args]
   (keycard/stop-nfc card args))
 
-(defn set-nfc-message
-  [args]
+(defn set-nfc-message [args]
   (keycard/set-nfc-message card args))
 
-(defn delete-multiaccount-before-migration
-  [args]
+(defn delete-multiaccount-before-migration [args]
   (keycard/delete-multiaccount-before-migration card args))

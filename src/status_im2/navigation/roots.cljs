@@ -1,19 +1,17 @@
 (ns status-im2.navigation.roots
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im2.navigation.view :as views]))
+  (:require [status-im2.navigation.view :as views]
+            [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
-(defn status-bar-options
-  []
+(defn status-bar-options []
   (if platform/android?
     {:navigationBar {:backgroundColor colors/neutral-100}
      :statusBar     {:backgroundColor :transparent
                      :style           :light
                      :drawBehind      true}}
-    {:statusBar {:style :light}}))
+    {:statusBar     {:style :light}}))
 
-(defn topbar-options
-  []
+(defn topbar-options []
   {:noBorder             true
    :scrollEdgeAppearance {:active   false
                           :noBorder true}
@@ -21,17 +19,15 @@
    :title                {:color (colors/theme-colors colors/neutral-100 colors/white)}
    :rightButtonColor     (colors/theme-colors colors/neutral-100 colors/white)
    :background           {:color (colors/theme-colors colors/white colors/neutral-100)}
-   :backButton           {:color  (colors/theme-colors colors/neutral-100 colors/white)
+   :backButton           {:color (colors/theme-colors colors/neutral-100 colors/white)
                           :testID :back-button}})
 
-(defn default-root
-  []
+(defn default-root []
   {:layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
             :orientation              "portrait"
             :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}})
 
-(defn merge-top-bar
-  [root-options options]
+(defn merge-top-bar [root-options options]
   (let [options (:topBar options)]
     {:topBar
      (merge root-options
@@ -47,17 +43,14 @@
             (when (or (:rightButtons root-options) (:rightButtons options))
               {:rightButtons (merge (:rightButtons root-options) (:rightButtons options))}))}))
 
-(defn get-screen-options
-  [screen]
+(defn get-screen-options [screen]
   (merge (get-in views/screens [screen :options])
          (status-bar-options)
          (merge-top-bar (topbar-options)
                         (get-in views/screens [screen :options]))))
 
-;;TODO problem here is that we have two places for screens, here and in screens ns, and we have handler
-;;in navigate
-(defn old-roots
-  []
+;;TODO problem here is that we have two places for screens, here and in screens ns, and we have handler in navigate
+(defn old-roots []
   ;;TABS
   {;;INTRO (onboarding carousel)
    :intro
@@ -76,10 +69,7 @@
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
                                     (status-bar-options)
-                                    {:topBar (assoc (topbar-options)
-                                                    :elevation 0
-                                                    :noBorder  true
-                                                    :animate   false)})}}}
+                                    {:topBar (assoc (topbar-options) :elevation 0 :noBorder true :animate false)})}}}
 
    ;;PROGRESS
    :progress
@@ -141,8 +131,7 @@
                                     (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}})
 
-(defn roots
-  []
+(defn roots []
   ;;TABS
   (merge (old-roots)
          {:shell-stack

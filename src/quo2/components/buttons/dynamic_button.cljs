@@ -1,12 +1,11 @@
 (ns quo2.components.buttons.dynamic-button
-  (:require [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
+  (:require [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [quo2.components.icon :as icon]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [quo2.components.markdown.text :as text]))
 
-(defn- get-button-color
-  [type pressed? customization-color]
+(defn- get-button-color [type pressed? customization-color]
   (if (#{:jump-to :mention} type)
     (if pressed?
       (colors/custom-color-by-theme customization-color 60 50)
@@ -15,14 +14,12 @@
       (colors/theme-colors colors/neutral-80-opa-80 colors/white-opa-80)
       (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70))))
 
-(defn- get-icon-and-text-color
-  [type]
+(defn- get-icon-and-text-color [type]
   (if (#{:jump-to :mention} type)
     colors/white
     (colors/theme-colors colors/white colors/neutral-100)))
 
-(defn- icon-view
-  [type]
+(defn- icon-view [type]
   [icon/icon
    (case type
      :jump-to           :i/jump-to
@@ -70,34 +67,32 @@
         :active-opacity      1
         :style               {:padding 5}
         :accessibility-label type}
-       [rn/view
-        {:style (merge
-                 {:flex-direction   :row
-                  :height           24
-                  :border-radius    12
-                  :background-color (get-button-color type @pressed? (or customization-color :primary))}
-                 style)}
+       [rn/view {:style (merge
+                         {:flex-direction   :row
+                          :height           24
+                          :border-radius    12
+                          :background-color (get-button-color type @pressed? (or customization-color :primary))}
+                         style)}
         (when (#{:mention :search :search-with-label :bottom} type)
           [icon-view type])
         (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
-          [text/text
-           {:weight :medium
-            :size   :paragraph-2
-            :style  {:color         (get-icon-and-text-color type)
-                     :margin-top    2.5
-                     :margin-bottom 3.5
-                     :margin-left   (case type
-                                      :jump-to           8
-                                      :mention           0
-                                      :notification-down 8
-                                      :notification-up   8
-                                      :search-with-label 0)
-                     :margin-right  (case type
-                                      :jump-to           0
-                                      :mention           8
-                                      :notification-down 0
-                                      :notification-up   0
-                                      :search-with-label 8)}}
+          [text/text {:weight :medium
+                      :size   :paragraph-2
+                      :style  {:color         (get-icon-and-text-color type)
+                               :margin-top    2.5
+                               :margin-bottom 3.5
+                               :margin-left   (case type
+                                                :jump-to           8
+                                                :mention           0
+                                                :notification-down 8
+                                                :notification-up   8
+                                                :search-with-label 0)
+                               :margin-right  (case type
+                                                :jump-to           0
+                                                :mention           8
+                                                :notification-down 0
+                                                :notification-up   0
+                                                :search-with-label 8)}}
            (case type
              :jump-to                                       label
              :search-with-label                             label

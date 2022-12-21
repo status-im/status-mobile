@@ -1,18 +1,17 @@
 (ns status-im.utils.keychain.core
-  (:require ["react-native-keychain" :as react-native-keychain]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.security :as security]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+            [clojure.string :as string]
+            ["react-native-keychain" :as react-native-keychain]))
 
-(defn- check-conditions
-  [callback & checks]
+(defn- check-conditions [callback & checks]
   (if (= (count checks) 0)
     (callback true)
-    (let [current-check-fn     (first checks)
+    (let [current-check-fn (first checks)
           process-check-result (fn [callback-success callback-fail]
                                  (fn [current-check-passed?]
                                    (if current-check-passed?
@@ -29,8 +28,7 @@
 ;; We are using set/get/reset internet credentials there because they are bound
 ;; to an address (`server`) property.
 
-(defn enum-val
-  [enum-name value-name]
+(defn enum-val [enum-name value-name]
   (get-in (js->clj react-native-keychain) [enum-name value-name]))
 
 ;; We need a more strict access mode for keychain entries that save user password.
@@ -61,19 +59,16 @@
 ;; These helpers check if the device is okay to use for password storage
 ;; They resolve callback with `true` if the check is passed, with `false` otherwise.
 ;; Android only
-(defn- device-not-rooted?
-  [callback]
+(defn- device-not-rooted? [callback]
   (status/rooted-device? (fn [rooted?] (callback (not rooted?)))))
 
 ;; Android only
-(defn- secure-hardware-available?
-  [callback]
+(defn- secure-hardware-available? [callback]
   (-> (.getSecurityLevel react-native-keychain)
       (.then (fn [level] (callback (= level keychain-secure-hardware))))))
 
 ;; iOS only
-(defn- device-encrypted?
-  [callback]
+(defn- device-encrypted? [callback]
   (-> (.canImplyAuthentication
        react-native-keychain
        (clj->js
@@ -81,12 +76,10 @@
          (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")}))
       (.then callback)))
 
-(defn- whisper-key-name
-  [address]
+(defn- whisper-key-name [address]
   (str address "-whisper"))
 
-(defn can-save-user-password?
-  [callback]
+(defn can-save-user-password? [callback]
   (log/debug "[keychain] can-save-user-password?")
   (cond
     platform/ios?
@@ -103,11 +96,8 @@
   [server username password callback]
   (log/debug "[keychain] save-credentials")
   (-> (.setInternetCredentials react-native-keychain
-                               (string/lower-case server)
-                               username
-                               password
-                               keychain-secure-hardware
-                               keychain-restricted-availability)
+                               (string/lower-case server) username password
+                               keychain-secure-hardware keychain-restricted-availability)
       (.then callback)))
 
 (defn get-credentials
@@ -173,8 +163,7 @@
  :keychain/save-auth-method
  (fn [[key-uid method]]
    (log/debug "[keychain] :keychain/save-auth-method"
-              "method"
-              method)
+              "method" method)
    (save-credentials
     (str key-uid "-auth")
     key-uid

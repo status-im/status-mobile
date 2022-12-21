@@ -1,8 +1,8 @@
 (ns status-im.ui2.screens.chat.components.edit.style)
 
 (def container
-  {:flex-direction :row
-   :height         24})
+  {:flex-direction      :row
+   :height              24})
 
 (def content-container
   {:padding-horizontal 10

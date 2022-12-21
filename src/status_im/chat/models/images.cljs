@@ -1,25 +1,24 @@
 (ns status-im.chat.models.images
-  (:require ["@react-native-community/cameraroll" :as CameraRoll]
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]
+            ["@react-native-community/cameraroll" :as CameraRoll]
             ["react-native-blob-util" :default ReactNativeBlobUtil]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
-            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.types :as types]
+            [status-im.utils.config :as config]
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]
-            [status-im.utils.fs :as fs]
-            [status-im.utils.fx :as fx]
             [status-im.utils.image-processing :as image-processing]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]
+            [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.fs :as fs]
+            [status-im.chat.models :as chat]))
 
 (def maximum-image-size-px 2000)
 
-(defn- resize-and-call
-  [uri cb]
+(defn- resize-and-call [uri cb]
   (react/image-get-size
    uri
    (fn [width height]
@@ -35,19 +34,16 @@
             (cb path)))
         #(log/error "could not resize image" %))))))
 
-(defn result->id
-  [^js result]
+(defn result->id [^js result]
   (if platform/ios?
     (.-localIdentifier result)
     (.-path result)))
 
 (def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))
 
-(defn download-image-http
-  [base64-uri on-success]
-  (-> (.config ReactNativeBlobUtil
-               (clj->js {:trusty platform/ios?
-                         :path   temp-image-url}))
+(defn download-image-http [base64-uri on-success]
+  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?
+                                             :path   temp-image-url}))
       (.fetch "GET" base64-uri)
       (.then #(on-success (.path %)))
       (.catch #(log/error "could not save image"))))
@@ -74,16 +70,15 @@
  ::chat-open-image-picker-camera
  (fn [current-chat-id]
    (react/show-image-picker-camera
-    #(re-frame/dispatch [:chat.ui/image-captured current-chat-id (.-path %)])
-    {})))
+    #(re-frame/dispatch [:chat.ui/image-captured current-chat-id (.-path %)]) {})))
 
 (re-frame/reg-fx
  ::chat-open-image-picker
  (fn [chat-id]
    (react/show-image-picker
     (fn [^js images]
-      ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
-      ;; gallery, we just clean previous state and set all newly picked images
+        ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
+        ;; gallery, we just clean previous state and set all newly picked images
       (when (and platform/ios? (pos? (count images)))
         (re-frame/dispatch [:chat.ui/clear-sending-images chat-id]))
       (doseq [^js result (if platform/ios?
@@ -91,8 +86,8 @@
                            [images])]
         (resize-and-call (.-path result)
                          #(re-frame/dispatch [:chat.ui/image-selected chat-id (result->id result) %]))))
-    ;; NOTE(Ferossgp): On android you cannot set max limit on images, when a user
-    ;; selects too many images the app crashes.
+      ;; NOTE(Ferossgp): On android you cannot set max limit on images, when a user
+      ;; selects too many images the app crashes.
     {:media-type "photo"
      :multiple   platform/ios?})))
 
@@ -110,14 +105,10 @@
     {:permissions [:read-external-storage]
      :on-allowed  (fn []
                     (-> (if end-cursor
-                            (.getPhotos
-                             CameraRoll
-                             #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
-                            (.getPhotos CameraRoll
-                                        #js {:first num :assetType "Photos" :groupTypes "All"}))
+                          (.getPhotos CameraRoll #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
+                          (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"}))
                         (.then #(let [response (types/js->clj %)]
-                                  (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
-                                                      (:page_info response) end-cursor])))
+                                  (re-frame/dispatch [:on-camera-roll-get-photos (:edges response) (:page_info response) end-cursor])))
                         (.catch #(log/warn "could not get camera roll photos"))))})))
 
 (fx/defn image-captured

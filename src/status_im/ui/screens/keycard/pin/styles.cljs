@@ -6,42 +6,37 @@
    :flex-direction  :column
    :justify-content :space-between})
 
-(defn info-container
-  [small-screen?]
-  {:height          44
-   :width           "100%"
+(defn info-container [small-screen?]
+  {:height 44
+   :width "100%"
    :justify-content :center
-   :margin-top      (if small-screen? 14 10)})
+   :margin-top    (if small-screen? 14 10)})
 
-(defn error-container
-  [y-translation opacity]
-  {:left            0
-   :right           0
-   :align-items     :center
-   :position        :absolute
-   :transform       [{:translateY y-translation}]
-   :opacity         opacity
+(defn error-container [y-translation opacity]
+  {:left 0
+   :right 0
+   :align-items :center
+   :position :absolute
+   :transform [{:translateY y-translation}]
+   :opacity opacity
    :justify-content :center})
 
-(defn error-text
-  [small-screen?]
-  {:position   :absolute
+(defn error-text [small-screen?]
+  {:position :absolute
    :color      colors/red
    :font-size  (if small-screen? 12 15)
    :text-align :center})
 
-(defn retry-container
-  [y-translation opacity]
-  {:left            0
-   :right           0
-   :align-items     :center
-   :position        :absolute
-   :transform       [{:translateY y-translation}]
-   :opacity         opacity
+(defn retry-container [y-translation opacity]
+  {:left 0
+   :right 0
+   :align-items :center
+   :position :absolute
+   :transform [{:translateY y-translation}]
+   :opacity opacity
    :justify-content :center})
 
-(defn center-container
-  [title]
+(defn center-container [title]
   {:flex-direction :column
    :align-items    :center
    :margin-top     (if title 20 5)})
@@ -58,12 +53,11 @@
 (def pin-indicator-container
   {:flex-direction  :row
    :justify-content :space-between
-   :align-items     :center
-   :height          22
-   :margin-top      5})
+   :align-items :center
+   :height 22
+   :margin-top 5})
 
-(defn pin-indicator
-  [pressed? error?]
+(defn pin-indicator [pressed? error?]
   {:width             8
    :height            8
    :background-color  (if error?
@@ -74,8 +68,7 @@
    :border-radius     50
    :margin-horizontal 5})
 
-(defn puk-indicator
-  [error?]
+(defn puk-indicator [error?]
   {:width             8
    :height            8
    :background-color  (if error?
@@ -87,15 +80,13 @@
 (def numpad-container
   {:margin-top 18})
 
-(defn numpad-row-container
-  [small-screen?]
+(defn numpad-row-container [small-screen?]
   {:flex-direction  :row
    :justify-content :center
    :align-items     :center
    :margin-vertical (if small-screen? 4 10)})
 
-(defn numpad-button
-  [small-screen?]
+(defn numpad-button [small-screen?]
   {:width             (if small-screen? 50 64)
    :margin-horizontal (if small-screen? 10 14)
    :height            (if small-screen? 50 64)
@@ -105,15 +96,12 @@
    :border-radius     (/ (if small-screen? 50 64) 2)
    :background-color  colors/blue-light})
 
-(defn numpad-delete-button
-  [small-screen?]
+(defn numpad-delete-button [small-screen?]
   (assoc (numpad-button small-screen?) :background-color colors/white))
 
-(defn numpad-empty-button
-  [small-screen?]
-  (assoc (numpad-button small-screen?)
-         :background-color colors/white
-         :border-color     colors/white))
+(defn numpad-empty-button [small-screen?]
+  (assoc (numpad-button small-screen?) :background-color colors/white
+         :border-color colors/white))
 
 (def numpad-button-text
   {:font-size 22

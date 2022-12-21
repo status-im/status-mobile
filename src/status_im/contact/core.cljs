@@ -1,32 +1,30 @@
 (ns status-im.contact.core
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.contact.block :as contact.block]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im2.navigation.events :as navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.constants :as constants]
+            [status-im.contact.block :as contact.block]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
   [{:keys [db] :as cofx} all-contacts]
-  (let [contacts-list (map #(vector (:public-key %)
-                                    (if (empty? (:address %))
-                                      (dissoc % :address)
-                                      %))
+  (let [contacts-list (map #(vector (:public-key %) (if (empty? (:address %))
+                                                      (dissoc % :address)
+                                                      %))
                            all-contacts)
-        contacts      (into {} contacts-list)]
+        contacts (into {} contacts-list)]
     {:db (cond-> (-> db
                      (update :contacts/contacts #(merge contacts %))
                      (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts))))}))
 
 (defn build-contact
-  [{{:keys          [multiaccount]
-     :contacts/keys [contacts]}
-    :db} public-key]
+  [{{:keys [multiaccount]
+     :contacts/keys [contacts]} :db} public-key]
   (cond-> (contact.db/public-key->contact contacts public-key)
     (= public-key (:public-key multiaccount))
     (assoc :name (:name multiaccount))))
@@ -36,9 +34,9 @@
   (let [events
         (reduce
          (fn [acc {:keys [public-key] :as contact}]
-           (let [added       (:added contact)
-                 was-added   (contact.db/added? db public-key)
-                 blocked     (:blocked contact)
+           (let [added (:added contact)
+                 was-added (contact.db/added? db public-key)
+                 blocked (:blocked contact)
                  was-blocked (contact.db/blocked? db public-key)]
              (cond-> acc
                (and added (not was-added))
@@ -53,8 +51,7 @@
           [:activity-center.notifications/fetch-unread-count]]
          contacts)]
     (merge
-     {:db (update db
-                  :contacts/contacts
+     {:db (update db :contacts/contacts
                   #(reduce (fn [acc {:keys [public-key] :as contact}]
                              (-> acc
                                  (update public-key merge contact)
@@ -75,8 +72,8 @@
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method     "wakuext_sendContactUpdate"
-                       :params     [public-key name profile-image]
+    {::json-rpc/call [{:method "wakuext_sendContactUpdate"
+                       :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 
 (fx/defn add-contact
@@ -97,36 +94,34 @@
   "Remove a contact from current account's contact list"
   {:events [:contact.ui/remove-contact-pressed]}
   [{:keys [db]} {:keys [public-key]}]
-  {:db             (-> db
-                       (assoc-in [:contacts/contacts public-key :added] false)
-                       (assoc-in [:contacts/contacts public-key :contact-request-state]
-                                 constants/contact-request-state-none))
-   ::json-rpc/call [{:method     "wakuext_removeContact"
-                     :params     [public-key]
+  {:db (-> db
+           (assoc-in [:contacts/contacts public-key :added] false)
+           (assoc-in [:contacts/contacts public-key :contact-request-state] constants/contact-request-state-none))
+   ::json-rpc/call [{:method "wakuext_removeContact"
+                     :params [public-key]
                      :on-success #(log/debug "contact removed successfully")}
-                    {:method     "wakuext_retractContactRequest"
-                     :params     [{:contactId public-key}]
+                    {:method "wakuext_retractContactRequest"
+                     :params [{:contactId public-key}]
                      :on-success #(log/debug "contact removed successfully")}]
-   :dispatch       [:offload-messages constants/timeline-chat-id]})
+   :dispatch [:offload-messages constants/timeline-chat-id]})
 
 (fx/defn accept-contact-request
   {:events [:contact-requests.ui/accept-request]}
   [{:keys [db]} id]
-  {::json-rpc/call [{:method      "wakuext_acceptContactRequest"
-                     :params      [{:id id}]
+  {::json-rpc/call [{:method "wakuext_acceptContactRequest"
+                     :params [{:id id}]
                      :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn decline-contact-request
   {:events [:contact-requests.ui/decline-request]}
   [{:keys [db]} id]
-  {::json-rpc/call [{:method      "wakuext_dismissContactRequest"
-                     :params      [{:id id}]
+  {::json-rpc/call [{:method "wakuext_dismissContactRequest"
+                     :params [{:id id}]
                      :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
-(fx/defn initialize-contacts
-  [cofx]
+(fx/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
 (fx/defn open-contact-toggle-list
@@ -135,7 +130,7 @@
   (fx/merge cofx
             {:db (assoc db
                         :group/selected-contacts #{}
-                        :new-chat-name           "")}
+                        :new-chat-name "")}
             (navigation/navigate-to-cofx :contact-toggle-list nil)))
 
 (fx/defn update-nickname

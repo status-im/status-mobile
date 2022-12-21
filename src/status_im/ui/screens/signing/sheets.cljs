@@ -1,26 +1,24 @@
 (ns status-im.ui.screens.signing.sheets
   (:require-macros [status-im.utils.views :as views])
-  (:require [clojure.string :as string]
+  (:require [status-im.ui.components.react :as react]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.signing.gas :as gas]
+            [status-im.utils.money :as money]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.money :as money]))
+            [clojure.string :as string]
+            [status-im.signing.gas :as gas]
+            [reagent.core :as reagent]))
 
-(views/defview fee-bottom-sheet
-  [fee-display-symbol]
+(views/defview fee-bottom-sheet [fee-display-symbol]
   (views/letsubs [{gas-edit :gas gas-price-edit :gasPrice max-fee :max-fee} [:signing/edit-fee]]
     [react/view
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/network-fee)]
-      [react/view
-       {:style {:flex-direction :row
-                :margin-top     8
-                :align-items    :flex-end}}
+      [react/view {:style {:flex-direction :row
+                           :margin-top     8
+                           :align-items    :flex-end}}
        [react/view {:flex 1}
         [quo/text-input
          {:on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
@@ -33,9 +31,8 @@
           :placeholder     "0"
           :show-cancel     false
           :auto-focus      false}]]
-       [react/view
-        {:flex         1
-         :padding-left 16}
+       [react/view {:flex         1
+                    :padding-left 16}
         [quo/text-input
          {:label           (i18n/label :t/gas-price)
           :on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gasPrice %])
@@ -47,9 +44,8 @@
           :placeholder     "0.000"
           :show-cancel     false
           :auto-focus      false}]]
-       [react/view
-        {:padding-left   8
-         :padding-bottom 12}
+       [react/view {:padding-left   8
+                    :padding-bottom 12}
         [react/text (i18n/label :t/gwei)]]]
 
       [react/view {:margin-vertical 16 :align-items :center}
@@ -59,34 +55,27 @@
         max-fee " "
         [{:style {:color colors/gray}} fee-display-symbol]]]]
      [react/view {:height 1 :background-color colors/gray-lighter}]
-     [react/view
-      {:margin-horizontal 16
-       :align-items       :center
-       :justify-content   :space-between
-       :flex-direction    :row
-       :margin-top        6}
+     [react/view {:margin-horizontal 16 :align-items :center :justify-content :space-between :flex-direction :row :margin-top 6}
       [quo/button
        {:type     :secondary
         :on-press #(re-frame/dispatch [:bottom-sheet/hide])}
        (i18n/label :t/cancel)]
       [quo/button
-       {:type     :secondary
-        :on-press #(re-frame/dispatch [:signing.edit-fee.ui/submit])
-        :disabled (or (:error gas-edit) (:error gas-price-edit))}
+       {:type      :secondary
+        :on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
+        :disabled  (or (:error gas-edit) (:error gas-price-edit))}
        (i18n/label :t/update)]]]))
 
 (declare fee-bottom-sheet-eip1559)
 
-(defn fee-bottom-sheet-eip1559-custom
-  [_ #_fee-display-symbol]
+(defn fee-bottom-sheet-eip1559-custom [_ #_fee-display-symbol]
   (let [{gas-edit                      :gas
          max-fee-per-gas-edit          :maxFeePerGas
          max-priority-fee-per-gas-edit :maxPriorityFeePerGas}
         @(re-frame/subscribe [:signing/edit-fee])
-        error? (some :error
-                     [gas-edit
-                      max-fee-per-gas-edit
-                      max-priority-fee-per-gas-edit])
+        error? (some :error [gas-edit
+                             max-fee-per-gas-edit
+                             max-priority-fee-per-gas-edit])
         base-fee @(re-frame/subscribe [:wallet/current-base-fee])
         [fee-currency fiat-currency price]
         @(re-frame/subscribe [:signing/currencies])
@@ -101,9 +90,8 @@
     [:<>
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/max-priority-fee)]
-      [react/text
-       {:style {:color      (colors/get-color :text-02)
-                :margin-top 12}}
+      [react/text {:style {:color      (colors/get-color :text-02)
+                           :margin-top 12}}
        (i18n/label :t/miners-higher-fee)]
       [react/view
        {:style {:margin-top      12
@@ -115,11 +103,10 @@
         (money/to-fixed (money/wei-> :gwei base-fee))
         " "
         (i18n/label :t/gwei)]]]
-     [react/view
-      {:margin-vertical   12
-       :margin-horizontal 16
-       :height            1
-       :background-color  colors/gray-lighter}]
+     [react/view {:margin-vertical   12
+                  :margin-horizontal 16
+                  :height            1
+                  :background-color  colors/gray-lighter}]
      [react/view
       {:margin-horizontal 16
        :margin-top        4
@@ -141,8 +128,7 @@
         :error               (or (:error max-priority-fee-per-gas-edit)
                                  (get-in max-priority-fee-per-gas-edit [:fee-error :label]))
         :default-value       (str (:value max-priority-fee-per-gas-edit))
-        :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas
-                                                  %])
+        :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
         :show-cancel         false
         :after               {:component [quo/text
                                           {:style {:color (colors/get-color :text-02)}}
@@ -162,10 +148,9 @@
         :after               {:component [quo/text
                                           {:style {:color (colors/get-color :text-02)}}
                                           (i18n/label :t/gwei)]}}]]
-     [react/view
-      {:margin-vertical  12
-       :height           1
-       :background-color colors/gray-lighter}]
+     [react/view {:margin-vertical  12
+                  :height           1
+                  :background-color colors/gray-lighter}]
      [react/view
       {:style {:margin-top        4
                :margin-horizontal 16
@@ -185,9 +170,8 @@
         (money/to-fixed (money/mul fee-eth (money/bignumber (or price 0))) 2)
         " "
         fiat-currency]]]
-     [react/text
-      {:style {:color  (colors/get-color :text-02)
-               :margin 16}}
+     [react/text {:style {:color  (colors/get-color :text-02)
+                          :margin 16}}
       (i18n/label :t/fee-explanation)]
      [react/view
       {:style {:margin-left     12
@@ -197,7 +181,7 @@
                :align-items     :center
                :justify-content :space-between}}
       [quo/button
-       {:type                :secondary
+       {:type     :secondary
         :accessibility-label :see-fee-suggestions
         ;;:on-press
         #_(re-frame/dispatch
@@ -214,21 +198,19 @@
         :theme               :accent}
        (i18n/label :t/save)]]]))
 
-(defn fee-bottom-sheet-eip1559
-  [fee-display-symbol]
+(defn fee-bottom-sheet-eip1559 [fee-display-symbol]
   (let [{priority-fee-edit :maxPriorityFeePerGas
-         option            :selected-fee-option
-         fee-edit          :maxFeePerGas}
+         option :selected-fee-option
+         fee-edit :maxFeePerGas}
         @(re-frame/subscribe [:signing/edit-fee])
         {:keys [normal fast slow]}
         @(re-frame/subscribe [:signing/priority-fee-suggestions-range])]
     [react/view
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/fee-options)]
-      [react/text
-       {:style               {:margin-top 12}
-        :accessibility-label :slow-fee
-        :on-press            #(re-frame/dispatch [:signing.edit-fee.ui/set-option :slow])}
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :slow-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :slow])}
        (string/join
         " "
         [(str (i18n/label :t/slow) ":")
@@ -236,10 +218,9 @@
          (str (:tip slow) " gwei")
          (when (= :slow option)
            "<- selected")])]
-      [react/text
-       {:style               {:margin-top 12}
-        :accessibility-label :normal-fee
-        :on-press            #(re-frame/dispatch [:signing.edit-fee.ui/set-option :normal])}
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :normal-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :normal])}
        (string/join
         " "
         [(str (i18n/label :t/normal) ":")
@@ -248,10 +229,9 @@
          (when (or (nil? option)
                    (= :normal option))
            "<- selected")])]
-      [react/text
-       {:style               {:margin-top 12}
-        :accessibility-label :fast-fee
-        :on-press            #(re-frame/dispatch [:signing.edit-fee.ui/set-option :fast])}
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :fast-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :fast])}
        (string/join
         " "
         [(str (i18n/label :t/fast) ":")
@@ -266,44 +246,40 @@
           [(str (i18n/label :t/custom) ":")
            (str (-> fee-edit
                     :value-number
-                    (money/to-fixed 2))
-                " gwei")
+                    (money/to-fixed 2)) " gwei")
            (str (-> priority-fee-edit
                     :value-number
-                    (money/to-fixed 2))
-                " gwei")
+                    (money/to-fixed 2)) " gwei")
            (when (= :custom option)
              "<- selected")])])]
      [react/view
-      {:style           {:margin-left  12
-                         :margin-right 16
-                         :margin-top   38}
-       :flex-direction  :row
-       :align-items     :center
-       :justify-content :space-between}
+      {:style {:margin-left 12
+               :margin-right 16
+               :margin-top 38}
+       :flex-direction    :row
+       :align-items       :center
+       :justify-content   :space-between}
       [quo/button
-       {:type                :secondary
+       {:type :secondary
         :accessibility-label :set-custom-fee
-        :on-press            #(re-frame/dispatch
-                               [:bottom-sheet/show-sheet
-                                {:content        (fn []
-                                                   [fee-bottom-sheet-eip1559-custom fee-display-symbol])
-                                 :content-height 270}])}
+        :on-press #(re-frame/dispatch
+                    [:bottom-sheet/show-sheet
+                     {:content        (fn []
+                                        [fee-bottom-sheet-eip1559-custom fee-display-symbol])
+                      :content-height 270}])}
        (i18n/label :t/set-custom-fee)]
       [quo/button
-       {:type                :primary
+       {:type :primary
         :accessibility-label :save-custom-fee
-        :theme               :accent
-        :on-press            #(re-frame/dispatch [:signing.edit-fee.ui/submit])}
+        :theme :accent
+        :on-press #(re-frame/dispatch [:signing.edit-fee.ui/submit])}
        (i18n/label :t/save)]]]))
 
-(defn gwei
-  [val]
+(defn gwei [val]
   (str (money/to-fixed val 2) " " (i18n/label :t/gwei)))
 
-(defn fees-warning
-  []
-  (let [base-fee @(re-frame/subscribe [:wallet/current-base-fee])
+(defn fees-warning []
+  (let [base-fee     @(re-frame/subscribe [:wallet/current-base-fee])
         base-fee-gwei (money/wei-> :gwei (money/bignumber base-fee))
         priority-fee @(re-frame/subscribe [:wallet/current-priority-fee])
         priority-fee-gwei (money/wei-> :gwei (money/bignumber priority-fee))
@@ -311,28 +287,24 @@
          fee-edit          :maxFeePerGas}
         @(re-frame/subscribe [:signing/edit-fee])]
     [react/view
-     [react/view
-      {:margin-top        24
-       :margin-horizontal 24
-       :margin-bottom     32
-       :align-items       :center}
-      [react/view
-       {:background-color colors/blue-light
-        :width            32
-        :height           32
-        :border-radius    16
-        :align-items      :center
-        :justify-content  :center}
+     [react/view {:margin-top        24
+                  :margin-horizontal 24
+                  :margin-bottom     32
+                  :align-items       :center}
+      [react/view {:background-color colors/blue-light
+                   :width            32
+                   :height           32
+                   :border-radius    16
+                   :align-items      :center
+                   :justify-content  :center}
        [icons/icon :main-icons/warning {:color colors/black}]]
-      [react/text
-       {:style {:typography    :title-bold
-                :margin-top    16
-                :margin-bottom 8}}
+      [react/text {:style {:typography    :title-bold
+                           :margin-top    16
+                           :margin-bottom 8}}
        (i18n/label :t/are-you-sure)]
-      [react/text
-       {:style {:color             colors/gray
-                :text-align        :center
-                :margin-horizontal 24}}
+      [react/text {:style {:color             colors/gray
+                           :text-align        :center
+                           :margin-horizontal 24}}
        (i18n/label :t/bad-fees-description)]]
      [react/view
       {:style {:flex-direction    :row
@@ -354,10 +326,9 @@
                  :margin-horizontal 32}}
         [react/text (i18n/label :t/current-average-tip)]
         [react/text (gwei (money/to-fixed priority-fee-gwei 2))]]
-     [react/view
-      {:margin-vertical  16
-       :height           1
-       :background-color colors/gray-lighter}]
+     [react/view {:margin-vertical  16
+                  :height           1
+                  :background-color colors/gray-lighter}]
      [react/view
       {:style {:flex-direction    :row
                :justify-content   :space-between
@@ -375,12 +346,11 @@
        (i18n/label :t/your-price-limit)]
       [react/text {:style {:color (colors/get-color :negative-01)}}
        (gwei (:value-number fee-edit))]]
-     [react/view
-      {:style
-       {:background-color   colors/gray-lighter
-        :padding-horizontal 32
-        :padding-vertical   16
-        :margin-vertical    16}}
+     [react/view {:style
+                  {:background-color   colors/gray-lighter
+                   :padding-horizontal 32
+                   :padding-vertical   16
+                   :margin-vertical    16}}
       [react/view
        {:style {:flex-direction  :row
                 :justify-content :space-between}}
@@ -396,7 +366,7 @@
                :justify-content :center
                :margin-top      8}}
       [quo/button
-       {:type     :primary
+       {:type :primary
         :on-press #(re-frame/dispatch [:hide-popover])}
        (i18n/label :t/change-tip)]]
      [react/view
@@ -405,14 +375,13 @@
                :margin-top      8
                :margin-bottom   16}}
       [quo/button
-       {:type     :secondary
+       {:type :secondary
         :on-press #(do (re-frame/dispatch [:hide-popover])
                        (re-frame/dispatch [:signing.edit-fee.ui/submit true]))}
        (i18n/label :t/continue-anyway)]]]))
 
-(defn advanced
-  []
-  (let [nonce         (reagent/atom nil)
+(defn advanced []
+  (let [nonce (reagent/atom nil)
         default-nonce (:nonce @(re-frame/subscribe [:signing/tx]))]
     (fn []
       [react/view {:padding 20}
@@ -424,7 +393,7 @@
          :on-change-text      #(reset! nonce %)
          :show-cancel         false
          :auto-focus          true
-         :container-style     {:margin-bottom 20}}]
+         :container-style {:margin-bottom 20}}]
        [react/view {:align-items :flex-end}
         [quo/button
          {:type                :primary

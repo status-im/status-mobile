@@ -1,35 +1,33 @@
 (ns status-im.keycard.sign
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.keycard.common :as common]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.keycard.common :as common]
+            [clojure.string :as string]))
 
 (fx/defn sign
   {:events [:keycard/sign]}
   [{:keys [db] :as cofx} hash on-success]
-  (let [card-connected?     (get-in db [:keycard :card-connected?])
-        key-uid             (get-in db [:multiaccount :key-uid])
-        keycard-key-uid     (get-in db [:keycard :application-info :key-uid])
-        keycard-pin-retries (get-in db [:keycard :application-info :pin-retry-counter])
-        keycard-match?      (= key-uid keycard-key-uid)
-        hash                (or hash (get-in db [:keycard :hash]))
-        data                (get-in db [:keycard :data])
-        typed?              (get-in db [:keycard :typed?])
-        pin                 (common/vector->string (get-in db [:keycard :pin :sign]))
-        from                (or (get-in db [:signing/tx :from :address])
-                                (get-in db [:signing/tx :message :from])
-                                (ethereum/default-address db))
-        path                (reduce
-                             (fn [_ {:keys [address path]}]
-                               (when (ethereum/address= from address)
-                                 (reduced path)))
-                             nil
-                             (:multiaccount/accounts db))]
+  (let [card-connected?      (get-in db [:keycard :card-connected?])
+        key-uid              (get-in db [:multiaccount :key-uid])
+        keycard-key-uid      (get-in db [:keycard :application-info :key-uid])
+        keycard-pin-retries  (get-in db [:keycard :application-info :pin-retry-counter])
+        keycard-match?       (= key-uid keycard-key-uid)
+        hash                 (or hash (get-in db [:keycard :hash]))
+        data                 (get-in db [:keycard :data])
+        typed?               (get-in db [:keycard :typed?])
+        pin                  (common/vector->string (get-in db [:keycard :pin :sign]))
+        from                 (or (get-in db [:signing/tx :from :address]) (get-in db [:signing/tx :message :from]) (ethereum/default-address db))
+        path                 (reduce
+                              (fn [_ {:keys [address path]}]
+                                (when (ethereum/address= from address)
+                                  (reduced path)))
+                              nil
+                              (:multiaccount/accounts db))]
     (cond
       (not keycard-match?)
       (common/show-wrong-keycard-alert cofx)
@@ -39,11 +37,10 @@
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
                 (common/set-on-card-connected :keycard/sign))
 
-      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the connection
-                                 ; sheet and opened the frozen card popup
-      {:db           (-> db
-                         (assoc-in [:keycard :card-read-in-progress?] true)
-                         (assoc-in [:keycard :pin :status] :verifying))
+      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the connection sheet and opened the frozen card popup
+      {:db              (-> db
+                            (assoc-in [:keycard :card-read-in-progress?] true)
+                            (assoc-in [:keycard :pin :status] :verifying))
        :keycard/sign {:hash       (ethereum/naked-address hash)
                       :data       data
                       :typed?     typed? ; this parameter is for e2e
@@ -51,20 +48,19 @@
                       :pin        pin
                       :path       path}})))
 
-(defn normalize-signature
-  [signature]
+(defn normalize-signature [signature]
   (-> signature
-      (string/replace-first #"00$" "1b")
-      (string/replace-first #"01$" "1c")
+      (string/replace-first #"00$", "1b")
+      (string/replace-first #"01$", "1c")
       ethereum/normalized-hex))
 
 (fx/defn sign-message
   {:events [:keycard/sign-message]}
   [cofx params result]
   (let [{:keys [result error]} (types/json->clj result)
-        on-success             #(re-frame/dispatch [:keycard/on-sign-message-success params
-                                                    (normalize-signature %)])
-        hash                   (ethereum/naked-address result)]
+        on-success #(re-frame/dispatch [:keycard/on-sign-message-success params
+                                        (normalize-signature %)])
+        hash (ethereum/naked-address result)]
     (sign cofx hash on-success)))
 
 (fx/defn on-sign-message-success
@@ -77,9 +73,9 @@
       [:sign/send-accept-transaction-message message-id tx-hash signature]
       [:sign/send-transaction-message chat-id value contract tx-hash signature])
     :signing/show-transaction-result nil
-    :db                              (-> db
-                                         (assoc-in [:keycard :pin :sign] [])
-                                         (assoc-in [:keycard :pin :status] nil))}
+    :db (-> db
+            (assoc-in [:keycard :pin :sign] [])
+            (assoc-in [:keycard :pin :status] nil))}
    (common/clear-on-card-connected)
    (common/get-application-info nil)
    (common/hide-connection-sheet)))
@@ -88,7 +84,7 @@
   {:events [:keycard/sign-typed-data]}
   [{:keys [db] :as cofx}]
   (let [card-connected? (get-in db [:keycard :card-connected?])
-        hash            (get-in db [:keycard :hash])]
+        hash (get-in db [:keycard :hash])]
     (if card-connected?
       {:db                      (-> db
                                     (assoc-in [:keycard :card-read-in-progress?] true)
@@ -104,22 +100,19 @@
   {:db (-> db
            (assoc-in [:signing/sign :formatted-data :message :formatted-currency] symbol)
            (update-in [:signing/sign :formatted-data :message]
-                      #(assoc %
-                              :formatted-amount
-                              (.dividedBy ^js (money/bignumber (:amount %))
-                                          (money/bignumber (money/from-decimal decimals))))))})
+                      #(assoc % :formatted-amount (.dividedBy ^js (money/bignumber (:amount %))
+                                                              (money/bignumber (money/from-decimal decimals))))))})
 
 (fx/defn store-hash-and-sign-typed
   {:events [:keycard/store-hash-and-sign-typed]}
   [{:keys [db] :as cofx} result]
-  (let [{:keys [result]}  (types/json->clj result)
-        message           (get-in db [:signing/sign :formatted-data :message])
+  (let [{:keys [result]} (types/json->clj result)
+        message (get-in db [:signing/sign :formatted-data :message])
         currency-contract (:currency message)]
     (when currency-contract
-      {::json-rpc/call [{:method     "wallet_discoverToken"
-                         :params     [(ethereum/chain-id db) currency-contract]
-                         :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success
-                                                          %])}]})
+      {::json-rpc/call [{:method "wallet_discoverToken"
+                         :params [(ethereum/chain-id db) currency-contract]
+                         :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success %])}]})
     (fx/merge cofx
               {:db (assoc-in db [:keycard :hash] result)}
               sign-typed-data)))
@@ -147,8 +140,7 @@
   (log/debug "[keycard] sign success: " signature)
   (let [signature-json (types/clj->json {:result (normalize-signature signature)})
         transaction    (get-in db [:keycard :transaction])
-        tx-obj         (select-keys transaction
-                                    [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
+        tx-obj         (select-keys transaction [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
         command?       (:command? transaction)]
     (fx/merge cofx
               {:db (-> db
@@ -176,14 +168,13 @@
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] sign error: " error)
   (let [tag-was-lost? (common/tag-lost? (:error error))
-        pin-retries   (common/pin-retries (:error error))]
+        pin-retries (common/pin-retries (:error error))]
     (when-not tag-was-lost?
       (if (not (nil? pin-retries))
         (fx/merge cofx
                   {:db (-> db
                            (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries)
-                           (update-in [:keycard :pin]
-                                      assoc
+                           (update-in [:keycard :pin] assoc
                                       :status      :error
                                       :sign        []
                                       :error-label :t/pin-mismatch)

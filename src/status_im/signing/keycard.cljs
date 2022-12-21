@@ -1,8 +1,8 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -27,7 +27,7 @@
   [{:keys [gas gasPrice data nonce tx-obj] :as params}]
   (let [{:keys [from to value chat-id message-id command? maxPriorityFeePerGas maxFeePerGas]} tx-obj
         maxPriorityFeePerGas (or maxPriorityFeePerGas (get params :maxPriorityFeePerGas))
-        maxFeePerGas         (or maxFeePerGas (get params :maxFeePerGas))]
+        maxFeePerGas (or maxFeePerGas (get params :maxFeePerGas))]
     (cond-> {:from       from
              :to         to
              :value      value
@@ -35,15 +35,11 @@
              :message-id message-id
              :command?   command?}
       maxPriorityFeePerGas
-      (assoc :maxPriorityFeePerGas
-             (str "0x"
-                  (status/number-to-hex
-                   (js/parseInt maxPriorityFeePerGas))))
+      (assoc :maxPriorityFeePerGas (str "0x" (status/number-to-hex
+                                              (js/parseInt maxPriorityFeePerGas))))
       maxFeePerGas
-      (assoc :maxFeePerGas
-             (str "0x"
-                  (status/number-to-hex
-                   (js/parseInt maxFeePerGas))))
+      (assoc :maxFeePerGas (str "0x" (status/number-to-hex
+                                      (js/parseInt maxFeePerGas))))
       gas
       (assoc :gas (str "0x" (status/number-to-hex gas)))
       gasPrice
@@ -80,11 +76,10 @@
       {:dispatch         [:signing.ui/cancel-is-pressed]
        :utils/show-popup {:title   (i18n/label :t/sign-request-failed)
                           :content (:message error)}}
-      {:db (update db
-                   :keycard assoc
-                   :hash    result
-                   :typed?  typed?
-                   :data    data)})))
+      {:db (update db :keycard assoc
+                   :hash result
+                   :typed? typed?
+                   :data data)})))
 
 (fx/defn hash-transaction
   [{:keys [db]}]

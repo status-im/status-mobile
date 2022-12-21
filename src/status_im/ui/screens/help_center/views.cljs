@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.help-center.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
+            [quo.core :as quo]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]))
+            [status-im.constants :as constants]))
 
 (def data
   [{:size                :small
@@ -34,8 +34,7 @@
                          "support"])
     :chevron             true}])
 
-(defn help-center
-  []
+(defn help-center []
   [list/flat-list
    {:data      data
     :key-fn    (fn [_ i] (str i))

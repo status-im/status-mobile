@@ -28,8 +28,7 @@
 
 ;; this map looks a bit strange
 ;; but this way of setting elevation seems to be the only way to set z-index (in RN 0.30)
-(defn add-contact
-  []
+(defn add-contact []
   {:flex-direction      :row
    :align-items         :center
    :justify-content     :center
@@ -51,17 +50,16 @@
 (defn intro-header-container
   [loading-messages? no-messages?]
   (if (or loading-messages? no-messages?)
-    {:flex            1
-     :flex-direction  :column
-     :justify-content :center
-     :align-items     :center}
-    {:flex            1
-     :flex-direction  :column
-     :justify-content :center
-     :align-items     :center}))
+    {:flex               1
+     :flex-direction     :column
+     :justify-content    :center
+     :align-items        :center}
+    {:flex               1
+     :flex-direction     :column
+     :justify-content    :center
+     :align-items        :center}))
 
-(defn intro-header-icon
-  [diameter color]
+(defn intro-header-icon [diameter color]
   {:width            diameter
    :height           diameter
    :align-items      :center
@@ -78,13 +76,11 @@
    :opacity     0.8
    :line-height 72})
 
-(defn emoji-intro-header-icon-text
-  [size]
-  {:font-size  (emoji-utils/emoji-font-size size)
-   :margin-top (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
+(defn emoji-intro-header-icon-text [size]
+  {:font-size   (emoji-utils/emoji-font-size size)
+   :margin-top  (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
 
-(defn intro-header-chat-name
-  []
+(defn intro-header-chat-name []
   {:font-size         22
    :font-weight       "700"
    :line-height       28
@@ -148,9 +144,9 @@
    :font-size   15})
 
 (def tribute-received-note
-  {:font-size   13
+  {:font-size 13
    :line-height 18
-   :text-align  :center})
+   :text-align :center})
 
 (def contact-request
   {:width            "100%"

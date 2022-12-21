@@ -19,39 +19,25 @@
 (def key-value-separator "=")
 
 ;;TODO(goranjovic) - rewrite all of these with something more readable than regex
-(def uri-pattern
-  (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
-(def authority-path-pattern
-  (re-pattern (str "^([^"
-                   chain-id-separator
-                   function-name-separator
-                   "]*)(?:"
-                   chain-id-separator
-                   "(\\d+))?(?:"
-                   function-name-separator
-                   "(\\w*))?")))
+(def uri-pattern (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
+(def authority-path-pattern (re-pattern (str "^([^" chain-id-separator function-name-separator "]*)(?:" chain-id-separator "(\\d+))?(?:" function-name-separator "(\\w*))?")))
 (def key-value-format (str "([^" parameter-separator key-value-separator "]+)"))
 (def query-pattern (re-pattern (str key-value-format key-value-separator key-value-format)))
 
 (def valid-native-arguments #{:value :gas :gasPrice :gasLimit})
 
-(defn- parse-query
-  [s]
-  (into {}
-        (for [[_ k v] (re-seq query-pattern (or s ""))]
-          [(keyword k) v])))
+(defn- parse-query [s]
+  (into {} (for [[_ k v] (re-seq query-pattern (or s ""))]
+             [(keyword k) v])))
 
-(defn- parse-native-arguments
-  [m]
+(defn- parse-native-arguments [m]
   (select-keys m valid-native-arguments))
 
-(defn- parse-arguments
-  [function-name s]
+(defn- parse-arguments [function-name s]
   (let [m         (parse-query s)
         arguments (parse-native-arguments m)]
     (if function-name
-      (merge arguments
-             {:function-name function-name}
+      (merge arguments {:function-name function-name}
              (when (seq m)
                {:function-arguments (apply dissoc m valid-native-arguments)}))
       arguments)))
@@ -79,9 +65,7 @@
                               raw-address)]
                 (when-let [arguments (parse-arguments function-name query)]
                   (let [contract-address (get-in arguments [:function-arguments :address])]
-                    (if-not (or (not contract-address)
-                                (or (ens/is-valid-eth-name? contract-address)
-                                    (ethereum/address? contract-address)))
+                    (if-not (or (not contract-address) (or (ens/is-valid-eth-name? contract-address) (ethereum/address? contract-address)))
                       nil
                       (merge {:address  address
                               :chain-id (if chain-id
@@ -93,7 +77,7 @@
   "Takes a map as returned by `parse-uri` and returns value as BigNumber"
   [s]
   (when (string? s)
-    (let [eth?  (string/ends-with? s "ETH")
+    (let [eth? (string/ends-with? s "ETH")
           ^js n (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
@@ -114,8 +98,7 @@
               :address (:address function-arguments)}
              nil))))
 
-(defn- generate-query-string
-  [m]
+(defn- generate-query-string [m]
   (string/join parameter-separator
                (for [[k v] m]
                  (str (name k) key-value-separator v))))
@@ -126,17 +109,13 @@
   [address {:keys [chain-id function-name function-arguments] :as m}]
   (when (ethereum/address? address)
     (let [parameters (dissoc (into {} (filter second m)) :chain-id)] ;; filter nil values
-      (str scheme
-           scheme-separator
-           address
+      (str scheme scheme-separator address
            (when (and chain-id (not= chain-id (ethereum/chain-keyword->chain-id :mainnet)))
              ;; Add chain-id if specified and is not main-net
              (str chain-id-separator chain-id))
            (when-not (empty? parameters)
              (if function-name
-               (str function-name-separator
-                    function-name
-                    query-separator
+               (str function-name-separator function-name query-separator
                     (let [native-parameters (dissoc parameters :function-name :function-arguments)]
                       (generate-query-string (merge function-arguments native-parameters))))
                (str query-separator (generate-query-string parameters))))))))

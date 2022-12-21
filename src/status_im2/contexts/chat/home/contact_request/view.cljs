@@ -1,16 +1,17 @@
 (ns status-im2.contexts.chat.home.contact-request.view
-  (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
+  (:require [react-native.core :as rn]
             [quo2.core :as quo]
+            [i18n.i18n :as i18n]
+            [utils.re-frame :as rf]
+            [clojure.string :as string]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent] ;; TODO move to status-im2
-            [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
             [status-im2.contexts.chat.home.contact-request.style :as style]
-            [utils.re-frame :as rf]))
+            [reagent.core :as reagent]
 
-(defn contact-requests-sheet
-  [received-requests]
+            ;; TODO move to status-im2
+            [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]))
+
+(defn contact-requests-sheet [received-requests]
   (let [selected-requests-tab (reagent/atom :received)]
     (fn []
       (let [sent-requests []]
@@ -35,32 +36,23 @@
            :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
            :render-fn received-cr-item/received-cr-item}]]))))
 
-(defn get-display-name
-  [{:keys [chat-id message]}]
-  (let [name        (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+(defn get-display-name [{:keys [chat-id message]}]
+  (let [name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         no-ens-name (string/blank? (get-in message [:content :ens-name]))]
     (if no-ens-name
       (first (string/split name " "))
       name)))
 
-(defn requests-summary
-  [requests]
+(defn requests-summary [requests]
   (case (count requests)
     1
     (get-display-name (first requests))
     2
-    (str (get-display-name (first requests))
-         " " (i18n/label :t/and)
-         " " (get-display-name (second requests)))
-    (str (get-display-name (first requests))
-         ", " (get-display-name (second requests))
-         " "
-         (i18n/label :t/and)
-         " "  (- (count requests) 2)
-         " "  (i18n/label :t/more))))
+    (str (get-display-name (first requests)) " " (i18n/label :t/and) " " (get-display-name (second requests)))
+    (str (get-display-name (first requests)) ", " (get-display-name (second requests)) " "
+         (i18n/label :t/and) " " (- (count requests) 2) " " (i18n/label :t/more))))
 
-(defn contact-requests
-  [requests]
+(defn contact-requests [requests]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       (fn []
@@ -71,8 +63,7 @@
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
     [rn/text {:weight :semi-bold} (i18n/label :t/pending-requests)]
-    [rn/text
-     {:size  :paragraph-2
-      :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+    [rn/text {:size  :paragraph-2
+              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
      (requests-summary requests)]]
    [quo/info-count (count requests)]])

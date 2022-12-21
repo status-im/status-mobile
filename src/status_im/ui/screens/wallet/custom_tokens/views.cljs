@@ -1,40 +1,35 @@
 (ns status-im.ui.screens.wallet.custom-tokens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
+  (:require [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
+            [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]))
 
 (def debounce-timers (atom {}))
 
-(defn debounce-and-save
-  [field-key value]
+(defn debounce-and-save [field-key value]
   (let [timeout (get @debounce-timers field-key)]
     (when timeout (js/clearTimeout timeout))
-    (swap! debounce-timers assoc
-      field-key
-      (js/setTimeout
-       #(re-frame/dispatch [:wallet.custom-token.ui/field-is-edited field-key (string/trim value)])
-       500))))
+    (swap! debounce-timers assoc field-key
+           (js/setTimeout
+            #(re-frame/dispatch [:wallet.custom-token.ui/field-is-edited field-key (string/trim value)])
+            500))))
 
-(defview add-custom-token
-  []
+(defview add-custom-token []
   (letsubs [{:keys [contract name symbol decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
     [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
-     [react/scroll-view
-      {:keyboard-should-persist-taps :handled
-       :style                        {:flex               1
-                                      :padding-horizontal 16}}
+     [react/scroll-view {:keyboard-should-persist-taps :handled
+                         :style                        {:flex               1
+                                                        :padding-horizontal 16}}
       [react/view {:padding-vertical 8}
-       [react/view
-        {:style {:flex-direction   :row
-                 :justify-content  :space-between
-                 :padding-vertical 10}}
+       [react/view {:style {:flex-direction   :row
+                            :justify-content  :space-between
+                            :padding-vertical 10}}
         [react/text (i18n/label :t/contract-address)]
         (when in-progress?
           [react/view {:flex-direction :row :justify-content :center}
@@ -45,8 +40,7 @@
        (when-not in-progress?
          ;;tooltip covers button
          [react/view {:position :absolute :z-index 1000 :right 0 :top 10}
-          [react/touchable-highlight
-           {:on-press #(re-frame/dispatch [:wallet.custom-token.ui/contract-address-paste])}
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.custom-token.ui/contract-address-paste])}
            [react/text {:style {:color colors/blue}}
             (i18n/label :t/paste)]]])
        [quo/text-input
@@ -68,9 +62,8 @@
          :placeholder    (i18n/label :t/name-of-token)}]]
       [react/view {:padding-vertical 8}
        [react/view {:style {:flex-direction :row}}
-        [react/view
-         {:flex          1
-          :padding-right 8}
+        [react/view {:flex          1
+                     :padding-right 8}
          [quo/text-input
           {:on-change-text #(debounce-and-save :symbol %)
            :label          (i18n/label :t/symbol)
@@ -79,9 +72,8 @@
            :auto-focus     false
            :show-cancel    false
            :placeholder    "ABC"}]]
-        [react/view
-         {:flex         1
-          :padding-left 8}
+        [react/view {:flex         1
+                     :padding-left 8}
          [quo/text-input
           {:label          (i18n/label :t/decimals)
            :on-change-text #(debounce-and-save :decimals %)
@@ -106,27 +98,20 @@
          :after    :main-icon/next
          :disabled (boolean
                     (or in-progress?
-                        error
-                        error-name
-                        error-symbol
-                        (string/blank? contract)
-                        (string/blank? name)
-                        (string/blank? symbol)
-                        (string/blank? decimals)))
+                        error error-name error-symbol
+                        (string/blank? contract) (string/blank? name)
+                        (string/blank? symbol) (string/blank? decimals)))
          :on-press #(re-frame/dispatch [:wallet.custom-token.ui/add-pressed])}
         (i18n/label :t/add)]}]]))
 
-(defview custom-token-details
-  []
+(defview custom-token-details []
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
             [:get-screen-params]]
-    [react/keyboard-avoiding-view
-     {:style         {:flex 1}
-      :ignore-offset true}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [topbar/topbar {:title name}]
-     [react/scroll-view
-      {:keyboard-should-persist-taps :handled
-       :style                        {:flex 1}}
+     [react/scroll-view {:keyboard-should-persist-taps :handled
+                         :style                        {:flex 1}}
       [react/view {:padding-horizontal 16}
        [react/view {:padding-vertical 8}
         [quo/text-input
@@ -142,9 +127,8 @@
           :editable      false}]]
        [react/view {:padding-vertical 8}
         [react/view {:style {:flex-direction :row}}
-         [react/view
-          {:flex          1
-           :padding-right 8}
+         [react/view {:flex          1
+                      :padding-right 8}
           [quo/text-input
            {:label         (i18n/label :t/symbol)
             :editable      false

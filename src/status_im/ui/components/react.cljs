@@ -1,21 +1,21 @@
 (ns status-im.ui.components.react
-  (:require ["@react-native-community/blur" :as blur]
-            ["@react-native-community/clipboard" :default Clipboard]
-            ["@react-native-community/masked-view" :default MaskedView]
-            ["react" :as reactjs]
-            ["react-native" :as react-native :refer (Keyboard BackHandler)]
-            ["react-native-fast-image" :as FastImage]
-            ["react-native-image-crop-picker" :default image-picker]
-            ["react-native-linear-gradient" :default LinearGradient]
-            ["react-native-navigation" :refer (Navigation)]
-            ["react-native-safe-area-context" :as safe-area-context :refer
-             (SafeAreaProvider SafeAreaInsetsContext)]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.typography :as typography]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            ["react" :as reactjs]
+            ["react-native" :as react-native :refer (Keyboard BackHandler)]
+            ["react-native-image-crop-picker" :default image-picker]
+            ["react-native-safe-area-context" :as safe-area-context
+             :refer (SafeAreaProvider SafeAreaInsetsContext)]
+            ["@react-native-community/clipboard" :default Clipboard]
+            ["react-native-linear-gradient" :default LinearGradient]
+            ["@react-native-community/masked-view" :default MaskedView]
+            ["react-native-navigation" :refer (Navigation)]
+            ["react-native-fast-image" :as FastImage]
+            ["@react-native-community/blur" :as blur])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -36,9 +36,7 @@
 (def fast-image-class (reagent/adapt-react-class FastImage))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
-(defn resolve-asset-source
-  [uri]
-  (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
+(defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
 
 (def linear-gradient (reagent/adapt-react-class LinearGradient))
 
@@ -46,41 +44,34 @@
 
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
-(defn valid-source?
-  [source]
+(defn valid-source? [source]
   (or (not (map? source))
       (not (contains? source :uri))
       (and (contains? source :uri)
            (:uri source))))
 
-(defn image
-  [{:keys [source] :as props}]
+(defn image [{:keys [source] :as props}]
   (when (valid-source? source)
     [image-class props]))
 
 (def switch-class (reagent/adapt-react-class (.-Switch react-native)))
 
-(defn switch
-  [props]
+(defn switch [props]
   [switch-class props])
 
 (def touchable-highlight-class (reagent/adapt-react-class (.-TouchableHighlight react-native)))
 (def pressable-class (reagent/adapt-react-class (.-Pressable react-native)))
-(def touchable-without-feedback-class
-  (reagent/adapt-react-class (.-TouchableWithoutFeedback react-native)))
+(def touchable-without-feedback-class (reagent/adapt-react-class (.-TouchableWithoutFeedback react-native)))
 (def touchable-opacity-class (reagent/adapt-react-class (.-TouchableOpacity react-native)))
 (def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator react-native)))
 
-(defn activity-indicator
-  [props]
+(defn activity-indicator [props]
   [activity-indicator-class (update props :color #(or % colors/gray))])
 
-(defn small-loading-indicator
-  [color]
-  [activity-indicator
-   {:color   color
-    :ios     {:size :small}
-    :android {:size :16}}])
+(defn small-loading-indicator [color]
+  [activity-indicator {:color   color
+                       :ios     {:size :small}
+                       :android {:size :16}}])
 
 (def animated (.-Animated react-native))
 
@@ -93,12 +84,10 @@
 (def animated-scroll-view-class
   (reagent/adapt-react-class (.-ScrollView ^js animated)))
 
-(defn animated-view
-  [props & content]
+(defn animated-view [props & content]
   (vec (conj content props animated-view-class)))
 
-(defn animated-scroll-view
-  [props & children]
+(defn animated-scroll-view [props & children]
   (vec (conj children props animated-scroll-view-class)))
 
 (def dimensions (.-Dimensions react-native))
@@ -108,14 +97,12 @@
 
 (def max-font-size-multiplier 1.25)
 
-(defn prepare-text-props
-  [props]
+(defn prepare-text-props [props]
   (-> props
       (update :style typography/get-style)
       (assoc :max-font-size-multiplier max-font-size-multiplier)))
 
-(defn prepare-nested-text-props
-  [props]
+(defn prepare-nested-text-props [props]
   (-> props
       (update :style typography/get-nested-style)
       (assoc :parseBasicMarkdown true)
@@ -141,8 +128,7 @@
                     (if (string? text-element)
                       text-element
                       (let [[options & nested-text-elements] text-element]
-                        (apply nested-text
-                               (prepare-nested-text-props options)
+                        (apply nested-text (prepare-nested-text-props options)
                                nested-text-elements)))))
             [text-class (dissoc options-with-style :nested?)]
             nested-text-elements)))
@@ -175,8 +161,7 @@
                                      (swap! text-input-refs dissoc @input-ref))
           :reagent-render
           (fn [options text]
-            (render-fn (assoc options
-                              :ref
+            (render-fn (assoc options :ref
                               (fn [r]
                                 ;; Store input and its defaultValue
                                 ;; one we receive a non-nil ref
@@ -184,40 +169,33 @@
                                   (swap! text-input-refs assoc r (:default-value options)))
                                 (reset! input-ref r)
                                 (when (:ref options)
-                                  ((:ref options) r))))
-                       text))})))))
+                                  ((:ref options) r)))) text))})))))
 
 (defn i18n-text
   [{:keys [style key]}]
-  [text {:style style} (i18n/label key)])
+  [text {:style  style} (i18n/label key)])
 
-(defn touchable-opacity
-  [props content]
+(defn touchable-opacity [props content]
   [touchable-opacity-class props content])
 
-(defn touchable-highlight
-  [props content]
+(defn touchable-highlight [props content]
   [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
 
-(defn pressable
-  [props content]
+(defn pressable [props content]
   [pressable-class props content])
 
-(defn touchable-without-feedback
-  [props content]
+(defn touchable-without-feedback [props content]
   [touchable-without-feedback-class
    props
    content])
 
-(defn get-dimensions
-  [name]
+(defn get-dimensions [name]
   (js->clj (.get ^js dimensions name) :keywordize-keys true))
 
 ;; Image picker
-(defn show-access-error
-  [o]
+(defn show-access-error [o]
   (when (= "E_PERMISSION_MISSING" (.-code ^js o))
     (utils/show-popup (i18n/label :t/error)
                       (i18n/label :t/photos-access-error))))
@@ -225,37 +203,34 @@
 (defn show-image-picker
   ([images-fn]
    (show-image-picker images-fn nil))
-  ([images-fn
-    {:keys [media-type]
-     :or   {media-type "any"}
-     :as   props}]
-   (-> ^js image-picker
-       (.openPicker (clj->js (merge {:mediaType media-type}
-                                    props)))
-       (.then images-fn)
-       (.catch show-access-error))))
+  ([images-fn {:keys [media-type]
+               :or   {media-type "any"}
+               :as   props}]
+   (->  ^js image-picker
+        (.openPicker (clj->js (merge {:mediaType media-type}
+                                     props)))
+        (.then images-fn)
+        (.catch show-access-error))))
 
 (defn show-image-picker-camera
   ([images-fn]
    (show-image-picker-camera images-fn nil))
   ([images-fn props]
-   (-> ^js image-picker
-       (.openCamera (clj->js props))
-       (.then images-fn)
-       (.catch show-access-error))))
+   (->  ^js image-picker
+        (.openCamera (clj->js props))
+        (.then images-fn)
+        (.catch show-access-error))))
 
 ;; Clipboard
 
 (def sharing
   (.-Share react-native))
 
-(defn copy-to-clipboard
-  [text]
+(defn copy-to-clipboard [text]
   (.setString ^js Clipboard text))
 
-(defn get-from-clipboard
-  [clbk]
-  (let [clipboard-contents (.getString ^js Clipboard)]
+(defn get-from-clipboard [clbk]
+  (let [clipboard-contents (.getString  ^js Clipboard)]
     (.then clipboard-contents #(clbk %))))
 
 ;; KeyboardAvoidingView
@@ -263,12 +238,11 @@
 
 (.then (.constants Navigation)
        (fn [^js consts]
-         (reset! navigation-const {:top-bar-height     (.-topBarHeight consts)
+         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
                                    :bottom-tabs-height (.-bottomTabsHeight consts)
-                                   :status-bar-height  (.-statusBarHeight consts)})))
+                                   :status-bar-height (.-statusBarHeight consts)})))
 
-(defn keyboard-avoiding-view
-  [props & children]
+(defn keyboard-avoiding-view [props & children]
   (into [keyboard-avoiding-view-class
          (merge (when platform/ios? {:behavior :padding})
                 (if (:ignore-offset props)
@@ -276,8 +250,7 @@
                   (update props :keyboardVerticalOffset + 44 (:status-bar-height @navigation-const))))]
         children))
 
-(defn keyboard-avoiding-view-new
-  [props & children]
+(defn keyboard-avoiding-view-new [props & children]
   (into [keyboard-avoiding-view-class
          (merge (when platform/ios? {:behavior :padding})
                 (if (:ignore-offset props)
@@ -285,8 +258,7 @@
                   (update props :keyboardVerticalOffset + 44)))]
         children))
 
-(defn scroll-view
-  [props & children]
+(defn scroll-view [props & children]
   (vec (conj children props scroll-view-class)))
 
 (views/defview with-activity-indicator
@@ -301,20 +273,16 @@
                                                  timeout)))}
     (if (and (not enabled?) @loading)
       (or preview
-          [view
-           {:style (or style
-                       {:justify-content :center
-                        :align-items     :center})}
+          [view {:style (or style {:justify-content :center
+                                   :align-items     :center})}
            [activity-indicator {:animating true}]])
       comp)))
 
 (def safe-area-provider (reagent/adapt-react-class SafeAreaProvider))
 (def safe-area-consumer (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
 
-(defn hw-back-add-listener
-  [callback]
+(defn hw-back-add-listener [callback]
   (.addEventListener BackHandler "hardwareBackPress" callback))
 
-(defn hw-back-remove-listener
-  [callback]
+(defn hw-back-remove-listener [callback]
   (.removeEventListener BackHandler "hardwareBackPress" callback))

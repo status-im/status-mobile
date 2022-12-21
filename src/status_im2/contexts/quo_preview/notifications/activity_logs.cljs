@@ -6,65 +6,64 @@
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]))
 
-(def descriptor
-  [{:label "Unread?"
-    :key   :unread?
-    :type  :boolean}
-   {:label "Replying?"
-    :key   :replying?
-    :type  :boolean}
-   {:label   "Icon"
-    :key     :icon
-    :type    :select
-    :options [{:key   :placeholder
-               :value :placeholder}]}
-   {:label "Title"
-    :key   :title
-    :type  :text}
-   {:label   "Context"
-    :key     :context
-    :type    :select
-    :options [{:key   :basic-user-action
-               :value "Basic user action"}
-              {:key   :complex-user-action
-               :value "Complex user action"}]}
-   {:label   "Message"
-    :key     :message
-    :type    :select
-    :options [{:value "Simple"
-               :key   :simple}
-              {:value "With mention"
-               :key   :with-mention}
-              {:value "With title"
-               :key   :with-title}]}
-   {:label "Timestamp"
-    :key   :timestamp
-    :type  :text}
-   {:label   "Button 1 type"
-    :key     :button-1-type
-    :type    :select
-    :options [{:value "Danger"
-               :key   :danger}
-              {:value "Primary"
-               :key   :primary}
-              {:value "Success"
-               :key   :success}]}
-   {:label "Button 1 label"
-    :key   :button-1-label
-    :type  :text}
-   {:label   "Button 2 type"
-    :key     :button-2-type
-    :type    :select
-    :options [{:value "Danger"
-               :key   :danger}
-              {:value "Primary"
-               :key   :primary}
-              {:value "Success"
-               :key   :success}]}
-   {:label "Button 2 label"
-    :key   :button-2-label
-    :type  :text}
-   status-tags/status-tags-options])
+(def descriptor [{:label "Unread?"
+                  :key   :unread?
+                  :type  :boolean}
+                 {:label "Replying?"
+                  :key   :replying?
+                  :type  :boolean}
+                 {:label   "Icon"
+                  :key     :icon
+                  :type    :select
+                  :options [{:key   :placeholder
+                             :value :placeholder}]}
+                 {:label "Title"
+                  :key   :title
+                  :type  :text}
+                 {:label   "Context"
+                  :key     :context
+                  :type    :select
+                  :options [{:key   :basic-user-action
+                             :value "Basic user action"}
+                            {:key   :complex-user-action
+                             :value "Complex user action"}]}
+                 {:label   "Message"
+                  :key     :message
+                  :type    :select
+                  :options [{:value "Simple"
+                             :key   :simple}
+                            {:value "With mention"
+                             :key   :with-mention}
+                            {:value "With title"
+                             :key   :with-title}]}
+                 {:label "Timestamp"
+                  :key   :timestamp
+                  :type  :text}
+                 {:label   "Button 1 type"
+                  :key     :button-1-type
+                  :type    :select
+                  :options [{:value "Danger"
+                             :key   :danger}
+                            {:value "Primary"
+                             :key   :primary}
+                            {:value "Success"
+                             :key   :success}]}
+                 {:label "Button 1 label"
+                  :key   :button-1-label
+                  :type  :text}
+                 {:label   "Button 2 type"
+                  :key     :button-2-type
+                  :type    :select
+                  :options [{:value "Danger"
+                             :key   :danger}
+                            {:value "Primary"
+                             :key   :primary}
+                            {:value "Success"
+                             :key   :success}]}
+                 {:label "Button 2 label"
+                  :key   :button-2-label
+                  :type  :text}
+                 status-tags/status-tags-options])
 
 (def basic-user-action
   [[quo2/user-avatar-tag
@@ -93,17 +92,15 @@
 (def message-with-mention
   (let [common-text-style {:style {:color colors/white}
                            :size  :paragraph-1}]
-    {:body [rn/view
-            {:flex           1
-             :flex-direction :row}
+    {:body [rn/view {:flex           1
+                     :flex-direction :row}
             [quo2/text common-text-style "Hello"]
-            [quo2/text
-             {:style {:background-color   colors/primary-50-opa-10
-                      :border-radius      6
-                      :color              colors/primary-50
-                      :margin-horizontal  3
-                      :padding-horizontal 3
-                      :size               :paragraph-1}}
+            [quo2/text {:style {:background-color   colors/primary-50-opa-10
+                                :border-radius      6
+                                :color              colors/primary-50
+                                :margin-horizontal  3
+                                :padding-horizontal 3
+                                :size               :paragraph-1}}
              "@name"]
             [quo2/text common-text-style "! How are you feeling?"]]}))
 
@@ -111,8 +108,7 @@
   {:body  "Your favorite color is Turquoise."
    :title "What's my favorite color?"})
 
-(defn preview
-  []
+(defn preview []
   (let [state (reagent/atom {:button-1-label "Decline"
                              :button-1-type  :danger
                              :button-2-label "Accept"
@@ -127,57 +123,49 @@
       (let [{:keys [button-1-type
                     button-1-label
                     button-2-type
-                    button-2-label]}
-            @state
-            props (cond-> @state
-                    (and (seq button-1-label)
-                         button-1-type)
-                    (assoc :button-1
-                           {:label button-1-label
-                            :type  button-1-type})
+                    button-2-label]} @state
+            props                    (cond-> @state
+                                       (and (seq button-1-label)
+                                            button-1-type)
+                                       (assoc :button-1 {:label button-1-label
+                                                         :type  button-1-type})
 
-                    (and (seq button-2-label)
-                         button-2-type)
-                    (assoc :button-2
-                           {:label button-2-label
-                            :type  button-2-type})
+                                       (and (seq button-2-label)
+                                            button-2-type)
+                                       (assoc :button-2 {:label button-2-label
+                                                         :type  button-2-type})
 
-                    (= (:message @state) :simple)
-                    (assoc :message {:body "The quick brown fox forgot to jump."})
+                                       (= (:message @state) :simple)
+                                       (assoc :message {:body "The quick brown fox forgot to jump."})
 
-                    (= (:message @state) :with-mention)
-                    (assoc :message message-with-mention)
+                                       (= (:message @state) :with-mention)
+                                       (assoc :message message-with-mention)
 
-                    (some? (:status @state))
-                    (update :status
-                            (fn [status]
-                              {:label (name status) :type status}))
+                                       (some? (:status @state))
+                                       (update :status (fn [status]
+                                                         {:label (name status) :type status}))
 
-                    (= (:message @state) :with-title)
-                    (assoc :message message-with-title)
+                                       (= (:message @state) :with-title)
+                                       (assoc :message message-with-title)
 
-                    (= (:context @state) :basic-user-action)
-                    (assoc :context basic-user-action)
+                                       (= (:context @state) :basic-user-action)
+                                       (assoc :context basic-user-action)
 
-                    (= (:context @state) :complex-user-action)
-                    (assoc :context complex-user-action))]
+                                       (= (:context @state) :complex-user-action)
+                                       (assoc :context complex-user-action))]
         [rn/view {:margin-bottom 50}
-         [rn/view
-          {:flex    1
-           :padding 16}
+         [rn/view {:flex    1
+                   :padding 16}
           [preview/customizer state descriptor]]
-         [rn/view
-          {:background-color colors/neutral-90
-           :flex-direction   :row
-           :justify-content  :center
-           :padding-vertical 60}
+         [rn/view {:background-color colors/neutral-90
+                   :flex-direction   :row
+                   :justify-content  :center
+                   :padding-vertical 60}
           [quo2/activity-log props]]]))))
 
-(defn preview-activity-logs
-  []
+(defn preview-activity-logs []
   [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                      1
-     :header                    [preview]
-     :key-fn                    str
-     :keyboardShouldPersistTaps :always}]])
+   [rn/flat-list {:flex                      1
+                  :header                    [preview]
+                  :key-fn                    str
+                  :keyboardShouldPersistTaps :always}]])

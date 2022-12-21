@@ -1,15 +1,15 @@
 (ns quo2.components.icon
-  (:require [clojure.string :as string]
-            [quo2.components.icons.icons :as icons]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [clojure.string :as string]
+   [react-native.core :as rn]
+   [quo2.components.icons.icons :as icons]
+   [quo2.foundations.colors :as colors]))
 
 (defn memo-icon-fn
   ([icon-name] (memo-icon-fn icon-name nil))
-  ([icon-name
-    {:keys [color container-style size
-            accessibility-label no-color]
-     :or   {accessibility-label :icon}}]
+  ([icon-name {:keys [color container-style size
+                      accessibility-label no-color]
+               :or   {accessibility-label :icon}}]
    (let [size (or size 20)]
      ^{:key icon-name}
      [rn/image

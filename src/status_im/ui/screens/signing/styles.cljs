@@ -18,8 +18,7 @@
    :padding-right   24
    :margin-bottom   19})
 
-(defn message
-  []
+(defn message []
   {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
@@ -35,15 +34,13 @@
    :border-width      1
    :padding           8})
 
-(defn sheet
-  []
+(defn sheet []
   {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          40})
 
-(defn sign-with-keycard-button
-  [disabled?]
+(defn sign-with-keycard-button [disabled?]
   {:background-color   (if (colors/dark?) "#27D8B9" colors/black-light)
    :padding-top        2
    :border-radius      8
@@ -55,8 +52,7 @@
    :opacity            (if disabled? 0.1 1)
    :padding-horizontal 12})
 
-(defn sign-with-keycard-button-text
-  [disabled?]
+(defn sign-with-keycard-button-text [disabled?]
   {:padding-right      2
    :padding-left       16
    :color              (if disabled? colors/black colors/white-persist)

@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.chat.styles.input.gap
   (:require [quo.design-system.colors :as colors]))
 
-(defn gap-container
-  []
+(defn gap-container []
   {:align-self          :stretch
    :margin-top          24
    :margin-bottom       24
@@ -19,8 +18,7 @@
    :justify-content :center
    :text-align      :center})
 
-(defn gap-text
-  [connected?]
+(defn gap-text [connected?]
   {:text-align :center
    :color      (if connected?
                  colors/blue

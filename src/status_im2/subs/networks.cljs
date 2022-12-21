@@ -1,21 +1,19 @@
 (ns status-im2.subs.networks
-  (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
+  (:require [status-im.ethereum.core :as ethereum]
+            [re-frame.core :as re-frame]
             [status-im.utils.config :as config]))
 
-(defn- filter-networks
-  [network-type]
+(defn- filter-networks [network-type]
   (fn [network]
     (let [chain-id (ethereum/network->chain-id network)
           testnet? (ethereum/testnet? chain-id)
           custom?  (:custom? network)]
       (case network-type
-        :custom  custom?
+        :custom custom?
         :mainnet (and (not custom?) (not testnet?))
         :testnet (and (not custom?) testnet?)))))
 
-(defn- label-networks
-  [default-networks]
+(defn- label-networks [default-networks]
   (fn [network]
     (let [custom? (not (default-networks (:id network)))]
       (assoc network :custom? custom?))))
@@ -24,8 +22,7 @@
  :get-networks
  :<- [:networks/networks]
  (fn [networks]
-   (let [networks (map (label-networks (into #{} (map :id config/default-networks)))
-                       (sort-by :name (vals networks)))
+   (let [networks (map (label-networks (into #{} (map :id config/default-networks))) (sort-by :name (vals networks)))
          types    [:mainnet :testnet :custom]]
      (zipmap
       types

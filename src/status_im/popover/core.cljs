@@ -4,7 +4,7 @@
 (fx/defn show-popover
   {:events [:show-popover]}
   [_ value]
-  {:show-popover     nil
+  {:show-popover nil
    ;;TODO refactor popover just start animation on mount
    :dispatch-later   [{:ms 250 :dispatch [:show-popover-db value]}]
    :dismiss-keyboard nil})
@@ -17,5 +17,5 @@
 (fx/defn hide-popover
   {:events [:hide-popover]}
   [{:keys [db]}]
-  {:db           (dissoc db :popover/popover)
+  {:db               (dissoc db :popover/popover)
    :hide-popover nil})

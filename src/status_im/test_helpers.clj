@@ -19,8 +19,8 @@
 
 (s/fdef deftest-sub
   :args (s/cat :sub-name keyword?
-               :args     (s/coll-of symbol? :count 1)
-               :body     (s/* any?)))
+               :args (s/coll-of symbol? :count 1)
+               :body (s/* any?)))
 
 (defmacro deftest-sub
   "Defines a test based on `sub-name`, executes `body` and restores the app db.

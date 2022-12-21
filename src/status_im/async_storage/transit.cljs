@@ -6,8 +6,6 @@
 (def writer (transit/writer :json))
 
 (defn clj->transit [o] (transit/write writer o))
-(defn transit->clj
-  [o]
-  (try (transit/read reader o)
-       (catch :default e
-         (log/error e))))
+(defn transit->clj [o] (try (transit/read reader o)
+                            (catch :default e
+                              (log/error e))))

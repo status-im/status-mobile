@@ -1,8 +1,7 @@
 (ns status-im.data-store.invitations
   (:require clojure.set))
 
-(defn <-rpc
-  [message]
+(defn <-rpc [message]
   (-> message
       (clojure.set/rename-keys {:chatId              :chat-id
                                 :introductionMessage :introduction-message

@@ -1,8 +1,8 @@
 (ns status-im2.contexts.activity-center.events
   (:require [re-frame.core :as rf]
             [status-im.data-store.activities :as data-store.activities]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
-            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.contexts.activity-center.notification-types :as types]
             [taoensso.timbre :as log]))
 
@@ -19,13 +19,12 @@
 (fx/defn open-activity-center
   {:events [:activity-center/open]}
   [_]
-  (rf/dispatch [:show-popover
-                {:view                       :activity-center
-                 :style                      {:margin 0}
-                 :disable-touchable-overlay? true
-                 :blur-view?                 true
-                 :blur-view-props            {:blur-amount 20
-                                              :blur-type   :dark}}]))
+  (rf/dispatch [:show-popover {:view                       :activity-center
+                               :style                      {:margin 0}
+                               :disable-touchable-overlay? true
+                               :blur-view?                 true
+                               :blur-view-props            {:blur-amount 20
+                                                            :blur-type   :dark}}]))
 
 ;;;; Misc
 
@@ -73,10 +72,8 @@
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
   (when (seq new-notifications)
-    {:db (update-in db
-                    [:activity-center :notifications]
-                    update-notifications
-                    new-notifications)}))
+    {:db (update-in db [:activity-center :notifications]
+                    update-notifications new-notifications)}))
 
 (fx/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
@@ -90,12 +87,11 @@
 
 (defn- get-notification
   [db notification-id]
-  (->> (get-in db
-               [:activity-center
-                :notifications
-                (get-in db [:activity-center :filter :type])
-                (get-in db [:activity-center :filter :status])
-                :data])
+  (->> (get-in db [:activity-center
+                   :notifications
+                   (get-in db [:activity-center :filter :type])
+                   (get-in db [:activity-center :filter :status])
+                   :data])
        (filter #(= notification-id (:id %)))
        first))
 
@@ -105,8 +101,7 @@
   (when-let [notification (get-notification db notification-id)]
     {::json-rpc/call [{:method     "wakuext_markActivityCenterNotificationsRead"
                        :params     [[notification-id]]
-                       :on-success #(rf/dispatch [:activity-center.notifications/mark-as-read-success
-                                                  notification])
+                       :on-success #(rf/dispatch [:activity-center.notifications/mark-as-read-success notification])
                        :on-error   #(rf/dispatch [:activity-center/process-notification-failure
                                                   notification-id
                                                   :notification/mark-as-read
@@ -124,8 +119,7 @@
   [_ notification-id]
   {::json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
                      :params     [notification-id]
-                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                                %])
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
                                                 notification-id
                                                 :contact-verification/decline
@@ -136,8 +130,7 @@
   [_ notification-id reply]
   {::json-rpc/call [{:method     "wakuext_acceptContactVerificationRequest"
                      :params     [notification-id reply]
-                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                                %])
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
                                                 notification-id
                                                 :contact-verification/reply
@@ -148,8 +141,7 @@
   [_ notification-id]
   {::json-rpc/call [{:method     "wakuext_verifiedTrusted"
                      :params     [{:id notification-id}]
-                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                                %])
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
                                                 notification-id
                                                 :contact-verification/mark-as-trusted
@@ -160,8 +152,7 @@
   [_ notification-id]
   {::json-rpc/call [{:method     "wakuext_verifiedUntrustworthy"
                      :params     [{:id notification-id}]
-                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                                %])
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
                                                 notification-id
                                                 :contact-verification/mark-as-untrustworthy
@@ -180,8 +171,7 @@
 (def ^:const status-unread 2)
 (def ^:const status-all 3)
 
-(defn status
-  [filter-status]
+(defn status [filter-status]
   (case filter-status
     :unread status-unread
     :all    status-all
@@ -191,26 +181,20 @@
   [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
     (let [per-page (or per-page (defaults :notifications-per-page))]
-      {:db             (assoc-in db
-                        [:activity-center :notifications filter-type filter-status :loading?]
-                        true)
+      {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
        ::json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
                          :params     [cursor per-page filter-type (status filter-status)]
-                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
-                                                    filter-type filter-status reset-data? %])
-                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
-                                                    filter-type filter-status %])}]})))
+                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
+                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]})))
 
 (fx/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
   [{:keys [db] :as cofx} {:keys [filter-type filter-status]}]
   (let [filter-type   (or filter-type
-                          (get-in db
-                                  [:activity-center :filter :type]
+                          (get-in db [:activity-center :filter :type]
                                   (defaults :filter-type)))
         filter-status (or filter-status
-                          (get-in db
-                                  [:activity-center :filter :status]
+                          (get-in db [:activity-center :filter :status]
                                   (defaults :filter-status)))]
     (fx/merge cofx
               {:db (-> db
@@ -227,11 +211,10 @@
   (let [{:keys [type status]} (get-in db [:activity-center :filter])
         {:keys [cursor]}      (get-in db [:activity-center :notifications type status])]
     (when (valid-cursor? cursor)
-      (notifications-fetch cofx
-                           {:cursor        cursor
-                            :filter-type   type
-                            :filter-status status
-                            :reset-data?   false}))))
+      (notifications-fetch cofx {:cursor        cursor
+                                 :filter-type   type
+                                 :filter-status status
+                                 :reset-data?   false}))))
 
 (fx/defn notifications-fetch-success
   {:events [:activity-center.notifications/fetch-success]}
@@ -259,20 +242,18 @@
   to explicitly support fetching notifications for 'pending' contact requests."
   {:events [:activity-center.notifications/fetch-unread-contact-requests]}
   [cofx]
-  (notifications-fetch cofx
-                       {:cursor        start-or-end-cursor
-                        :filter-status :unread
-                        :filter-type   types/contact-request
-                        :per-page      20
-                        :reset-data?   true}))
+  (notifications-fetch cofx {:cursor        start-or-end-cursor
+                             :filter-status :unread
+                             :filter-type   types/contact-request
+                             :per-page      20
+                             :reset-data?   true}))
 
 (fx/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
   [_]
   {::json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
                      :params     []
-                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success
-                                                %])
+                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success %])
                      :on-error   #()}]})
 
 (fx/defn notifications-fetch-unread-count-success

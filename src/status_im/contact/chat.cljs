@@ -1,9 +1,9 @@
 (ns status-im.contact.chat
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
-            [status-im.contact.core :as contact]
+            [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im2.navigation.events :as navigation]))
+            [status-im.chat.models :as chat]
+            [status-im.contact.core :as contact]))
 
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]
@@ -24,6 +24,6 @@
                  (navigation/navigate-back %)))))
 
 (fx/defn pinned-messages-pressed
-  {:events [:contact.ui/pinned-messages-pressed]}
+  {:events       [:contact.ui/pinned-messages-pressed]}
   [cofx public-key]
   (chat/navigate-to-user-pinned-messages cofx public-key))

@@ -3,8 +3,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]))
 
-(defn picker-wrapper-style
-  [{:keys [display-photo? outgoing timeline]}]
+(defn picker-wrapper-style [{:keys [display-photo? outgoing timeline]}]
   (merge {:flex-direction :row
           :flex           1
           :padding-top    4
@@ -17,35 +16,31 @@
              {:padding-left (+ 16 photos/default-size)}
              {:padding-left 8}))))
 
-(defn container-style
-  [{:keys [outgoing timeline]}]
+(defn container-style [{:keys [outgoing timeline]}]
   (merge {:border-top-left-radius     16
           :border-top-right-radius    16
           :border-bottom-right-radius 16
           :border-bottom-left-radius  16
           :background-color           (:ui-background @colors/theme)}
          (if timeline
-           {:border-top-left-radius  16
+           {:border-top-left-radius 16
             :border-top-right-radius 4}
            (if outgoing
              {:border-top-right-radius 4}
              {:border-top-left-radius 4}))))
 
-(defn reactions-picker-row
-  []
+(defn reactions-picker-row []
   {:flex-direction     :row
    :padding-vertical   8
    :padding-horizontal 8})
 
-(defn quick-actions-container
-  []
+(defn quick-actions-container []
   {:flex-direction   :column
    :justify-content  :space-evenly
    :border-top-width 1
    :border-top-color (:ui-01 @colors/theme)})
 
-(defn quick-actions-row
-  []
+(defn quick-actions-row []
   {:flex-direction     :row
    :padding-horizontal 16
    :padding-vertical   12
@@ -53,8 +48,7 @@
    :border-top-width   1
    :border-top-color   (:ui-01 @colors/theme)})
 
-(defn reaction-style
-  [{:keys [outgoing own]}]
+(defn reaction-style [{:keys [outgoing own]}]
   (merge {:border-top-left-radius     10
           :border-top-right-radius    10
           :border-bottom-right-radius 10
@@ -73,8 +67,7 @@
            {:border-top-left-radius 2
             :margin-right           4})))
 
-(defn reaction-quantity-style
-  [{:keys [own]}]
+(defn reaction-quantity-style [{:keys [own]}]
   {:font-size   12
    :line-height 16
    :color       (if own
@@ -86,8 +79,7 @@
       react/get-dimensions
       :width))
 
-(defn reactions-row-old
-  [{:keys [outgoing display-photo?]} timeline]
+(defn reactions-row-old [{:keys [outgoing display-photo?]} timeline]
   (merge {:flex-direction :row
           :padding-right  8}
          (if (and outgoing (not timeline))
@@ -97,19 +89,17 @@
            {:padding-left (+ 30 photos/default-size (when timeline 8))}
            {:padding-left 30})))
 
-(defn reactions-row
-  [timeline margin-top]
+(defn reactions-row [timeline margin-top]
   {:flex-direction  :row
    :padding-right   8
-   :padding-bottom  8
+   :padding-bottom   8
    :justify-content :flex-start
    :margin-top      margin-top
    :flex-wrap       :wrap
    :max-width       (- screen-width (+ 30 photos/default-size (when timeline 8)))
    :margin-left     (+ 30 photos/default-size (when timeline 8))})
 
-(defn reaction-button
-  [active]
+(defn reaction-button [active]
   (merge {:width             40
           :height            40
           :border-radius     20
@@ -123,8 +113,7 @@
             ;; FIXME: Use broder color here
             :border-color     "rgba(67, 96, 223, 0.2)"})))
 
-(defn link-preview-request-wrapper
-  []
+(defn link-preview-request-wrapper []
   {:border-radius    16
    :border-width     1
    :border-color     colors/gray-lighter
@@ -132,15 +121,14 @@
    :background-color (:ui-background @colors/theme)})
 
 (def link-preview-request-image
-  {:width      132
-   :height     94
+  {:width 132
+   :height 94
    :align-self :center})
 
 (def community-preview-header
   {:margin 8 :margin-left 12})
 
-(defn link-preview-wrapper
-  [outgoing timeline]
+(defn link-preview-wrapper [outgoing timeline]
   {:overflow                   :hidden
    :border-top-left-radius     16
    :border-top-right-radius    16
@@ -162,8 +150,7 @@
       {:width  max-width
        :height (* aspect-ratio max-width)})))
 
-(defn link-preview-image
-  [outgoing {:keys [height width] :as dimensions}]
+(defn link-preview-image [outgoing {:keys [height width] :as dimensions}]
   (merge (if (and (pos? height)
                   (pos? width))
            (scale-dimensions dimensions)

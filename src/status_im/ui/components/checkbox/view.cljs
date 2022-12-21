@@ -1,6 +1,6 @@
 (ns status-im.ui.components.checkbox.view
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.checkbox.styles :as styles]
+  (:require [status-im.ui.components.checkbox.styles :as styles]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))
 
@@ -20,7 +20,6 @@
             {:on-press #(on-value-change (not checked?))}))
    (if checked?
      [icons/tiny-icon
-      :tiny-icons/tiny-check
-      {:container-style (styles/icon-check-container true)
-       :color           colors/white-persist}]
-     [react/view {:style (styles/icon-check-container false)}])])
+      :tiny-icons/tiny-check {:container-style (styles/icon-check-container true)
+                              :color colors/white-persist}]
+     [react/view {:style  (styles/icon-check-container false)}])])

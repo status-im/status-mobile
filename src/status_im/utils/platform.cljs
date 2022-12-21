@@ -16,8 +16,7 @@
 (def x-height 812)
 (def xs-height 896)
 
-(defn iphone-x-dimensions?
-  []
+(defn iphone-x-dimensions? []
   (let [{:keys [height]} (-> Dimensions
                              (.get "window")
                              (js->clj :keywordize-keys true))]
@@ -27,14 +26,12 @@
 (def ios? (= os "ios"))
 (def iphone-x? (and ios? (iphone-x-dimensions?)))
 
-(defn no-backup-directory
-  []
+(defn no-backup-directory []
   (cond
     android? "/../no_backup"
     ios?     "/"))
 
-(defn android-version>=
-  [v]
+(defn android-version>= [v]
   (and android? (>= version v)))
 
 (def low-device? (and android? (< version 29)))

@@ -1,5 +1,3 @@
-import { useDerivedValue, interpolate } from 'react-native-reanimated';
-
 // Generic Worklets
 
 export function applyAnimationsToStyle(animations, style) {
@@ -29,12 +27,3 @@ export function applyAnimationsToStyle(animations, style) {
     return Object.assign(animatedStyle, style);
   };
 };
-
-export function interpolateValue(sharedValue, inputRange, outputRange) {
-  return useDerivedValue(
-    function () {
-      'worklet'
-      return interpolate(sharedValue.value, inputRange, outputRange);
-    }
-  );
-}

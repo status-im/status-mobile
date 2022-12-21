@@ -4,10 +4,10 @@
 (fx/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
   {:show-bottom-sheet nil
-   :db                (assoc db
-                             :bottom-sheet/show?   true
-                             :bottom-sheet/view    view
-                             :bottom-sheet/options options)})
+   :db (assoc db
+              :bottom-sheet/show? true
+              :bottom-sheet/view view
+              :bottom-sheet/options options)})
 
 (fx/defn show-bottom-sheet-event
   {:events [:bottom-sheet/show-sheet]}
@@ -21,4 +21,4 @@
   {:events [:bottom-sheet/hide]}
   [{:keys [db]}]
   {:hide-bottom-sheet nil
-   :db                (assoc db :bottom-sheet/show? false)})
+   :db (assoc db :bottom-sheet/show? false)})

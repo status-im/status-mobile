@@ -4,8 +4,7 @@
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Bottom Tabs
-(defn bottom-tabs-container
-  [pass-through?]
+(defn bottom-tabs-container [pass-through?]
   {:background-color    (if pass-through? colors/neutral-100-opa-70 colors/neutral-100)
    :flex                1
    :align-items         :center
@@ -17,8 +16,7 @@
    :left                0
    :accessibility-label :bottom-tabs-container})
 
-(defn bottom-tabs
-  []
+(defn bottom-tabs []
   {:flex-direction      :row
    :position            :absolute
    :bottom              (if platform/android? 8 34)
@@ -26,8 +24,7 @@
    :accessibility-label :bottom-tabs})
 
 ;; Home Stack
-(defn home-stack
-  []
+(defn home-stack []
   (let [{:keys [width height]} (shell.constants/dimensions)]
     {:border-bottom-left-radius  20
      :border-bottom-right-radius 20
@@ -38,8 +35,7 @@
      :height                     (- height (shell.constants/bottom-tabs-container-height))}))
 
 ;; Placeholder
-(defn placeholder-container
-  [status-bar-height]
+(defn placeholder-container [status-bar-height]
   {:position            :absolute
    :top                 (+ 112 status-bar-height)
    :left                0
@@ -62,8 +58,7 @@
    :color      colors/white})
 
 ;; Shell
-(defn jump-to-text
-  [status-bar-height]
+(defn jump-to-text [status-bar-height]
   {:color         colors/white
    :margin-top    (+ 68 status-bar-height)
    :margin-bottom 20

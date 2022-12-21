@@ -1,16 +1,15 @@
 (ns status-im.async-storage.core
-  (:require ["@react-native-async-storage/async-storage" :default async-storage]
+  (:require [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [goog.functions :as f]
-            [re-frame.core :as re-frame]
             [status-im.async-storage.transit :refer [clj->transit transit->clj]]
-            [taoensso.timbre :as log]))
+            ["@react-native-async-storage/async-storage" :default async-storage]))
 
 (def ^:private debounce-ms 250)
 
 (def key->string str)
 
-(defn set-item!
-  [key value]
+(defn set-item! [key value]
   (-> ^js async-storage
       (.setItem (key->string key)
                 (clj->transit value))
@@ -23,14 +22,12 @@
         debounced   (f/debounce (fn []
                                   (doseq [[k v] @tmp-storage]
                                     (swap! tmp-storage dissoc k)
-                                    (set-item! k v)))
-                                debounce-ms)]
+                                    (set-item! k v))) debounce-ms)]
     (fn [items]
       (swap! tmp-storage merge items)
       (debounced))))
 
-(defn get-items
-  [keys cb]
+(defn get-items [keys cb]
   (-> ^js async-storage
       (.multiGet (to-array (map key->string keys)))
       (.then (fn [^js data]
@@ -41,8 +38,7 @@
                 (cb nil)
                 (log/error "[async-storage]" error)))))
 
-(defn get-item
-  [k cb]
+(defn get-item [k cb]
   (-> ^js async-storage
       (.getItem (key->string k))
       (.then (fn [^js data]

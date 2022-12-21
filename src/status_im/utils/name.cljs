@@ -1,8 +1,7 @@
 (ns status-im.utils.name
   (:require [clojure.string :as string]))
 
-(defn too-long?
-  [name max-len]
+(defn too-long? [name max-len]
   (> (count name) max-len))
 
 (defn max-name
@@ -22,8 +21,7 @@
              [(first names)]
              (rest names)))))
 
-(defn shortened-name
-  [name max-len]
+(defn shortened-name [name max-len]
   (if (> (count name) max-len)
     (let [name' (max-name name max-len)]
       (if (too-long? name' max-len)

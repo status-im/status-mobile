@@ -1,32 +1,28 @@
 (ns status-im.ui.screens.network-info.views
-  (:require [re-frame.core :as re-frame]
+  (:require [status-im.ui.components.react :as react]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.decode :as decode]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.native-module.core :as status]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.datetime :as time]))
+            [status-im.ethereum.decode :as decode]
+            [status-im.utils.datetime :as time]
+            [status-im.native-module.core :as status]))
 
-(defn get-block
-  [block callback]
+(defn get-block [block callback]
   (json-rpc/call
    {:method     "eth_getBlockByNumber"
     :params     [block false]
     :on-success callback
     :on-error   #(js/alert (str "can't fetch latest block" %))}))
 
-(defn last-loaded-block-number
-  []
+(defn last-loaded-block-number []
   @(re-frame/subscribe [:ethereum/current-block]))
 
-(defn to-date
-  [timestamp]
+(defn to-date [timestamp]
   (time/timestamp->long-date
    (* 1000 timestamp)))
 
-(defn check-lag
-  []
-  (let [latest-block      (reagent/atom nil)
+(defn check-lag []
+  (let [latest-block (reagent/atom nil)
         last-loaded-block (reagent/atom nil)
         on-press
         (fn []
@@ -35,9 +31,8 @@
            (fn [res]
              (reset! latest-block res)
              (get-block
-              (str "0x"
-                   (status/number-to-hex
-                    (last-loaded-block-number)))
+              (str "0x" (status/number-to-hex
+                         (last-loaded-block-number)))
               (fn [res]
                 (reset! last-loaded-block res))))))]
     (fn []
@@ -73,15 +68,13 @@
                  "Last loaded block time: "
                  (to-date last-loaded-block-timestamp)
                  "\n"
-                 "Seconds diff: "
-                 (- latest-block-timestamp
-                    last-loaded-block-timestamp)
+                 "Seconds diff: " (- latest-block-timestamp
+                                     last-loaded-block-timestamp)
                  "\n"
                  "Blocks diff: " (- latest-block-number
                                     last-loaded-block-number)
                  "\n"
                  "PRESS TO REFRESH"))])])))
 
-(defn network-info
-  []
+(defn network-info []
   [check-lag])

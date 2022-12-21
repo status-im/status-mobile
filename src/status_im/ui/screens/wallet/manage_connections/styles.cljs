@@ -2,13 +2,13 @@
   (:require [quo.design-system.colors :as colors]))
 
 (def dapp-icon
-  {:width         30
-   :height        30
-   :resize-mode   :cover
-   :margin        10
-   :border-radius 15
-   :border-width  2
-   :padding       10})
+  {:width            30
+   :height           30
+   :resize-mode      :cover
+   :margin           10
+   :border-radius    15
+   :border-width     2
+   :padding          10})
 
 (def app-row
   {:flex-direction  :row
@@ -17,7 +17,7 @@
 
 (def app-column
   {:flex-direction  :column
-   :max-width       160
+   :max-width 160
    :justify-content :center})
 
 (def dapp-name
@@ -29,10 +29,9 @@
 
 (def selected-account
   {:font-size 13
-   :color     colors/white})
+   :color   colors/white})
 
-(defn selected-account-container
-  [account-background-color]
+(defn selected-account-container [account-background-color]
   {:background-color   account-background-color
    :padding-horizontal 10
    :justify-content    :center

@@ -3,12 +3,12 @@
             [status-im.data-store.contacts :as c]))
 
 (deftest contact<-rpc
-  (let [contact          {:id          "pk"
-                          :address     "address"
-                          :name        "name"
-                          :displayName "display-name"
-                          :identicon   "identicon"
-                          :lastUpdated 1}
+  (let [contact {:id          "pk"
+                 :address     "address"
+                 :name        "name"
+                 :displayName "display-name"
+                 :identicon   "identicon"
+                 :lastUpdated 1}
         expected-contact {:public-key   "pk"
                           :address      "address"
                           :display-name "display-name"

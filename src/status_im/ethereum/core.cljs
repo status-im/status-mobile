@@ -1,22 +1,19 @@
 (ns status-im.ethereum.core
   (:require [clojure.string :as string]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.native-module.core :as status]))
+            [status-im.native-module.core :as status]
+            [status-im.ethereum.eip55 :as eip55]))
 
-(defn sha3
-  [s]
+(defn sha3 [s]
   (when s
     (status/sha3 (str s))))
 
-(defn utf8-to-hex
-  [s]
+(defn utf8-to-hex [s]
   (let [hex (status/utf8-to-hex (str s))]
     (if (empty? hex)
       nil
       hex)))
 
-(defn hex-to-utf8
-  [s]
+(defn hex-to-utf8 [s]
   (let [utf8 (status/hex-to-utf8 s)]
     (if (empty? utf8)
       nil
@@ -35,112 +32,90 @@
    :bsc-testnet {:id   BSC-testnet-chain-id
                  :name "BSC tetnet"}})
 
-(defn chain-id->chain-keyword
-  [i]
+(defn chain-id->chain-keyword [i]
   (or (some #(when (= i (:id (val %))) (key %)) chains)
       :custom))
 
-(defn chain-id->chain-name
-  [i]
+(defn chain-id->chain-name [i]
   (or (some #(when (= i (:id (val %))) (:name (val %))) chains)
       :custom))
 
-(defn chain-keyword->chain-id
-  [k]
+(defn chain-keyword->chain-id [k]
   (get-in chains [k :id]))
 
-(defn chain-keyword->snt-symbol
-  [k]
+(defn chain-keyword->snt-symbol [k]
   (case k
     :mainnet :SNT
     :STT))
 
-(defn testnet?
-  [id]
+(defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :goerli)
-               (chain-keyword->chain-id :bsc-testnet)}
-             id))
+               (chain-keyword->chain-id :bsc-testnet)} id))
 
-(defn sidechain?
-  [id]
+(defn sidechain? [id]
   (contains? #{(chain-keyword->chain-id :xdai)
-               (chain-keyword->chain-id :bsc)}
-             id))
+               (chain-keyword->chain-id :bsc)} id))
 
-(defn network-with-upstream-rpc?
-  [network]
+(defn network-with-upstream-rpc? [network]
   (get-in network [:config :UpstreamConfig :Enabled]))
 
 (def hex-prefix "0x")
 
-(defn normalized-hex
-  [hex]
+(defn normalized-hex [hex]
   (when hex
     (if (string/starts-with? hex hex-prefix)
       hex
       (str hex-prefix hex))))
 
-(defn current-address
-  [db]
+(defn current-address [db]
   (-> (get-in db [:multiaccount :address])
       normalized-hex))
 
-(defn get-default-account
-  [accounts]
+(defn get-default-account [accounts]
   (some #(when (:wallet %) %) accounts))
 
-(defn default-address
-  [db]
+(defn default-address [db]
   (-> (get db :multiaccount/accounts)
       get-default-account
       :address))
 
-(defn addresses-without-watch
-  [db]
+(defn addresses-without-watch [db]
   (into #{}
         (remove #(= (:type %) :watch)
                 (map #(eip55/address->checksum (:address %)) (get db :multiaccount/accounts)))))
 
-(defn naked-address
-  [s]
+(defn naked-address [s]
   (when s
     (string/replace s hex-prefix "")))
 
 (def public-key-length 128)
 
-(defn coordinates
-  [public-key]
+(defn coordinates [public-key]
   (when-let [hex (naked-address public-key)]
     (when (= public-key-length (count (subs hex 2)))
       {:x (normalized-hex (subs hex 2 66))
        :y (normalized-hex (subs hex 66))})))
 
-(defn address?
-  [s]
+(defn address? [s]
   (when s
     (status/address? s)))
 
-(defn network->chain-id
-  [network]
+(defn network->chain-id [network]
   (get-in network [:config :NetworkId]))
 
-(defn network->chain-keyword
-  [network]
+(defn network->chain-keyword [network]
   (chain-id->chain-keyword (network->chain-id network)))
 
-(defn current-network
-  [db]
+(defn current-network [db]
   (let [networks   (get db :networks/networks)
         network-id (get db :networks/current-network)]
     (get networks network-id)))
 
-(defn binance-chain-id?
-  [chain-id]
+(defn binance-chain-id? [chain-id]
   (or (= BSC-mainnet-chain-id chain-id)
       (= BSC-testnet-chain-id chain-id)))
 
-(defn binance-chain?
-  [db]
+(defn binance-chain? [db]
   (-> db
       current-network
       network->chain-id
@@ -148,16 +123,13 @@
 
 (def custom-rpc-node-id-len 45)
 
-(defn custom-rpc-node?
-  [{:keys [id]}]
+(defn custom-rpc-node? [{:keys [id]}]
   (= custom-rpc-node-id-len (count id)))
 
-(defn network->network-name
-  [network]
+(defn network->network-name [network]
   (chain-id->chain-name (network->chain-id network)))
 
-(defn network->chain-name
-  [network]
+(defn network->chain-name [network]
   (-> network
       network->chain-keyword
       name))
@@ -174,20 +146,16 @@
   [db]
   (network->chain-id (get-current-network db)))
 
-(defn snt-symbol
-  [db]
+(defn snt-symbol [db]
   (chain-keyword->snt-symbol (chain-keyword db)))
 
-(defn address=
-  [address1 address2]
-  (and address1
-       address2
+(defn address= [address1 address2]
+  (and address1 address2
        (= (string/lower-case (normalized-hex address1))
           (string/lower-case (normalized-hex address2)))))
 
-(defn public-key->address
-  [public-key]
-  (let [length         (count public-key)
+(defn public-key->address [public-key]
+  (let [length (count public-key)
         normalized-key (case length
                          132 (str "0x" (subs public-key 4))
                          130 public-key

@@ -21,8 +21,8 @@
 ;; Note: Only send pings if the user interacted with the app in the last x minutes.
 (def visibility-status-type-data
   {constants/visibility-status-unknown
-   {:color colors/red
-    :title (i18n/label :t/error)}
+   {:color    colors/red
+    :title    (i18n/label :t/error)}
    constants/visibility-status-automatic
    {:color    quo2.colors/success-50
     :title    (i18n/label :t/status-automatic)
@@ -32,8 +32,8 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color quo2.colors/success-50
-    :title (i18n/label :t/status-always-online)}
+   {:color    quo2.colors/success-50
+    :title    (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
     :title    (i18n/label :t/status-inactive)
@@ -41,8 +41,8 @@
 
 (def visibility-status-type-data-old
   {constants/visibility-status-unknown
-   {:color colors/red
-    :title (i18n/label :t/error)}
+   {:color    colors/red
+    :title    (i18n/label :t/error)}
    constants/visibility-status-automatic
    {:color    colors/color-online
     :title    (i18n/label :t/status-automatic)
@@ -52,8 +52,8 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color colors/color-online
-    :title (i18n/label :t/status-always-online)}
+   {:color    colors/color-online
+    :title    (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
     :title    (i18n/label :t/status-inactive)
@@ -73,12 +73,10 @@
       constants/visibility-status-inactive
       status-type)))
 
-(defn icon-dot-color
-  [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
+(defn icon-dot-color [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
   (:color (get visibility-status-type-data status-type)))
 
-(defn my-icon?
-  [public-key]
+(defn my-icon? [public-key]
   (or (string/blank? public-key)
       (= public-key (<sub [:multiaccount/public-key]))))
 
@@ -118,8 +116,7 @@
             :position            :absolute
             :accessibility-label (icon-dot-accessibility-label dot-color)})))
 
-(defn visibility-status-order
-  [public-key]
+(defn visibility-status-order [public-key]
   (let [my-icon?                 (my-icon? public-key)
         visibility-status-update (visibility-status-update public-key my-icon?)
         dot-color                (icon-dot-color visibility-status-update)]

@@ -55,6 +55,6 @@
 ;; sheets
 
 (def sheet-text
-  {:text-align  :center
+  {:text-align :center
    :line-height 22
    :font-size   15})

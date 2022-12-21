@@ -1,11 +1,10 @@
 (ns status-im.utils.async
   "Utility namespace containing `core.async` helper constructs"
   (:require [cljs.core.async :as async]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.utils :as utils]))
 
-(defn timeout
-  [ms]
+(defn timeout [ms]
   (let [c (async/chan)]
     (utils/set-timeout (fn [] (async/close! c)) ms)
     c))
@@ -13,8 +12,7 @@
 ;; This wrapping is required as core.async macro replaces tries and catch with
 ;; https://github.com/clojure/core.async/blob/18d2f903b169c681ed008dd9545dc33458604b89/src/main/clojure/cljs/core/async/impl/ioc_helpers.cljs#L74
 ;; and this does not seem to play nice with desktop, and the error is bubble up killing the go-loop
-(defn run-task
-  [f]
+(defn run-task [f]
   (try
     (f)
     (catch :default e
@@ -31,15 +29,15 @@
   [input-ch output-ch flush-time]
   (async/go-loop [acc []
                   flush? false]
-                 (if flush?
-                   (do (async/put! output-ch acc)
-                       (recur [] false))
-                   (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
-                     (if (= ch input-ch)
-                       (if v
-                         (recur (conj acc v) (and (seq acc) flush?))
-                         (async/close! output-ch))
-                       (recur acc (seq acc)))))))
+    (if flush?
+      (do (async/put! output-ch acc)
+          (recur [] false))
+      (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
+        (if (= ch input-ch)
+          (if v
+            (recur (conj acc v) (and (seq acc) flush?))
+            (async/close! output-ch))
+          (recur acc (seq acc)))))))
 
 (defn task-queue
   "Creates `core.async` channel which will process 0 arg functions put there in serial fashion.
@@ -49,8 +47,8 @@
   [& args]
   (let [task-queue (apply async/chan args)]
     (async/go-loop [task-fn (async/<! task-queue)]
-                   (run-task task-fn)
-                   (recur (async/<! task-queue)))
+      (run-task task-fn)
+      (recur (async/<! task-queue)))
     task-queue))
 
 ;; ---------------------------------------------------------------------------
@@ -63,8 +61,7 @@
   ([async-periodic-chan worker-fn]
    (async/put! async-periodic-chan worker-fn)))
 
-(defn async-periodic-stop!
-  [async-periodic-chan]
+(defn async-periodic-stop! [async-periodic-chan]
   (async/close! async-periodic-chan))
 
 (defn async-periodic-exec
@@ -85,24 +82,23 @@
   [work-fn interval-ms timeout-ms]
   {:pre [(fn? work-fn) (integer? interval-ms) (integer? timeout-ms)]}
   (let [do-now-chan (async/chan (async/sliding-buffer 1))
-        try-it      (fn [exec-fn catch-fn] (try (exec-fn) (catch :default e (catch-fn e))))]
+        try-it (fn [exec-fn catch-fn] (try (exec-fn) (catch :default e (catch-fn e))))]
     (async/go-loop []
-                   (let [timeout-chan  (timeout interval-ms)
-                         finished-chan (async/promise-chan)
-                         [v ch]        (async/alts! [do-now-chan timeout-chan])
-                         worker        (if (and (= ch do-now-chan) (fn? v))
-                                         v
-                                         work-fn)]
-                     (when-not (and (= ch do-now-chan) (nil? v))
-                       ;; don't let try catch be parsed by go-block
-                       (try-it #(worker (fn [] (async/put! finished-chan true)))
-                               (fn [e]
-                                 (log/error "failed to run job" e)
-                                 ;; if an error occurs in work-fn log it and consider it done
-                                 (async/put! finished-chan true)))
-                       ;; sanity timeout for work-fn
-                       (async/alts! [finished-chan (timeout timeout-ms)])
-                       (recur))))
+      (let [timeout-chan (timeout interval-ms)
+            finished-chan (async/promise-chan)
+            [v ch] (async/alts! [do-now-chan timeout-chan])
+            worker (if (and (= ch do-now-chan) (fn? v))
+                     v work-fn)]
+        (when-not (and (= ch do-now-chan) (nil? v))
+          ;; don't let try catch be parsed by go-block
+          (try-it #(worker (fn [] (async/put! finished-chan true)))
+                  (fn [e]
+                    (log/error "failed to run job" e)
+                    ;; if an error occurs in work-fn log it and consider it done
+                    (async/put! finished-chan true)))
+          ;; sanity timeout for work-fn
+          (async/alts! [finished-chan (timeout timeout-ms)])
+          (recur))))
     do-now-chan))
 
 (comment

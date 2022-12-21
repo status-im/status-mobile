@@ -4,8 +4,7 @@
             [taoensso.timbre :as log]
             [utils.debounce :as debounce]))
 
-(defn- pretty-print-event
-  [ctx]
+(defn- pretty-print-event [ctx]
   (let [[first _] (get-coeffect ctx :event)]
     first))
 
@@ -35,6 +34,5 @@
 
 (def >evt re-frame/dispatch)
 
-(defn >evt-once
-  [event]
+(defn >evt-once [event]
   (debounce/dispatch-and-chill event 3000))

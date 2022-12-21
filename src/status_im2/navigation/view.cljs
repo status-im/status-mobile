@@ -1,34 +1,31 @@
 (ns status-im2.navigation.view
-  (:require [oops.core :refer [oget]]
-            [quo2.foundations.colors :as colors]
+  (:require [reagent.core :as reagent]
+            [oops.core :refer [oget]]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
-            [status-im.ui.screens.popover.views :as popover]
-            [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-            [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
-            [status-im.ui.screens.wallet.send.views :as wallet.send.views]
-            [status-im2.common.toasts.view :as toasts] ;; TODO (14/11/22 flexsurfer) move to status-im2
-                                                       ;; namespace
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.config :as config]
-            [status-im2.setup.hot-reload :as reloader]))
+            [status-im2.setup.hot-reload :as reloader]
 
-(defn get-screens
-  []
+    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
+            [status-im.ui.screens.popover.views :as popover]
+            [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
+            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
+            [status-im.ui.screens.signing.views :as signing]
+            [status-im.ui.screens.wallet.send.views :as wallet.send.views]
+            [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
+            [status-im.keycard.test-menu :as keycard.test-menu]
+            [quo2.foundations.colors :as colors]))
+
+(defn get-screens []
   (reduce
    (fn [acc screen]
      (assoc acc (:name screen) screen))
    {}
    (screens/screens)))
 
-;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if
-;;debug
-;;true)
+;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug true)
 (def screens (get-screens))
 
 (def components
@@ -38,8 +35,7 @@
    {}
    (concat screens/components)))
 
-(defn wrapped-screen-style
-  [{:keys [insets style]} insets-obj]
+(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
    {:flex             1
     :background-color (colors/theme-colors colors/white colors/neutral-100)}
@@ -53,21 +49,13 @@
                       (get style :padding-top)
                       (get style :padding-vertical))})))
 
-(defn inactive
-  []
+(defn inactive []
   (when @(re-frame/subscribe [:hide-screen?])
-    [rn/view
-     {:position         :absolute
-      :flex             1
-      :top              0
-      :bottom           0
-      :left             0
-      :right            0
-      :background-color (colors/theme-colors colors/white colors/neutral-100)
-      :z-index          999999999999999999}]))
+    [rn/view {:position :absolute :flex 1 :top 0 :bottom 0 :left 0 :right 0
+              :background-color (colors/theme-colors colors/white colors/neutral-100)
+              :z-index 999999999999999999}]))
 
-(defn screen
-  [key]
+(defn screen [key]
   (reagent.core/reactify-component
    (fn []
      (let [{:keys [component insets]} (get
@@ -80,17 +68,15 @@
         [safe-area/safe-area-consumer
          (fn [safe-insets]
            (reagent/as-element
-            [rn/view
-             {:style (wrapped-screen-style
-                      {:insets insets}
-                      safe-insets)}
+            [rn/view {:style (wrapped-screen-style
+                              {:insets insets}
+                              safe-insets)}
              [inactive]
              [component]]))]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
-(defn component
-  [comp]
+(defn component [comp]
   (reagent/reactify-component
    (fn []
      [rn/view {:width 500 :height 44}
@@ -105,13 +91,6 @@
       [popover/popover]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
-
-(def toasts-comp
-  (reagent/reactify-component
-   (fn []
-     ;; DON'T wrap this in safe-area-provider, it makes it unable to click through toasts
-     ^{:key (str "toasts" @reloader/cnt)}
-     [toasts/toasts])))
 
 (def visibility-status-popover-comp
   (reagent/reactify-component

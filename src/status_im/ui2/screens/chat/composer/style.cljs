@@ -1,11 +1,10 @@
 (ns status-im.ui2.screens.chat.composer.style
-  (:require [quo.design-system.colors :as quo.colors]
-            [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as quo2.typography]
-            [status-im.utils.platform :as platform]))
+  (:require [quo2.foundations.typography :as quo2.typography]
+            [quo.design-system.colors :as quo.colors]
+            [status-im.utils.platform :as platform]
+            [quo2.foundations.colors :as colors]))
 
-(defn text-input
-  []
+(defn text-input []
   (merge quo2.typography/font-regular
          quo2.typography/paragraph-1
          {:flex              1
@@ -20,8 +19,7 @@
            {:margin-top    8
             :margin-bottom 8})))
 
-(defn input-bottom-sheet
-  [window-height]
+(defn input-bottom-sheet [window-height]
   (merge {:border-top-left-radius  20
           :border-top-right-radius 20
           :position                :absolute
@@ -39,8 +37,7 @@
             :shadow-offset  {:width 0 :height -2}}
            {:elevation 2})))
 
-(defn bottom-sheet-handle
-  []
+(defn bottom-sheet-handle []
   {:width            32
    :height           4
    :background-color (colors/theme-colors colors/neutral-100 colors/white)
@@ -49,8 +46,7 @@
    :align-self       :center
    :margin-top       8})
 
-(defn bottom-sheet-controls
-  [insets]
+(defn bottom-sheet-controls [insets]
   {:flex-direction     :row
    :padding-horizontal 20
    :elevation          2
@@ -62,8 +58,7 @@
    :padding-bottom     (+ 12 (:bottom insets))
    :bottom             (- 2 (:bottom insets))})
 
-(defn bottom-sheet-background
-  [window-height]
+(defn bottom-sheet-background [window-height]
   {:position         :absolute
    :left             0
    :right            0
@@ -72,21 +67,18 @@
    :background-color colors/neutral-95-opa-70
    :z-index          1})
 
-(defn reply-content
-  [pin?]
+(defn reply-content [pin?]
   {:padding-horizontal (when-not pin? 10)
    :flex               1
    :flex-direction     :row})
 
-(defn quoted-message
-  [pin?]
+(defn quoted-message [pin?]
   (merge {:flex-direction :row
           :align-items    :center
           :width          "45%"}
-         (when-not pin?
-           {:position :absolute
-            :left     34
-            :top      3})))
+         (when-not pin? {:position :absolute
+                         :left     34
+                         :top      3})))
 
 (def remove-photo-container
   {:width            14

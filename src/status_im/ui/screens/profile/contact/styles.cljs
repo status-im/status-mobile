@@ -13,8 +13,7 @@
 (def contact-profile-detail-share-icon
   {:color colors/gray-transparent-40})
 
-(defn updates-descr-cont
-  []
+(defn updates-descr-cont []
   {:border-width               1
    :border-color               colors/gray-lighter
    :border-top-right-radius    16

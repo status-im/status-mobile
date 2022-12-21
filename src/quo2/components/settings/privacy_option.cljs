@@ -1,10 +1,10 @@
 (ns quo2.components.settings.privacy-option
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
+  (:require [react-native.core :as rn]
+            [quo2.components.icon :as icons]
             [quo2.components.selectors.selectors :as selectors]
             [quo2.components.settings.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]))
 
 (defn- bullet
   []
@@ -27,9 +27,8 @@
     [rn/view {:style style/card-footer-label-container}
      [text/text {:size :paragraph-2} label]]
     [rn/view {:style style/card-footer-toggle-container}
-     [selectors/toggle
-      {:disabled? (not active?)
-       :on-change on-toggle}]]]])
+     [selectors/toggle {:disabled? (not active?)
+                        :on-change on-toggle}]]]])
 
 (defn- selection-indicator
   [active?]
@@ -39,9 +38,8 @@
 (defn- card-header
   [{:keys [icon label active?]}]
   [rn/view {:style style/card-header-container}
-   [icons/icon icon
-    {:size  20
-     :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+   [icons/icon icon {:size  20
+                     :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
    [rn/view {:style style/card-header-label-container}
     [text/text {:weight :semi-bold} label]]
    [selection-indicator active?]])
@@ -55,13 +53,11 @@
     :accessibility-label :privacy-option-card
     :testID              :privacy-option-card}
    [rn/view (style/privacy-option-card active?)
-    [card-header
-     {:active? active?
-      :icon    icon
-      :label   header}]
+    [card-header {:active? active?
+                  :icon    icon
+                  :label   header}]
     [unordered-list (when-not footer {:margin-bottom 8}) list-items]
     (when footer
-      [card-footer
-       {:active?   active?
-        :label     footer
-        :on-toggle on-toggle}])]])
+      [card-footer {:active?   active?
+                    :label     footer
+                    :on-toggle on-toggle}])]])

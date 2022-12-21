@@ -1,10 +1,10 @@
 (ns status-im.i18n.i18n
-  (:require ["i18n-js" :as i18n]
-            [clojure.string :as string]
-            [status-im.goog.i18n :as goog.i18n]
-            [status-im.i18n.i18n-resources :as i18n-resources]))
-;;TODO (14/11/22 flexsurfer) this namespace has been moved to the root level, we keep this only for old
-;;(status 1.0) code,
+  (:require
+   [clojure.string :as string]
+   ["i18n-js" :as i18n]
+   [status-im.i18n.i18n-resources :as i18n-resources]
+   [status-im.goog.i18n :as goog.i18n]))
+;;TODO (14/11/22 flexsurfer) this namespace has been moved to the root level, we keep this only for old (status 1.0) code,
 ;; can be removed with old code later
 
 (set! (.-locale i18n) (name i18n-resources/default-device-language))
@@ -12,15 +12,13 @@
 (set! (.-defaultSeparator i18n) "/")
 
 (set! (.-translations i18n)
-  (clj->js i18n-resources/translations-by-locale))
+      (clj->js i18n-resources/translations-by-locale))
 
-(defn set-language
-  [lang]
+(defn set-language [lang]
   (i18n-resources/load-language lang)
   (set! (.-locale i18n) lang))
 
-;;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed
-;;https://github.com/fnando/i18n-js/issues/460
+;;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
 
 (def delimeters
   "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass
@@ -33,8 +31,7 @@
       {:delimiter ""
        :separator (subs n 4 5)})))
 
-(defn label-number
-  [number]
+(defn label-number [number]
   (when number
     (let [{:keys [delimiter separator]} delimeters]
       (.toNumber i18n
@@ -46,8 +43,7 @@
 
 (def default-option-value "<no value>")
 
-(defn label-options
-  [options]
+(defn label-options [options]
   ;; i18n ignores nil value, leading to misleading messages
   (into {} (for [[k v] options] [k (or v default-option-value)])))
 
@@ -61,8 +57,7 @@
 
 (def label (memoize label-fn))
 
-(defn label-pluralize
-  [count path & options]
+(defn label-pluralize [count path & options]
   (if (exists? (.t i18n))
     (.p i18n count (name path) (clj->js options))
     (name path)))

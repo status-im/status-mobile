@@ -4,8 +4,8 @@
   {:flex 1})
 
 (def multiaccounts-container
-  {:flex            1
-   :justify-content :space-between})
+  {:flex               1
+   :justify-content    :space-between})
 
 (def multiaccount-image-size 40)
 

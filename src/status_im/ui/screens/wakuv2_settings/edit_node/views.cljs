@@ -1,37 +1,35 @@
 (ns status-im.ui.screens.wakuv2-settings.edit-node.views
   (:require [clojure.string :as string]
-            [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wakuv2-settings.edit-node.styles :as styles])
+            [status-im.ui.screens.wakuv2-settings.edit-node.styles
+             :as
+             styles])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn delete-button
-  [id]
+(defn delete-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:wakuv2.ui/delete-pressed id])}
    [react/view styles/button-container
-    [react/view
-     {:style               styles/delete-button
-      :accessibility-label :wakuv2-delete-button}
+    [react/view {:style               styles/delete-button
+                 :accessibility-label :wakuv2-delete-button}
      [react/text {:style styles/button-label}
       (i18n/label :t/delete)]]]])
 
-(views/defview edit-node
-  []
-  (views/letsubs [manage-node       [:wakuv2-nodes/manage]
+(views/defview edit-node []
+  (views/letsubs [manage-node   [:wakuv2-nodes/manage]
                   validation-errors [:wakuv2-nodes/validation-errors]]
-    (let [address          (get-in manage-node [:address :value])
-          id               (:id manage-node)
-          name             (get-in manage-node [:name :value])
-          new-node?        (:new? manage-node)
-          is-valid?        (empty? validation-errors)
+    (let [address      (get-in manage-node [:address :value])
+          id           (:id manage-node)
+          name         (get-in manage-node [:name :value])
+          new-node?    (:new? manage-node)
+          is-valid?    (empty? validation-errors)
           invalid-address? (contains? validation-errors :address)]
-      [react/keyboard-avoiding-view
-       {:style         {:flex 1}
-        :ignore-offset true}
+      [react/keyboard-avoiding-view {:style {:flex 1}
+                                     :ignore-offset true}
        [topbar/topbar {:title (i18n/label (if name :t/node-details :t/add-node))}]
        [react/scroll-view {:keyboard-should-persist-taps :handled}
         [react/view styles/edit-node-view
@@ -63,8 +61,8 @@
        [toolbar/toolbar
         {:right
          [quo/button
-          {:type     :secondary
-           :after    :main-icon/next
-           :disabled (not is-valid?)
-           :on-press #(re-frame/dispatch [:wakuv2.ui/save-node-pressed])}
+          {:type      :secondary
+           :after     :main-icon/next
+           :disabled  (not is-valid?)
+           :on-press  #(re-frame/dispatch [:wakuv2.ui/save-node-pressed])}
           (i18n/label :t/save)]}]])))

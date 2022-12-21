@@ -9,8 +9,7 @@
    :goerli  "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"})
 
 (def default-address "0x0000000000000000000000000000000000000000")
-(def default-key
-  "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+(def default-key "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 (def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
 
 (defn valid-eth-name-prefix?
@@ -40,10 +39,9 @@
   (json-rpc/call {:method     "ens_publicKeyOf"
                   :params     [chain-id ens-name]
                   :on-success cb
-                  ;;at some point infura started to return execution reverted error instead of "0x"
-                  ;;result
+                  ;;at some point infura started to return execution reverted error instead of "0x" result
                   ;;our code expects "0x" result
-                  :on-error   #(cb "0x")}))
+                  :on-error #(cb "0x")}))
 
 (defn owner
   [chain-id ens-name cb]
@@ -61,20 +59,20 @@
 
 (defn expire-at
   [chain-id ens-name cb]
-  (json-rpc/call {:method     "ens_expireAt"
-                  :params     [chain-id ens-name]
+  (json-rpc/call {:method "ens_expireAt"
+                  :params [chain-id ens-name]
                   :on-success
                   ;;NOTE: returns a timestamp in s and we want ms
                   #(cb (* (js/Number (status/hex-to-number %)) 1000))}))
 
 (defn register-prepare-tx
   [chain-id from ens-name pubkey cb]
-  (json-rpc/call {:method     "ens_registerPrepareTx"
-                  :params     [chain-id {:from from} ens-name pubkey]
+  (json-rpc/call {:method "ens_registerPrepareTx"
+                  :params [chain-id {:from from} ens-name pubkey]
                   :on-success cb}))
 
 (defn set-pub-key-prepare-tx
   [chain-id from ens-name pubkey cb]
-  (json-rpc/call {:method     "ens_setPubKeyPrepareTx"
-                  :params     [chain-id {:from from} ens-name pubkey]
+  (json-rpc/call {:method "ens_setPubKeyPrepareTx"
+                  :params [chain-id {:from from} ens-name pubkey]
                   :on-success cb}))

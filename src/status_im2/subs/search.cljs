@@ -8,8 +8,7 @@
 (defn sort-by-timestamp
   [coll]
   (when (not-empty coll)
-    (sort-by #(-> % second :timestamp)
-             >
+    (sort-by #(-> % second :timestamp) >
              (into {} coll))))
 
 (defn apply-filter
@@ -24,7 +23,7 @@
                   (let [search-filter (string/lower-case search-filter)]
                     (filter (fn [element]
                               (some (fn [v]
-                                      (let [s (cond (string? v)  v
+                                      (let [s (cond (string? v) v
                                                     (keyword? v) (name v))]
                                         (when (string? s)
                                           (string/includes? (string/lower-case s)
@@ -38,11 +37,11 @@
 
 (defn filter-chat
   [contacts search-filter {:keys [group-chat alias name chat-id]}]
-  (let [alias    (if-not group-chat
-                   (string/lower-case (or alias
-                                          (get-in contacts [chat-id :alias])
-                                          (gfycat/generate-gfy chat-id)))
-                   "")
+  (let [alias (if-not group-chat
+                (string/lower-case (or alias
+                                       (get-in contacts [chat-id :alias])
+                                       (gfycat/generate-gfy chat-id)))
+                "")
         nickname (get-in contacts [chat-id :nickname])]
     (or
      (string/includes? (string/lower-case (str name)) search-filter)
@@ -71,8 +70,7 @@
                           chats)]
      (sort-by :timestamp > filtered-chats))))
 
-(defn extract-currency-attributes
-  [currency]
+(defn extract-currency-attributes [currency]
   (let [{:keys [code display-name]} (val currency)]
     [code display-name]))
 
@@ -81,13 +79,9 @@
  :<- [:search/currency-filter]
  (fn [search-currency-filter]
    {:search-filter search-currency-filter
-    :currencies    (apply-filter search-currency-filter
-                                 currency/currencies
-                                 extract-currency-attributes
-                                 false)}))
+    :currencies    (apply-filter search-currency-filter currency/currencies extract-currency-attributes false)}))
 
-(defn extract-token-attributes
-  [token]
+(defn extract-token-attributes [token]
   (let [{:keys [symbol name]} token]
     [symbol name]))
 
@@ -97,8 +91,5 @@
  :<- [:search/token-filter]
  (fn [[{custom-tokens true default-tokens nil} search-token-filter]]
    {:search-filter search-token-filter
-    :tokens        {true (apply-filter search-token-filter custom-tokens extract-token-attributes false)
-                    nil  (apply-filter search-token-filter
-                                       default-tokens
-                                       extract-token-attributes
-                                       false)}}))
+    :tokens {true (apply-filter search-token-filter custom-tokens extract-token-attributes false)
+             nil (apply-filter search-token-filter default-tokens extract-token-attributes false)}}))

@@ -1,9 +1,9 @@
 (ns status-im.utils.universal-links.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [re-frame.core :as re-frame]
-            [status-im.router.core :as router]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
+            [re-frame.core :as re-frame]
+            [status-im.router.core :as router]
             [status-im.utils.universal-links.core :as links]))
 
 (deftest handle-url-test

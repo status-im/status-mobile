@@ -1,14 +1,13 @@
 (ns status-im.ui.screens.wallet.accounts-manage.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]
+  (:require [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.components.list.views :as list]
-            [status-im.utils.handlers :refer [<sub >evt]]
-            [status-im.utils.utils :as utils]))
+            [reagent.core :as reagent]
+            [quo.core :as quo]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.icons.icons :as icons]
+            [quo.design-system.colors :as colors]))
 
-(defn render-account
-  [_]
+(defn render-account [_]
   (reagent/create-class
    {:should-component-update
     (fn [_ [_ old-item] [_ new-item]]
@@ -27,8 +26,7 @@
         :subtitle            (utils/get-shortened-checksum-address address)
         :on-press            #(>evt [:wallet.accounts/save-account account {:hidden (not hidden)}])}])}))
 
-(defn manage
-  []
+(defn manage []
   (let [accounts (<sub [:multiaccount/accounts])]
     [list/flat-list
      {:key-fn    :address

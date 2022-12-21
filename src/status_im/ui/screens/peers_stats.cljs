@@ -3,12 +3,10 @@
             [status-im.i18n.i18n :as i18n]
             [utils.re-frame :as re-frame]))
 
-(defn peers-stats
-  []
+(defn peers-stats []
   (let [peers-count (re-frame/sub [:peers-count])]
-    [react-native.core/view
-     {:flex              1
-      :margin-horizontal 8}
+    [react-native.core/view {:flex              1
+                             :margin-horizontal 8}
      [react-native.core/view
       {:style {:flex-direction  :row
                :margin-vertical 8

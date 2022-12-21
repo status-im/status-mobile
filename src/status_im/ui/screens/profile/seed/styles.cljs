@@ -13,13 +13,13 @@
    :margin-vertical 16})
 
 (def intro-description
-  {:margin-top 8
-   :text-align :center
-   :color      colors/gray})
+  {:margin-top  8
+   :text-align  :center
+   :color       colors/gray})
 
 (def intro-button
-  {:flex-direction  :row
-   :margin-vertical 16})
+  {:flex-direction   :row
+   :margin-vertical  16})
 
 (def six-words-container
   {:flex    1
@@ -53,12 +53,12 @@
   {:flex 1})
 
 (def twelve-words-columns
-  {:margin-top     8
-   :margin-bottom  16
-   :flex-direction :row
-   :border-radius  8
-   :border-width   1
-   :border-color   colors/gray-lighter})
+  {:margin-top       8
+   :margin-bottom    16
+   :flex-direction   :row
+   :border-radius    8
+   :border-width     1
+   :border-color     colors/gray-lighter})
 
 (def twelve-words-columns-separator
   {:width            1

@@ -1,8 +1,7 @@
 (ns status-im2.contexts.chat.home.chat-list-item.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn container
-  []
+(defn container []
   {:margin-top         8
    :margin-horizontal  8
    :padding-vertical   8
@@ -11,8 +10,7 @@
    :flex-direction     :row
    :align-items        :center})
 
-(defn count-container
-  []
+(defn count-container []
   {:width            8
    :height           8
    :border-radius    4
@@ -21,8 +19,7 @@
    :top              16
    :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
 
-(defn timestamp
-  []
+(defn timestamp []
   {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
    :margin-top  3
    :margin-left 8})
