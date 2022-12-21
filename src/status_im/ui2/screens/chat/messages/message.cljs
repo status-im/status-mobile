@@ -35,13 +35,16 @@
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
-(defn system-text? [content-type]
+(defn system-text?
+  [content-type]
   (= content-type constants/content-type-system-text))
 
-(defn mention-element [from]
+(defn mention-element
+  [from]
   (rf/sub [:contacts/contact-name-by-identity from]))
 
-(defn render-inline [_message-text content-type acc {:keys [type literal destination]}]
+(defn render-inline
+  [_message-text content-type acc {:keys [type literal destination]}]
   (case type
     ""
     (conj acc literal)
@@ -63,9 +66,10 @@
 
     "link"
     (conj acc
-          [rn/text {:style    {:color                :blue
-                               :text-decoration-line :underline}
-                    :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
+          [rn/text
+           {:style    {:color                :blue
+                       :text-decoration-line :underline}
+            :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
            destination])
 
     "mention"
@@ -80,18 +84,20 @@
                     #(rf/dispatch [:chat.ui/show-profile literal]))}
        [mention-element literal]]])
     "status-tag"
-    (conj acc [rn/text
-               {:style    {:color                :blue
-                           :text-decoration-line :underline}
-                :on-press #(rf/dispatch [:chat.ui/start-public-chat literal])}
-               "#"
-               literal])
+    (conj acc
+          [rn/text
+           {:style    {:color                :blue
+                       :text-decoration-line :underline}
+            :on-press #(rf/dispatch [:chat.ui/start-public-chat literal])}
+           "#"
+           literal])
 
     (conj acc literal)))
 
 ;; TEXT
-(defn render-block [{:keys [content content-type in-popover?]} acc
-                    {:keys [type ^js literal children]}]
+(defn render-block
+  [{:keys [content content-type in-popover?]} acc
+   {:keys [type ^js literal children]}]
   (case type
 
     "paragraph"
@@ -108,18 +114,21 @@
             (.substring literal 0 (.-length literal))]])
 
     "codeblock"
-    (conj acc [rn/view {:style style/codeblock-style}
-               [rn/text (.substring literal 0 (dec (.-length literal)))]])
+    (conj acc
+          [rn/view {:style style/codeblock-style}
+           [rn/text (.substring literal 0 (dec (.-length literal)))]])
 
     acc))
 
-(defn render-parsed-text [{:keys [content] :as message-data}]
+(defn render-parsed-text
+  [{:keys [content] :as message-data}]
   (reduce (fn [acc e]
             (render-block message-data acc e))
           [:<>]
           (:parsed-text content)))
 
-(defn message-status [{:keys [outgoing content outgoing-status pinned edited-at in-popover?]}]
+(defn message-status
+  [{:keys [outgoing content outgoing-status pinned edited-at in-popover?]}]
   (when-not in-popover? ;; We keep track if showing this message in a list in pin-limit-popover
     [rn/view
      {:align-self                       :flex-end
@@ -129,12 +138,13 @@
       :flex-direction                   :row
       :align-items                      :flex-end}
      (when outgoing
-       [icons/icon (case outgoing-status
-                     :sending :tiny-icons/tiny-pending
-                     :sent :tiny-icons/tiny-sent
-                     :not-sent :tiny-icons/tiny-warning
-                     :delivered :tiny-icons/tiny-delivered
-                     :tiny-icons/tiny-pending)
+       [icons/icon
+        (case outgoing-status
+          :sending   :tiny-icons/tiny-pending
+          :sent      :tiny-icons/tiny-sent
+          :not-sent  :tiny-icons/tiny-warning
+          :delivered :tiny-icons/tiny-delivered
+          :tiny-icons/tiny-pending)
         {:width               16
          :height              12
          :color               (if pinned quo.colors/gray quo.colors/white)
@@ -143,8 +153,11 @@
 
 (defn quoted-message
   [{:keys [message-id chat-id]} reply pin?]
-  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id]) message-id)
-        reply                              (assoc reply :deleted? deleted? :deleted-for-me? deleted-for-me?)]
+  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id])
+                                                message-id)
+        reply                              (assoc reply
+                                                  :deleted?        deleted?
+                                                  :deleted-for-me? deleted-for-me?)]
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
      [components.reply/reply-message reply false pin?]]))
 
@@ -181,7 +194,8 @@
   (letsubs [contact-with-names [:multiaccount/contact]]
     (chat.utils/format-author contact-with-names opts nil)))
 
-(defn display-name-view [display-name contact timestamp show-key?]
+(defn display-name-view
+  [display-name contact timestamp show-key?]
   [rn/view {:style {:flex-direction :row}}
    [text/text
     {:weight          :semi-bold
@@ -214,23 +228,26 @@
         contact      (rf/sub [:contacts/contact-by-address from])
         photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
         online?      (rf/sub [:visibility-status-updates/online? from])]
-    [rn/view {:style               (style/message-wrapper message)
-              :pointer-events      :box-none
-              :accessibility-label :chat-item}
+    [rn/view
+     {:style               (style/message-wrapper message)
+      :pointer-events      :box-none
+      :accessibility-label :chat-item}
      (when (and (seq response-to) (:quoted-message message))
        [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message)])
-     [rn/view {:style          (style/message-body)
-               :pointer-events :box-none}
+     [rn/view
+      {:style          (style/message-body)
+       :pointer-events :box-none}
       ;; AVATAR
       [rn/view {:style {:width 40}}
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-          [user-avatar/user-avatar {:full-name         display-name
-                                    :profile-picture   photo-path
-                                    :status-indicator? true
-                                    :online?           online?
-                                    :size              :small
-                                    :ring?             false}]])]
+          [user-avatar/user-avatar
+           {:full-name         display-name
+            :profile-picture   photo-path
+            :status-indicator? true
+            :online?           online?
+            :size              :small
+            :ring?             false}]])]
       [rn/view {:style (style/message-author-wrapper)}
        ;; AUTHOR NAME
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
@@ -340,7 +357,8 @@
       (-> content :parsed-text peek :children))]]])
 
 ;; EMOJI
-(defn emoji []
+(defn emoji
+  []
   (fn [{:keys [content] :as message}]
     [rn/view style/message-view-wrapper
      [rn/view (style/message-view message)
@@ -352,8 +370,9 @@
 ;; STICKER
 (defn sticker
   [{:keys [content]}]
-  [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}
-                          :source {:uri (str (-> content :sticker :url) "&download=true")}}])
+  [fast-image/fast-image
+   {:style  {:margin 10 :width 140 :height 140}
+    :source {:uri (str (-> content :sticker :url) "&download=true")}}])
 
 ;;IMAGE
 (defn message-content-image
@@ -367,12 +386,14 @@
                         :width    (:width @dimensions)
                         :height   (:height @dimensions)}]
         [:<>
-         [preview/preview-image {:message  message
-                                 :visible  @visible
-                                 :on-close #(do (reset! visible false)
-                                                (reagent/flush))}]
-         [rn/view {:style               (style/image-message style-opts)
-                   :accessibility-label :image-message}
+         [preview/preview-image
+          {:message  message
+           :visible  @visible
+           :on-close #(do (reset! visible false)
+                          (reagent/flush))}]
+         [rn/view
+          {:style               (style/image-message style-opts)
+           :accessibility-label :image-message}
           (when (or (:error @dimensions) (not (:loaded @dimensions)))
             [rn/view
              (merge (dissoc style-opts :opacity)
@@ -380,14 +401,16 @@
              (if (:error @dimensions)
                [icons/icon :i/cancel]
                [rn/activity-indicator {:animating true}])])
-          [fast-image/fast-image {:style    (dissoc style-opts :outgoing)
-                                  :on-load  (image-set-size dimensions)
-                                  :on-error #(swap! dimensions assoc :error true)
-                                  :source   {:uri uri}}]
+          [fast-image/fast-image
+           {:style    (dissoc style-opts :outgoing)
+            :on-load  (image-set-size dimensions)
+            :on-error #(swap! dimensions assoc :error true)
+            :source   {:uri uri}}]
           [rn/view {:style (style/image-message-border style-opts)}]]]))))
 
 ;; AUDIO
-(defn audio [message]
+(defn audio
+  [message]
   [rn/view style/message-view-wrapper
    [rn/view {:style (style/message-view message) :accessibility-label :audio-message}
     [rn/view {:style (style/message-view-content)}
@@ -450,36 +473,43 @@
      (get-in message [:content :text])]]
    [contact-request-status-label (:contact-request-state message)]])
 
-(defview community-content [{:keys [community-id] :as message}]
+(defview community-content
+  [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
             communities-enabled?                              [:communities/enabled?]]
     (when (and communities-enabled? community)
-      [rn/view {:style (assoc (style/message-wrapper message)
-                              :margin-vertical 10
-                              :margin-left 8
-                              :width 271)}
+      [rn/view
+       {:style (assoc (style/message-wrapper message)
+                      :margin-vertical 10
+                      :margin-left     8
+                      :width           271)}
        (when verified
          [rn/view (style/community-verified)
-          [rn/text {:style {:font-size 13
-                            :color     quo.colors/blue}} (i18n/label :t/communities-verified)]])
+          [rn/text
+           {:style {:font-size 13
+                    :color     quo.colors/blue}} (i18n/label :t/communities-verified)]])
        [rn/view (style/community-message verified)
-        [rn/view {:width        62
-                  :padding-left 14}
+        [rn/view
+         {:width        62
+          :padding-left 14}
          (if (= community-id constants/status-community-id)
-           [rn/image {:source (resources/get-image :status-logo)
-                      :style  {:width  40
-                               :height 40}}]
+           [rn/image
+            {:source (resources/get-image :status-logo)
+             :style  {:width  40
+                      :height 40}}]
            [communities.icon/community-icon community])]
         [rn/view {:padding-right 14 :flex 1}
          [rn/text {:style {:font-weight "700" :font-size 17}}
           name]
          [rn/text description]]]
        [rn/view (style/community-view-button)
-        [rn/touchable-opacity {:on-press #(re-frame/dispatch
-                                           [:communities/navigate-to-community
-                                            {:community-id (:id community)}])}
-         [rn/text {:style {:text-align :center
-                           :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
+        [rn/touchable-opacity
+         {:on-press #(re-frame/dispatch
+                      [:communities/navigate-to-community
+                       {:community-id (:id community)}])}
+         [rn/text
+          {:style {:text-align :center
+                   :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
 
 ;; COMMUNITY (like system ? ) no wrapper
 (defn community

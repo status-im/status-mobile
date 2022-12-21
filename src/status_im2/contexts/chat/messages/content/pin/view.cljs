@@ -34,7 +34,7 @@
                                      :background-color colors/primary-50-opa-10}
                :accessibility-label :content-type-pin-icon}
       [quo/icon :i/pin {:color colors/primary-50 :size 16}]]
-     [:<>
+     [rn/view
       [rn/view {:style {:flex-direction :row :align-items :center}}
        [rn/touchable-opacity {:style    old-style/message-author-touchable
                               :disabled in-popover?

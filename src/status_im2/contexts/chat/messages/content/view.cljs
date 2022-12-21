@@ -43,7 +43,7 @@
 
 (defn system-message-content [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
-    [pin/system-message quoted-message]
+    [pin/system-message message-data]
     (case content-type
 
       constants/content-type-system-text [system.text/text-content message-data]
