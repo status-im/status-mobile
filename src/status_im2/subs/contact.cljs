@@ -283,6 +283,21 @@
           (remove #(empty? (:data %)))))))
 
 (re-frame/reg-sub
+ :contacts/sorted-and-grouped-by-first-letter
+ :<- [:contacts/active]
+ :<- [:selected-contacts-count]
+ (fn [[contacts selected-contacts-count]]
+   (->> contacts
+        (filter :mutual?)
+        (map #(assoc % :allow-new-users? (< selected-contacts-count
+                                            (dec constants/max-group-chat-participants))))
+        (group-by (comp (fnil string/upper-case "") first :alias))
+        (sort-by (fn [[title]] title))
+        (map (fn [[title data]]
+               {:title title
+                :data  data})))))
+
+(re-frame/reg-sub
  :contacts/group-members-sections
  :<- [:contacts/current-chat-contacts]
  (fn [members]

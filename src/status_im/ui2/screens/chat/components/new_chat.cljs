@@ -12,9 +12,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.invite.views :as invite]
-            [status-im.ui.components.keyboard-avoid-presentation
-             :as
-             kb-presentation]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -23,7 +20,8 @@
             [utils.debounce :as debounce]
             [status-im.ui.screens.chat.sheets :refer [hide-sheet-and-dispatch]]
             [status-im.ui.components.search-input.view :as search]
-            [status-im.ui.components.toolbar :as toolbar]))
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]))
 
 (defn- render-contact [row]
   (let [[first-name second-name] (multiaccounts/contact-two-names row false)]
@@ -54,7 +52,7 @@
 
 (defn- toggle-item []
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
-    (let [contact-selected? @(re-frame/subscribe [subs-name public-key])
+    (let [contact-selected?        @(re-frame/subscribe [subs-name public-key])
           [first-name second-name] (multiaccounts/contact-two-names contact true)]
       [quo2/list-item
        {:title            first-name
@@ -149,25 +147,6 @@
                                                                                       300)}
                        (i18n/label :t/create-group-chat)]}]]]))
 
-(defn searchable-contact-list []
-  (let [search-value (reagent/atom nil)]
-    (fn [{:keys [contacts no-contacts-label toggle-fn allow-new-users? show-cancel?]}]
-      [react/view {:style {:flex 1}}
-       [react/view {:style (styles/search-container)}
-        [search/search-input {:on-cancel            #(reset! search-value nil)
-                              :search-border-radius 0
-                              :show-cancel          show-cancel?
-                              :search-border-width  0
-                              :on-change            #(reset! search-value %)}]]
-       [react/view {:style {:flex             1
-                            :padding-vertical 8
-                            :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}}
-        (if (seq contacts)
-          [toggle-list {:contacts    (filter-contacts @search-value contacts)
-                        :render-data allow-new-users?
-                        :render-fn   toggle-fn}]
-          [no-contacts {:no-contacts no-contacts-label}])]])))
-
 ;; Start group chat
 (defn contact-toggle-list []
   (let [contacts                   (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
@@ -175,7 +154,8 @@
         window-height              (rf/sub [:dimensions/window-height])
         one-contact-selected?      (= selected-contacts-count 1)
         no-contacts-selected?      (zero? selected-contacts-count)
-        {:keys [alias public-key]} (-> contacts first :data first)]
+        {:keys [alias public-key]} (-> contacts first :data first)
+        added                      (reagent/atom '())]
     [react/view  {:style {:height (* window-height 0.95)}}
      [topbar/topbar {:use-insets                 false
                      :border-bottom              false
@@ -206,11 +186,13 @@
                    {:selected (inc selected-contacts-count)
                     :max      constants/max-group-chat-participants})]]
      [react/view {:style {:height 430}}
-      [searchable-contact-list
-       {:contacts          contacts
-        :show-cancel?      false
-        :no-contacts-label (i18n/label :t/group-chat-no-contacts)
-        :toggle-fn         group-toggle-contact}]]
+      [contact-list/contact-list
+       {:icon    :check
+        :group   nil
+        :added   added
+        :search? false
+        :start-a-new-chat? true
+        :on-toggle on-toggle}]]
      (when-not no-contacts-selected?
        [toolbar/toolbar
         {:show-border?  false
@@ -224,61 +206,3 @@
                          (if one-contact-selected?
                            (i18n/label :t/chat-with {:selected-user alias})
                            (i18n/label :t/setup-group-chat))]}])]))
-
-;; Add participants to existing group chat
-(defn add-participants-toggle-list []
-  (let [contacts                   (rf/sub [:contacts/all-contacts-not-in-current-chat])
-        current-chat               (rf/sub [:chats/current-chat])
-        selected-contacts-count    (rf/sub [:selected-participants-count])
-        current-participants-count (count (:contacts current-chat))]
-    [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-     [topbar/topbar {:use-insets    false
-                     :border-bottom false
-                     :title         (i18n/label :t/add-members)
-                     :subtitle      (i18n/label :t/group-chat-members-count
-                                                {:selected (+ current-participants-count selected-contacts-count)
-                                                 :max      constants/max-group-chat-participants})}]
-     [searchable-contact-list
-      {:contacts          contacts
-       :no-contacts-label (i18n/label :t/group-chat-all-contacts-invited)
-       :toggle-fn         group-toggle-participant
-       :allow-new-users?  (< (+ current-participants-count
-                                selected-contacts-count)
-                             constants/max-group-chat-participants)}]
-     [toolbar/toolbar
-      {:show-border? true
-       :center       [quo/button {:type                :secondary
-                                  :accessibility-label :next-button
-                                  :disabled            (zero? selected-contacts-count)
-                                  :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
-                      (i18n/label :t/add)]}]]))
-
-(defn edit-group-chat-name []
-  (let [{:keys [name chat-id]} (rf/sub [:chats/current-chat])
-        new-group-chat-name (reagent/atom nil)]
-    [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-     [react/scroll-view {:style {:padding 16
-                                 :flex    1}}
-      [quo/text-input
-       {:on-change-text      #(reset! new-group-chat-name %)
-        :default-value       name
-        :on-submit-editing   #(when (seq @new-group-chat-name)
-                                (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name]))
-        :placeholder         (i18n/label :t/enter-contact-code)
-        :accessibility-label :new-chat-name
-        :return-key-type     :go}]]
-     [react/view {:style {:flex 1}}]
-     [toolbar/toolbar
-      {:show-border? true
-       :center
-       [quo/button {:type                :secondary
-                    :accessibility-label :done
-                    :disabled            (and (<= (count @new-group-chat-name) 1)
-                                              (not (nil? @new-group-chat-name)))
-                    :on-press            #(cond
-                                            (< 1 (count @new-group-chat-name))
-                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
-
-                                            (nil? @new-group-chat-name)
-                                            (re-frame/dispatch [:navigate-back]))}
-        (i18n/label :t/done)]}]]))

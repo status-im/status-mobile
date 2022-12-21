@@ -130,7 +130,7 @@
                            {:weight          :bold
                             :number-of-lines 0
                             :align           title-align
-                            :size            :large}
+                            :size            :label}
                            title])])
 
 (defn header

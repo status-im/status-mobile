@@ -69,44 +69,43 @@
 (defn checkbox
   [{:keys [default-checked?]}]
   (let [checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style accessibility-label]}]
-      [rn/touchable-without-feedback
-       {:accessibility-label accessibility-label
-        :on-press            (handle-press disabled? on-change checked?)}
-       [rn/view
-        {:style (merge
-                 container-style
-                 {:height 20
-                  :width  20})}
-        [rn/view
-         {:style               {:flex             1
-                                :border-radius    6
-                                :border-width     (if @checked? 0 1)
-                                :background-color (cond
-                                                    @checked?
-                                                    (get-color @checked? disabled? blurred-background?)
-                                                    blurred-background?
-                                                    (colors/theme-colors
-                                                     colors/white-opa-5
-                                                     colors/white-opa-10)
-                                                    :else
-                                                    (colors/theme-colors
-                                                     colors/white
-                                                     colors/neutral-80-opa-40))
-                                :border-color     (if @checked?
-                                                    :none
-                                                    (get-color @checked? disabled? blurred-background?))}
-          :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
-          :accessibility-role  :checkbox
-          :testID              "checkbox-component"}
-         (when @checked?
-           [rn/view
-            {:style
-             {:height 20
-              :width  20}}
-            [icons/icon :i/check-small
-             {:size  20
-              :color colors/white}]])]]])))
+    @(reagent/track (fn [{:keys [on-change disabled? blurred-background? container-style]}]
+                      [rn/touchable-without-feedback
+                       {:on-press (handle-press disabled? on-change checked?)}
+                       [rn/view
+                        {:style (merge
+                                 container-style
+                                 {:height 20
+                                  :width  20})}
+                        [rn/view
+                         {:style               {:flex             1
+                                                :border-radius    6
+                                                :border-width     (if @checked? 0 1)
+                                                :background-color (cond
+                                                                    @checked?
+                                                                    (get-color @checked? disabled? blurred-background?)
+                                                                    blurred-background?
+                                                                    (colors/theme-colors
+                                                                     colors/white-opa-5
+                                                                     colors/white-opa-10)
+                                                                    :else
+                                                                    (colors/theme-colors
+                                                                     colors/white
+                                                                     colors/neutral-80-opa-40))
+                                                :border-color     (if @checked?
+                                                                    :none
+                                                                    (get-color @checked? disabled? blurred-background?))}
+                          :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
+                          :accessibility-role  :checkbox
+                          :testID              "checkbox-component"}
+                         (when @checked?
+                           [rn/view
+                            {:style
+                             {:height 20
+                              :width  20}}
+                            [icons/icon :i/check-small
+                             {:size  20
+                              :color colors/white}]])]]]) checked?)))
 
 (defn radio
   [{:keys [default-checked?]}]
