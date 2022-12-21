@@ -43,16 +43,6 @@
                   (-> (js/expect (rtl/screen.queryByLabelText "left-icon-for-action"))
                       (.toBeTruthy))))
 
-(js/global.test "action-drawer does not render a divider when the add-divider? prop is false"
-                (fn []
-                  (render-action-drawer [[{:icon                :i/friend
-                                           :label               "a sample label"
-                                           :add-divider?        false
-                                           :accessibility-label :first-element}]])
-                  (-> (js/expect (rtl/screen.getAllByLabelText "divider"))
-                      (.not)
-                      (.toBeTruthy))))
-
 (js/global.test "action-drawer renders a divider when the add-divider? prop is true"
                 (fn []
                   (render-action-drawer [[{:icon                :i/friend
