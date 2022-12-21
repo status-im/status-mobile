@@ -4,7 +4,8 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
-(defn text-style [{:keys [size align weight style secondary-color]}]
+(defn text-style
+  [{:keys [size align weight style secondary-color]}]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -23,8 +24,7 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (or secondary-color
-                                   (colors/theme-colors colors/neutral-100 colors/white))))))
+                      (assoc style :color (or secondary-color (colors/theme-colors colors/neutral-100 colors/white))))))
 
 (defn text
   []
