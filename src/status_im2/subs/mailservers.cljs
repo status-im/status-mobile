@@ -1,7 +1,7 @@
 (ns status-im2.subs.mailservers
   (:require [re-frame.core :as re-frame]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.fleet.core :as fleet]))
+            [status-im.fleet.core :as fleet]
+            [status-im.mailserver.core :as mailserver]))
 
 (re-frame/reg-sub
  :mailserver/current-name

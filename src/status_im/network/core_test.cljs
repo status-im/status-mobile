@@ -65,33 +65,33 @@
 
 (deftest valid-manage-test
   (testing "a valid manage"
-    (is (network.core/valid-manage? {:url   {:value "http://valid.com"}
-                                     :name  {:value "valid"}
+    (is (network.core/valid-manage? {:url    {:value "http://valid.com"}
+                                     :name   {:value "valid"}
                                      :symbol {:value "valid"}
-                                     :chain {:value "valid"}})))
+                                     :chain  {:value "valid"}})))
   (testing "invalid url"
-    (is (not (network.core/valid-manage? {:url   {:value "invalid"}
-                                          :name  {:value "valid"}
+    (is (not (network.core/valid-manage? {:url    {:value "invalid"}
+                                          :name   {:value "valid"}
                                           :symbol {:value "valid"}
-                                          :chain {:value "valid"}}))))
+                                          :chain  {:value "valid"}}))))
 
   (testing "invalid name"
-    (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
-                                          :name  {:value ""}
+    (is (not (network.core/valid-manage? {:url    {:value "http://valid.com"}
+                                          :name   {:value ""}
                                           :symbol {:value "valid"}
-                                          :chain {:value "valid"}}))))
+                                          :chain  {:value "valid"}}))))
 
   (testing "invalid chain"
-    (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
-                                          :name  {:value "valid"}
+    (is (not (network.core/valid-manage? {:url    {:value "http://valid.com"}
+                                          :name   {:value "valid"}
                                           :symbol {:value "valid"}
-                                          :chain {:value ""}}))))
+                                          :chain  {:value ""}}))))
 
   (testing "invalid symbol"
-    (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
-                                          :name  {:value "valid"}
+    (is (not (network.core/valid-manage? {:url    {:value "http://valid.com"}
+                                          :name   {:value "valid"}
                                           :symbol {:value ""}
-                                          :chain {:value "valid"}})))))
+                                          :chain  {:value "valid"}})))))
 
 (deftest set-input-test
   (testing "it updates and validate a field"
@@ -105,40 +105,44 @@
                                                 :error false}
                                    :network-id {:value nil
                                                 :error false}}}}
-           (network.core/set-input {:db {:networks/manage {:url   {:value "something"
-                                                                   :error true}
-                                                           :name  {:value ""
-                                                                   :error false}
+           (network.core/set-input {:db {:networks/manage {:url    {:value "something"
+                                                                    :error true}
+                                                           :name   {:value ""
+                                                                    :error false}
                                                            :symbol {:value "symbol"
                                                                     :error false}
-                                                           :chain {:value "mainnet"
-                                                                   :error false}}}}
-                                   :url "http://valid.com")))))
+                                                           :chain  {:value "mainnet"
+                                                                    :error false}}}}
+                                   :url
+                                   "http://valid.com")))))
 
 (deftest not-save-invalid-url
   (testing "it does not save a network with an invalid url"
-    (is (:ui/show-error (network.core/save {:random-id-generator  (constantly "random")
-                                            :db {:networks/manage {:url {:value "wrong"}
-                                                                   :chain {:value "1"}
-                                                                   :name {:value "empty"}}
-                                                 :multiaccount {}}})))))
+    (is
+     (:ui/show-error (network.core/save {:random-id-generator (constantly "random")
+                                         :db                  {:networks/manage {:url   {:value "wrong"}
+                                                                                 :chain {:value "1"}
+                                                                                 :name  {:value "empty"}}
+                                                               :multiaccount    {}}})))))
 
 (deftest save-valid-network
   (testing "save a valid network"
-    (let [fx (network.core/save {:random-id-generator  (constantly "random-id")
-                                 :db {:networks/manage {:url {:value "http://valid.com"}
-                                                        :chain {:value :mainnet}
-                                                        :symbol {:value "symbol"}
-                                                        :name {:value "valid"}}
-                                      :multiaccount {}
-                                      :networks/networks {"random2"
-                                                          {:id     "random2"
-                                                           :name   "network-name"
-                                                           :symbol "symbol"
-                                                           :config {:NetworkId      1
-                                                                    :DataDir        "/ethereum/mainnet_rpc"
-                                                                    :UpstreamConfig {:Enabled true
-                                                                                     :URL     "upstream-url"}}}}}})]
+    (let [fx (network.core/save
+              {:random-id-generator (constantly "random-id")
+               :db                  {:networks/manage   {:url    {:value "http://valid.com"}
+                                                         :chain  {:value :mainnet}
+                                                         :symbol {:value "symbol"}
+                                                         :name   {:value "valid"}}
+                                     :multiaccount      {}
+                                     :networks/networks {"random2"
+                                                         {:id     "random2"
+                                                          :name   "network-name"
+                                                          :symbol "symbol"
+                                                          :config {:NetworkId 1
+                                                                   :DataDir "/ethereum/mainnet_rpc"
+                                                                   :UpstreamConfig
+                                                                   {:Enabled true
+                                                                    :URL     "upstream-url"}}}}}})]
       (is (= "settings_saveSetting" (:method (first (::json-rpc/call fx)))))
       (is (nil? (:networks/manage (:db fx))))
       (testing "and check that it has an id with `-` and the correct mainnet NetworkId"
@@ -146,38 +150,42 @@
 
 (deftest not-save-custom-chain-with-non-unique-id
   (testing "it does not save a custom chain with network-id already defined"
-    (let [result (network.core/save {:random-id-generator  (constantly "already-defined")
-                                     :db {:networks/manage {:url {:value "http://valid.com"}
-                                                            :chain {:value :custom}
-                                                            :name {:value "valid"}
-                                                            :network-id {:value 1}}
-                                          :multiaccount {}
-                                          :networks/networks {"random"
-                                                              {:id     "random"
-                                                               :name   "network-name"
-                                                               :config {:NetworkId      1
-                                                                        :DataDir        "/ethereum/mainnet_rpc"
-                                                                        :UpstreamConfig {:Enabled true
-                                                                                         :URL     "upstream-url"}}}}}})]
+    (let [result (network.core/save
+                  {:random-id-generator (constantly "already-defined")
+                   :db                  {:networks/manage   {:url        {:value "http://valid.com"}
+                                                             :chain      {:value :custom}
+                                                             :name       {:value "valid"}
+                                                             :network-id {:value 1}}
+                                         :multiaccount      {}
+                                         :networks/networks {"random"
+                                                             {:id     "random"
+                                                              :name   "network-name"
+                                                              :config {:NetworkId 1
+                                                                       :DataDir "/ethereum/mainnet_rpc"
+                                                                       :UpstreamConfig
+                                                                       {:Enabled true
+                                                                        :URL     "upstream-url"}}}}}})]
       (is (:ui/show-error result)))))
 
 (deftest save-valid-network-with-unique-chain-id-check
   (testing "save a valid network with chain-id not already defined"
-    (let [fx (network.core/save {:random-id-generator  (constantly "random")
-                                 :db {:networks/manage {:url {:value "http://valid.com"}
-                                                        :chain {:value :mainnet}
-                                                        :name {:value "valid"}
-                                                        :symbol {:value "symbol"}
-                                                        :network-id {:value 5}}
-                                      :multiaccount {}
-                                      :networks/networks {"randomid"
-                                                          {:id     "randomid"
-                                                           :name   "network-name"
-                                                           :symbol "symbol"
-                                                           :config {:NetworkId      3
-                                                                    :DataDir        "/ethereum/mainnet_rpc"
-                                                                    :UpstreamConfig {:Enabled true
-                                                                                     :URL     "upstream-url"}}}}}})]
+    (let [fx (network.core/save
+              {:random-id-generator (constantly "random")
+               :db                  {:networks/manage   {:url        {:value "http://valid.com"}
+                                                         :chain      {:value :mainnet}
+                                                         :name       {:value "valid"}
+                                                         :symbol     {:value "symbol"}
+                                                         :network-id {:value 5}}
+                                     :multiaccount      {}
+                                     :networks/networks {"randomid"
+                                                         {:id     "randomid"
+                                                          :name   "network-name"
+                                                          :symbol "symbol"
+                                                          :config {:NetworkId 3
+                                                                   :DataDir "/ethereum/mainnet_rpc"
+                                                                   :UpstreamConfig
+                                                                   {:Enabled true
+                                                                    :URL     "upstream-url"}}}}}})]
       (is (= "settings_saveSetting" (:method (first (::json-rpc/call fx)))))
       (is (nil? (:networks/manage (:db fx))))
       (is (get-in fx [:db :networks/networks "random"])))))

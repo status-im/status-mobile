@@ -10,28 +10,30 @@
 ;; to avoid accidentally exposing them.
 (deftype MaskedData [data]
   Object
-  (toString [_] "******")
+    (toString [_] "******")
 
   ICounted
-  (-count [^js this]
-    (count (.-data this)))
+    (-count [^js this]
+      (count (.-data this)))
 
   IEquiv
-  (-equiv [this other]
-    (if (instance? MaskedData other)
-      (= (unmask this)
-         (unmask other))
-      false))
+    (-equiv [this other]
+      (if (instance? MaskedData other)
+        (= (unmask this)
+           (unmask other))
+        false))
 
   Unmaskable
-  (unmask [^js this]
-    (.-data this)))
+    (unmask [^js this]
+      (.-data this)))
 
 ;; Returns a MaskedData instance that stores the piece of data.
-(defn mask-data [data]
+(defn mask-data
+  [data]
   (MaskedData. data))
 
-(defn safe-unmask-data [data]
+(defn safe-unmask-data
+  [data]
   (if (instance? MaskedData data)
     (unmask data)
     data))

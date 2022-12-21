@@ -1,48 +1,48 @@
 (ns status-im.multiaccounts.login.core
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.async-storage.core :as async-storage]
+            [status-im.chat.models.link-preview :as link-preview]
+            [status-im.communities.core :as communities]
             [status-im.contact.core :as contact]
-            [status-im.utils.config :as config]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.invitations :as data-store.invitations]
             [status-im.data-store.settings :as data-store.settings]
+            [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.transactions.core :as transactions]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.keycard.common :as keycard.common]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.common :as keycard.common]
+            [status-im.mobile-sync-settings.core :as mobile-network]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.popover.core :as popover]
-            [status-im.communities.core :as communities]
+            [status-im.signing.eip1559 :as eip1559]
             [status-im.transport.core :as transport]
-            [status-im.mobile-sync-settings.core :as mobile-network]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
-            [status-im2.setup.log :as logging]
+            [status-im.utils.mobile-sync :as utils.mobile-sync]
+            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.wallet.core :as wallet]
+            [status-im.utils.wallet-connect :as wallet-connect]
             [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
+            [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
-            [taoensso.timbre :as log]
-            [status-im.data-store.invitations :as data-store.invitations]
-            [status-im.chat.models.link-preview :as link-preview]
-            [status-im.utils.mobile-sync :as utils.mobile-sync]
-            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
-            [status-im.signing.eip1559 :as eip1559]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
-            [status-im.ethereum.tokens :as tokens]
-            [clojure.string :as string]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [status-im.node.core :as node]))
+            [status-im2.setup.log :as logging]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -89,11 +89,13 @@
     #(re-frame/dispatch [:wallet-connect/client-init %])
     #(log/error "[wallet-connect]" %))))
 
-(defn rpc->accounts [accounts]
+(defn rpc->accounts
+  [accounts]
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
             (if chat
               acc
-              (let [account (cond-> (update account :address
+              (let [account (cond-> (update account
+                                            :address
                                             eip55/address->checksum)
                               type
                               (update :type keyword))]
@@ -119,12 +121,14 @@
     "0x86a12d91c813f69a53349ff640e32af97d5f5c1f8d42d54cf4c8aa8dea231955"
     "0x0011a30f5b2023bc228f6dd5608b3e7149646fa83f33350926ceb1925af78f08"})
 
-(fx/defn check-invalid-ens [{:keys [db]}]
+(fx/defn check-invalid-ens
+  [{:keys [db]}]
   (async-storage/get-item
    :invalid-ens-name-seen
    (fn [already-seen]
      (when (and (not already-seen)
-                (boolean (get invalid-addrr (ethereum/sha3 (string/lower-case (ethereum/default-address db))))))
+                (boolean (get invalid-addrr
+                              (ethereum/sha3 (string/lower-case (ethereum/default-address db))))))
        (utils/show-popup
         (i18n/label :t/warning)
         (i18n/label :t/ens-username-invalid-name-warning)
@@ -137,7 +141,8 @@
    favourites scan-all-tokens? new-account?]
   (fx/merge
    cofx
-   {:db                          (assoc db :multiaccount/accounts
+   {:db                          (assoc db
+                                        :multiaccount/accounts
                                         (rpc->accounts accounts))
     ;; NOTE: Local notifications should be enabled only after wallet was started
     ::enable-local-notifications nil}
@@ -146,16 +151,18 @@
    (wallet/initialize-favourites favourites)
    (wallet/get-pending-transactions)
    (wallet/fetch-collectibles-collection)
-   (cond (and new-account?
-              (not scan-all-tokens?))
-         (wallet/set-zero-balances (first accounts))
+   (cond
+     (and new-account?
+          (not scan-all-tokens?))
+     (wallet/set-zero-balances (first accounts))
 
-         (and new-account? scan-all-tokens?
-              (not (utils.mobile-sync/cellular? (:network/type db))))
-         (wallet/set-max-block (get (first accounts) :address) 0)
+     (and new-account?
+          scan-all-tokens?
+          (not (utils.mobile-sync/cellular? (:network/type db))))
+     (wallet/set-max-block (get (first accounts) :address) 0)
 
-         :else
-         (wallet/get-cached-balances scan-all-tokens?))
+     :else
+     (wallet/get-cached-balances scan-all-tokens?))
    (when-not (get db :wallet/new-account)
      (wallet/restart-wallet-service nil))
    (when (or (not (utils.mobile-sync/syncing-allowed? cofx))
@@ -170,14 +177,14 @@
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
   (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
-    {:db (-> db
-             (assoc-in [:multiaccounts/login :processing] true)
-             (dissoc :intro-wizard :recovered-account?)
-             (update :keycard dissoc :flow))
+    {:db     (-> db
+                 (assoc-in [:multiaccounts/login :processing] true)
+                 (dissoc :intro-wizard :recovered-account?)
+                 (update :keycard dissoc :flow))
      ::login [key-uid
-              (types/clj->json {:name       name
-                                :key-uid    key-uid
-                                :identicon  identicon})
+              (types/clj->json {:name      name
+                                :key-uid   key-uid
+                                :identicon identicon})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn export-db-submitted
@@ -192,24 +199,25 @@
                   (fn [path]
                     (when platform/ios?
                       (let [uri (str "file://" path)]
-                        (.share ^js react/sharing (clj->js {:title "Unencrypted database"
-                                                            :url   uri})))))]}))
+                        (.share ^js react/sharing
+                                (clj->js {:title "Unencrypted database"
+                                          :url   uri})))))]}))
 
 (fx/defn import-db-submitted
   {:events [:multiaccounts.login.ui/import-db-submitted]}
   [{:keys [db]}]
   (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
     {::import-db [key-uid
-                  (types/clj->json {:name       name
-                                    :key-uid    key-uid
-                                    :identicon  identicon})
+                  (types/clj->json {:name      name
+                                    :key-uid   key-uid
+                                    :identicon identicon})
                   (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn finish-keycard-setup
   [{:keys [db] :as cofx}]
   {:db (update db :keycard dissoc :flow)})
 
-(fx/defn  initialize-dapp-permissions
+(fx/defn initialize-dapp-permissions
   {:events [::initialize-dapp-permissions]}
   [{:keys [db]} all-dapp-permissions]
   (let [dapp-permissions (reduce (fn [acc {:keys [dapp] :as dapp-permissions}]
@@ -239,10 +247,12 @@
 (fx/defn initialize-invitations
   {:events [::initialize-invitations]}
   [{:keys [db]} invitations]
-  {:db (assoc db :group-chat/invitations (reduce (fn [acc {:keys [id] :as inv}]
-                                                   (assoc acc id (data-store.invitations/<-rpc inv)))
-                                                 {}
-                                                 invitations))})
+  {:db (assoc db
+              :group-chat/invitations
+              (reduce (fn [acc {:keys [id] :as inv}]
+                        (assoc acc id (data-store.invitations/<-rpc inv)))
+                      {}
+                      invitations))})
 
 (fx/defn initialize-web3-client-version
   {:events [::initialize-web3-client-version]}
@@ -257,7 +267,7 @@
 (fx/defn check-network-version
   [_ network-id]
   {::json-rpc/call
-   [{:method "net_version"
+   [{:method     "net_version"
      :on-success
      (fn [fetched-network-id]
        (when (not= network-id (str (int fetched-network-id)))
@@ -270,7 +280,8 @@
                        :fetched-network-id fetched-network-id})
           #(re-frame/dispatch [::close-app-confirmed]))))}]})
 
-(defn normalize-tokens [network-id tokens]
+(defn normalize-tokens
+  [network-id tokens]
   (mapv #(-> %
              (update :symbol keyword)
              ((partial tokens/update-icon (ethereum/chain-id->chain-keyword (int network-id)))))
@@ -281,8 +292,8 @@
  (fn [[network-id accounts recovered-account?]]
    (utils/set-timeout
     (fn []
-      (json-rpc/call {:method "wallet_getTokens"
-                      :params [(int network-id)]
+      (json-rpc/call {:method     "wallet_getTokens"
+                      :params     [(int network-id)]
                       :on-success #(re-frame/dispatch [::initialize-wallet
                                                        accounts
                                                        (normalize-tokens network-id %)
@@ -299,25 +310,25 @@
         (clj->js
          [(js/Promise.
            (fn [resolve reject]
-             (json-rpc/call {:method "accounts_getAccounts"
+             (json-rpc/call {:method     "accounts_getAccounts"
                              :on-success resolve
-                             :on-error reject})))
+                             :on-error   reject})))
           (js/Promise.
            (fn [resolve _]
-             (json-rpc/call {:method "wallet_getTokens"
-                             :params [(int network-id)]
+             (json-rpc/call {:method     "wallet_getTokens"
+                             :params     [(int network-id)]
                              :on-success resolve
-                             :on-error #(resolve nil)})))
+                             :on-error   #(resolve nil)})))
           (js/Promise.
            (fn [resolve reject]
-             (json-rpc/call {:method "wallet_getCustomTokens"
+             (json-rpc/call {:method     "wallet_getCustomTokens"
                              :on-success resolve
-                             :on-error reject})))
+                             :on-error   reject})))
           (js/Promise.
            (fn [resolve reject]
-             (json-rpc/call {:method "wallet_getSavedAddresses"
+             (json-rpc/call {:method     "wallet_getSavedAddresses"
                              :on-success resolve
-                             :on-error reject})))]))
+                             :on-error   reject})))]))
        (.then (fn [[accounts tokens custom-tokens favourites]]
                 (callback accounts
                           (normalize-tokens network-id tokens)
@@ -326,7 +337,8 @@
        (.catch (fn [_]
                  (log/error "Failed to initialize wallet"))))))
 
-(fx/defn initialize-browser [_]
+(fx/defn initialize-browser
+  [_]
   {::json-rpc/call
    [{:method     "wakuext_getBrowsers"
      :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -335,10 +347,12 @@
     {:method     "permissions_getDappPermissions"
      :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
 
-(fx/defn initialize-appearance [cofx]
+(fx/defn initialize-appearance
+  [cofx]
   {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])})
 
-(fx/defn get-group-chat-invitations [_]
+(fx/defn get-group-chat-invitations
+  [_]
   {::json-rpc/call
    [{:method     "wakuext_getGroupChatInvitations"
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
@@ -359,8 +373,9 @@
   {:events [::get-node-config-callback]}
   [{:keys [db] :as cofx} node-config-json]
   (let [node-config (types/json->clj node-config-json)]
-    {:db (assoc-in db [:multiaccount :wakuv2-config]
-                   (get node-config :WakuV2Config))}))
+    {:db (assoc-in db
+          [:multiaccount :wakuv2-config]
+          (get node-config :WakuV2Config))}))
 
 (fx/defn get-node-config
   [_]
@@ -373,15 +388,16 @@
          :as            settings}
         (data-store.settings/rpc->settings settings)
         multiaccount (dissoc settings :networks/current-network :networks/networks)
-        ;;for some reason we save default networks in db, in case when we want to modify default-networks for
+        ;;for some reason we save default networks in db, in case when we want to modify default-networks
+        ;;for
         ;; existing accounts we have to merge them again into networks
         merged-networks (merge networks config/default-networks-by-id)]
     (fx/merge cofx
               {:db (-> db
                        (dissoc :multiaccounts/login)
                        (assoc :networks/current-network current-network
-                              :networks/networks merged-networks
-                              :multiaccount multiaccount))}
+                              :networks/networks        merged-networks
+                              :multiaccount             multiaccount))}
               (data-store.chats/fetch-chats-rpc
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
@@ -416,20 +432,21 @@
 (fx/defn update-wallet-accounts
   [{:keys [db]} accounts]
   (let [existing-accounts (into {} (map #(vector (:address %1) %1) (:multiaccount/accounts db)))
-        reduce-fn (fn [existing-accs new-acc]
-                    (let [address (:address new-acc)]
-                      (if (:removed new-acc)
-                        (dissoc existing-accs address)
-                        (assoc existing-accs address new-acc))))
-        new-accounts (reduce reduce-fn existing-accounts (rpc->accounts accounts))]
+        reduce-fn         (fn [existing-accs new-acc]
+                            (let [address (:address new-acc)]
+                              (if (:removed new-acc)
+                                (dissoc existing-accs address)
+                                (assoc existing-accs address new-acc))))
+        new-accounts      (reduce reduce-fn existing-accounts (rpc->accounts accounts))]
     {:db (assoc db :multiaccount/accounts (vals new-accounts))}))
 
 (fx/defn get-chats-callback
   {:events [::get-chats-callback]}
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
-        notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
-        network-id   (str (get-in networks [current-network :config :NetworkId]))
+        notifications-enabled?                      (get-in db [:multiaccount :notifications-enabled?])
+        network-id                                  (str (get-in networks
+                                                                 [current-network :config :NetworkId]))
         remote-push-notifications-enabled?
         (get-in db [:multiaccount :remote-push-notifications-enabled?])]
     (fx/merge cofx
@@ -442,7 +459,7 @@
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
-                       ::open-last-chat (get-in db [:multiaccount :key-uid])}
+                       ::open-last-chat                   (get-in db [:multiaccount :key-uid])}
                 (or notifications-enabled? remote-push-notifications-enabled?)
                 (assoc ::notifications/enable remote-push-notifications-enabled?))
               (transport/start-messenger)
@@ -457,7 +474,8 @@
               (link-preview/request-link-preview-whitelist)
               (visibility-status-updates-store/fetch-visibility-status-updates-rpc))))
 
-(defn get-new-auth-method [auth-method save-password?]
+(defn get-new-auth-method
+  [auth-method save-password?]
   (when save-password?
     (when-not (or (= keychain/auth-method-biometric auth-method)
                   (= keychain/auth-method-password auth-method))
@@ -477,10 +495,10 @@
   (let [auth-method     (:auth-method db)
         new-auth-method (get-new-auth-method auth-method save-password?)]
     (log/debug "[login] login-only-events"
-               "auth-method" auth-method
+               "auth-method"     auth-method
                "new-auth-method" new-auth-method)
     (fx/merge cofx
-              {:db (assoc db :chats/loading? true)
+              {:db             (assoc db :chats/loading? true)
                ::json-rpc/call
                [{:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
@@ -488,24 +506,26 @@
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
-              (keychain/save-auth-method key-uid (or new-auth-method auth-method keychain/auth-method-none)))))
+              (keychain/save-auth-method key-uid
+                                         (or new-auth-method auth-method keychain/auth-method-none)))))
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx} recovered-account?]
   (let [{:keys [multiaccount
                 :multiaccounts/multiaccounts
-                :multiaccount/accounts]} db
-        {:keys [creating?]}              (:multiaccounts/login db)
-        first-account?                   (and creating?
-                                              (empty? multiaccounts))
-        tos-accepted?                    (get db :tos/accepted?)
+                :multiaccount/accounts]}
+        db
+        {:keys [creating?]} (:multiaccounts/login db)
+        first-account? (and creating?
+                            (empty? multiaccounts))
+        tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
-              {:db             (-> db
-                                   (dissoc :multiaccounts/login)
-                                   (assoc :tos/next-root :onboarding-notification :chats/loading? false)
-                                   (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
+              {:db          (-> db
+                                (dissoc :multiaccounts/login)
+                                (assoc :tos/next-root :onboarding-notification :chats/loading? false)
+                                (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
                ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
               (transport/start-messenger)
@@ -525,14 +545,16 @@
                   (navigation/init-root :onboarding-notification)
                   (navigation/init-root :tos))))))
 
-(defn- keycard-setup? [cofx]
+(defn- keycard-setup?
+  [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))
 
-(defn on-login-update-db [db login-only? now]
+(defn on-login-update-db
+  [db login-only? now]
   (-> db
       (dissoc :connectivity/ui-status-properties)
       (update :keycard dissoc :from-key-storage-and-migration?)
-      (update :keycard dissoc
+      (update :keycard      dissoc
               :on-card-read
               :card-read-in-progress?
               :pin
@@ -549,18 +571,20 @@
   (let [{:keys [key-uid password save-password? creating?]}
         (:multiaccounts/login db)
 
-        multiaccounts        (:multiaccounts/multiaccounts db)
-        recovered-account?   (get db :recovered-account?)
-        login-only?          (not (or creating?
-                                      recovered-account?
-                                      (keycard-setup? cofx)))
-        from-migration?      (get-in db [:keycard :from-key-storage-and-migration?])
-        nodes                nil]
+        multiaccounts                                       (:multiaccounts/multiaccounts db)
+        recovered-account?                                  (get db :recovered-account?)
+        login-only?                                         (not (or creating?
+                                                                     recovered-account?
+                                                                     (keycard-setup? cofx)))
+        from-migration?                                     (get-in db
+                                                                    [:keycard
+                                                                     :from-key-storage-and-migration?])
+        nodes                                               nil]
     (log/debug "[multiaccount] multiaccount-login-success"
-               "login-only?" login-only?
+               "login-only?"        login-only?
                "recovered-account?" recovered-account?)
     (fx/merge cofx
-              {:db (on-login-update-db db login-only? now)
+              {:db             (on-login-update-db db login-only? now)
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
@@ -571,7 +595,8 @@
                          (not recovered-account?))
                 (wallet/set-initial-blocks-range))
               (when from-migration?
-                (utils/show-popup (i18n/label :t/migration-successful) (i18n/label :t/migration-successful-text)))
+                (utils/show-popup (i18n/label :t/migration-successful)
+                                  (i18n/label :t/migration-successful-text)))
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events recovered-account?)))))
@@ -596,17 +621,20 @@
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
   [{:keys [db] :as cofx} password]
-  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
-        keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
-                                              key-uid
-                                              :keycard-pairing]))
+  (let [key-uid           (get-in db [:multiaccounts/login :key-uid])
+        keycard-account?  (boolean (get-in db
+                                           [:multiaccounts/multiaccounts
+                                            key-uid
+                                            :keycard-pairing]))
         goto-key-storage? (:goto-key-storage? db)]
     (if password
       (fx/merge
        cofx
-       {:db (update-in db [:multiaccounts/login] assoc
-                       :password password
-                       :save-password? true)
+       {:db           (update-in db
+                                 [:multiaccounts/login]
+                                 assoc
+                                 :password       password
+                                 :save-password? true)
         :init-root-fx :progress}
        login)
       (fx/merge
@@ -624,9 +652,11 @@
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
-  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
+  (let [keycard-multiaccount? (boolean (get-in db
+                                               [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (log/debug "[login] get-credentials"
-               "keycard-multiacc?" keycard-multiaccount?)
+               "keycard-multiacc?"
+               keycard-multiaccount?)
     (if keycard-multiaccount?
       (keychain/get-keycard-keys cofx key-uid)
       (keychain/get-user-password cofx key-uid))))
@@ -636,9 +666,10 @@
   {:events [:multiaccounts.login/get-auth-method-success]}
   [{:keys [db] :as cofx} auth-method]
   (let [key-uid               (get-in db [:multiaccounts/login :key-uid])
-        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
+        keycard-multiaccount? (boolean (get-in db
+                                               [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (log/debug "[login] get-auth-method-success"
-               "auth-method" auth-method
+               "auth-method"       auth-method
                "keycard-multiacc?" keycard-multiaccount?)
     (fx/merge
      cofx
@@ -661,13 +692,13 @@
     (log/debug "[biometric] biometric-auth-done"
                "bioauth-success" bioauth-success
                "bioauth-message" bioauth-message
-               "bioauth-code" bioauth-code)
+               "bioauth-code"    bioauth-code)
     (if bioauth-success
       (get-credentials cofx key-uid)
       (fx/merge cofx
                 {:db (assoc-in db
-                               [:multiaccounts/login :save-password?]
-                               (= auth-method keychain/auth-method-biometric))}
+                      [:multiaccounts/login :save-password?]
+                      (= auth-method keychain/auth-method-biometric))}
                 (when-not (= auth-method keychain/auth-method-biometric)
                   (keychain/save-auth-method key-uid keychain/auth-method-none))
                 (biometric/show-message bioauth-message bioauth-code)
@@ -679,8 +710,8 @@
   (let [bioauth-supported?   (boolean (get db :supported-biometric-auth))
         previous-auth-method (get db :auth-method)]
     (log/debug "[login] save-password"
-               "save-password?" save-password?
-               "bioauth-supported?" bioauth-supported?
+               "save-password?"       save-password?
+               "bioauth-supported?"   bioauth-supported?
                "previous-auth-method" previous-auth-method)
     (fx/merge
      cofx
@@ -710,11 +741,11 @@
   [{:keys [db] :as cofx} key-uid]
   ;; We specifically pass a bunch of fields instead of the whole multiaccount
   ;; as we want store some fields in multiaccount that are not here
-  (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])
+  (let [multiaccount          (get-in db [:multiaccounts/multiaccounts key-uid])
         keycard-multiaccount? (boolean (:keycard-pairing multiaccount))]
     (fx/merge
      cofx
-     {:db (update db :keycard dissoc :application-info)
+     {:db             (update db :keycard dissoc :application-info)
       :navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 

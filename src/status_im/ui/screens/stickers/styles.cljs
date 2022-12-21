@@ -2,15 +2,17 @@
   (:require [quo.design-system.colors :as colors]))
 
 (def screen
-  {:flex             1})
+  {:flex 1})
 
-(defn sticker-image [sticker-icon-size]
+(defn sticker-image
+  [sticker-icon-size]
   {:margin        16
    :width         sticker-icon-size
    :height        sticker-icon-size
    :border-radius (/ sticker-icon-size 2)})
 
-(defn price-badge [not-enough-snt?]
+(defn price-badge
+  [not-enough-snt?]
   {:background-color   (if not-enough-snt? colors/gray colors/blue)
    :border-radius      14
    :flex-direction     :row

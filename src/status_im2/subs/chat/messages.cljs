@@ -3,8 +3,8 @@
             [status-im.chat.db :as chat.db]
             [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im2.common.constants :as constants]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            [status-im2.common.constants :as constants]))
 
 (re-frame/reg-sub
  :chats/chat-messages
@@ -24,7 +24,8 @@
                     (if (or deleted? deleted-for-me?)
                       acc
                       (assoc acc message-id message))))
-                {} pin-messages))))
+                {}
+                pin-messages))))
 
 (re-frame/reg-sub
  :chats/pinned-sorted-list
@@ -87,9 +88,9 @@
    (keep #(if (= :message (% :type))
             (when-let [message (messages (% :message-id))]
               (let [pinned-message (get pinned-messages (% :message-id))
-                    pinned (if pinned-message true (some? (message :pinned-by)))
-                    pinned-by (when pinned (or (message :pinned-by) (pinned-message :pinned-by)))
-                    message (assoc message :pinned pinned :pinned-by pinned-by)]
+                    pinned         (if pinned-message true (some? (message :pinned-by)))
+                    pinned-by      (when pinned (or (message :pinned-by) (pinned-message :pinned-by)))
+                    message        (assoc message :pinned pinned :pinned-by pinned-by)]
                 (merge message %)))
             %)
          message-list)))
@@ -120,7 +121,12 @@
        (-> message-list-seq
            (chat.db/add-datemarks)
            (hydrate-messages messages pin-messages)
-           (chat.db/collapse-gaps chat-id synced-from (datetime/timestamp) chat-type joined loading-messages?))))))
+           (chat.db/collapse-gaps chat-id
+                                  synced-from
+                                  (datetime/timestamp)
+                                  chat-type
+                                  joined
+                                  loading-messages?))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-profile-messages-stream (atom nil))

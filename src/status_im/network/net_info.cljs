@@ -1,10 +1,10 @@
 (ns status-im.network.net-info
-  (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
+  (:require ["@react-native-community/netinfo" :default net-info]
+            [re-frame.core :as re-frame]
             [status-im.mobile-sync-settings.core :as mobile-network]
+            [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]
-            ["@react-native-community/netinfo" :default net-info]
             [taoensso.timbre :as log]))
 
 (fx/defn change-network-status
@@ -20,7 +20,7 @@
 (fx/defn change-network-type
   [{:keys [db] :as cofx} old-network-type network-type expensive?]
   (fx/merge cofx
-            {:db (assoc db :network/type network-type)
+            {:db                       (assoc db :network/type network-type)
              :network/notify-status-go [network-type expensive?]}
             (mobile-network/on-network-status-change)))
 
@@ -33,18 +33,19 @@
         status-changed?     (= connectivity-status old-network-status)
         type-changed?       (= type old-network-type)]
     (log/debug "[net-info]"
-               "old-network-status" old-network-status
-               "old-network-type" old-network-type
+               "old-network-status"  old-network-status
+               "old-network-type"    old-network-type
                "connectivity-status" connectivity-status
-               "type" type
-               "details" details)
+               "type"                type
+               "details"             details)
     (fx/merge cofx
               (when-not status-changed?
                 (change-network-status isConnected))
               (when-not type-changed?
                 (change-network-type old-network-type type (:is-connection-expensive details))))))
 
-(defn add-net-info-listener []
+(defn add-net-info-listener
+  []
   (when net-info
     (.addEventListener ^js net-info
                        #(re-frame/dispatch [::network-info-changed

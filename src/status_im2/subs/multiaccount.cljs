@@ -1,14 +1,14 @@
 (ns status-im2.subs.multiaccount
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.security :as security]
-            [cljs.spec.alpha :as spec]
-            [status-im.fleet.core :as fleet]
-            [clojure.string :as string]
-            [status-im.utils.image-server :as image-server]
+  (:require [cljs.spec.alpha :as spec]
             [clojure.set :as clojure.set]
-            [status-im.multiaccounts.db :as multiaccounts.db]))
+            [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.fleet.core :as fleet]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.utils.image-server :as image-server]
+            [status-im.utils.security :as security]))
 
 (re-frame/reg-sub
  :multiaccount/public-key
@@ -100,7 +100,9 @@
  :<- [:get-screen-params :wallet-account]
  (fn [[accounts acc]]
    (some #(when (= (string/lower-case (:address %))
-                   (string/lower-case (:address acc))) %) accounts)))
+                   (string/lower-case (:address acc)))
+            %)
+         accounts)))
 
 (re-frame/reg-sub
  :account-by-address
@@ -108,7 +110,9 @@
  (fn [accounts [_ address]]
    (when (string? address)
      (some #(when (= (string/lower-case (:address %))
-                     (string/lower-case address)) %) accounts))))
+                     (string/lower-case address))
+              %)
+           accounts))))
 
 (re-frame/reg-sub
  :multiple-multiaccounts?
@@ -190,9 +194,9 @@
  :<- [:multiaccount/resetting-password?]
  (fn [[form-vals errors resetting?]]
    (let [{:keys [current-password new-password confirm-new-password]} form-vals]
-     {:form-vals  form-vals
-      :errors     errors
-      :resetting? resetting?
+     {:form-vals     form-vals
+      :errors        errors
+      :resetting?    resetting?
       :next-enabled?
       (and (pos? (count current-password))
            (pos? (count new-password))
@@ -207,18 +211,22 @@
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
 
-(defn- replace-multiaccount-image-uri [multiaccount port]
-  (let [public-key (:public-key multiaccount)
-        identicon (image-server/get-identicons-uri port public-key)
+(defn- replace-multiaccount-image-uri
+  [multiaccount port]
+  (let [public-key   (:public-key multiaccount)
+        identicon    (image-server/get-identicons-uri port public-key)
         multiaccount (assoc multiaccount :identicon identicon)
-        images (:images multiaccount)
-        images (reduce (fn [acc current]
-                         (let [key-uid (:keyUid current)
-                               image-name (:type current)
-                               uri (image-server/get-account-image-uri port public-key image-name key-uid)]
-                           (conj acc (assoc current :uri uri))))
-                       []
-                       images)]
+        images       (:images multiaccount)
+        images       (reduce (fn [acc current]
+                               (let [key-uid    (:keyUid current)
+                                     image-name (:type current)
+                                     uri        (image-server/get-account-image-uri port
+                                                                                    public-key
+                                                                                    image-name
+                                                                                    key-uid)]
+                                 (conj acc (assoc current :uri uri))))
+                             []
+                             images)]
     (assoc multiaccount :images images)))
 
 (re-frame/reg-sub
@@ -228,7 +236,8 @@
  (fn [[multiaccount port]]
    (replace-multiaccount-image-uri multiaccount port)))
 
-;; LINK PREVIEW ========================================================================================================
+;; LINK PREVIEW
+;; ========================================================================================================
 
 (re-frame/reg-sub
  :link-preview/cache

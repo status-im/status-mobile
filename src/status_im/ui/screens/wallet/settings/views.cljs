@@ -1,30 +1,33 @@
 (ns status-im.ui.screens.wallet.settings.views
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [quo.core :as quo]
-            [reagent.core :as reagent]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.search-input.view :as search-input]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))
 
-(defn toolbar []
+(defn toolbar
+  []
   [topbar/topbar
-   {:title (i18n/label :t/wallet-assets)
+   {:title      (i18n/label :t/wallet-assets)
     :navigation
-    {:on-press  #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
+    {:on-press #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
 
-(defn hide-sheet-and-dispatch [event]
+(defn hide-sheet-and-dispatch
+  [event]
   (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
-(defn custom-token-actions-view [{:keys [custom?] :as token}]
+(defn custom-token-actions-view
+  [{:keys [custom?] :as token}]
   (fn []
     [react/view
      [quo/list-item
@@ -69,17 +72,20 @@
   [token]
   [render-token token])
 
-(defview manage-assets []
+(defview manage-assets
+  []
   (letsubs [{search-filter                           :search-filter
-             {custom-tokens true default-tokens nil} :tokens} [:wallet/filtered-grouped-chain-tokens]]
+             {custom-tokens true default-tokens nil} :tokens}
+            [:wallet/filtered-grouped-chain-tokens]]
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/token-filter-changed nil])
                                 (reset! search-active? false))}
     [react/view {:flex 1 :background-color colors/white}
      [toolbar]
      [react/view {:flex 1}
-      [react/view {:padding-horizontal 16
-                   :padding-vertical   10}
+      [react/view
+       {:padding-horizontal 16
+        :padding-vertical   10}
        [search-input/search-input-old
         {:search-active? search-active?
          :search-filter  search-filter
@@ -93,9 +99,9 @@
        {:header
         [react/view {:margin-top 16}
          [quo/list-item
-          {:theme :accent
-           :title (i18n/label :t/add-custom-token)
-           :icon  :main-icons/add
+          {:theme    :accent
+           :title    (i18n/label :t/add-custom-token)
+           :icon     :main-icons/add
            :on-press
            #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
         :sections                    (concat

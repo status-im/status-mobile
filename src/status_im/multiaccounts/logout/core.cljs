@@ -1,18 +1,18 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.keychain.core :as keychain]
+            [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.keychain.core :as keychain]
             [status-im.wallet.core :as wallet]
             [status-im2.setup.events :as init]))
 
 (fx/defn logout-method
   {:events [::logout-method]}
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
-  (let [key-uid              (get-in db [:multiaccount :key-uid])]
+  (let [key-uid (get-in db [:multiaccount :key-uid])]
     (fx/merge cofx
               {:init-root-fx                         :progress
                :chat.ui/clear-inputs                 nil
@@ -22,17 +22,19 @@
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               :setup/open-multiaccounts             #(re-frame/dispatch [:setup/initialize-multiaccounts % {:logout? logout?}])}
+               :setup/open-multiaccounts             #(re-frame/dispatch [:setup/initialize-multiaccounts
+                                                                          % {:logout? logout?}])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))
 
 (fx/defn logout
-  {:events [:logout :multiaccounts.logout.ui/logout-confirmed :multiaccounts.update.callback/save-settings-success]}
+  {:events [:logout :multiaccounts.logout.ui/logout-confirmed
+            :multiaccounts.update.callback/save-settings-success]}
   [cofx]
   ;; we need to disable notifications before starting the logout process
   (fx/merge cofx
-            {:dispatch [:wallet-connect-legacy/clean-up-sessions]
+            {:dispatch       [:wallet-connect-legacy/clean-up-sessions]
              :dispatch-later [{:ms       100
                                :dispatch [::logout-method
                                           {:auth-method keychain/auth-method-none

@@ -1,25 +1,27 @@
 (ns status-im2.contexts.chat.messages.view
-  (:require [reagent.core :as reagent]
-            [re-frame.db]
-            [i18n.i18n :as i18n]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [utils.debounce :as debounce]
+  (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
+            [re-frame.db]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im.ui2.screens.chat.composer.view :as composer]
+            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
             [status-im2.common.constants :as constants]
-            [status-im2.navigation.state :as navigation.state]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
-            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
-            [status-im.ui2.screens.chat.composer.view :as composer]))
+            [status-im2.navigation.state :as navigation.state]
+            [utils.debounce :as debounce]
+            [utils.re-frame :as rf]))
 
-(defn navigate-back-handler []
+(defn navigate-back-handler
+  []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
     (rn/hw-back-remove-listener navigate-back-handler)
     (rf/dispatch [:close-chat])
     (rf/dispatch [:navigate-back])))
 
-(defn page-nav []
+(defn page-nav
+  []
   (let [{:keys [group-chat chat-id chat-name emoji chat-type]} (rf/sub [:chats/current-chat])
         display-name (if (= chat-type constants/one-to-one-chat-type)
                        (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -28,7 +30,7 @@
         contact (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [quo/page-nav
-     {:align-mid? true
+     {:align-mid?            true
 
       :mid-section
       (if group-chat
@@ -54,7 +56,8 @@
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
-(defn chat-render []
+(defn chat-render
+  []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
@@ -70,7 +73,8 @@
       {:position :absolute
        :bottom   117}]]))
 
-(defn chat []
+(defn chat
+  []
   (reagent/create-class
    {:component-did-mount    (fn []
                               (rn/hw-back-remove-listener navigate-back-handler)

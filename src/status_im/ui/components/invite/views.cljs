@@ -1,15 +1,18 @@
 (ns status-im.ui.components.invite.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.invite.events :as invite.events]
-            [status-im.i18n.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.invite.events :as invite.events]))
 
-(defn button []
-  [quo/button {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
-               :accessibility-label :invite-friends-button}
+(defn button
+  []
+  [quo/button
+   {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
+    :accessibility-label :invite-friends-button}
    (i18n/label :t/invite-friends)])
 
-(defn list-item [{:keys [accessibility-label]}]
+(defn list-item
+  [{:keys [accessibility-label]}]
   [quo/list-item
    {:theme               :accent
     :title               (i18n/label :t/invite-friends)
@@ -18,7 +21,8 @@
     :on-press            (fn []
                            (re-frame/dispatch [:bottom-sheet/hide])
                            (js/setTimeout
-                            #(re-frame/dispatch [::invite.events/share-link nil]) 250))}])
+                            #(re-frame/dispatch [::invite.events/share-link nil])
+                            250))}])
 
 
 

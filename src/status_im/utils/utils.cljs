@@ -1,14 +1,15 @@
 (ns status-im.utils.utils
-  (:require [clojure.string :as string]
-            [goog.string :as gstring]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.core :as ethereum]
-            ["react-native" :as react-native]
+  (:require ["react-native" :as react-native]
             ["react-native-background-timer" :default background-timer]
-            [re-frame.core :as re-frame]))
+            [clojure.string :as string]
+            [goog.string :as gstring]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.i18n.i18n :as i18n]))
 
-;;TODO (14/11/22 flexsurfer) .-Alert usage code has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;;TODO (14/11/22 flexsurfer) .-Alert usage code has been moved to the status-im2 namespace, we keep this
+;;only for old (status 1.0) code,
 ;; can be removed with old code later
 (defn show-popup
   ([title content]
@@ -31,7 +32,8 @@
   (.alert (.-Alert react-native)
           title
           content
-          ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
+          ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is
+          ;; 'positive'
           (clj->js
            (concat
             (vector (merge {:text                (or cancel-button-text (i18n/label :t/cancel))
@@ -60,19 +62,24 @@
                      :onPress             on-accept
                      :accessibility-label :yes-button})))))
 
-;;TODO (14/11/22 flexsurfer) background-timer usage code has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;;TODO (14/11/22 flexsurfer) background-timer usage code has been moved to the status-im2 namespace, we
+;;keep this only for old (status 1.0) code,
 ;; can be removed with old code later
 
-(defn set-timeout [cb ms]
+(defn set-timeout
+  [cb ms]
   (.setTimeout background-timer cb ms))
 
-(defn clear-timeout [id]
+(defn clear-timeout
+  [id]
   (.clearTimeout background-timer id))
 
-(defn set-interval [cb ms]
+(defn set-interval
+  [cb ms]
   (.setInterval background-timer cb ms))
 
-(defn clear-interval [id]
+(defn clear-interval
+  [id]
   (.clearInterval background-timer id))
 
 (re-frame/reg-fx
@@ -96,27 +103,33 @@
   (when address
     (str (subs address 0 6) "\u2026" (subs address (- (count address) 3) (count address)))))
 
-(defn get-shortened-checksum-address [address]
+(defn get-shortened-checksum-address
+  [address]
   (when address
     (get-shortened-address (eip55/address->checksum (ethereum/normalized-hex address)))))
 
 ;;TODO (14/11/22 flexsurfer) haven't moved yet
-(defn format-decimals [amount places]
+(defn format-decimals
+  [amount places]
   (let [decimal-part (get (string/split (str amount) ".") 1)]
     (if (> (count decimal-part) places)
       (gstring/format (str "%." places "f") amount)
       (or (str amount) 0))))
 
-(defn safe-trim [s]
+(defn safe-trim
+  [s]
   (when (string? s)
     (string/trim s)))
 
-(defn safe-replace [s m r]
+(defn safe-replace
+  [s m r]
   (when (string? s)
     (string/replace s m r)))
 
-(defn svg? [some-string]
+(defn svg?
+  [some-string]
   (string/ends-with? some-string ".svg"))
 
-(defn exclude-svg-resources [lst]
+(defn exclude-svg-resources
+  [lst]
   (remove svg? lst))

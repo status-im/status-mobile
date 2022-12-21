@@ -1,15 +1,15 @@
 (ns status-im.qr-scanner.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.chat.models :as chat]
-            [status-im.router.core :as router]
-            [status-im2.navigation.events :as navigation]
-            [status-im.utils.utils :as utils]
-            [status-im.ethereum.core :as ethereum]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
-            [status-im.utils.fx :as fx]
+            [status-im.chat.models :as chat]
+            [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.router.core :as router]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]
+            [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
 (fx/defn scan-qr-code
@@ -38,22 +38,26 @@
             (when-let [handler (:cancel-handler opts)]
               (fn [] {:dispatch [handler opts]}))))
 
-(fx/defn handle-browse [cofx {:keys [url]}]
+(fx/defn handle-browse
+  [cofx {:keys [url]}]
   (fx/merge cofx
             {:browser/show-browser-selection url}
             (navigation/navigate-back)))
 
-(fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
+(fx/defn handle-private-chat
+  [{:keys [db] :as cofx} {:keys [chat-id]}]
   (if-not (new-chat.db/own-public-key? db chat-id)
     (chat/start-chat cofx chat-id nil)
     {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                         :content (i18n/label :t/can-not-add-yourself)}}))
 
-(fx/defn handle-public-chat [cofx {:keys [topic]}]
+(fx/defn handle-public-chat
+  [cofx {:keys [topic]}]
   (when (seq topic)
     (chat/start-public-chat cofx topic)))
 
-(fx/defn handle-group-chat [cofx params]
+(fx/defn handle-group-chat
+  [cofx params]
   (group-chats/create-from-link cofx params))
 
 (fx/defn handle-view-profile
@@ -61,7 +65,7 @@
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      {:change-tab-fx :profile
+      {:change-tab-fx      :profile
        :pop-to-root-tab-fx :profile-stack}
 
       (and public-key (not own))
@@ -74,7 +78,8 @@
                           :content    (i18n/label :t/ens-name-not-found)
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
-(fx/defn handle-eip681 [cofx data]
+(fx/defn handle-eip681
+  [cofx data]
   (fx/merge cofx
             {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
             (navigation/change-tab :wallet)
@@ -109,7 +114,7 @@
       (log/info "Unable to find matcher for scanned value"
                 {:type  type
                  :event ::match-scanned-value})
-      {:dispatch [:navigate-back]
+      {:dispatch         [:navigate-back]
        :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 

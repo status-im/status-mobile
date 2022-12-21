@@ -1,14 +1,16 @@
 (ns status-im.ui.screens.wallet.accounts.sheets
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [quo.core :as quo]))
+            [status-im.ui.components.react :as react]))
 
-(defn hide-sheet-and-dispatch [event]
+(defn hide-sheet-and-dispatch
+  [event]
   (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
-(defn accounts-options [mnemonic]
+(defn accounts-options
+  [mnemonic]
   (fn []
     [:<>
      [quo/list-item
@@ -61,7 +63,8 @@
          :on-press            #(hide-sheet-and-dispatch
                                 [:navigate-to :backup-seed])}])]))
 
-(defn account-card-actions [account type wallet]
+(defn account-card-actions
+  [account type wallet]
   [react/view
    (when-not (= type :watch)
      [quo/list-item
@@ -87,7 +90,8 @@
        :on-press            #(hide-sheet-and-dispatch
                               [:wallet.accounts/save-account account {:hidden true}])}])])
 
-(defn add-account []
+(defn add-account
+  []
   (let [keycard? @(re-frame/subscribe [:keycard-multiaccount?])]
     [react/view
      [quo/list-item
@@ -125,7 +129,8 @@
                                 [:wallet.accounts/start-adding-new-account
                                  {:type :key}])}])]))
 
-(defn account-settings []
+(defn account-settings
+  []
   [react/view
    [quo/list-item
     {:theme               :accent

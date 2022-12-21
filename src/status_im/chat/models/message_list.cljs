@@ -4,20 +4,23 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]))
 
-(defn- add-datemark [{:keys [whisper-timestamp] :as msg}]
+(defn- add-datemark
+  [{:keys [whisper-timestamp] :as msg}]
   ;;TODO this is slow
   (assoc msg :datemark (time/day-relative whisper-timestamp)))
 
-(defn- add-timestamp [{:keys [whisper-timestamp] :as msg}]
+(defn- add-timestamp
+  [{:keys [whisper-timestamp] :as msg}]
   (assoc msg :timestamp-str (time/timestamp->time whisper-timestamp)))
 
-(defn prepare-message [{:keys [message-id
-                               clock-value
-                               message-type
-                               from
-                               outgoing
-                               whisper-timestamp
-                               deleted-for-me?]}]
+(defn prepare-message
+  [{:keys [message-id
+           clock-value
+           message-type
+           from
+           outgoing
+           whisper-timestamp
+           deleted-for-me?]}]
   (-> {:whisper-timestamp whisper-timestamp
        :from              from
        :one-to-one?       (= constants/message-type-one-to-one message-type)
@@ -69,7 +72,8 @@
   the most recent message, similarly :first-in-group? is the most recent message
   in a group."
   [{:keys [system-message?
-           one-to-one? outgoing] :as current-message}
+           one-to-one? outgoing]
+    :as   current-message}
    {:keys [outgoing-seen?] :as previous-message}
    next-message]
   (let [last-in-group? (or (nil? next-message)
@@ -87,7 +91,7 @@
                                    (not system-message?)
                                    (not outgoing)
                                    (not one-to-one?))
-           :display-photo?   (display-photo? current-message))))
+           :display-photo?    (display-photo? current-message))))
 
 (defn update-next-message
   "Update next message in the list, we set :first? to false, and check if it
@@ -95,26 +99,28 @@
   [current-message next-message]
   (assoc
    next-message
-   :first? false
+   :first?          false
    :first-outgoing? (and
                      (not (:first-outgoing? current-message))
                      (:first-outgoing? next-message))
-   :outgoing-seen? (:outgoing-seen? current-message)
+   :outgoing-seen?  (:outgoing-seen? current-message)
    :first-in-group?
    (not (same-group? current-message next-message))))
 
 (defn update-previous-message
   "If this is a new group, we mark the previous as the last one in the group"
-  [current-message {:keys [one-to-one?
-                           system-message?
-                           outgoing] :as previous-message}]
+  [current-message
+   {:keys [one-to-one?
+           system-message?
+           outgoing]
+    :as   previous-message}]
   (let [last-in-group? (not (same-group? current-message previous-message))]
     (assoc previous-message
            :display-username? (and last-in-group?
                                    (not system-message?)
                                    (not outgoing)
                                    (not one-to-one?))
-           :last-in-group?  last-in-group?)))
+           :last-in-group?    last-in-group?)))
 
 (defn get-prev-element
   "Get previous item in the iterator, and wind it back to the initial state"
@@ -135,11 +141,11 @@
 (defn update-message
   "Update the message and siblings with positional info"
   [^js tree message]
-  (let [^js iter (.find tree message)
-        ^js previous-message (when (.-hasPrev iter)
-                               (get-prev-element iter))
-        ^js next-message (when (.-hasNext iter)
-                           (get-next-element iter))
+  (let [^js iter                  (.find tree message)
+        ^js previous-message      (when (.-hasPrev iter)
+                                    (get-prev-element iter))
+        ^js next-message          (when (.-hasNext iter)
+                                    (get-next-element iter))
         ^js message-with-pos-data (add-group-info message previous-message next-message)]
     (cond-> (.update iter message-with-pos-data)
       next-message
@@ -157,9 +163,9 @@
   (let [iter (.find tree prepared-message)]
     (if (not iter)
       tree
-      (let [^js new-tree (.remove iter)
-            ^js next-message     (when (.-hasNext iter)
-                                   (get-next-element iter))]
+      (let [^js new-tree     (.remove iter)
+            ^js next-message (when (.-hasNext iter)
+                               (get-next-element iter))]
         (if (not next-message)
           new-tree
           (update-message new-tree next-message))))))
@@ -173,15 +179,18 @@
   (let [^js tree (.insert old-message-list prepared-message prepared-message)]
     (update-message tree prepared-message)))
 
-(defn add [message-list message]
+(defn add
+  [message-list message]
   (insert-message (or message-list (rb-tree compare-fn)) (prepare-message message)))
 
-(defn add-many [message-list messages]
+(defn add-many
+  [message-list messages]
   (reduce add
           message-list
           messages))
 
-(defn ->seq [^js message-list]
+(defn ->seq
+  [^js message-list]
   (if message-list
     (array-seq (.-values message-list))
     []))
@@ -189,5 +198,6 @@
 ;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
 (fx/defn rebuild-message-list
   [{:keys [db]} chat-id]
-  {:db (assoc-in db [:message-lists chat-id]
-                 (add-many nil (vals (get-in db [:messages chat-id]))))})
+  {:db (assoc-in db
+        [:message-lists chat-id]
+        (add-many nil (vals (get-in db [:messages chat-id]))))})

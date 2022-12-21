@@ -1,13 +1,13 @@
 (ns status-im.stickers.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im2.navigation.events :as navigation]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]
-            [status-im.constants :as constants]))
+            [status-im2.navigation.events :as navigation]))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx
@@ -54,7 +54,8 @@
   {:events [:stickers/pending-pack]}
   [{db :db} id]
   {:db                              (-> db
-                                        (assoc-in [:stickers/packs id :status] constants/sticker-pack-status-pending)
+                                        (assoc-in [:stickers/packs id :status]
+                                                  constants/sticker-pack-status-pending)
                                         (update :stickers/packs-pending conj id))
    :stickers/set-pending-timeout-fx nil
    ::json-rpc/call                  [{:method     "stickers_addPending"
@@ -67,17 +68,18 @@
   (when (seq packs-pending)
     {::json-rpc/call [{:method     "stickers_processPending"
                        :params     [(ethereum/chain-id db)]
-                       :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success %])}]}))
+                       :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success
+                                                        %])}]}))
 
 (fx/defn stickers-process-pending-success
   {:events [:stickers/stickers-process-pending-success]}
   [{{:stickers/keys [packs-pending packs] :as db} :db} purchased]
   (let [purchased-ids (map :id (vals purchased))
         packs-pending (apply disj packs-pending purchased-ids)
-        packs (reduce (fn [packs id]
-                        (assoc-in packs [id :status] constants/sticker-pack-status-owned))
-                      packs
-                      purchased-ids)]
+        packs         (reduce (fn [packs id]
+                                (assoc-in packs [id :status] constants/sticker-pack-status-owned))
+                              packs
+                              purchased-ids)]
     (merge
      {:db (-> db
               (assoc :stickers/packs packs)

@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.reset-password.views
-  (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [quo.core :as quo]
-            [status-im.ui.components.react :as react]
+  (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.reset-password.core :as reset-password]
-            [status-im.utils.security :as security]
-            [status-im.ui.components.toolbar :as toolbar])
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.utils.security :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn input-field
@@ -32,33 +32,43 @@
                               (i18n/label error)
                               error))}]])
 
-(defview reset-password []
+(defview reset-password
+  []
   (letsubs [{:keys [form-vals errors next-enabled? resetting?]}
             [:multiaccount/reset-password-form-vals-and-errors]]
     (let [{:keys [current-password
-                  new-password]} form-vals
-          on-submit              #(re-frame/dispatch [::reset-password/reset form-vals])]
+                  new-password]}
+          form-vals
+          on-submit #(re-frame/dispatch [::reset-password/reset form-vals])]
       [react/keyboard-avoiding-view {:flex 1}
-       [react/view {:style {:flex            1
-                            :justify-content :space-between}}
-        [react/view {:style {:margin-top         32
-                             :padding-horizontal 16
-                             :padding-vertical   16}}
-         [input-field {:id        :current-password
-                       :errors    errors
-                       :on-sumbit on-submit
-                       :disabled? false
-                       :focus?    true}]
-         [input-field {:id        :new-password
-                       :errors    errors
-                       :on-sumbit on-submit
-                       :disabled? (zero? (count current-password))}]
-         [input-field {:id        :confirm-new-password
-                       :errors    errors
-                       :on-sumbit on-submit
-                       :disabled? (zero? (count new-password))}]]
-        [quo/text {:color :secondary :align :center :size :small
-                   :style {:padding-horizontal 16}}
+       [react/view
+        {:style {:flex            1
+                 :justify-content :space-between}}
+        [react/view
+         {:style {:margin-top         32
+                  :padding-horizontal 16
+                  :padding-vertical   16}}
+         [input-field
+          {:id        :current-password
+           :errors    errors
+           :on-sumbit on-submit
+           :disabled? false
+           :focus?    true}]
+         [input-field
+          {:id        :new-password
+           :errors    errors
+           :on-sumbit on-submit
+           :disabled? (zero? (count current-password))}]
+         [input-field
+          {:id        :confirm-new-password
+           :errors    errors
+           :on-sumbit on-submit
+           :disabled? (zero? (count new-password))}]]
+        [quo/text
+         {:color :secondary
+          :align :center
+          :size  :small
+          :style {:padding-horizontal 16}}
          (i18n/label :t/password-description)]
         [toolbar/toolbar
          {:show-border? true
@@ -67,45 +77,53 @@
            {:on-press            on-submit
             :accessibility-label :next-button
             :disabled            (or (not next-enabled?)
-                                     ;; disable on resetting? so the user cannot press the next button recklessly
+                                     ;; disable on resetting? so the user cannot press the next button
+                                     ;; recklessly
                                      ;; https://github.com/status-im/status-mobile/pull/12245#issuecomment-874827573
                                      resetting?)
             :type                :secondary
             :after               :main-icons/next}
            (i18n/label :t/next)]}]]])))
 
-(defview reset-password-popover []
+(defview reset-password-popover
+  []
   (letsubs [{:keys [resetting?]} [:multiaccount/reset-password-form-vals-and-errors]]
-    [react/view {:padding-vertical   24
-                 :padding-horizontal 48
-                 :align-items        :center}
-     [react/view {:width            32
-                  :height           32
-                  :background-color (if resetting?
-                                      colors/gray-lighter
-                                      colors/green-transparent-10)
-                  :border-radius    32
-                  :align-items      :center
-                  :justify-content  :center}
+    [react/view
+     {:padding-vertical   24
+      :padding-horizontal 48
+      :align-items        :center}
+     [react/view
+      {:width            32
+       :height           32
+       :background-color (if resetting?
+                           colors/gray-lighter
+                           colors/green-transparent-10)
+       :border-radius    32
+       :align-items      :center
+       :justify-content  :center}
       (if resetting?
-        [react/activity-indicator {:size      :small
-                                   :animating true}]
+        [react/activity-indicator
+         {:size      :small
+          :animating true}]
         [icons/icon :main-icons/check {:color colors/green}])]
-     [quo/text {:size   :x-large
-                :weight :bold
-                :align  :center
-                :style  {:typography    :title-bold
-                         :margin-top    16
-                         :margin-bottom 24}}
+     [quo/text
+      {:size   :x-large
+       :weight :bold
+       :align  :center
+       :style  {:typography    :title-bold
+                :margin-top    16
+                :margin-bottom 24}}
       (i18n/label (if resetting?
                     :t/password-reset-in-progress
                     :t/password-reset-success))]
      (when-not resetting?
-       [quo/text {:align :center
-                  :color :secondary
-                  :style {:margin-bottom 24}}
+       [quo/text
+        {:align :center
+         :color :secondary
+         :style {:margin-bottom 24}}
         (i18n/label :t/password-reset-success-message)])
      [react/view {:align-items :center}
-      [quo/button {:on-press #(re-frame/dispatch [:logout])
-                   :disabled resetting?}
+      [quo/button
+       {:on-press #(re-frame/dispatch [:logout])
+        :disabled resetting?}
        (i18n/label :t/okay)]]]))

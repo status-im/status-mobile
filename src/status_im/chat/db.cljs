@@ -5,7 +5,8 @@
   [{:keys [public? name]}]
   (str (when public? "#") name))
 
-(defn datemark? [{:keys [type]}]
+(defn datemark?
+  [{:keys [type]}]
   (= type :datemark))
 
 (defn intersperse-datemark
@@ -20,22 +21,24 @@
   M1 needs to be displayed before M2
   so we bucket both in 1999-12-31"
   [{:keys [acc last-timestamp last-datemark]} {:keys [whisper-timestamp datemark] :as msg}]
-  (cond (empty? acc)                                     ; initial element
-        {:last-timestamp whisper-timestamp
-         :last-datemark  datemark
-         :acc            (conj acc msg)}
+  (cond
+    (empty? acc)                       ; initial element
+    {:last-timestamp whisper-timestamp
+     :last-datemark  datemark
+     :acc            (conj acc msg)}
 
-        (and (not= last-datemark datemark)               ; not the same day
-             (< whisper-timestamp last-timestamp))               ; not out-of-order
-        {:last-timestamp whisper-timestamp
-         :last-datemark  datemark
-         :acc            (conj acc {:value last-datemark ; intersperse datemark message
-                                    :type  :datemark}
-                               msg)}
-        :else
-        {:last-timestamp (min whisper-timestamp last-timestamp)  ; use last datemark
-         :last-datemark  last-datemark
-         :acc            (conj acc (assoc msg :datemark last-datemark))}))
+    (and (not= last-datemark datemark) ; not the same day
+         (< whisper-timestamp last-timestamp))               ; not out-of-order
+    {:last-timestamp whisper-timestamp
+     :last-datemark  datemark
+     :acc            (conj acc
+                           {:value last-datemark ; intersperse datemark message
+                            :type  :datemark}
+                           msg)}
+    :else
+    {:last-timestamp (min whisper-timestamp last-timestamp)  ; use last datemark
+     :last-datemark  last-datemark
+     :acc            (conj acc (assoc msg :datemark last-datemark))}))
 
 (defn add-datemarks
   "Add a datemark in between an ordered seq of messages when two datemarks are not
@@ -44,17 +47,18 @@
   (when (seq messages)
     (let [messages-with-datemarks (:acc (reduce intersperse-datemark {:acc []} messages))]
       ; Append last datemark
-      (conj messages-with-datemarks {:value (:datemark (peek messages-with-datemarks))
-                                     :type  :datemark}))))
+      (conj messages-with-datemarks
+            {:value (:datemark (peek messages-with-datemarks))
+             :type  :datemark}))))
 
 (defn last-gap
   "last-gap is a special gap that is put last in the message stream"
   [chat-id synced-from]
-  {:message-id "0x123"
-   :message-type constants/message-type-gap
-   :chat-id chat-id
-   :content-type constants/content-type-gap
-   :gap-ids #{:first-gap}
+  {:message-id     "0x123"
+   :message-type   constants/message-type-gap
+   :chat-id        chat-id
+   :content-type   constants/content-type-gap
+   :gap-ids        #{:first-gap}
    :gap-parameters {:from synced-from}})
 
 (defn collapse-gaps
@@ -66,17 +70,17 @@
                             (fn [acc {:keys [gap-parameters message-id] :as message}]
                               (let [last-element (peek acc)]
                                 (cond
-                                 ;; If it's a message, just add
+                                  ;; If it's a message, just add
                                   (empty? gap-parameters)
                                   (conj acc message)
 
-                                 ;; Both are gaps, merge them
+                                  ;; Both are gaps, merge them
                                   (and
                                    (seq (:gap-parameters last-element))
                                    (seq gap-parameters))
                                   (conj (pop acc) (update last-element :gap-ids conj message-id))
 
-                                 ;; it's a gap
+                                  ;; it's a gap
                                   :else
                                   (conj acc (assoc message :gap-ids #{message-id})))))
                             []

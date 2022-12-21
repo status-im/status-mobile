@@ -3,10 +3,10 @@
             status-im2.subs.activity-center
             status-im2.subs.bootnodes
             status-im2.subs.browser
-            status-im2.subs.communities
-            status-im2.subs.contact
             status-im2.subs.chat.chats
             status-im2.subs.chat.messages
+            status-im2.subs.communities
+            status-im2.subs.contact
             status-im2.subs.ens
             status-im2.subs.general
             status-im2.subs.home
@@ -17,13 +17,14 @@
             status-im2.subs.onboarding
             status-im2.subs.pairing
             status-im2.subs.search
-            status-im2.subs.stickers
             status-im2.subs.shell
+            status-im2.subs.stickers
             status-im2.subs.wallet.signing
             status-im2.subs.wallet.transactions
             status-im2.subs.wallet.wallet))
 
-(defn reg-root-key-sub [sub-name db-key]
+(defn reg-root-key-sub
+  [sub-name db-key]
   (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
 ;;view
@@ -242,7 +243,8 @@
 (reg-root-key-sub :wallet-connect/proposal-metadata :wallet-connect/proposal-metadata)
 (reg-root-key-sub :wallet-connect/enabled? :wallet-connect/enabled?)
 (reg-root-key-sub :wallet-connect/session-connected :wallet-connect/session-connected)
-(reg-root-key-sub :wallet-connect/showing-app-management-sheet? :wallet-connect/showing-app-management-sheet?)
+(reg-root-key-sub :wallet-connect/showing-app-management-sheet?
+                  :wallet-connect/showing-app-management-sheet?)
 (reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
 (reg-root-key-sub :wallet-connect-legacy/sessions :wallet-connect-legacy/sessions)
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)

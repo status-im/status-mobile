@@ -11,7 +11,8 @@
 
 (def notification-id "0x1")
 
-(defn setup []
+(defn setup
+  []
   (h/register-helper-events)
   (rf/dispatch [:setup/app-started]))
 
@@ -42,9 +43,10 @@
      (let [spy-queue (atom [])]
        (h/spy-fx spy-queue ::json-rpc/call)
        (let [notifications {types/one-to-one-chat
-                            {:all    {:cursor "" :data [{:id   notification-id
-                                                         :read false
-                                                         :type types/one-to-one-chat}]}
+                            {:all    {:cursor ""
+                                      :data   [{:id   notification-id
+                                                :read false
+                                                :type types/one-to-one-chat}]}
                              :unread {:cursor "" :data []}}}]
          (rf/dispatch [:test/assoc-in [:activity-center]
                        {:notifications notifications
@@ -98,14 +100,16 @@
       :event           [:activity-center.notifications/mark-as-read notification-id]
       :action          :notification/mark-as-read
       :before-test     (fn []
-                         (rf/dispatch [:test/assoc-in [:activity-center]
-                                       {:notifications {types/one-to-one-chat
-                                                        {:all    {:cursor "" :data [{:id   notification-id
-                                                                                     :read false
-                                                                                     :type types/one-to-one-chat}]}
-                                                         :unread {:cursor "" :data []}}}
-                                        :filter        {:type   types/one-to-one-chat
-                                                        :status :all}}]))})))
+                         (rf/dispatch
+                          [:test/assoc-in [:activity-center]
+                           {:notifications {types/one-to-one-chat
+                                            {:all    {:cursor ""
+                                                      :data   [{:id   notification-id
+                                                                :read false
+                                                                :type types/one-to-one-chat}]}
+                                             :unread {:cursor "" :data []}}}
+                            :filter        {:type   types/one-to-one-chat
+                                            :status :all}}]))})))
 
 ;;;; Contact verification
 
@@ -156,7 +160,9 @@
   (rf-test/run-test-sync
    (setup)
    (let [spy-queue (atom [])]
-     (h/stub-fx-with-callbacks ::json-rpc/call :on-success (constantly contact-verification-rpc-response))
+     (h/stub-fx-with-callbacks ::json-rpc/call
+                               :on-success
+                               (constantly contact-verification-rpc-response))
      (h/spy-fx spy-queue ::json-rpc/call)
      (rf/dispatch event)
 
@@ -370,11 +376,12 @@
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
         ::json-rpc/call
-        :on-success (constantly {:cursor        "10"
-                                 :notifications [{:id     "0x1"
-                                                  :type   types/one-to-one-chat
-                                                  :read   false
-                                                  :chatId "0x9"}]}))
+        :on-success
+        (constantly {:cursor        "10"
+                     :notifications [{:id     "0x1"
+                                      :type   types/one-to-one-chat
+                                      :read   false
+                                      :chatId "0x9"}]}))
        (h/spy-fx spy-queue ::json-rpc/call)
 
        (rf/dispatch [:activity-center.notifications/fetch-first-page
@@ -407,7 +414,8 @@
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
                      types/one-to-one-chat])
-       (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
+       (rf/dispatch [:test/assoc-in
+                     [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                      ""])
 
        (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -426,7 +434,8 @@
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
                      types/one-to-one-chat])
-       (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
+       (rf/dispatch [:test/assoc-in
+                     [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                      nil])
 
        (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -439,11 +448,12 @@
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
         ::json-rpc/call
-        :on-success (constantly {:cursor        ""
-                                 :notifications [{:id     "0x1"
-                                                  :type   types/mention
-                                                  :read   false
-                                                  :chatId "0x9"}]}))
+        :on-success
+        (constantly {:cursor        ""
+                     :notifications [{:id     "0x1"
+                                      :type   types/mention
+                                      :read   false
+                                      :chatId "0x9"}]}))
        (h/spy-fx spy-queue ::json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :unread])
@@ -481,7 +491,8 @@
                      types/one-to-one-chat])
        (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :all :cursor]
                      "10"])
-       (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :all :loading?]
+       (rf/dispatch [:test/assoc-in
+                     [:activity-center :notifications types/one-to-one-chat :all :loading?]
                      true])
 
        (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -499,12 +510,14 @@
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
                      types/one-to-one-chat])
-       (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
+       (rf/dispatch [:test/assoc-in
+                     [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                      ""])
 
        (rf/dispatch [:activity-center.notifications/fetch-first-page])
 
-       (is (nil? (get-in (h/db) [:activity-center :notifications types/one-to-one-chat :unread :loading?])))
+       (is (nil? (get-in (h/db)
+                         [:activity-center :notifications types/one-to-one-chat :unread :loading?])))
        (is (= [:activity-center.notifications/fetch-error
                types/one-to-one-chat
                :unread

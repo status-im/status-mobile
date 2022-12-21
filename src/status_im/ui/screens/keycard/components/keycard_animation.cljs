@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.keycard.components.keycard-animation
-  (:require [reagent.core :as reagent]
+  (:require [quo.design-system.colors :as colors]
+            [reagent.core :as reagent]
             [status-im.keycard.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
-            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))
 
-(defn circle [{:keys [animation-value color size]}]
+(defn circle
+  [{:keys [animation-value color size]}]
   [react/animated-view
    {:style {:width            size
             :height           size
@@ -16,14 +17,15 @@
             :border-radius    (/ size 2)
             :opacity          (animation/interpolate
                                animation-value
-                               {:inputRange [0 1 2]
+                               {:inputRange  [0 1 2]
                                 :outputRange [0.7 1 0]})
             :transform        [{:scale (animation/interpolate
                                         animation-value
                                         {:inputRange  [0 1]
                                          :outputRange [0.9 1]})}]}}])
 
-(defn indicator-container [anim children]
+(defn indicator-container
+  [anim children]
   [react/animated-view
    {:style {:position         "absolute"
             :justify-content  :center
@@ -46,32 +48,38 @@
                                          :outputRange [0 1]})}]}}
    children])
 
-(defn indicator [{:keys [state animation-value]}]
+(defn indicator
+  [{:keys [state animation-value]}]
   [indicator-container animation-value
    (case @state
      :error
-     [icons/icon :main-icons/close {:color  colors/red
-                                    :height 28
-                                    :width  28}]
+     [icons/icon :main-icons/close
+      {:color  colors/red
+       :height 28
+       :width  28}]
      :success
-     [icons/icon :main-icons/check {:color  colors/green
-                                    :height 28
-                                    :width  28}]
+     [icons/icon :main-icons/check
+      {:color  colors/green
+       :height 28
+       :width  28}]
      :connected
-     [icons/icon :main-icons/check {:color  colors/blue
-                                    :height 28
-                                    :width  28}]
+     [icons/icon :main-icons/check
+      {:color  colors/blue
+       :height 28
+       :width  28}]
      :processing
      [react/activity-indicator {:color colors/blue}]
 
      nil)])
 
-(defn animate-card-position [card-scale animation-value]
+(defn animate-card-position
+  [card-scale animation-value]
   {:transform [{:scale card-scale}
                {:translateX (animation/x animation-value)}
                {:translateY (animation/y animation-value)}]})
 
-(defn card-colors [state]
+(defn card-colors
+  [state]
   (case state
     (:init :awaiting)
     {:card-color "#2D2D2D"
@@ -91,10 +99,12 @@
      :chip-color colors/white}
     nil))
 
-(defn card [{:keys [card-scale state indicator-value animation-value]}]
+(defn card
+  [{:keys [card-scale state indicator-value animation-value]}]
   (let [{:keys [card-color
                 chip-color
-                key-color]} (card-colors @state)]
+                key-color]}
+        (card-colors @state)]
     [react/animated-view
      {:style (merge
               (animate-card-position card-scale animation-value)
@@ -126,30 +136,34 @@
        {:color  key-color
         :width  25
         :height 42}]]
-     [indicator {:state           state
-                 :animation-value indicator-value}]]))
+     [indicator
+      {:state           state
+       :animation-value indicator-value}]]))
 
-(defn phone [{:keys [animation-value]}]
-  [react/animated-view {:style {:position  :absolute
-                                :bottom    0
-                                :elevation 9
-                                :opacity   (animation/interpolate
-                                            animation-value
-                                            {:inputRange  [0 1]
-                                             :outputRange [0 0.9]})
-                                :transform [{:translateY (animation/interpolate
-                                                          animation-value
-                                                          {:inputRange  [0 1]
-                                                           :outputRange [125 10]})}]}}
+(defn phone
+  [{:keys [animation-value]}]
+  [react/animated-view
+   {:style {:position  :absolute
+            :bottom    0
+            :elevation 9
+            :opacity   (animation/interpolate
+                        animation-value
+                        {:inputRange  [0 1]
+                         :outputRange [0 0.9]})
+            :transform [{:translateY (animation/interpolate
+                                      animation-value
+                                      {:inputRange  [0 1]
+                                       :outputRange [125 10]})}]}}
    [react/image
     {:source (resources/get-image :onboarding-phone)
      :style  {:height 125
               :width  86}}]])
 
-(def circle-easing    (animation/bezier 0.455 0.03 0.515 0.955))
-(def card-easing      (animation/bezier 0.77 0 0.175 1))
+(def circle-easing (animation/bezier 0.455 0.03 0.515 0.955))
+(def card-easing (animation/bezier 0.77 0 0.175 1))
 
-(defn- circle-animation [animation-value to delay]
+(defn- circle-animation
+  [animation-value to delay]
   (animation/timing animation-value
                     {:toValue  to
                      :delay    delay
@@ -169,8 +183,9 @@
         card-loop      (animation/anim-loop
                         (animation/anim-sequence
                          [(animation/timing card
-                                            {:toValue  #js {:x -30
-                                                            :y 30}
+                                            {:toValue  #js
+                                                        {:x -30
+                                                         :y 30}
                                              :duration 1000
                                              :easing   card-easing})
                           (animation/timing card
@@ -180,8 +195,9 @@
                                              :delay    2000
                                              :easing   card-easing})
                           (animation/timing card
-                                            {:toValue  #js {:x -30
-                                                            :y 105}
+                                            {:toValue  #js
+                                                        {:x -30
+                                                         :y 105}
                                              :duration 1000
                                              :delay    2000
                                              :easing   card-easing})
@@ -219,10 +235,12 @@
                    phone-enter-at)
     (animation/start animation)))
 
-(defn on-error [{:keys [state restart]}]
+(defn on-error
+  [{:keys [state restart]}]
   (reset! state :error)
   (js/setTimeout #(when (= @state :error)
-                    (restart)) 3000))
+                    (restart))
+                 3000))
 
 (defn on-connect
   [{:keys [state card small indicator
@@ -253,8 +271,9 @@
                                                :timing  1000
                                                :easing  card-easing})
                             (animation/timing card
-                                              {:toValue #js {:x 0
-                                                             :y 0}
+                                              {:toValue #js
+                                                         {:x 0
+                                                          :y 0}
                                                :timing  3000
                                                :easing  card-easing})])]
     (reset! state :connected)
@@ -262,12 +281,14 @@
                    2000)
     (animation/start connect-animation)))
 
-(defn animated-circles [{:keys [state connected? on-card-connected on-card-disconnected]}]
+(defn animated-circles
+  [{:keys [state connected? on-card-connected on-card-disconnected]}]
   (let [animation-small     (animation/create-value 0)
         animation-medium    (animation/create-value 0)
         animation-big       (animation/create-value 0)
-        animation-card      (animation/create-value-xy #js {:x 0
-                                                            :y 0})
+        animation-card      (animation/create-value-xy #js
+                                                        {:x 0
+                                                         :y 0})
         card-scale          (animation/create-value 0.66)
         animation-phone     (animation/create-value 0)
         animation-indicator (animation/create-value 0)
@@ -316,27 +337,32 @@
           (keycard-nfc/remove-event-listener listener)))
       :render
       (fn []
-        [react/view {:style {:position        :absolute
-                             :top             0
-                             :bottom          0
-                             :left            0
-                             :right           0
-                             :justify-content :center
-                             :align-items     :center}}
+        [react/view
+         {:style {:position        :absolute
+                  :top             0
+                  :bottom          0
+                  :left            0
+                  :right           0
+                  :justify-content :center
+                  :align-items     :center}}
 
-         [circle {:animation-value animation-big
-                  :size            200
-                  :color           "#F1F4FF"}]
-         [circle {:animation-value animation-medium
-                  :size            140
-                  :color           "#E3E8FA"}]
-         [circle {:animation-value animation-small
-                  :size            80
-                  :color           "#D2D9F0"}]
+         [circle
+          {:animation-value animation-big
+           :size            200
+           :color           "#F1F4FF"}]
+         [circle
+          {:animation-value animation-medium
+           :size            140
+           :color           "#E3E8FA"}]
+         [circle
+          {:animation-value animation-small
+           :size            80
+           :color           "#D2D9F0"}]
 
-         [card {:animation-value animation-card
-                :state           state
-                :indicator-value animation-indicator
-                :card-scale      card-scale}]
+         [card
+          {:animation-value animation-card
+           :state           state
+           :indicator-value animation-indicator
+           :card-scale      card-scale}]
 
          [phone {:animation-value animation-phone}]])})))

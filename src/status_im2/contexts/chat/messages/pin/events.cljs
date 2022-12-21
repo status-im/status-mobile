@@ -1,11 +1,11 @@
 (ns status-im2.contexts.chat.messages.pin.events
-  (:require [status-im.chat.models.message-list :as message-list]
+  (:require [re-frame.core :as re-frame]
+            [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.pin-messages :as data-store.pin-messages]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
             [status-im.transport.message.protocol :as protocol]
-            [re-frame.core :as re-frame]))
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 (fx/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}
@@ -32,23 +32,25 @@
   [{:keys [db]} pin-messages]
   (let [{:keys [chat-id]} (first pin-messages)]
     (when (= chat-id (db :current-chat-id))
-      (let [{:keys [chat-id]} (first pin-messages)
+      (let [{:keys [chat-id]}           (first pin-messages)
             already-loaded-pin-messages (get-in db [:pin-messages chat-id] {})
-            already-loaded-messages (get-in db [:messages chat-id] {})
-            all-messages (reduce (fn [acc {:keys [message_id pinned from]}]
-                                   ;; Add to or remove from pinned message list, and normalizing pinned-by property
-                                   (let [current-message (get already-loaded-messages message_id)
-                                         current-message-pin (merge current-message
-                                                                    {:pinned    pinned
-                                                                     :pinned-by from})]
-                                     (cond-> acc
-                                       (nil? pinned)
-                                       (dissoc message_id)
+            already-loaded-messages     (get-in db [:messages chat-id] {})
+            all-messages                (reduce (fn [acc {:keys [message_id pinned from]}]
+                                                  ;; Add to or remove from pinned message list, and
+                                                  ;; normalizing pinned-by property
+                                                  (let [current-message     (get already-loaded-messages
+                                                                                 message_id)
+                                                        current-message-pin (merge current-message
+                                                                                   {:pinned    pinned
+                                                                                    :pinned-by from})]
+                                                    (cond-> acc
+                                                      (nil? pinned)
+                                                      (dissoc message_id)
 
-                                       (and (some? pinned) (some? current-message))
-                                       (assoc message_id current-message-pin))))
-                                 already-loaded-pin-messages
-                                 pin-messages)]
+                                                      (and (some? pinned) (some? current-message))
+                                                      (assoc message_id current-message-pin))))
+                                                already-loaded-pin-messages
+                                                pin-messages)]
         {:db (-> db
                  (assoc-in [:pin-messages chat-id] all-messages)
                  (assoc-in [:pin-message-lists chat-id]
@@ -59,27 +61,27 @@
   {:events [:pin-message/send-pin-message]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
   (let [current-public-key (get-in db [:multiaccount :public-key])
-        message (merge pin-message {:pinned-by current-public-key})
-        preferred-name (get-in db [:multiaccount :preferred-name])]
+        message            (merge pin-message {:pinned-by current-public-key})
+        preferred-name     (get-in db [:multiaccount :preferred-name])]
     (fx/merge cofx
               {:db (cond-> db
                      pinned
                      (->
-                      (update-in [:pin-message-lists chat-id] message-list/add message)
-                      (assoc-in [:pin-messages chat-id message-id] message))
+                       (update-in [:pin-message-lists chat-id] message-list/add message)
+                       (assoc-in [:pin-messages chat-id message-id] message))
                      (not pinned)
                      (->
-                      (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
-                      (update-in [:pin-messages chat-id] dissoc message-id)))}
+                       (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
+                       (update-in [:pin-messages chat-id] dissoc message-id)))}
               (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)
                                                          :message_id (pin-message :message-id)
                                                          :pinned     (pin-message :pinned)})
               (when pinned
                 (protocol/send-chat-messages [{:chat-id      (pin-message :chat-id)
                                                :content-type constants/content-type-system-text
-                                               :text "pinned a message"
-                                               :response-to (pin-message :message-id)
-                                               :ens-name preferred-name}])))))
+                                               :text         "pinned a message"
+                                               :response-to  (pin-message :message-id)
+                                               :ens-name     preferred-name}])))))
 
 (fx/defn load-pin-messages
   {:events [:pin-message/load-pin-messages]}

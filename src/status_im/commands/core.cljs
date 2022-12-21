@@ -7,10 +7,10 @@
 (fx/defn handle-prepare-accept-request-address-for-transaction
   {:events [::prepare-accept-request-address-for-transaction]}
   [{:keys [db]} message]
-  {:db (assoc db
-              :commands/select-account
-              {:message message
-               :from (ethereum/get-default-account (:multiaccount/accounts db))})
+  {:db                    (assoc db
+                                 :commands/select-account
+                                 {:message message
+                                  :from    (ethereum/get-default-account (:multiaccount/accounts db))})
    :show-select-acc-sheet nil})
 
 (fx/defn set-selected-account
@@ -22,24 +22,24 @@
 (fx/defn handle-accept-request-address-for-transaction
   {:events [::accept-request-address-for-transaction]}
   [{:keys [db]} message-id address]
-  {:db (dissoc db :commands/select-account)
-   ::json-rpc/call [{:method "wakuext_acceptRequestAddressForTransaction"
-                     :params [message-id address]
+  {:db             (dissoc db :commands/select-account)
+   ::json-rpc/call [{:method      "wakuext_acceptRequestAddressForTransaction"
+                     :params      [message-id address]
                      :js-response true
-                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})
+                     :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn handle-decline-request-address-for-transaction
   {:events [::decline-request-address-for-transaction]}
   [_ message-id]
-  {::json-rpc/call [{:method "wakuext_declineRequestAddressForTransaction"
-                     :params [message-id]
+  {::json-rpc/call [{:method      "wakuext_declineRequestAddressForTransaction"
+                     :params      [message-id]
                      :js-response true
-                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})
+                     :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn handle-decline-request-transaction
   {:events [::decline-request-transaction]}
   [cofx message-id]
-  {::json-rpc/call [{:method "wakuext_declineRequestTransaction"
-                     :params [message-id]
+  {::json-rpc/call [{:method      "wakuext_declineRequestTransaction"
+                     :params      [message-id]
                      :js-response true
-                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})
+                     :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})

@@ -4,12 +4,12 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im2.navigation.events :as navigation]
-            [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
-            [status-im2.contexts.activity-center.events :as activity-center]))
+            [status-im.utils.fx :as fx]
+            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.navigation.events :as navigation]))
 
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -30,7 +30,8 @@
   {:events [:chat-updated]}
   [_ response do-not-navigate?]
   {:dispatch-n [[:sanitize-messages-and-process-response response]
-                (when-not do-not-navigate? [:navigate-chat-updated (.-id (aget (.-chats response) 0))])]})
+                (when-not do-not-navigate?
+                  [:navigate-chat-updated (.-id (aget (.-chats response) 0))])]})
 
 (fx/defn remove-member
   "Format group update message and sign membership"
@@ -115,7 +116,8 @@
 (def not-blank?
   (complement string/blank?))
 
-(defn- valid-name? [name]
+(defn- valid-name?
+  [name]
   (spec/valid? not-blank? name))
 
 (fx/defn name-changed
@@ -144,7 +146,7 @@
   {:events [:send-group-chat-membership-request]}
   [{{:keys [current-chat-id chats] :as db} :db :as cofx}]
   (let [{:keys [invitation-admin]} (get chats current-chat-id)
-        message (get-in db [:chat/memberships current-chat-id :message])]
+        message                    (get-in db [:chat/memberships current-chat-id :message])]
     {:db             (assoc-in db [:chat/memberships current-chat-id] nil)
      ::json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRequest"
                        :params      [nil current-chat-id invitation-admin message]
@@ -162,12 +164,15 @@
 
 (fx/defn handle-invitations
   [{db :db} invitations]
-  {:db (update db :group-chat/invitations #(reduce (fn [acc {:keys [id] :as inv}]
-                                                     (assoc acc id inv))
-                                                   %
-                                                   invitations))})
+  {:db (update db
+               :group-chat/invitations
+               #(reduce (fn [acc {:keys [id] :as inv}]
+                          (assoc acc id inv))
+                        %
+                        invitations))})
 
-(defn member-removed? [{:keys [membership-update-events]} pk]
+(defn member-removed?
+  [{:keys [membership-update-events]} pk]
   (->> membership-update-events
        (filter #(contains? (set (:members %)) pk))
        (sort-by :clockValue >)

@@ -1,35 +1,35 @@
 (ns status-im.wallet.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.config :as config]
-            [status-im.qr-scanner.core :as qr-scaner]
+  (:require [clojure.set :as clojure.set]
+            [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.async-storage.core :as async-storage]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.ens :as ens]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
-            [status-im2.navigation.events :as navigation]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils.utils]
-            [taoensso.timbre :as log]
-            [status-im.wallet.db :as wallet.db]
-            [clojure.string :as string]
-            [status-im.contact.db :as contact.db]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.wallet.prices :as prices]
-            [status-im.wallet.utils :as wallet.utils]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im.utils.datetime :as datetime]
-            status-im.wallet.recipient.core
-            [status-im.async-storage.core :as async-storage]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.popover.core :as popover.core]
+            [status-im.qr-scanner.core :as qr-scaner]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.signing.gas :as signing.gas]
-            [clojure.set :as clojure.set]))
+            [status-im.utils.config :as config]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.mobile-sync :as mobile-network-utils]
+            [status-im.utils.money :as money]
+            [status-im.utils.utils :as utils.utils]
+            [status-im.wallet.db :as wallet.db]
+            [status-im.wallet.prices :as prices]
+            status-im.wallet.recipient.core
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -49,7 +49,8 @@
        :on-success #(re-frame/dispatch [::update-balance-success address %])
        :on-error   #(re-frame/dispatch [::update-balance-fail %])}))))
 
-(defn assoc-error-message [db error-type err]
+(defn assoc-error-message
+  [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
 (re-frame/reg-fx
@@ -62,7 +63,7 @@
      :on-error   on-error})))
 
 (fx/defn get-cached-balances
-  [{:keys [db]}  scan-all-tokens?]
+  [{:keys [db]} scan-all-tokens?]
   (let [addresses (map (comp string/lower-case :address)
                        (get db :multiaccount/accounts))]
     {:wallet/get-cached-balances
@@ -87,9 +88,10 @@
   [cofx hash address]
   (navigation/navigate-to-cofx cofx :wallet-transaction-details {:hash hash :address address}))
 
-(defn dups [seq]
+(defn dups
+  [seq]
   (for [[id freq] (frequencies seq)
-        :when (> freq 1)]
+        :when     (> freq 1)]
     id))
 
 (defn- clean-up-results
@@ -98,22 +100,24 @@
    otherwise return only the visible assets balances"
   [results tokens assets]
   (let [balances
-        (reduce (fn [acc [address balances]]
-                  (let [pos-balances
-                        (reduce (fn [acc [token-address token-balance]]
-                                  (let [token-symbol (or (get tokens (name token-address))
-                                                         (get tokens (eip55/address->checksum (name token-address))))]
-                                    (if (or (and (empty? assets) (pos? token-balance))
-                                            (and (seq assets) (assets token-symbol)))
-                                      (assoc acc token-symbol token-balance)
-                                      acc)))
-                                {}
-                                balances)]
-                    (if (not-empty pos-balances)
-                      (assoc acc (eip55/address->checksum (name address)) pos-balances)
-                      acc)))
-                {}
-                results)]
+        (reduce
+         (fn [acc [address balances]]
+           (let [pos-balances
+                 (reduce (fn [acc [token-address token-balance]]
+                           (let [token-symbol (or (get tokens (name token-address))
+                                                  (get tokens
+                                                       (eip55/address->checksum (name token-address))))]
+                             (if (or (and (empty? assets) (pos? token-balance))
+                                     (and (seq assets) (assets token-symbol)))
+                               (assoc acc token-symbol token-balance)
+                               acc)))
+                         {}
+                         balances)]
+             (if (not-empty pos-balances)
+               (assoc acc (eip55/address->checksum (name address)) pos-balances)
+               acc)))
+         {}
+         results)]
     (when (not-empty balances)
       balances)))
 
@@ -126,7 +130,8 @@
     :on-success
     (fn [results]
       (when-let [balances (clean-up-results
-                           results tokens
+                           results
+                           tokens
                            (if scan-all-tokens? nil assets))]
         (re-frame/dispatch (if scan-all-tokens?
                              ;; NOTE: when there it is not a visible
@@ -154,13 +159,15 @@
                       ethereum/current-network
                       ethereum/network->chain-id)]
     (when (get-in db [:multiaccount :opensea-enabled?])
-      {::json-rpc/call (map (fn [address]
-                              {:method     "wallet_getOpenseaCollectionsByOwner"
-                               :params     [chain-id address]
-                               :on-error   (fn [error]
-                                             (log/error "Unable to get Opensea collections" address error))
-                               :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success address %])})
-                            addresses)})))
+      {::json-rpc/call (map
+                        (fn [address]
+                          {:method     "wallet_getOpenseaCollectionsByOwner"
+                           :params     [chain-id address]
+                           :on-error   (fn [error]
+                                         (log/error "Unable to get Opensea collections" address error))
+                           :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success
+                                                            address %])})
+                        addresses)})))
 
 (fx/defn collectible-assets-fetch-success
   {:events [::collectible-assets-fetch-success]}
@@ -178,13 +185,15 @@
   {:events [::fetch-collectible-assets-by-owner-and-collection]}
   [{:keys [db]} address collectible-slug limit]
   (let [chain-id (ethereum/network->chain-id (ethereum/current-network db))]
-    {:db (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
+    {:db             (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
      ::json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
                        :params     [chain-id address collectible-slug limit]
                        :on-error   (fn [error]
                                      (log/error "Unable to get collectible assets" address error)
-                                     (re-frame/dispatch [::collectibles-assets-fetch-error collectible-slug]))
-                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address collectible-slug %])}]}))
+                                     (re-frame/dispatch [::collectibles-assets-fetch-error
+                                                         collectible-slug]))
+                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address
+                                                        collectible-slug %])}]}))
 
 (fx/defn show-nft-details
   {:events [::show-nft-details]}
@@ -193,7 +202,8 @@
             {:db (assoc (:db cofx) :wallet/selected-collectible asset)}
             (navigation/open-modal :nft-details {})))
 
-(defn rpc->token [tokens]
+(defn rpc->token
+  [tokens]
   (reduce (fn [acc {:keys [address] :as token}]
             (assoc acc
                    address
@@ -210,31 +220,36 @@
 
 (fx/defn initialize-favourites
   [{:keys [db]} favourites]
-  {:db (assoc db :wallet/favourites (reduce (fn [acc {:keys [address] :as favourit}]
-                                              (assoc acc address favourit))
-                                            {}
-                                            favourites))})
+  {:db (assoc db
+              :wallet/favourites
+              (reduce (fn [acc {:keys [address] :as favourit}]
+                        (assoc acc address favourit))
+                      {}
+                      favourites))})
 
 (fx/defn update-balances
   {:events [:wallet/update-balances]}
   [{{:keys [network-status :wallet/all-tokens
-            multiaccount :multiaccount/accounts] :as db} :db
+            multiaccount :multiaccount/accounts]
+     :as   db}
+    :db
     :as cofx} addresses scan-all-tokens?]
   (log/debug "update-balances"
-             "accounts" addresses
+             "accounts"         addresses
              "scan-all-tokens?" scan-all-tokens?)
-  (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
+  (let [addresses                        (or addresses (map (comp string/lower-case :address) accounts))
         {:keys [:wallet/visible-tokens]} multiaccount
-        chain     (ethereum/chain-keyword db)
-        assets    (get visible-tokens chain)
-        tokens    (->> (vals all-tokens)
-                       (remove #(or (:hidden? %)
-                                    ;;if not scan-all-tokens? remove not visible tokens
-                                    (and (not scan-all-tokens?)
-                                         (not (get assets (:symbol %))))))
-                       (reduce (fn [acc {:keys [address symbol]}]
-                                 (assoc acc address symbol))
-                               {}))]
+        chain                            (ethereum/chain-keyword db)
+        assets                           (get visible-tokens chain)
+        tokens                           (->> (vals all-tokens)
+                                              (remove #(or (:hidden? %)
+                                                           ;;if not scan-all-tokens? remove not visible
+                                                           ;;tokens
+                                                           (and (not scan-all-tokens?)
+                                                                (not (get assets (:symbol %))))))
+                                              (reduce (fn [acc {:keys [address symbol]}]
+                                                        (assoc acc address symbol))
+                                                      {}))]
     (when (and (seq addresses)
                (not= network-status :offline))
       (fx/merge
@@ -247,8 +262,11 @@
         :db                         (prices/clear-error-message db :balance-update)}
        (when-not assets
          (multiaccounts.update/multiaccount-update
-          :wallet/visible-tokens (assoc visible-tokens chain (or (config/default-visible-tokens chain)
-                                                                 #{}))
+          :wallet/visible-tokens
+          (assoc visible-tokens
+                 chain
+                 (or (config/default-visible-tokens chain)
+                     #{}))
           {}))))))
 
 (fx/defn on-get-cached-balance-fail
@@ -257,7 +275,8 @@
   (log/warn "Can't fetch cached balances" err)
   (update-balances cofx nil scan-all-tokens?))
 
-(defn- set-checked [tokens-id token-id checked?]
+(defn- set-checked
+  [tokens-id token-id checked?]
   (let [tokens-id (or tokens-id #{})]
     (if checked?
       (conj tokens-id token-id)
@@ -267,8 +286,8 @@
   {:events [::update-balance-success]}
   [{:keys [db]} address balance]
   {:db (assoc-in db
-                 [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
-                 (money/bignumber balance))})
+        [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
+        (money/bignumber balance))})
 
 (fx/defn set-cached-balances
   {:events [::set-cached-balances]}
@@ -280,7 +299,8 @@
                 (update-balance address balance))
               balances)))
 
-(defn has-empty-balances? [db]
+(defn has-empty-balances?
+  [db]
   (some #(nil? (get-in % [:balance :ETH]))
         (get-in db [:wallet :accounts])))
 
@@ -290,9 +310,10 @@
         visible-tokens (get multiaccount :wallet/visible-tokens)]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
-               :wallet/visible-tokens (update visible-tokens
-                                              chain
-                                              #(set-checked % symbol checked?))
+               :wallet/visible-tokens
+               (update visible-tokens
+                       chain
+                       #(set-checked % symbol checked?))
                {})
               #(when checked?
                  (update-balances % nil nil)))))
@@ -307,18 +328,18 @@
   [{:keys [db]} balances]
   (let [accounts (get-in db [:wallet :accounts])]
     {:db (assoc-in db
-                   [:wallet :accounts]
-                   (reduce (fn [acc [address balances]]
-                             (assoc-in acc
-                                       [address :balance]
-                                       (reduce (fn [acc [token-symbol balance]]
-                                                 (assoc acc
-                                                        token-symbol
-                                                        (money/bignumber balance)))
-                                               (get-in accounts [address :balance])
-                                               balances)))
-                           accounts
-                           balances))}))
+          [:wallet :accounts]
+          (reduce (fn [acc [address balances]]
+                    (assoc-in acc
+                     [address :balance]
+                     (reduce (fn [acc [token-symbol balance]]
+                               (assoc acc
+                                      token-symbol
+                                      (money/bignumber balance)))
+                             (get-in accounts [address :balance])
+                             balances)))
+                  accounts
+                  balances))}))
 
 (fx/defn set-zero-balances
   [cofx {:keys [address]}]
@@ -330,8 +351,8 @@
 (fx/defn configure-token-balance-and-visibility
   {:events [::tokens-found]}
   [{:keys [db] :as cofx} balances]
-  (let [chain (ethereum/chain-keyword db)
-        visible-tokens (get-in db [:multiaccount :wallet/visible-tokens])
+  (let [chain                (ethereum/chain-keyword db)
+        visible-tokens       (get-in db [:multiaccount :wallet/visible-tokens])
         chain-visible-tokens (into (or (config/default-visible-tokens chain)
                                        #{})
                                    (flatten (map keys (vals balances))))]
@@ -364,19 +385,20 @@
                   current-base-fee max-priority-fee]}
           price
           max-priority-fee-bn (money/with-precision (signing.gas/get-suggested-tip max-priority-fee) 0)
-          fee-cap  (-> normal-base-fee
-                       money/bignumber
-                       (money/add max-priority-fee-bn)
-                       money/to-hex)
+          fee-cap (-> normal-base-fee
+                      money/bignumber
+                      (money/add max-priority-fee-bn)
+                      money/to-hex)
           tip-cap (money/to-hex max-priority-fee-bn)]
       {:db (-> db
-               (update tx-entry assoc
-                       :maxFeePerGas (or maxFeePerGas fee-cap)
+               (update tx-entry
+                       assoc
+                       :maxFeePerGas         (or maxFeePerGas fee-cap)
                        :maxPriorityFeePerGas (or maxPriorityFeePerGas tip-cap))
-               (assoc :wallet/current-base-fee current-base-fee
-                      :wallet/normal-base-fee normal-base-fee
-                      :wallet/slow-base-fee slow-base-fee
-                      :wallet/fast-base-fee fast-base-fee
+               (assoc :wallet/current-base-fee     current-base-fee
+                      :wallet/normal-base-fee      normal-base-fee
+                      :wallet/slow-base-fee        slow-base-fee
+                      :wallet/fast-base-fee        fast-base-fee
                       :wallet/current-priority-fee max-priority-fee)
                (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
     {:db (-> db
@@ -386,15 +408,15 @@
 (fx/defn set-max-amount
   {:events [:wallet.send/set-max-amount]}
   [{:keys [db]} {:keys [amount decimals symbol]}]
-  (let [^js gas (money/bignumber 21000)
+  (let [^js gas      (money/bignumber 21000)
         ^js gasPrice (or
                       (get-in db [:wallet/prepare-transaction :maxFeePerGas])
                       (get-in db [:wallet/prepare-transaction :gasPrice]))
-        ^js fee (when gasPrice (.times gas gasPrice))
-        amount-text (if (= :ETH symbol)
-                      (when (and fee (money/sufficient-funds? fee amount))
-                        (str (wallet.utils/format-amount (.minus amount fee) decimals)))
-                      (str (wallet.utils/format-amount amount decimals)))]
+        ^js fee      (when gasPrice (.times gas gasPrice))
+        amount-text  (if (= :ETH symbol)
+                       (when (and fee (money/sufficient-funds? fee amount))
+                         (str (wallet.utils/format-amount (.minus amount fee) decimals)))
+                       (str (wallet.utils/format-amount amount decimals)))]
     (when amount-text
       {:db (cond-> db
              :always
@@ -408,44 +430,45 @@
   {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
 (fx/defn request-transaction-button-clicked-from-chat
-  {:events  [:wallet.ui/request-transaction-button-clicked]}
+  {:events [:wallet.ui/request-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
-        from-address (:address from)
-        identity (:current-chat-id db)]
+        from-address             (:address from)
+        identity                 (:current-chat-id db)]
     (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)
-               ::json-rpc/call [{:method "wakuext_requestTransaction"
-                                 :params [(:public-key to)
-                                          amount
-                                          (when-not (= symbol :ETH)
-                                            address)
-                                          from-address]
+              {:db             (dissoc db :wallet/prepare-transaction)
+               ::json-rpc/call [{:method      "wakuext_requestTransaction"
+                                 :params      [(:public-key to)
+                                               amount
+                                               (when-not (= symbol :ETH)
+                                                 address)
+                                               from-address]
                                  :js-response true
-                                 :on-success #(re-frame/dispatch [:transport/message-sent %])}]})))
+                                 :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (fx/defn accept-request-transaction-button-clicked-from-command
-  {:events  [:wallet.ui/accept-request-transaction-button-clicked-from-command]}
+  {:events [:wallet.ui/accept-request-transaction-button-clicked-from-command]}
   [{:keys [db]} chat-id {:keys [value contract] :as request-parameters}]
-  (let [identity (:current-chat-id db)
-        all-tokens (:wallet/all-tokens db)
+  (let [identity                  (:current-chat-id db)
+        all-tokens                (:wallet/all-tokens db)
         {:keys [symbol decimals]}
         (if (seq contract)
           (get all-tokens contract)
           (tokens/native-currency (ethereum/get-current-network db)))
-        amount-text (str (money/internal->formatted value symbol decimals))]
-    {:db (assoc db :wallet/prepare-transaction
-                {:from (ethereum/get-default-account (:multiaccount/accounts db))
-                 :to   (or (get-in db [:contacts/contacts identity])
-                           (-> identity
-                               contact.db/public-key->new-contact
-                               contact.db/enrich-contact))
-                 :request-parameters request-parameters
-                 :chat-id chat-id
-                 :symbol symbol
-                 :amount-text amount-text
-                 :request? true
-                 :from-chat? true})
+        amount-text               (str (money/internal->formatted value symbol decimals))]
+    {:db       (assoc db
+                      :wallet/prepare-transaction
+                      {:from               (ethereum/get-default-account (:multiaccount/accounts db))
+                       :to                 (or (get-in db [:contacts/contacts identity])
+                                               (-> identity
+                                                   contact.db/public-key->new-contact
+                                                   contact.db/enrich-contact))
+                       :request-parameters request-parameters
+                       :chat-id            chat-id
+                       :symbol             symbol
+                       :amount-text        amount-text
+                       :request?           true
+                       :from-chat?         true})
      :dispatch [:open-modal :prepare-send-transaction]}))
 
 (fx/defn set-and-validate-amount-request
@@ -453,7 +476,8 @@
   [{:keys [db]} amount symbol decimals]
   (let [{:keys [value error]} (wallet.db/parse-amount amount decimals)]
     {:db (-> db
-             (assoc-in [:wallet :request-transaction :amount] (money/formatted->internal value symbol decimals))
+             (assoc-in [:wallet :request-transaction :amount]
+                       (money/formatted->internal value symbol decimals))
              (assoc-in [:wallet :request-transaction :amount-text] amount)
              (assoc-in [:wallet :request-transaction :amount-error] error))}))
 
@@ -470,29 +494,29 @@
 (fx/defn on-recipient-address-resolved
   {:events [::recipient-address-resolved]}
   [{:keys [db]} address]
-  {:db (assoc-in db [:wallet/prepare-transaction :to :address] address)
+  {:db                       (assoc-in db [:wallet/prepare-transaction :to :address] address)
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id  (get-in (ethereum/current-network db)
-                                                   [:config :NetworkId])}})
+                              :network-id       (get-in (ethereum/current-network db)
+                                                        [:config :NetworkId])}})
 
 (fx/defn prepare-transaction-from-chat
   {:events [:wallet/prepare-transaction-from-chat]}
   [{:keys [db]}]
-  (let [identity (:current-chat-id db)
+  (let [identity                                (:current-chat-id db)
         {:keys [ens-verified name] :as contact}
         (or (get-in db [:contacts/contacts identity])
             (-> identity
                 contact.db/public-key->new-contact
                 contact.db/enrich-contact))]
-    (cond-> {:db (assoc db
-                        :wallet/prepare-transaction
-                        {:from (ethereum/get-default-account
-                                (:multiaccount/accounts db))
-                         :to contact
-                         :symbol :ETH
-                         :from-chat? true})
+    (cond-> {:db       (assoc db
+                              :wallet/prepare-transaction
+                              {:from       (ethereum/get-default-account
+                                            (:multiaccount/accounts db))
+                               :to         contact
+                               :symbol     :ETH
+                               :from-chat? true})
              :dispatch [:open-modal :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
@@ -501,37 +525,39 @@
                           (stateofus/subdomain name)
                           name)
               ;;TODO handle errors and timeout for ens name resolution
-              :cb #(re-frame/dispatch [::recipient-address-resolved %])}))))
+              :cb       #(re-frame/dispatch [::recipient-address-resolved %])}))))
 
 (fx/defn prepare-request-transaction-from-chat
   {:events [:wallet/prepare-request-transaction-from-chat]}
   [{:keys [db]}]
   (let [identity (:current-chat-id db)]
-    {:db (assoc db :wallet/prepare-transaction
-                {:from (ethereum/get-default-account (:multiaccount/accounts db))
-                 :to   (or (get-in db [:contacts/contacts identity])
-                           (-> identity
-                               contact.db/public-key->new-contact
-                               contact.db/enrich-contact))
-                 :symbol :ETH
-                 :from-chat? true
-                 :request-command? true})
+    {:db       (assoc db
+                      :wallet/prepare-transaction
+                      {:from             (ethereum/get-default-account (:multiaccount/accounts db))
+                       :to               (or (get-in db [:contacts/contacts identity])
+                                             (-> identity
+                                                 contact.db/public-key->new-contact
+                                                 contact.db/enrich-contact))
+                       :symbol           :ETH
+                       :from-chat?       true
+                       :request-command? true})
      :dispatch [:open-modal :request-transaction]}))
 
 (fx/defn prepare-transaction-from-wallet
   {:events [:wallet/prepare-transaction-from-wallet]}
   [{:keys [db]} account]
-  {:db (assoc db :wallet/prepare-transaction
-              {:from       account
-               :to         nil
-               :symbol     :ETH
-               :from-chat? false})
-   :dispatch [:open-modal :prepare-send-transaction]
+  {:db                       (assoc db
+                                    :wallet/prepare-transaction
+                                    {:from       account
+                                     :to         nil
+                                     :symbol     :ETH
+                                     :from-chat? false})
+   :dispatch                 [:open-modal :prepare-send-transaction]
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id  (get-in (ethereum/current-network db)
-                                                   [:config :NetworkId])}})
+                              :network-id       (get-in (ethereum/current-network db)
+                                                        [:config :NetworkId])}})
 
 (fx/defn cancel-transaction-command
   {:events [:wallet/cancel-transaction-command]}
@@ -542,11 +568,12 @@
 (fx/defn finalize-transaction-from-command
   {:events [:wallet/finalize-transaction-from-command]}
   [{:keys [db]} account to symbol amount]
-  {:db (assoc db :wallet/prepare-transaction
-              {:from       account
-               :to         to
-               :symbol     symbol
-               :amount     amount
+  {:db (assoc db
+              :wallet/prepare-transaction
+              {:from          account
+               :to            to
+               :symbol        symbol
+               :amount        amount
                :from-command? true})})
 
 (fx/defn view-only-qr-scanner-allowed
@@ -592,7 +619,8 @@
   {:ui/show-confirmation {:title               (i18n/label :t/are-you-sure?)
                           :confirm-button-text (i18n/label :t/yes)
                           :cancel-button-text  (i18n/label :t/no)
-                          :on-accept           #(re-frame/dispatch [:wallet.accounts/delete-account account])
+                          :on-accept           #(re-frame/dispatch [:wallet.accounts/delete-account
+                                                                    account])
                           :on-cancel           #()}})
 
 (re-frame/reg-fx
@@ -600,10 +628,10 @@
  (fn [addresses]
    (log/info "[wallet] check recent history" addresses)
    (json-rpc/call
-    {:method            "wallet_checkRecentHistory"
-     :params            [addresses]
-     :on-success        #(log/info "[wallet] wallet_checkRecentHistory success")
-     :on-error          #(log/error "[wallet] wallet_checkRecentHistory error" %)})))
+    {:method     "wallet_checkRecentHistory"
+     :params     [addresses]
+     :on-success #(log/info "[wallet] wallet_checkRecentHistory success")
+     :on-error   #(log/error "[wallet] wallet_checkRecentHistory error" %)})))
 
 (def ms-2-min (datetime/minutes 2))
 (def ms-3-min (datetime/minutes 3))
@@ -619,15 +647,16 @@
    :ms-20-min ms-20-min})
 
 (def next-custom-interval
-  {:ms-2-min  :ms-3-min
-   :ms-3-min  :ms-5-min
-   :ms-5-min  :ms-10-min})
+  {:ms-2-min :ms-3-min
+   :ms-3-min :ms-5-min
+   :ms-5-min :ms-10-min})
 
 (defn get-next-custom-interval
   [{:keys [:wallet-service/custom-interval]}]
   (get next-custom-interval custom-interval))
 
-(defn get-max-block-with-transfer [db]
+(defn get-max-block-with-transfer
+  [db]
   (reduce
    (fn [block [_ {:keys [max-block]}]]
      (if (or (nil? block)
@@ -637,7 +666,8 @@
    nil
    (get-in db [:wallet :accounts])))
 
-(defn get-restart-interval [db]
+(defn get-restart-interval
+  [db]
   (let [max-block       (get-max-block-with-transfer db)
         custom-interval (get db :wallet-service/custom-interval)]
     (cond
@@ -653,7 +683,8 @@
       :else
       (get custom-intervals custom-interval ms-20-min))))
 
-(defn get-watching-interval [db]
+(defn get-watching-interval
+  [db]
   (if (ethereum/custom-rpc-node?
        (ethereum/current-network db))
     ms-2-min
@@ -666,7 +697,8 @@
                :wallet/recent-history-fetching-started?
                :wallet/refreshing-history?)})
 
-(defn set-timeout [db]
+(defn set-timeout
+  [db]
   (when-let [interval (get-restart-interval db)]
     (utils.utils/set-timeout
      #(re-frame.core/dispatch [::restart])
@@ -680,12 +712,14 @@
         timeout     (if force-restart?
                       old-timeout
                       (set-timeout db))]
-    {:db            (-> db
-                        (assoc :wallet-service/restart-timeout timeout
-                               :wallet-service/custom-interval (get-next-custom-interval db)
-                               :wallet/was-started? true
-                               :wallet/on-recent-history-fetching on-recent-history-fetching))
-     ::check-recent-history addresses
+    {:db                          (-> db
+                                      (assoc :wallet-service/restart-timeout    timeout
+                                             :wallet-service/custom-interval    (get-next-custom-interval
+                                                                                 db)
+                                             :wallet/was-started?               true
+                                             :wallet/on-recent-history-fetching
+                                             on-recent-history-fetching))
+     ::check-recent-history       addresses
      ::utils.utils/clear-timeouts
      [(when (not= timeout old-timeout) old-timeout)]}))
 
@@ -697,9 +731,9 @@
     (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)
           binance-chain?   (ethereum/binance-chain? db)]
       (log/info "restart-wallet-service"
-                "force-restart?" force-restart?
+                "force-restart?"   force-restart?
                 "syncing-allowed?" syncing-allowed?
-                "binance-chain?" binance-chain?)
+                "binance-chain?"   binance-chain?)
       (if (and (or syncing-allowed?
                    force-restart?)
                (not binance-chain?))
@@ -755,7 +789,7 @@
                    (> (- now last-pull) pull-to-refresh-cooldown-period)))
       (fx/merge
        {:db (assoc db
-                   :wallet/last-pull-time now
+                   :wallet/last-pull-time      now
                    :wallet/refreshing-history? true)}
        (restart-wallet-service
         {:force-restart? true})))))
@@ -797,12 +831,12 @@
   {:events [::wallet-stack]}
   [{:keys [db]}]
   (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
-        sign-phrase-showed? (get db :wallet/sign-phrase-showed?)]
+        sign-phrase-showed?   (get db :wallet/sign-phrase-showed?)]
     {:dispatch-n [[:wallet.ui/pull-to-refresh]] ;TODO temporary simple fix for v1
-                  ;;[:show-popover {:view [signing-phrase/signing-phrase]}]]
-     :db       (if (or wallet-set-up-passed? sign-phrase-showed?)
-                 db
-                 (assoc db :wallet/sign-phrase-showed? true))}))
+     ;;[:show-popover {:view [signing-phrase/signing-phrase]}]]
+     :db         (if (or wallet-set-up-passed? sign-phrase-showed?)
+                   db
+                   (assoc db :wallet/sign-phrase-showed? true))}))
 
 (fx/defn wallet-wallet-add-custom-token
   {:events [:wallet/wallet-add-custom-token]}
@@ -838,8 +872,9 @@
 (fx/defn transactions-add-all-filters
   {:events [:wallet.transactions/add-all-filters]}
   [{:keys [db]}]
-  {:db (assoc-in db [:wallet :filters]
-                 wallet.db/default-wallet-filters)})
+  {:db (assoc-in db
+        [:wallet :filters]
+        wallet.db/default-wallet-filters)})
 
 (fx/defn settings-navigate-back-pressed
   {:events [:wallet.settings.ui/navigate-back-pressed]}
@@ -851,10 +886,10 @@
 
 (fx/defn stop-fetching-on-empty-tx-history
   [{:keys [db now] :as cofx} transfers]
-  (let [non-empty-history?    (get db :wallet/non-empty-tx-history?)
-        custom-node?          (ethereum/custom-rpc-node?
-                               (ethereum/current-network db))
-        until-ms              (get db :wallet/keep-watching-until-ms)]
+  (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
+        custom-node?       (ethereum/custom-rpc-node?
+                            (ethereum/current-network db))
+        until-ms           (get db :wallet/keep-watching-until-ms)]
     (when-not (and until-ms (> until-ms now))
       (fx/merge
        cofx
@@ -873,10 +908,10 @@
         old-timeout        (get db :wallet-service/restart-timeout)
         db                 (assoc db :wallet-service/custom-interval :ms-2-min)
         timeout            (set-timeout db)]
-    {:db (assoc db
-                :wallet/keep-watching-until-ms (+ now (datetime/minutes 30))
-                :wallet-service/restart-timeout timeout
-                :wallet-service/custom-interval (get-next-custom-interval db))
+    {:db                          (assoc db
+                                         :wallet/keep-watching-until-ms  (+ now (datetime/minutes 30))
+                                         :wallet-service/restart-timeout timeout
+                                         :wallet-service/custom-interval (get-next-custom-interval db))
      ::utils.utils/clear-timeouts [old-timeout]}))
 
 (re-frame/reg-fx
@@ -900,10 +935,11 @@
   (when-not (get db :wallet/was-started?)
     (restart-wallet-service cofx nil)))
 
-(fx/defn set-max-block [{:keys [db]} address block]
+(fx/defn set-max-block
+  [{:keys [db]} address block]
   (log/debug "set-max-block"
              "address" address
-             "block" block)
+             "block"   block)
   {:db (assoc-in db [:wallet :accounts address :max-block] block)})
 
 (fx/defn set-max-block-with-transfers
@@ -921,8 +957,8 @@
   {:events [:wallet/share-popover]}
   [{:keys [db] :as cofx} address]
   (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
-        restart?     (and (not (get db :wallet/non-empty-tx-history?))
-                          (not (get db :wallet-service/restart-timeout)))]
+        restart?           (and (not (get db :wallet/non-empty-tx-history?))
+                                (not (get db :wallet-service/restart-timeout)))]
     (fx/merge
      cofx
      (popover.core/show-popover
@@ -947,15 +983,15 @@
 (defn normalize-transaction
   [db {:keys [symbol gasPrice gasLimit value from to] :as transaction}]
   (let [symbol (keyword symbol)
-        token (tokens/symbol->token (:wallet/all-tokens db) symbol)]
+        token  (tokens/symbol->token (:wallet/all-tokens db) symbol)]
     (-> transaction
         (select-keys [:timestamp :hash :data])
-        (assoc :from (eip55/address->checksum from)
-               :to (eip55/address->checksum to)
-               :type :pending
-               :symbol symbol
-               :token token
-               :value (money/bignumber value)
+        (assoc :from      (eip55/address->checksum from)
+               :to        (eip55/address->checksum to)
+               :type      :pending
+               :symbol    symbol
+               :token     token
+               :value     (money/bignumber value)
                :gas-price (money/bignumber gasPrice)
                :gas-limit (money/bignumber gasLimit)))))
 
@@ -987,7 +1023,7 @@
   {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
   [{:keys [db]} enabled?]
   {::async-storage/set! {:transactions-management-enabled? enabled?}
-   :db (assoc db :wallet/transactions-management-enabled? enabled?)})
+   :db                  (assoc db :wallet/transactions-management-enabled? enabled?)})
 
 (fx/defn update-current-block
   {:events [::update-current-block]}
@@ -998,8 +1034,8 @@
  ::request-current-block-update
  (fn []
    (json-rpc/call
-    {:method "eth_getBlockByNumber"
-     :params ["latest" false]
+    {:method     "eth_getBlockByNumber"
+     :params     ["latest" false]
      :on-success #(re-frame/dispatch [::update-current-block (get % :number)])})))
 
 (fx/defn request-current-block-update

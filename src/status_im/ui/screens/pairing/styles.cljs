@@ -3,13 +3,13 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1})
+  {:flex 1})
 
 (styles/def installation-item
-  {:flex-direction   :row
-   :align-items      :center
-   :ios              {:height 64}
-   :android          {:height 56}})
+  {:flex-direction :row
+   :align-items    :center
+   :ios            {:height 64}
+   :android        {:height 56}})
 
 (def installation-list
   {:padding-horizontal 16
@@ -19,12 +19,14 @@
   {:padding-top        10
    :padding-horizontal 16})
 
-(def footer-content {:justify-content :center
-                     :flex            1
-                     :align-items     :center})
+(def footer-content
+  {:justify-content :center
+   :flex            1
+   :align-items     :center})
 
-(def footer-text {:color      colors/blue
-                  :text-align :center})
+(def footer-text
+  {:color      colors/blue
+   :text-align :center})
 
 (def pair-this-device
   {:height             80
@@ -42,7 +44,8 @@
   {:flex           1
    :flex-direction :row})
 
-(defn pairing-button [enabled?]
+(defn pairing-button
+  [enabled?]
   {:width            40
    :height           40
    :background-color (if enabled?
@@ -60,7 +63,8 @@
   {:color         colors/blue
    :margin-bottom 6})
 
-(styles/defn pairing-button-icon [enabled?]
+(styles/defn pairing-button-icon
+  [enabled?]
   (let [color (if enabled?
                 colors/blue
                 colors/gray)]

@@ -1,8 +1,7 @@
 (ns status-im.chat.models.delete-message-test
-  (:require
-   [cljs.test                            :refer-macros [deftest is testing]]
-   [status-im.chat.models.delete-message :as delete-message]
-   [status-im.utils.datetime             :as datetime]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.chat.models.delete-message :as delete-message]
+            [status-im.utils.datetime :as datetime]))
 
 (def mid "message-id")
 (def cid "chat-id")

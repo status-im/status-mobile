@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.chat.audio-message.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [goog.string :as gstring]
-   [reagent.core :as reagent]
-   [status-im.audio.core :as audio]
-   [status-im.ui.components.react :as react]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [quo.components.animated.pressable :as pressable]
-   [status-im.native-module.core :as status]
-   [status-im.ui.screens.chat.components.input :as input]
-   [status-im.ui.screens.chat.components.style :as input.style]
-   [status-im.ui.screens.chat.audio-message.styles :as styles]
-   [quo.design-system.colors :as colors]
-   [status-im.ui.components.animation :as anim]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.utils.utils :as utils.utils]
-   [status-im.utils.fs :as fs]
-   [status-im.utils.fx :as fx]))
+  (:require [goog.string :as gstring]
+            [quo.components.animated.pressable :as pressable]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.audio.core :as audio]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.audio-message.styles :as styles]
+            [status-im.ui.screens.chat.components.input :as input]
+            [status-im.ui.screens.chat.components.style :as input.style]
+            [status-im.utils.fs :as fs]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils.utils]))
 
 ;; reference db levels
 (def total-silence-db -160)
@@ -31,20 +30,23 @@
 ;;ensure animation finishes before next meter update
 (defonce metering-anim-duration (int (* metering-interval 0.9)))
 
-(defn update-meter [meter-data]
+(defn update-meter
+  [meter-data]
   (let [value (if meter-data
                 (.-value ^js meter-data)
                 total-silence-db)]
-    (anim/start (anim/timing visual-target-value {:toValue value
-                                                  :duration        metering-anim-duration
-                                                  :useNativeDriver true}))))
+    (anim/start (anim/timing visual-target-value
+                             {:toValue         value
+                              :duration        metering-anim-duration
+                              :useNativeDriver true}))))
 
 (def base-filename "am.")
 (def default-format "aac")
-(def rec-options  (merge
-                   audio/default-recorder-options
-                   {:filename (str base-filename default-format)
-                    :meteringInterval metering-interval}))
+(def rec-options
+  (merge
+   audio/default-recorder-options
+   {:filename         (str base-filename default-format)
+    :meteringInterval metering-interval}))
 
 ;; maximum 1 minute of recordings time to keep data at certain size
 (def max-recording-ms (* 1 60 1000))
@@ -53,11 +55,13 @@
 (defonce recorder-ref (atom nil))
 (defonce player-ref (atom nil))
 
-(defn destroy-recorder []
+(defn destroy-recorder
+  []
   (audio/destroy-recorder @recorder-ref)
   (reset! recorder-ref nil))
 
-(defn destroy-player []
+(defn destroy-player
+  []
   (audio/destroy-player @player-ref)
   (reset! player-ref nil))
 
@@ -83,32 +87,38 @@
 (defonce recording-backlog-ms (atom 0))
 
 ;; updates timer UI
-(defn update-timer [timer]
+(defn update-timer
+  [timer]
   (let [ms (if @recording-start-ts
              (+
               (- (js/Date.now) @recording-start-ts)
               @recording-backlog-ms)
              @recording-backlog-ms)
-        s (quot ms 1000)]
+        s  (quot ms 1000)]
     (if (> ms max-recording-ms)
       (@max-recording-reached-cb)
       (reset! timer (gstring/format "%d:%02d" (quot s 60) (mod s 60))))))
 
-(defn reset-timer [timer]
+(defn reset-timer
+  [timer]
   (reset! timer "0:00")
   (reset! recording-backlog-ms 0))
 
-(defn animate-buttons [rec? show-ctrl? {:keys [rec-button-anim-value ctrl-buttons-anim-value]}]
+(defn animate-buttons
+  [rec? show-ctrl? {:keys [rec-button-anim-value ctrl-buttons-anim-value]}]
   (anim/start
    (anim/parallel
-    [(anim/timing rec-button-anim-value {:toValue         (if rec? 1 0)
-                                         :duration        100
-                                         :useNativeDriver true})
-     (anim/timing ctrl-buttons-anim-value {:toValue         (if show-ctrl? 1 0)
-                                           :duration        100
-                                           :useNativeDriver true})])))
+    [(anim/timing rec-button-anim-value
+                  {:toValue         (if rec? 1 0)
+                   :duration        100
+                   :useNativeDriver true})
+     (anim/timing ctrl-buttons-anim-value
+                  {:toValue         (if show-ctrl? 1 0)
+                   :duration        100
+                   :useNativeDriver true})])))
 
-(defn start-recording [{:keys [timer] :as params}]
+(defn start-recording
+  [{:keys [timer] :as params}]
   (if (> @recording-backlog-ms max-recording-ms)
     (@max-recording-reached-cb)
     (do
@@ -120,7 +130,8 @@
        @state-cb
        #(utils.utils/show-popup (i18n/label :t/audio-recorder-error) (:message %))))))
 
-(defn reload-recorder []
+(defn reload-recorder
+  []
   (when @recorder-ref
     (destroy-recorder))
   (reset! recorder-ref (audio/new-recorder rec-options #(update-meter %) @state-cb))
@@ -134,7 +145,7 @@
      (destroy-player))
    (reset! player-ref (audio/new-player
                        (:filename rec-options)
-                       {:autoDestroy false
+                       {:autoDestroy                 false
                         :continuesToPlayInBackground false}
                        @state-cb))
    (audio/prepare-player
@@ -142,7 +153,8 @@
     #(do (@state-cb) (when on-success (on-success)))
     #(utils.utils/show-popup (i18n/label :t/audio-recorder-error) (:message %)))))
 
-(defn stop-recording [{:keys [on-success timer max-recording-reached?] :as params}]
+(defn stop-recording
+  [{:keys [on-success timer max-recording-reached?] :as params}]
   (when @recording-timer
     (utils.utils/clear-interval @recording-timer)
     (reset! recording-timer nil))
@@ -158,7 +170,8 @@
    #(utils.utils/show-popup (i18n/label :t/audio-recorder-error) (:message %)))
   (animate-buttons false max-recording-reached? params))
 
-(defn pause-recording [{:keys [timer] :as params}]
+(defn pause-recording
+  [{:keys [timer] :as params}]
   (when @recording-timer
     (utils.utils/clear-interval @recording-timer)
     (reset! recording-backlog-ms (+ @recording-backlog-ms (- (js/Date.now) @recording-start-ts)))
@@ -181,28 +194,29 @@
    - :recording-paused
    - :ready-to-record"
   [state-ref]
-  (let [player-state (audio/get-state @player-ref)
-        recorder-state  (audio/get-state @recorder-ref)
-        output-file (or
-                     (audio/get-recorder-file-path @recorder-ref)
-                     (:output-file @state-ref))
-        general (cond
-                  (= recorder-state audio/RECORDING) :recording
-                  (= player-state audio/PLAYING) :playing
-                  (= player-state audio/PREPARED) :ready-to-send
-                  (= recorder-state audio/PAUSED) :recording-paused
-                  :else :ready-to-record)
-        new-state {:general general
-                   :cancel-disabled? (nil? (#{:recording :recording-paused :ready-to-send} general))
-                   :output-file output-file
-                   :duration (audio/get-player-duration @player-ref)}]
+  (let [player-state   (audio/get-state @player-ref)
+        recorder-state (audio/get-state @recorder-ref)
+        output-file    (or
+                        (audio/get-recorder-file-path @recorder-ref)
+                        (:output-file @state-ref))
+        general        (cond
+                         (= recorder-state audio/RECORDING) :recording
+                         (= player-state audio/PLAYING)     :playing
+                         (= player-state audio/PREPARED)    :ready-to-send
+                         (= recorder-state audio/PAUSED)    :recording-paused
+                         :else                              :ready-to-record)
+        new-state      {:general          general
+                        :cancel-disabled? (nil? (#{:recording :recording-paused :ready-to-send} general))
+                        :output-file      output-file
+                        :duration         (audio/get-player-duration @player-ref)}]
     (if (#{:recording :recording-paused} general)
       (status/activate-keep-awake)
       (status/deactivate-keep-awake))
     (when (not= @state-ref new-state)
       (reset! state-ref new-state))))
 
-(defn send-audio-msessage [state-ref]
+(defn send-audio-msessage
+  [state-ref]
   (re-frame/dispatch [:chat/send-audio
                       (:output-file @state-ref)
                       (int (:duration @state-ref))])
@@ -210,52 +224,65 @@
   (@state-cb))
 
 ;; rec-button-anim-value 0 => stopped, 1 => recording
-(defview rec-button-view [{:keys [rec-button-anim-value state] :as params}]
-  (letsubs [outer-scale (anim/interpolate visual-target-value  {:inputRange  [total-silence-db silence-db 0]
-                                                                :outputRange [1 0.8 1.2]})
-            inner-scale (anim/interpolate rec-button-anim-value {:inputRange  [0 1]
-                                                                 :outputRange [1 0.5]})
-            inner-border-radius (anim/interpolate rec-button-anim-value {:inputRange  [0 1]
-                                                                         :outputRange [styles/rec-button-base-size 16]})]
-    [react/touchable-highlight {:on-press #(if (= (:general @state) :recording)
-                                             (pause-recording params)
-                                             (start-recording params))
-                                :accessibility-label :start-stop-audio-recording-button}
+(defview rec-button-view
+  [{:keys [rec-button-anim-value state] :as params}]
+  (letsubs [outer-scale         (anim/interpolate visual-target-value
+                                                  {:inputRange  [total-silence-db silence-db 0]
+                                                   :outputRange [1 0.8 1.2]})
+            inner-scale         (anim/interpolate rec-button-anim-value
+                                                  {:inputRange  [0 1]
+                                                   :outputRange [1 0.5]})
+            inner-border-radius (anim/interpolate rec-button-anim-value
+                                                  {:inputRange  [0 1]
+                                                   :outputRange [styles/rec-button-base-size 16]})]
+    [react/touchable-highlight
+     {:on-press            #(if (= (:general @state) :recording)
+                              (pause-recording params)
+                              (start-recording params))
+      :accessibility-label :start-stop-audio-recording-button}
      [react/view {:style styles/rec-button-container}
       [react/animated-view {:style (styles/rec-outer-circle outer-scale)}]
       [react/animated-view {:style (styles/rec-inner-circle inner-scale inner-border-radius)}]]]))
 
-(defn- cancel-button [disabled? on-press contact-request]
-  [pressable/pressable {:type     :scale
-                        :disabled disabled?
-                        :on-press on-press}
+(defn- cancel-button
+  [disabled? on-press contact-request]
+  [pressable/pressable
+   {:type     :scale
+    :disabled disabled?
+    :on-press on-press}
    [react/view {:style (input.style/send-message-button)}
     [icons/icon :main-icons/close
-     {:container-style     (merge (input.style/send-message-container contact-request) {:background-color colors/gray})
+     {:container-style     (merge (input.style/send-message-container contact-request)
+                                  {:background-color colors/gray})
       :accessibility-label :cancel-message-button
       :color               colors/white-persist}]]])
 
-(defview audio-message-view []
-  (letsubs [rec-button-anim-value (anim/create-value 0)
+(defview audio-message-view
+  []
+  (letsubs [rec-button-anim-value   (anim/create-value 0)
             ctrl-buttons-anim-value (anim/create-value 0)
-            timer (reagent/atom "")
-            state             (reagent/atom nil)]
-    {:component-did-mount (fn []
-                            (reset-timer timer)
-                            (reset! state-cb #(update-state state))
-                            (reset! max-recording-reached-cb #(do
-                                                                (when (= (:general @state) :recording)
-                                                                  (stop-recording {:rec-button-anim-value rec-button-anim-value
-                                                                                   :ctrl-buttons-anim-value ctrl-buttons-anim-value
-                                                                                   :timer timer
-                                                                                   :max-recording-reached? true}))
-                                                                (utils.utils/show-popup (i18n/label :t/audio-recorder)
-                                                                                        (i18n/label :t/audio-recorder-max-ms-reached))))
-                            (reset! on-background-cb #(when (= (:general @state) :recording)
-                                                        (pause-recording {:rec-button-anim-value rec-button-anim-value
-                                                                          :ctrl-buttons-anim-value ctrl-buttons-anim-value
-                                                                          :timer timer})))
-                            (reload-recorder))
+            timer                   (reagent/atom "")
+            state                   (reagent/atom nil)]
+    {:component-did-mount    (fn []
+                               (reset-timer timer)
+                               (reset! state-cb #(update-state state))
+                               (reset! max-recording-reached-cb
+                                 #(do
+                                    (when (= (:general @state) :recording)
+                                      (stop-recording {:rec-button-anim-value   rec-button-anim-value
+                                                       :ctrl-buttons-anim-value ctrl-buttons-anim-value
+                                                       :timer                   timer
+                                                       :max-recording-reached?  true}))
+                                    (utils.utils/show-popup (i18n/label :t/audio-recorder)
+                                                            (i18n/label
+                                                             :t/audio-recorder-max-ms-reached))))
+                               (reset! on-background-cb #(when (= (:general @state) :recording)
+                                                           (pause-recording
+                                                            {:rec-button-anim-value rec-button-anim-value
+                                                             :ctrl-buttons-anim-value
+                                                             ctrl-buttons-anim-value
+                                                             :timer timer})))
+                               (reload-recorder))
      :component-will-unmount (fn []
                                (when @recording-timer
                                  (utils.utils/clear-interval @recording-timer)
@@ -268,26 +295,29 @@
                                (reset! state-cb nil)
                                (reset! max-recording-reached-cb nil)
                                (reset! on-background-cb nil))}
-    (let [base-params {:rec-button-anim-value rec-button-anim-value
-                       :ctrl-buttons-anim-value ctrl-buttons-anim-value
-                       :timer timer}
+    (let [base-params     {:rec-button-anim-value   rec-button-anim-value
+                           :ctrl-buttons-anim-value ctrl-buttons-anim-value
+                           :timer                   timer}
           contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
       [react/view {:style styles/container}
-       [react/text {:style styles/timer
-                    :accessibility-label :audio-message-recorded-time} @timer]
+       [react/text
+        {:style               styles/timer
+         :accessibility-label :audio-message-recorded-time} @timer]
        [react/view {:style styles/buttons-container}
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
          [cancel-button (:cancel-disabled? @state) #(stop-recording base-params) contact-request]]
         [rec-button-view (merge base-params {:state state})]
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
-         [input/send-button (fn [] (cond
-                                     (= :ready-to-send (:general @state))
-                                     (do
-                                       (reset-timer timer)
-                                       (animate-buttons false false base-params)
-                                       (send-audio-msessage state))
+         [input/send-button
+          (fn []
+            (cond
+              (= :ready-to-send (:general @state))
+              (do
+                (reset-timer timer)
+                (animate-buttons false false base-params)
+                (send-audio-msessage state))
 
-                                     (#{:recording :recording-paused} (:general @state))
-                                     (stop-recording (merge base-params
-                                                            {:on-success
-                                                             #(send-audio-msessage state)}))))]]]])))
+              (#{:recording :recording-paused} (:general @state))
+              (stop-recording (merge base-params
+                                     {:on-success
+                                      #(send-audio-msessage state)}))))]]]])))

@@ -1,20 +1,21 @@
 (ns quo2.components.counter.counter
-  (:require [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]))
+  (:require [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def themes
-  {:light {:default    colors/primary-50
-           :secondary  colors/neutral-80-opa-5
-           :grey       colors/neutral-10
-           :outline    colors/neutral-20}
-   :dark  {:default    colors/primary-60
-           :secondary  colors/white-opa-5
-           :grey       colors/neutral-70
-           :outline    colors/neutral-70}})
+  {:light {:default   colors/primary-50
+           :secondary colors/neutral-80-opa-5
+           :grey      colors/neutral-10
+           :outline   colors/neutral-20}
+   :dark  {:default   colors/primary-60
+           :secondary colors/white-opa-5
+           :grey      colors/neutral-70
+           :outline   colors/neutral-70}})
 
-(defn get-color [key]
+(defn get-color
+  [key]
   (get-in themes [(theme/get-theme) key]))
 
 (defn counter
@@ -35,30 +36,32 @@
                      "99+"
                      (str value))
         width      (case (count label)
-                     1     16
-                     2     20
+                     1 16
+                     2 20
                      28)]
-    [rn/view {:test-ID :counter-component
-              :accessible true
-              :accessibility-label accessibility-label
-              :style (cond-> (merge
-                              {:align-items     :center
-                               :justify-content :center
-                               :border-radius   6
-                               :width           width
-                               :height          16}
-                              style)
-                       (= type :outline)
-                       (merge {:border-width 1
-                               :border-color (get-color type)})
+    [rn/view
+     {:test-ID             :counter-component
+      :accessible          true
+      :accessibility-label accessibility-label
+      :style               (cond-> (merge
+                                    {:align-items     :center
+                                     :justify-content :center
+                                     :border-radius   6
+                                     :width           width
+                                     :height          16}
+                                    style)
+                             (= type :outline)
+                             (merge {:border-width 1
+                                     :border-color (get-color type)})
 
-                       (not= type :outline)
-                       (assoc :background-color
-                              (or override-bg-color
-                                  (get-color type)))
+                             (not= type :outline)
+                             (assoc :background-color
+                                    (or override-bg-color
+                                        (get-color type)))
 
-                       (> value 99)
-                       (assoc :padding-left 0.5))}
-     [text/text {:weight :medium
-                 :size   :label
-                 :style  {:color text-color}} label]]))
+                             (> value 99)
+                             (assoc :padding-left 0.5))}
+     [text/text
+      {:weight :medium
+       :size   :label
+       :style  {:color text-color}} label]]))

@@ -1,14 +1,15 @@
 (ns quo2.components.avatars.account-avatar
-  (:require [react-native.core :as rn]
+  (:require [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icons]
-            [quo2.theme :as theme]))
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def icon-color-value
   {:dark  (get-in colors/customization [:dark :purple])
    :light (get-in colors/customization [:light :purple])})
 
-(defn get-border-radius [size]
+(defn get-border-radius
+  [size]
   (case size
     80 16
     48 12
@@ -16,7 +17,8 @@
     24 8
     20 6))
 
-(defn get-inner-icon-sizes [size]
+(defn get-inner-icon-sizes
+  [size]
   (case size
     80 36
     48 24
@@ -28,17 +30,18 @@
   [{:keys [size icon]
     :or   {size 80
            icon :main-icons/placeholder}}]
-  (let [icon-color (if (theme/dark?)
-                     (:dark icon-color-value)
-                     (:light icon-color-value))
+  (let [icon-color           (if (theme/dark?)
+                               (:dark icon-color-value)
+                               (:light icon-color-value))
         avatar-border-radius (get-border-radius size)
-        inner-icon-size (get-inner-icon-sizes size)]
-    [rn/view {:style {:width            size
-                      :background-color icon-color
-                      :height           size
-                      :border-radius    avatar-border-radius
-                      :justify-content  :center
-                      :align-items      :center}}
+        inner-icon-size      (get-inner-icon-sizes size)]
+    [rn/view
+     {:style {:width            size
+              :background-color icon-color
+              :height           size
+              :border-radius    avatar-border-radius
+              :justify-content  :center
+              :align-items      :center}}
      [icons/icon icon
       {:no-color true
        :size     inner-icon-size}]]))

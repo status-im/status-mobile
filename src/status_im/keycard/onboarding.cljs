@@ -1,16 +1,16 @@
 (ns status-im.keycard.onboarding
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im2.navigation.events :as navigation]
+            [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im.keycard.mnemonic :as mnemonic]
+            [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [status-im.keycard.common :as common]
-            [status-im.keycard.mnemonic :as mnemonic]
-            [taoensso.timbre :as log]
-            status-im.keycard.fx
-            [status-im.ui.components.react :as react]
-            [status-im.constants :as constants]))
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn begin-setup-button-pressed
   {:keys [:keycard.ui/begin-setup-button-pressed]}
@@ -66,7 +66,8 @@
                           :content             (i18n/label :t/secret-keys-confirmation-text)
                           :confirm-button-text (i18n/label :t/yes)
                           :cancel-button-text  (i18n/label :t/cancel)
-                          :on-accept           #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/confirm-pressed])
+                          :on-accept           #(re-frame/dispatch
+                                                 [:keycard.onboarding.puk-code.ui/confirm-pressed])
                           :on-cancel           #()}})
 
 (fx/defn load-finishing-screen
@@ -90,12 +91,13 @@
   {:events [:keycard.onboarding.recovery-phrase.ui/next-pressed
             :keycard.ui/recovery-phrase-next-button-pressed]}
   [_]
-  {:ui/show-confirmation {:title               (i18n/label :t/keycard-recovery-phrase-confirmation-title)
-                          :content             (i18n/label :t/keycard-recovery-phrase-confirmation-text)
+  {:ui/show-confirmation {:title (i18n/label :t/keycard-recovery-phrase-confirmation-title)
+                          :content (i18n/label :t/keycard-recovery-phrase-confirmation-text)
                           :confirm-button-text (i18n/label :t/yes)
-                          :cancel-button-text  (i18n/label :t/cancel)
-                          :on-accept           #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/confirm-pressed])
-                          :on-cancel           #()}})
+                          :cancel-button-text (i18n/label :t/cancel)
+                          :on-accept #(re-frame/dispatch
+                                       [:keycard.onboarding.recovery-phrase.ui/confirm-pressed])
+                          :on-cancel #()}})
 
 (fx/defn recovery-phrase-start-confirmation
   [{:keys [db] :as cofx}]
@@ -130,14 +132,16 @@
 
 (fx/defn proceed-with-generating-key
   [{:keys [db] :as cofx}]
-  (let [pin (get-in db [:keycard :secrets :pin]
+  (let [pin (get-in db
+                    [:keycard :secrets :pin]
                     (common/vector->string (get-in db [:keycard :pin :current])))]
     (if (empty? pin)
       (fx/merge cofx
                 {:db (-> db
-                         (assoc-in [:keycard :pin] {:enter-step  :current
-                                                    :on-verified :keycard/generate-and-load-key
-                                                    :current     []})
+                         (assoc-in [:keycard :pin]
+                                   {:enter-step  :current
+                                    :on-verified :keycard/generate-and-load-key
+                                    :current     []})
                          (assoc-in [:keycard :setup-step] :loading-keys))}
                 (navigation/navigate-to-cofx :keycard-onboarding-pin nil))
       (load-finishing-screen cofx))))
@@ -146,8 +150,8 @@
   {:events [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed
             :keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted]}
   [{:keys [db] :as cofx}]
-  (let [step (get-in db [:keycard :recovery-phrase :step])
-        input-word (get-in db [:keycard :recovery-phrase :input-word])
+  (let [step           (get-in db [:keycard :recovery-phrase :step])
+        input-word     (get-in db [:keycard :recovery-phrase :input-word])
         {:keys [word]} (get-in db [:keycard :recovery-phrase step])]
     (if (= word input-word)
       (if (= (:view-id db) :keycard-onboarding-recovery-phrase-confirm-word1)
@@ -183,7 +187,7 @@
   {:events [:keycard/start-onboarding-flow]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db                           (assoc-in db [:keycard :flow] :create)
+            {:db                        (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
             (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
@@ -193,19 +197,22 @@
   [_]
   {:keycard/open-nfc-settings nil})
 
-(defn- show-recover-confirmation []
+(defn- show-recover-confirmation
+  []
   {:ui/show-confirmation {:title               (i18n/label :t/are-you-sure?)
                           :content             (i18n/label :t/are-you-sure-description)
                           :confirm-button-text (clojure.string/upper-case (i18n/label :t/yes))
                           :cancel-button-text  (i18n/label :t/see-it-again)
-                          :on-accept           #(re-frame/dispatch [:keycard.ui/recovery-phrase-confirm-pressed])
-                          :on-cancel           #(re-frame/dispatch [:keycard.ui/recovery-phrase-cancel-pressed])}})
+                          :on-accept           #(re-frame/dispatch
+                                                 [:keycard.ui/recovery-phrase-confirm-pressed])
+                          :on-cancel           #(re-frame/dispatch
+                                                 [:keycard.ui/recovery-phrase-cancel-pressed])}})
 
 (fx/defn recovery-phrase-confirm-word
   {:events [:keycard.ui/recovery-phrase-confirm-word-next-button-pressed]}
   [{:keys [db]}]
-  (let [step (get-in db [:keycard :recovery-phrase :step])
-        input-word (get-in db [:keycard :recovery-phrase :input-word])
+  (let [step           (get-in db [:keycard :recovery-phrase :step])
+        input-word     (get-in db [:keycard :recovery-phrase :input-word])
         {:keys [word]} (get-in db [:keycard :recovery-phrase step])]
     (if (= word input-word)
       (if (= step :word1)
@@ -256,16 +263,19 @@
         {:keys [selected-id multiaccounts]}
         (:intro-wizard db)
 
-        multiaccount      (or (->> multiaccounts
-                                   (filter #(= (:id %) selected-id))
-                                   first)
-                              (assoc (get-in db [:intro-wizard :root-key])
-                                     :derived
-                                     (get-in db [:intro-wizard :derived])))
-        recovery-mnemonic (get-in db [:intro-wizard :passphrase])
-        mnemonic          (or (:mnemonic multiaccount)
-                              recovery-mnemonic)
-        pin'              (or pin (common/vector->string (get-in db [:keycard :pin :current])))]
+        multiaccount                        (or (->> multiaccounts
+                                                     (filter #(= (:id %) selected-id))
+                                                     first)
+                                                (assoc (get-in db [:intro-wizard :root-key])
+                                                       :derived
+                                                       (get-in db [:intro-wizard :derived])))
+        recovery-mnemonic                   (get-in db [:intro-wizard :passphrase])
+        mnemonic                            (or (:mnemonic multiaccount)
+                                                recovery-mnemonic)
+        pin'                                (or pin
+                                                (common/vector->string (get-in db
+                                                                               [:keycard :pin
+                                                                                :current])))]
     (fx/merge cofx
               {:keycard/generate-and-load-key
                {:mnemonic             mnemonic
@@ -285,7 +295,9 @@
    cofx
    {:db (-> db
             (update :keycard
-                    dissoc :secrets :card-state :multiaccount-wallet-address
+                    dissoc
+                    :secrets
+                    :card-state                      :multiaccount-wallet-address
                     :multiaccount-whisper-public-key :application-info)
             (assoc-in [:keycard :setup-step] :begin)
             (assoc-in [:keycard :pin :on-verified] nil))}
