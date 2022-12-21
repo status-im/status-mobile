@@ -146,36 +146,46 @@
                           (let [width  (oget evt "nativeEvent" "layout" "width")
                                 height (oget evt "nativeEvent" "layout" "height")]
                             (when get-layout
-                              (get-layout el {:width  width
-                                              :height height}))
-                            (swap! layout assoc el {:width  width
-                                                    :height height}))))]
-    (fn [{:keys [left-accessories left-component border-bottom
-                 right-accessories right-component insets get-layout
-                 title subtitle title-component style title-align
-                 background header-style]
-          :or   {title-align   :center
-                 border-bottom false}}]
+                              (get-layout el
+                                          {:width  width
+                                           :height height}))
+                            (swap! layout assoc
+                              el
+                              {:width  width
+                               :height height}))))]
+    (fn
+      [{:keys [left-accessories left-component border-bottom
+               right-accessories right-component insets get-layout
+               title subtitle title-component style title-align
+               background header-style]
+        :or   {title-align   :center
+               border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
-        [reanimated/view {:style (header-wrapper-style {:height        height
-                                                        :background    background
-                                                        :header-style  header-style
-                                                        :border-bottom border-bottom})}
-         [rn/view {:pointer-events :box-none
-                   :height         status-bar-height}]
-         [rn/view {:style          (merge {:height header-height}
-                                          style)
-                   :pointer-events :box-none}
-          [rn/view {:style          absolute-fill
-                    :pointer-events :box-none}
-           [rn/view {:style          content
-                     :pointer-events :box-none}
-            [rn/view {:style          left
-                      :on-layout      (handle-layout :left get-layout)
-                      :pointer-events :box-none}
-             [header-actions {:accessories left-accessories
-                              :component   left-component}]]
+        [reanimated/view
+         {:style (header-wrapper-style {:height        height
+                                        :background    background
+                                        :border-bottom border-bottom})}
+         [rn/view
+          {:pointer-events :box-none
+           :height         status-bar-height}]
+         [rn/view
+          {:style          (merge {:height header-height}
+                                  style)
+           :pointer-events :box-none}
+          [rn/view
+           {:style          absolute-fill
+            :pointer-events :box-none}
+           [rn/view
+            {:style          content
+             :pointer-events :box-none}
+            [rn/view
+             {:style          left
+              :on-layout      (handle-layout :left get-layout)
+              :pointer-events :box-none}
+             [header-actions
+              {:accessories left-accessories
+               :component   left-component}]]
 
             [rn/view
              {:style          (title-style @layout title-align)
