@@ -52,7 +52,7 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
-   @(when (rf/subscribe [:communities/enabled?])
+   (when @(rf/subscribe [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)
@@ -93,9 +93,9 @@
 
 (def add-new-sheet
   {:content add-new-sheet-view})
-
+;; Deprecated
 (def add-new
   {:content add-new-view})
 
 (def start-a-new-chat
-  {:content (fn [] [new-chat-aio/contact-toggle-list])})
+  {:content new-chat-aio/contact-toggle-list})

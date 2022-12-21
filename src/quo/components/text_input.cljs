@@ -168,7 +168,7 @@
     (fn [{:keys [label multiline error style input-style keyboard-type before after 
                  on-focus text-padding-left placeholder-text-color on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
-                 monospace auto-complete-type auto-correct]
+                 monospace auto-complete-type auto-correct cancel-label]
           :or  {cancel-label "Cancel"}
           :as  props}]
       {:pre [(check-spec ::text-input props)]}

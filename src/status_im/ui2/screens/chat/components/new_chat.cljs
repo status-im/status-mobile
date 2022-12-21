@@ -23,8 +23,7 @@
             [utils.debounce :as debounce]
             [status-im.ui.screens.chat.sheets :refer [hide-sheet-and-dispatch]]
             [status-im.ui.components.search-input.view :as search]
-            [status-im.ui.components.toolbar :as toolbar])
-  (:require-macros [status-im.utils.views :as views]))
+            [status-im.ui.components.toolbar :as toolbar]))
 
 (defn- render-contact [row]
   (let [[first-name second-name] (multiaccounts/contact-two-names row false)]

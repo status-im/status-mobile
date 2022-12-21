@@ -51,7 +51,9 @@
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
    quo2.components.tags.status-tags
-   quo2.components.tags.tags))
+   quo2.components.tags.tags
+   quo2.components.list-items.index
+   quo2.components.list-items.list-item))
 
 (def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
