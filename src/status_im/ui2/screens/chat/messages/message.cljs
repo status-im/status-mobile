@@ -361,8 +361,7 @@
   (let [dimensions (reagent/atom {:width image-max-width :height image-max-height :loaded false})
         visible    (reagent/atom false)
         uri        (:image content)]
-    (fn [{:keys [in-popover?] :as message}
-         {:keys [on-long-press]}]
+    (fn [message]
       (let [style-opts {:outgoing false
                         :opacity  (if (:loaded @dimensions) 1 0)
                         :width    (:width @dimensions)
@@ -372,25 +371,20 @@
                                  :visible  @visible
                                  :on-close #(do (reset! visible false)
                                                 (reagent/flush))}]
-         [rn/touchable-opacity {:on-press      (fn []
-                                                 (reset! visible true)
-                                                 (rn/dismiss-keyboard!))
-                                :on-long-press @on-long-press
-                                :disabled      in-popover?}
-          [rn/view {:style               (style/image-message style-opts)
-                    :accessibility-label :image-message}
-           (when (or (:error @dimensions) (not (:loaded @dimensions)))
-             [rn/view
-              (merge (dissoc style-opts :opacity)
-                     {:flex 1 :align-items :center :justify-content :center :position :absolute})
-              (if (:error @dimensions)
-                [icons/icon :i/cancel]
-                [rn/activity-indicator {:animating true}])])
-           [fast-image/fast-image {:style    (dissoc style-opts :outgoing)
-                                   :on-load  (image-set-size dimensions)
-                                   :on-error #(swap! dimensions assoc :error true)
-                                   :source   {:uri uri}}]
-           [rn/view {:style (style/image-message-border style-opts)}]]]]))))
+         [rn/view {:style               (style/image-message style-opts)
+                   :accessibility-label :image-message}
+          (when (or (:error @dimensions) (not (:loaded @dimensions)))
+            [rn/view
+             (merge (dissoc style-opts :opacity)
+                    {:flex 1 :align-items :center :justify-content :center :position :absolute})
+             (if (:error @dimensions)
+               [icons/icon :i/cancel]
+               [rn/activity-indicator {:animating true}])])
+          [fast-image/fast-image {:style    (dissoc style-opts :outgoing)
+                                  :on-load  (image-set-size dimensions)
+                                  :on-error #(swap! dimensions assoc :error true)
+                                  :source   {:uri uri}}]
+          [rn/view {:style (style/image-message-border style-opts)}]]]))))
 
 ;; AUDIO
 (defn audio [message]
