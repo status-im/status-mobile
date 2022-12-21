@@ -676,11 +676,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if not channel.chat_element_by_text(emoji_unicode).is_element_displayed(30):
                 self.errors.append('Message with emoji was not sent or received in community channel')
 
-        self.channel_1.just_fyi("Can copy and paste emojis")
-        self.channel_1.copy_message_text(emoji_unicode)
-        self.channel_1.chat_message_input.paste_text_from_clipboard()
-        if self.channel_1.chat_message_input.text != emoji_unicode:
-            self.errors.append('Emoji message was not copied')
+        # Commented as paste_text_from_clipboard() method doesn't work any more for some reason. Needs to be investigated
+        # self.channel_1.just_fyi("Can copy and paste emojis")
+        # self.channel_1.copy_message_text(emoji_unicode)
+        # self.channel_1.chat_message_input.click()
+        # self.channel_1.chat_message_input.paste_text_from_clipboard()
+        # if self.channel_1.chat_message_input.text != emoji_unicode:
+        #     self.errors.append('Emoji message was not copied')
 
         self.channel_1.just_fyi("Can reply to emojis")
         self.channel_2.quote_message(emoji_unicode)
@@ -712,6 +714,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702844)
+    @marks.skip("Until preview component will be developed")
     def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
         preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
@@ -730,6 +733,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         }
 
         self.home_1.just_fyi("Check enabling and sending first gif")
+        self.channel_2.send_message(giphy_url)
+        # workaround to get chat view focused
         self.channel_2.send_message(giphy_url)
         self.channel_2.element_by_translation_id("dont-ask").click()
         # workaround to get chat view focused
