@@ -7,7 +7,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.onboarding.views :as ui]
-            [status-im.utils.datetime :as datetime]
+            [utils.datetime :as datetime]
             [status-im.utils.utils :as utils]
             [utils.debounce :refer [dispatch-and-chill]]
             [utils.security.core :as security]))

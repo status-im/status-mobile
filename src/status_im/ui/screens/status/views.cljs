@@ -19,7 +19,7 @@
             [status-im.ui.screens.chat.message.reactions-old :as reactions]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.status.styles :as styles]
-            [status-im.utils.datetime :as datetime]))
+            [utils.datetime :as datetime]))
 
 (defonce messages-list-ref (atom nil))
 (def image-max-dimension 192)

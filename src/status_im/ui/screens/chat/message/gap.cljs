@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.input.gap :as style]
-            [status-im.utils.datetime :as datetime]))
+            [utils.datetime :as datetime]))
 
 (defn on-press
   [chat-id gap-ids]

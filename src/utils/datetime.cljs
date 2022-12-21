@@ -1,4 +1,4 @@
-(ns status-im.utils.datetime
+(ns utils.datetime
   (:require [cljs-time.coerce :as t.coerce]
             [cljs-time.core :as t]
             [cljs-time.format :as t.format]

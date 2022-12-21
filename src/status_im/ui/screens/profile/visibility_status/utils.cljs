@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [status-im.utils.datetime :as datetime]
+            [utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
 ;; Specs:

@@ -23,7 +23,7 @@
    [status-im.ui.screens.chat.sheets :as sheets]
    [status-im.ui.screens.home.views.inner-item :as inner-item]
    [status-im.utils.core :as utils]
-   [status-im.utils.datetime :as datetime]
+   [utils.datetime :as datetime]
    [utils.re-frame :as rf]))
 
 (def request-cooldown-ms (* 24 60 60 1000))

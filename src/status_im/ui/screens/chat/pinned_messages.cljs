@@ -12,7 +12,7 @@
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.views :as chat]
-            [status-im.utils.datetime :as time]
+            [utils.datetime :as datetime]
             [status-im.utils.platform :as platform]))
 
 (defn pins-topbar
@@ -81,7 +81,7 @@
            :edit-enabled        edit-enabled
            :display-username?   (not outgoing)
            :pinned              true
-           :timestamp-str       (time/timestamp->time whisper-timestamp))
+           :timestamp-str       (datetime/timestamp->time whisper-timestamp))
     space-keeper]])
 
 (defn pinned-messages-view

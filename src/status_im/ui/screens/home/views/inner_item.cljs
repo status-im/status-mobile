@@ -14,7 +14,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time]
+            [utils.datetime :as datetime]
             [status-im.utils.utils :as utils.utils]))
 
 (defn preview-label
@@ -123,7 +123,7 @@
 (def memo-timestamp
   (memoize
    (fn [timestamp]
-     (string/upper-case (time/to-short-str timestamp)))))
+     (string/upper-case (datetime/to-short-str timestamp)))))
 
 (defn unviewed-indicator
   [{:keys [unviewed-mentions-count

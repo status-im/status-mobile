@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.delete-message.events
   (:require [status-im.chat.models.message-list :as message-list]
-            [status-im.utils.datetime :as datetime]
+            [utils.datetime :as datetime]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 

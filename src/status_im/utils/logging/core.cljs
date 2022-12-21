@@ -9,8 +9,8 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
             [status-im.utils.build :as build]
-            [status-im.utils.datetime :as datetime]
             [utils.re-frame :as rf]
+            [utils.datetime :as datetime]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im2.setup.log :as log]))

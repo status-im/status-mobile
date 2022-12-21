@@ -3,8 +3,8 @@
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
-            [status-im.utils.datetime :as datetime]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.datetime :as datetime]))
 
 (defn valid-status-type?
   [status-type]

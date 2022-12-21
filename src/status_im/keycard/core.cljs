@@ -16,8 +16,8 @@
             [status-im.keycard.wallet :as wallet]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.datetime :as utils.datetime]
             [utils.re-frame :as rf]
+            [utils.datetime :as datetime]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
@@ -485,7 +485,7 @@
         flow         (get-in db [:keycard :flow])
         instance-uid (get-in db [:keycard :application-info :instance-uid])
         multiaccount (common/find-multiaccount-by-keycard-instance-uid db instance-uid)
-        paired-on    (utils.datetime/timestamp)
+        paired-on    (datetime/timestamp)
         pairings     (-> (get-in db [:keycard :pairings])
                          (dissoc (keyword instance-uid))
                          (assoc instance-uid {:pairing pairing :paired-on paired-on}))
