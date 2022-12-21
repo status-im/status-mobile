@@ -34,6 +34,38 @@
 
 ;;;; Misc
 
+(deftest open-activity-center-test
+  (testing "opens the activity center with filters enabled"
+    (h/run-test-sync
+     (let [spy-queue (atom [])]
+       (setup)
+       (h/spy-fx spy-queue :show-popover)
+
+       (rf/dispatch [:activity-center/open
+                     {:filter-type   types/contact-request
+                      :filter-status :unread}])
+
+       (is (= {:status :unread
+               :type   types/contact-request}
+              (get-in (h/db) [:activity-center :filter])))
+       (is (= [{:id :show-popover :args nil}]
+              @spy-queue)))))
+
+  (testing "opens the activity center without custom filters"
+    (h/run-test-sync
+     (let [spy-queue        (atom [])
+           existing-filters {:status :all}]
+       (setup)
+       (h/spy-fx spy-queue :show-popover)
+       (rf/dispatch [:test/assoc-in [:activity-center :filter] existing-filters])
+
+       (rf/dispatch [:activity-center/open])
+
+       (is (= existing-filters
+              (get-in (h/db) [:activity-center :filter])))
+       (is (= [{:id :show-popover :args nil}]
+              @spy-queue))))))
+
 (deftest mark-as-read-test
   (testing "does nothing if the notification ID cannot be found in the app db"
     (h/run-test-sync

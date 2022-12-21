@@ -52,12 +52,13 @@
 (defn contacts
   [contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
-    (if (empty? items)
+    (if (and (empty? items) (empty? contact-requests))
       [welcome-blank-contacts]
       [:<>
-       (when (pos? (count contact-requests))
+       (when (seq contact-requests)
          [contact-request/contact-requests contact-requests])
-       [contact-list/contact-list {:icon :options}]])))
+       (when (seq items)
+         [contact-list/contact-list {:icon :options}])])))
 
 (defn tabs
   []
