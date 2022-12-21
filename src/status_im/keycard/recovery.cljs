@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.common :as common]
             status-im.keycard.fx
             [status-im.multiaccounts.create.core :as multiaccounts.create]

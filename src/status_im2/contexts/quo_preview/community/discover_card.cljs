@@ -4,7 +4,7 @@
             [quo2.components.community.discover-card :as discover-card]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]))
+            [i18n.i18n :as i18n]))
 
 (def descriptor
   [{:label "Joined:"

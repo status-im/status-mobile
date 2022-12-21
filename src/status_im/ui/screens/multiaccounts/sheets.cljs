@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.multiaccounts.sheets
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]))
+            [i18n.i18n :as i18n]))
 
 (defn actions-sheet
   []

@@ -6,7 +6,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.audio.core :as audio]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.icons.icons :as icons]

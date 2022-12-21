@@ -1,6 +1,6 @@
 (ns status-im.keycard.core
   (:require [re-frame.db]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             status-im.keycard.backup-key
             [status-im.keycard.card :as card]
             [status-im.keycard.change-pin :as change-pin]

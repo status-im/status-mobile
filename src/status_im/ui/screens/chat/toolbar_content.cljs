@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.screens.chat.styles.main :as st]))
 

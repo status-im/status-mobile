@@ -3,7 +3,7 @@
             [quo.react :as quo.react]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]

@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]

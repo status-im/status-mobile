@@ -6,7 +6,7 @@
             [reagent.core :as reagent]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.create.core :as multiaccounts.create]

@@ -1,6 +1,6 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]

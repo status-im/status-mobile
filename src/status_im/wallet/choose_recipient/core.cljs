@@ -5,7 +5,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scaner]
             [status-im.router.core :as router]
             [utils.re-frame :as rf]

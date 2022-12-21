@@ -4,8 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
             [status-im.chat.models :as chat.models]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.i18n.i18n-resources :as i18n-resources]
+            [i18n.i18n :as i18n]
+            [status-im2.setup.i18n-resources :as i18n-resources]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react])

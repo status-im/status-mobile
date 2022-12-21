@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.sheets
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]))
 
 (defn hide-sheet-and-dispatch

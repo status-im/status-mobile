@@ -9,8 +9,8 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
             [utils.re-frame :as rf]
+            [i18n.i18n :as i18n]
             [utils.datetime :as datetime]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))

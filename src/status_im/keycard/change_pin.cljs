@@ -1,5 +1,5 @@
 (ns status-im.keycard.change-pin
-  (:require [status-im.i18n.i18n :as i18n]
+  (:require [i18n.i18n :as i18n]
             [status-im.keycard.common :as common]
             [status-im.keycard.onboarding :as onboarding]
             [utils.re-frame :as rf]

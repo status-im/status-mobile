@@ -3,7 +3,7 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [utils.re-frame :as rf]))
 

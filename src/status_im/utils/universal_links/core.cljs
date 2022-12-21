@@ -7,7 +7,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.router.core :as router]
             [status-im.ui.components.react :as react]

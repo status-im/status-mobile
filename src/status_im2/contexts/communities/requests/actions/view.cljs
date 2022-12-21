@@ -3,7 +3,7 @@
             [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im2.contexts.communities.requests.actions.style :as style]
             [utils.re-frame :as rf]

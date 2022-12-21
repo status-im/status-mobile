@@ -7,7 +7,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
