@@ -104,7 +104,7 @@
                                  :weight :semi-bold
                                  :style  {:color text-color}}
                                 main-text]
-        :user-avatar           [rn/view {:style (assoc centrify-style :flex-direction :row)}
+        :user-avatar           [rn/view {:style (assoc centrify-style :flex-direction :row )}
                                 [user-avatar/user-avatar avatar]
                                 [text/text
                                  {:size   :paragraph-1
@@ -146,7 +146,6 @@
   [rn/view
    {:style (assoc centrify-style
                   :flex-direction  :row
-                  :flex            1
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
      (map-indexed (fn [index {:keys [icon on-press type] :or {type :grey}}]

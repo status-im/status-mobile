@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.foundations.typography :as typography]
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]))

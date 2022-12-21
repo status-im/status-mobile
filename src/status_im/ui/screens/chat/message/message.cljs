@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.chat.models.images :as images]
-            [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
