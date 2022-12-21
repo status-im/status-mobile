@@ -23,7 +23,9 @@
 
 (defn toast-action-container
   [{:keys [on-press style]} & children]
-  [rn/touchable-highlight {:on-press on-press}
+  [rn/touchable-highlight
+   {:on-press       on-press
+    :underlay-color :transparent}
    [into
     [rn/view
      {:style (merge

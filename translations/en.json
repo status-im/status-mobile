@@ -878,7 +878,15 @@
     "message": "Message",
     "message-deleted": "Message deleted",
     "message-deleted-for-everyone": "Message deleted for everyone",
+    "message-deleted-for-everyone-count": {
+        "one": "1 message deleted for everyone",
+        "other": "{{count}} messages deleted for everyone"
+    },
     "message-deleted-for-you": "Message deleted for you",
+    "message-deleted-for-you-count": {
+        "one": "1 message deleted for you",
+        "other": "{{count}} messages deleted for you"
+    },
     "message-not-sent": "Message not sent",
     "message-options-cancel": "Cancel",
     "message-reply": "Reply",
