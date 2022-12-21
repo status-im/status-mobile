@@ -279,8 +279,6 @@
            {}
            contacts)))
 
-
-
 (re-frame/reg-sub
  :contacts/filtered-active-sections
  :<- [:contacts/active-sections]

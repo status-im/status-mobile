@@ -600,7 +600,7 @@
     :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
     :component new-public-chat/new-public-chat}
 
-                                ;[Group chat] Add participants
+   ;[Group chat] Add participants	
    {:name      :add-participants-toggle-list
     :on-focus  [:group/add-participants-toggle-list]
     :insets    {:bottom true}
