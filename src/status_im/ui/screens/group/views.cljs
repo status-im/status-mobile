@@ -17,7 +17,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
-            [utils.re-frame :as rf]
             [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 

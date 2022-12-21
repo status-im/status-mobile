@@ -1,15 +1,15 @@
 (ns quo.components.list.item
-  (:require [quo.react-native :as rn]
-            [quo.platform :as platform]
-            [quo.haptic :as haptic]
-            [quo.gesture-handler :as gh]
-            [quo.design-system.spacing :as spacing]
-            [quo.design-system.colors :as colors]
-            [quo.components.text :as text]
+  (:require [quo.components.animated.pressable :as animated]
             [quo.components.controls.view :as controls]
+            [quo.components.text :as text]
             [quo.components.tooltip :as tooltip]
-            [status-im.ui.components.icons.icons :as icons]
-            [quo.components.animated.pressable :as animated]))
+            [quo.design-system.colors :as colors]
+            [quo.design-system.spacing :as spacing]
+            [quo.gesture-handler :as gh]
+            [quo.haptic :as haptic]
+            [quo.platform :as platform]
+            [quo.react-native :as rn]
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn themes [theme]
   (case theme
@@ -57,13 +57,16 @@
     :small :base
     :large))
 
-(defn container [{:keys [size container-style]} & children]
-  (into [rn/view {:style (merge (:tiny spacing/padding-horizontal)
-                                {:min-height       (size->container-size size)
-                                 :padding-vertical 8
-                                 :flex-direction   :row
-                                 :align-items      :center
-                                 :justify-content  :space-between} container-style)}]
+(defn container
+  [{:keys [size container-style]} & children]
+  (into [rn/view
+         {:style (merge (:tiny spacing/padding-horizontal)
+                        {:min-height       (size->container-size size)
+                         :padding-vertical 8
+                         :flex-direction   :row
+                         :align-items      :center
+                         :justify-content  :space-between}
+                        container-style)}]
         children))
 
 (defn icon-column
@@ -75,23 +78,25 @@
          (vector? icon)
          icon
          (keyword? icon)
-         [rn/view {:style {:width            icon-size
-                           :height           icon-size
-                           :align-items      :center
-                           :justify-content  :center
-                           :border-radius    (/ icon-size 2)
-                           :background-color icon-bg-color}}
+         [rn/view
+          {:style {:width            icon-size
+                   :height           icon-size
+                   :align-items      :center
+                   :justify-content  :center
+                   :border-radius    (/ icon-size 2)
+                   :background-color icon-bg-color}}
           [icons/icon icon {:color icon-color}]])])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
            title-accessibility-label size text-size title-text-weight
            right-side-present?]}]
-  [rn/view {:style (merge (:tiny spacing/padding-horizontal)
-                          ;; make left-side title grow if nothing is present on right-side
-                          (when-not right-side-present?
-                            {:flex            1
-                             :justify-content :center}))}
+  [rn/view
+   {:style (merge (:tiny spacing/padding-horizontal)
+                  ;; make left-side title grow if nothing is present on right-side
+                  (when-not right-side-present?
+                    {:flex            1
+                     :justify-content :center}))}
    (cond
 
      (and title subtitle)
@@ -110,33 +115,37 @@
         title)
       (if (string? subtitle-secondary)
         [rn/view {:flex-direction :row}
-         [text/text {:style {:max-width "56.5%"}
-                     :weight          :regular
-                     :color           :secondary
-                     :ellipsize-mode  :tail
-                     :number-of-lines subtitle-max-lines
-                     :size            text-size}
+         [text/text
+          {:style           {:max-width "56.5%"}
+           :weight          :regular
+           :color           :secondary
+           :ellipsize-mode  :tail
+           :number-of-lines subtitle-max-lines
+           :size            text-size}
           subtitle]
-         [text/text {:style {:width "7%" :text-align :center}
-                     :weight          :regular
-                     :color           :secondary
-                     :ellipsize-mode  :middle
-                     :number-of-lines subtitle-max-lines
-                     :size            text-size}
+         [text/text
+          {:style           {:width "7%" :text-align :center}
+           :weight          :regular
+           :color           :secondary
+           :ellipsize-mode  :middle
+           :number-of-lines subtitle-max-lines
+           :size            text-size}
           "•"]
-         [text/text {:style {:max-width "36.5%"}
-                     :weight          :regular
-                     :color           :secondary
-                     :ellipsize-mode  :middle
-                     :number-of-lines subtitle-max-lines
-                     :size            text-size}
+         [text/text
+          {:style           {:max-width "36.5%"}
+           :weight          :regular
+           :color           :secondary
+           :ellipsize-mode  :middle
+           :number-of-lines subtitle-max-lines
+           :size            text-size}
           subtitle-secondary]]
         (if (string? subtitle)
-          [text/text {:weight          :regular
-                      :color           :secondary
-                      :ellipsize-mode  :tail
-                      :number-of-lines subtitle-max-lines
-                      :size            text-size}
+          [text/text
+           {:weight          :regular
+            :color           :secondary
+            :ellipsize-mode  :tail
+            :number-of-lines subtitle-max-lines
+            :size            text-size}
            subtitle]
           subtitle))]
 
@@ -197,18 +206,20 @@
         accessory)]
      (when (and chevron platform/ios?)
        [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-        [icons/icon :main-icons/next {:container-style {:opacity         0.4
-                                                        :align-items     :center
-                                                        :justify-content :center}
-                                      :resize-mode     :center
-                                      :color           (:icon-02 @colors/theme)}]])]))
+        [icons/icon :main-icons/next
+         {:container-style {:opacity         0.4
+                            :align-items     :center
+                            :justify-content :center}
+          :resize-mode     :center
+          :color           (:icon-02 @colors/theme)}]])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
            left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
-           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
+           haptic-feedback haptic-type error animated animated-accessory? title-text-weight
+           container-style
            active-background-enabled background-color]
     :or   {subtitle-max-lines        1
            theme                     :main
@@ -253,31 +264,33 @@
                                  (optional-haptic)
                                  (on-long-press))}))
       [container {:size size :container-style container-style}
-       [left-side {:icon-color                icon-color
-                   :text-color                (if on-press
-                                                text-color
-                                                (:text-color (themes :main)))
-                   :left-side-alignment       left-side-alignment
-                   :icon-bg-color             icon-bg-color
-                   :title-accessibility-label title-accessibility-label
-                   :icon                      icon
-                   :icon-container-style      icon-container-style
-                   :title                     title
-                   :title-text-weight         title-text-weight
-                   :size                      size
-                   :text-size                 text-size
-                   :subtitle                  subtitle
-                   :subtitle-max-lines        subtitle-max-lines
-                   :subtitle-secondary        subtitle-secondary
-                   :right-side-present?       (or accessory chevron)}]
-       [right-side {:chevron             chevron
-                    :active              active
-                    :disabled            disabled
-                    :on-press            on-press
-                    :accessory-text      accessory-text
-                    :animated-accessory? animated-accessory?
-                    :accessory-style     accessory-style
-                    :accessory           accessory}]]]
+       [left-side
+        {:icon-color                icon-color
+         :text-color                (if on-press
+                                      text-color
+                                      (:text-color (themes :main)))
+         :left-side-alignment       left-side-alignment
+         :icon-bg-color             icon-bg-color
+         :title-accessibility-label title-accessibility-label
+         :icon                      icon
+         :icon-container-style      icon-container-style
+         :title                     title
+         :title-text-weight         title-text-weight
+         :size                      size
+         :text-size                 text-size
+         :subtitle                  subtitle
+         :subtitle-max-lines        subtitle-max-lines
+         :subtitle-secondary        subtitle-secondary
+         :right-side-present?       (or accessory chevron)}]
+       [right-side
+        {:chevron             chevron
+         :active              active
+         :disabled            disabled
+         :on-press            on-press
+         :accessory-text      accessory-text
+         :animated-accessory? animated-accessory?
+         :accessory-style     accessory-style
+         :accessory           accessory}]]]
      (when error
        [tooltip/tooltip
         (merge {:bottom-value 0}

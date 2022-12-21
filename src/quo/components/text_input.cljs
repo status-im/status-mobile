@@ -4,8 +4,6 @@
             [quo.components.text :as text]
             [quo.components.tooltip :as tooltip]
             [quo.design-system.colors :as colors]
-            [quo2.components.icon :as quo2.icons]
-            [status-im.i18n.i18n :as i18n]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.typography :as typography]
             [quo.platform :as platform]
@@ -98,7 +96,8 @@
           :background-color (:ui-01 @colors/theme)}
          style))
 
-(defn text-input-style [multiline input-style monospace before after]
+(defn text-input-style
+  [multiline input-style monospace before after]
   (merge (if monospace
            typography/monospace
            typography/font-regular)
@@ -164,13 +163,15 @@
         visible (reagent/atom false)
         ref     (atom nil)
         blur    (fn []
-                  (some-> @ref (ocall "blur")))]
-    (fn [{:keys [label multiline error style input-style keyboard-type before after 
-                 on-focus text-padding-left placeholder-text-color on-blur show-cancel accessibility-label
-                 bottom-value secure-text-entry container-style get-ref on-cancel
-                 monospace auto-complete-type auto-correct cancel-label]
-          :or  {cancel-label "Cancel"}
-          :as  props}]
+                  (some-> @ref
+                          (ocall "blur")))]
+    (fn
+      [{:keys [label multiline error style input-style keyboard-type before after
+               cancel-label on-focus on-blur show-cancel accessibility-label
+               bottom-value secure-text-entry container-style get-ref on-cancel
+               monospace auto-complete-type auto-correct]
+        :or   {cancel-label "Cancel"}
+        :as   props}]
       {:pre [(check-spec ::text-input props)]}
       (let [show-cancel   (if (nil? show-cancel)
                             ;; Enabled by default on iOs and disabled on Android
@@ -231,39 +232,47 @@
            (when before
              [accessory-element before])
            [rn/text-input
-            (merge {:style                   (text-input-style multiline input-style monospace before after)
-                    :ref                     (fn [r]
-                                               (reset! ref r)
-                                               (when get-ref (get-ref r)))
-                    :placeholder-text-color  (:text-02 @colors/theme)
-                    :underline-color-android :transparent
-                    :auto-capitalize         :none
-                    :secure-text-entry       secure
-                    :auto-correct            auto-correct
-                    :auto-complete-type      auto-complete
-                    :on-focus                (fn [evt]
-                                               (when on-focus (on-focus evt))
-                                               (when show-cancel
-                                                 (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
-                                               (reset! focused true))
-                    :on-blur                 (fn [evt]
-                                               (when on-blur (on-blur evt))
-                                               (when show-cancel
-                                                 (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
-                                               (reset! focused false))
-                    :keyboard-type           keyboard-type}
-                   (when (and platform/ios? (not after))
-                     {:clear-button-mode :while-editing})
-                   (dissoc props
-                           :style :keyboard-type :on-focus :on-blur
-                           :secure-text-entry :ref :get-ref :auto-correct :auto-complete-type))]
+            (merge
+             {:style                   (text-input-style multiline input-style monospace before after)
+              :ref                     (fn [r]
+                                         (reset! ref r)
+                                         (when get-ref (get-ref r)))
+              :placeholder-text-color  (:text-02 @colors/theme)
+              :underline-color-android :transparent
+              :auto-capitalize         :none
+              :secure-text-entry       secure
+              :auto-correct            auto-correct
+              :auto-complete-type      auto-complete
+              :on-focus                (fn [evt]
+                                         (when on-focus (on-focus evt))
+                                         (when show-cancel
+                                           (rn/configure-next (:ease-in-ease-out
+                                                               rn/layout-animation-presets)))
+                                         (reset! focused true))
+              :on-blur                 (fn [evt]
+                                         (when on-blur (on-blur evt))
+                                         (when show-cancel
+                                           (rn/configure-next (:ease-in-ease-out
+                                                               rn/layout-animation-presets)))
+                                         (reset! focused false))
+              :keyboard-type           keyboard-type}
+             (when (and platform/ios? (not after))
+               {:clear-button-mode :while-editing})
+             (dissoc props
+                     :style
+                     :keyboard-type :on-focus
+                     :on-blur
+                     :secure-text-entry
+                     :ref           :get-ref
+                     :auto-correct  :auto-complete-type))]
            (when after
              [accessory-element after])]
           (when (and show-cancel
                      (not multiline)
                      @focused)
-            [rn/touchable-opacity {:style    (cancel-style)
-                                   :on-press on-cancel}
+            [rn/touchable-opacity
+             {:style    (cancel-style)
+              :on-press on-cancel}
              [text/text {:color :link} cancel-label]])
           (when error
             [tooltip/tooltip

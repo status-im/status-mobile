@@ -78,6 +78,21 @@
    (contact.db/get-active-contacts contacts)))
 
 (re-frame/reg-sub
+ :contacts/active-sections
+ :<- [:contacts/active]
+ (fn [contacts]
+   (-> (reduce
+        (fn [acc contact]
+          (let [first-char (first (:alias contact))]
+            (if (get acc first-char)
+              (update-in acc [first-char :data] #(conj % contact))
+              (assoc acc first-char {:title first-char :data [contact]}))))
+        {}
+        contacts)
+       sort
+       vals)))
+
+(re-frame/reg-sub
  :contacts/sorted-and-grouped-by-first-letter
  :<- [:contacts/active]
  :<- [:selected-contacts-count]
@@ -264,6 +279,8 @@
            {}
            contacts)))
 
+
+
 (re-frame/reg-sub
  :contacts/filtered-active-sections
  :<- [:contacts/active-sections]
@@ -281,21 +298,6 @@
                                      (string/lower-case query))
                                    data)))))
           (remove #(empty? (:data %)))))))
-
-(re-frame/reg-sub
- :contacts/sorted-and-grouped-by-first-letter
- :<- [:contacts/active]
- :<- [:selected-contacts-count]
- (fn [[contacts selected-contacts-count]]
-   (->> contacts
-        (filter :mutual?)
-        (map #(assoc % :allow-new-users? (< selected-contacts-count
-                                            (dec constants/max-group-chat-participants))))
-        (group-by (comp (fnil string/upper-case "") first :alias))
-        (sort-by (fn [[title]] title))
-        (map (fn [[title data]]
-               {:title title
-                :data  data})))))
 
 (re-frame/reg-sub
  :contacts/group-members-sections
