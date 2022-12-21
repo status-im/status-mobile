@@ -7,8 +7,7 @@
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
             [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]
-            [status-im.utils.config :as config]
-            [quo2.components.list-items.list-item :as quo2.list-item]))
+            [status-im.utils.config :as config]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -64,7 +63,7 @@
 
 (defn add-new-sheet-view []
   [rn/view
-   [quo2.list-item/list-item
+   [quo/list-item
     {:theme                        :main
      :title                        (i18n/label :t/new-chat)
      :icon-bg-color                :transparent
@@ -76,7 +75,7 @@
      :accessibility-label          :start-a-new-chat
      :icon                         :i/new-message
      :on-press                     #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
-   [quo2.list-item/list-item
+   [quo/list-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
      :icon-bg-color                :transparent

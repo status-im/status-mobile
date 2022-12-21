@@ -51,9 +51,7 @@
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
    quo2.components.tags.status-tags
-   quo2.components.tags.tags
-   quo2.components.list-items.index
-   quo2.components.list-items.list-item))
+   quo2.components.tags.tags))
 
 (def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
@@ -121,8 +119,6 @@
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
-(def index quo2.components.list-items.index/index)
-(def list-item quo2.components.list-items.list-item/list-item)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
