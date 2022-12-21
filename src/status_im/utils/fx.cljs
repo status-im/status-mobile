@@ -2,6 +2,7 @@
   (:require-macros status-im.utils.fx)
   (:require [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.handlers :as handlers]
+            [status-im2.common.json-rpc.events :as json-rpc-status-im2]
             [taoensso.timbre :as log])
   (:refer-clojure :exclude [merge reduce]))
 
@@ -21,7 +22,8 @@
     :transport/confirm-messages-processed
     :group-chats/extract-membership-signature
     :utils/dispatch-later
-    ::json-rpc/call})
+    ::json-rpc/call
+    ::json-rpc-status-im2/call})
 
 (defn- safe-merge
   [fx new-fx]
