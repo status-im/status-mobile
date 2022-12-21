@@ -185,21 +185,23 @@
         node-offline? (and can-join? (not joined) (pos? requested-to-join-at))]
     [:<>
      (when (and (not joined) (not pending?) can-join?)
-       [quo/button
-        {:on-press                  #(rf/dispatch
-                                      [:bottom-sheet/show-sheet
-                                       {:content        (fn [] [requests.actions/request-to-join
-                                                                community])
-                                        :content-height 300}])
-         :override-background-color community-color
-         :style                     style/join-button
-         :before                    :i/communities}
-        (request-to-join-text is-open?)]
-       (when-not is-open?
-         [quo/text
-          {:size  :paragraph-2
-           :style style/review-notice}
-          (i18n/label :t/community-admins-will-review-your-request)]))
+       [:<>
+        [quo/button
+         {:on-press                  #(rf/dispatch
+                                       [:bottom-sheet/show-sheet
+                                        {:content        (fn [] [requests.actions/request-to-join
+                                                                 community])
+                                         :content-height 300}])
+          :accessibility-label       :show-request-to-join-screen-button
+          :override-background-color community-color
+          :style                     style/join-button
+          :before                    :i/communities}
+         (request-to-join-text is-open?)]
+        (when-not is-open?
+          [quo/text
+           {:size  :paragraph-2
+            :style style/review-notice}
+           (i18n/label :t/community-admins-will-review-your-request)])])
      (when node-offline?
        [quo/information-box
         {:type  :informative
@@ -222,7 +224,6 @@
    channel-heights first-channel-height]
   (let [pending?        (pos? requested-to-join-at)
         thumbnail-image (get-in images [:thumbnail])]
-    (js/console.log "pending " pending?)
     (fn [scroll-height icon-top icon-size]
       [rn/view
        [rn/view {:padding-horizontal 20}

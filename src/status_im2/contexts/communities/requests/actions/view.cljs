@@ -10,7 +10,6 @@
             [status-im.communities.core :as communities]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.list.views :as list]
             [utils.re-frame :as rf]
             [status-im.utils.datetime :as datetime]))
 
@@ -141,8 +140,9 @@
        [community-rules-list community-rules]
 
        [disclaimer/disclaimer
-        {:container-style {:margin-top 20}
-         :on-change       #(swap! agreed-to-rules? not)}
+        {:accessibility-label :rules-disclaimer-checkbox
+         :container-style     {:margin-top 20}
+         :on-change           #(swap! agreed-to-rules? not)}
         (i18n/label :t/accept-community-rules)]
 
        [rn/view
@@ -154,22 +154,24 @@
                  :align-items     :center
                  :justify-content :space-evenly}}
         [button/button
-         {:on-press #(rf/dispatch [:bottom-sheet/hide])
-          :type     :grey
-          :style    {:flex         1
-                     :margin-right 12}} (i18n/label :t/cancel)]
+         {:accessibility-label :cancel
+          :on-press            #(rf/dispatch [:bottom-sheet/hide])
+          :type                :grey
+          :style               {:flex         1
+                                :margin-right 12}} (i18n/label :t/cancel)]
         [button/button
-         {:on-press (fn []
-                      (when-not joined
-                        (when can-join?
-                          (rf/dispatch [::communities/join id]))
+         {:accessibility-label :join-community-button
+          :on-press            (fn []
+                                 (when-not joined
+                                   (when can-join?
+                                     (rf/dispatch [::communities/join id]))
 
-                        (when
-                         can-request-access?
-                          (and can-request-access?
-                               (zero? requested-to-join-at)
-                               (can-request-access-again? requested-to-join-at))
-                          (rf/dispatch [::communities/request-to-join id])))
-                      (rf/dispatch [:bottom-sheet/hide]))
-          :disabled (not @agreed-to-rules?)
-          :style    {:flex 1}} (request-to-join-text is-open?)]]])))
+                                   (when
+                                    can-request-access?
+                                     (and can-request-access?
+                                          (zero? requested-to-join-at)
+                                          (can-request-access-again? requested-to-join-at))
+                                     (rf/dispatch [::communities/request-to-join id])))
+                                 (rf/dispatch [:bottom-sheet/hide]))
+          :disabled            (not @agreed-to-rules?)
+          :style               {:flex 1}} (request-to-join-text is-open?)]]])))

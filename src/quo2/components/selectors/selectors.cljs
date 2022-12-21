@@ -69,9 +69,10 @@
 (defn checkbox
   [{:keys [default-checked?]}]
   (let [checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style]}]
+    (fn [{:keys [on-change disabled? blurred-background? container-style accessibility-label]}]
       [rn/touchable-without-feedback
-       {:on-press (handle-press disabled? on-change checked?)}
+       {:accessibility-label accessibility-label
+        :on-press            (handle-press disabled? on-change checked?)}
        [rn/view
         {:style (merge
                  container-style

@@ -1,14 +1,15 @@
 (ns quo2.components.community.community-card-view
-  (:require
-   [quo2.components.community.icon :as icon]
-   [quo2.components.community.community-view :as community-view]
-   [quo2.components.community.style :as style]
-   [react-native.core :as rn]))
+  (:require [quo2.components.community.community-view :as community-view]
+            [quo2.components.community.icon :as icon]
+            [quo2.components.community.style :as style]
+            [react-native.core :as rn]))
 
 (defn community-card-view-item
   [{:keys [name description locked images
            status tokens cover tags width]} on-press]
-  [rn/touchable-opacity {:on-press on-press}
+  [rn/touchable-opacity
+   {:accessibility-label :community-card-item
+    :on-press            on-press}
    [rn/view {:style (style/community-card 20)}
     [rn/view
      {:style    {:width         width
