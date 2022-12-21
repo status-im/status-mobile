@@ -10,8 +10,8 @@
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.state :as state]
-            [status-im.ui2.screens.chat.messages.message :as message]
-            [status-im2.common.constants :as constants] ;;TODO move to status-im2
+            [status-im2.contexts.chat.messages.content.view :as message]
+            [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]))
 
 (defonce messages-list-ref (atom nil))

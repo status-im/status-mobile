@@ -23,7 +23,8 @@
             [status-im.utils.universal-links.utils :as links]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [utils.debounce :as debounce]))
+            [utils.debounce :as debounce]
+            [utils.security.core :as security]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]

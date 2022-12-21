@@ -8,8 +8,6 @@
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.chat.models.images :as images]
-            [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
@@ -32,7 +30,7 @@
             [status-im2.contexts.chat.messages.message.delete-message-for-me.events]
             [status-im2.contexts.chat.messages.message.delete-message.events]
             [utils.re-frame :as rf]
-            [utils.security.core :as security])
+            [quo2.core :as quo])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))

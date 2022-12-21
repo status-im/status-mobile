@@ -1,10 +1,11 @@
 (ns status-im2.contexts.chat.messages.pin.list.view
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors] ;; TODO move to status-im2
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.chat.messages.content.view :as message]
+            [utils.re-frame :as rf]
+            [status-im.utils.datetime :as time]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -13,7 +14,7 @@
    _
    {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
   ;; TODO (flexsurfer) probably we don't want reactions here
-  [old-message/message-with-reactions
+  [message/message-with-reactions
    message
    {:group-chat          group-chat
     :public?             public?

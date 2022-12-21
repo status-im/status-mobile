@@ -29,6 +29,7 @@
    quo2.components.list-items.preview-list
    quo2.components.loaders.skeleton
    quo2.components.markdown.text
+   quo2.components.messages.author.view
    quo2.components.messages.gap
    quo2.components.messages.system-message
    quo2.components.navigation.floating-shell-button
