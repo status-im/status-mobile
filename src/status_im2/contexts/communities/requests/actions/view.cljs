@@ -11,7 +11,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.list.views :as list]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.utils.datetime :as datetime]))
 
 ;; TODO: update with real data
 (def community-rules
@@ -38,13 +39,13 @@
     :title   "No offensive names and profile pictures"
     :content "You will be asked to change your name or picture if the staff deems them inappropriate."}])
 
-(def request-to-join-text (memoize
-                           (fn [is-open?]
-                             (if is-open?
-                               (i18n/label :t/join-open-community)
-                               (i18n/label :t/request-to-join)))))
+(defn request-to-join-text [is-open?]
+  (if is-open?
+    (i18n/label :t/join-open-community)
+    (i18n/label :t/request-to-join)))
 
-(defn community-rule-item [{:keys [title content index]}]
+(defn community-rule-item
+  [{:keys [title content index]}]
   [rn/view
    {:style {:flex 1 :margin-top 16}}
    [rn/view
@@ -86,44 +87,56 @@
 
 (defn community-rules-list
   [rules]
-  [list/flat-list
+  [rn/flat-list
    {:shows-horizontal-scroll-indicator false
     :data                              rules
     :separator                         [rn/view {:margin-top 1}]
     :render-fn                         community-rule-item}])
 
-(defn request-to-join [{:keys [permissions name id]}]
+(def request-cooldown-ms (* 24 60 60 1000))
+
+(defn can-request-access-again?
+  [requested-at]
+  (> (datetime/timestamp) (+ (* requested-at 1000) request-cooldown-ms)))
+
+(defn request-to-join
+  [{:keys [permissions name id joined
+           can-join? can-request-access?
+           requested-to-join-at]}]
   (let [agreed-to-rules? (reagent/atom false)
-        is-open? (not= 3 (:access permissions))]
+        is-open?         (not= 3 (:access permissions))]
     (fn []
       [rn/scroll-view {:style {:margin-left 20 :margin-right 20 :margin-bottom 20}}
        [rn/view
         {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :space-between}}
 
-        [text/text {:accessibility-label :communities-join-community
-                    :weight              :semi-bold
-                    :size                :heading-1}
+        [text/text
+         {:accessibility-label :communities-join-community
+          :weight              :semi-bold
+          :size                :heading-1}
          (request-to-join-text is-open?)]
-        [rn/view {:style {:height 32
-                          :width 32
-                          :align-items :center
-                          :background-color colors/white
-                          :border-color colors/neutral-20
-                          :border-width 1
-                          :border-radius 8
-                          :display :flex
-                          :justify-content :center}}
-         [icon/icon  :i/info]]]
+        [rn/view
+         {:style {:height           32
+                  :width            32
+                  :align-items      :center
+                  :background-color colors/white
+                  :border-color     colors/neutral-20
+                  :border-width     1
+                  :border-radius    8
+                  :display          :flex
+                  :justify-content  :center}}
+         [icon/icon :i/info]]]
        ;; TODO get tag image from community data
        [context-tags/context-tag
         {:style
          {:margin-right :auto
-          :margin-top 8}}
+          :margin-top   8}}
         (resources/get-image :status-logo) name]
-       [text/text {:style {:margin-top 24}
-                   :accessibility-label :communities-rules-title
-                   :weight              :semi-bold
-                   :size                :paragraph-1}
+       [text/text
+        {:style               {:margin-top 24}
+         :accessibility-label :communities-rules-title
+         :weight              :semi-bold
+         :size                :paragraph-1}
         (i18n/label :t/community-rules)]
        [community-rules-list community-rules]
 
@@ -132,19 +145,31 @@
          :on-change       #(swap! agreed-to-rules? not)}
         (i18n/label :t/accept-community-rules)]
 
-       [rn/view {:style {:width "100%"
-                         :margin-top 32 :margin-bottom 16
-                         :flex 1
-                         :flex-direction :row
-                         :align-items :center
-                         :justify-content :space-evenly}}
-        [button/button {:on-press #(rf/dispatch [:bottom-sheet/hide])
-                        :type     :grey
-                        :style    {:flex         1
-                                   :margin-right 12}} (i18n/label :t/cancel)]
+       [rn/view
+        {:style {:width           "100%"
+                 :margin-top      32
+                 :margin-bottom   16
+                 :flex            1
+                 :flex-direction  :row
+                 :align-items     :center
+                 :justify-content :space-evenly}}
+        [button/button
+         {:on-press #(rf/dispatch [:bottom-sheet/hide])
+          :type     :grey
+          :style    {:flex         1
+                     :margin-right 12}} (i18n/label :t/cancel)]
         [button/button
          {:on-press (fn []
-                      (rf/dispatch [::communities/join id])
-                      (rf/dispatch [:bottom-sheet/hide])) 
-          :disabled  (not @agreed-to-rules?) :style {:flex 1}} (request-to-join-text is-open?)]]])))
+                      (when-not joined
+                        (when can-join?
+                          (rf/dispatch [::communities/join id]))
 
+                        (when
+                         can-request-access?
+                          (and can-request-access?
+                               (zero? requested-to-join-at)
+                               (can-request-access-again? requested-to-join-at))
+                          (rf/dispatch [::communities/request-to-join id])))
+                      (rf/dispatch [:bottom-sheet/hide]))
+          :disabled (not @agreed-to-rules?)
+          :style    {:flex 1}} (request-to-join-text is-open?)]]])))
