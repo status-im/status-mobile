@@ -22,24 +22,29 @@
     label
     (assoc :label label)))
 
-(defn topbar [{:keys [navigation use-insets header-style right-accessories modal? content border-bottom? new-ui?] ;; remove new-ui? key, temp fix
-               :or   {border-bottom? true
-                      new-ui?        false}
-               :as   props}]
+(defn topbar
+  [{:keys [navigation use-insets right-accessories modal? content border-bottom? new-ui? header-style] ;; remove
+                                                                                          ;; new-ui? key,
+                                                                                          ;; temp fix
+    :or   {border-bottom? true
+           new-ui?        false}
+    :as   props}]
   (let [navigation (if (= navigation :none)
                      nil
                      [(default-navigation modal? navigation)])]
     [quo/safe-area-consumer
      (fn [insets]
-       [quo2/header (merge {:left-accessories navigation
-                            :title-component  content
-                            :header-style     header-style
-                            :insets           (when use-insets insets)
-                            :left-width       (when navigation
-                                                default-button-width)
-                            :border-bottom    border-bottom?}
-                           props
-                           (when (seq right-accessories)
-                             {:right-accessories right-accessories})
-                           (when new-ui?
-                             {:background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}))])]))
+       [quo/header
+        (merge {:left-accessories navigation
+                :title-component  content
+                :insets           (when use-insets insets)
+                :left-width       (when navigation
+                                    default-button-width)
+                :border-bottom    border-bottom?
+                :header-style     header-style}
+               props
+               (when (seq right-accessories)
+                 {:right-accessories right-accessories})
+               (when new-ui?
+                 {:background (quo2.colors/theme-colors quo2.colors/neutral-5
+                                                        quo2.colors/neutral-95)}))])]))
