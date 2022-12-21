@@ -198,8 +198,7 @@
 ;;intro-wizard
 (reg-root-key-sub :intro-wizard-state :intro-wizard)
 
-(reg-root-key-sub :toasts/toasts :toasts/toasts)
-(reg-root-key-sub :toasts/index :toasts/index)
+(reg-root-key-sub :toasts :toasts)
 (reg-root-key-sub :popover/popover :popover/popover)
 (reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
 (reg-root-key-sub :add-account :add-account)
