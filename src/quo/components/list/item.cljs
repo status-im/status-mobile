@@ -11,18 +11,19 @@
             [quo.react-native :as rn]
             [status-im.ui.components.icons.icons :as icons]))
 
-(defn themes [theme]
+(defn themes
+  [theme]
   (case theme
-    :main {:icon-color         (:icon-04 @colors/theme)
-           :icon-bg-color      (:interactive-02 @colors/theme)
-           :active-background  (:interactive-02 @colors/theme)
-           :passive-background (:ui-background @colors/theme)
-           :text-color         (:text-01 @colors/theme)}
-    :accent {:icon-color         (:icon-04 @colors/theme)
-             :icon-bg-color      (:interactive-02 @colors/theme)
-             :active-background  (:interactive-02 @colors/theme)
-             :passive-background (:ui-background @colors/theme)
-             :text-color         (:text-04 @colors/theme)}
+    :main     {:icon-color         (:icon-04 @colors/theme)
+               :icon-bg-color      (:interactive-02 @colors/theme)
+               :active-background  (:interactive-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:text-01 @colors/theme)}
+    :accent   {:icon-color         (:icon-04 @colors/theme)
+               :icon-bg-color      (:interactive-02 @colors/theme)
+               :active-background  (:interactive-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:text-04 @colors/theme)}
     :negative {:icon-color         (:negative-01 @colors/theme)
                :icon-bg-color      (:negative-02 @colors/theme)
                :active-background  (:negative-02 @colors/theme)
