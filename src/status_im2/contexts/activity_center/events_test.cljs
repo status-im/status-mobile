@@ -1,12 +1,13 @@
 (ns status-im2.contexts.activity-center.events-test
   (:require [cljs.test :refer [deftest is testing]]
-            [day8.re-frame.test :as rf-test]
-            [re-frame.core :as rf]
             [status-im.constants :as constants]
             status-im.events
             [status-im.test-helpers :as h]
             [status-im2.contexts.activity-center.events :as activity-center]
-            [status-im2.contexts.activity-center.notification-types :as types]))
+            [status-im2.contexts.activity-center.notification-types :as types]
+            [utils.re-frame :as rf]))
+
+(h/use-log-fixture)
 
 (def notification-id "0x1")
 
@@ -17,27 +18,25 @@
 
 (defn test-log-on-failure
   [{:keys [before-test notification-id event action]}]
-  (rf-test/run-test-sync
+  (h/run-test-sync
    (setup)
-   (h/using-log-test-appender
-    (fn [logs]
-      (when before-test
-        (before-test))
-      (h/stub-fx-with-callbacks :json-rpc/call :on-error (constantly :fake-error))
+   (when before-test
+     (before-test))
+   (h/stub-fx-with-callbacks :json-rpc/call :on-error (constantly :fake-error))
 
-      (rf/dispatch event)
+   (rf/dispatch event)
 
-      (is (= {:args  [(str "Failed to " action)
-                      {:notification-id notification-id
-                       :error           :fake-error}]
-              :level :warn}
-             (last @logs)))))))
+   (is (= {:args  [(str "Failed to " action)
+                   {:notification-id notification-id
+                    :error           :fake-error}]
+           :level :warn}
+          (last @h/logs)))))
 
 ;;;; Misc
 
 (deftest mark-as-read-test
   (testing "does nothing if the notification ID cannot be found in the app db"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/spy-fx spy-queue :json-rpc/call)
@@ -58,7 +57,7 @@
          (is (= notifications (get-in (h/db) [:activity-center :notifications])))))))
 
   (testing "marks notifications as read and updates app db"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notif-1     {:id "0x1" :read true :type types/one-to-one-chat}
            notif-2     {:id "0x2" :read false :type types/one-to-one-chat}
@@ -156,7 +155,7 @@
 
 (defn test-contact-verification-event
   [{:keys [event expected-rpc-call]}]
-  (rf-test/run-test-sync
+  (h/run-test-sync
    (setup)
    (let [spy-queue (atom [])]
      (h/stub-fx-with-callbacks :json-rpc/call
@@ -231,7 +230,7 @@
 
 (deftest notifications-reconcile-test
   (testing "does nothing when there are no new notifications"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notifications {types/one-to-one-chat
                           {:all    {:cursor ""
@@ -257,7 +256,7 @@
        (is (= notifications (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "removes dismissed or accepted notifications"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notif-1 {:id "0x1" :read true :type types/one-to-one-chat}
            notif-2 {:id "0x2" :read false :type types/one-to-one-chat}
@@ -290,7 +289,7 @@
               (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "replaces old notifications with newly arrived ones"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notif-1     {:id "0x1" :read true :type types/one-to-one-chat}
            notif-4     {:id "0x4" :read false :type types/private-group-chat}
@@ -320,7 +319,7 @@
               (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "reconciles notifications that switched their read/unread status"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notif-1     {:id "0x1" :read true :type types/one-to-one-chat}
            new-notif-1 (assoc notif-1 :read false)]
@@ -342,7 +341,7 @@
   ;; Sorting by timestamp and ID is compatible with what the backend does when
   ;; returning paginated results.
   (testing "sorts notifications by timestamp and id in descending order"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [notif-1     {:id "0x1" :read true :type types/one-to-one-chat :timestamp 1}
            notif-2     {:id "0x2" :read true :type types/one-to-one-chat :timestamp 1}
@@ -370,7 +369,7 @@
 
 (deftest notifications-fetch-test
   (testing "fetches first page"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
@@ -405,7 +404,7 @@
               (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "does not fetch next page when pagination cursor reached the end"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/spy-fx spy-queue :json-rpc/call)
@@ -425,7 +424,7 @@
   ;; about updating the cursor value, but we have to make sure the next page is
   ;; only fetched if the current cursor is valid.
   (testing "does not fetch next page when cursor is nil"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/spy-fx spy-queue :json-rpc/call)
@@ -442,7 +441,7 @@
        (is (= [] @spy-queue)))))
 
   (testing "fetches next page when pagination cursor is not empty"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
@@ -480,7 +479,7 @@
               (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "does not fetch next page while it is still loading"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/spy-fx spy-queue :json-rpc/call)
@@ -499,7 +498,7 @@
        (is (= [] @spy-queue)))))
 
   (testing "resets loading flag after an error"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks :json-rpc/call :on-error (constantly :fake-error))
@@ -542,7 +541,7 @@
 
 (deftest notifications-fetch-unread-count-test
   (testing "fetches total notification count and store in db"
-    (rf-test/run-test-sync
+    (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks :json-rpc/call :on-success (constantly 9))
