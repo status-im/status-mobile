@@ -1,0 +1,106 @@
+{
+    "amount": "Сума",
+    "members-active": {
+        "one": "1 член, 1 актыўны",
+        "other": "{{count}} члена(ау), {{count}} актыўных",
+        "zero": "няма членау"
+    },
+    "chat-name": "Імя чата",
+    "phew-here-is-your-passphrase": [
+        "str",
+        "*Уф*, эгэта было няпроста, вось ваша парольная фраза, *запішыце яе і захавайце ў надзейным месцы!* ",
+        "Яна будзе патрэбна вам для аднаўлення акаўнта."
+    ],
+    "chat-settings": "Налады чата",
+    "offline": "Оффлайн",
+    "invited": "запрошаны(на)",
+    "address": "Адрас",
+    "datetime-hour": {
+        "one": "гадзіна",
+        "other": "гадзін"
+    },
+    "remove": "Выдаліць",
+    "add-members": "Дадаць членаў",
+    "done": "Гатова",
+    "new-group-chat": "Новы групавы чат",
+    "datetime-yesterday": "учора",
+    "datetime-ago": "назад",
+    "contacts": "Кантакты",
+    "active-online": "У сетцы",
+    "password": "Пароль",
+    "discover": "Пошук",
+    "intro-status": "Пагутарыце са мной у чаце, каб наладзіць свой рахунак і змяніць свае налады!",
+    "name": "Імя",
+    "show-qr": "Паказаць QR",
+    "connect": "Падлучыцца",
+    "edit": "Змяніць",
+    "account-generation-message": "Секундачку, мне трэба выканаць вар'яцка складаныя разлікі для стварэння вашага акаўнта!",
+    "no-messages": "Няма паведамленняў",
+    "passphrase": "Парольная фраза",
+    "recipient": "Атрымальнік",
+    "members-title": "Удзельнікі",
+    "new-group": "Новая група",
+    "settings": "Налады",
+    "chats": "Чаты",
+    "image-source-make-photo": "Сфатаграфаваць",
+    "save": "Захаваць",
+    "sharing-copy-to-clipboard": "Скапіяваць",
+    "sync-in-progress": "Сінхранізацыя...",
+    "incorrect-code": [
+        "str",
+        "Выбачайце, код няправільны, увядзіце яшчэ раз"
+    ],
+    "image-source-gallery": "Выбраць з галерэі",
+    "sync-synced": "Сінхранізуецца",
+    "status-pending": "у чаканні",
+    "datetime-day": {
+        "one": "дзень",
+        "other": "дні"
+    },
+    "scan-qr": "Сканаваць QR",
+    "next": "Працягнуць",
+    "recent": "Апошнія",
+    "status": "Статус",
+    "wrong-password": "Няправільны пароль",
+    "sharing-share": "Падзяліцца...",
+    "clear-history": "Ачысціць гісторыю",
+    "no-contacts": "Пакуль няма кантактаў",
+    "datetime-today": "сёння",
+    "web-view-error": "ой, памылка",
+    "cancel": "Адмена",
+    "can-not-add-yourself": "Вы не можаце дадаць сябе",
+    "add-to-contacts": "Дадаць у кантакты",
+    "available": "Даступна",
+    "You": "Вы",
+    "main-wallet": "Асноўны кашалёк",
+    "members": {
+        "one": "1 член",
+        "other": "{{count}} члена(ау)",
+        "zero": "няма членов"
+    },
+    "intro-message1": "Сардэчна запрашаем у Статус\nНацісніце на гэтае паведамленне, каб усталяваць пароль і пачаць!",
+    "new-contact": "Новы кантакт",
+    "datetime-second": {
+        "one": "секунда",
+        "other": "секунды"
+    },
+    "recover": "Аднавіць",
+    "datetime-minute": {
+        "one": "хвіліна",
+        "other": "хвіліны"
+    },
+    "active-unknown": "Невядома",
+    "public-key": "Публічны ключ",
+    "profile": "Профіль",
+    "none": "Няма",
+    "removed": "выдалены(на)",
+    "message": "Паведамленне",
+    "here-is-your-passphrase": [
+        "str",
+        "Вось ваша парольная фраза, *запішыце яе і захавайце ў надзейным месцы!* ",
+        "Яна будзе патрэбна вам для аднаўлення акаўнта."
+    ],
+    "image-source-title": "Mалюнак профілю",
+    "status-sent": "Адправіць",
+    "left": "засталося"
+}
