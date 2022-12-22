@@ -138,6 +138,7 @@
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
      (if (> unviewed-mentions-count 0)
-       [quo/info-count unviewed-mentions-count {:top 16}]
+       [quo/info-count {:style {:top 16}}
+        unviewed-mentions-count]
        (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))

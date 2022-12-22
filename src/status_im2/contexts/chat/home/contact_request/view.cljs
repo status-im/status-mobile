@@ -35,12 +35,13 @@
 (defn contact-requests
   [requests]
   [rn/touchable-opacity
-   {:active-opacity 1
-    :on-press       (fn []
-                      (rf/dispatch [:activity-center/open
-                                    {:filter-status :unread
-                                     :filter-type   notification-types/contact-request}]))
-    :style          style/contact-requests}
+   {:active-opacity      1
+    :accessibility-label :open-activity-center-contact-requests
+    :on-press            (fn []
+                           (rf/dispatch [:activity-center/open
+                                         {:filter-status :unread
+                                          :filter-type   notification-types/contact-request}]))
+    :style               style/contact-requests}
    [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
@@ -49,4 +50,5 @@
      {:size  :paragraph-2
       :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
      (requests-summary requests)]]
-   [quo/info-count (count requests)]])
+   [quo/info-count {:accessibility-label :pending-contact-requests-count}
+    (count requests)]])

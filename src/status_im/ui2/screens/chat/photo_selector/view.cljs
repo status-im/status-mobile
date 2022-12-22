@@ -56,7 +56,8 @@
    (when (some #{item} @selected)
      [rn/view {:style (style/overlay window-width)}])
    (when (some #{item} @selected)
-     [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
+     [info-count/info-count {:style style/image-count}
+      (inc (utils/first-index #(= item %) @selected))])])
 
 (defn photo-selector
   [chat-id]

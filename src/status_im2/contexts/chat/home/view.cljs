@@ -76,13 +76,16 @@
            :size           32
            :on-change      #(reset! selected-tab %)
            :default-active @selected-tab
-           :data           [{:id    :recent
-                             :label (i18n/label :t/recent)}
-                            {:id    :groups
-                             :label (i18n/label :t/groups)}
-                            {:id                :contacts
-                             :label             (i18n/label :t/contacts)
-                             :notification-dot? (pos? (count contact-requests))}]}]
+           :data           [{:id                  :recent
+                             :label               (i18n/label :t/recent)
+                             :accessibility-label :tab-recent}
+                            {:id                  :groups
+                             :label               (i18n/label :t/groups)
+                             :accessibility-label :tab-groups}
+                            {:id                  :contacts
+                             :label               (i18n/label :t/contacts)
+                             :accessibility-label :tab-contacts
+                             :notification-dot?   (pos? (count contact-requests))}]}]
          (if (= @selected-tab :contacts)
            [contacts contact-requests]
            [chats @selected-tab])]))))

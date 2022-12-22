@@ -62,8 +62,7 @@
    :height           (/ window-width 3)
    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)})
 
-(defn image-count
-  []
+(def image-count
   {:width         24
    :height        24
    :border-radius 8
