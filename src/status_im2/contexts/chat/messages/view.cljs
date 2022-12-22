@@ -1,9 +1,5 @@
 (ns status-im2.contexts.chat.messages.view
-<<<<<<< HEAD
-  (:require [quo2.core :as quo]
-=======
   (:require [reagent.core :as reagent]
->>>>>>> cd7bdbda2... rebase
             [re-frame.db]
             [i18n.i18n :as i18n]
             [react-native.core :as rn]
@@ -107,7 +103,12 @@
      ;;INPUT COMPOSER
 >>>>>>> f42ddbb66... rebase
      (when show-input?
-       [composer/composer chat-id])]))
+       [composer/composer chat-id])
+     [quo/floating-shell-button
+      {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+                 :label    (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :bottom   117}]]))
 
 (defn chat []
   (reagent/create-class

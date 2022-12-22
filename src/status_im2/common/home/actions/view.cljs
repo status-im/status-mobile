@@ -321,8 +321,10 @@
 
 (defn group-actions [{:keys [chat-id admins]} inside-chat?]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])
-        admin?     (get admins current-pub-key)]
-    [(group-details-entry chat-id)
+        admin?     (get admins current-pub-key)
+        removed? (rf/sub [:group-chat/removed-from-current-chat?])]
+    [(when-not removed?
+       (group-details-entry chat-id))
      (when inside-chat?
        (if admin?
          (manage-members-entry)

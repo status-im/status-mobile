@@ -14,6 +14,6 @@
       :sticky-section-headers-enabled false
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
-      :content-container-style        {:padding-bottom 120}
+      :content-container-style        {:padding-bottom 20}
       :render-data data
       :render-fn  contact-list-item/contact-list-item}]))
