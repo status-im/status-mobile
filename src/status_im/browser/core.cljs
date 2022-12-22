@@ -10,7 +10,6 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
@@ -54,19 +53,19 @@
 (fx/defn remove-browser
   {:events [:browser.ui/remove-browser-pressed]}
   [{:keys [db]} browser-id]
-  {:db             (update-in db [:browser/browsers] dissoc browser-id)
-   ::json-rpc/call [{:method     "wakuext_deleteBrowser"
-                     :params     [browser-id]
-                     :on-success #()}]})
+  {:db            (update-in db [:browser/browsers] dissoc browser-id)
+   :json-rpc/call [{:method     "wakuext_deleteBrowser"
+                    :params     [browser-id]
+                    :on-success #()}]})
 
 (fx/defn clear-all-browsers
   {:events [:browser.ui/clear-all-browsers-pressed]}
   [{:keys [db]}]
-  {:db             (dissoc db :browser/browsers)
-   ::json-rpc/call (for [browser-id (keys (get db :browser/browsers))]
-                     {:method     "wakuext_deleteBrowser"
-                      :params     [browser-id]
-                      :on-success #()})})
+  {:db            (dissoc db :browser/browsers)
+   :json-rpc/call (for [browser-id (keys (get db :browser/browsers))]
+                    {:method     "wakuext_deleteBrowser"
+                     :params     [browser-id]
+                     :on-success #()})})
 
 (defn update-dapp-name
   [{:keys [name] :as browser}]
@@ -101,24 +100,24 @@
   (let [updated-browser (-> browser
                             (update-dapp-name)
                             (check-if-phishing-url))]
-    {:db             (update-in db
-                                [:browser/browsers browser-id]
-                                merge
-                                updated-browser)
-     ::json-rpc/call [{:method     "wakuext_addBrowser"
-                       :params     [(select-keys updated-browser
-                                                 [:browser-id :timestamp :name :dapp? :history
-                                                  :history-index])]
-                       :on-success #()}]}))
+    {:db            (update-in db
+                               [:browser/browsers browser-id]
+                               merge
+                               updated-browser)
+     :json-rpc/call [{:method     "wakuext_addBrowser"
+                      :params     [(select-keys updated-browser
+                                                [:browser-id :timestamp :name :dapp? :history
+                                                 :history-index])]
+                      :on-success #()}]}))
 
 (fx/defn store-bookmark
   {:events [:browser/store-bookmark]}
   [{:keys [db]}
    {:keys [url] :as bookmark}]
-  {:db             (assoc-in db [:bookmarks/bookmarks url] bookmark)
-   ::json-rpc/call [{:method     "wakuext_addBookmark"
-                     :params     [bookmark]
-                     :on-success #()}]})
+  {:db            (assoc-in db [:bookmarks/bookmarks url] bookmark)
+   :json-rpc/call [{:method     "wakuext_addBookmark"
+                    :params     [bookmark]
+                    :on-success #()}]})
 
 (fx/defn update-bookmark
   {:events [:browser/update-bookmark]}
@@ -127,10 +126,10 @@
   (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
         new-bookmark (merge old-bookmark bookmark)]
     (fx/merge cofx
-              {:db             (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
-               ::json-rpc/call [{:method     "wakuext_updateBookmark"
-                                 :params     [url bookmark]
-                                 :on-success #()}]})))
+              {:db            (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
+               :json-rpc/call [{:method     "wakuext_updateBookmark"
+                                :params     [url bookmark]
+                                :on-success #()}]})))
 
 (fx/defn delete-bookmark
   {:events [:browser/delete-bookmark]}
@@ -139,10 +138,10 @@
   (let [old-bookmark     (get-in db [:bookmarks/bookmarks url])
         removed-bookmark (merge old-bookmark {:removed true})]
     (fx/merge cofx
-              {:db             (update db :bookmarks/bookmarks dissoc url)
-               ::json-rpc/call [{:method     "wakuext_removeBookmark"
-                                 :params     [url]
-                                 :on-success #()}]})))
+              {:db            (update db :bookmarks/bookmarks dissoc url)
+               :json-rpc/call [{:method     "wakuext_removeBookmark"
+                                :params     [url]
+                                :on-success #()}]})))
 
 (defn can-go-back?
   [{:keys [history-index]}]

@@ -1,6 +1,5 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.utils.fx :as fx]
@@ -67,19 +66,19 @@
                                   (disj dapp-permissions-set permission))
         allowed-permissions     {:dapp        dapp-name
                                  :permissions (vec allowed-permissions-set)}]
-    {:db             (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
-     ::json-rpc/call [{:method     "permissions_addDappPermissions"
-                       :params     [allowed-permissions]
-                       :on-success #()}]}))
+    {:db            (assoc-in db [:dapps/permissions dapp-name] allowed-permissions)
+     :json-rpc/call [{:method     "permissions_addDappPermissions"
+                      :params     [allowed-permissions]
+                      :on-success #()}]}))
 
 (fx/defn revoke-permissions
   {:events [:browser/revoke-dapp-permissions]}
   [{:keys [db] :as cofx} dapp]
   (fx/merge cofx
-            {:db             (update-in db [:dapps/permissions] dissoc dapp)
-             ::json-rpc/call [{:method     "permissions_deleteDappPermissions"
-                               :params     [dapp]
-                               :on-success #()}]}))
+            {:db            (update-in db [:dapps/permissions] dissoc dapp)
+             :json-rpc/call [{:method     "permissions_deleteDappPermissions"
+                              :params     [dapp]
+                              :on-success #()}]}))
 
 (fx/defn revoke-dapp-permissions
   {:events [:dapps/revoke-access]}
@@ -91,11 +90,11 @@
 (fx/defn clear-dapps-permissions
   [{:keys [db]}]
   (let [dapp-permissions (keys (:dapps/permissions db))]
-    {:db             (dissoc db :dapps/permissions)
-     ::json-rpc/call (for [dapp dapp-permissions]
-                       {:method     "permissions_deleteDappPermissions"
-                        :params     [dapp]
-                        :on-success #()})}))
+    {:db            (dissoc db :dapps/permissions)
+     :json-rpc/call (for [dapp dapp-permissions]
+                      {:method     "permissions_deleteDappPermissions"
+                       :params     [dapp]
+                       :on-success #()})}))
 
 (fx/defn process-next-permission
   "Process next permission by removing it from pending permissions and prompting user

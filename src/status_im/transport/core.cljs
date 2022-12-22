@@ -1,6 +1,5 @@
 (ns ^{:doc "API to init and stop whisper messaging"} status-im.transport.core
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.pairing.core :as pairing]
             [status-im.stickers.core :as stickers]
             status-im.transport.shh
@@ -15,9 +14,9 @@
 
 (fx/defn fetch-node-info-fx
   [_]
-  {::json-rpc/call [{:method     "admin_nodeInfo"
-                     :on-success #(re-frame/dispatch [:transport.callback/node-info-fetched %])
-                     :on-error   #(log/error "node-info: failed error" %)}]})
+  {:json-rpc/call [{:method     "admin_nodeInfo"
+                    :on-success #(re-frame/dispatch [:transport.callback/node-info-fetched %])
+                    :on-error   #(log/error "node-info: failed error" %)}]})
 
 (defn add-mailservers
   [db mailservers]
@@ -38,9 +37,9 @@
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
   [_]
-  {::json-rpc/call [{:method     "wakuext_startMessenger"
-                     :on-success #(re-frame/dispatch [::messenger-started %])
-                     :on-error   #(log/error "failed to start messenger")}]})
+  {:json-rpc/call [{:method     "wakuext_startMessenger"
+                    :on-success #(re-frame/dispatch [::messenger-started %])
+                    :on-error   #(log/error "failed to start messenger")}]})
 
 (fx/defn messenger-started
   {:events [::messenger-started]}

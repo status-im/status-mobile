@@ -1,7 +1,6 @@
 (ns status-im.visibility-status-updates.core
   (:require [status-im.constants :as constants]
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
             [status-im.utils.datetime :as datetime]
@@ -102,14 +101,14 @@
 (fx/defn update-visibility-status
   {:events [:visibility-status-updates/update-visibility-status]}
   [{:keys [db] :as cofx} status-type]
-  {:db             (update-in db
-                              [:multiaccount :current-user-visibility-status]
-                              merge
-                              {:status-type status-type
-                               :clock       (datetime/timestamp-sec)})
-   ::json-rpc/call [{:method     "wakuext_setUserStatus"
-                     :params     [status-type ""]
-                     :on-success #()}]})
+  {:db            (update-in db
+                             [:multiaccount :current-user-visibility-status]
+                             merge
+                             {:status-type status-type
+                              :clock       (datetime/timestamp-sec)})
+   :json-rpc/call [{:method     "wakuext_setUserStatus"
+                    :params     [status-type ""]
+                    :on-success #()}]})
 
 (fx/defn send-visibility-status-updates?
   {:events [:visibility-status-updates/send-visibility-status-updates?]}

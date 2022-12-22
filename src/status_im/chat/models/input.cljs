@@ -9,7 +9,6 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
             [status-im.constants :as constants]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
@@ -264,16 +263,16 @@
   [{:keys [db] :as cofx} text {:keys [message-id quoted-message]}]
   (fx/merge
    cofx
-   {::json-rpc/call [{:method      "wakuext_editMessage"
-                      :params      [{:id           message-id
-                                     :text         text
-                                     :content-type (if (message-content/emoji-only-content?
-                                                        {:text text :response-to quoted-message})
-                                                     constants/content-type-emoji
-                                                     constants/content-type-text)}]
-                      :js-response true
-                      :on-error    #(log/error "failed to edit message " %)
-                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
+   {:json-rpc/call [{:method      "wakuext_editMessage"
+                     :params      [{:id           message-id
+                                    :text         text
+                                    :content-type (if (message-content/emoji-only-content?
+                                                       {:text text :response-to quoted-message})
+                                                    constants/content-type-emoji
+                                                    constants/content-type-text)}]
+                     :js-response true
+                     :on-error    #(log/error "failed to edit message " %)
+                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
    (cancel-message-edit)
    (process-cooldown)))
 
@@ -297,7 +296,7 @@
   (fx/merge cofx
             {:chat.ui/clear-inputs     nil
              :chat.ui/clear-inputs-old nil
-             ::json-rpc/call           [{:method      "wakuext_sendContactRequest"
+             :json-rpc/call            [{:method      "wakuext_sendContactRequest"
                                          :js-response true
                                          :params      [{:id public-key :message message}]
                                          :on-error    #(log/warn "failed to send a contact request" %)
@@ -324,13 +323,13 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx} {:keys [hash packID pack] :as sticker}]
   (fx/merge
    cofx
-   {:db             (update db
-                            :stickers/recent-stickers
-                            (fn [recent]
-                              (conj (remove #(= hash (:hash %)) recent) sticker)))
-    ::json-rpc/call [{:method     "stickers_addRecent"
-                      :params     [(int (if (string/blank? packID) pack packID)) hash]
-                      :on-success #()}]}
+   {:db            (update db
+                           :stickers/recent-stickers
+                           (fn [recent]
+                             (conj (remove #(= hash (:hash %)) recent) sticker)))
+    :json-rpc/call [{:method     "stickers_addRecent"
+                     :params     [(int (if (string/blank? packID) pack packID)) hash]
+                     :on-success #()}]}
    (send-sticker-message sticker current-chat-id)))
 
 (fx/defn chat-send-audio

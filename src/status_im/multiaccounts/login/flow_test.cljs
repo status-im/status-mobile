@@ -4,7 +4,6 @@
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.login.core :as login.core]
             [status-im.multiaccounts.login.data-test :as data]))
 
@@ -30,7 +29,7 @@
                     :multiaccount        data/multiaccount}
           cofx     {:db db}
           efx      (login.core/multiaccount-login-success cofx)
-          json-rpc (into #{} (map :method (::json-rpc/call efx)))]
+          json-rpc (into #{} (map :method (:json-rpc/call efx)))]
       ;; TODO: Account is now cleared only after all sign in fx are executed.
       ;; (testing ":accounts/login cleared."
       ;;   (is (not (contains? new-db :multiaccounts/login))))

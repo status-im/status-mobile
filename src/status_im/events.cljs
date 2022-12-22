@@ -18,7 +18,6 @@
    status-im.contact.chat
    status-im.contact.core
    status-im.currency.core
-   [status-im.ethereum.json-rpc :as json-rpc]
    status-im.ethereum.subscriptions
    status-im.fleet.core
    status-im.http.core
@@ -263,10 +262,10 @@
 (fx/defn buy-crypto-ui-loaded
   {:events [:buy-crypto.ui/loaded]}
   [_]
-  {::json-rpc/call [{:method     "wallet_getCryptoOnRamps"
-                     :params     []
-                     :on-success (fn [on-ramps]
-                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
+  {:json-rpc/call [{:method     "wallet_getCryptoOnRamps"
+                    :params     []
+                    :on-success (fn [on-ramps]
+                                  (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
 (fx/defn open-buy-crypto-screen
   {:events [:buy-crypto.ui/open-screen]}

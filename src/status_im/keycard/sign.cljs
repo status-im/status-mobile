@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.keycard.common :as common]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
@@ -116,10 +115,10 @@
         message           (get-in db [:signing/sign :formatted-data :message])
         currency-contract (:currency message)]
     (when currency-contract
-      {::json-rpc/call [{:method     "wallet_discoverToken"
-                         :params     [(ethereum/chain-id db) currency-contract]
-                         :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success
-                                                          %])}]})
+      {:json-rpc/call [{:method     "wallet_discoverToken"
+                        :params     [(ethereum/chain-id db) currency-contract]
+                        :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success
+                                                         %])}]})
     (fx/merge cofx
               {:db (assoc-in db [:keycard :hash] result)}
               sign-typed-data)))

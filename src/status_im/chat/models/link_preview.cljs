@@ -1,7 +1,6 @@
 (ns status-im.chat.models.link-preview
   (:require [re-frame.core :as re-frame]
             [status-im.communities.core :as models.communities]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -63,24 +62,24 @@
 (fx/defn resolve-community-info
   {:events [::resolve-community-info]}
   [{:keys [db]} community-id]
-  {:db             (community-resolving db community-id)
-   ::json-rpc/call [{:method     "wakuext_requestCommunityInfoFromMailserver"
-                     :params     [community-id]
-                     :on-success #(re-frame/dispatch [::community-resolved community-id %])
-                     :on-error   #(do
-                                    (re-frame/dispatch [::community-failed-to-resolve community-id])
-                                    (log/error "Failed to request community info from mailserver"))}]})
+  {:db            (community-resolving db community-id)
+   :json-rpc/call [{:method     "wakuext_requestCommunityInfoFromMailserver"
+                    :params     [community-id]
+                    :on-success #(re-frame/dispatch [::community-resolved community-id %])
+                    :on-error   #(do
+                                   (re-frame/dispatch [::community-failed-to-resolve community-id])
+                                   (log/error "Failed to request community info from mailserver"))}]})
 
 (fx/defn load-link-preview-data
   {:events [::load-link-preview-data]}
   [cofx link]
-  {::json-rpc/call [{:method     "wakuext_getLinkPreviewData"
-                     :params     [link]
-                     :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
-                     :on-error   #(re-frame/dispatch
-                                   [::cache-link-preview-data
-                                    link
-                                    {:error (str "Can't get preview data for " link)}])}]})
+  {:json-rpc/call [{:method     "wakuext_getLinkPreviewData"
+                    :params     [link]
+                    :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
+                    :on-error   #(re-frame/dispatch
+                                  [::cache-link-preview-data
+                                   link
+                                   {:error (str "Can't get preview data for " link)}])}]})
 
 (fx/defn cache-link-preview-data
   {:events [::cache-link-preview-data]}
@@ -107,10 +106,10 @@
 
 (fx/defn request-link-preview-whitelist
   [_]
-  {::json-rpc/call [{:method     "wakuext_getLinkPreviewWhitelist"
-                     :params     []
-                     :on-success #(re-frame/dispatch [::link-preview-whitelist-received %])
-                     :on-error   #(log/error "Failed to get link preview whitelist")}]})
+  {:json-rpc/call [{:method     "wakuext_getLinkPreviewWhitelist"
+                    :params     []
+                    :on-success #(re-frame/dispatch [::link-preview-whitelist-received %])
+                    :on-error   #(log/error "Failed to get link preview whitelist")}]})
 
 (fx/defn save-link-preview-whitelist
   {:events [::link-preview-whitelist-received]}

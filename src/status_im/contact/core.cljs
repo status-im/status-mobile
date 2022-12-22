@@ -4,7 +4,6 @@
             [status-im.contact.block :as contact.block]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
             [status-im2.navigation.events :as navigation]
@@ -75,9 +74,9 @@
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method     "wakuext_sendContactUpdate"
-                       :params     [public-key name profile-image]
-                       :on-success #(log/debug "contact request sent" public-key)}]}))
+    {:json-rpc/call [{:method     "wakuext_sendContactUpdate"
+                      :params     [public-key name profile-image]
+                      :on-success #(log/debug "contact request sent" public-key)}]}))
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
@@ -97,33 +96,33 @@
   "Remove a contact from current account's contact list"
   {:events [:contact.ui/remove-contact-pressed]}
   [{:keys [db]} {:keys [public-key]}]
-  {:db             (-> db
-                       (assoc-in [:contacts/contacts public-key :added] false)
-                       (assoc-in [:contacts/contacts public-key :contact-request-state]
-                                 constants/contact-request-state-none))
-   ::json-rpc/call [{:method     "wakuext_removeContact"
-                     :params     [public-key]
-                     :on-success #(log/debug "contact removed successfully")}
-                    {:method     "wakuext_retractContactRequest"
-                     :params     [{:contactId public-key}]
-                     :on-success #(log/debug "contact removed successfully")}]
-   :dispatch       [:offload-messages constants/timeline-chat-id]})
+  {:db            (-> db
+                      (assoc-in [:contacts/contacts public-key :added] false)
+                      (assoc-in [:contacts/contacts public-key :contact-request-state]
+                                constants/contact-request-state-none))
+   :json-rpc/call [{:method     "wakuext_removeContact"
+                    :params     [public-key]
+                    :on-success #(log/debug "contact removed successfully")}
+                   {:method     "wakuext_retractContactRequest"
+                    :params     [{:contactId public-key}]
+                    :on-success #(log/debug "contact removed successfully")}]
+   :dispatch      [:offload-messages constants/timeline-chat-id]})
 
 (fx/defn accept-contact-request
   {:events [:contact-requests.ui/accept-request]}
   [{:keys [db]} id]
-  {::json-rpc/call [{:method      "wakuext_acceptContactRequest"
-                     :params      [{:id id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+  {:json-rpc/call [{:method      "wakuext_acceptContactRequest"
+                    :params      [{:id id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn decline-contact-request
   {:events [:contact-requests.ui/decline-request]}
   [{:keys [db]} id]
-  {::json-rpc/call [{:method      "wakuext_dismissContactRequest"
-                     :params      [{:id id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+  {:json-rpc/call [{:method      "wakuext_dismissContactRequest"
+                    :params      [{:id id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn initialize-contacts
   [cofx]

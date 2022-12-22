@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.node.core :as node]
             [status-im.utils.fx :as fx]
@@ -143,20 +142,20 @@
   {:events [::save-network-settings-pressed]}
   [{:keys [db] :as cofx} network]
   (fx/merge cofx
-            {:db             (assoc db :networks/current-network network)
-             ::json-rpc/call [{:method     "settings_saveSetting"
-                               :params     [:networks/current-network network]
-                               :on-success #()}]}
+            {:db            (assoc db :networks/current-network network)
+             :json-rpc/call [{:method     "settings_saveSetting"
+                              :params     [:networks/current-network network]
+                              :on-success #()}]}
             (node/prepare-new-config {:on-success #(re-frame/dispatch [:logout])})))
 
 (fx/defn remove-network
   {:events [::remove-network-confirmed]}
   [{:keys [db] :as cofx} network]
   (let [networks (dissoc (:networks/networks db) network)]
-    {:db             (assoc db :networks/networks networks)
-     ::json-rpc/call [{:method     "settings_saveSetting"
-                       :params     [:networks/networks (vals networks)]
-                       :on-success #(re-frame/dispatch [:navigate-back])}]}))
+    {:db            (assoc db :networks/networks networks)
+     :json-rpc/call [{:method     "settings_saveSetting"
+                      :params     [:networks/networks (vals networks)]
+                      :on-success #(re-frame/dispatch [:navigate-back])}]}))
 
 (defn new-network
   [random-id network-name symbol upstream-url chain-type chain-id]
@@ -191,12 +190,12 @@
           new-networks                               (assoc networks random-id network)]
       (if (or (not custom-chain-type?)
               (chain-id-available? networks network))
-        {:db             (-> db
-                             (dissoc :networks/manage)
-                             (assoc :networks/networks new-networks))
-         ::json-rpc/call [{:method     "settings_saveSetting"
-                           :params     [:networks/networks (vals new-networks)]
-                           :on-success #(re-frame/dispatch [:navigate-back])}]}
+        {:db            (-> db
+                            (dissoc :networks/manage)
+                            (assoc :networks/networks new-networks))
+         :json-rpc/call [{:method     "settings_saveSetting"
+                          :params     [:networks/networks (vals new-networks)]
+                          :on-success #(re-frame/dispatch [:navigate-back])}]}
         {:ui/show-error "chain-id already defined"}))
     {:ui/show-error "invalid network parameters"}))
 
