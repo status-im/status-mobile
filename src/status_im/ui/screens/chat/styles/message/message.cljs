@@ -73,10 +73,16 @@
    :align-items    :flex-start
    :margin-left    4})
 
-(defn delivery-status
-  []
-  {:align-self   :flex-start
-   :padding-left 8})
+(defn delivery-status-icon-style []
+  {:width 16
+   :height 16
+   :border-color colors/red
+   :border-radius 16
+   :border-width 1})
+
+(defn delivery-status []
+  {:align-self    :flex-start
+   :padding-left  8})
 
 (defn pin-indicator
   []
@@ -167,8 +173,7 @@
    :shadow-offset    {:width 0 :height 4}})
 
 (def message-view-wrapper
-  {:align-self     :flex-end
-   :flex-direction :row-reverse})
+  {:align-self :flex-end})
 
 (defn message-view
   [{:keys [content-type]}]

@@ -51,7 +51,10 @@
    :community-cover    (js/require "../resources/images/ui/community-cover.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
    :music              (js/require "../resources/images/ui/music.png")
-   :podcasts           (js/require "../resources/images/ui/podcasts.png")})
+   :podcasts           (js/require "../resources/images/ui/podcasts.png")
+   :sending            (js/require "../resources/images/ui/temp-delivery-states/sending.png")
+   :sent               (js/require "../resources/images/ui/temp-delivery-states/sent.png")
+   :delivered          (js/require "../resources/images/ui/temp-delivery-states/delivered.png")})
 
 (def mock-images
   {:photo1               (js/require "../resources/images/mock/photo1.png")

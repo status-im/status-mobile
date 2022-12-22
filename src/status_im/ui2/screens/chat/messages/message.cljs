@@ -39,7 +39,8 @@
             [status-im2.contexts.chat.messages.message.delete-message-for-me.events]
             [status-im2.contexts.chat.messages.message.delete-message.events]
             [utils.re-frame :as rf]
-            [utils.security.core :as security])
+            [utils.security.core :as security]
+            [taoensso.timbre :as log])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element
@@ -344,13 +345,14 @@
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [last-in-group? timestamp-str timestamp deleted? deleted-undoable-till
-           deleted-for-me? deleted-for-me-undoable-till pinned from chat-id]
+           deleted-for-me? deleted-for-me-undoable-till pinned from chat-id outgoing-status]
     :as   message} content]
   (let [response-to  (:response-to (:content message))
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
         contact      (rf/sub [:contacts/contact-by-address from])
         photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
-        online?      (rf/sub [:visibility-status-updates/online? from])]
+        online?      (rf/sub [:visibility-status-updates/online? from])
+        delivery-state  outgoing-status]
     (if (or deleted? deleted-for-me?)
       [system-message/system-message
        {:type             :deleted
@@ -386,8 +388,20 @@
         [rn/view {:style (style/message-author-wrapper)}
          (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
            [display-name-view display-name contact timestamp true])
-         ;; MESSAGE CONTENT
-         content
+          ;; MESSAGE CONTENT
+         [rn/view {:style {:flex-direction :row}}
+
+          [rn/view {:style {:width            "90%"
+                            :flex-direction   :row}}
+           content]
+
+          [rn/view {:style {:width "9%"
+                            :flex-direction :row
+                            :justify-content :center
+                            :align-items :center}}
+           (if (= delivery-state nil) (log/debug "expected delivery status and got nil")
+               [rn/image {:source (resources/get-image delivery-state) :style (style/delivery-status-icon-style)}])]]
+
          [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
        ;; delivery status
        [rn/view (style/delivery-status)
