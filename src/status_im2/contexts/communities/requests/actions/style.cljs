@@ -11,22 +11,33 @@
    :border-width     1
    :border-radius    6})
 
+(def community-rule-container
+  {:flex       1
+   :margin-top 16})
+
+(def inner-community-rule-container
+  {:flex           1
+   :flex-direction :row
+   :align-items    :center})
+
 (def community-rule-text
   {:margin-left   :auto
    :margin-right  :auto
    :margin-top    :auto
    :margin-bottom :auto})
 
-(def request-container1
-  {:flex          1
-   :margin-left   20
+(def community-rule-sub-text
+  {:margin-left 28
+   :margin-top  1})
+
+(def page-container
+  {:margin-left   20
    :margin-right  20
    :margin-bottom 20})
 
-(def request-container2
+(def title-container
   {:flex            1
-   :flex-direction
-   :row
+   :flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
 
@@ -40,6 +51,10 @@
    :border-radius    8
    :display          :flex
    :justify-content  :center})
+
+(def cancel-button
+  {:flex         1
+   :margin-right 12})
 
 (def request-button
   {:margin-top      32
