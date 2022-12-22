@@ -35,11 +35,14 @@
    :margin-bottom    24})
 
 (defn bottom-container [safe-area]
-  {:position           :absolute
+  {
+   ;:position           :absolute
    :padding-horizontal 20
    :padding-vertical   12
-   :padding-bottom     33
+   :padding-bottom     (+ 33 (if platform/ios? (:bottom safe-area) 0))
    :width              "100%"
    :background-color   colors/white
    :flex-direction     :row
-   :bottom             (if platform/ios? (:bottom safe-area) 80)})
+   ;:padding-bottom     (if platform/ios? (:bottom safe-area) 0)
+   :margin-bottom      (if platform/ios? 0 70)
+   })

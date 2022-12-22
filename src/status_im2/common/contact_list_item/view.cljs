@@ -44,7 +44,8 @@
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
-        current-pk   (rf/sub [:multiaccount/public-key])]
+        current-pk   (rf/sub [:multiaccount/public-key])
+        online? (rf/sub [:visibility-status-updates/online? public-key])]
     [rn/touchable-opacity (merge {:style          (style/container)
                                   :accessibility-label :contact
                                   :active-opacity 1
@@ -54,7 +55,7 @@
      [quo/user-avatar {:full-name         display-name
                        :profile-picture   photo-path
                        :status-indicator? true
-                       :online?           true
+                       :online?           online?
                        :size              :small
                        :ring?             false}]
      [rn/view {:style {:margin-left 8}}
