@@ -28,11 +28,22 @@
               {:key   :avatar
                :value "Avatar"}
               {:key   :group-avatar
-               :value "Group avatar"}]}])
+               :value "Group avatar"}
+              {:key   :context-tag
+               :value "Context tag"}]}])
+
+(def context-tag-descriptor
+  [{:label "Label"
+    :key   :label
+    :type  :text}
+   {:label "Channel Name"
+    :key   :channel-name
+    :type  :text}])
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:label "Name"
+                             :channel-name "Channel"
                              :type  :group-avatar})]
     (fn []
       (let [contacts             {example-pk  {:public-key example-pk
@@ -56,6 +67,7 @@
                                    "Please select a user")
             descriptor
             (cond
+              (= (:type @state) :context-tag)  (into main-descriptor context-tag-descriptor)
               (= (:type @state) :group-avatar) (conj main-descriptor
                                                      {:label "Label"
                                                       :key   :label
@@ -80,6 +92,8 @@
             :flex-direction   :row
             :justify-content  :center}
            (case (:type @state)
+             :context-tag
+             [quo2/context-tag group-avatar-default-params {:uri example-photo2}  (:label @state) (:channel-name @state)]
              :group-avatar
              [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
              :public-key

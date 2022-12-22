@@ -1,22 +1,17 @@
 (ns status-im2.common.toasts.events
-  (:require [taoensso.encore :as enc]
-            [utils.re-frame :as rf]))
-
-(def ^:private next-toast-id (atom 0))
+  (:require [utils.re-frame :as rf]))
 
 (rf/defn upsert
   {:events [:toasts/upsert]}
   [{:keys [db]} id opts]
-  (let [{:toasts/keys [index toasts]} db
-        update?                       (some #{id} index)
-        index                         (enc/conj-when index (and (not update?) id))
-        toasts                        (assoc toasts id opts)
-        db                            (-> db
-                                          (assoc
-                                           :toasts/index  index
-                                           :toasts/toasts toasts)
-                                          (dissoc :toasts/hide-toasts-timer-set))]
-    (if (and (not update?) (= (count index) 1))
+  (let [{:keys [ordered toasts]} (:toasts db)
+        update?                  (some #(= % id) ordered)
+        ordered                  (if (not update?) (conj ordered id) ordered)
+        toasts                   (assoc toasts id opts)
+        db                       (-> db
+                                     (update :toasts assoc :ordered ordered :toasts toasts)
+                                     (update :toasts dissoc :hide-toasts-timer-set))]
+    (if (and (not update?) (= (count ordered) 1))
       {:show-toasts []
        :db          db}
       {:db db})))
@@ -24,24 +19,29 @@
 (rf/defn create
   {:events [:toasts/create]}
   [{:keys [db]} opts]
-  {:dispatch [:toasts/upsert (str "toast-" (swap! next-toast-id inc)) opts]})
+  (let [next-toast-id (or (get-in [:toasts :next-toast-id] db) 1)]
+    {:db       (assoc-in db [:toasts :next-toast-id] (inc next-toast-id))
+     :dispatch [:toasts/upsert (str "toast-" next-toast-id) opts]}))
 
 (rf/defn hide-toasts-with-check
   {:events [:toasts/hide-with-check]}
   [{:keys [db]}]
-  (when (:toasts/hide-toasts-timer-set db)
-    {:db          (dissoc db :toasts/hide-toasts-timer-set)
+  (when (get-in db [:toasts :hide-toasts-timer-set])
+    {:db          (update db :toasts dissoc :hide-toasts-timer-set)
      :hide-toasts nil}))
 
 (rf/defn close
   {:events [:toasts/close]}
   [{:keys [db]} id]
-  (when (get-in db [:toasts/toasts id])
-    (let [{:toasts/keys [toasts index]} db
-          toasts                        (dissoc toasts id)
-          index                         (remove #{id} index)
-          empty-index?                  (not (seq index))
-          db                            (assoc db :toasts/index index :toasts/toasts toasts)]
-      (cond-> {:db db}
-        empty-index? (update :db assoc :toasts/hide-toasts-timer-set true)
-        empty-index? (assoc :dispatch-later [{:ms 500 :dispatch [:toasts/hide-with-check]}])))))
+  (when (get-in db [:toasts :toasts id])
+    (let [{:keys [toasts ordered]} (:toasts db)
+          toasts                   (dissoc toasts id)
+          ordered                  (remove #(= % id) ordered)
+          empty-ordered?           (not (seq ordered))
+          db                       (update db :toasts assoc :ordered ordered :toasts toasts)
+          effect                   {:db db}]
+      (if empty-ordered?
+        (-> effect
+            (update-in [:db :toasts] assoc :hide-toasts-timer-set true)
+            (assoc :dispatch-later [{:ms 500 :dispatch [:toasts/hide-with-check]}]))
+        effect))))

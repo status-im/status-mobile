@@ -23,6 +23,6 @@
     :render-fn               image
     :data                    images
     :horizontal              true
-    :style                   {:bottom 50 :position :absolute :z-index 5}
+    :style                   {:bottom 50 :position :absolute :z-index 5 :elevation 5}
     :content-container-style {:padding-horizontal 20 :margin-top 12}
     :separator               [rn/view {:style {:width 12}}]}])

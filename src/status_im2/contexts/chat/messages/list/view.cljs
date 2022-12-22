@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.messages.list.view
-  (:require [oops.core :as oops]
+  (:require [i18n.i18n :as i18n]
+            [oops.core :as oops]
             [quo.react-native :as quo.react]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
@@ -23,24 +23,6 @@
   []
   (some-> ^js @messages-list-ref
           (.scrollToOffset #js {:y 0 :animated true})))
-
-(defn floating-scroll-down-button
-  [show-input?]
-  [rn/touchable-without-feedback
-   {:on-press scroll-to-bottom}
-   [rn/view
-    {:style {:position         :absolute
-             :bottom           (if show-input? 126 12)
-             :right            12
-             :height           24
-             :width            24
-             :align-items      :center
-             :justify-content  :center
-             :border-radius    (/ 24 2)
-             :background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70)}}
-    [quo/icon :i/arrow-down
-     {:color (colors/theme-colors colors/white colors/neutral-100)
-      :size  12}]]])
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce show-floating-scroll-down-button (reagent/atom false))
@@ -171,7 +153,7 @@
          mutual-contact-requests-enabled?
          one-to-one?
          (not contact-added?))]
-    [:<>
+    [rn/view {:style {:flex 1}}
      ;;DO NOT use anonymous functions for handlers
      [rn/flat-list
       (merge
@@ -206,5 +188,11 @@
         :inverted                     (when platform/ios? true)
         :style                        (when platform/android? {:scaleY -1})
         :on-layout                    on-messages-view-layout})]
-     (when @show-floating-scroll-down-button
-       [floating-scroll-down-button show-input?])]))
+     [quo/floating-shell-button
+      (merge {:jump-to
+              {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+               :label    (i18n/label :t/jump-to)}}
+             (when @show-floating-scroll-down-button
+               {:bottom {:on-press scroll-to-bottom}}))
+      {:position :absolute
+       :bottom   12}]]))

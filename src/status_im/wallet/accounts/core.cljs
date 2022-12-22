@@ -7,7 +7,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n.i18n :as i18n]
@@ -197,12 +196,12 @@
         new-accounts                  (conj accounts account)]
     (when account
       (fx/merge cofx
-                {::json-rpc/call [{:method     "accounts_saveAccounts"
-                                   :params     [[account]]
-                                   :on-success #(re-frame/dispatch [::wallet/restart])}]
-                 :db             (-> db
-                                     (assoc :multiaccount/accounts new-accounts)
-                                     (dissoc :add-account))}
+                {:json-rpc/call [{:method     "accounts_saveAccounts"
+                                  :params     [[account]]
+                                  :on-success #(re-frame/dispatch [::wallet/restart])}]
+                 :db            (-> db
+                                    (assoc :multiaccount/accounts new-accounts)
+                                    (dissoc :add-account))}
                 (when (= type :generate)
                   (multiaccounts.update/multiaccount-update
                    :latest-derived-path
@@ -293,10 +292,10 @@
                        color               (assoc :color color)
                        (not (nil? hidden)) (assoc :hidden hidden))
         new-accounts (replace {account new-account} accounts)]
-    {::json-rpc/call [{:method     "accounts_saveAccounts"
-                       :params     [[new-account]]
-                       :on-success #()}]
-     :db             (assoc db :multiaccount/accounts new-accounts)}))
+    {:json-rpc/call [{:method     "accounts_saveAccounts"
+                      :params     [[new-account]]
+                      :on-success #()}]
+     :db            (assoc db :multiaccount/accounts new-accounts)}))
 
 (fx/defn delete-account
   {:events [:wallet.accounts/delete-account]}
@@ -305,12 +304,12 @@
         new-accounts    (vec (remove #(= account %) accounts))
         deleted-address (:address account)]
     (fx/merge cofx
-              {::json-rpc/call [{:method     "accounts_deleteAccount"
-                                 :params     [(:address account)]
-                                 :on-success #()}]
-               :db             (-> db
-                                   (assoc :multiaccount/accounts new-accounts)
-                                   (update-in [:wallet :accounts] dissoc deleted-address))}
+              {:json-rpc/call [{:method     "accounts_deleteAccount"
+                                :params     [(:address account)]
+                                :on-success #()}]
+               :db            (-> db
+                                  (assoc :multiaccount/accounts new-accounts)
+                                  (update-in [:wallet :accounts] dissoc deleted-address))}
               (navigation/pop-to-root-tab :wallet-stack))))
 
 (fx/defn delete-account-key

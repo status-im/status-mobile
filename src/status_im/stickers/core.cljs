@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
@@ -20,35 +19,35 @@
   [{db :db :as cofx} id]
   (fx/merge
    cofx
-   {:db             (assoc-in db [:stickers/packs id :status] constants/sticker-pack-status-installed)
-    ::json-rpc/call [{:method     "stickers_install"
-                      :params     [(ethereum/chain-id db) id]
-                      :on-success #()}]}))
+   {:db            (assoc-in db [:stickers/packs id :status] constants/sticker-pack-status-installed)
+    :json-rpc/call [{:method     "stickers_install"
+                     :params     [(ethereum/chain-id db) id]
+                     :on-success #()}]}))
 
 (fx/defn load-packs
   {:events [:stickers/load-packs]}
   [{:keys [db]}]
-  {::json-rpc/call [{:method     "stickers_market"
-                     :params     [(ethereum/chain-id db)]
-                     :on-success #(re-frame/dispatch [:stickers/stickers-market-success %])}
-                    {:method     "stickers_installed"
-                     :params     []
-                     :on-success #(re-frame/dispatch [:stickers/stickers-installed-success %])}
-                    {:method     "stickers_pending"
-                     :params     []
-                     :on-success #(re-frame/dispatch [:stickers/stickers-pending-success %])}
-                    {:method     "stickers_recent"
-                     :params     []
-                     :on-success #(re-frame/dispatch [:stickers/stickers-recent-success %])}]})
+  {:json-rpc/call [{:method     "stickers_market"
+                    :params     [(ethereum/chain-id db)]
+                    :on-success #(re-frame/dispatch [:stickers/stickers-market-success %])}
+                   {:method     "stickers_installed"
+                    :params     []
+                    :on-success #(re-frame/dispatch [:stickers/stickers-installed-success %])}
+                   {:method     "stickers_pending"
+                    :params     []
+                    :on-success #(re-frame/dispatch [:stickers/stickers-pending-success %])}
+                   {:method     "stickers_recent"
+                    :params     []
+                    :on-success #(re-frame/dispatch [:stickers/stickers-recent-success %])}]})
 
 (fx/defn buy-pack
   {:events [:stickers/buy-pack]}
   [{db :db} pack-id]
-  {::json-rpc/call [{:method     "stickers_buyPrepareTx"
-                     :params     [(ethereum/chain-id db) (ethereum/default-address db) (int pack-id)]
-                     :on-success #(re-frame/dispatch [:signing.ui/sign
-                                                      {:tx-obj    %
-                                                       :on-result [:stickers/pending-pack pack-id]}])}]})
+  {:json-rpc/call [{:method     "stickers_buyPrepareTx"
+                    :params     [(ethereum/chain-id db) (ethereum/default-address db) (int pack-id)]
+                    :on-success #(re-frame/dispatch [:signing.ui/sign
+                                                     {:tx-obj    %
+                                                      :on-result [:stickers/pending-pack pack-id]}])}]})
 
 (fx/defn pending-pack
   {:events [:stickers/pending-pack]}
@@ -58,7 +57,7 @@
                                                   constants/sticker-pack-status-pending)
                                         (update :stickers/packs-pending conj id))
    :stickers/set-pending-timeout-fx nil
-   ::json-rpc/call                  [{:method     "stickers_addPending"
+   :json-rpc/call                   [{:method     "stickers_addPending"
                                       :params     [(ethereum/chain-id db) (int id)]
                                       :on-success #()}]})
 
@@ -66,10 +65,10 @@
   {:events [:stickers/pending-timeout]}
   [{{:stickers/keys [packs-pending] :as db} :db}]
   (when (seq packs-pending)
-    {::json-rpc/call [{:method     "stickers_processPending"
-                       :params     [(ethereum/chain-id db)]
-                       :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success
-                                                        %])}]}))
+    {:json-rpc/call [{:method     "stickers_processPending"
+                      :params     [(ethereum/chain-id db)]
+                      :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success
+                                                       %])}]}))
 
 (fx/defn stickers-process-pending-success
   {:events [:stickers/stickers-process-pending-success]}

@@ -1,6 +1,5 @@
 (ns status-im.data-store.messages
   (:require [clojure.set :as clojure.set]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -65,41 +64,41 @@
    limit
    on-success
    on-error]
-  {::json-rpc/call [{:method     "wakuext_chatMessages"
-                     :params     [chat-id cursor limit]
-                     :on-success (fn [result]
-                                   (on-success (update result :messages #(map <-rpc %))))
-                     :on-error   on-error}]})
+  {:json-rpc/call [{:method     "wakuext_chatMessages"
+                    :params     [chat-id cursor limit]
+                    :on-success (fn [result]
+                                  (on-success (update result :messages #(map <-rpc %))))
+                    :on-error   on-error}]})
 
 (defn mark-seen-rpc
   [chat-id ids on-success]
-  {::json-rpc/call [{:method     "wakuext_markMessagesSeen"
-                     :params     [chat-id ids]
-                     :on-success #(do
-                                    (log/debug "successfully marked as seen" %)
-                                    (when on-success (on-success chat-id ids %)))
-                     :on-error   #(log/error "failed to get messages" %)}]})
+  {:json-rpc/call [{:method     "wakuext_markMessagesSeen"
+                    :params     [chat-id ids]
+                    :on-success #(do
+                                   (log/debug "successfully marked as seen" %)
+                                   (when on-success (on-success chat-id ids %)))
+                    :on-error   #(log/error "failed to get messages" %)}]})
 
 (defn delete-message-rpc
   [id]
-  {::json-rpc/call [{:method     "wakuext_deleteMessage"
-                     :params     [id]
-                     :on-success #(log/debug "successfully deleted message" id)
-                     :on-error   #(log/error "failed to delete message" % id)}]})
+  {:json-rpc/call [{:method     "wakuext_deleteMessage"
+                    :params     [id]
+                    :on-success #(log/debug "successfully deleted message" id)
+                    :on-error   #(log/error "failed to delete message" % id)}]})
 
 (defn delete-messages-from-rpc
   [author]
-  {::json-rpc/call [{:method     "wakuext_deleteMessagesFrom"
-                     :params     [author]
-                     :on-success #(log/debug "successfully deleted messages from" author)
-                     :on-error   #(log/error "failed to delete messages from" % author)}]})
+  {:json-rpc/call [{:method     "wakuext_deleteMessagesFrom"
+                    :params     [author]
+                    :on-success #(log/debug "successfully deleted messages from" author)
+                    :on-error   #(log/error "failed to delete messages from" % author)}]})
 
 (defn delete-messages-by-chat-id-rpc
   [chat-id]
-  {::json-rpc/call [{:method     "wakuext_deleteMessagesByChatID"
-                     :params     [chat-id]
-                     :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
-                     :on-error   #(log/error "failed to delete messages by chat-id" % chat-id)}]})
+  {:json-rpc/call [{:method     "wakuext_deleteMessagesByChatID"
+                    :params     [chat-id]
+                    :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
+                    :on-error   #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
 (fx/defn delete-message
   [cofx id]

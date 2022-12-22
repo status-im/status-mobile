@@ -1,5 +1,5 @@
 (ns status-im.utils.prices
-  (:require [status-im.ethereum.json-rpc :as json-rpc]))
+  (:require [status-im2.common.json-rpc.events :as json-rpc]))
 
 (defn- format-price-resp
   [resp to mainnet?]

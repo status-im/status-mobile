@@ -8,7 +8,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
@@ -28,6 +27,7 @@
             [status-im.wallet.prices :as prices]
             status-im.wallet.recipient.core
             [status-im.wallet.utils :as wallet.utils]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
@@ -159,15 +159,15 @@
                       ethereum/current-network
                       ethereum/network->chain-id)]
     (when (get-in db [:multiaccount :opensea-enabled?])
-      {::json-rpc/call (map
-                        (fn [address]
-                          {:method     "wallet_getOpenseaCollectionsByOwner"
-                           :params     [chain-id address]
-                           :on-error   (fn [error]
-                                         (log/error "Unable to get Opensea collections" address error))
-                           :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success
-                                                            address %])})
-                        addresses)})))
+      {:json-rpc/call (map
+                       (fn [address]
+                         {:method     "wallet_getOpenseaCollectionsByOwner"
+                          :params     [chain-id address]
+                          :on-error   (fn [error]
+                                        (log/error "Unable to get Opensea collections" address error))
+                          :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success
+                                                           address %])})
+                       addresses)})))
 
 (fx/defn collectible-assets-fetch-success
   {:events [::collectible-assets-fetch-success]}
@@ -185,15 +185,15 @@
   {:events [::fetch-collectible-assets-by-owner-and-collection]}
   [{:keys [db]} address collectible-slug limit]
   (let [chain-id (ethereum/network->chain-id (ethereum/current-network db))]
-    {:db             (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
-     ::json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
-                       :params     [chain-id address collectible-slug limit]
-                       :on-error   (fn [error]
-                                     (log/error "Unable to get collectible assets" address error)
-                                     (re-frame/dispatch [::collectibles-assets-fetch-error
-                                                         collectible-slug]))
-                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address
-                                                        collectible-slug %])}]}))
+    {:db            (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
+     :json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
+                      :params     [chain-id address collectible-slug limit]
+                      :on-error   (fn [error]
+                                    (log/error "Unable to get collectible assets" address error)
+                                    (re-frame/dispatch [::collectibles-assets-fetch-error
+                                                        collectible-slug]))
+                      :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address
+                                                       collectible-slug %])}]}))
 
 (fx/defn show-nft-details
   {:events [::show-nft-details]}
@@ -436,15 +436,15 @@
         from-address             (:address from)
         identity                 (:current-chat-id db)]
     (fx/merge cofx
-              {:db             (dissoc db :wallet/prepare-transaction)
-               ::json-rpc/call [{:method      "wakuext_requestTransaction"
-                                 :params      [(:public-key to)
-                                               amount
-                                               (when-not (= symbol :ETH)
-                                                 address)
-                                               from-address]
-                                 :js-response true
-                                 :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
+              {:db            (dissoc db :wallet/prepare-transaction)
+               :json-rpc/call [{:method      "wakuext_requestTransaction"
+                                :params      [(:public-key to)
+                                              amount
+                                              (when-not (= symbol :ETH)
+                                                address)
+                                              from-address]
+                                :js-response true
+                                :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (fx/defn accept-request-transaction-button-clicked-from-command
   {:events [:wallet.ui/accept-request-transaction-button-clicked-from-command]}

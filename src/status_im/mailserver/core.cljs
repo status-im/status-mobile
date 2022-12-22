@@ -1,7 +1,6 @@
 (ns ^{:doc "Mailserver events and API"} status-im.mailserver.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
@@ -125,16 +124,16 @@
          (mobile-network-utils/syncing-allowed? cofx)
          (fetch-use-mailservers? cofx)
          (not (:mailserver/current-request db)))
-    {:db             (assoc db :mailserver/current-request true)
-     ::json-rpc/call [{:method      "wakuext_requestAllHistoricMessagesWithRetries"
-                       :params      []
-                       :js-response true
-                       :on-success  #(do
-                                       (log/info "fetched historical messages")
-                                       (re-frame/dispatch [::request-success %]))
-                       :on-error    #(do
-                                       (log/error "failed retrieve historical messages" %)
-                                       (re-frame/dispatch [::request-error]))}]}))
+    {:db            (assoc db :mailserver/current-request true)
+     :json-rpc/call [{:method      "wakuext_requestAllHistoricMessagesWithRetries"
+                      :params      []
+                      :js-response true
+                      :on-success  #(do
+                                      (log/info "fetched historical messages")
+                                      (re-frame/dispatch [::request-success %]))
+                      :on-error    #(do
+                                      (log/error "failed retrieve historical messages" %)
+                                      (re-frame/dispatch [::request-error]))}]}))
 
 (fx/defn handle-mailserver-changed
   [{:keys [db] :as cofx} ms]
@@ -168,7 +167,7 @@
 
 (fx/defn toggle-use-mailservers
   [cofx value]
-  {::json-rpc/call
+  {:json-rpc/call
    [{:method     "wakuext_toggleUseMailservers"
      :params     [value]
      :on-success #(log/info "successfully toggled use-mailservers" value)
@@ -282,11 +281,11 @@
                         (:value name)
                         (:value url))
             current    (connected? db (:id mailserver))]
-        {:db             (-> db
-                             (dissoc :mailserver.edit/mailserver)
-                             (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
-                                       mailserver))
-         ::json-rpc/call
+        {:db            (-> db
+                            (dissoc :mailserver.edit/mailserver)
+                            (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
+                                      mailserver))
+         :json-rpc/call
          [{:method     "mailservers_addMailserver"
            :params     [(mailserver->rpc mailserver current-fleet)]
            :on-success (fn []
@@ -297,7 +296,7 @@
                             [:multiaccounts.logout.ui/logout-confirmed]))
                          (log/debug "saved mailserver" id "successfuly"))
            :on-failure #(log/error "failed to save mailserver" id %)}]
-         :dispatch       [:navigate-back]}))))
+         :dispatch      [:navigate-back]}))))
 
 (defn can-delete?
   [db id]
@@ -308,18 +307,18 @@
   {:events [:mailserver.ui/delete-confirmed]}
   [{:keys [db] :as cofx} id]
   (if (can-delete? db id)
-    {:db             (-> db
-                         (update-in
-                          [:mailserver/mailservers (node/current-fleet-key db)]
-                          dissoc
-                          id)
-                         (dissoc :mailserver.edit/mailserver))
-     ::json-rpc/call
+    {:db            (-> db
+                        (update-in
+                         [:mailserver/mailservers (node/current-fleet-key db)]
+                         dissoc
+                         id)
+                        (dissoc :mailserver.edit/mailserver))
+     :json-rpc/call
      [{:method     "mailservers_deleteMailserver"
        :params     [(name id)]
        :on-success #(log/debug "deleted mailserver" id)
        :on-failure #(log/error "failed to delete mailserver" id %)}]
-     :dispatch       [:navigate-back]}
+     :dispatch      [:navigate-back]}
     {:dispatch [:navigate-back]}))
 
 (fx/defn show-connection-confirmation
@@ -368,11 +367,11 @@
                                (get-in [:multiaccount :pinned-mailservers])
                                (assoc current-fleet mailserver-id))]
     (fx/merge cofx
-              {:db             (assoc db :mailserver/current-id mailserver-id)
-               ::json-rpc/call [{:method     "wakuext_setPinnedMailservers"
-                                 :params     [pinned-mailservers]
-                                 :on-success #(log/info "successfully pinned mailserver")
-                                 :on-error   #(log/error "failed to pin mailserver" %)}]}
+              {:db            (assoc db :mailserver/current-id mailserver-id)
+               :json-rpc/call [{:method     "wakuext_setPinnedMailservers"
+                                :params     [pinned-mailservers]
+                                :on-success #(log/info "successfully pinned mailserver")
+                                :on-error   #(log/error "failed to pin mailserver" %)}]}
               (multiaccounts.update/optimistic :pinned-mailservers pinned-mailservers))))
 
 (fx/defn unpin
@@ -383,10 +382,10 @@
                                (get-in [:multiaccount :pinned-mailservers])
                                (dissoc current-fleet))]
     (fx/merge cofx
-              {::json-rpc/call [{:method     "wakuext_setPinnedMailservers"
-                                 :params     [pinned-mailservers]
-                                 :on-success #(log/info "successfully unpinned mailserver")
-                                 :on-error   #(log/error "failed to unpin mailserver" %)}]}
+              {:json-rpc/call [{:method     "wakuext_setPinnedMailservers"
+                                :params     [pinned-mailservers]
+                                :on-success #(log/info "successfully unpinned mailserver")
+                                :on-error   #(log/error "failed to unpin mailserver" %)}]}
               (multiaccounts.update/optimistic
                :pinned-mailservers
                pinned-mailservers)

@@ -1408,7 +1408,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.default_username_1).click()
-        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
+        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
                                                                                                    diff=5):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()

@@ -1,7 +1,6 @@
 (ns status-im2.setup.dev
   (:require ["react-native" :refer (DevSettings LogBox)]
             [react-native.platform :as platform]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [utils.re-frame :as rf]))
 
 ;; Ignore all logs, because there are lots of temporary warnings when developing and hot reloading
@@ -43,7 +42,7 @@
                            :transport/confirm-messages-processed
                            :group-chats/extract-membership-signature
                            :utils/dispatch-later
-                           ::json-rpc/call})
+                           :json-rpc/call})
 
   (when (and js/goog.DEBUG platform/ios? DevSettings)
     ;;on Android this method doesn't work

@@ -2,10 +2,10 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.decode :as decode]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im2.common.json-rpc.events :as json-rpc]))
 
 (defn get-block
   [block callback]

@@ -2,7 +2,6 @@
   (:require ["@react-native-community/push-notification-ios" :default pn-ios]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.notifications.android :as pn-android]
             [status-im.notifications.local :as local]
@@ -112,27 +111,27 @@
 (fx/defn handle-enable-notifications-event
   {:events [:notifications/registered-for-push-notifications]}
   [cofx token]
-  {::json-rpc/call [{:method     "wakuext_registerForPushNotifications"
-                     :params     [token (if platform/ios? config/apn-topic)
-                                  (if platform/ios? apn-token-type firebase-token-type)]
-                     :on-success #(log/info "[push-notifications] register-success" %)
-                     :on-error   #(re-frame/dispatch [:notifications/switch-error true %])}]})
+  {:json-rpc/call [{:method     "wakuext_registerForPushNotifications"
+                    :params     [token (if platform/ios? config/apn-topic)
+                                 (if platform/ios? apn-token-type firebase-token-type)]
+                    :on-success #(log/info "[push-notifications] register-success" %)
+                    :on-error   #(re-frame/dispatch [:notifications/switch-error true %])}]})
 
 (fx/defn handle-disable-notifications-event
   {:events [:notifications/unregistered-from-push-notifications]}
   [cofx]
-  {::json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
-                     :params     []
-                     :on-success #(log/info "[push-notifications] unregister-success" %)
-                     :on-error   #(re-frame/dispatch [:notifications/switch-error false %])}]})
+  {:json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
+                    :params     []
+                    :on-success #(log/info "[push-notifications] unregister-success" %)
+                    :on-error   #(re-frame/dispatch [:notifications/switch-error false %])}]})
 
 (fx/defn logout-disable
   [cofx]
   (merge {::logout-disable nil}
-         {::json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
-                            :params     []
-                            :on-success #(log/info "[push-notifications] unregister-success" %)
-                            :on-error   #(log/info "[push-notifications] unregister-error" %)}]}))
+         {:json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
+                           :params     []
+                           :on-success #(log/info "[push-notifications] unregister-success" %)
+                           :on-error   #(log/info "[push-notifications] unregister-error" %)}]}))
 
 (fx/defn notification-switch-error
   {:events [:notifications/switch-error]}
@@ -179,10 +178,10 @@
                  "wakuext_disablePushNotificationsFromContactsOnly")]
     (fx/merge
      cofx
-     {::json-rpc/call [{:method     method
-                        :params     []
-                        :on-success #(log/info "[push-notifications] contacts-notification-success" %)
-                        :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]}
+     {:json-rpc/call [{:method     method
+                       :params     []
+                       :on-success #(log/info "[push-notifications] contacts-notification-success" %)
+                       :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]}
 
      (multiaccounts.update/optimistic :push-notifications-from-contacts-only? (boolean enabled?)))))
 
@@ -194,11 +193,11 @@
                  "wakuext_disablePushNotificationsBlockMentions")]
     (log/info "USING METHOD" method enabled?)
     (fx/merge cofx
-              {::json-rpc/call [{:method     method
-                                 :params     []
-                                 :on-success #(log/info "[push-notifications] block-mentions-success" %)
-                                 :on-error   #(re-frame/dispatch [::block-mentions-update-error enabled?
-                                                                  %])}]}
+              {:json-rpc/call [{:method     method
+                                :params     []
+                                :on-success #(log/info "[push-notifications] block-mentions-success" %)
+                                :on-error   #(re-frame/dispatch [::block-mentions-update-error enabled?
+                                                                 %])}]}
 
               (multiaccounts.update/optimistic :push-notifications-block-mentions? (boolean enabled?)))))
 
@@ -210,11 +209,11 @@
                  "wakuext_stopPushNotificationsServer")]
     (fx/merge
      cofx
-     {::json-rpc/call [{:method     method
-                        :params     []
-                        :on-success #(log/info "[push-notifications] switch-server-enabled successful" %)
-                        :on-error   #(re-frame/dispatch [::push-notifications-server-update-error
-                                                         enabled? %])}]}
+     {:json-rpc/call [{:method     method
+                       :params     []
+                       :on-success #(log/info "[push-notifications] switch-server-enabled successful" %)
+                       :on-error   #(re-frame/dispatch [::push-notifications-server-update-error
+                                                        enabled? %])}]}
 
      (multiaccounts.update/optimistic :push-notifications-server-enabled? (boolean enabled?)))))
 
@@ -225,13 +224,13 @@
                  "wakuext_enableSendingNotifications"
                  "wakuext_disableSendingNotifications")]
     (fx/merge cofx
-              {::json-rpc/call [{:method     method
-                                 :params     []
-                                 :on-success
-                                 #(log/info "[push-notifications] switch-send-notifications successful"
-                                            %)
-                                 :on-error   #(re-frame/dispatch [::push-notifications-send-update-error
-                                                                  enabled? %])}]}
+              {:json-rpc/call [{:method     method
+                                :params     []
+                                :on-success
+                                #(log/info "[push-notifications] switch-send-notifications successful"
+                                           %)
+                                :on-error   #(re-frame/dispatch [::push-notifications-send-update-error
+                                                                 enabled? %])}]}
 
               (multiaccounts.update/optimistic :send-push-notifications? (boolean enabled?)))))
 
@@ -244,15 +243,15 @@
   {:events [::add-server]}
   [{:keys [db] :as cofx} public-key]
   (fx/merge cofx
-            {::json-rpc/call [{:method     "wakuext_addPushNotificationsServer"
-                               :params     [public-key]
-                               :on-success
-                               #(do
-                                  (log/info "[push-notifications] switch-send-notifications successful"
-                                            %)
-                                  (re-frame/dispatch [::fetch-servers]))
-                               :on-error   #(re-frame/dispatch [::push-notifications-add-server-error
-                                                                public-key %])}]}))
+            {:json-rpc/call [{:method     "wakuext_addPushNotificationsServer"
+                              :params     [public-key]
+                              :on-success
+                              #(do
+                                 (log/info "[push-notifications] switch-send-notifications successful"
+                                           %)
+                                 (re-frame/dispatch [::fetch-servers]))
+                              :on-error   #(re-frame/dispatch [::push-notifications-add-server-error
+                                                               public-key %])}]}))
 
 (fx/defn handle-servers-fetched
   {:events [::servers-fetched]}
@@ -262,11 +261,11 @@
 (fx/defn fetch-push-notifications-servers
   {:events [::fetch-servers]}
   [cofx]
-  {::json-rpc/call [{:method     "wakuext_getPushNotificationsServers"
-                     :params     []
-                     :on-success #(do
-                                    (log/info "[push-notifications] servers fetched" %)
-                                    (re-frame/dispatch [::servers-fetched %]))}]})
+  {:json-rpc/call [{:method     "wakuext_getPushNotificationsServers"
+                    :params     []
+                    :on-success #(do
+                                   (log/info "[push-notifications] servers fetched" %)
+                                   (re-frame/dispatch [::servers-fetched %]))}]})
 
 ;; Wallet transactions
 
@@ -278,9 +277,9 @@
 (fx/defn load-notification-preferences
   {:events [::load-notification-preferences]}
   [cofx]
-  {::json-rpc/call [{:method     "localnotifications_notificationPreferences"
-                     :params     []
-                     :on-success #(re-frame/dispatch [::preferences-loaded %])}]})
+  {:json-rpc/call [{:method     "localnotifications_notificationPreferences"
+                    :params     []
+                    :on-success #(re-frame/dispatch [::preferences-loaded %])}]})
 
 (defn preference=
   [x y]
@@ -295,18 +294,18 @@
 (fx/defn switch-transaction-notifications
   {:events [::switch-transaction-notifications]}
   [{:keys [db] :as cofx} enabled?]
-  {:db             (update db
-                           :push-notifications/preferences
-                           update-preference
-                           {:enabled    (not enabled?)
-                            :service    "wallet"
-                            :event      "transaction"
-                            :identifier "all"})
-   ::json-rpc/call [{:method     "localnotifications_switchWalletNotifications"
-                     :params     [(not enabled?)]
-                     :on-success #(log/info
-                                   "[push-notifications] switch-transaction-notifications successful"
-                                   %)
-                     :on-error   #(log/error
-                                   "[push-notifications] switch-transaction-notifications error"
-                                   %)}]})
+  {:db            (update db
+                          :push-notifications/preferences
+                          update-preference
+                          {:enabled    (not enabled?)
+                           :service    "wallet"
+                           :event      "transaction"
+                           :identifier "all"})
+   :json-rpc/call [{:method     "localnotifications_switchWalletNotifications"
+                    :params     [(not enabled?)]
+                    :on-success #(log/info
+                                  "[push-notifications] switch-transaction-notifications successful"
+                                  %)
+                    :on-error   #(log/error
+                                  "[push-notifications] switch-transaction-notifications error"
+                                  %)}]})

@@ -3,6 +3,6 @@
 
 (re-frame/reg-sub
  :toasts/toast
- :<- [:toasts/toasts]
+ :<- [:toasts]
  (fn [toasts [_ toast-id]]
-   (get toasts toast-id)))
+   (get-in toasts [:toasts toast-id])))

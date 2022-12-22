@@ -4,7 +4,6 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [status-im2.contexts.activity-center.events :as activity-center]
             [taoensso.timbre :as log]))
@@ -47,10 +46,10 @@
 
 (fx/defn load-chat
   [_ chat-id]
-  {::json-rpc/call [{:method     "wakuext_chat"
-                     :params     [chat-id]
-                     :on-success #(re-frame/dispatch [:chats-list/load-chat-success %])
-                     :on-error   #(log/error "failed to fetch chats" 0 -1 %)}]})
+  {:json-rpc/call [{:method     "wakuext_chat"
+                    :params     [chat-id]
+                    :on-success #(re-frame/dispatch [:chats-list/load-chat-success %])
+                    :on-error   #(log/error "failed to fetch chats" 0 -1 %)}]})
 
 (fx/defn handle-failed-loading-messages
   {:events [::failed-loading-messages]}
@@ -86,7 +85,7 @@
   {:db                          (mark-chat-all-read db chat-id)
    :clear-message-notifications [[chat-id]
                                  (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-   ::json-rpc/call              [{:method     "wakuext_markAllRead"
+   :json-rpc/call               [{:method     "wakuext_markAllRead"
                                   :params     [chat-id]
                                   :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
 
@@ -97,7 +96,7 @@
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-     ::json-rpc/call              [{:method     "wakuext_markAllReadInCommunity"
+     :json-rpc/call               [{:method     "wakuext_markAllReadInCommunity"
                                     :params     [community-id]
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))

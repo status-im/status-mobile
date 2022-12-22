@@ -1,26 +1,27 @@
 (ns status-im2.common.toasts.view
-  (:require [quo2.core :as quo2]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.utils.utils :as utils.utils]
+            [status-im2.common.toasts.style :as style]
             [utils.re-frame :as rf]))
 
 (def ^:private slide-out-up-animation
-  (-> reanimated/slide-out-up-animation
+  (-> ^js reanimated/slide-out-up-animation
       .springify
       (.damping 20)
       (.stiffness 300)))
 
 (def ^:private slide-in-up-animation
-  (-> reanimated/slide-in-up-animation
+  (-> ^js reanimated/slide-in-up-animation
       .springify
       (.damping 20)
       (.stiffness 300)))
 
 (def ^:private linear-transition
-  (-> reanimated/linear-transition
+  (-> ^js reanimated/linear-transition
       .springify
       (.damping 20)
       (.stiffness 300)))
@@ -47,7 +48,7 @@
                  ;; remove timer on pan start
                  (gesture/on-start clear-timer)
                  (gesture/on-update
-                  (fn [evt]
+                  (fn [^js evt]
                     (let [evt-translation-y (.-translationY evt)]
                       (cond
                         ;; reset translate y on pan down
@@ -82,22 +83,15 @@
               :layout   reanimated/linear-transition
               :style    (reanimated/apply-animations-to-style
                          {:transform [{:translateY translate-y}]}
-                         {:width         "100%"
-                          :margin-bottom 5})}
-             [quo2/toast toast-opts]]]))])))
+                         style/each-toast-container)}
+             [quo/toast toast-opts]]]))])))
 
 (defn toasts
   []
-  (let [toasts-index (rf/sub [:toasts/index])]
+  (let [toasts-ordered (:ordered (rf/sub [:toasts]))]
     [into
      [rn/view
-      {:style {:elevation        2
-               :pointer-events   :box-none
-               :padding-top      52
-               :flex-direction   :column
-               :justify-content  :center
-               :align-items      :center
-               :background-color :transparent}}]
-     (->> toasts-index
+      {:style style/outmost-transparent-container}]
+     (->> toasts-ordered
           reverse
           (map (fn [id] ^{:key id} [container id])))]))

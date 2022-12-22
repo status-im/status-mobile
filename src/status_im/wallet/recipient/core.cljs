@@ -4,13 +4,13 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]))
 
 ;;NOTE we want to handle only last resolve
@@ -96,8 +96,8 @@
                        :name      (or name "")
                        :favourite true}]
     (fx/merge cofx
-              {:db             (assoc-in db [:wallet/favourites address] new-favourite)
-               ::json-rpc/call [{:method     "wallet_addSavedAddress"
-                                 :params     [new-favourite]
-                                 :on-success #()}]}
+              {:db            (assoc-in db [:wallet/favourites address] new-favourite)
+               :json-rpc/call [{:method     "wallet_addSavedAddress"
+                                :params     [new-favourite]
+                                :on-success #()}]}
               (navigation/navigate-back))))

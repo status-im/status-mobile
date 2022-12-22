@@ -5,11 +5,11 @@
             [quo.react-native :as quo.react-native]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
