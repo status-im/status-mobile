@@ -13,6 +13,7 @@
    [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
    [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
    [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
+   [status-im2.contexts.quo-preview.banners.banner :as banner]
    [status-im2.contexts.quo-preview.buttons.button :as button]
    [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
    [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
@@ -81,6 +82,9 @@
                            {:name      :account-avatar
                             :insets    {:top false}
                             :component account-avatar/preview-account-avatar}]
+   :banner                [{:name      :banner
+                            :insets    {:top false}
+                            :component banner/preview-banner}]
    :buttons               [{:name      :button
                             :insets    {:top false}
                             :component button/preview-button}
