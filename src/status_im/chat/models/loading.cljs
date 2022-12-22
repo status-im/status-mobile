@@ -101,7 +101,28 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
+<<<<<<< HEAD
 (rf/defn messages-loaded
+=======
+(defn find-albums [messages]
+  (let [albums-count (atom {})]
+    (doseq [message messages]
+      (println "WTFF" message)
+      (let [album-id (:album-id (:content (val message)))]
+        (println "ALBUMID" album-id (get @albums-count album-id))
+        (when album-id
+          (if (get @albums-count album-id)
+            (swap! albums-count assoc-in [album-id] (inc (get @albums-count album-id)))
+            (swap! albums-count assoc-in [album-id] 1)))
+        (when (> (get @albums-count album-id) 3)
+          (println "COMPLETED AN ALBUMXXXX" (get @albums-count album-id))
+          )
+        )
+      ))
+  messages)
+
+(fx/defn messages-loaded
+>>>>>>> 86fbedba6... updates
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
   [{db :db} chat-id session-id {:keys [cursor messages]}]
@@ -128,11 +149,17 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
+<<<<<<< HEAD
           current-clock-value                                  (get-in db
                                                                        [:pagination-info chat-id
                                                                         :cursor-clock-value])
           clock-value                                          (when cursor
                                                                  (cursor->clock-value cursor))]
+=======
+          current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
+          clock-value (when cursor (cursor->clock-value cursor))
+          result (find-albums all-messages)]
+>>>>>>> da601071d... updates
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
