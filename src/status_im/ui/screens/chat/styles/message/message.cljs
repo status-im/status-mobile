@@ -50,7 +50,9 @@
   []
   {:font-size   10
    :line-height 10
-   :color       colors/gray})
+   :border-color :pink
+   :border-width 1
+   :color       colors/blue})
 
 (defn audio-message-timestamp-text
   []

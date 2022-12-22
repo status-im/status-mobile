@@ -128,28 +128,14 @@
           (:parsed-text content)))
 
 (defn message-status
-  [{:keys [outgoing content outgoing-status pinned edited-at in-popover?]}]
-  (when-not in-popover? ;; We keep track if showing this message in a list in pin-limit-popover
-    [rn/view
-     {:align-self                       :flex-end
-      :position                         :absolute
-      :bottom                           9 ; 6 Bubble bottom, 3 message baseline
-      (if (:rtl? content) :left :right) 0
-      :flex-direction                   :row
-      :align-items                      :flex-end}
-     (when outgoing
-       [icons/icon
-        (case outgoing-status
-          :sending   :tiny-icons/tiny-pending
-          :sent      :tiny-icons/tiny-sent
-          :not-sent  :tiny-icons/tiny-warning
-          :delivered :tiny-icons/tiny-delivered
-          :tiny-icons/tiny-pending)
-        {:width               16
-         :height              12
-         :color               (if pinned quo.colors/gray quo.colors/white)
-         :accessibility-label (name outgoing-status)}])
-     (when edited-at [rn/text {:style (style/message-status-text)} edited-at-text])]))
+  [{:keys [outgoing-status edited-at]}]
+  (when (or edited-at outgoing-status)
+    [rn/view {:flex-direction :row}
+     [rn/text {:style (style/message-status-text)}
+      (if edited-at
+        "edited"
+        (or outgoing-status ""))
+      " [WIP]"]]))
 
 (defn quoted-message
   [{:keys [message-id chat-id]} reply pin?]
