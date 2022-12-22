@@ -8,7 +8,6 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -181,11 +180,11 @@
   {:events [:chat.ui/clear-history]}
   [{:keys [db] :as cofx} chat-id remove-chat?]
   (fx/merge cofx
-            {:db             db
-             ::json-rpc/call [{:method     "wakuext_clearHistory"
-                               :params     [{:id chat-id}]
-                               :on-success #(re-frame/dispatch [::history-cleared chat-id %])
-                               :on-error   #(log/error "failed to clear history " chat-id %)}]}
+            {:db            db
+             :json-rpc/call [{:method     "wakuext_clearHistory"
+                              :params     [{:id chat-id}]
+                              :on-success #(re-frame/dispatch [::history-cleared chat-id %])
+                              :on-error   #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
 (fx/defn chat-deactivated
@@ -198,15 +197,15 @@
   [{:keys [db now] :as cofx} chat-id]
   (fx/merge
    cofx
-   {:db             (-> (if (get-in db [:chats chat-id :muted])
-                            (assoc-in db [:chats chat-id :active] false)
-                            (update db :chats dissoc chat-id))
-                        (update :chats-home-list disj chat-id)
-                        (assoc :current-chat-id nil))
-    ::json-rpc/call [{:method     "wakuext_deactivateChat"
-                      :params     [{:id chat-id}]
-                      :on-success #(re-frame/dispatch [::chat-deactivated chat-id])
-                      :on-error   #(log/error "failed to create public chat" chat-id %)}]}
+   {:db            (-> (if (get-in db [:chats chat-id :muted])
+                           (assoc-in db [:chats chat-id :active] false)
+                           (update db :chats dissoc chat-id))
+                       (update :chats-home-list disj chat-id)
+                       (assoc :current-chat-id nil))
+    :json-rpc/call [{:method     "wakuext_deactivateChat"
+                     :params     [{:id chat-id}]
+                     :on-success #(re-frame/dispatch [::chat-deactivated chat-id])
+                     :on-error   #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
 
 (fx/defn offload-messages
@@ -326,10 +325,10 @@
   [{:keys [db] :as cofx} chat-id ens-name]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
-    {::json-rpc/call [{:method     "wakuext_createOneToOneChat"
-                       :params     [{:id chat-id :ensName ens-name}]
-                       :on-success #(re-frame/dispatch [::one-to-one-chat-created chat-id %])
-                       :on-error   #(log/error "failed to create one-to-on chat" chat-id %)}]}))
+    {:json-rpc/call [{:method     "wakuext_createOneToOneChat"
+                      :params     [{:id chat-id :ensName ens-name}]
+                      :on-success #(re-frame/dispatch [::one-to-one-chat-created chat-id %])
+                      :on-error   #(log/error "failed to create one-to-on chat" chat-id %)}]}))
 
 (defn profile-chat-topic
   [public-key]
@@ -349,10 +348,10 @@
 
 (fx/defn create-public-chat-go
   [_ chat-id]
-  {::json-rpc/call [{:method     "wakuext_createPublicChat"
-                     :params     [{:id chat-id}]
-                     :on-success #(re-frame/dispatch [::public-chat-created chat-id %])
-                     :on-error   #(log/error "failed to create public chat" chat-id %)}]})
+  {:json-rpc/call [{:method     "wakuext_createPublicChat"
+                    :params     [{:id chat-id}]
+                    :on-success #(re-frame/dispatch [::public-chat-created chat-id %])
+                    :on-error   #(log/error "failed to create public chat" chat-id %)}]})
 
 (fx/defn start-public-chat
   "Starts a new public chat"
@@ -387,10 +386,10 @@
   (let [chat-id (profile-chat-topic profile-public-key)]
     (if (active-chat? cofx chat-id)
       {:dispatch [::profile-chat-created chat-id nil navigate-to?]}
-      {::json-rpc/call [{:method     "wakuext_createProfileChat"
-                         :params     [{:id profile-public-key}]
-                         :on-success #(re-frame/dispatch [::profile-chat-created chat-id % navigate-to?])
-                         :on-error   #(log/error "failed to create profile chat" chat-id %)}]})))
+      {:json-rpc/call [{:method     "wakuext_createProfileChat"
+                        :params     [{:id profile-public-key}]
+                        :on-success #(re-frame/dispatch [::profile-chat-created chat-id % navigate-to?])
+                        :on-error   #(log/error "failed to create profile chat" chat-id %)}]})))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"
@@ -421,11 +420,11 @@
   {:events [::mute-chat-toggled]}
   [{:keys [db] :as cofx} chat-id muted?]
   (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")]
-    {:db             (assoc-in db [:chats chat-id :muted] muted?)
-     ::json-rpc/call [{:method     method
-                       :params     [chat-id]
-                       :on-error   #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
-                       :on-success #(re-frame/dispatch [::mute-chat-toggled-successfully chat-id])}]}))
+    {:db            (assoc-in db [:chats chat-id :muted] muted?)
+     :json-rpc/call [{:method     method
+                      :params     [chat-id]
+                      :on-error   #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
+                      :on-success #(re-frame/dispatch [::mute-chat-toggled-successfully chat-id])}]}))
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}
@@ -483,18 +482,18 @@
 
 (fx/defn fill-gaps
   [cofx chat-id gap-ids]
-  {::json-rpc/call [{:method     "wakuext_fillGaps"
-                     :params     [chat-id gap-ids]
-                     :on-success #(re-frame/dispatch [::gaps-filled chat-id gap-ids %])
-                     :on-error   #(re-frame/dispatch [::gaps-failed chat-id gap-ids %])}]})
+  {:json-rpc/call [{:method     "wakuext_fillGaps"
+                    :params     [chat-id gap-ids]
+                    :on-success #(re-frame/dispatch [::gaps-filled chat-id gap-ids %])
+                    :on-error   #(re-frame/dispatch [::gaps-failed chat-id gap-ids %])}]})
 
 (fx/defn sync-chat-from-sync-from
   [cofx chat-id]
   (log/debug "syncing chat from sync from")
-  {::json-rpc/call [{:method     "wakuext_syncChatFromSyncedFrom"
-                     :params     [chat-id]
-                     :on-success #(re-frame/dispatch [::sync-chat-from-sync-from-success chat-id %])
-                     :on-error   #(re-frame/dispatch [::sync-chat-from-sync-from-failed chat-id %])}]})
+  {:json-rpc/call [{:method     "wakuext_syncChatFromSyncedFrom"
+                    :params     [chat-id]
+                    :on-success #(re-frame/dispatch [::sync-chat-from-sync-from-success chat-id %])
+                    :on-error   #(re-frame/dispatch [::sync-chat-from-sync-from-failed chat-id %])}]})
 
 (fx/defn chat-ui-fill-gaps
   {:events [:chat.ui/fill-gaps]}

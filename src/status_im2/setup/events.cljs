@@ -6,6 +6,7 @@
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.utils.keychain.core :as keychain]
+            [status-im2.common.json-rpc.events]
             [status-im2.common.theme.core :as theme]
             [status-im2.common.toasts.events]
             [status-im2.navigation.events :as navigation]

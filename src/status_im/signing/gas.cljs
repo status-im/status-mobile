@@ -3,12 +3,12 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
@@ -398,7 +398,7 @@
   {:events [::header-fetched]}
   [{{:networks/keys [current-network networks]} :db}
    {:keys [error-callback success-callback fee-history] :as params}]
-  {::json-rpc/call
+  {:json-rpc/call
    [;; NOTE(rasom): eth_maxPriorityFeePerGas is not supported by some networks
     ;; so it is more reliable to calculate maxPriorityFeePerGas using the value
     ;; returned by eth_gasPrice and current base fee.

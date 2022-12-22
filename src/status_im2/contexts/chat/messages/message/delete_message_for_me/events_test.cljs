@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.message.delete-message-for-me.events-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.datetime :as datetime]
-            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.contexts.chat.messages.message.delete-message-for-me.events :as
              delete-message-for-me]))
 
@@ -64,7 +63,7 @@
         (let [expected-db {:messages {cid {mid {:id mid}}}}
               effects     (delete-message-for-me/delete-and-sync {:db db} message)
               result-db   (:db effects)
-              rpc-calls   (::json-rpc/call effects)]
+              rpc-calls   (:json-rpc/call effects)]
           (is (= result-db expected-db))
           (is (= (count rpc-calls) 1))
           (is (= (-> rpc-calls

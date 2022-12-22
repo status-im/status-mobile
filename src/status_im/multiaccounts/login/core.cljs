@@ -11,7 +11,6 @@
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
@@ -38,6 +37,7 @@
             [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [status-im2.setup.log :as logging]
@@ -266,7 +266,7 @@
 
 (fx/defn check-network-version
   [_ network-id]
-  {::json-rpc/call
+  {:json-rpc/call
    [{:method     "net_version"
      :on-success
      (fn [fetched-network-id]
@@ -339,7 +339,7 @@
 
 (fx/defn initialize-browser
   [_]
-  {::json-rpc/call
+  {:json-rpc/call
    [{:method     "wakuext_getBrowsers"
      :on-success #(re-frame/dispatch [::initialize-browsers %])}
     {:method     "browsers_getBookmarks"
@@ -353,7 +353,7 @@
 
 (fx/defn get-group-chat-invitations
   [_]
-  {::json-rpc/call
+  {:json-rpc/call
    [{:method     "wakuext_getGroupChatInvitations"
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
@@ -498,8 +498,8 @@
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
     (fx/merge cofx
-              {:db             (assoc db :chats/loading? true)
-               ::json-rpc/call
+              {:db            (assoc db :chats/loading? true)
+               :json-rpc/call
                [{:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
                                   (redirect-to-root db))}]}
@@ -584,8 +584,8 @@
                "login-only?"        login-only?
                "recovered-account?" recovered-account?)
     (fx/merge cofx
-              {:db             (on-login-update-db db login-only? now)
-               ::json-rpc/call
+              {:db            (on-login-update-db db login-only? now)
+               :json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
               ;;FIXME

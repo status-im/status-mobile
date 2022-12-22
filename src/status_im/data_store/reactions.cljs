@@ -1,6 +1,5 @@
 (ns status-im.data-store.reactions
-  (:require [clojure.set :as clojure.set]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+  (:require [clojure.set :as clojure.set]))
 
 (defn ->rpc
   [message]
@@ -27,8 +26,8 @@
    limit
    on-success
    on-error]
-  {::json-rpc/call [{:method     "wakuext_emojiReactionsByChatID"
-                     :params     [chat-id cursor limit]
-                     :on-success (fn [result]
-                                   (on-success (map <-rpc result)))
-                     :on-error   on-error}]})
+  {:json-rpc/call [{:method     "wakuext_emojiReactionsByChatID"
+                    :params     [chat-id cursor limit]
+                    :on-success (fn [result]
+                                  (on-success (map <-rpc result)))
+                    :on-error   on-error}]})
