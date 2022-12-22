@@ -7,7 +7,7 @@
   {:width    "100%"
    :height   (+ (:bottom safe-area) 65)
    :position :absolute
-   :bottom   (if platform/ios? 0 80)})
+   :bottom   (if platform/ios? 0 65)})
 
 (defn buttons-container
   [safe-area]
