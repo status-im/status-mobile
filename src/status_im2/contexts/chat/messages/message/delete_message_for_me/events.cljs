@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.message.delete-message-for-me.events
   (:require [status-im.chat.models.message-list :as message-list]
             [status-im.utils.datetime :as datetime]
-            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -65,13 +64,13 @@
   {:events [:chat.ui/delete-message-for-me-and-sync]}
   [{:keys [db]} {:keys [message-id chat-id]}]
   (when (get-in db [:messages chat-id message-id])
-    {:db             (update-db-clear-undo-timer db chat-id message-id)
-     ::json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"
-                       :params      [chat-id message-id]
-                       :js-response true
-                       :on-error    #(log/error "failed to delete message for me, message id: "
-                                                {:message-id message-id :error %})
-                       :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]}))
+    {:db            (update-db-clear-undo-timer db chat-id message-id)
+     :json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"
+                      :params      [chat-id message-id]
+                      :js-response true
+                      :on-error    #(log/error "failed to delete message for me, message id: "
+                                               {:message-id message-id :error %})
+                      :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]}))
 
 (defn- filter-pending-sync-messages
   "traverse all messages find not yet synced deleted-for-me? messages"

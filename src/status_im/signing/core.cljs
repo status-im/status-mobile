@@ -5,7 +5,6 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
             [status-im.keycard.card :as keycard.card]
@@ -20,6 +19,7 @@
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
 
@@ -154,19 +154,19 @@
                      :tip-cap   maxPriorityFeePerGas
                      :gas-limit gas-limit}]
     (log/info "[signing] prepare-unconfirmed-transaction" tx)
-    {:db             (-> db
-                         ;;remove old transaction, because we replace it with the new one
-                         (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
-                         (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))
-     ::json-rpc/call [{:method     "wallet_storePendingTransaction"
-                       :params     [(-> tx
-                                        (dissoc :gas-price :gas-limit)
-                                        (assoc :gasPrice
-                                               (money/to-fixed (money/bignumber gasPrice))
-                                               :gasLimit (money/to-fixed (money/bignumber gas)))
-                                        clj->js)]
-                       :on-success #(log/info "pending transfer is saved")
-                       :on-error   #(log/info "pending transfer was not saved" %)}]}))
+    {:db            (-> db
+                        ;;remove old transaction, because we replace it with the new one
+                        (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
+                        (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))
+     :json-rpc/call [{:method     "wallet_storePendingTransaction"
+                      :params     [(-> tx
+                                       (dissoc :gas-price :gas-limit)
+                                       (assoc :gasPrice
+                                              (money/to-fixed (money/bignumber gasPrice))
+                                              :gasLimit (money/to-fixed (money/bignumber gas)))
+                                       clj->js)]
+                      :on-success #(log/info "pending transfer is saved")
+                      :on-error   #(log/info "pending transfer was not saved" %)}]}))
 
 (defn get-method-type
   [data]
@@ -311,26 +311,26 @@
 (fx/defn send-transaction-message
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method      "wakuext_sendTransaction"
-                     ;; We make sure `value` is serialized as string, and not
-                     ;; as an integer or big-int
-                     :params      [chat-id (str value) contract transaction-hash
-                                   (or (:result (types/json->clj signature))
-                                       (ethereum/normalized-hex signature))]
-                     :js-response true
-                     :on-success
-                     #(re-frame/dispatch [:transport/message-sent %])}]})
+  {:json-rpc/call [{:method      "wakuext_sendTransaction"
+                    ;; We make sure `value` is serialized as string, and not
+                    ;; as an integer or big-int
+                    :params      [chat-id (str value) contract transaction-hash
+                                  (or (:result (types/json->clj signature))
+                                      (ethereum/normalized-hex signature))]
+                    :js-response true
+                    :on-success
+                    #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method      "wakuext_acceptRequestTransaction"
-                     :params      [transaction-hash message-id
-                                   (or (:result (types/json->clj signature))
-                                       (ethereum/normalized-hex signature))]
-                     :js-response true
-                     :on-success
-                     #(re-frame/dispatch [:transport/message-sent %])}]})
+  {:json-rpc/call [{:method      "wakuext_acceptRequestTransaction"
+                    :params      [transaction-hash message-id
+                                  (or (:result (types/json->clj signature))
+                                      (ethereum/normalized-hex signature))]
+                    :js-response true
+                    :on-success
+                    #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
@@ -495,8 +495,8 @@
                          :chat-id  identity
                          :command? true
                          :data     (status/encode-transfer to-norm amount-hex)})}))
-      {:db             db
-       ::json-rpc/call
+      {:db            db
+       :json-rpc/call
        [{:method      "wakuext_requestAddressForTransaction"
          :params      [(:current-chat-id db)
                        from-address

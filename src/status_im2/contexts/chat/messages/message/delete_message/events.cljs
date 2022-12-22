@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.message.delete-message.events
   (:require [status-im.chat.models.message-list :as message-list]
             [status-im.utils.datetime :as datetime]
-            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -71,14 +70,14 @@
   {:events [:chat.ui/delete-message-and-send]}
   [{:keys [db]} {:keys [message-id chat-id]}]
   (when-let [message (get-in db [:messages chat-id message-id])]
-    (cond-> {:db             (update-db-clear-undo-timer db chat-id message-id)
-             ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                               :params      [message-id]
-                               :js-response true
-                               :on-error    #(log/error "failed to delete message "
-                                                        {:message-id message-id :error %})
-                               :on-success  #(rf/dispatch [:sanitize-messages-and-process-response
-                                                           %])}]}
+    (cond-> {:db            (update-db-clear-undo-timer db chat-id message-id)
+             :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
+                              :params      [message-id]
+                              :js-response true
+                              :on-error    #(log/error "failed to delete message "
+                                                       {:message-id message-id :error %})
+                              :on-success  #(rf/dispatch [:sanitize-messages-and-process-response
+                                                          %])}]}
       (get-in db [:pin-messages chat-id message-id])
       (assoc :dispatch
              [:pin-message/send-pin-message

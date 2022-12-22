@@ -45,7 +45,7 @@
                            (transforms/js->clj (.-result response-js)))))))))))
 
 (re-frame/reg-fx
- ::call
+ :json-rpc/call
  (fn [params]
    (doseq [param params]
      (call param))))

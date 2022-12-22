@@ -4,7 +4,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.network.core :as network]
             [status-im.ui.screens.browser.eip3085.sheet :as sheet]
             [status-im.utils.fx :as fx]
@@ -23,13 +22,13 @@
 (fx/defn allow-permission
   {:events [:eip3085.ui/dapp-permission-allowed]}
   [{:keys [db] :as cofx} message-id {:keys [new-networks id]}]
-  {:db             (assoc db :networks/networks new-networks)
-   ::json-rpc/call [{:method     "settings_saveSetting"
-                     :params     [:networks/networks (vals new-networks)]
-                     :on-success #(re-frame/dispatch [:eip3085/send-success-call-to-bridge cofx id
-                                                      message-id])
-                     :on-error   #(log/error "failed to perform settings_saveSetting" %)}]
-   :dispatch       [:bottom-sheet/hide]})
+  {:db            (assoc db :networks/networks new-networks)
+   :json-rpc/call [{:method     "settings_saveSetting"
+                    :params     [:networks/networks (vals new-networks)]
+                    :on-success #(re-frame/dispatch [:eip3085/send-success-call-to-bridge cofx id
+                                                     message-id])
+                    :on-error   #(log/error "failed to perform settings_saveSetting" %)}]
+   :dispatch      [:bottom-sheet/hide]})
 
 (fx/defn deny-permission
   {:events [:eip3085.ui/dapp-permission-denied]}

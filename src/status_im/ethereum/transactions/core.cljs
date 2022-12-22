@@ -6,10 +6,10 @@
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.wallet.core :as wallet]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
 
 (def confirmations-count-threshold 12)

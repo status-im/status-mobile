@@ -5,7 +5,6 @@
             [status-im.constants :as constants]
             status-im.events
             [status-im.test-helpers :as h]
-            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.contexts.activity-center.notification-types :as types]))
 
@@ -24,7 +23,7 @@
     (fn [logs]
       (when before-test
         (before-test))
-      (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
+      (h/stub-fx-with-callbacks :json-rpc/call :on-error (constantly :fake-error))
 
       (rf/dispatch event)
 
@@ -41,7 +40,7 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (let [notifications {types/one-to-one-chat
                             {:all    {:cursor ""
                                       :data   [{:id   notification-id
@@ -66,7 +65,7 @@
            notif-3     {:id "0x3" :read false :type types/one-to-one-chat}
            new-notif-3 (assoc notif-3 :read true)
            new-notif-2 (assoc notif-2 :read true)]
-       (h/stub-fx-with-callbacks ::json-rpc/call :on-success (constantly nil))
+       (h/stub-fx-with-callbacks :json-rpc/call :on-success (constantly nil))
        (rf/dispatch [:test/assoc-in [:activity-center]
                      {:notifications {types/one-to-one-chat
                                       {:all    {:cursor "" :data [notif-3 notif-2 notif-1]}
@@ -160,10 +159,10 @@
   (rf-test/run-test-sync
    (setup)
    (let [spy-queue (atom [])]
-     (h/stub-fx-with-callbacks ::json-rpc/call
+     (h/stub-fx-with-callbacks :json-rpc/call
                                :on-success
                                (constantly contact-verification-rpc-response))
-     (h/spy-fx spy-queue ::json-rpc/call)
+     (h/spy-fx spy-queue :json-rpc/call)
      (rf/dispatch event)
 
      (is (= {types/no-type
@@ -375,14 +374,14 @@
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
-        ::json-rpc/call
+        :json-rpc/call
         :on-success
         (constantly {:cursor        "10"
                      :notifications [{:id     "0x1"
                                       :type   types/one-to-one-chat
                                       :read   false
                                       :chatId "0x9"}]}))
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
 
        (rf/dispatch [:activity-center.notifications/fetch-first-page
                      {:filter-type types/one-to-one-chat}])
@@ -409,7 +408,7 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
@@ -429,7 +428,7 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
@@ -447,14 +446,14 @@
      (setup)
      (let [spy-queue (atom [])]
        (h/stub-fx-with-callbacks
-        ::json-rpc/call
+        :json-rpc/call
         :on-success
         (constantly {:cursor        ""
                      :notifications [{:id     "0x1"
                                       :type   types/mention
                                       :read   false
                                       :chatId "0x9"}]}))
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
@@ -484,7 +483,7 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :all])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
@@ -503,9 +502,9 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
+       (h/stub-fx-with-callbacks :json-rpc/call :on-error (constantly :fake-error))
        (h/spy-event-fx spy-queue :activity-center.notifications/fetch-error)
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/spy-fx spy-queue :json-rpc/call)
        (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                      :unread])
        (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
@@ -537,7 +536,7 @@
       (is (= {:method "wakuext_activityCenterNotificationsBy"
               :params ["" per-page types/contact-request activity-center/status-unread]}
              (-> actual
-                 ::json-rpc/call
+                 :json-rpc/call
                  first
                  (select-keys [:method :params])))))))
 
@@ -546,8 +545,8 @@
     (rf-test/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
-       (h/stub-fx-with-callbacks ::json-rpc/call :on-success (constantly 9))
-       (h/spy-fx spy-queue ::json-rpc/call)
+       (h/stub-fx-with-callbacks :json-rpc/call :on-success (constantly 9))
+       (h/spy-fx spy-queue :json-rpc/call)
 
        (rf/dispatch [:activity-center.notifications/fetch-unread-count])
 

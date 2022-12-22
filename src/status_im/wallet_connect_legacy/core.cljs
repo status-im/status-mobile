@@ -3,7 +3,6 @@
             [status-im.browser.core :as browser]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.signing.core :as signing]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
@@ -176,7 +175,7 @@
                                             (update :wallet-connect-legacy/sessions
                                                     conj
                                                     session))
-     ::json-rpc/call                    [{:method     "wakuext_addWalletConnectSession"
+     :json-rpc/call                     [{:method     "wakuext_addWalletConnectSession"
                                           :params     [{:id       peer-id
                                                         :info     info
                                                         :dappName dapp-name
@@ -251,19 +250,19 @@
   {:events [:wallet-connect-legacy/disconnect-by-peer-id]}
   [{:keys [db]} peer-id]
   (let [sessions (get db :wallet-connect-legacy/sessions)]
-    {:db             (-> db
-                         (assoc :wallet-connect-legacy/sessions
-                                (filter #(not= peer-id (get-in % [:params 0 :peerId])) sessions))
-                         (dissoc :wallet-connect/session-managed)
-                         (dissoc :wallet-connect/session-connected))
-     ::json-rpc/call [{:method     "wakuext_destroyWalletConnectSession"
-                       :params     [peer-id]
-                       :on-success #(log/debug
-                                     "wakuext_destroyWalletConnectSession success call back , data ===>"
-                                     %)
-                       :on-error   #(log/debug
-                                     "wakuext_destroyWalletConnectSession error call back , data ===>"
-                                     %)}]}))
+    {:db            (-> db
+                        (assoc :wallet-connect-legacy/sessions
+                               (filter #(not= peer-id (get-in % [:params 0 :peerId])) sessions))
+                        (dissoc :wallet-connect/session-managed)
+                        (dissoc :wallet-connect/session-connected))
+     :json-rpc/call [{:method     "wakuext_destroyWalletConnectSession"
+                      :params     [peer-id]
+                      :on-success #(log/debug
+                                    "wakuext_destroyWalletConnectSession success call back , data ===>"
+                                    %)
+                      :on-error   #(log/debug
+                                    "wakuext_destroyWalletConnectSession error call back , data ===>"
+                                    %)}]}))
 
 (fx/defn disconnect-session
   {:events [:wallet-connect-legacy/disconnect]}
@@ -280,7 +279,7 @@
                                                                   sessions))
                                                    (dissoc :wallet-connect/session-managed)
                                                    (dissoc :wallet-connect/session-connected))
-     ::json-rpc/call
+     :json-rpc/call
      [{:method     "wakuext_destroyWalletConnectSession"
        :params     [peer-id]
        :on-success #(log/debug "wakuext_destroyWalletConnectSession success call back , data ===>" %)
@@ -390,8 +389,8 @@
 (fx/defn get-connector-session-from-db
   {:events [:get-connector-session-from-db]}
   [_]
-  {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
-                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
-                     :on-error   #(log/debug
-                                   "wakuext_getWalletConnectSession error call back , data ===>"
-                                   %)}]})
+  {:json-rpc/call [{:method     "wakuext_getWalletConnectSession"
+                    :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
+                    :on-error   #(log/debug
+                                  "wakuext_getWalletConnectSession error call back , data ===>"
+                                  %)}]})

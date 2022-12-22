@@ -3,7 +3,6 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
@@ -191,9 +190,9 @@
   {:events [:multiaccounts.ui/profile-picture-show-to-switched]}
   [cofx id]
   (fx/merge cofx
-            {::json-rpc/call [{:method     "wakuext_changeIdentityImageShowTo"
-                               :params     [id]
-                               :on-success #(log/debug "picture settings changed successfully")}]}
+            {:json-rpc/call [{:method     "wakuext_changeIdentityImageShowTo"
+                              :params     [id]
+                              :on-success #(log/debug "picture settings changed successfully")}]}
             (multiaccounts.update/optimistic :profile-pictures-show-to id)))
 
 (fx/defn switch-appearance-profile
@@ -212,10 +211,10 @@
   [cofx path ax ay bx by]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
     (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
-                                 :params     [key-uid (clean-path path) ax ay bx by]
-                                 ;; NOTE: In case of an error we can show a toast error
-                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+              {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
+                                :params     [key-uid (clean-path path) ax ay bx by]
+                                ;; NOTE: In case of an error we can show a toast error
+                                :on-success #(re-frame/dispatch [::update-local-picture %])}]}
               (bottom-sheet/hide-bottom-sheet))))
 
 (fx/defn save-profile-picture-from-url
@@ -223,10 +222,10 @@
   [cofx url]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
     (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
-                                 :params     [key-uid url]
-                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
-                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+              {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
+                                :params     [key-uid url]
+                                :on-error   #(log/error "::save-profile-picture-from-url error" %)
+                                :on-success #(re-frame/dispatch [::update-local-picture %])}]}
               (bottom-sheet/hide-bottom-sheet))))
 
 (comment
@@ -239,20 +238,20 @@
   [cofx name]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
     (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
-                                 :params     [key-uid]
-                                 ;; NOTE: In case of an error we could fallback to previous image in UI
-                                 ;; with a toast error
-                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
+              {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
+                                :params     [key-uid]
+                                ;; NOTE: In case of an error we could fallback to previous image in UI
+                                ;; with a toast error
+                                :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
               (multiaccounts.update/optimistic :images nil)
               (bottom-sheet/hide-bottom-sheet))))
 
 (fx/defn get-profile-picture
   [cofx]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    {::json-rpc/call [{:method     "multiaccounts_getIdentityImages"
-                       :params     [key-uid]
-                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
+    {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
+                      :params     [key-uid]
+                      :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
 
 (fx/defn store-profile-picture
   {:events [::update-local-picture]}

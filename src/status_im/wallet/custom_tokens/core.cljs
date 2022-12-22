@@ -3,7 +3,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
@@ -34,13 +33,13 @@
       {:db (assoc db
                   :wallet/custom-token-screen
                   {:contract contract :error (i18n/label :t/already-have-asset)})}
-      {:db             (assoc db
-                              :wallet/custom-token-screen
-                              {:contract contract :in-progress? true})
-       ::json-rpc/call [{:method     "wallet_discoverToken"
-                         :params     [(ethereum/chain-id db) contract]
-                         :on-success #(re-frame/dispatch [:wallet.custom-token/token-discover-result %])
-                         :on-error   #(re-frame/dispatch [:wallet.custom-token/not-supported])}]})
+      {:db            (assoc db
+                             :wallet/custom-token-screen
+                             {:contract contract :in-progress? true})
+       :json-rpc/call [{:method     "wallet_discoverToken"
+                        :params     [(ethereum/chain-id db) contract]
+                        :on-success #(re-frame/dispatch [:wallet.custom-token/token-discover-result %])
+                        :on-error   #(re-frame/dispatch [:wallet.custom-token/not-supported])}]})
     {:db (assoc db
                 :wallet/custom-token-screen
                 {:contract contract
@@ -77,12 +76,12 @@
                                                  :decimals (int decimals)
                                                  :color    (rand-nth colors/chat-colors)}]
     (fx/merge cofx
-              {:db             (assoc-in db
-                                [:wallet/all-tokens contract]
-                                (assoc new-token :custom? true))
-               ::json-rpc/call [{:method     "wallet_addCustomToken"
-                                 :params     [new-token]
-                                 :on-success #()}]}
+              {:db            (assoc-in db
+                               [:wallet/all-tokens contract]
+                               (assoc new-token :custom? true))
+               :json-rpc/call [{:method     "wallet_addCustomToken"
+                                :params     [new-token]
+                                :on-success #()}]}
               (wallet/add-custom-token new-token)
               (prices/update-prices)
               (navigation/navigate-back))))
@@ -91,10 +90,10 @@
   {:events [:wallet.custom-token.ui/remove-pressed]}
   [{:keys [db] :as cofx} {:keys [address] :as token} navigate-back?]
   (fx/merge cofx
-            {:db             (update db :wallet/all-tokens dissoc address)
-             ::json-rpc/call [{:method     "wallet_deleteCustomToken"
-                               :params     [address]
-                               :on-success #()}]}
+            {:db            (update db :wallet/all-tokens dissoc address)
+             :json-rpc/call [{:method     "wallet_deleteCustomToken"
+                              :params     [address]
+                              :on-success #()}]}
             (wallet/remove-custom-token token)
             (when navigate-back?
               (navigation/navigate-back))))

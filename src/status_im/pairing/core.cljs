@@ -1,11 +1,11 @@
 (ns status-im.pairing.core
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
+            [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
@@ -59,9 +59,9 @@
 (fx/defn send-pair-installation
   {:events [:pairing.ui/pair-devices-pressed]}
   [_]
-  {::json-rpc/call [{:method     "wakuext_sendPairInstallation"
-                     :params     []
-                     :on-success #(log/info "sent pair installation message")}]})
+  {:json-rpc/call [{:method     "wakuext_sendPairInstallation"
+                    :params     []
+                    :on-success #(log/info "sent pair installation message")}]})
 
 (fx/defn prompt-dismissed
   {:events [:pairing.ui/prompt-dismissed]}
@@ -197,9 +197,9 @@
   [{:keys [db]}]
   (let [multiaccount                            (:multiaccount db)
         {:keys [name preferred-name identicon]} multiaccount]
-    {::json-rpc/call [{:method     "wakuext_syncDevices"
-                       :params     [(or preferred-name name) identicon]
-                       :on-success #(log/debug "successfully synced devices")}]}))
+    {:json-rpc/call [{:method     "wakuext_syncDevices"
+                      :params     [(or preferred-name name) identicon]
+                      :on-success #(log/debug "successfully synced devices")}]}))
 
 (defn installation<-rpc
   [{:keys [metadata id enabled timestamp]}]

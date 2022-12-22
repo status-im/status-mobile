@@ -1,6 +1,5 @@
 (ns status-im.network.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.network.core :as network.core]))
 
 (deftest valid-rpc-url-test
@@ -143,7 +142,7 @@
                                                                    :UpstreamConfig
                                                                    {:Enabled true
                                                                     :URL     "upstream-url"}}}}}})]
-      (is (= "settings_saveSetting" (:method (first (::json-rpc/call fx)))))
+      (is (= "settings_saveSetting" (:method (first (:json-rpc/call fx)))))
       (is (nil? (:networks/manage (:db fx))))
       (testing "and check that it has an id with `-` and the correct mainnet NetworkId"
         (is (= 1 (get-in fx [:db :networks/networks "randomid" :config :NetworkId])))))))
@@ -186,6 +185,6 @@
                                                                    :UpstreamConfig
                                                                    {:Enabled true
                                                                     :URL     "upstream-url"}}}}}})]
-      (is (= "settings_saveSetting" (:method (first (::json-rpc/call fx)))))
+      (is (= "settings_saveSetting" (:method (first (:json-rpc/call fx)))))
       (is (nil? (:networks/manage (:db fx))))
       (is (get-in fx [:db :networks/networks "random"])))))

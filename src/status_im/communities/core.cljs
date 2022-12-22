@@ -7,7 +7,6 @@
             [status-im.async-storage.core :as async-storage]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.constants :as constants]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :refer [>evt]]
@@ -125,47 +124,47 @@
 (fx/defn export
   {:events [::export-pressed]}
   [cofx community-id]
-  {::json-rpc/call [{:method     "wakuext_exportCommunity"
-                     :params     [community-id]
-                     :on-success #(re-frame/dispatch [:show-popover
-                                                      {:view          :export-community
-                                                       :community-key %}])
-                     :on-error   #(do
-                                    (log/error "failed to export community" community-id %)
-                                    (re-frame/dispatch [::failed-to-export %]))}]})
+  {:json-rpc/call [{:method     "wakuext_exportCommunity"
+                    :params     [community-id]
+                    :on-success #(re-frame/dispatch [:show-popover
+                                                     {:view          :export-community
+                                                      :community-key %}])
+                    :on-error   #(do
+                                   (log/error "failed to export community" community-id %)
+                                   (re-frame/dispatch [::failed-to-export %]))}]})
 
 (fx/defn import-community
   {:events [::import]}
   [cofx community-key]
-  {::json-rpc/call [{:method      "wakuext_importCommunity"
-                     :params      [community-key]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::community-imported %])
-                     :on-error    #(do
-                                     (log/error "failed to import community" %)
-                                     (re-frame/dispatch [::failed-to-import %]))}]})
+  {:json-rpc/call [{:method      "wakuext_importCommunity"
+                    :params      [community-key]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::community-imported %])
+                    :on-error    #(do
+                                    (log/error "failed to import community" %)
+                                    (re-frame/dispatch [::failed-to-import %]))}]})
 
 (fx/defn join
   {:events [:communities/join]}
   [cofx community-id]
-  {::json-rpc/call [{:method      "wakuext_joinCommunity"
-                     :params      [community-id]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::joined %])
-                     :on-error    #(do
-                                     (log/error "failed to join community" community-id %)
-                                     (re-frame/dispatch [::failed-to-join %]))}]})
+  {:json-rpc/call [{:method      "wakuext_joinCommunity"
+                    :params      [community-id]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::joined %])
+                    :on-error    #(do
+                                    (log/error "failed to join community" community-id %)
+                                    (re-frame/dispatch [::failed-to-join %]))}]})
 
 (fx/defn request-to-join
   {:events [::request-to-join]}
   [cofx community-id]
-  {::json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
-                     :params      [{:communityId community-id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::requested-to-join %])
-                     :on-error    #(do
-                                     (log/error "failed to request to join community" community-id %)
-                                     (re-frame/dispatch [::failed-to-request-to-join %]))}]})
+  {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
+                    :params      [{:communityId community-id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::requested-to-join %])
+                    :on-error    #(do
+                                    (log/error "failed to request to join community" community-id %)
+                                    (re-frame/dispatch [::failed-to-request-to-join %]))}]})
 
 (fx/defn leave
   {:events [:communities/leave]}
@@ -174,7 +173,7 @@
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-     ::json-rpc/call              [{:method      "wakuext_leaveCommunity"
+     :json-rpc/call               [{:method      "wakuext_leaveCommunity"
                                     :params      [community-id]
                                     :js-response true
                                     :on-success  #(re-frame/dispatch [::left %])
@@ -186,26 +185,26 @@
 
 (fx/defn fetch
   [_]
-  {::json-rpc/call [{:method     "wakuext_communities"
-                     :params     []
-                     :on-success #(re-frame/dispatch [::fetched %])
-                     :on-error   #(do
-                                    (log/error "failed to fetch communities" %)
-                                    (re-frame/dispatch [::failed-to-fetch %]))}]})
+  {:json-rpc/call [{:method     "wakuext_communities"
+                    :params     []
+                    :on-success #(re-frame/dispatch [::fetched %])
+                    :on-error   #(do
+                                   (log/error "failed to fetch communities" %)
+                                   (re-frame/dispatch [::failed-to-fetch %]))}]})
 
 (fx/defn chat-created
   {:events [::chat-created]}
   [_ community-id user-pk]
-  {::json-rpc/call [{:method      "wakuext_sendChatMessage"
-                     :params      [{:chatId      user-pk
-                                    :text        "Upgrade here to see an invitation to community"
-                                    :communityId community-id
-                                    :contentType constants/content-type-community}]
-                     :js-response true
-                     :on-success
-                     #(re-frame/dispatch [:transport/message-sent %])
-                     :on-error
-                     #(log/error "failed to send a message" %)}]})
+  {:json-rpc/call [{:method      "wakuext_sendChatMessage"
+                    :params      [{:chatId      user-pk
+                                   :text        "Upgrade here to see an invitation to community"
+                                   :communityId community-id
+                                   :contentType constants/content-type-community}]
+                    :js-response true
+                    :on-success
+                    #(re-frame/dispatch [:transport/message-sent %])
+                    :on-error
+                    #(log/error "failed to send a message" %)}]})
 
 (fx/defn invite-users
   {:events [::invite-people-confirmation-pressed]}
@@ -215,14 +214,14 @@
                        (conj contacts user-pk)
                        contacts)]
     (when (seq pks)
-      {::json-rpc/call [{:method      "wakuext_inviteUsersToCommunity"
-                         :params      [{:communityId community-id
-                                        :users       pks}]
-                         :js-response true
-                         :on-success  #(re-frame/dispatch [::people-invited %])
-                         :on-error    #(do
-                                         (log/error "failed to invite-user community" %)
-                                         (re-frame/dispatch [::failed-to-invite-people %]))}]})))
+      {:json-rpc/call [{:method      "wakuext_inviteUsersToCommunity"
+                        :params      [{:communityId community-id
+                                       :users       pks}]
+                        :js-response true
+                        :on-success  #(re-frame/dispatch [::people-invited %])
+                        :on-error    #(do
+                                        (log/error "failed to invite-user community" %)
+                                        (re-frame/dispatch [::failed-to-invite-people %]))}]})))
 (fx/defn share-community
   {:events [::share-community-confirmation-pressed]}
   [cofx user-pk contacts]
@@ -231,14 +230,14 @@
                        (conj contacts user-pk)
                        contacts)]
     (when (seq pks)
-      {::json-rpc/call [{:method      "wakuext_shareCommunity"
-                         :params      [{:communityId community-id
-                                        :users       pks}]
-                         :js-response true
-                         :on-success  #(re-frame/dispatch [::people-invited %])
-                         :on-error    #(do
-                                         (log/error "failed to invite-user community" %)
-                                         (re-frame/dispatch [::failed-to-share-community %]))}]})))
+      {:json-rpc/call [{:method      "wakuext_shareCommunity"
+                        :params      [{:communityId community-id
+                                       :users       pks}]
+                        :js-response true
+                        :on-success  #(re-frame/dispatch [::people-invited %])
+                        :on-error    #(do
+                                        (log/error "failed to invite-user community" %)
+                                        (re-frame/dispatch [::failed-to-share-community %]))}]})))
 
 (fx/defn create
   {:events [::create-confirmation-pressed]}
@@ -254,52 +253,52 @@
                   :imageBx     crop-size
                   :imageBy     crop-size}]
 
-      {::json-rpc/call [{:method      "wakuext_createCommunity"
-                         :params      [params]
-                         :js-response true
-                         :on-success  #(re-frame/dispatch [::community-created %])
-                         :on-error    #(do
-                                         (log/error "failed to create community" %)
-                                         (re-frame/dispatch [::failed-to-create-community %]))}]})))
+      {:json-rpc/call [{:method      "wakuext_createCommunity"
+                        :params      [params]
+                        :js-response true
+                        :on-success  #(re-frame/dispatch [::community-created %])
+                        :on-error    #(do
+                                        (log/error "failed to create community" %)
+                                        (re-frame/dispatch [::failed-to-create-community %]))}]})))
 
 (fx/defn edit
   {:events [::edit-confirmation-pressed]}
   [{:keys [db]}]
   (let [{:keys [id name description membership new-image color]} (get db :communities/create)]
-    {::json-rpc/call [{:method     "wakuext_editCommunity"
-                       :params     [{:communityID id
-                                     :name        name
-                                     :description description
-                                     :color       color
-                                     :image       (string/replace-first (str new-image) #"file://" "")
-                                     :imageAx     0
-                                     :imageAy     0
-                                     :imageBx     crop-size
-                                     :imageBy     crop-size
-                                     :membership  membership}]
-                       :on-success #(re-frame/dispatch [::community-edited %])
-                       :on-error   #(do
-                                      (log/error "failed to edit community" %)
-                                      (re-frame/dispatch [::failed-to-edit-community %]))}]}))
+    {:json-rpc/call [{:method     "wakuext_editCommunity"
+                      :params     [{:communityID id
+                                    :name        name
+                                    :description description
+                                    :color       color
+                                    :image       (string/replace-first (str new-image) #"file://" "")
+                                    :imageAx     0
+                                    :imageAy     0
+                                    :imageBx     crop-size
+                                    :imageBy     crop-size
+                                    :membership  membership}]
+                      :on-success #(re-frame/dispatch [::community-edited %])
+                      :on-error   #(do
+                                     (log/error "failed to edit community" %)
+                                     (re-frame/dispatch [::failed-to-edit-community %]))}]}))
 
 (fx/defn create-channel
   {:events [::create-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
   (let [community-id                           (fetch-community-id-input cofx)
         {:keys [name description color emoji]} (get db :communities/create-channel)]
-    {::json-rpc/call [{:method      "wakuext_createCommunityChat"
-                       :params      [community-id
-                                     {:identity    {:display_name name
-                                                    :description  description
-                                                    :color        color
-                                                    :emoji        emoji}
-                                      :permissions {:access
-                                                    constants/community-channel-access-no-membership}}]
-                       :js-response true
-                       :on-success  #(re-frame/dispatch [::community-channel-created %])
-                       :on-error    #(do
-                                       (log/error "failed to create community channel" %)
-                                       (re-frame/dispatch [::failed-to-create-community-channel %]))}]}))
+    {:json-rpc/call [{:method      "wakuext_createCommunityChat"
+                      :params      [community-id
+                                    {:identity    {:display_name name
+                                                   :description  description
+                                                   :color        color
+                                                   :emoji        emoji}
+                                     :permissions {:access
+                                                   constants/community-channel-access-no-membership}}]
+                      :js-response true
+                      :on-success  #(re-frame/dispatch [::community-channel-created %])
+                      :on-error    #(do
+                                      (log/error "failed to create community channel" %)
+                                      (re-frame/dispatch [::failed-to-create-community-channel %]))}]}))
 
 (def community-chat-id-length 68)
 
@@ -312,22 +311,22 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [name description color community-id emoji edit-channel-id category-id position]}
         (get db :communities/create-channel)]
-    {::json-rpc/call [{:method      "wakuext_editCommunityChat"
-                       :params      [community-id
-                                     edit-channel-id
-                                     {:identity    {:display_name name
-                                                    :description  description
-                                                    :color        color
-                                                    :emoji        emoji}
-                                      :category_id category-id
-                                      :position    position
-                                      :permissions {:access
-                                                    constants/community-channel-access-no-membership}}]
-                       :js-response true
-                       :on-success  #(re-frame/dispatch [::community-channel-edited %])
-                       :on-error    #(do
-                                       (log/error "failed to edit community channel" %)
-                                       (re-frame/dispatch [::failed-to-edit-community-channel %]))}]}))
+    {:json-rpc/call [{:method      "wakuext_editCommunityChat"
+                      :params      [community-id
+                                    edit-channel-id
+                                    {:identity    {:display_name name
+                                                   :description  description
+                                                   :color        color
+                                                   :emoji        emoji}
+                                     :category_id category-id
+                                     :position    position
+                                     :permissions {:access
+                                                   constants/community-channel-access-no-membership}}]
+                      :js-response true
+                      :on-success  #(re-frame/dispatch [::community-channel-edited %])
+                      :on-error    #(do
+                                      (log/error "failed to edit community channel" %)
+                                      (re-frame/dispatch [::failed-to-edit-community-channel %]))}]}))
 
 (defn require-membership?
   [permissions]
@@ -488,15 +487,15 @@
 (fx/defn member-ban
   {:events [::member-ban]}
   [cofx community-id public-key]
-  {::json-rpc/call [{:method      "wakuext_banUserFromCommunity"
-                     :params      [{:communityId community-id
-                                    :user        public-key}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::member-banned %])
-                     :on-error    #(log/error "failed to ban user from community"
-                                              community-id
-                                              public-key
-                                              %)}]})
+  {:json-rpc/call [{:method      "wakuext_banUserFromCommunity"
+                    :params      [{:communityId community-id
+                                   :user        public-key}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::member-banned %])
+                    :on-error    #(log/error "failed to ban user from community"
+                                             community-id
+                                             public-key
+                                             %)}]})
 
 (fx/defn member-kicked
   {:events [::member-kicked]}
@@ -508,14 +507,14 @@
 (fx/defn member-kick
   {:events [::member-kick]}
   [cofx community-id public-key]
-  {::json-rpc/call [{:method      "wakuext_removeUserFromCommunity"
-                     :params      [community-id public-key]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::member-kicked %])
-                     :on-error    #(log/error "failed to remove user from community"
-                                              community-id
-                                              public-key
-                                              %)}]})
+  {:json-rpc/call [{:method      "wakuext_removeUserFromCommunity"
+                    :params      [community-id public-key]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::member-kicked %])
+                    :on-error    #(log/error "failed to remove user from community"
+                                             community-id
+                                             public-key
+                                             %)}]})
 
 (fx/defn delete-community
   {:events [::delete-community]}
@@ -532,10 +531,10 @@
 (fx/defn fetch-requests-to-join
   {:events [::fetch-requests-to-join]}
   [cofx community-id]
-  {::json-rpc/call [{:method     "wakuext_pendingRequestsToJoinForCommunity"
-                     :params     [community-id]
-                     :on-success #(re-frame/dispatch [::requests-to-join-fetched community-id %])
-                     :on-error   #(log/error "failed to fetch requests-to-join" community-id %)}]})
+  {:json-rpc/call [{:method     "wakuext_pendingRequestsToJoinForCommunity"
+                    :params     [community-id]
+                    :on-success #(re-frame/dispatch [::requests-to-join-fetched community-id %])
+                    :on-error   #(log/error "failed to fetch requests-to-join" community-id %)}]})
 
 (defn fetch-requests-to-join!
   [community-id]
@@ -558,27 +557,27 @@
 (fx/defn accept-request-to-join-pressed
   {:events [:communities.ui/accept-request-to-join-pressed]}
   [cofx community-id request-id]
-  {::json-rpc/call [{:method      "wakuext_acceptRequestToJoinCommunity"
-                     :params      [{:id request-id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::request-to-join-accepted community-id request-id
-                                                       %])
-                     :on-error    #(log/error "failed to accept requests-to-join"
-                                              community-id
-                                              request-id
-                                              %)}]})
+  {:json-rpc/call [{:method      "wakuext_acceptRequestToJoinCommunity"
+                    :params      [{:id request-id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::request-to-join-accepted community-id request-id
+                                                      %])
+                    :on-error    #(log/error "failed to accept requests-to-join"
+                                             community-id
+                                             request-id
+                                             %)}]})
 
 (fx/defn decline-request-to-join-pressed
   {:events [:communities.ui/decline-request-to-join-pressed]}
   [cofx community-id request-id]
-  {::json-rpc/call [{:method      "wakuext_declineRequestToJoinCommunity"
-                     :params      [{:id request-id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [::request-to-join-declined community-id request-id
-                                                       %])
-                     :on-error    #(log/error "failed to decline requests-to-join"
-                                              community-id
-                                              request-id)}]})
+  {:json-rpc/call [{:method      "wakuext_declineRequestToJoinCommunity"
+                    :params      [{:id request-id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [::request-to-join-declined community-id request-id
+                                                      %])
+                    :on-error    #(log/error "failed to decline requests-to-join"
+                                             community-id
+                                             request-id)}]})
 
 (fx/defn switch-communities-enabled
   {:events [:multiaccounts.ui/switch-communities-enabled]}
@@ -589,15 +588,15 @@
 (fx/defn create-category
   {:events [::create-category-confirmation-pressed]}
   [_ community-id category-title chat-ids]
-  {::json-rpc/call [{:method      "wakuext_createCommunityCategory"
-                     :params      [{:communityId  community-id
-                                    :categoryName category-title
-                                    :chatIds      (map #(string/replace % community-id "") chat-ids)}]
-                     :js-response true
-                     :on-success  #(do
-                                     (re-frame/dispatch [:navigate-back])
-                                     (re-frame/dispatch [:sanitize-messages-and-process-response %]))
-                     :on-error    #(log/error "failed to create community category" %)}]})
+  {:json-rpc/call [{:method      "wakuext_createCommunityCategory"
+                    :params      [{:communityId  community-id
+                                   :categoryName category-title
+                                   :chatIds      (map #(string/replace % community-id "") chat-ids)}]
+                    :js-response true
+                    :on-success  #(do
+                                    (re-frame/dispatch [:navigate-back])
+                                    (re-frame/dispatch [:sanitize-messages-and-process-response %]))
+                    :on-error    #(log/error "failed to create community category" %)}]})
 
 (fx/defn remove-chat-from-category
   {:events [:remove-chat-from-community-category]}
@@ -606,48 +605,48 @@
         category-chats (map :id
                             (filter #(and (= (:categoryID %) categoryID) (not= id (:id %)))
                                     (vals (get-in db [:communities community-id :chats]))))]
-    {::json-rpc/call [{:method      "wakuext_editCommunityCategory"
-                       :params      [{:communityId  community-id
-                                      :categoryId   categoryID
-                                      :categoryName (:name category)
-                                      :chatIds      category-chats}]
-                       :js-response true
-                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                       :on-error    #(log/error "failed to remove chat from community" %)}]}))
+    {:json-rpc/call [{:method      "wakuext_editCommunityCategory"
+                      :params      [{:communityId  community-id
+                                     :categoryId   categoryID
+                                     :categoryName (:name category)
+                                     :chatIds      category-chats}]
+                      :js-response true
+                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                      :on-error    #(log/error "failed to remove chat from community" %)}]}))
 
 (fx/defn delete-community-chat
   {:events [:delete-community-chat]}
   [_ community-id chat-id]
-  {::json-rpc/call [{:method      "wakuext_deleteCommunityChat"
-                     :params      [community-id chat-id]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error    #(log/error "failed to delete community chat" %)}]})
+  {:json-rpc/call [{:method      "wakuext_deleteCommunityChat"
+                    :params      [community-id chat-id]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to delete community chat" %)}]})
 
 (fx/defn delete-category
   {:events [:delete-community-category]}
   [_ community-id category-id]
-  {::json-rpc/call [{:method      "wakuext_deleteCommunityCategory"
-                     :params      [{:communityId community-id
-                                    :categoryId  category-id}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error    #(log/error "failed to delete community category" %)}]})
+  {:json-rpc/call [{:method      "wakuext_deleteCommunityCategory"
+                    :params      [{:communityId community-id
+                                   :categoryId  category-id}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to delete community category" %)}]})
 
 (fx/defn change-category
   {:events [::change-category-confirmation-pressed]}
   [cofx community-id category-id {:keys [id position categoryID]}]
   (if (not (string/blank? category-id))
-    {::json-rpc/call [{:method      "wakuext_reorderCommunityChat"
-                       :params      [{:communityId community-id
-                                      :categoryId  category-id
-                                      :chatId      id
-                                      :position    position}]
-                       :js-response true
-                       :on-success  #(do
-                                       (re-frame/dispatch [:navigate-back])
-                                       (re-frame/dispatch [:sanitize-messages-and-process-response %]))
-                       :on-error    #(log/error "failed to change community category" %)}]}
+    {:json-rpc/call [{:method      "wakuext_reorderCommunityChat"
+                      :params      [{:communityId community-id
+                                     :categoryId  category-id
+                                     :chatId      id
+                                     :position    position}]
+                      :js-response true
+                      :on-success  #(do
+                                      (re-frame/dispatch [:navigate-back])
+                                      (re-frame/dispatch [:sanitize-messages-and-process-response %]))
+                      :on-error    #(log/error "failed to change community category" %)}]}
     (fx/merge cofx
               (navigation/navigate-back)
               (remove-chat-from-category community-id id categoryID))))
@@ -655,25 +654,25 @@
 (fx/defn reorder-category-chat
   {:events [::reorder-community-category-chat]}
   [_ community-id category-id chat-id new-position]
-  {::json-rpc/call [{:method      "wakuext_reorderCommunityChat"
-                     :params      [{:communityId community-id
-                                    :categoryId  category-id
-                                    :chatId      chat-id
-                                    :position    new-position}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error    #(log/error "failed to reorder community category chat" %)}]})
+  {:json-rpc/call [{:method      "wakuext_reorderCommunityChat"
+                    :params      [{:communityId community-id
+                                   :categoryId  category-id
+                                   :chatId      chat-id
+                                   :position    new-position}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to reorder community category chat" %)}]})
 
 (fx/defn reorder-category
   {:events [::reorder-community-category]}
   [_ community-id category-id new-position]
-  {::json-rpc/call [{:method      "wakuext_reorderCommunityCategories"
-                     :params      [{:communityId community-id
-                                    :categoryId  category-id
-                                    :position    new-position}]
-                     :js-response true
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error    #(log/error "failed to reorder community category" %)}]})
+  {:json-rpc/call [{:method      "wakuext_reorderCommunityCategories"
+                    :params      [{:communityId community-id
+                                   :categoryId  category-id
+                                   :position    new-position}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to reorder community category" %)}]})
 
 (defn category-hash
   [public-key community-id category-id]
@@ -737,28 +736,28 @@
 (fx/defn add-role-to-member
   {:events [:community.member/add-role]}
   [cofx community-id public-key role-id]
-  {::json-rpc/call [{:method     "wakuext_addRoleToMember"
-                     :params     [{:communityId community-id
-                                   :user        public-key
-                                   :role        role-id}]
-                     :on-success #(re-frame/dispatch [:community.member/role-updated %])
-                     :on-error   #(log/error "failed to add role to member"
-                                             {:error        %
-                                              :community-id community-id
-                                              :public-key   public-key
-                                              :role-id      role-id})}]})
+  {:json-rpc/call [{:method     "wakuext_addRoleToMember"
+                    :params     [{:communityId community-id
+                                  :user        public-key
+                                  :role        role-id}]
+                    :on-success #(re-frame/dispatch [:community.member/role-updated %])
+                    :on-error   #(log/error "failed to add role to member"
+                                            {:error        %
+                                             :community-id community-id
+                                             :public-key   public-key
+                                             :role-id      role-id})}]})
 
 (fx/defn remove-role-from-member
   {:events [:community.member/remove-role]}
   [_ community-id public-key role-id]
-  {::json-rpc/call [{:method "wakuext_removeRoleFromMember"
-                     :params [{:communityId community-id
-                               :user        public-key
-                               :role        role-id}]}
-                    :on-success #(re-frame/dispatch [:community.member/role-updated %])
-                    :on-error
-                    #(log/error "failed to remove role from member"
-                                {:error        %
-                                 :community-id community-id
-                                 :public-key   public-key
-                                 :role-id      role-id})]})
+  {:json-rpc/call [{:method "wakuext_removeRoleFromMember"
+                    :params [{:communityId community-id
+                              :user        public-key
+                              :role        role-id}]}
+                   :on-success #(re-frame/dispatch [:community.member/role-updated %])
+                   :on-error
+                   #(log/error "failed to remove role from member"
+                               {:error        %
+                                :community-id community-id
+                                :public-key   public-key
+                                :role-id      role-id})]})
