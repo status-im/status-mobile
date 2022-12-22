@@ -134,11 +134,11 @@
   [channel-heights first-channel-height]
   [rn/view
    {:on-layout #(swap! first-channel-height
-                  (fn []
-                    (+ (if platform/ios?
-                         0
-                         38)
-                       (int (Math/ceil (oops/oget % "nativeEvent.layout.y"))))))
+                       (fn []
+                         (+ (if platform/ios?
+                              0
+                              38)
+                            (int (Math/ceil (oops/oget % "nativeEvent.layout.y"))))))
     :style     {:margin-top 20 :flex 1}}
    (map-indexed (fn [index category]
                   (let [first-category (first category)]
@@ -147,11 +147,11 @@
                      {:flex      1
                       :key       (str index first-category)
                       :on-layout #(swap! channel-heights
-                                    (fn []
-                                      (sort-by :height
-                                               (conj @channel-heights
-                                                     {:height (int (oops/oget % "nativeEvent.layout.y"))
-                                                      :label  first-category}))))}
+                                         (fn []
+                                           (sort-by :height
+                                                    (conj @channel-heights
+                                                          {:height (int (oops/oget % "nativeEvent.layout.y"))
+                                                           :label  first-category}))))}
 
                      [quo/divider-label
                       {:label            first-category
@@ -185,23 +185,22 @@
         node-offline? (and can-join? (not joined) (pos? requested-to-join-at))]
     [:<>
      (when (and (not joined) (not pending?) can-join?)
-       [:<>
-        [quo/button
-         {:on-press                  #(rf/dispatch
-                                       [:bottom-sheet/show-sheet
-                                        {:content        (fn [] [requests.actions/request-to-join
-                                                                 community])
-                                         :content-height 300}])
-          :accessibility-label       :show-request-to-join-screen-button
-          :override-background-color community-color
-          :style                     style/join-button
-          :before                    :i/communities}
-         (request-to-join-text is-open?)]
-        (when-not is-open?
-          [quo/text
-           {:size  :paragraph-2
-            :style style/review-notice}
-           (i18n/label :t/community-admins-will-review-your-request)])])
+       [quo/button
+        {:on-press                  #(rf/dispatch
+                                      [:bottom-sheet/show-sheet
+                                       {:content        (fn [] [requests.actions/request-to-join
+                                                                community])
+                                        :content-height 300}])
+         :accessibility-label       :show-request-to-join-screen-button
+         :override-background-color community-color
+         :style                     style/join-button
+         :before                    :i/communities}
+        (request-to-join-text is-open?)]
+       (when-not (and is-open? (not node-offline?))
+         [quo/text
+          {:size  :paragraph-2
+           :style style/review-notice}
+          (i18n/label :t/community-admins-will-review-your-request)]))
      (when node-offline?
        [quo/information-box
         {:type  :informative

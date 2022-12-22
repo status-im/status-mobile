@@ -165,13 +165,11 @@
                                  (when-not joined
                                    (when can-join?
                                      (rf/dispatch [::communities/join id]))
-
                                    (when
-                                    can-request-access?
                                      (and can-request-access?
                                           (zero? requested-to-join-at)
                                           (can-request-access-again? requested-to-join-at))
-                                     (rf/dispatch [::communities/request-to-join id])))
-                                 (rf/dispatch [:bottom-sheet/hide]))
+                                     (rf/dispatch [::communities/request-to-join id]))
+                                   (rf/dispatch [:bottom-sheet/hide])))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))
