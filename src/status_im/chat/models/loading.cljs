@@ -105,9 +105,9 @@
 (rf/defn messages-loaded
 =======
 (defn find-albums [messages]
-  (let [albums-count (atom {})]
+  (let [albums-count (atom {})
+        new-messages (atom {})]
     (doseq [message messages]
-      (println "WTFF" message)
       (let [album-id (:album-id (:content (val message)))]
         (println "ALBUMID" album-id (get @albums-count album-id))
         (when album-id
@@ -116,9 +116,7 @@
             (swap! albums-count assoc-in [album-id] 1)))
         (when (> (get @albums-count album-id) 3)
           (println "COMPLETED AN ALBUMXXXX" (get @albums-count album-id))
-          )
-        )
-      ))
+          ))))
   messages)
 
 (fx/defn messages-loaded
@@ -149,17 +147,9 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
-<<<<<<< HEAD
-          current-clock-value                                  (get-in db
-                                                                       [:pagination-info chat-id
-                                                                        :cursor-clock-value])
-          clock-value                                          (when cursor
-                                                                 (cursor->clock-value cursor))]
-=======
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))
           result (find-albums all-messages)]
->>>>>>> da601071d... updates
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
