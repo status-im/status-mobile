@@ -6,7 +6,6 @@
             [quo.react]
             [quo.react-native :as rn :refer [navigation-const]]
             [quo2.components.buttons.button :as quo2.button]
-            [re-frame.core :as re-frame]
             [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
             [status-im.ui.components.permissions :as permissions]
@@ -19,19 +18,29 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.utils :as utils]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
+            [status-im.utils.platform :as platform]))
 
 (defn calculate-y
-  [context min-y max-y added-value chat-id]
+  [context min-y max-y added-value chat-id set-bg-opacity]
   (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines  (count (string/split input-text "\n"))]
+    (if (<= 5 num-lines)
+      (do (when-not (:minimized-from-handlebar? @context)
+            (swap! context assoc :state :max)
+            (set-bg-opacity 1))
+          max-y)
+      (when (:minimized-from-handlebar? @context)
+        (swap! context assoc :state :min :minimized-from-handlebar? false)
+        (set-bg-opacity 0)
+        min-y))
     (if (= (:state @context) :max)
-      (do (swap! context assoc :state :max) max-y)
-      (if (< (:y @context) max-y)
-        (+ (:y @context) added-value)
-        (if (<= 5 num-lines)
-          (do (swap! context assoc :state :max) max-y)
-          (do (swap! context assoc :state :min) min-y))))))
+      (do
+        (set-bg-opacity 1)
+        max-y)
+      (when (< (:y @context) max-y)
+        (+ (:y @context) added-value)))))
 
 (defn calculate-y-with-mentions
   [y max-y max-height chat-id suggestions reply]
@@ -47,24 +56,20 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value
-  [context min-y max-y added-value max-height chat-id suggestions reply images]
-  (let [y               (calculate-y context min-y max-y added-value chat-id)
-        y               (+ y (when (seq images) 80))
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit images set-bg-opacity]
+  (let [y               (calculate-y context min-y max-y added-value chat-id set-bg-opacity)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
-    (+ y (when (seq suggestions) y-with-mentions))))
+    (+ y (when (seq suggestions) y-with-mentions) (when (seq images) 80) (when edit 38))))
 
 (defn- clean-and-minimize-composer
   ([context chat-id refs min-y]
    (clean-and-minimize-composer context chat-id refs min-y false))
   ([context chat-id refs min-y edit?]
    (input/clear-input chat-id refs)
-   (swap! context assoc
-     :y
-     (if edit?
-       (- min-y 38)
-       min-y))
-   (swap! context assoc :clear true)))
+   (swap! context assoc :y (if edit?
+                             (- min-y 38)
+                             min-y))
+   (swap! context assoc :clear true :state :min)))
 
 (defn get-bottom-sheet-gesture
   [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
@@ -87,20 +92,23 @@
          (when keyboard-shown
            (if (< (:dy @context) 0)
              (do
+               (swap! context assoc :minimized-from-handlebar? false)
                (swap! context assoc :state :max)
                (input/input-focus text-input-ref)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
                (set-bg-opacity 1))
              (do
+               (swap! context assoc :minimized-from-handlebar? true)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
                (set-bg-opacity 0)
-               (re-frame/dispatch [:dismiss-keyboard]))))))))
+               (rf/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change
-  [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
+(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer? initial-value]
   (fn [evt]
+    (when-not (or blank-composer? (some? initial-value))
+      (swap! context assoc :clear false))
     (if (:clear @context)
       (do
         (swap! context dissoc :clear)
@@ -110,7 +118,8 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (set-bg-opacity 0))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 40) 40))]
+        (let [offset-value (if platform/ios? 22 40)
+              new-y        (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") offset-value) offset-value))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -131,24 +140,25 @@
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
-              (when keyboard-shown
-                (set-bg-opacity 1)
-                (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- max-y)))))))))))
+              (if keyboard-shown
+                (do (set-bg-opacity 1)
+                    (reanimated/set-shared-value
+                     translate-y
+                     (reanimated/with-timing (- max-y))))
+                (set-bg-opacity 0)))))))))
 
 (defn composer
   [chat-id]
   [safe-area/consumer
    (fn [insets]
      (let [min-y               112
-           context             (atom {:y     min-y ;current y value
-                                      :min-y min-y ;minimum y value
-                                      :dy    0     ;used for gesture
-                                      :pdy   0     ;used for gesture
-                                      :state :min  ;:min, :custom-chat-available,
-                                                   ;:custom-chat-unavailable, :max
-                                      :clear false})
+           context             (atom {:y                         min-y ;current y value
+                                      :min-y                     min-y ;minimum y value
+                                      :dy                        0     ;used for gesture
+                                      :pdy                       0     ;used for gesture
+                                      :state                     :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                      :clear                     false
+                                      :minimized-from-handlebar? false})
            keyboard-was-shown? (atom false)
            text-input-ref      (quo.react/create-ref)
            send-ref            (quo.react/create-ref)
@@ -184,6 +194,13 @@
                                                                 ; of input box
                                                                 ; needed when reply
                   min-y                                    (+ min-y (when (or edit reply) 38))
+                  bg-opacity                               (reanimated/use-shared-value 0)
+                  bg-bottom                                (reanimated/use-shared-value (-
+                                                                                         window-height))
+                  set-bg-opacity
+                  (fn [value]
+                    (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   y                                        (get-y-value
                                                             context
                                                             min-y
@@ -193,18 +210,16 @@
                                                             chat-id
                                                             suggestions
                                                             reply
-                                                            images)
+                                                            edit
+                                                            images
+                                                            set-bg-opacity)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
-                  bg-opacity                               (reanimated/use-shared-value 0)
                   clean-and-minimize-composer-fn
                   #(clean-and-minimize-composer context chat-id refs min-y %)
-                  bg-bottom                                (reanimated/use-shared-value (-
-                                                                                         window-height))
-                  set-bg-opacity
-                  (fn [value]
-                    (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
+                  blank-composer?                          (string/blank? (get @input/input-texts
+                                                                               chat-id))
+                  initial-value                            (or (get @input/input-texts chat-id) nil)
                   input-content-change                     (get-input-content-change
                                                             context
                                                             translate-y
@@ -213,9 +228,9 @@
                                                             set-bg-opacity
                                                             keyboard-shown
                                                             min-y
-                                                            max-y)
-                  blank-composer?                          (string/blank? (get @input/input-texts
-                                                                               chat-id))
+                                                            max-y
+                                                            blank-composer?
+                                                            initial-value)
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture
                                                             context
                                                             translate-y
@@ -225,13 +240,13 @@
                                                             max-y
                                                             shared-height
                                                             max-height
-                                                            set-bg-opacity)
-                  initial-value                            (or (get @input/input-texts chat-id) nil)]
+                                                            set-bg-opacity)]
               (quo.react/effect!
                #(do
                   (when (and @keyboard-was-shown? (not keyboard-shown))
-                    (swap! context assoc :state :min))
-                  (when (and blank-composer? (not (seq images)))
+                    (swap! context assoc :state :min)
+                    (set-bg-opacity 0))
+                  (when (and blank-composer? (not (seq images)) (not edit))
                     (clean-and-minimize-composer-fn false))
                   (when (seq images)
                     (input/show-send refs))
@@ -272,7 +287,7 @@
                    {:on-press (fn []
                                 (permissions/request-permissions
                                  {:permissions [:read-external-storage :write-external-storage]
-                                  :on-allowed  #(re-frame/dispatch
+                                  :on-allowed  #(rf/dispatch
                                                  [:bottom-sheet/show-sheet
                                                   {:content (fn []
                                                               (photo-selector/photo-selector chat-id))}])
@@ -292,17 +307,16 @@
                     :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
-                  [rn/view
-                   {:ref   send-ref
-                    :style (when (seq images)
-                             {:width 0
-                              :right -100})}
-                   [quo2.button/button
-                    {:icon                true
-                     :size                32
-                     :accessibility-label :send-message-button
-                     :on-press            #(do (clean-and-minimize-composer-fn false)
-                                               (re-frame/dispatch [:chat.ui/send-current-message]))}
+                  [rn/view {:ref   send-ref
+                            :style (when (seq images)
+                                     {:width 0
+                                      :right -100})}
+                   [quo2.button/button {:icon                true
+                                        :size                32
+                                        :accessibility-label :send-message-button
+                                        :on-press            #(do (clean-and-minimize-composer-fn false)
+                                                                  (scroll-to-bottom)
+                                                                  (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view
