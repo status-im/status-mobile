@@ -171,7 +171,7 @@ class ChatElementByText(Text):
     def username(self):
         class Username(Text):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[1]")
+                super().__init__(driver, prefix=parent_locator, xpath="/android.view.ViewGroup/android.widget.TextView[1]")
 
         return Username(self.driver, self.locator)
 
