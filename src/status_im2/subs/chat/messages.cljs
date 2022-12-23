@@ -102,6 +102,23 @@
  (fn [messages]
    (empty? messages)))
 
+(defn find-albums [messages]
+  (let [new-messages (atom {})]
+    (doseq [message messages]
+      (let [album-id (or (:album-id (:content message)) :all-messages)]
+        (if (get @new-messages album-id)
+          (swap! new-messages update-in [album-id] #(conj % message))
+          (swap! new-messages assoc-in [album-id] [message]))
+        ;)
+        (when (and (not= album-id :all-messages) (> (count (get @new-messages album-id)) 3))
+          (swap! new-messages update-in [:all-messages] #(conj % {album-id (get @new-messages album-id)
+                                                                  :album-id album-id})))
+        ))
+    ;(println "asdfasdf" (:all-messages @new-messages))
+    (:all-messages @new-messages))
+  ;messages
+  )
+
 (re-frame/reg-sub
  :chats/raw-chat-messages-stream
  (fn [[_ chat-id] _]
@@ -114,6 +131,7 @@
     (re-frame/subscribe [:chats/joined chat-id])])
  (fn [[message-list messages pin-messages loading-messages? synced-from chat-type joined] [_ chat-id]]
    ;;TODO (perf)
+   ;(js/console.log "LLL" message-list)
    (let [message-list-seq (models.message-list/->seq message-list)]
      ; Don't show gaps if that's the case as we are still loading messages
      (if (and (empty? message-list-seq) loading-messages?)
@@ -126,7 +144,9 @@
                                   (datetime/timestamp)
                                   chat-type
                                   joined
-                                  loading-messages?))))))
+                                  loading-messages?)
+           (find-albums)
+           )))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-profile-messages-stream (atom nil))
