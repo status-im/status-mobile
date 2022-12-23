@@ -132,10 +132,11 @@
   (when (or edited-at outgoing-status)
     [rn/view {:flex-direction :row}
      [rn/text {:style (style/message-status-text)}
-      (if edited-at
-        "edited"
-        (or outgoing-status ""))
-      " [WIP]"]]))
+      (str "["
+        (if edited-at
+          "edited"
+          (or outgoing-status ""))
+        " DEBUG]")]]))
 
 (defn quoted-message
   [{:keys [message-id chat-id]} reply pin?]
