@@ -8,18 +8,12 @@
             [quo2.core :as quo]
             [status-im2.common.constants :as constants]
             [status-im2.navigation.state :as navigation.state]
-<<<<<<< HEAD
-            [utils.debounce :as debounce]
-            [utils.re-frame :as rf]
-            [status-im2.common.not-implemented :as not-implemented]))
-=======
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
 
     ;;TODO move to status-im2
             [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
             [status-im.ui2.screens.chat.composer.view :as composer]))
->>>>>>> f42ddbb66... rebase
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
@@ -58,37 +52,15 @@
        :accessibility-label :back-button}
 
       :right-section-buttons
-      [{:on-press            #()
-        :style {:border-width 1 :border-color :red}
+      [{:on-press            #()                            ;; TODO not implemented
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn chat-render []
-  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
-=======
-(defn chat-render
-  []
-=======
-(defn chat-render []
->>>>>>> f42ddbb66... rebase
   (let [;;we want to react only on these fields, do not use full chat map here
         show-input? (not (rf/sub [:group-chat/removed-from-current-chat?]))
         {:keys [chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])]
-<<<<<<< HEAD
->>>>>>> a909675bf... qa fixes
->>>>>>> 1f22b54b4... qa fixes
-    [rn/keyboard-avoiding-view {:style {:flex 1}}
-     [page-nav]
-     [not-implemented/not-implemented
-      [pin-limit-popover/pin-limit-popover chat-id]]
-     [not-implemented/not-implemented
-      [pin.banner/banner chat-id]]
-     [messages.list/messages-list {:chat chat :show-input? show-input?}]
-=======
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
      ;; TODO (flexsurfer) this should be in-app notification component in quo2 https://github.com/status-im/status-mobile/issues/14527
@@ -101,7 +73,6 @@
        :show-input?                      show-input?
        :bottom-space                     15}]
      ;;INPUT COMPOSER
->>>>>>> f42ddbb66... rebase
      (when show-input?
        [composer/composer chat-id])
      [quo/floating-shell-button
