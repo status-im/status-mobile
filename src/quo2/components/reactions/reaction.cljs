@@ -1,31 +1,18 @@
 (ns quo2.components.reactions.reaction
   (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as quo2.text]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.reactions.style :as style]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]))
 
-(def reaction-styling
-  {:flex-direction     :row
-   :justify-content    :center
-   :align-items        :center
-   :padding-horizontal 8
-   :border-radius      8
-   :height             24})
-
-(defn open-reactions-menu
+(defn add-reaction
   [{:keys [on-press]}]
   (let [dark? (theme/dark?)]
     [rn/touchable-opacity
      {:on-press            on-press
       :accessibility-label :emoji-reaction-add
-      :style               (merge reaction-styling
-                                  {:padding-horizontal 9
-                                   :border-width       1
-                                   :margin-top         5
-                                   :border-color       (if dark?
-                                                         colors/neutral-70
-                                                         colors/neutral-30)})}
+      :style               (style/add-reaction)}
      [icons/icon :i/add
       {:size  20
        :color (if dark?
@@ -35,41 +22,17 @@
 (defn reaction
   "Add your emoji as a param here"
   [{:keys [emoji clicks neutral? on-press accessibility-label]}]
-  (let [dark?            (theme/dark?)
-        text-color       (if dark?
-                           colors/white
-                           colors/neutral-100)
-        numeric-value    (int clicks)
-        clicks-positive? (pos? numeric-value)]
+  (let [numeric-value (int clicks)]
     [rn/touchable-opacity
      {:on-press            on-press
       :accessibility-label accessibility-label
-      :style               (merge reaction-styling
-                                  (cond->
-                                    {:background-color
-                                     (if dark?
-                                       (if neutral?
-                                         colors/neutral-70
-                                         :transparent)
-                                       (if neutral?
-                                         colors/neutral-30
-                                         :transparent))}
-                                    (and dark? (not neutral?))
-                                    (assoc :border-color colors/neutral-70
-                                           :border-width 1)
-                                    (and (not dark?) (not neutral?))
-                                    (assoc :border-color colors/neutral-30
-                                           :border-width 1)))}
-     [icons/icon emoji
-      {:no-color true
-       :size     16}]
-     [quo2.text/text
-      {:size            :paragraph-2
-       :weight          :semi-bold
-       :color           text-color
-       :flex-direction  :row
-       :align-items     :center
-       :justify-content :center}
-      (if clicks-positive?
-        (str " " numeric-value)
-        "")]]))
+      :style               (style/reaction neutral?)}
+     [icons/icon emoji {:no-color true
+                        :size     16}]
+     [text/text {:size            :paragraph-2
+                 :weight          :semi-bold
+                 :flex-direction  :row
+                 :align-items     :center
+                 :justify-content :center}
+      (when (pos? numeric-value)
+        (str " " numeric-value))]]))

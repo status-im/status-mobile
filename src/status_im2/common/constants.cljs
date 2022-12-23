@@ -195,3 +195,6 @@
 (def ^:const community-member-role-all 1)
 (def ^:const community-member-role-manage-users 2)
 (def ^:const community-member-role-moderator 3)
+
+(def ^:const delete-message-undo-time-limit-ms 4000)
+(def ^:const delete-message-for-me-undo-time-limit-ms 4000)

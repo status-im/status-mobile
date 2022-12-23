@@ -13,7 +13,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [status-im2.contexts.chat.messages.message.delete-message.events :as delete-message]
+            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
             [taoensso.timbre :as log]))
 
 (defn- message-loaded?

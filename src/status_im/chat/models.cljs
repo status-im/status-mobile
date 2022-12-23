@@ -16,8 +16,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im2.contexts.chat.messages.message.delete-message-for-me.events :as delete-for-me]
-            [status-im2.contexts.chat.messages.message.delete-message.events :as delete-message]
+            [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
+            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 

@@ -8,11 +8,13 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.state :as state]
-            [status-im.ui2.screens.chat.messages.message :as message]
-            [status-im2.common.constants :as constants] ;;TODO move to status-im2
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.chat.messages.content.view :as message]
+            [status-im2.common.constants :as constants]
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -112,39 +114,23 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn
-  [{:keys [outgoing type] :as message}
-   idx
-   _
-   {:keys [group-chat public? community? current-public-key
-           chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?
-           can-delete-message-for-everyone?]}]
-  [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
+(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+  [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
-     [quo/divider-date (:value message)]
-     (if (= type :gap)
-       ;; TODO (flexsurfer) new gap functionality is not implemented yet
-       [gap/gap message idx messages-list-ref false chat-id]
-       ; message content
-       [message/chat-message
-        (assoc message
-               :incoming-group                   (and group-chat (not outgoing))
-               :group-chat                       group-chat
-               :public?                          public?
-               :community?                       community?
-               :current-public-key               current-public-key
-               :show-input?                      show-input?
-               :message-pin-enabled              message-pin-enabled
-               :edit-enabled                     edit-enabled
-               :can-delete-message-for-everyone? can-delete-message-for-everyone?)]))])
+     [quo/divider-date value]
+     (if (= content-type constants/content-type-gap)
+       [not-implemented/not-implemented
+        [message.gap/gap message-data]]
+       [rn/view {:padding-horizontal 8}
+        (if (or deleted? deleted-for-me?)
+          [content.deleted/deleted-message message-data]
+          [message/message-with-reactions message-data context])]))])
 
-(defn messages-list
-  [{:keys [chat
-           bottom-space
-           pan-responder
-           mutual-contact-requests-enabled?
-           show-input?]}]
+(defn messages-list [{:keys [chat
+                             pan-responder
+                             show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
+        mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])
         messages (rf/sub [:chats/raw-chat-messages-stream chat-id])
         one-to-one? (= chat-type constants/one-to-one-chat-type)
         contact-added? (when one-to-one? (rf/sub [:contacts/contact-added? chat-id]))
@@ -152,8 +138,9 @@
         (and
          mutual-contact-requests-enabled?
          one-to-one?
-         (not contact-added?))]
-    [rn/view {:style {:flex 1}}
+         (not contact-added?))
+        bottom-space 15]
+    [:<>
      ;;DO NOT use anonymous functions for handlers
      [rn/flat-list
       (merge

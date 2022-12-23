@@ -29,6 +29,7 @@
    quo2.components.list-items.preview-list
    quo2.components.loaders.skeleton
    quo2.components.markdown.text
+   quo2.components.messages.author.view
    quo2.components.messages.gap
    quo2.components.messages.system-message
    quo2.components.navigation.floating-shell-button
@@ -64,6 +65,7 @@
 (def gap quo2.components.messages.gap/gap)
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
+(def add-reaction quo2.components.reactions.reaction/add-reaction)
 (def tags quo2.components.tags.tags/tags)
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def context-tag quo2.components.tags.context-tags/context-tag)
@@ -77,6 +79,7 @@
 (def disclaimer quo2.components.selectors.disclaimer/disclaimer)
 (def checkbox quo2.components.selectors.selectors/checkbox)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
+(def author quo2.components.messages.author.view/author)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)

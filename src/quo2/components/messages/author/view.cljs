@@ -95,5 +95,6 @@
         [text/text
          {:monospace true
           :size      :paragraph-2
+          :accessibility-label :message-timestamp
           :style     (style/time-text ens?)}
          time-str]]))])

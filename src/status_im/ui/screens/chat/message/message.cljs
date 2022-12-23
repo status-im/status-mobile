@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.chat.models.images :as images]
-            [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
@@ -827,11 +826,11 @@
      :picker-on-close (fn []
                         (space-keeper false))
      :send-emoji      (fn [{:keys [emoji-id]}]
-                        (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                        (re-frame/dispatch [:models.reactions/send-emoji-reaction
                                             {:message-id (:message-id message)
                                              :emoji-id   emoji-id}]))
      :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
-                        (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                        (re-frame/dispatch [:models.reactions/send-emoji-reaction-retraction
                                             {:message-id        (:message-id message)
                                              :emoji-id          emoji-id
                                              :emoji-reaction-id emoji-reaction-id}]))

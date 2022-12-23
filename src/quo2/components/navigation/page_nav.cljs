@@ -146,12 +146,11 @@
   [rn/view
    {:style (assoc centrify-style
                   :flex-direction  :row
-                  :flex            1
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
-     (map-indexed (fn [index {:keys [icon on-press type] :or {type :grey}}]
+     (map-indexed (fn [index {:keys [icon on-press type style] :or {type :grey}}]
                     ^{:key index}
-                    [rn/view {:style {:margin-right (if (not= index last-icon-index) 8 0)}}
+                    [rn/view {:style (merge {:margin-right (if (not= index last-icon-index) 8 0)} style)}
                      [button/button {:on-press on-press :icon true :type type :size 32}
                       icon]])
                   right-section-buttons))])

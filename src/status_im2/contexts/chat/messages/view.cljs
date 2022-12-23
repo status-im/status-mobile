@@ -10,7 +10,8 @@
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner] ;;TODO move to status-im2
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defn navigate-back-handler
   []
@@ -51,28 +52,21 @@
        :accessibility-label :back-button}
 
       :right-section-buttons
-      [{:on-press            #()                            ;; TODO not implemented
+      [{:on-press            #()
+        :style {:border-width 1 :border-color :red}
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
-(defn chat-render
-  []
-  (let [;;we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])
-        mutual-contact-requests-enabled?       (rf/sub [:mutual-contact-requests/enabled?])]
+(defn chat-render []
+  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
+        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
-     ;; TODO (flexsurfer) this should be in-app notification component in quo2
-     ;; https://github.com/status-im/status-mobile/issues/14527
-     [pin-limit-popover/pin-limit-popover chat-id]
-     [pin.banner/banner chat-id]
-     ;;MESSAGES LIST
-     [messages.list/messages-list
-      {:chat                             chat
-       :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-       :show-input?                      show-input?
-       :bottom-space                     15}]
-     ;;INPUT COMPOSER
+     [not-implemented/not-implemented
+      [pin-limit-popover/pin-limit-popover chat-id]]
+     [not-implemented/not-implemented
+      [pin.banner/banner chat-id]]
+     [messages.list/messages-list {:chat chat :show-input? show-input?}]
      (when show-input?
        [composer/composer chat-id])]))
 

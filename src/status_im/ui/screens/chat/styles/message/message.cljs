@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.foundations.typography :as typography]
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]))
@@ -51,7 +50,9 @@
   []
   {:font-size   10
    :line-height 10
-   :color       colors/gray})
+   :border-color :red
+   :border-width 1
+   :color        :red})
 
 (defn audio-message-timestamp-text
   []
@@ -104,14 +105,7 @@
   {:flex-direction :row
    :margin-top     1})
 
-(defn pin-author-text
-  []
-  (merge typography/font-medium
-         {:color  quo2.colors/primary-50
-          :bottom 2}))
-
-(defn pinned-by-text
-  []
+(defn pinned-by-text []
   {:margin-left 5})
 
 (def message-author-touchable

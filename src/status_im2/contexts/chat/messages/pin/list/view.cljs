@@ -1,18 +1,36 @@
 (ns status-im2.contexts.chat.messages.pin.list.view
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors] ;; TODO move to status-im2
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.chat.messages.content.view :as message]
+            [utils.re-frame :as rf]
+            [status-im.utils.datetime :as time]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
-(defn pinned-messages-list
-  [chat-id]
+(defn message-render-fn
+  [{:keys [whisper-timestamp] :as message}
+   _
+   {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
+  ;; TODO (flexsurfer) probably we don't want reactions here
+  [message/message-with-reactions
+   message
+   {:group-chat          group-chat
+    :public?             public?
+    :community?          community?
+    :current-public-key  current-public-key
+    :show-input?         show-input?
+    :message-pin-enabled true
+    :in-pinned-view?     true
+    :pinned              true
+    :timestamp-str       (time/timestamp->time whisper-timestamp)
+    :edit-enabled        edit-enabled}])
+
+(defn pinned-messages-list [chat-id]
   (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
-        current-chat    (rf/sub [:chats/current-chat])
-        community       (rf/sub [:communities/community (:community-id current-chat)])]
+        current-chat (rf/sub [:chats/current-chat])
+        community (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529
@@ -44,7 +62,7 @@
      (if (> (count pinned-messages) 0)
        [rn/flat-list
         {:data      pinned-messages
-         :render-fn old-message/message-render-fn
+         :render-fn message-render-fn
          :key-fn    list-key-fn
          :separator quo/separator}]
        [rn/view
