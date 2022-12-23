@@ -13,7 +13,8 @@
             [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-            [status-im.ui.screens.chat.message.gap :as message.gap]))
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -118,7 +119,8 @@
    (if (= type :datemark)
      [quo/divider-date value]
      (if (= content-type constants/content-type-gap)
-       [message.gap/gap message-data]
+       [not-implemented/not-implemented
+        [message.gap/gap message-data]]
        [rn/view {:padding-horizontal 8}
         (if (or deleted? deleted-for-me?)
           [content.deleted/deleted-message message-data]

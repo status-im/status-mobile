@@ -10,7 +10,8 @@
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner] ;;TODO move to status-im2
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defn navigate-back-handler
   []
@@ -52,6 +53,7 @@
 
       :right-section-buttons
       [{:on-press            #()
+        :style {:border-width 1 :border-color :red}
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
@@ -60,8 +62,10 @@
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
-     [pin-limit-popover/pin-limit-popover chat-id]
-     [pin.banner/banner chat-id]
+     [not-implemented/not-implemented
+      [pin-limit-popover/pin-limit-popover chat-id]]
+     [not-implemented/not-implemented
+      [pin.banner/banner chat-id]]
      [messages.list/messages-list {:chat chat :show-input? show-input?}]
      (when show-input?
        [composer/composer chat-id])]))

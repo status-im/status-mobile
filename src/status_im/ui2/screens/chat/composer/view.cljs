@@ -20,7 +20,8 @@
             [status-im.utils.utils :as utils]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defn calculate-y
   [context min-y max-y added-value chat-id set-bg-opacity]
@@ -301,10 +302,11 @@
                     :type     :outline
                     :size     32} :i/image]
                   [rn/view {:width 12}]
-                  [quo2.button/button
-                   {:icon true
-                    :type :outline
-                    :size 32} :i/reaction]
+                  [not-implemented/not-implemented
+                   [quo2.button/button
+                    {:icon true
+                     :type :outline
+                     :size 32} :i/reaction]]
                   [rn/view {:flex 1}]
                   ;;SEND button
                   [rn/view {:ref   send-ref

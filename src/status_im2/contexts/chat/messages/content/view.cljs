@@ -13,7 +13,8 @@
             [quo2.core :as quo]
             [utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
-            [status-im.ui2.screens.chat.messages.message :as old-message]))
+            [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im2.common.not-implemented :as not-implemented]))
 
 (defn avatar
   [{:keys [response-to last-in-group? pinned quoted-message from]}]
@@ -47,14 +48,14 @@
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
-    [pin/system-message message-data]
+    [not-implemented/not-implemented [pin/system-message message-data]]
     (case content-type
 
-      constants/content-type-system-text     [system.text/text-content message-data]
+      constants/content-type-system-text     [not-implemented/not-implemented [system.text/text-content message-data]]
 
-      constants/content-type-community       [old-message/community message-data]
+      constants/content-type-community       [not-implemented/not-implemented [old-message/community message-data]]
 
-      constants/content-type-contact-request [old-message/system-contact-request message-data])))
+      constants/content-type-contact-request [not-implemented/not-implemented [old-message/system-contact-request message-data]])))
 
 (defn user-message-content
   [{:keys [content-type quoted-message content] :as message-data}
@@ -75,17 +76,17 @@
         [author message-data]
         (case content-type
 
-          constants/content-type-text    [content.text/text-content message-data]
+          constants/content-type-text    [not-implemented/not-implemented [content.text/text-content message-data]]
 
-          constants/content-type-emoji   [old-message/emoji message-data]
+          constants/content-type-emoji   [not-implemented/not-implemented [old-message/emoji message-data]]
 
-          constants/content-type-sticker [old-message/sticker message-data]
+          constants/content-type-sticker [not-implemented/not-implemented [old-message/sticker message-data]]
 
-          constants/content-type-image   [old-message/message-content-image message-data]
+          constants/content-type-image   [not-implemented/not-implemented [old-message/message-content-image message-data]]
 
-          constants/content-type-audio   [old-message/audio message-data]
+          constants/content-type-audio   [not-implemented/not-implemented [old-message/audio message-data]]
 
-          [content.unknown/unknown-content message-data])
+          [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
         [status/status message-data]]]]]))
 
 (defn message-with-reactions
