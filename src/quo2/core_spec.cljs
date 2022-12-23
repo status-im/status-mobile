@@ -7,4 +7,6 @@
             [quo2.components.drawers.permission-context.component-spec]
             [quo2.components.markdown.--tests--.text-component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]
-            [quo2.components.selectors.filter.component-spec]))
+            [quo2.components.selectors.filter.component-spec]
+            [quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec]
+            [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]))

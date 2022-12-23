@@ -15,3 +15,15 @@
   `(js/global.test
      ~description
      (fn [] ~@body)))
+
+(defmacro before-each
+  [description & body]
+  `(js/beforeEach
+    ~description
+    (fn [] ~@body)))
+
+(defmacro after-each
+  [description & body]
+  `(js/afterEach
+    ~description
+    (fn [] ~@body)))

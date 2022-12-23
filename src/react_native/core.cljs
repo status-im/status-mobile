@@ -94,11 +94,12 @@
 
 (defn use-effect
   ([effect-fn]
+   (use-effect effect-fn []))
+  ([effect-fn deps]
    (react/useEffect
     #(let [ret (effect-fn)]
-       (if (fn? ret) ret js/undefined))))
-  ([effect-fn deps]
-   (react/useEffect effect-fn (bean/->js deps))))
+       (if (fn? ret) ret js/undefined))
+    (bean/->js deps))))
 
 (defn use-effect-once
   [effect-fn]

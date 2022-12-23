@@ -199,9 +199,10 @@
     :z-index          0}))
 
 (defn delete-button
-  [translate-x opacity]
+  [scale translate-x opacity]
   (reanimated/apply-animations-to-style
-   {:transform [{:translateX translate-x}]
+   {:transform [{:translateX translate-x}
+                {:scale scale}]
     :opacity   opacity}
    {:width            32
     :height           32
@@ -221,8 +222,66 @@
    {:margin-bottom 32
     :margin-right  32}))
 
-(def input-container
+(def button-container
   {:width           140
    :height          140
    :align-items     :flex-end
-   :justify-content :flex-end})
+   :justify-content :flex-end
+   :position        :absolute
+   :right           -10})
+
+(def bar-container
+  {:flex   1
+   :height 128})
+
+(defn recording-bar-container
+  []
+  {:height           4
+   :border-radius    2
+   :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80)
+   :overflow         :hidden
+   :position         :absolute
+   :left             80
+   :right            148
+   :bottom           34})
+
+(defn recording-bar
+  [fill-percentage ready-to-delete?]
+  {:width            (str fill-percentage "%")
+   :height           4
+   :border-radius    2
+   :background-color (if ready-to-delete?
+                       (colors/theme-colors colors/danger-50 colors/danger-60)
+                       (colors/theme-colors colors/primary-50 colors/primary-60))})
+
+(defn timer-container
+  [reviewing-audio?]
+  {:position       :absolute
+   :left           (if reviewing-audio? 67 20)
+   :bottom         28.5
+   :flex-direction :row
+   :align-items    :center})
+
+(defn timer-circle
+  []
+  {:width            8
+   :height           8
+   :border-radius    4
+   :margin-right     6
+   :background-color (colors/theme-colors colors/danger-50 colors/danger-60)})
+
+(defn timer-text
+  []
+  {:color (colors/theme-colors colors/danger-50 colors/danger-60)})
+
+(defn play-button
+  []
+  {:position         :absolute
+   :bottom           20
+   :left             20
+   :width            32
+   :height           32
+   :border-radius    16
+   :align-items      :center
+   :justify-content  :center
+   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-90)})

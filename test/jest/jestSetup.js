@@ -3,16 +3,7 @@ const { NativeModules } = require('react-native');
 
 require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
-
-
-jest.mock('react-native-reanimated', () => {
-    const Reanimated = require('react-native-reanimated/mock');
-    // The mock for `call` immediately calls the callback which is incorrect
-    // So we override it with a no-op
-    Reanimated.default.call = () => { };
-
-    return Reanimated;
-});
+require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
@@ -33,6 +24,41 @@ jest.mock('react-native-languages', () => ({
         language: 'en',
         locale: 'en'
     },
+}));
+
+jest.mock('react-native-permissions', () =>
+    require('react-native-permissions/mock'),
+);
+
+jest.mock('@react-native-community/audio-toolkit', () => ({
+    Recorder: jest.fn().mockImplementation(() => ({
+        prepare: jest.fn(),
+        record: jest.fn(),
+        toggleRecord: jest.fn(),
+        pause: jest.fn(),
+        stop: jest.fn(),
+        on: jest.fn(),
+    })),
+    Player: jest.fn().mockImplementation(() => ({
+        prepare: jest.fn(),
+        playPause: jest.fn(),
+        play: jest.fn(),
+        pause: jest.fn(),
+        stop: jest.fn(),
+        seek: jest.fn(),
+        on: jest.fn(),
+    })),
+    MediaStates: {
+        DESTROYED: -2,
+        ERROR: -1,
+        IDLE: 0,
+        PREPARING: 1,
+        PREPARED: 2,
+        SEEKING: 3,
+        PLAYING: 4,
+        RECORDING: 4,
+        PAUSED: 5
+    }
 }));
 
 NativeModules.ReactLocalization = {
