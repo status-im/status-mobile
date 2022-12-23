@@ -6,6 +6,7 @@
    quo2.components.avatars.icon-avatar
    quo2.components.avatars.user-avatar
    quo2.components.avatars.wallet-user-avatar
+   quo2.components.banners.banner.view
    quo2.components.buttons.button
    quo2.components.buttons.dynamic-button
    quo2.components.community.community-card-view
@@ -84,6 +85,9 @@
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
+
+;;;; BANNER
+(def banner quo2.components.banners.banner.view/banner)
 
 ;;;; COMMUNITY
 (def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
