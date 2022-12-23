@@ -117,12 +117,12 @@
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
-     (if (or deleted? deleted-for-me?)
-       [content.deleted/deleted-message message-data]
-       (if (= content-type constants/content-type-gap)
-         [message.gap/gap message-data]
-         [rn/view {:padding-horizontal 8}
-          [message/message-with-reactions message-data context]])))])
+     (if (= content-type constants/content-type-gap)
+       [message.gap/gap message-data]
+       [rn/view {:padding-horizontal 8}
+        (if (or deleted? deleted-for-me?)
+          [content.deleted/deleted-message message-data]
+          [message/message-with-reactions message-data context])]))])
 
 (defn messages-list [{:keys [chat
                              pan-responder

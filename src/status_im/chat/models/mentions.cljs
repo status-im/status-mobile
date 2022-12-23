@@ -600,7 +600,7 @@
         {:keys [new-text at-idxs start end] :as state}
         (get-in db [:chats/mentions chat-id :mentions])
         new-text                                       (or new-text text)]
-    (log/info "[mentions] calculate suggestions"
+    (log/debug "[mentions] calculate suggestions"
               "state"
               state)
     (if-not (seq at-idxs)

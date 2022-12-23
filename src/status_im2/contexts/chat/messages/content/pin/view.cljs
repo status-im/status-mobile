@@ -12,7 +12,8 @@
   (let [{:keys [public-key]} (rf/sub [:multiaccount/contact])
         contact-names (rf/sub [:contacts/contact-two-names-by-identity pinned-by])
         author-name (if (= pinned-by public-key) (i18n/label :t/You) (first contact-names))]
-    [rn/view {:style style/pin-indicator-container}
+    [rn/view {:style style/pin-indicator-container
+              :accessibility-label :pinned-by}
      [quo/icon :i/pin {:color colors/primary-50 :size 16}]
      [quo/text {:size   :label
                 :weight :medium

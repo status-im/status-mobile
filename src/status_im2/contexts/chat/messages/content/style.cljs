@@ -6,5 +6,5 @@
            {:background-color colors/primary-50-opa-5
             :margin-bottom    4})
          (when (or mentioned pinned last-in-group?)
-           {:margin-top    8})
+           {:margin-top 8})
          {:border-radius 16}))
