@@ -334,25 +334,23 @@
 
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
-  [{:keys [content content-type] :as message}]
-  [message-content-wrapper message
-   [rn/view style/status-container
-    [rn/text {:style (style/status-text)}
-     (reduce
-      (fn [acc e] (render-inline (:text content) content-type acc e))
-      [rn/text {:style (style/status-text)}]
-      (-> content :parsed-text peek :children))]]])
+  [{:keys [content content-type]}]
+  [rn/view style/status-container
+   [rn/text {:style (style/status-text)}
+    (reduce
+     (fn [acc e] (render-inline (:text content) content-type acc e))
+     [rn/text {:style (style/status-text)}]
+     (-> content :parsed-text peek :children))]])
 
 ;; EMOJI
 (defn emoji
   []
   (fn [{:keys [content] :as message}]
-    [rn/view style/message-view-wrapper
-     [rn/view (style/message-view message)
-      [rn/view {:style (style/message-view-content)}
-       [rn/view {:style (style/style-message-text)}
-        [rn/text {:style (style/emoji-message message)}
-         (:text content)]]]]]))
+    [rn/view (style/message-view message)
+     [rn/view {:style (style/message-view-content)}
+      [rn/view {:style (style/style-message-text)}
+       [rn/text {:style (style/emoji-message message)}
+        (:text content)]]]]))
 
 ;; STICKER
 (defn sticker
@@ -398,10 +396,9 @@
 ;; AUDIO
 (defn audio
   [message]
-  [rn/view style/message-view-wrapper
-   [rn/view {:style (style/message-view message) :accessibility-label :audio-message}
-    [rn/view {:style (style/message-view-content)}
-     [message.audio/message-content message]]]])
+  [rn/view {:style (style/message-view message) :accessibility-label :audio-message}
+   [rn/view {:style (style/message-view-content)}
+    [message.audio/message-content message]]])
 
 (defn contact-request-status-pending
   []

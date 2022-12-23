@@ -9,15 +9,20 @@
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     (when (seq reactions)
       [rn/view {:margin-left 52 :margin-bottom 12 :flex-direction :row}
-       (for [{:keys [own emoji-id quantity] :as emoji-reaction} reactions]
+       (for [{:keys [own emoji-id quantity emoji-reaction-id] :as emoji-reaction} reactions]
          ^{:key (str emoji-reaction)}
          [rn/view {:style {:margin-right 6}}
           [quo/reaction {:emoji               (get constants/reactions emoji-id)
                          :neutral?            own
                          :clicks              quantity
-                         :on-press            #(rf/dispatch [:models.reactions/send-emoji-reaction-retraction
-                                                             {:message-id message-id
-                                                              :emoji-id   emoji-id}])
+                         :on-press            (if own
+                                                #(rf/dispatch [:models.reactions/send-emoji-reaction-retraction
+                                                               {:message-id        message-id
+                                                                :emoji-id          emoji-id
+                                                                :emoji-reaction-id emoji-reaction-id}])
+                                                #(rf/dispatch [:models.reactions/send-emoji-reaction
+                                                               {:message-id        message-id
+                                                                :emoji-id          emoji-id}]))
                          :accessibility-label (str "emoji-reaction-" emoji-id)}]])
        [quo/add-reaction {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                    {:content (fn [] [drawers/reactions message-id])}])}]])))
