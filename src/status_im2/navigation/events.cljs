@@ -8,7 +8,9 @@
     (all-screens-params (:screen screen-params) (:params screen-params))
 
     (seq screen-params)
-    (assoc-in [:navigation/screen-params view] screen-params)))
+    (assoc-in [:navigation/screen-params view] screen-params)
+  )
+)
 
 (rf/defn navigate-to-cofx
   [{:keys [db]} go-to-view-id screen-params]

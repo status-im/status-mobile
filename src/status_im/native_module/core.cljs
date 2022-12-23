@@ -5,7 +5,8 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.constants :as constants]))
 
 (defn status
   []
@@ -277,6 +278,52 @@
              :config-json       config-json
              :connection-string connection-string})
   (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+
+(defn deserialize-and-compress-key
+  "Provides a community id public key to status-go and gets back a key that status-mobile understands"
+  [desktop-key callback]
+  (log/info "[native-module] Compressing public key"
+            {:fn          :convert-desktop-key-to-mobile-key
+             :desktop-key desktop-key})
+  (.deserializeAndCompressKey ^js (status) desktop-key callback))
+
+
+(defn serialise-public-key-into-compressed-key
+  "Provides public key to status-go and gets back a compressed key"
+  [public-key callback]
+  (let [serialisation-key constants/serialization-key
+        multi-code-prefix constants/multi-code-prefix
+        multi-code-key    (str multi-code-prefix (subs public-key 2))]
+    (log/info "[native-module] Compressing public key"
+              {:fn             :serialise-public-key-into-compressed-key
+               :public-key     public-key
+               :multi-code-key multi-code-key})
+    (.multiformatSerializePublicKey ^js (status) multi-code-key serialisation-key callback)))
+
+(defn deserialise-compressed-key-into-public-key
+  "Provides compressed key to status-go and gets back the uncompressed public key"
+  [public-key callback]
+  (let [deserialisation-key constants/de-serialization-key]
+    (log/info "[native-module] Deserialising compressed key"
+              {:fn         :deserialise-compressed-key-into-public-key
+               :public-key public-key})
+    (.multiformatDeserializePublicKey ^js (status) public-key deserialisation-key callback)))
+
+(defn decompress-key-into-public-key
+  "Provides compressed key to status-go and gets back the uncompressed public key"
+  [public-key callback]
+  (log/info "[native-module] Decompressing compressed key"
+            {:fn         :deserialise-compressed-key-into-public-key
+             :public-key public-key})
+  (.decompressPublicKey ^js (status) public-key callback))
+
+(defn compress-given-key
+  "Provides any key to status-go and gets back a 33bit compressed key back"
+  [some-key callback]
+  (log/info "[native-module] Compressing some key"
+            {:fn         :compress-given-key
+             :public-key some-key})
+  (.compressPublicKey ^js (status) some-key callback))
 
 (defn hash-typed-data
   "used for keycard"

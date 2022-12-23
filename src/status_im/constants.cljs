@@ -211,3 +211,18 @@
   An example of a connection string is -> cs2:5vd6J6:Jfc:27xMmHKEYwzRGXcvTtuiLZFfXscMx4Mz8d9wEHUxDj4p7:EG7Z13QScfWBJNJ5cprszzDQ5fBVsYMirXo8MaQFJvpF:3 "
   "cs")
 
+(def serialization-key
+  "We pass this serialization key as a parameter to MultiformatSerializePublicKey function at status-go,
+  This key determines the output base of the serialisation.
+  according to https://specs.status.im/spec/2#public-key-serialization we serialise keys with base58btc encoding"
+  "z")
+
+(def de-serialization-key
+  "We pass this de-serialization key as a parameter to MultiformatDeserializePublicKey function at status-go,
+  This key determines the output base of the deserialisation.
+  according to https://specs.status.im/spec/2#public-key-serialization we deserialise keys with base16 hexadecimal encoding"
+  "f")
+
+(def multi-code-prefix
+  "We prefix our keys with 0xe701 prior to serialisation them"
+  "0xe701")

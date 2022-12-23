@@ -339,6 +339,38 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(multiformatSerializePublicKey:(NSString *)multiCodecKey
+                  base58btc:(NSString *)base58btc
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoMultiformatSerializePublicKey(multiCodecKey,base58btc);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(multiformatDeserializePublicKey:(NSString *)multiCodecKey
+                  base58btc:(NSString *)base58btc
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoMultiformatDeserializePublicKey(multiCodecKey,base58btc);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(decompressPublicKey:(NSString *)multiCodecKey
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoDecompressPublicKey(multiCodecKey);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(compressPublicKey:(NSString *)multiCodecKey
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoCompressPublicKey(multiCodecKey);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(deserializeAndCompressKey:(NSString *)desktopKey
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoDeserializeAndCompressKey(desktopKey);
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

@@ -229,7 +229,11 @@
       (cb {:type handler :community-id (:community-id route-params)})
 
       (= handler :community)
-      (cb {:type handler :community-id (:community-id route-params)})
+      (cb {:type         (if (string/starts-with? (:community-id route-params) "z")
+                           :desktop-community
+                           :community
+                         )
+           :community-id (:community-id route-params)})
 
       (= handler :community-chat)
       (cb {:type handler :chat-id (:chat-id route-params)})

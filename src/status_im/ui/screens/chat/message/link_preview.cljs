@@ -19,9 +19,14 @@
     (string/starts-with? link (str "https://www." domain)) true
     :else                                                  false))
 
+;;siddarthkay : todo add code for previews here once previews are fixed in new messaging ui
+
 (defn community-id-from-link
   [link]
-  (nth (re-find constants/regx-community-universal-link link) 4))
+  (let [community-id (nth (re-find constants/regx-community-universal-link link) 4)]
+    community-id
+  )
+)
 
 (defn domain-info-if-whitelisted
   [link whitelist]
