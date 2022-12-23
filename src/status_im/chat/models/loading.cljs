@@ -102,6 +102,7 @@
                                                   [::mark-all-read-in-community-successful %])}]}))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (rf/defn messages-loaded
 =======
 (defn find-albums [messages]
@@ -119,6 +120,8 @@
           ))))
   messages)
 
+=======
+>>>>>>> c341585dd... updates
 (fx/defn messages-loaded
 >>>>>>> 86fbedba6... updates
   "Loads more messages for current chat"
@@ -149,7 +152,8 @@
                   messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))
-          result (find-albums all-messages)]
+          ;all-messages (find-albums all-messages)
+          ]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]

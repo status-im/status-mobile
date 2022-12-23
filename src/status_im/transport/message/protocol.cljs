@@ -5,6 +5,7 @@
 
 (defn build-message
   [{:keys [chat-id
+           album-id
            text
            response-to
            ens-name
@@ -15,6 +16,7 @@
            sticker
            content-type]}]
   {:chatId          chat-id
+   :albumId         album-id
    :text            text
    :responseTo      response-to
    :ensName         ens-name

@@ -18,7 +18,7 @@
 
 (defonce messages-list-ref (atom nil))
 
-(defonce list-key-fn #(or (:message-id %) (:value %)))
+(defonce list-key-fn #(or (:message-id %) (:value %) :nil))
 (defonce list-ref #(reset! messages-list-ref %))
 
 (defn scroll-to-bottom
@@ -114,8 +114,13 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
+<<<<<<< HEAD
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+=======
+<<<<<<< HEAD
+(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+>>>>>>> 2323598a4... updates
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
@@ -126,6 +131,36 @@
         (if (or deleted? deleted-for-me?)
           [content.deleted/deleted-message message-data]
           [message/message-with-reactions message-data context])]))])
+=======
+(defn render-fn
+  [{:keys [outgoing type album-id] :as message}
+   idx
+   _
+   {:keys [group-chat public? community? current-public-key
+           chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?
+           can-delete-message-for-everyone?]}]
+  [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
+   (if (= type :datemark)
+     [quo/divider-date (:value message)]
+     (if (= type :gap)
+       ;; TODO (flexsurfer) new gap functionality is not implemented yet
+       [gap/gap message idx messages-list-ref false chat-id]
+       ; message content
+       [message/chat-message
+        (if-not album-id
+          (assoc message
+            :incoming-group                   (and group-chat (not outgoing))
+            :group-chat                       group-chat
+            :public?                          public?
+            :community?                       community?
+            :current-public-key               current-public-key
+            :show-input?                      show-input?
+            :message-pin-enabled              message-pin-enabled
+            :edit-enabled                     edit-enabled
+            :can-delete-message-for-everyone? can-delete-message-for-everyone?)
+          (assoc message
+            :content-type 12))]))])
+>>>>>>> ef5639b77... updates
 
 (defn messages-list
   [{:keys [chat
