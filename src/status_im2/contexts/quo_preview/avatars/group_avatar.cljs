@@ -5,29 +5,31 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.group-avatar :as quo2]))
 
-(def descriptor [{:label "Size"
-                  :key :size
-                  :type :select
-                  :options [{:key :small
-                             :value "Small"}
-                            {:key :medium
-                             :value "Medium"}
-                            {:key :large
-                             :value "Large"}]}
-                 {:label "Color"
-                  :key   :color
-                  :type  :select
-                  :options
-                  (map
-                    (fn [c]
-                      {:key   c
-                       :value c})
-                    ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+(def descriptor
+  [{:label   "Size"
+    :key     :size
+    :type    :select
+    :options [{:key   :small
+               :value "Small"}
+              {:key   :medium
+               :value "Medium"}
+              {:key   :large
+               :value "Large"}]}
+   {:label "Color"
+    :key   :color
+    :type  :select
+    :options
+    (map
+      (fn [c]
+        {:key   c
+         :value c})
+      ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
 
-(defn cool-preview []
+(defn cool-preview
+  []
   (let [state (reagent/atom {:theme :light
                              :color :purple
-                             :size :small})]
+                             :size  :small})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -38,7 +40,8 @@
                   :justify-content  :center}
          [quo2/group-avatar @state]]]])))
 
-(defn preview-group-avatar []
+(defn preview-group-avatar
+  []
   [rn/view {:background-color (colors/theme-colors colors/white
                                                    colors/neutral-90)
             :flex             1}
