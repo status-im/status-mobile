@@ -17,13 +17,3 @@
    :border-radius   16
    :border-width    1
    :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)})
-
-(defn contact-requests-sheet
-  []
-  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
-   :width            32
-   :height           32
-   :border-radius    10
-   :justify-content  :center
-   :align-items      :center
-   :margin-bottom    24})

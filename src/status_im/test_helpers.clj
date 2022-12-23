@@ -55,3 +55,34 @@
                {'cljs.test/testing `testing-subscription
                 'testing           `testing-subscription}
                body)))))))
+
+(defmacro use-log-fixture
+  "Register log fixture which allows inspecting all calls to `taoensso.timbre/log`.
+
+  Usage: Simply call this macro once per test namespace, and use the
+  `status-im.test-helpers/logs` atom to deref the collection of all logs for the
+  test under execution.
+
+  In Clojure(Script), we can rely on fixtures for each `cljs.deftest`, but not
+  for individual `cljs.testing` macro calls. So keep that in mind when testing
+  for log messages."
+  []
+  `(cljs.test/use-fixtures
+    :each
+    {:before status-im.test-helpers/log-fixture-before
+     :after  status-im.test-helpers/log-fixture-after}))
+
+(defmacro run-test-sync
+  "Wrap around `re-frame.test/run-test-sync` to make it work with our aliased
+  function `utils.re-frame/dispatch`.
+
+  This macro is a must, because the original implementation uses `with-redefs`
+  pointing to the original re-frame `dispatch` function, but our event handlers
+  are dispatching using our aliased function.
+
+  If tests run using the original `run-test-sync`, then all bets are off, and
+  tests start to behave erratically."
+  [& body]
+  `(day8.re-frame.test/run-test-sync
+    (with-redefs [utils.re-frame/dispatch re-frame.core/dispatch]
+      ~@body)))

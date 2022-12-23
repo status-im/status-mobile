@@ -24,6 +24,7 @@
   "letsubs"         :binding
   "testing"         :arg1-body
   "deftest-sub"     :arg1-body
+  "wait-for"        :arg1-body
   "with-deps-check" :arg1-body
   "ns"              [:arg1-body
                      {:list   {:respect-nl? false}

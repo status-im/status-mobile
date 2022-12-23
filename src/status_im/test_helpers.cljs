@@ -89,20 +89,6 @@
              (and original-on-success on-success)
              (original-on-success (on-success fx-map)))))))
 
-(defn using-log-test-appender
-  "Rebinds `taoensso.timbre/*config*` to use a custom test appender that persists
-  all `taoensso.timbre/log` call arguments. `f` is called with the atom
-  reference so that tests can de-reference it and verify log messages and their
-  respective levels."
-  [f]
-  (let [logs (atom [])]
-    (binding [log/*config* (assoc-in log/*config*
-                            [:appenders :test]
-                            {:enabled? true
-                             :fn       (fn [{:keys [vargs level]}]
-                                         (swap! logs conj {:args vargs :level level}))})]
-      (f logs))))
-
 (defn restore-app-db
   "Saves current app DB, calls `f` and restores the original app DB.
 
@@ -114,3 +100,39 @@
       (f)
       (finally
        (reset! rf-db/app-db original-db)))))
+
+;;;; Log fixture
+
+(def ^:private original-log-config
+  (atom nil))
+
+(def logs
+  "The collection of all logs registered by `test-log-appender`. Tests can
+  de-reference it and verify log messages and their respective levels."
+  (atom []))
+
+(defn- test-log-appender
+  "Custom log appender that persists all `taoensso.timbre/log` call arguments."
+  [{:keys [vargs level]}]
+  (swap! logs conj {:args vargs :level level}))
+
+#_{:clj-kondo/ignore [:unused-private-var]}
+(defn- log-fixture-before
+  []
+  #_{:clj-kondo/ignore [:unresolved-var]}
+  (reset! original-log-config log/*config*)
+
+  ;; We reset the logs *before* running tests instead of *after* because: 1.
+  ;; It's just as reliable; 2. It helps when using the REPL, because we can
+  ;; easily inspect `logs` after a test has finished.
+  (reset! logs [])
+
+  (log/swap-config! assoc-in
+                    [:appenders :test]
+                    {:enabled? true
+                     :fn       test-log-appender}))
+
+#_{:clj-kondo/ignore [:unused-private-var]}
+(defn- log-fixture-after
+  []
+  (log/set-config! @original-log-config))

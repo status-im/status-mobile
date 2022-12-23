@@ -52,12 +52,13 @@
 (defn contacts
   [contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
-    (if (empty? items)
+    (if (and (empty? items) (empty? contact-requests))
       [welcome-blank-contacts]
       [:<>
-       (when (pos? (count contact-requests))
+       (when (seq contact-requests)
          [contact-request/contact-requests contact-requests])
-       [contact-list/contact-list {:icon :options}]])))
+       (when (seq items)
+         [contact-list/contact-list {:icon :options}])])))
 
 (defn tabs
   []
@@ -75,13 +76,16 @@
            :size           32
            :on-change      #(reset! selected-tab %)
            :default-active @selected-tab
-           :data           [{:id    :recent
-                             :label (i18n/label :t/recent)}
-                            {:id    :groups
-                             :label (i18n/label :t/groups)}
-                            {:id                :contacts
-                             :label             (i18n/label :t/contacts)
-                             :notification-dot? (pos? (count contact-requests))}]}]
+           :data           [{:id                  :recent
+                             :label               (i18n/label :t/recent)
+                             :accessibility-label :tab-recent}
+                            {:id                  :groups
+                             :label               (i18n/label :t/groups)
+                             :accessibility-label :tab-groups}
+                            {:id                  :contacts
+                             :label               (i18n/label :t/contacts)
+                             :accessibility-label :tab-contacts
+                             :notification-dot?   (pos? (count contact-requests))}]}]
          (if (= @selected-tab :contacts)
            [contacts contact-requests]
            [chats @selected-tab])]))))
