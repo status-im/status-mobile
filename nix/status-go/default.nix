@@ -33,8 +33,9 @@ let
   ];
 in rec {
   inherit nimbusSource;
+
   mobile = callPackage ./mobile {
-    inherit meta source nimbusSource goBuildLdFlags;
+    inherit meta source nimbusSource nimCompiler goBuildLdFlags;
   };
 
   library = callPackage ./library {
@@ -43,6 +44,13 @@ in rec {
 
   nimCompiler = callPackage ./mobile/buildNim.nix {
     srcRaw = nimbusSource;
+  };
+
+  liblcproxy-android-arm = callPackage ./mobile/buildNimbus.nix {
+    srcRaw = nimbusSource;
+    nimCompiler = nimCompiler;
+    platform = "android";
+    arch = "arm";
   };
 
   liblcproxy-android-arm64 = callPackage ./mobile/buildNimbus.nix {

@@ -2,6 +2,7 @@
 , androidPkgs, openjdk, gomobile, xcodeWrapper, removeReferencesTo
 , meta
 , source
+, buildNimbusLc
 , platform ? "android"
 , platformVersion ? "23"
 , targets ? [ "android/arm64" "android/arm" ]
@@ -13,7 +14,13 @@ let
   inherit (lib) concatStringsSep optionalString optional;
   isIOS = platform == "ios";
   isAndroid = platform == "android";
+  lc = buildNimbusLc {inherit platform targets;};
 
+  lcDirs = (builtins.concatStringsSep " " (builtins.map (s: "-L" + s) lc));
+
+  goBuildLdFlagsModified = 
+    goBuildLdFlags ++ [("\"-extldflags=-llcproxy " + lcDirs + "\"")];
+  ldflags = concatStringsSep " " goBuildLdFlagsModified;
 in buildGoPackage {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}-${platform}";
@@ -30,8 +37,6 @@ in buildGoPackage {
     ++ optional isAndroid openjdk
     ++ optional isIOS xcodeWrapper;
 
-  ldflags = concatStringsSep " " goBuildLdFlags;
-
   ANDROID_HOME = optionalString isAndroid androidPkgs.sdk;
 
   # Ensure XCode is present for iOS, instead of failing at the end of the build.
@@ -40,11 +45,12 @@ in buildGoPackage {
   buildPhase = ''
     runHook preBuild
     echo -e "\nBuilding $pname for: ${concatStringsSep "," targets}"
-
+    echo -e "\n LC dirs: ${lcDirs}"
+    echo -e "\n ldflags: ${ldflags}"
     set -x
     gomobile bind \
       ${concatStringsSep " " goBuildFlags} \
-      -ldflags="$ldflags" \
+      -ldflags="${ldflags}" \
       -target=${concatStringsSep "," targets} \
       ${optionalString isAndroid "-androidapi=${platformVersion}" } \
       ${optionalString isIOS "-iosversion=${platformVersion}" } \
