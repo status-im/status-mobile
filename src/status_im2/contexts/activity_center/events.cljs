@@ -90,6 +90,28 @@
        (map data-store.activities/<-rpc)
        (notifications-reconcile cofx)))
 
+(defn- remove-pending-contact-request
+  [notifications contact-id]
+  (remove #(= contact-id (:author %))
+          notifications))
+
+(rf/defn notifications-remove-pending-contact-request
+  {:events [:activity-center/remove-pending-contact-request]}
+  [{:keys [db]} contact-id]
+  {:db (-> db
+           (update-in [:activity-center :notifications types/no-type :all :data]
+                      remove-pending-contact-request
+                      contact-id)
+           (update-in [:activity-center :notifications types/no-type :unread :data]
+                      remove-pending-contact-request
+                      contact-id)
+           (update-in [:activity-center :notifications types/contact-request :all :data]
+                      remove-pending-contact-request
+                      contact-id)
+           (update-in [:activity-center :notifications types/contact-request :unread :data]
+                      remove-pending-contact-request
+                      contact-id))})
+
 ;;;; Mark notifications as read
 
 (defn- get-notification

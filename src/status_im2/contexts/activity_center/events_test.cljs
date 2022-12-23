@@ -397,6 +397,36 @@
                 :unread {:cursor "" :data [notif-5 new-notif-4 notif-3]}}}
               (get-in (h/db) [:activity-center :notifications])))))))
 
+(deftest remove-pending-contact-request-test
+  (testing "removes notification from all related filter types and status"
+    (h/run-test-sync
+     (setup)
+     (let [contact-pub-key "0x99"
+           notif-1         {:id "0x1" :read true :type types/contact-request}
+           notif-2         {:id "0x2" :read false :type types/contact-request :author contact-pub-key}
+           notif-3         {:id "0x3" :read false :type types/private-group-chat}
+           notifications   {types/contact-request
+                            {:all    {:cursor "" :data [notif-2 notif-1]}
+                             :unread {:cursor "" :data [notif-2]}}
+                            types/private-group-chat
+                            {:unread {:cursor "" :data [notif-3]}}
+                            types/no-type
+                            {:all    {:cursor "" :data [notif-3 notif-2 notif-1]}
+                             :unread {:cursor "" :data [notif-2 notif-3]}}}]
+       (rf/dispatch [:test/assoc-in [:activity-center :notifications] notifications])
+
+       (rf/dispatch [:activity-center/remove-pending-contact-request contact-pub-key])
+
+       (is (= {types/contact-request
+               {:all    {:cursor "" :data [notif-1]}
+                :unread {:cursor "" :data []}}
+               types/private-group-chat
+               {:unread {:cursor "" :data [notif-3]}}
+               types/no-type
+               {:all    {:cursor "" :data [notif-3 notif-1]}
+                :unread {:cursor "" :data [notif-3]}}}
+              (get-in (h/db) [:activity-center :notifications])))))))
+
 ;;;; Notifications fetching and pagination
 
 (deftest notifications-fetch-test

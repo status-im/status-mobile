@@ -43,6 +43,10 @@
                (and added (not was-added))
                (conj [:start-profile-chat public-key])
 
+               (and (not (:has-added-us contact))
+                    (= constants/contact-request-state-none (:contact-request-state contact)))
+               (conj [:activity-center/remove-pending-contact-request (:public-key contact)])
+
                (and was-added (not added))
                (conj nil)
 
