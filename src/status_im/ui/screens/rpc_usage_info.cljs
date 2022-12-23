@@ -8,9 +8,9 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
 (re-frame/reg-sub :rpc-usage/filter (fn [db] (get db :rpc-usage/filter)))
@@ -54,42 +54,43 @@
 ;; RPC usage refresh interval (ms)
 (def rpc-usage-refresh-interval-ms 2000)
 
-(fx/defn handle-stats
+(rf/defn handle-stats
   {:events [::handle-stats]}
   [{:keys [db]} data]
   {:db (assoc db :rpc-usage/data data)})
 
-(fx/defn get-stats
+(rf/defn get-stats
   {:events [::get-stats]}
   [{:keys [db]}]
   (let [method-filter (get db :rpc-usage/filter "eth_")]
     {:db         (assoc db :rpc-usage/filter method-filter)
      ::get-stats nil}))
 
-(fx/defn reset
+(rf/defn reset
   {:events [::reset]}
   [{:keys [db]}]
   {:db     (dissoc db :rpc-usage/data)
    ::reset nil})
 
-(fx/defn copy
+(rf/defn copy
   {:events [::copy]}
   [{:keys [db]}]
   {:db     (dissoc db :rpc-usage/data)
    ::reset nil})
 
-(fx/defn set-filter
+(rf/defn set-filter
   {:events [::set-filter]}
   [{:keys [db]} method-filter]
   {:db (assoc db :rpc-usage/filter method-filter)})
 
-(defn stats-table [{:keys [total filtered-total stats]}]
+(defn stats-table
+  [{:keys [total filtered-total stats]}]
   [quo.react-native/scroll-view
    {:style {:padding-horizontal 8}}
    [quo.react-native/view
     {:style {:flex-direction  :row
              :justify-content :space-between
-             :margin-bottom 2}}
+             :margin-bottom   2}}
     [quo.core/text {:style typography/font-semi-bold}
      (i18n/label :t/rpc-usage-total)]
     [quo.core/text {:style typography/font-semi-bold}
@@ -108,18 +109,21 @@
           v]]
         [quo.core/separator]]))])
 
-(defn prepare-stats [{:keys [stats]}]
+(defn prepare-stats
+  [{:keys [stats]}]
   (string/join
    "\n"
    (map (fn [[k v]]
           (str k " " v))
         stats)))
 
-(defn usage-info-render []
+(defn usage-info-render
+  []
   (let [stats          @(re-frame/subscribe [:rpc-usage/data])
         methods-filter @(re-frame/subscribe [:rpc-usage/filter])]
-    [react/view {:flex              1
-                 :margin-horizontal 8}
+    [react/view
+     {:flex              1
+      :margin-horizontal 8}
      [quo.react-native/view
       {:style {:flex-direction  :row
                :margin-vertical 8
@@ -146,12 +150,13 @@
        :auto-focus      false}]
      [stats-table stats]]))
 
-(defn usage-info []
+(defn usage-info
+  []
   (reagent/create-class
    {:component-did-mount
     (fn []
       (reset! rpc-refresh-interval
-              (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
+        (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
 
     :component-will-unmount (fn []
                               (utils/clear-interval @rpc-refresh-interval)

@@ -1,19 +1,19 @@
 (ns status-im.add-new.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.add-new.db :as db]
+            [status-im.chat.models :as chat]
+            [status-im.contact.core :as contact]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.add-new.db :as db]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.router.core :as router]
+            [status-im.utils.db :as utils.db]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
-            [status-im.utils.fx :as fx]
-            [status-im.chat.models :as chat]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.contact.core :as contact]
-            [status-im.router.core :as router]
             [status-im2.navigation.events :as navigation]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.utils.db :as utils.db]))
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :resolve-public-key
@@ -24,19 +24,19 @@
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
 
-(fx/defn new-chat-set-new-identity
+(rf/defn new-chat-set-new-identity
   {:events [:new-chat/set-new-identity]}
   [{db :db} new-identity-raw new-ens-name id]
   (let [ens-error (and (= new-identity-raw "0x") (not (string/blank? new-ens-name)))]
     (when (or (not id) (= id @resolve-last-id))
       (if ens-error
         {:db (assoc-in db [:contacts/new-identity :state] :error)}
-        (let [new-identity (utils/safe-trim new-identity-raw)
+        (let [new-identity   (utils/safe-trim new-identity-raw)
               is-public-key? (and (string? new-identity)
                                   (utils.db/valid-public-key? new-identity))
-              is-ens? (and (not is-public-key?)
-                           (ens/valid-eth-name-prefix? new-identity))
-              error (db/validate-pub-key db new-identity)]
+              is-ens?        (and (not is-public-key?)
+                                  (ens/valid-eth-name-prefix? new-identity))
+              error          (db/validate-pub-key db new-identity)]
           (reset! resolve-last-id nil)
           (merge {:db (assoc db
                              :contacts/new-identity
@@ -61,25 +61,27 @@
                                                             new-identity
                                                             @resolve-last-id])}})))))))
 
-(fx/defn clear-new-identity
+(rf/defn clear-new-identity
   {:events [::clear-new-identity ::new-chat-focus]}
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
 
-(fx/defn qr-code-handled
+(rf/defn qr-code-handled
   {:events [::qr-code-handled]}
-  [{:keys [db] :as cofx} {:keys [type public-key chat-id data ens-name]} {:keys [new-contact? nickname] :as opts}]
-  (let [public-key? (and (string? data)
-                         (string/starts-with? data "0x"))
-        chat-key (cond
-                   (= type :private-chat) chat-id
-                   (= type :contact) public-key
-                   (and (= type :undefined)
-                        public-key?) data)
+  [{:keys [db] :as cofx} {:keys [type public-key chat-id data ens-name]}
+   {:keys [new-contact? nickname] :as opts}]
+  (let [public-key?       (and (string? data)
+                               (string/starts-with? data "0x"))
+        chat-key          (cond
+                            (= type :private-chat) chat-id
+                            (= type :contact) public-key
+                            (and (= type :undefined)
+                                 public-key?)
+                            data)
         validation-result (db/validate-pub-key db chat-key)]
     (if-not validation-result
       (if new-contact?
-        (fx/merge cofx
+        (rf/merge cofx
                   (contact/add-contact chat-key nickname ens-name)
                   (navigation/navigate-to-cofx :contacts-list {}))
         (chat/start-chat cofx chat-key ens-name))
@@ -91,7 +93,7 @@
                                         (i18n/label :t/can-not-add-yourself))
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
-(fx/defn qr-code-scanned
+(rf/defn qr-code-scanned
   {:events [:contact/qr-code-scanned]}
   [{:keys [db]} data opts]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)

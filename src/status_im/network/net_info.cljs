@@ -1,15 +1,15 @@
 (ns status-im.network.net-info
-  (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
+  (:require ["@react-native-community/netinfo" :default net-info]
+            [re-frame.core :as re-frame]
             [status-im.mobile-sync-settings.core :as mobile-network]
-            [status-im.utils.fx :as fx]
+            [status-im.native-module.core :as status]
             [status-im.wallet.core :as wallet]
-            ["@react-native-community/netinfo" :default net-info]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
-(fx/defn change-network-status
+(rf/defn change-network-status
   [{:keys [db] :as cofx} is-connected?]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when (and is-connected?
                        (or (not= (count (get-in db [:wallet :accounts]))
@@ -17,14 +17,14 @@
                            (wallet/has-empty-balances? db)))
               (wallet/update-balances nil nil))))
 
-(fx/defn change-network-type
+(rf/defn change-network-type
   [{:keys [db] :as cofx} old-network-type network-type expensive?]
-  (fx/merge cofx
-            {:db (assoc db :network/type network-type)
+  (rf/merge cofx
+            {:db                       (assoc db :network/type network-type)
              :network/notify-status-go [network-type expensive?]}
             (mobile-network/on-network-status-change)))
 
-(fx/defn handle-network-info-change
+(rf/defn handle-network-info-change
   {:events [::network-info-changed]}
   [{:keys [db] :as cofx} {:keys [isConnected type details] :as state}]
   (let [old-network-status  (:network-status db)
@@ -33,18 +33,19 @@
         status-changed?     (= connectivity-status old-network-status)
         type-changed?       (= type old-network-type)]
     (log/debug "[net-info]"
-               "old-network-status" old-network-status
-               "old-network-type" old-network-type
+               "old-network-status"  old-network-status
+               "old-network-type"    old-network-type
                "connectivity-status" connectivity-status
-               "type" type
-               "details" details)
-    (fx/merge cofx
+               "type"                type
+               "details"             details)
+    (rf/merge cofx
               (when-not status-changed?
                 (change-network-status isConnected))
               (when-not type-changed?
                 (change-network-type old-network-type type (:is-connection-expensive details))))))
 
-(defn add-net-info-listener []
+(defn add-net-info-listener
+  []
   (when net-info
     (.addEventListener ^js net-info
                        #(re-frame/dispatch [::network-info-changed

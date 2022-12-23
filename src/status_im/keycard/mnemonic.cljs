@@ -1,21 +1,21 @@
 (ns status-im.keycard.mnemonic
-  (:require [status-im2.navigation.events :as navigation]
-            [status-im.utils.fx :as fx]
+  (:require [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [status-im.keycard.common :as common]
-            status-im.keycard.fx))
+            [utils.re-frame :as rf]))
 
-(fx/defn set-mnemonic
+(rf/defn set-mnemonic
   [{:keys [db] :as cofx}]
   (log/debug "[keycard] set-mnemonic")
   (let [selected-id (get-in db [:intro-wizard :selected-id])
-        mnemonic (reduce
-                  (fn [_ {:keys [id mnemonic]}]
-                    (when (= selected-id id)
-                      (reduced mnemonic)))
-                  nil
-                  (get-in db [:intro-wizard :multiaccounts]))]
-    (fx/merge
+        mnemonic    (reduce
+                     (fn [_ {:keys [id mnemonic]}]
+                       (when (= selected-id id)
+                         (reduced mnemonic)))
+                     nil
+                     (get-in db [:intro-wizard :multiaccounts]))]
+    (rf/merge
      cofx
      {:db (-> db
               (assoc-in [:keycard :setup-step] :recovery-phrase)
@@ -24,11 +24,11 @@
      (common/hide-connection-sheet)
      (navigation/navigate-replace :keycard-onboarding-recovery-phrase nil))))
 
-(fx/defn load-loading-keys-screen
+(rf/defn load-loading-keys-screen
   {:events [:keycard.ui/recovery-phrase-confirm-pressed
             :keycard/load-loading-keys-screen]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc-in db [:keycard :setup-step] :loading-keys)}
    (common/show-connection-sheet

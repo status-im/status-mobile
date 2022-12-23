@@ -1,10 +1,10 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
             [status-im.i18n.i18n :as i18n]
+            [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::hash-transaction
@@ -27,7 +27,7 @@
   [{:keys [gas gasPrice data nonce tx-obj] :as params}]
   (let [{:keys [from to value chat-id message-id command? maxPriorityFeePerGas maxFeePerGas]} tx-obj
         maxPriorityFeePerGas (or maxPriorityFeePerGas (get params :maxPriorityFeePerGas))
-        maxFeePerGas (or maxFeePerGas (get params :maxFeePerGas))]
+        maxFeePerGas         (or maxFeePerGas (get params :maxFeePerGas))]
     (cond-> {:from       from
              :to         to
              :value      value
@@ -35,11 +35,15 @@
              :message-id message-id
              :command?   command?}
       maxPriorityFeePerGas
-      (assoc :maxPriorityFeePerGas (str "0x" (status/number-to-hex
-                                              (js/parseInt maxPriorityFeePerGas))))
+      (assoc :maxPriorityFeePerGas
+             (str "0x"
+                  (status/number-to-hex
+                   (js/parseInt maxPriorityFeePerGas))))
       maxFeePerGas
-      (assoc :maxFeePerGas (str "0x" (status/number-to-hex
-                                      (js/parseInt maxFeePerGas))))
+      (assoc :maxFeePerGas
+             (str "0x"
+                  (status/number-to-hex
+                   (js/parseInt maxFeePerGas))))
       gas
       (assoc :gas (str "0x" (status/number-to-hex gas)))
       gasPrice
@@ -49,7 +53,7 @@
       nonce
       (assoc :nonce nonce))))
 
-(fx/defn hash-message
+(rf/defn hash-message
   [_ {:keys [v4 data typed? on-completed]}]
   (if typed?
     {::hash-typed-data
@@ -68,7 +72,7 @@
             [:signing.keycard.callback/hash-message-completed
              data typed? %]))}}))
 
-(fx/defn hash-message-completed
+(rf/defn hash-message-completed
   {:events [:signing.keycard.callback/hash-message-completed]}
   [{:keys [db]} data typed? result]
   (let [{:keys [result error]} (types/json->clj result)]
@@ -76,12 +80,13 @@
       {:dispatch         [:signing.ui/cancel-is-pressed]
        :utils/show-popup {:title   (i18n/label :t/sign-request-failed)
                           :content (:message error)}}
-      {:db (update db :keycard assoc
-                   :hash result
-                   :typed? typed?
-                   :data data)})))
+      {:db (update db
+                   :keycard assoc
+                   :hash    result
+                   :typed?  typed?
+                   :data    data)})))
 
-(fx/defn hash-transaction
+(rf/defn hash-transaction
   [{:keys [db]}]
   (let [tx (prepare-transaction (:signing/tx db))]
     (log/debug "hash-transaction" tx)
@@ -90,7 +95,7 @@
       :on-completed #(re-frame/dispatch
                       [:signing.keycard.callback/hash-transaction-completed tx %])}}))
 
-(fx/defn hash-transaction-completed
+(rf/defn hash-transaction-completed
   {:events [:signing.keycard.callback/hash-transaction-completed]}
   [{:keys [db]} original-tx result]
   (let [{:keys [transaction hash]} (:result (types/json->clj result))]
@@ -99,11 +104,11 @@
                        (merge original-tx transaction))
              (assoc-in [:keycard :hash] hash))}))
 
-(fx/defn sign-with-keycard
+(rf/defn sign-with-keycard
   {:events [:signing.ui/sign-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [message maxPriorityFeePerGas maxFeePerGas]} (get db :signing/tx)]
-    (fx/merge
+    (rf/merge
      cofx
      {:db (-> db
               (assoc-in [:keycard :pin :enter-step] :sign)

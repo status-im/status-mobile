@@ -1,14 +1,14 @@
 (ns status-im.multiaccounts.biometric.core
-  (:require [re-frame.core :as re-frame]
+  (:require ["react-native-touch-id" :default touchid]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
-            [quo.design-system.colors :as colors]
-            [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
-            ["react-native-touch-id" :default touchid]))
+            [utils.re-frame :as rf]))
 
 ;; currently, for android, react-native-touch-id
 ;; is not returning supported biometric type
@@ -28,11 +28,12 @@
 (def android-device-blacklisted?
   (cond
     (= (:brand deviceinfo) "bannedbrand") true
-    :else false))
+    :else                                 false))
 
 ;; biometric auth config
 ;; https://github.com/naoufal/react-native-touch-id#authenticatereason-config
-(defn- authenticate-options [ios-fallback-label]
+(defn- authenticate-options
+  [ios-fallback-label]
   (clj->js (merge
             {:unifiedErrors true}
             (when platform/ios?
@@ -46,7 +47,8 @@
                :sensorErrorDescription (i18n/label :t/biometric-auth-android-sensor-error-desc)
                :cancelText             (i18n/label :cancel)}))))
 
-(defn get-label [supported-biometric-auth]
+(defn get-label
+  [supported-biometric-auth]
   (case supported-biometric-auth
     :fingerprint (i18n/label :t/biometric-fingerprint)
     :FaceID      (i18n/label :t/biometric-faceid)
@@ -61,29 +63,33 @@
     (= touchid-error-code "USER_FALLBACK") nil
     ;; add here more specific errors if needed
     ;; https://github.com/naoufal/react-native-touch-id#unified-errors
-    :else (i18n/label :t/biometric-auth-error {:code touchid-error-code})))
+    :else                                  (i18n/label :t/biometric-auth-error
+                                                       {:code touchid-error-code})))
 
 (def success-result
   {:bioauth-success true})
 
-(defn- generate-error-result [touchid-error-obj]
+(defn- generate-error-result
+  [touchid-error-obj]
   (let [code (aget touchid-error-obj "code")]
     {:bioauth-success false
      :bioauth-code    code
      :bioauth-message (get-error-message code)}))
 
-(defn- do-get-supported [callback]
+(defn- do-get-supported
+  [callback]
   (-> (.isSupported touchid)
       (.then #(callback (or (keyword %) android-default-support)))
       (.catch #(callback nil))))
 
-(defn get-supported [callback]
+(defn get-supported
+  [callback]
   (log/debug "[biometric] get-supported")
-  (cond platform/ios? (do-get-supported callback)
+  (cond platform/ios?     (do-get-supported callback)
         platform/android? (if android-device-blacklisted?
                             (callback nil)
                             (do-get-supported callback))
-        :else (callback nil)))
+        :else             (callback nil)))
 
 (defn authenticate-fx
   ([cb]
@@ -105,12 +111,12 @@
           (get-supported callback)
           (callback nil)))))))
 
-(fx/defn set-supported-biometric-auth
+(rf/defn set-supported-biometric-auth
   {:events [:init.callback/get-supported-biometric-auth-success]}
   [{:keys [db]} supported-biometric-auth]
   {:db (assoc db :supported-biometric-auth supported-biometric-auth)})
 
-(fx/defn authenticate
+(rf/defn authenticate
   [_ cb options]
   {:biometric-auth/authenticate [cb options]})
 
@@ -119,10 +125,11 @@
  (fn [[cb options]]
    (authenticate-fx #(cb %) options)))
 
-(fx/defn update-biometric [{db :db :as cofx} biometric-auth?]
+(rf/defn update-biometric
+  [{db :db :as cofx} biometric-auth?]
   (let [key-uid (or (get-in db [:multiaccount :key-uid])
                     (get-in db [:multiaccounts/login :key-uid]))]
-    (fx/merge cofx
+    (rf/merge cofx
               (keychain/save-auth-method
                key-uid
                (if biometric-auth?
@@ -131,7 +138,7 @@
               #(when-not biometric-auth?
                  {:keychain/clear-user-password key-uid}))))
 
-(fx/defn biometric-auth-switched
+(rf/defn biometric-auth-switched
   {:events [:multiaccounts.ui/biometric-auth-switched]}
   [cofx biometric-auth?]
   (if biometric-auth?
@@ -141,17 +148,17 @@
      {})
     (update-biometric cofx false)))
 
-(fx/defn show-message
+(rf/defn show-message
   [cofx bioauth-message bioauth-code]
   (let [content (or (when (get #{"NOT_AVAILABLE" "NOT_ENROLLED"} bioauth-code)
                       (i18n/label :t/grant-face-id-permissions))
                     bioauth-message)]
     (when content
       {:utils/show-popup
-       {:title (i18n/label :t/biometric-auth-login-error-title)
+       {:title   (i18n/label :t/biometric-auth-login-error-title)
         :content content}})))
 
-(fx/defn biometric-init-done
+(rf/defn biometric-init-done
   {:events [:biometric-init-done]}
   [cofx {:keys [bioauth-success bioauth-message bioauth-code]}]
   (if bioauth-success
@@ -161,7 +168,7 @@
       (popover/show-popover cofx {:view :enable-biometric}))
     (show-message cofx bioauth-message bioauth-code)))
 
-(fx/defn biometric-auth
+(rf/defn biometric-auth
   {:events [:biometric-authenticate]}
   [cofx]
   (authenticate
@@ -170,31 +177,31 @@
    {:reason             (i18n/label :t/biometric-auth-reason-login)
     :ios-fallback-label (i18n/label :t/biometric-auth-login-ios-fallback-label)}))
 
-(fx/defn enable
+(rf/defn enable
   {:events [:biometric/enable]}
   [cofx]
-  (fx/merge
+  (rf/merge
    cofx
    (popover/hide-popover)
    (authenticate #(re-frame/dispatch [:biometric/setup-done %]) {})))
 
-(fx/defn disable
+(rf/defn disable
   {:events [:biometric/disable]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (-> db
             (assoc :auth-method keychain/auth-method-none)
             (assoc-in [:multiaccounts/login :save-password?] false))}
    (popover/hide-popover)))
 
-(fx/defn setup-done
+(rf/defn setup-done
   {:events [:biometric/setup-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
   (log/debug "[biometric] setup-done"
              "bioauth-success" bioauth-success
              "bioauth-message" bioauth-message
-             "bioauth-code" bioauth-code)
+             "bioauth-code"    bioauth-code)
   (if bioauth-success
     {:db (assoc db :auth-method keychain/auth-method-biometric-prepare)}
     (show-message cofx bioauth-message bioauth-code)))

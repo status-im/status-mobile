@@ -12,9 +12,9 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -26,7 +26,7 @@
                           (.-char ^js emoji-map)
                           original))))
 
-(fx/defn set-chat-input-text
+(rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
@@ -34,24 +34,25 @@
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
 
-(fx/defn set-timeline-input-text
+(rf/defn set-timeline-input-text
   {:events [:chat.ui/set-timeline-input-text]}
   [{db :db} new-input]
-  {:db (assoc-in db [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
-                 (text->emoji new-input))})
+  {:db (assoc-in db
+        [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
+        (text->emoji new-input))})
 
-(fx/defn select-mention
+(rf/defn select-mention
   {:events [:chat.ui/select-mention]}
   [{:keys [db] :as cofx} text-input-ref {:keys [alias name searched-text match] :as user}]
   (let [chat-id     (:current-chat-id db)
         new-text    (mentions/new-input-text-with-mention cofx user)
         at-sign-idx (get-in db [:chats/mentions chat-id :mentions :at-sign-idx])
         cursor      (+ at-sign-idx (count name) 2)]
-    (fx/merge
+    (rf/merge
      cofx
-     {:db             (-> db
-                          (assoc-in [:chats/cursor chat-id] cursor)
-                          (assoc-in [:chats/mention-suggestions chat-id] nil))
+     {:db                   (-> db
+                                (assoc-in [:chats/cursor chat-id] cursor)
+                                (assoc-in [:chats/mention-suggestions chat-id] nil))
       :set-text-input-value [chat-id new-text text-input-ref]}
      (set-chat-input-text new-text chat-id)
      ;; NOTE(rasom): Some keyboards do not react on selection property passed to
@@ -74,67 +75,77 @@
          :end           end}))
      (mentions/recheck-at-idxs {alias user}))))
 
-(defn- start-cooldown [{:keys [db]} cooldowns]
+(defn- start-cooldown
+  [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
                             :ms       (chat.constants/cooldown-periods-ms
                                        cooldowns
                                        chat.constants/default-cooldown-period-ms)}]
    :show-cooldown-warning nil
    :db                    (assoc db
-                                 :chat/cooldowns (if (= chat.constants/cooldown-reset-threshold cooldowns)
-                                                   0
-                                                   cooldowns)
+                                 :chat/cooldowns               (if
+                                                                 (=
+                                                                  chat.constants/cooldown-reset-threshold
+                                                                  cooldowns)
+                                                                 0
+                                                                 cooldowns)
                                  :chat/spam-messages-frequency 0
-                                 :chat/cooldown-enabled? true)})
+                                 :chat/cooldown-enabled?       true)})
 
-(fx/defn process-cooldown
+(rf/defn process-cooldown
   "Process cooldown to protect against message spammers"
   [{{:keys [chat/last-outgoing-message-sent-at
             chat/cooldowns
             chat/spam-messages-frequency
-            current-chat-id] :as db} :db :as cofx}]
+            current-chat-id]
+     :as   db}
+    :db
+    :as cofx}]
   (when (chat/public-chat? cofx current-chat-id)
-    (let [spamming-fast? (< (- (datetime/timestamp) last-outgoing-message-sent-at)
-                            (+ chat.constants/spam-interval-ms (* 1000 cooldowns)))
-          spamming-frequently? (= chat.constants/spam-message-frequency-threshold spam-messages-frequency)]
+    (let [spamming-fast?       (< (- (datetime/timestamp) last-outgoing-message-sent-at)
+                                  (+ chat.constants/spam-interval-ms (* 1000 cooldowns)))
+          spamming-frequently? (= chat.constants/spam-message-frequency-threshold
+                                  spam-messages-frequency)]
       (cond-> {:db (assoc db
                           :chat/last-outgoing-message-sent-at (datetime/timestamp)
-                          :chat/spam-messages-frequency (if spamming-fast?
-                                                          (inc spam-messages-frequency)
-                                                          0))}
+                          :chat/spam-messages-frequency       (if spamming-fast?
+                                                                (inc spam-messages-frequency)
+                                                                0))}
 
         (and spamming-fast? spamming-frequently?)
         (start-cooldown (inc cooldowns))))))
 
-(fx/defn reply-to-message
+(rf/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/reply-to-message]}
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (-> db
                        (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
                                  message)
                        (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
                        (update-in [:chat/inputs current-chat-id :metadata]
-                                  dissoc :sending-image))})))
+                                  dissoc
+                                  :sending-image))})))
 
-(fx/defn edit-message
+(rf/defn edit-message
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/edit-message]}
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)
 
-        text (get-in message [:content :text])]
+        text            (get-in message [:content :text])]
     {:dispatch [:chat.ui.input/set-chat-input-text text current-chat-id]
-     :db (-> db
-             (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                       message)
-             (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-             (update-in [:chat/inputs current-chat-id :metadata]
-                        dissoc :sending-image))}))
+     :db       (-> db
+                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                             message)
+                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                   (update-in [:chat/inputs current-chat-id :metadata]
+                              dissoc
+                              :sending-image))}))
 
-(fx/defn show-contact-request-input
+(rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/send-contact-request]}
   [{:keys [db] :as cofx}]
@@ -146,9 +157,10 @@
                        nil)
              (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
              (update-in [:chat/inputs current-chat-id :metadata]
-                        dissoc :sending-image))}))
+                        dissoc
+                        :sending-image))}))
 
-(fx/defn cancel-message-reply
+(rf/defn cancel-message-reply
   "Cancels stage message reply"
   {:events [:chat.ui/cancel-message-reply]}
   [{:keys [db]}]
@@ -160,16 +172,16 @@
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
           (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])
-          preferred-name (get-in db [:multiaccount :preferred-name])
-          emoji? (message-content/emoji-only-content? {:text input-text
-                                                       :response-to message-id})]
+          preferred-name       (get-in db [:multiaccount :preferred-name])
+          emoji?               (message-content/emoji-only-content? {:text        input-text
+                                                                     :response-to message-id})]
       {:chat-id      current-chat-id
        :content-type (if emoji?
                        constants/content-type-emoji
                        constants/content-type-text)
-       :text input-text
-       :response-to message-id
-       :ens-name preferred-name})))
+       :text         input-text
+       :response-to  message-id
+       :ens-name     preferred-name})))
 
 (defn build-image-messages
   [{db :db} chat-id]
@@ -181,8 +193,9 @@
              :text         (i18n/label :t/update-to-see-image {"locale" "en"})})
           images)))
 
-(fx/defn clean-input [{:keys [db] :as cofx} current-chat-id]
-  (fx/merge cofx
+(rf/defn clean-input
+  [{:keys [db] :as cofx} current-chat-id]
+  (rf/merge cofx
             {:db (-> db
                      (assoc-in [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)
                      (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
@@ -190,131 +203,137 @@
                      (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
             (set-chat-input-text nil current-chat-id)))
 
-(fx/defn cancel-message-edit
+(rf/defn cancel-message-edit
   "Cancels stage message edit"
   {:events [:chat.ui/cancel-message-edit]}
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:set-text-input-value [current-chat-id ""]}
               (clean-input current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
 
-(fx/defn send-messages [{:keys [db] :as cofx} input-text current-chat-id]
+(rf/defn send-messages
+  [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id)
-        text-message (build-text-message cofx input-text current-chat-id)
-        messages (keep identity (conj image-messages text-message))]
+        text-message   (build-text-message cofx input-text current-chat-id)
+        messages       (keep identity (conj image-messages text-message))]
     (when (seq messages)
-      (fx/merge cofx
+      (rf/merge cofx
                 (clean-input (:current-chat-id db))
                 (process-cooldown)
                 (chat.message/send-messages messages)))))
 
-(fx/defn send-my-status-message
+(rf/defn send-my-status-message
   "when not empty, proceed by sending text message with public key topic"
   {:events [:profile.ui/send-my-status-message]}
   [{db :db :as cofx}]
-  (let [current-chat-id (chat/my-profile-chat-topic db)
+  (let [current-chat-id      (chat/my-profile-chat-topic db)
         {:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
-        image-messages (build-image-messages cofx current-chat-id)
-        text-message (build-text-message cofx input-text current-chat-id)
-        messages (keep identity (conj image-messages text-message))]
+        image-messages       (build-image-messages cofx current-chat-id)
+        text-message         (build-text-message cofx input-text current-chat-id)
+        messages             (keep identity (conj image-messages text-message))]
     (when (seq messages)
-      (fx/merge cofx
+      (rf/merge cofx
                 (clean-input current-chat-id)
                 (chat.message/send-messages messages)))))
 
-(fx/defn send-audio-message
+(rf/defn send-audio-message
   [cofx audio-path duration current-chat-id]
   (when-not (string/blank? audio-path)
-    (chat.message/send-message cofx {:chat-id           current-chat-id
-                                     :content-type      constants/content-type-audio
-                                     :audio-path        audio-path
-                                     :audio-duration-ms duration
-                                     :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})})))
+    (chat.message/send-message
+     cofx
+     {:chat-id           current-chat-id
+      :content-type      constants/content-type-audio
+      :audio-path        audio-path
+      :audio-duration-ms duration
+      :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})})))
 
-(fx/defn send-sticker-message
+(rf/defn send-sticker-message
   [cofx {:keys [hash packID pack]} current-chat-id]
   (when-not (or (string/blank? hash) (and (string/blank? packID) (string/blank? pack)))
-    (chat.message/send-message cofx {:chat-id      current-chat-id
-                                     :content-type constants/content-type-sticker
-                                     :sticker {:hash hash
+    (chat.message/send-message cofx
+                               {:chat-id      current-chat-id
+                                :content-type constants/content-type-sticker
+                                :sticker      {:hash hash
                                                :pack (int (if (string/blank? packID) pack packID))}
-                                     :text    (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
+                                :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
-(fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id quoted-message]}]
-  (fx/merge
+(rf/defn send-edited-message
+  [{:keys [db] :as cofx} text {:keys [message-id quoted-message]}]
+  (rf/merge
    cofx
-   {::json-rpc/call [{:method     "wakuext_editMessage"
-                      :params     [{:id message-id
-                                    :text text
-                                    :content-type (if (message-content/emoji-only-content? {:text text :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)}]
+   {::json-rpc/call [{:method      "wakuext_editMessage"
+                      :params      [{:id           message-id
+                                     :text         text
+                                     :content-type (if (message-content/emoji-only-content?
+                                                        {:text text :response-to quoted-message})
+                                                     constants/content-type-emoji
+                                                     constants/content-type-text)}]
                       :js-response true
-                      :on-error #(log/error "failed to edit message " %)
-                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
+                      :on-error    #(log/error "failed to edit message " %)
+                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
    (cancel-message-edit)
    (process-cooldown)))
 
-(fx/defn send-current-message
+(rf/defn send-current-message
   "Sends message from current chat input"
   {:events [:chat.ui/send-current-message]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
-        editing-message (:editing-message metadata)
-        input-text-with-mentions (mentions/check-mentions cofx input-text)]
-    (fx/merge cofx
+        editing-message               (:editing-message metadata)
+        input-text-with-mentions      (mentions/check-mentions cofx input-text)]
+    (rf/merge cofx
               (if editing-message
                 (send-edited-message input-text-with-mentions editing-message)
                 (send-messages input-text-with-mentions current-chat-id))
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
 
-(fx/defn send-contact-request
+(rf/defn send-contact-request
   {:events [:contacts/send-contact-request]}
   [{:keys [db] :as cofx} public-key message]
-  (fx/merge cofx
+  (rf/merge cofx
             {:chat.ui/clear-inputs     nil
              :chat.ui/clear-inputs-old nil
-             ::json-rpc/call           [{:method "wakuext_sendContactRequest"
+             ::json-rpc/call           [{:method      "wakuext_sendContactRequest"
                                          :js-response true
-                                         :params [{:id public-key :message message}]
-                                         :on-error #(log/warn "failed to send a contact request" %)
-                                         :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
+                                         :params      [{:id public-key :message message}]
+                                         :on-error    #(log/warn "failed to send a contact request" %)
+                                         :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (mentions/clear-cursor)
             (clean-input (:current-chat-id db))
             (process-cooldown)))
 
-(fx/defn cancel-contact-request
+(rf/defn cancel-contact-request
   "Cancels contact request"
   {:events [:chat.ui/cancel-contact-request]}
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc-in db [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)}
               (mentions/clear-mentions)
               (mentions/clear-cursor)
               (clean-input (:current-chat-id db))
               (process-cooldown))))
 
-(fx/defn chat-send-sticker
+(rf/defn chat-send-sticker
   {:events [:chat/send-sticker]}
   [{{:keys [current-chat-id] :as db} :db :as cofx} {:keys [hash packID pack] :as sticker}]
-  (fx/merge
+  (rf/merge
    cofx
-   {:db (update db
-                :stickers/recent-stickers
-                (fn [recent]
-                  (conj (remove #(= hash (:hash %)) recent) sticker)))
+   {:db             (update db
+                            :stickers/recent-stickers
+                            (fn [recent]
+                              (conj (remove #(= hash (:hash %)) recent) sticker)))
     ::json-rpc/call [{:method     "stickers_addRecent"
                       :params     [(int (if (string/blank? packID) pack packID)) hash]
                       :on-success #()}]}
    (send-sticker-message sticker current-chat-id)))
 
-(fx/defn chat-send-audio
+(rf/defn chat-send-audio
   {:events [:chat/send-audio]}
   [{{:keys [current-chat-id]} :db :as cofx} audio-path duration]
   (send-audio-message cofx audio-path duration current-chat-id))

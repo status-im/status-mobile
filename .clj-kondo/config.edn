@@ -1,7 +1,6 @@
 {:lint-as      {status-im.utils.views/defview      clojure.core/defn
                 status-im.utils.views/letsubs      clojure.core/let
                 reagent.core/with-let              clojure.core/let
-                status-im.utils.fx/defn            clj-kondo.lint-as/def-catch-all
                 utils.re-frame/defn                clj-kondo.lint-as/def-catch-all
                 quo.react/with-deps-check          clojure.core/fn
                 quo.previews.preview/list-comp     clojure.core/for
@@ -12,7 +11,7 @@
  :linters      {:consistent-alias  {:level   :error
                                     :aliases {clojure.string  string
                                               taoensso.timbre log}}
-                :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
+                :invalid-arity     {:skip-args [utils.re-frame/defn]}
                 ;; TODO remove number when this is fixed
                 ;; https://github.com/borkdude/clj-kondo/issues/867
                 :unresolved-symbol {:exclude [PersistentPriorityMap.EMPTY

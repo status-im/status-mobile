@@ -1,18 +1,18 @@
 (ns status-im.qr-scanner.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.chat.models :as chat]
-            [status-im.router.core :as router]
-            [status-im2.navigation.events :as navigation]
-            [status-im.utils.utils :as utils]
-            [status-im.ethereum.core :as ethereum]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
-            [status-im.utils.fx :as fx]
+            [status-im.chat.models :as chat]
+            [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.router.core :as router]
+            [status-im.utils.utils :as utils]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
-(fx/defn scan-qr-code
+(rf/defn scan-qr-code
   {:events [::scan-code]}
   [_ opts]
   {:request-permissions-fx
@@ -24,48 +24,52 @@
                                        (i18n/label :t/camera-access-error))
                     50))}})
 
-(fx/defn set-qr-code
+(rf/defn set-qr-code
   {:events [:qr-scanner.callback/scan-qr-code-success]}
   [{:keys [db]} opts data]
   (when-let [handler (:handler opts)]
     {:dispatch [handler data opts]}))
 
-(fx/defn set-qr-code-cancel
+(rf/defn set-qr-code-cancel
   {:events [:qr-scanner.callback/scan-qr-code-cancel]}
   [cofx opts]
-  (fx/merge cofx
+  (rf/merge cofx
             (navigation/navigate-back)
             (when-let [handler (:cancel-handler opts)]
               (fn [] {:dispatch [handler opts]}))))
 
-(fx/defn handle-browse [cofx {:keys [url]}]
-  (fx/merge cofx
+(rf/defn handle-browse
+  [cofx {:keys [url]}]
+  (rf/merge cofx
             {:browser/show-browser-selection url}
             (navigation/navigate-back)))
 
-(fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
+(rf/defn handle-private-chat
+  [{:keys [db] :as cofx} {:keys [chat-id]}]
   (if-not (new-chat.db/own-public-key? db chat-id)
     (chat/start-chat cofx chat-id nil)
     {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                         :content (i18n/label :t/can-not-add-yourself)}}))
 
-(fx/defn handle-public-chat [cofx {:keys [topic]}]
+(rf/defn handle-public-chat
+  [cofx {:keys [topic]}]
   (when (seq topic)
     (chat/start-public-chat cofx topic)))
 
-(fx/defn handle-group-chat [cofx params]
+(rf/defn handle-group-chat
+  [cofx params]
   (group-chats/create-from-link cofx params))
 
-(fx/defn handle-view-profile
+(rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      {:change-tab-fx :profile
+      {:change-tab-fx      :profile
        :pop-to-root-tab-fx :profile-stack}
 
       (and public-key (not own))
-      (fx/merge cofx
+      (rf/merge cofx
                 {:dispatch [:chat.ui/show-profile public-key ens-name]}
                 (navigation/navigate-back))
 
@@ -74,13 +78,14 @@
                           :content    (i18n/label :t/ens-name-not-found)
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
-(fx/defn handle-eip681 [cofx data]
-  (fx/merge cofx
+(rf/defn handle-eip681
+  [cofx data]
+  (rf/merge cofx
             {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
             (navigation/change-tab :wallet)
             (navigation/pop-to-root-tab :wallet-stack)))
 
-(fx/defn handle-wallet-connect
+(rf/defn handle-wallet-connect
   {:events [::handle-wallet-connect-uri]}
   [cofx data]
   (let [wc-version (last (string/split (first (string/split data "?")) "@"))]
@@ -88,12 +93,12 @@
       {:dispatch [:wallet-connect-legacy/pair data]}
       {:dispatch [:wallet-connect/pair data]})))
 
-(fx/defn handle-local-pairing
+(rf/defn handle-local-pairing
   {:events [::handle-local-pairing-uri]}
   [_ data]
   {:dispatch [:syncing/input-connection-string-for-bootstrapping data]})
 
-(fx/defn match-scan
+(rf/defn match-scan
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
   (case type
@@ -109,11 +114,11 @@
       (log/info "Unable to find matcher for scanned value"
                 {:type  type
                  :event ::match-scanned-value})
-      {:dispatch [:navigate-back]
+      {:dispatch         [:navigate-back]
        :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
-(fx/defn on-scan
+(rf/defn on-scan
   {:events [::on-scan-success]}
   [{:keys [db]} uri]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)

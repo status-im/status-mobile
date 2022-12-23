@@ -2,8 +2,8 @@
   (:require [cljs.test :as test]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.login.core :as login]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.keychain.core :as keychain]))
+            [status-im.utils.keychain.core :as keychain]
+            [utils.re-frame :as rf]))
 
 (test/deftest save-password-test
   (test/testing "check save password, biometric unavailable"
@@ -44,7 +44,7 @@
                      "uncheck save password")
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
                              :supported-biometric-auth true}}
-          {:keys [db]} (login/save-password (fx/merge
+          {:keys [db]} (login/save-password (rf/merge
                                              initial-cofx
                                              (login/save-password true)
                                              (biometric/enable)

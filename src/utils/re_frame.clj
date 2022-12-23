@@ -1,5 +1,4 @@
-(ns utils.re-frame
-  (:refer-clojure :exclude [defn]))
+(ns utils.re-frame (:refer-clojure :exclude [defn]))
 
 (defn- register-events
   [events interceptors name argsyms]
@@ -10,7 +9,8 @@
             (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
-(defn- fully-qualified-name [sym]
+(defn- fully-qualified-name
+  [sym]
   (str *ns* "/" (name sym)))
 
 (defmacro defn
@@ -30,23 +30,23 @@
   - TODO: add validation of macro parameters"
   {:arglists '([name doc-string? attr-map? [params*] body])}
   [name & fdecl]
-  (let [m (if (string? (first fdecl))
-            {:doc (first fdecl)}
-            {})
-        fdecl (if (string? (first fdecl))
-                (next fdecl)
-                fdecl)
-        m (if (map? (first fdecl))
-            (conj m (first fdecl))
-            m)
-        events (get m :events [])
-        interceptors (get m :interceptors [])
-        fdecl (if (map? (first fdecl))
-                (next fdecl)
-                fdecl)
+  (let [m             (if (string? (first fdecl))
+                        {:doc (first fdecl)}
+                        {})
+        fdecl         (if (string? (first fdecl))
+                        (next fdecl)
+                        fdecl)
+        m             (if (map? (first fdecl))
+                        (conj m (first fdecl))
+                        m)
+        events        (get m :events [])
+        interceptors  (get m :interceptors [])
+        fdecl         (if (map? (first fdecl))
+                        (next fdecl)
+                        fdecl)
         [cofx & args] (first fdecl)
-        fdecl (next fdecl)
-        argsyms (take (count args) (repeatedly #(gensym "arg")))]
+        fdecl         (next fdecl)
+        argsyms       (take (count args) (repeatedly #(gensym "arg")))]
     (if (and (sequential? events)
              (every? keyword? events))
       `(do
@@ -76,9 +76,15 @@
                            m#
                            (when (and (map? k#)
                                       (contains? k# :db))
-                             (throw (js/Error. (str "fx/defn's result is used as fx producing function in " ~(fully-qualified-name name)))))
+                             (throw (js/Error. (str
+                                                "rf/defn's result is used as fx producing function in "
+                                                ~(fully-qualified-name name)))))
                            (get m# k# nil)))))
                 res#)
-              (throw (js/Error. (str "fx/defn expects a map of cofx as first argument got " cofx# " in function " ~(fully-qualified-name name)))))))
+              (throw (js/Error. (str "rf/defn expects a map of cofx as first argument got " cofx#
+                                     " in function " ~(fully-qualified-name name)))))))
          ~@(register-events events interceptors (with-meta name m) argsyms))
-      (throw (Exception. (str "fx/defn expects a vector of keyword as value for :events key in attr-map in function " name))))))
+      (throw
+       (Exception.
+        (str "rf/defn expects a vector of keyword as value for :events key in attr-map in function "
+             name))))))
