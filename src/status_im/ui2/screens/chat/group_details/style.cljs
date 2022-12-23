@@ -1,6 +1,5 @@
 (ns status-im.ui2.screens.chat.group-details.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn actions-view
   []
@@ -34,15 +33,12 @@
    :align-items      :center
    :margin-bottom    24})
 
-(defn bottom-container [safe-area]
-  {
-   ;:position           :absolute
+(def bottom-container
+  {:position           :absolute
    :padding-horizontal 20
    :padding-vertical   12
-   :padding-bottom     (+ 33 (if platform/ios? (:bottom safe-area) 0))
+   :padding-bottom     33
    :width              "100%"
    :background-color   colors/white
    :flex-direction     :row
-   ;:padding-bottom     (if platform/ios? (:bottom safe-area) 0)
-   :margin-bottom      (if platform/ios? 0 70)
-   })
+   :bottom             0})

@@ -217,7 +217,7 @@
 
 (re-frame/reg-sub
  :is-participant-selected?
- :<- [:group-chat/selected-participants]
+ :<- [:selected-participants]
  (fn [selected-participants [_ element]]
    (-> selected-participants
        (contains? element))))

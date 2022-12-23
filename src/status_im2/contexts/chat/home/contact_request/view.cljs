@@ -19,7 +19,7 @@
           {:on-press #(rf/dispatch [:bottom-sheet/hide])
            :style    (style/contact-requests-sheet)}
           [quo/icon :i/close]]
-         [quo/text {:size :heading-1 :weight :semi-bold}
+         [rn/text {:size :heading-1 :weight :semi-bold}
           (i18n/label :t/pending-requests)]
          [quo/tabs
           {:style          {:margin-top 12 :margin-bottom 20}
