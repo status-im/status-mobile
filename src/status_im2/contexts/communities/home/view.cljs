@@ -1,11 +1,11 @@
 (ns status-im2.contexts.communities.home.view
   (:require [i18n.i18n :as i18n]
-            [quo2.components.community.discover-card :as discover-card]
+
             [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.communities.home.actions.view :as home.actions]
+            [status-im2.contexts.communities.context-drawers.community-options.view :as options]
             [utils.re-frame :as rf]))
 
 (defn render-fn
@@ -19,7 +19,7 @@
       :on-long-press #(rf/dispatch
                        [:bottom-sheet/show-sheet
                         {:content       (fn []
-                                          [home.actions/actions id])
+                                          [options/community-options-bottom-sheet id])
                          :selected-item (fn []
                                           [quo/communities-membership-list-item {} community-item])}])}
      community-item]))
@@ -86,7 +86,7 @@
         {:label               (i18n/label :t/communities)
          :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
          :accessibility-label :new-chat-button}]
-       [discover-card/discover-card
+       [quo/discover-card
         {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
          :title               (i18n/label :t/discover)
          :description         (i18n/label :t/whats-trending)

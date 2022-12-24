@@ -7,7 +7,7 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.communities.community :as community]
+            [status-im2.contexts.communities.context-drawers.community-options.view :as options]
             [utils.re-frame :as rf]))
 
 (def mock-community-item-data  ;; TODO: remove once communities are loaded with this data.
@@ -40,12 +40,10 @@
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community (:id item)]))
-        :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                      {:content (fn []
-                                                  ;; TODO implement with quo2
-                                                  [community/community-actions item])}])}
-       item])))
+                         (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
+        :on-long-press #(rf/dispatch  [:bottom-sheet/show-sheet
+                                       {:content (fn []
+                                                   [options/community-options-bottom-sheet (:id item)])}])}])))
 
 (defn screen-title
   []
@@ -94,8 +92,8 @@
                     :width          "100%"
                     :margin-bottom  24}
         :on-layout #(swap! view-size
-                      (fn []
-                        (oops/oget % "nativeEvent.layout.width")))}
+                           (fn []
+                             (oops/oget % "nativeEvent.layout.width")))}
        (when-not (= @view-size 0)
          [rn/flat-list
           {:key-fn                            :id
