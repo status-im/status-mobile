@@ -1,8 +1,9 @@
 (ns quo2.components.counter.counter
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as theme]
+   [react-native.core :as rn]))
 
 (def themes
   {:light {:default   colors/primary-50

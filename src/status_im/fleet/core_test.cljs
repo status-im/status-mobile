@@ -1,7 +1,8 @@
 (ns status-im.fleet.core-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.constants :as constants]
-            [status-im.fleet.core :as fleet]))
+  (:require
+   [cljs.test :refer-macros [deftest is testing]]
+   [status-im.constants :as constants]
+   [status-im.fleet.core :as fleet]))
 
 #_(deftest fleets-test
     (testing "not passing any extra fleet"

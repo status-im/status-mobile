@@ -1,6 +1,7 @@
 (ns status-im.utils.fx-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.fx :as fx]))
+  (:require
+   [cljs.test :refer-macros [deftest is testing]]
+   [status-im.utils.fx :as fx]))
 
 (fx/defn hello
   "this is a very nice useless function"

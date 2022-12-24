@@ -1,22 +1,23 @@
 (ns status-im.ui.screens.profile.group-chat.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.chat.sheets :as chat.sheets]
-            [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [utils.debounce :as debounce])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.common.common :as components.common]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.profile-header.view :as profile-header]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.chat.message.message :as message]
+   [status-im.ui.screens.chat.photos :as photos]
+   [status-im.ui.screens.chat.sheets :as chat.sheets]
+   [status-im.ui.screens.chat.utils :as chat.utils]
+   [status-im.ui.screens.profile.components.styles :as profile.components.styles]
+   [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet

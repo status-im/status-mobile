@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.notifications.activity-logs
-  (:require [quo2.core :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]))
+  (:require
+   [quo2.core :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im2.contexts.quo-preview.preview :as preview]
+   [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]))
 
 (def descriptor
   [{:label "Unread?"

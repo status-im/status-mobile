@@ -1,8 +1,9 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.constants :as constants]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+   [status-im.constants :as constants]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.types :as types]
+   [taoensso.timbre :as log]))
 
 (fx/defn send-multiaccount-update
   [{:keys [db] :as cofx}]

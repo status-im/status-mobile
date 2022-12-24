@@ -1,5 +1,6 @@
 (ns status-im.bottom-sheet.core
-  (:require [status-im.utils.fx :as fx]))
+  (:require
+   [status-im.utils.fx :as fx]))
 
 (fx/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]

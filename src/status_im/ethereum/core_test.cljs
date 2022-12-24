@@ -1,6 +1,7 @@
 (ns status-im.ethereum.core-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.ethereum.core :as ethereum]))
+  (:require
+   [cljs.test :refer-macros [deftest is]]
+   [status-im.ethereum.core :as ethereum]))
 
 (deftest chain-id->chain-keyword
   (is (= (ethereum/chain-id->chain-keyword 1) :mainnet))

@@ -1,6 +1,7 @@
 (ns status-im.native-module.core-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [status-im.native-module.core :as status]))
+  (:require
+   [cljs.test :refer [deftest is testing]]
+   [status-im.native-module.core :as status]))
 
 (deftest identicon-test
   (testing "check if identicon test works"

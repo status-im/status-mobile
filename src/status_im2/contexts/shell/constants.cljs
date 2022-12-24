@@ -1,7 +1,8 @@
 (ns status-im2.contexts.shell.constants
-  (:require [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [utils.re-frame :as rf]))
+  (:require
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   [utils.re-frame :as rf]))
 
 (def shell-animation-time 200)
 

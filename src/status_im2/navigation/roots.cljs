@@ -1,7 +1,8 @@
 (ns status-im2.navigation.roots
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im2.navigation.view :as views]))
+  (:require
+   [quo2.foundations.colors :as colors]
+   [react-native.platform :as platform]
+   [status-im2.navigation.view :as views]))
 
 (defn status-bar-options
   []

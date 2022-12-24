@@ -1,13 +1,14 @@
 (ns status-im.wallet.prices
-  (:require [clojure.set :as set]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.currency :as currency]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.prices :as prices]
-            [status-im.wallet.utils :as wallet.utils]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.set :as set]
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.tokens :as tokens]
+   [status-im.utils.currency :as currency]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.prices :as prices]
+   [status-im.wallet.utils :as wallet.utils]
+   [taoensso.timbre :as log]))
 
 (defn assoc-error-message
   [db error-type err]

@@ -1,6 +1,7 @@
 (ns quo.components.bottom-sheet.style
-  (:require [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [quo.design-system.spacing :as spacing]))
 
 (def border-radius 16)
 (def vertical-padding (:tiny spacing/spacing))

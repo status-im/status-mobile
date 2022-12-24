@@ -1,7 +1,8 @@
 (ns quo.previews.tooltip
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn])
   (:require-macros [quo.previews.preview :as preview]))
 
 (def all-props

@@ -1,7 +1,8 @@
 (ns status-im2.subs.networks
-  (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.config :as config]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.utils.config :as config]))
 
 (defn- filter-networks
   [network-type]

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.tags.context-tags
-  (:require [quo2.components.tags.context-tags :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.tags.context-tags :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def group-avatar-default-params
   {:size  :small

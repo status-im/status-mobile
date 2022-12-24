@@ -1,13 +1,14 @@
 (ns status-im2.contexts.quo-preview.community.community-card-view
-  (:require [quo.design-system.colors :as quo.colors]
-            [quo2.components.community.community-card-view :as community-card-view]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im2.common.constants :as constants]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo.design-system.colors :as quo.colors]
+   [quo2.components.community.community-card-view :as community-card-view]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.react-native.resources :as resources]
+   [status-im2.common.constants :as constants]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def community-data
   {:id             constants/status-community-id

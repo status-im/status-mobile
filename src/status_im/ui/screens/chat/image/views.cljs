@@ -1,16 +1,17 @@
 (ns status-im.ui.screens.chat.image.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [quo.components.animated.pressable :as pressable]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.permissions :as permissions]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]))
+  (:require
+   [quo.components.animated.pressable :as pressable]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.permissions :as permissions]
+   [status-im.ui.components.react :as react]
+   [status-im.utils.config :as config]
+   [status-im.utils.utils :as utils]))
 
 (defn take-picture
   []

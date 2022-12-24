@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.events
-  (:require [re-frame.core :as re-frame]
-            [status-im2.common.constants :as constants]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im2.common.constants :as constants]
+   [status-im2.contexts.shell.animation :as animation]
+   [status-im2.contexts.shell.constants :as shell.constants]
+   [status-im2.navigation.events :as navigation]
+   [utils.re-frame :as rf]))
 
 ;; Effects
 

@@ -1,9 +1,10 @@
 (ns status-im2.contexts.activity-center.notification.common.view
-  (:require [quo2.core :as quo]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.contexts.activity-center.notification.common.style :as style]
-            [status-im2.contexts.activity-center.utils :as activity-center.utils]
-            [utils.re-frame :as rf]))
+  (:require
+   [quo2.core :as quo]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im2.contexts.activity-center.notification.common.style :as style]
+   [status-im2.contexts.activity-center.utils :as activity-center.utils]
+   [utils.re-frame :as rf]))
 
 (defn user-avatar-tag
   [user]

@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.reset-password.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.reset-password.core :as reset-password]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [utils.security.core :as security])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.reset-password.core :as reset-password]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [utils.security.core :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn input-field

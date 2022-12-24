@@ -1,6 +1,7 @@
 (ns status-im.utils.http-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.http :as http]))
+  (:require
+   [cljs.test :refer-macros [deftest is testing]]
+   [status-im.utils.http :as http]))
 
 (deftest url-sanitize-check
   (testing

@@ -1,11 +1,12 @@
 (ns quo.components.animated-header
-  (:require [oops.core :refer [oget]]
-            [quo.animated :as animated]
-            [quo.components.header :as header]
-            [quo.components.safe-area :as safe-area]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
-            [reagent.core :as reagent]))
+  (:require
+   [oops.core :refer [oget]]
+   [quo.animated :as animated]
+   [quo.components.header :as header]
+   [quo.components.safe-area :as safe-area]
+   [quo.design-system.colors :as colors]
+   [quo.platform :as platform]
+   [reagent.core :as reagent]))
 
 (defn header-wrapper-style
   [{:keys [value offset]}]

@@ -1,9 +1,10 @@
 (ns quo.previews.lists
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.previews.preview :as preview]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]))
 
 (def all-props (preview/list-comp [] {}))
 

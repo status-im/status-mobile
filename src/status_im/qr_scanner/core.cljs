@@ -1,16 +1,17 @@
 (ns status-im.qr-scanner.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.add-new.db :as new-chat.db]
-            [status-im.chat.models :as chat]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.group-chats.core :as group-chats]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.router.core :as router]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.add-new.db :as new-chat.db]
+   [status-im.chat.models :as chat]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.group-chats.core :as group-chats]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.router.core :as router]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.utils :as utils]
+   [status-im2.navigation.events :as navigation]
+   [taoensso.timbre :as log]))
 
 (fx/defn scan-qr-code
   {:events [::scan-code]}

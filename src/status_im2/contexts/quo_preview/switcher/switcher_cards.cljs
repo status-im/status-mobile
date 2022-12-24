@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.shell.cards.view :as switcher-cards]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+  (:require
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.react-native.resources :as resources]
+   [status-im2.contexts.quo-preview.preview :as preview]
+   [status-im2.contexts.shell.cards.view :as switcher-cards]
+   [status-im2.contexts.shell.constants :as shell.constants]))
 
 (def descriptor
   [{:label   "Type"

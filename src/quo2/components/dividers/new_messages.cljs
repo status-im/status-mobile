@@ -1,8 +1,9 @@
 (ns quo2.components.dividers.new-messages
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]))
+  (:require
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.linear-gradient :as linear-gradient]))
 
 (defn new-messages
   "new-messages params - label, color"

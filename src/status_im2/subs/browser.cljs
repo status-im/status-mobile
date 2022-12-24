@@ -1,6 +1,7 @@
 (ns status-im2.subs.browser
-  (:require [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.browser.core :as browser]))
 
 (re-frame/reg-sub
  :browser/browsers

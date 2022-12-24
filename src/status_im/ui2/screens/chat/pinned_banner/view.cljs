@@ -1,7 +1,8 @@
 (ns status-im.ui2.screens.chat.pinned-banner.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 ;; TODO (flexsurfer) this should be a banner component in quo2
 ;; https://github.com/status-im/status-mobile/issues/14528

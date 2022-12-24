@@ -1,15 +1,16 @@
 (ns quo2.components.record-audio.record-audio.view
-  (:require [cljs-bean.core :as bean]
-            [oops.core :as oops]
-            [quo.react :refer [effect! memo]]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.icon :as icons]
-            [quo2.components.record-audio.record-audio.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im.utils.utils :as utils]))
+  (:require
+   [cljs-bean.core :as bean]
+   [oops.core :as oops]
+   [quo.react :refer [effect! memo]]
+   [quo2.components.buttons.button :as button]
+   [quo2.components.icon :as icons]
+   [quo2.components.record-audio.record-audio.style :as style]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [reagent.core :as reagent]
+   [status-im.utils.utils :as utils]))
 
 (def ^:private scale-to-each 1.8)
 (def ^:private scale-to-total 2.6)

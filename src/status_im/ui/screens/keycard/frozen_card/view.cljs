@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.keycard.frozen-card.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.login :as login]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.keycard.login :as login]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]))
 
 (views/defview frozen-card
   [{:keys [show-dismiss-button?]

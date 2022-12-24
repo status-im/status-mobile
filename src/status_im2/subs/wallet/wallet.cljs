@@ -1,12 +1,13 @@
 (ns status-im2.subs.wallet.wallet
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.utils.currency :as currency]
-            [status-im.utils.money :as money]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.tokens :as tokens]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.utils.config :as config]
+   [status-im.utils.currency :as currency]
+   [status-im.utils.money :as money]))
 
 (re-frame/reg-sub
  :balance

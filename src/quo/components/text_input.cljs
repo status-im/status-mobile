@@ -1,15 +1,16 @@
 (ns quo.components.text-input
-  (:require [clojure.spec.alpha :as s]
-            [oops.core :refer [ocall]]
-            [quo.components.text :as text]
-            [quo.components.tooltip :as tooltip]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.design-system.typography :as typography]
-            [quo.platform :as platform]
-            [quo.react-native :as rn] ;; TODO(Ferossgp): Move icon component to lib
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+   [clojure.spec.alpha :as s]
+   [oops.core :refer [ocall]]
+   [quo.components.text :as text]
+   [quo.components.tooltip :as tooltip]
+   [quo.design-system.colors :as colors]
+   [quo.design-system.spacing :as spacing]
+   [quo.design-system.typography :as typography]
+   [quo.platform :as platform]
+   [quo.react-native :as rn] ;; TODO(Ferossgp): Move icon component to lib
+   [reagent.core :as reagent]
+   [status-im.ui.components.icons.icons :as icons]))
 
 ;; NOTE(Ferossgp): Refactor with hooks when available
 ;; We track all currently mounted text input refs

@@ -1,8 +1,9 @@
 (ns status-im.ui.components.invite.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.invite.events :as invite.events]))
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.invite.events :as invite.events]))
 
 (defn button
   []

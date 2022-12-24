@@ -1,12 +1,13 @@
 (ns status-im.utils.utils
-  (:require ["react-native" :as react-native]
-            ["react-native-background-timer" :default background-timer]
-            [clojure.string :as string]
-            [goog.string :as gstring]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n.i18n :as i18n]))
+  (:require
+   ["react-native" :as react-native]
+   ["react-native-background-timer" :default background-timer]
+   [clojure.string :as string]
+   [goog.string :as gstring]
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.i18n.i18n :as i18n]))
 
 ;;TODO (14/11/22 flexsurfer) .-Alert usage code has been moved to the status-im2 namespace, we keep this
 ;;only for old (status 1.0) code,

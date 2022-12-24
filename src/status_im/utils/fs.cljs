@@ -1,5 +1,6 @@
 (ns status-im.utils.fs
-  (:require ["react-native-fs" :as react-native-fs]))
+  (:require
+   ["react-native-fs" :as react-native-fs]))
 
 (defn move-file
   [src dst]

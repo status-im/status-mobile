@@ -1,6 +1,7 @@
 (ns status-im.theme.core
-  (:require [quo.theme :as quo.theme]
-            [quo2.theme :as quo2.theme]))
+  (:require
+   [quo.theme :as quo.theme]
+   [quo2.theme :as quo2.theme]))
 
 (defn change-theme
   [theme]

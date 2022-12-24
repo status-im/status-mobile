@@ -1,14 +1,15 @@
 (ns status-im.multiaccounts.biometric.core
-  (:require ["react-native-touch-id" :default touchid]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.native-module.core :as status]
-            [status-im.popover.core :as popover]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]))
+  (:require
+   ["react-native-touch-id" :default touchid]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.native-module.core :as status]
+   [status-im.popover.core :as popover]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.keychain.core :as keychain]
+   [status-im.utils.platform :as platform]
+   [taoensso.timbre :as log]))
 
 ;; currently, for android, react-native-touch-id
 ;; is not returning supported biometric type

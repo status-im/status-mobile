@@ -1,8 +1,9 @@
 (ns quo2.components.community.discover-card
-  (:require [quo2.components.community.style :as style]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.community.style :as style]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 ;; Discover card placeholders images.
 ;; TODO replaced when real data is available

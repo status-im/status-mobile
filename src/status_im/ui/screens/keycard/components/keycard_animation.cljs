@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.keycard.components.keycard-animation
-  (:require [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.keycard.card :as keycard-nfc]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [reagent.core :as reagent]
+   [status-im.keycard.card :as keycard-nfc]
+   [status-im.react-native.resources :as resources]
+   [status-im.ui.components.animation :as animation]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]))
 
 (defn circle
   [{:keys [animation-value color size]}]

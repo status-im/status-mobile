@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.chat.sheets
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
-            [status-im.utils.universal-links.utils :as universal-links]))
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.list-selection :as list-selection]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
+   [status-im.utils.universal-links.utils :as universal-links]))
 
 (defn hide-sheet-and-dispatch
   [event]

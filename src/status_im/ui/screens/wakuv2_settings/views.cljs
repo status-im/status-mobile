@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.wakuv2-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wakuv2-settings.styles :as styles]))
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.wakuv2-settings.styles :as styles]))
 
 (defn navigate-to-add-node
   [id]

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.overview.style
-  (:require [react-native.platform :as platform]))
+  (:require
+   [react-native.platform :as platform]))
 
 (def preview-user
   {:flex-direction :row

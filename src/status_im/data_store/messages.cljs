@@ -1,7 +1,8 @@
 (ns status-im.data-store.messages
-  (:require [clojure.set :as clojure.set]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.set :as clojure.set]
+   [status-im.utils.fx :as fx]
+   [taoensso.timbre :as log]))
 
 (defn ->rpc
   [{:keys [content] :as message}]

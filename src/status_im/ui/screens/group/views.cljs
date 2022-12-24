@@ -95,11 +95,11 @@
   (let [lower-filter-text (string/lower-case (str filter-text))
         filter-fn         (fn [{:keys [name alias nickname]}]
                             (or
-                              (string/includes? (string/lower-case (str name)) lower-filter-text)
-                              (string/includes? (string/lower-case (str alias)) lower-filter-text)
-                              (when nickname
-                                (string/includes? (string/lower-case (str nickname))
-                                                  lower-filter-text))))]
+                             (string/includes? (string/lower-case (str name)) lower-filter-text)
+                             (string/includes? (string/lower-case (str alias)) lower-filter-text)
+                             (when nickname
+                               (string/includes? (string/lower-case (str nickname))
+                                                 lower-filter-text))))]
     (if filter-text
       (filter filter-fn contacts)
       contacts)))
@@ -118,8 +118,8 @@
          {:use-insets false
           :title      (i18n/label :t/new-group-chat)
           :subtitle   (i18n/label :t/group-chat-members-count
-                        {:selected (inc (count contacts))
-                         :max      constants/max-group-chat-participants})}]
+                                  {:selected (inc (count contacts))
+                                   :max      constants/max-group-chat-participants})}]
         [react/view
          {:style {:padding-top 16
                   :flex        1}}
@@ -193,8 +193,8 @@
        :border-bottom false
        :title         (i18n/label :t/new-group-chat)
        :subtitle      (i18n/label :t/group-chat-members-count
-                        {:selected (inc selected-contacts-count)
-                         :max      constants/max-group-chat-participants})}]
+                                  {:selected (inc selected-contacts-count)
+                                   :max      constants/max-group-chat-participants})}]
      [searchable-contact-list
       {:contacts          contacts
        :no-contacts-label (i18n/label :t/group-chat-no-contacts)
@@ -224,8 +224,8 @@
          :border-bottom false
          :title         (i18n/label :t/add-members)
          :subtitle      (i18n/label :t/group-chat-members-count
-                          {:selected (+ current-participants-count selected-contacts-count)
-                           :max      constants/max-group-chat-participants})}]
+                                    {:selected (+ current-participants-count selected-contacts-count)
+                                     :max      constants/max-group-chat-participants})}]
        [searchable-contact-list
         {:contacts          contacts
          :no-contacts-label (i18n/label :t/group-chat-all-contacts-invited)

@@ -1,19 +1,20 @@
 (ns status-im.keycard.common
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.nfc :as nfc]
-            [status-im.popover.core :as popover]
-            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-            [status-im.utils.datetime :as utils.datetime]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.bottom-sheet.core :as bottom-sheet]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.keycard.nfc :as nfc]
+   [status-im.popover.core :as popover]
+   [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+   [status-im.utils.datetime :as utils.datetime]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.keychain.core :as keychain]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.types :as types]
+   [status-im2.navigation.events :as navigation]
+   [taoensso.timbre :as log]))
 
 (def default-pin "000000")
 

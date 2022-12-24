@@ -1,5 +1,6 @@
 (ns status-im2.subs.bootnodes
-  (:require [re-frame.core :as re-frame]))
+  (:require
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :custom-bootnodes/enabled?

@@ -1,12 +1,13 @@
 (ns status-im.ui2.screens.chat.pin-limit-popover.view
-  (:require [i18n.i18n :as i18n]
-            [quo.react :as react]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im.ui2.screens.chat.pin-limit-popover.style :as style] ;; TODO move to status-im2
-            [utils.re-frame :as rf]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo.react :as react]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.ui2.screens.chat.pin-limit-popover.style :as style] ;; TODO move to status-im2
+   [utils.re-frame :as rf]))
 
 ;; TODO (flexsurfer) this should be an in-app notification component in quo2
 ;; https://github.com/status-im/status-mobile/issues/14527

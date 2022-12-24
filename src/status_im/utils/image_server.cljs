@@ -1,5 +1,6 @@
 (ns status-im.utils.image-server
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
 (def ^:const identicons-action "/messages/identicons")

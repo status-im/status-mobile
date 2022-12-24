@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.bottom-tabs
-  (:require [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.style :as styles]))
+  (:require
+   [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im2.contexts.shell.animation :as animation]
+   [status-im2.contexts.shell.constants :as shell.constants]
+   [status-im2.contexts.shell.style :as styles]))
 
 (defn bottom-tab
   [icon stack-id shared-values]

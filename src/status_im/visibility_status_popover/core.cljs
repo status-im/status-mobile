@@ -1,5 +1,6 @@
 (ns status-im.visibility-status-popover.core
-  (:require [status-im.utils.fx :as fx]))
+  (:require
+   [status-im.utils.fx :as fx]))
 
 (fx/defn show-visibility-status-popover
   {:events [:show-visibility-status-popover]}

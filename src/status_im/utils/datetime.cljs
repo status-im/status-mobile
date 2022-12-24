@@ -1,12 +1,13 @@
 (ns status-im.utils.datetime
-  (:require [cljs-time.coerce :as t.coerce]
-            [cljs-time.core :as t]
-            [cljs-time.format :as t.format]
-            [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
-            [status-im.goog.i18n :as goog.18n]
-            [status-im.native-module.core :as status]))
+  (:require
+   [cljs-time.coerce :as t.coerce]
+   [cljs-time.core :as t]
+   [cljs-time.format :as t.format]
+   [clojure.string :as string]
+   [i18n.i18n :as i18n]
+   [re-frame.core :as re-frame]
+   [status-im.goog.i18n :as goog.18n]
+   [status-im.native-module.core :as status]))
 
 ;;;; Datetime constants
 (defn now [] (t/now))

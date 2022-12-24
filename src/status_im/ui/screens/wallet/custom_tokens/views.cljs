@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.wallet.custom-tokens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]))
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]))
 
 (def debounce-timers (atom {}))
 

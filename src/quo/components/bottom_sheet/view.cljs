@@ -1,14 +1,15 @@
 (ns quo.components.bottom-sheet.view
-  (:require [cljs-bean.core :as bean]
-            [quo.animated :as animated]
-            [quo.components.bottom-sheet.style :as styles]
-            [quo.components.safe-area :as safe-area]
-            [quo.design-system.colors :as colors]
-            [quo.gesture-handler :as gesture-handler]
-            [quo.platform :as platform]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [cljs-bean.core :as bean]
+   [quo.animated :as animated]
+   [quo.components.bottom-sheet.style :as styles]
+   [quo.components.safe-area :as safe-area]
+   [quo.design-system.colors :as colors]
+   [quo.gesture-handler :as gesture-handler]
+   [quo.platform :as platform]
+   [quo.react :as react]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)

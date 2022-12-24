@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.status.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (defn descr-container
   []

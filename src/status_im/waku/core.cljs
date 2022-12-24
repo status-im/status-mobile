@@ -1,11 +1,12 @@
 (ns status-im.waku.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.node.core :as node]
-            [status-im.utils.fx :as fx]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.update.core :as multiaccounts.update]
+   [status-im.node.core :as node]
+   [status-im.utils.fx :as fx]
+   [status-im2.navigation.events :as navigation]))
 
 (fx/defn switch-waku-bloom-filter-mode
   {:events [:multiaccounts.ui/waku-bloom-filter-mode-switched]}

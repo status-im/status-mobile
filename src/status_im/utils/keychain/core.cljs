@@ -1,12 +1,13 @@
 (ns status-im.utils.keychain.core
-  (:require ["react-native-keychain" :as react-native-keychain]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+   ["react-native-keychain" :as react-native-keychain]
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.native-module.core :as status]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.platform :as platform]
+   [taoensso.timbre :as log]
+   [utils.security.core :as security]))
 
 (defn- check-conditions
   [callback & checks]

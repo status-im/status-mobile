@@ -1,8 +1,9 @@
 (ns status-im.ethereum.stateofus
-  (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]
-            [status-im.utils.config :as config]))
+  (:require
+   [clojure.string :as string]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.ens :as ens]
+   [status-im.utils.config :as config]))
 
 (def domain "stateofus.eth")
 

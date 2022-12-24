@@ -1,7 +1,8 @@
 (ns quo2.components.buttons.--tests--.buttons-component-spec
-  (:require ["@testing-library/react-native" :as rtl]
-            [quo2.components.buttons.button :as button]
-            [reagent.core :as reagent]))
+  (:require
+   ["@testing-library/react-native" :as rtl]
+   [quo2.components.buttons.button :as button]
+   [reagent.core :as reagent]))
 
 (defn render-button
   ([options label]

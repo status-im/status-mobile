@@ -1,10 +1,11 @@
 (ns quo2.components.navigation.bottom-nav-tab
-  (:require [quo2.components.counter.counter :as counter]
-            [quo2.components.icons.icons :as icons]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.hole-view :as hole-view]
-            [react-native.reanimated :as reanimated]))
+  (:require
+   [quo2.components.counter.counter :as counter]
+   [quo2.components.icons.icons :as icons]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.hole-view :as hole-view]
+   [react-native.reanimated :as reanimated]))
 
 (defn toggle-background-color
   [background-color press-out? pass-through?]

@@ -1,8 +1,9 @@
 (ns status-im.utils.http
-  (:require ["react-native-fetch-polyfill" :default fetch]
-            [clojure.string :as string]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log])
+  (:require
+   ["react-native-fetch-polyfill" :default fetch]
+   [clojure.string :as string]
+   [status-im.utils.utils :as utils]
+   [taoensso.timbre :as log])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms

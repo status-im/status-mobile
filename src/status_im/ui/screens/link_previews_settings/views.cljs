@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.link-previews-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.link-preview :as link-preview]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.link-previews-settings.styles :as styles]))
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.chat.models.link-preview :as link-preview]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.react-native.resources :as resources]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.link-previews-settings.styles :as styles]))
 
 (defn prepare-urls-items-data
   [link-previews-enabled-sites]

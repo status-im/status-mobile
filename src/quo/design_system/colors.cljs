@@ -1,6 +1,7 @@
 (ns quo.design-system.colors
-  (:require [clojure.string :as string]
-            [reagent.core :as reagent]))
+  (:require
+   [clojure.string :as string]
+   [reagent.core :as reagent]))
 
 ;; Colors mapping from figma to code, note that theme is more extended and
 ;; one can follow the comments from the light theme to choose what to use in a component.

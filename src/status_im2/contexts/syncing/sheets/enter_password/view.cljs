@@ -1,13 +1,14 @@
 (ns status-im2.contexts.syncing.sheets.enter-password.view
-  (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [quo.core :as quo-old]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im.constants :as constants]
-            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
-            [utils.re-frame :as rf]))
+  (:require
+   [clojure.string :as string]
+   [i18n.i18n :as i18n]
+   [quo.core :as quo-old]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.constants :as constants]
+   [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
+   [utils.re-frame :as rf]))
 
 (defn qr-code-view-with-connection-string
   [connection-string]

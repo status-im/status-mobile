@@ -1,5 +1,6 @@
 (ns quo2.components.reactions.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+   [quo2.foundations.colors :as colors]))
 
 (def reaction-styling
   {:flex-direction     :row

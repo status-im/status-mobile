@@ -1,18 +1,19 @@
 (ns status-im.multiaccounts.create.core
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.data-store.settings :as data-store.settings]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.signing-phrase.core :as signing-phrase]
-            [status-im.utils.types :as types]
-            [utils.security.core :as security]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.data-store.settings :as data-store.settings]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.native-module.core :as status]
+   [status-im.node.core :as node]
+   [status-im.utils.config :as config]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.signing-phrase.core :as signing-phrase]
+   [status-im.utils.types :as types]
+   [utils.security.core :as security]))
 
 (defn normalize-derived-data-keys
   [derived-data]

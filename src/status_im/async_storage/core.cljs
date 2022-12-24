@@ -1,9 +1,10 @@
 (ns status-im.async-storage.core
-  (:require ["@react-native-async-storage/async-storage" :default async-storage]
-            [goog.functions :as f]
-            [re-frame.core :as re-frame]
-            [status-im.async-storage.transit :refer [clj->transit transit->clj]]
-            [taoensso.timbre :as log]))
+  (:require
+   ["@react-native-async-storage/async-storage" :default async-storage]
+   [goog.functions :as f]
+   [re-frame.core :as re-frame]
+   [status-im.async-storage.transit :refer [clj->transit transit->clj]]
+   [taoensso.timbre :as log]))
 
 (def ^:private debounce-ms 250)
 

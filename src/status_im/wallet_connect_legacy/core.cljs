@@ -1,13 +1,14 @@
 (ns status-im.wallet-connect-legacy.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.signing.core :as signing]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [status-im.utils.wallet-connect-legacy :as wallet-connect-legacy]
-            [taoensso.timbre :as log]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.browser.core :as browser]
+   [status-im.constants :as constants]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.signing.core :as signing]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.types :as types]
+   [status-im.utils.wallet-connect-legacy :as wallet-connect-legacy]
+   [taoensso.timbre :as log]))
 
 (defn subscribe-to-session
   [^js connector]

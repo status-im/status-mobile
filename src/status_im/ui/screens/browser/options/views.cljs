@@ -1,17 +1,18 @@
 (ns status-im.ui.screens.browser.options.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.http :as http]
-            [status-im.utils.utils :as utils]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.browser.core :as browser]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.qr-scanner.core :as qr-scanner]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.wallet.components.views :as components]
+   [status-im.utils.http :as http]
+   [status-im.utils.utils :as utils]))
 
 (defn hide-sheet-and-dispatch
   [event]

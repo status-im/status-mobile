@@ -1,11 +1,12 @@
 (ns status-im2.contexts.chat.messages.pin.events
-  (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.message-list :as message-list]
-            [status-im.constants :as constants]
-            [status-im.data-store.pin-messages :as data-store.pin-messages]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.chat.models.message-list :as message-list]
+   [status-im.constants :as constants]
+   [status-im.data-store.pin-messages :as data-store.pin-messages]
+   [status-im.transport.message.protocol :as protocol]
+   [status-im.utils.fx :as fx]
+   [taoensso.timbre :as log]))
 
 (fx/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}

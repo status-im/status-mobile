@@ -1,17 +1,18 @@
 (ns status-im.keycard.simulated-keycard
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [re-frame.db :as re-frame.db]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.keycard :as keycard]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [re-frame.db :as re-frame.db]
+   [status-im.constants :as constants]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.keycard.keycard :as keycard]
+   [status-im.multiaccounts.create.core :as multiaccounts.create]
+   [status-im.native-module.core :as status]
+   [status-im.node.core :as node]
+   [status-im.utils.types :as types]
+   [status-im.utils.utils :as utils]
+   [taoensso.timbre :as log]))
 
 (def kk1-password "000000")
 (def default-pin "111111")

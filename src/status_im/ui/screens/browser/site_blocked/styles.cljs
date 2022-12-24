@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.browser.site-blocked.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def container
   {:justify-content :center

@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.chat.pinned-messages
-  (:require [quo.animated :as animated]
-            [quo.react :as quo.react]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.connectivity.view :as connectivity]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.chat.components.accessory :as accessory]
-            [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.chat.styles.main :as style]
-            [status-im.ui.screens.chat.views :as chat]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.platform :as platform]))
+  (:require
+   [quo.animated :as animated]
+   [quo.react :as quo.react]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.connectivity.view :as connectivity]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.chat.components.accessory :as accessory]
+   [status-im.ui.screens.chat.message.message :as message]
+   [status-im.ui.screens.chat.styles.main :as style]
+   [status-im.ui.screens.chat.views :as chat]
+   [status-im.utils.datetime :as time]
+   [status-im.utils.platform :as platform]))
 
 (defn pins-topbar
   [chat]

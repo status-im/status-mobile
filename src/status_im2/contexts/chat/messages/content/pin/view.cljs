@@ -1,12 +1,13 @@
 (ns status-im2.contexts.chat.messages.content.pin.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.chat.messages.content.pin.style :as style]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im.ui.screens.chat.styles.message.message :as old-style]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.ui.screens.chat.styles.message.message :as old-style]
+   [status-im.ui2.screens.chat.messages.message :as old-message]
+   [status-im2.contexts.chat.messages.content.pin.style :as style]
+   [utils.re-frame :as rf]))
 
 (defn pinned-by-view [pinned-by]
   (let [{:keys [public-key]} (rf/sub [:multiaccount/contact])

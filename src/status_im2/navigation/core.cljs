@@ -1,17 +1,18 @@
 (ns status-im2.navigation.core
-  (:require [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.navigation :as navigation]
-            [react-native.platform :as platform]
-            [status-im.multiaccounts.login.core :as login-core]
-            [status-im2.navigation.roots :as roots]
-            [status-im2.navigation.state :as state]
-            [status-im2.navigation.view :as views]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf] ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-  ))
+  (:require
+   [quo2.foundations.colors :as colors]
+   [re-frame.core :as re-frame]
+   [react-native.core :as rn]
+   [react-native.gesture :as gesture]
+   [react-native.navigation :as navigation]
+   [react-native.platform :as platform]
+   [status-im.multiaccounts.login.core :as login-core]
+   [status-im2.navigation.roots :as roots]
+   [status-im2.navigation.state :as state]
+   [status-im2.navigation.view :as views]
+   [taoensso.timbre :as log]
+   [utils.re-frame :as rf] ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
+))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp

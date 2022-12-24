@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.multiaccounts.login.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def login-view
   {:flex              1

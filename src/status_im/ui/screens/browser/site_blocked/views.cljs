@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.browser.site-blocked.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.site-blocked.styles :as styles])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.browser.site-blocked.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview view

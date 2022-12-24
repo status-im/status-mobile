@@ -1,5 +1,6 @@
 (ns status-im.ui.components.emoji-thumbnail.utils
-  (:require [status-im.utils.platform :as platform]))
+  (:require
+   [status-im.utils.platform :as platform]))
 
 (defn emoji-font-size
   [container_size]

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.message.datemark
-  (:require [quo2.foundations.colors :as quo2.colors]))
+  (:require
+   [quo2.foundations.colors :as quo2.colors]))
 
 (def datemark-mobile
   {:flex            1

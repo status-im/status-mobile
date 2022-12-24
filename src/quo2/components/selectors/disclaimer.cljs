@@ -1,8 +1,9 @@
 (ns quo2.components.selectors.disclaimer
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors :as selectors]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.markdown.text :as text]
+   [quo2.components.selectors.selectors :as selectors]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 (defn disclaimer
   [{:keys [on-change accessibility-label container-style]} label]

@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.chat.image.preview.views
-  (:require ["react-native-image-viewing" :default image-viewing]
-            [quo.components.safe-area :as safe-area]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.chat.models.images :as images]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.share :as share]
-            [taoensso.timbre :as log]))
+  (:require
+   ["react-native-image-viewing" :default image-viewing]
+   [quo.components.safe-area :as safe-area]
+   [quo.design-system.colors :as colors]
+   [quo.platform :as platform]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.chat.models.images :as images]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.utils.share :as share]
+   [taoensso.timbre :as log]))
 
 (defn share
   [path]

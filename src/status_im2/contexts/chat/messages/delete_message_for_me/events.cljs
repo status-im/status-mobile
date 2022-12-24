@@ -1,8 +1,9 @@
 (ns status-im2.contexts.chat.messages.delete-message-for-me.events
-  (:require [status-im.chat.models.message-list :as message-list]
-            [status-im.utils.datetime :as datetime]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+   [status-im.chat.models.message-list :as message-list]
+   [status-im.utils.datetime :as datetime]
+   [taoensso.timbre :as log]
+   [utils.re-frame :as rf]))
 
 (defn- update-db-clear-undo-timer
   [db chat-id message-id]

@@ -1,10 +1,11 @@
 (ns quo2.components.buttons.button
-  (:require [quo2.components.icon :as quo2.icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo2.components.icon :as quo2.icons]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as theme]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (def themes
   {:light {:primary         {:icon-color       colors/white

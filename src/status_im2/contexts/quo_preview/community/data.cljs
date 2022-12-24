@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.community.data
-  (:require [quo.design-system.colors :as quo.colors]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]))
+  (:require
+   [quo.design-system.colors :as quo.colors]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.react-native.resources :as resources]))
 
 (def thumbnail
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII")

@@ -1,23 +1,24 @@
 (ns status-im.ui.screens.wallet.recipient.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.utils :as utils]
-            [utils.debounce :as debounce])
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.stateofus :as stateofus]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.search-input.view :as search-input]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.wallet.components.views :as components]
+   [status-im.utils.utils :as utils]
+   [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- recipient-topbar

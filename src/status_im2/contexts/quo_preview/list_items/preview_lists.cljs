@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.list-items.preview-lists
-  (:require [quo2.components.list-items.preview-list :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.list-items.preview-list :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.react-native.resources :as resources]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"

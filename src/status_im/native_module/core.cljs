@@ -1,11 +1,12 @@
 (ns status-im.native-module.core
-  (:require ["react-native" :as react-native]
-            [re-frame.core :as re-frame]
-            [status-im.utils.db :as utils.db]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.react-native :as react-native-utils]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+   ["react-native" :as react-native]
+   [re-frame.core :as re-frame]
+   [status-im.utils.db :as utils.db]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.react-native :as react-native-utils]
+   [status-im.utils.types :as types]
+   [taoensso.timbre :as log]))
 
 (defn status
   []

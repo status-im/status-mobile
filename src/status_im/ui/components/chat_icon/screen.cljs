@@ -1,14 +1,15 @@
 (ns status-im.ui.components.chat-icon.screen
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [re-frame.core :as re-frame.core]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.profile.db :as profile.db]
-            [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
+  (:require
+   [clojure.string :as string]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn]
+   [re-frame.core :as re-frame.core]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.profile.db :as profile.db]
+   [status-im.ui.components.chat-icon.styles :as styles]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.screens.chat.photos :as photos]
+   [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
 
 ;;TODO REWORK THIS NAMESPACE
 

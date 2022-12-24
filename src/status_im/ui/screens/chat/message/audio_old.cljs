@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.chat.message.audio-old
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require ["react-native-blob-util" :default ReactNativeBlobUtil]
-            [goog.string :as gstring]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.audio.core :as audio]
-            [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.slider :as slider]
-            [status-im.ui.screens.chat.styles.message.audio-old :as style]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+  (:require
+   ["react-native-blob-util" :default ReactNativeBlobUtil]
+   [goog.string :as gstring]
+   [quo.design-system.colors :as colors]
+   [reagent.core :as reagent]
+   [status-im.audio.core :as audio]
+   [status-im.ui.components.animation :as anim]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.slider :as slider]
+   [status-im.ui.screens.chat.styles.message.audio-old :as style]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.utils :as utils]
+   [taoensso.timbre :as log]))
 
 (defonce player-ref (atom nil))
 (defonce current-player-message-id (atom nil))

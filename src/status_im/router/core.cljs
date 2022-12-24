@@ -1,19 +1,20 @@
 (ns status-im.router.core
-  (:require [bidi.bidi :as bidi]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.add-new.db :as public-chat.db]
-            [status-im.chat.models :as chat.models]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip681 :as eip681]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.utils.db :as utils.db]
-            [status-im.utils.http :as http]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+   [bidi.bidi :as bidi]
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.add-new.db :as public-chat.db]
+   [status-im.chat.models :as chat.models]
+   [status-im.constants :as constants]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.eip681 :as eip681]
+   [status-im.ethereum.ens :as ens]
+   [status-im.ethereum.stateofus :as stateofus]
+   [status-im.utils.db :as utils.db]
+   [status-im.utils.http :as http]
+   [status-im.utils.wallet-connect :as wallet-connect]
+   [taoensso.timbre :as log]
+   [utils.security.core :as security]))
 
 (def ethereum-scheme "ethereum:")
 

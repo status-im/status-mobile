@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
-  (:require [quo.design-system.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [status-im.utils.styles :as styles]))
 
 (def edit-bootnode-view
   {:flex              1

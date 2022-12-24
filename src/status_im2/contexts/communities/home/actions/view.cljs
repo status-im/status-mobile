@@ -1,8 +1,9 @@
 (ns status-im2.contexts.communities.home.actions.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]

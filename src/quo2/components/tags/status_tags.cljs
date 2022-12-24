@@ -1,9 +1,10 @@
 (ns quo2.components.tags.status-tags
-  (:require [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo2.theme]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.icon :as icon]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as quo2.theme]
+   [react-native.core :as rn]))
 
 (def default-container-style
   {:border-radius 20

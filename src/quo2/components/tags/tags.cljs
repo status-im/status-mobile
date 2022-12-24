@@ -1,7 +1,8 @@
 (ns quo2.components.tags.tags
-  (:require [quo2.components.tags.tag :as tag]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo2.components.tags.tag :as tag]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (defn tags
   [{:keys [default-active on-change]}]

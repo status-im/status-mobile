@@ -1,9 +1,7 @@
 (ns status-im2.setup.db
-  (:require
-    [react-native.core :as rn]
-    ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
-    [status-im.fleet.core :as fleet]
-    [status-im.wallet.db :as wallet.db]))
+  (:require [react-native.core :as rn] ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
+            [status-im.fleet.core :as fleet]
+            [status-im.wallet.db :as wallet.db]))
 
 ;; initial state of app-db
 (def app-db

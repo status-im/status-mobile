@@ -1,8 +1,9 @@
 (ns quo2.components.selectors.selectors
-  (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo2.components.icon :as icons]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (defn- get-color
   [checked? disabled? blurred-background?]

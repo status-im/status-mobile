@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.default-sync-period-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.react :as react]
+   [status-im.utils.config :as config]))
 
 (def titles
   {constants/two-mins   (i18n/label :t/two-minutes)

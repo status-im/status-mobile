@@ -1,6 +1,7 @@
 (ns status-im.utils.clocks-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.clocks :as clocks]))
+  (:require
+   [cljs.test :refer-macros [deftest is testing]]
+   [status-im.utils.clocks :as clocks]))
 
 (deftest safe-timestamp
   (testing "it caps the timestamp when a value too large is provided"

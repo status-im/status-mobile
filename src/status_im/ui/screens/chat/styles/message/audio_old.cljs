@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.chat.styles.message.audio-old
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.screens.chat.styles.message.message-old :as message.style]
-            [status-im.utils.platform :as platform]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [status-im.ui.screens.chat.styles.message.message-old :as message.style]
+   [status-im.utils.platform :as platform]))
 
 (defn container
   [window-width]

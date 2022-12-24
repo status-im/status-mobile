@@ -1,5 +1,6 @@
 (ns status-im.react-native.resources
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def ui
   {:empty-chats-header (js/require "../resources/images/ui/empty-chats-header.png")

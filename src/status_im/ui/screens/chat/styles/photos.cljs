@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.photos
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def default-size 36)
 

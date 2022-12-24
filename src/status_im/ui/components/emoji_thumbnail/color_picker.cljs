@@ -1,6 +1,7 @@
 (ns status-im.ui.components.emoji-thumbnail.color-picker
-  (:require [quo.react-native :as rn]
-            [status-im.ui.components.emoji-thumbnail.styles :as styles]))
+  (:require
+   [quo.react-native :as rn]
+   [status-im.ui.components.emoji-thumbnail.styles :as styles]))
 
 (def emoji-picker-colors-row1
   [{:name "red" :color "#F5A3A3" :key "1"}

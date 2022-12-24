@@ -1,12 +1,13 @@
 (ns status-im.ui2.screens.chat.composer.mentions
-  (:require [quo.components.list.item :as list-item]
-            [quo.components.text :as text]
-            [quo.react]
-            [quo.react-native :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.utils.handlers :refer [>evt]]))
+  (:require
+   [quo.components.list.item :as list-item]
+   [quo.components.text :as text]
+   [quo.react]
+   [quo.react-native :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.screens.chat.photos :as photos]
+   [status-im.utils.handlers :refer [>evt]]))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]

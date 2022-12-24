@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.chat.components.hooks
-  (:require [quo.components.safe-area :refer [use-safe-area]]
-            [quo.platform :as platform]
-            [quo.react :as react]
-            [quo.react-native :refer [use-window-dimensions] :as rn]))
+  (:require
+   [quo.components.safe-area :refer [use-safe-area]]
+   [quo.platform :as platform]
+   [quo.react :as react]
+   [quo.react-native :refer [use-window-dimensions] :as rn]))
 
 (def ^:private keyboard-change-event (if platform/android? "keyboardDidShow" "keyboardWillChangeFrame"))
 

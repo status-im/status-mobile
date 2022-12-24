@@ -1,17 +1,18 @@
 (ns status-im.ui.screens.communities.create
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.screens.communities.membership :as memberships]
-            [status-im.utils.handlers :refer [<sub >evt]]
-            [status-im.utils.image :as utils.image]
-            [utils.debounce :as debounce]))
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn]
+   [status-im.communities.core :as communities]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.screens.communities.membership :as memberships]
+   [status-im.utils.handlers :refer [<sub >evt]]
+   [status-im.utils.image :as utils.image]
+   [utils.debounce :as debounce]))
 
 (def max-name-length 30)
 (def max-description-length 140)

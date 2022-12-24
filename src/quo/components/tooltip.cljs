@@ -1,12 +1,13 @@
 (ns quo.components.tooltip
-  (:require [oops.core :refer [oget]]
-            [quo.animated :as animated]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.platform :as platform] ;; FIXME(Ferossgp): Dependecy on status
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+   [oops.core :refer [oget]]
+   [quo.animated :as animated]
+   [quo.design-system.colors :as colors]
+   [quo.design-system.spacing :as spacing]
+   [quo.platform :as platform] ;; FIXME(Ferossgp): Dependecy on status
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]
+   [status-im.ui.components.icons.icons :as icons]))
 
 (def ^:private initial-height 22)
 

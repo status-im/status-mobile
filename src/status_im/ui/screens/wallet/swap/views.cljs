@@ -1,22 +1,23 @@
 (ns status-im.ui.screens.wallet.swap.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.slider :as slider]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.utils.handlers :refer [<sub]]
-            [status-im.wallet.swap.core :as wallet.swap]
-            [status-im.wallet.utils :as wallet.utils]))
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.tokens :as tokens]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.search-input.view :as search-input]
+   [status-im.ui.components.slider :as slider]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.wallet.components.views :as wallet.components]
+   [status-im.utils.handlers :refer [<sub]]
+   [status-im.wallet.swap.core :as wallet.swap]
+   [status-im.wallet.utils :as wallet.utils]))
 
 (defn render-asset
   [{{:keys

@@ -1,6 +1,7 @@
 (ns status-im.http.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.http :as http]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.utils.http :as http]))
 
 (re-frame/reg-fx
  :http-get

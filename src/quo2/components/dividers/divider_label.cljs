@@ -1,8 +1,9 @@
 (ns quo2.components.dividers.divider-label
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as markdown.text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.icon :as icons]
+   [quo2.components.markdown.text :as markdown.text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 (def chevron-icon-container-width 20)
 

@@ -1,5 +1,6 @@
 (ns status-im.ethereum.contracts
-  (:require [status-im.ethereum.core :as ethereum]))
+  (:require
+   [status-im.ethereum.core :as ethereum]))
 
 (def contracts
   {:status/snt

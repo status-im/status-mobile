@@ -1,10 +1,11 @@
 (ns quo2.components.tags.context-tags
-  (:require [quo2.components.avatars.group-avatar :as group-avatar]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo2.theme]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.avatars.group-avatar :as group-avatar]
+   [quo2.components.icon :as icons]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as quo2.theme]
+   [react-native.core :as rn]))
 
 (defn padding-left-for-type
   [type]

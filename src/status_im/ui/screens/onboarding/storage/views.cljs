@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.onboarding.storage.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.onboarding.views :as ui]
-            [utils.debounce :refer [dispatch-and-chill]])
+  (:require
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.onboarding.views :as ui]
+   [utils.debounce :refer [dispatch-and-chill]])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn storage-entry

@@ -1,6 +1,7 @@
 (ns status-im.utils.types
   (:refer-clojure :exclude [js->clj])
-  (:require [cljs-bean.core :as clj-bean]))
+  (:require
+   [cljs-bean.core :as clj-bean]))
 
 ;; NOTE(19/12/22 yqrashawn) this namespace has been moved to the utils.transforms namespace,
 ;; we keep this only for old (status 1.0) code, can be removed with old code later

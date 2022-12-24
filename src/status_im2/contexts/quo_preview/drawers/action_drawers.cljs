@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.drawers.action-drawers
-  (:require [quo2.components.buttons.button :as button]
-            [quo2.components.drawers.action-drawers :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.utils.handlers :refer [>evt]]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.buttons.button :as button]
+   [quo2.components.drawers.action-drawers :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.utils.handlers :refer [>evt]]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Muted?"

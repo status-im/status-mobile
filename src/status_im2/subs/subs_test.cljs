@@ -1,7 +1,8 @@
 (ns status-im2.subs.subs-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [status-im2.subs.onboarding :as onboarding]
-            [status-im2.subs.wallet.transactions :as wallet.transactions]))
+  (:require
+   [cljs.test :refer [deftest is testing]]
+   [status-im2.subs.onboarding :as onboarding]
+   [status-im2.subs.wallet.transactions :as wallet.transactions]))
 
 (def transactions
   [{:timestamp "1505912551000"}

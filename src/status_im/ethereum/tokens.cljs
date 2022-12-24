@@ -1,6 +1,7 @@
 (ns status-im.ethereum.tokens
-  (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum])
+  (:require
+   [clojure.string :as string]
+   [status-im.ethereum.core :as ethereum])
   (:require-macros [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (def default-native-currency

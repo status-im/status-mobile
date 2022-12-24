@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.code.snippet
-  (:require [quo2.components.code.snippet :as snippet]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.code.snippet :as snippet]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def go-example
   "func (s *Server) listenAndServe() {

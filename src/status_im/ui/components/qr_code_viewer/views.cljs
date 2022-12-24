@@ -1,10 +1,11 @@
 (ns status-im.ui.components.qr-code-viewer.views
-  (:require ["qrcode" :as qr-code-js]
-            ["react-native-svg" :refer (SvgXml)]
-            [cljs-bean.core :as bean]
-            [reagent.core :as reagent]
-            [status-im.ui.components.qr-code-viewer.styles :as styles]
-            [status-im.ui.components.react :as react]))
+  (:require
+   ["qrcode" :as qr-code-js]
+   ["react-native-svg" :refer (SvgXml)]
+   [cljs-bean.core :as bean]
+   [reagent.core :as reagent]
+   [status-im.ui.components.qr-code-viewer.styles :as styles]
+   [status-im.ui.components.react :as react]))
 
 (def svgxml (reagent/adapt-react-class SvgXml))
 

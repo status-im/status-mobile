@@ -34,9 +34,9 @@
    :align-items      :center
    :margin-bottom    24})
 
-(defn bottom-container [safe-area]
-  {
-   ;:position           :absolute
+(defn bottom-container
+  [safe-area]
+  {;:position           :absolute
    :padding-horizontal 20
    :padding-vertical   12
    :padding-bottom     (+ 33 (if platform/ios? (:bottom safe-area) 0))
@@ -45,4 +45,4 @@
    :flex-direction     :row
    ;:padding-bottom     (if platform/ios? (:bottom safe-area) 0)
    :margin-bottom      (if platform/ios? 0 70)
-   })
+  })

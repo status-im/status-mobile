@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.onboarding.notifications.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.notifications.core :as notifications]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.platform :as platform]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.notifications.core :as notifications]
+   [status-im.react-native.resources :as resources]
+   [status-im.ui.components.react :as react]))
 
 (defn notifications-onboarding
   []

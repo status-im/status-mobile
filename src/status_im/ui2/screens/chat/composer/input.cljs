@@ -1,22 +1,23 @@
 (ns status-im.ui2.screens.chat.composer.input
-  (:require ["react-native" :as react-native]
-            [clojure.string :as string]
-            [oops.core :as oops]
-            [quo.design-system.colors :as quo.colors]
-            [quo.react]
-            [quo.react-native :as rn]
-            [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.chat.constants :as chat.constants]
-            [status-im.chat.models.mentions :as mentions]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.composer.style :as style]
-            [status-im.utils.handlers :refer [<sub >evt]]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils.utils]
-            [utils.transforms :as transforms]))
+  (:require
+   ["react-native" :as react-native]
+   [clojure.string :as string]
+   [oops.core :as oops]
+   [quo.design-system.colors :as quo.colors]
+   [quo.react]
+   [quo.react-native :as rn]
+   [quo2.foundations.colors :as colors]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.chat.constants :as chat.constants]
+   [status-im.chat.models.mentions :as mentions]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.react :as react]
+   [status-im.ui2.screens.chat.composer.style :as style]
+   [status-im.utils.handlers :refer [<sub >evt]]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.utils :as utils.utils]
+   [utils.transforms :as transforms]))
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled? (reagent/atom {}))

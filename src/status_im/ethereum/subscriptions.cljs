@@ -1,10 +1,11 @@
 (ns status-im.ethereum.subscriptions
-  (:require [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.transactions.core :as transactions]
-            [status-im.utils.fx :as fx]
-            [status-im.wallet.core :as wallet.core]
-            [status-im.wallet.db :as wallet]
-            [taoensso.timbre :as log]))
+  (:require
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.ethereum.transactions.core :as transactions]
+   [status-im.utils.fx :as fx]
+   [status-im.wallet.core :as wallet.core]
+   [status-im.wallet.db :as wallet]
+   [taoensso.timbre :as log]))
 
 (fx/defn new-transfers
   [cofx block-number accounts]

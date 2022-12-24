@@ -1,14 +1,15 @@
 (ns quo2.components.community.token-gating
-  (:require [quo.react-native :as rn]
-            [quo2.components.avatars.channel-avatar :as channel-avatar]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.icon :as icon]
-            [quo2.components.info.information-box :as information-box]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tags.token-tag :as token-tag]
-            [quo2.foundations.colors :as colors]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.fast-image :as fast-image]))
+  (:require
+   [quo.react-native :as rn]
+   [quo2.components.avatars.channel-avatar :as channel-avatar]
+   [quo2.components.buttons.button :as button]
+   [quo2.components.icon :as icon]
+   [quo2.components.info.information-box :as information-box]
+   [quo2.components.markdown.text :as text]
+   [quo2.components.tags.token-tag :as token-tag]
+   [quo2.foundations.colors :as colors]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.fast-image :as fast-image]))
 
 (def ^:private token-tag-horizontal-spacing 7)
 (def token-tag-vertical-spacing 5)

@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.navigation.page-nav
-  (:require [quo2.components.navigation.page-nav :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.navigation.page-nav :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def ^:private descriptor
   [{:label   "Page nav variation"

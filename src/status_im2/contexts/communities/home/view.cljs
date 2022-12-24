@@ -1,12 +1,13 @@
 (ns status-im2.contexts.communities.home.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.components.community.discover-card :as discover-card]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.communities.home.actions.view :as home.actions]
-            [utils.re-frame :as rf]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.components.community.discover-card :as discover-card]
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im2.common.home.view :as common.home]
+   [status-im2.contexts.communities.home.actions.view :as home.actions]
+   [utils.re-frame :as rf]))
 
 (defn render-fn
   [id]

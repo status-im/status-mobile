@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.list-items.channel
-  (:require [quo2.components.list-items.channel :as quo2-channel]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.list-items.channel :as quo2-channel]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Muted?:"

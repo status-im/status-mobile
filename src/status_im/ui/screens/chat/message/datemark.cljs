@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.chat.message.datemark
-  (:require [clojure.string :as string]
-            [quo2.components.markdown.text :as quo2.text]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.message.datemark :as style]))
+  (:require
+   [clojure.string :as string]
+   [quo2.components.markdown.text :as quo2.text]
+   [quo2.foundations.colors :as quo2.colors]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.chat.styles.message.datemark :as style]))
 
 (defn chat-datemark
   [value]

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.community.token-gating
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [quo2.components.community.token-gating :as quo2]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.utils.utils :as utils]))
+  (:require
+   [quo.previews.preview :as preview]
+   [quo.react-native :as rn]
+   [quo2.components.community.token-gating :as quo2]
+   [quo2.foundations.colors :as colors]
+   [reagent.core :as reagent]
+   [status-im.utils.utils :as utils]))
 
 (def styles
   {:container-sandbox {:flex                    1

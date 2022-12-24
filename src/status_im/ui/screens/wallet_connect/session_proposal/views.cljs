@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.wallet-connect.session-proposal.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.bottom-panel.views :as bottom-panel]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.wallet-connect.session-proposal.styles :as styles]
-            [status-im.utils.utils :as status.utils]
-            [utils.security.core]))
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.platform :as platform]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.bottom-panel.views :as bottom-panel]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.wallet-connect.session-proposal.styles :as styles]
+   [status-im.utils.utils :as status.utils]
+   [utils.security.core]))
 
 (def chevron-icon-container-width 24)
 

@@ -1,8 +1,9 @@
 (ns quo.previews.controls
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]))
 
 (defn preview
   []

@@ -1,7 +1,8 @@
 (ns status-im.ui.components.emoji-thumbnail.styles
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]
-            [status-im.utils.platform :as platform]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]
+   [status-im.utils.platform :as platform]))
 
 (defn emoji-thumbnail-icon
   [color size]

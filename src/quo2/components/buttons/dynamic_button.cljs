@@ -1,9 +1,10 @@
 (ns quo2.components.buttons.dynamic-button
-  (:require [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [quo2.components.icon :as icon]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (defn- get-button-color
   [type pressed? customization-color]

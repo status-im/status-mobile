@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.communities.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as quo.colors]
-            [status-im.communities.core :as communities]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.badge :as badge]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.communities.community :as community]
-            [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.utils.core :as utils]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as quo.colors]
+   [status-im.communities.core :as communities]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.badge :as badge]
+   [status-im.ui.components.copyable-text :as copyable-text]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.communities.community :as community]
+   [status-im.ui.screens.communities.icon :as communities.icon]
+   [status-im.utils.core :as utils]
+   [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn hide-sheet-and-dispatch
   [event]

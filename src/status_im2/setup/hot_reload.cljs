@@ -1,7 +1,8 @@
 (ns status-im2.setup.hot-reload
-  (:require [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+   [re-frame.core :as re-frame]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (def cnt (reagent/atom 0))
 (defonce warning? (reagent/atom false))

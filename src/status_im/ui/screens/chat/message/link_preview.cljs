@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.chat.message.link-preview
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.link-preview :as link-preview]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.message.styles :as styles]
-            [status-im.ui.screens.communities.icon :as communities.icon]
-            [utils.security.core :as security])
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [status-im.chat.models.link-preview :as link-preview]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.react-native.resources :as resources]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.chat.message.styles :as styles]
+   [status-im.ui.screens.communities.icon :as communities.icon]
+   [utils.security.core :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn link-belongs-to-domain

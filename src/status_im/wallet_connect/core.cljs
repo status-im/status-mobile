@@ -1,15 +1,16 @@
 (ns status-im.wallet-connect.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.signing.core :as signing]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.browser.core :as browser]
+   [status-im.constants :as constants]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.signing.core :as signing]
+   [status-im.utils.config :as config]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.types :as types]
+   [status-im.utils.wallet-connect :as wallet-connect]
+   [taoensso.timbre :as log]))
 
 (fx/defn proposal-handler
   {:events [:wallet-connect/proposal]}

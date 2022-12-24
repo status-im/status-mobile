@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.contacts-list.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.invite.views :as invite]
-            [status-im.ui.components.list.views :as list.views]
-            [status-im.ui.components.react :as react])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+   [status-im.ui.components.invite.views :as invite]
+   [status-im.ui.components.list.views :as list.views]
+   [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn contacts-list-item

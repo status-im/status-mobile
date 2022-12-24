@@ -1,8 +1,9 @@
 (ns quo.previews.preview
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent])
   (:require-macros quo.previews.preview))
 
 (def container

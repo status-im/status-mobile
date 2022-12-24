@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.mobile-network-settings.sheets-styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def title
   {:height     21

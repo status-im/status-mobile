@@ -1,7 +1,8 @@
 (ns quo2.components.dividers.--tests--.divider-label-component-spec
-  (:require ["@testing-library/react-native" :as rtl]
-            [quo2.components.dividers.divider-label :as divider-label]
-            [reagent.core :as reagent]))
+  (:require
+   ["@testing-library/react-native" :as rtl]
+   [quo2.components.dividers.divider-label :as divider-label]
+   [reagent.core :as reagent]))
 
 (defn render-divider-label
   ([]

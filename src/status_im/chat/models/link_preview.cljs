@@ -1,9 +1,10 @@
 (ns status-im.chat.models.link-preview
-  (:require [re-frame.core :as re-frame]
-            [status-im.communities.core :as models.communities]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.communities.core :as models.communities]
+   [status-im.multiaccounts.update.core :as multiaccounts.update]
+   [status-im.utils.fx :as fx]
+   [taoensso.timbre :as log]))
 
 (fx/defn enable
   {:events [::enable]}

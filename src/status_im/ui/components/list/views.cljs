@@ -1,9 +1,10 @@
 (ns status-im.ui.components.list.views
-  (:require ["react-native" :as react-native]
-            [reagent.core :as reagent]
-            [status-im.ui.components.list.styles :as styles]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+  (:require
+   ["react-native" :as react-native]
+   [reagent.core :as reagent]
+   [status-im.ui.components.list.styles :as styles]
+   [status-im.ui.components.react :as react]
+   [status-im.utils.platform :as platform]))
 
 (def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))

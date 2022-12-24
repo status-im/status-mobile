@@ -1,13 +1,14 @@
 (ns status-im2.contexts.activity-center.notification.mentions.view
-  (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im.utils.datetime :as datetime]
-            [status-im2.contexts.activity-center.notification.common.view :as common]
-            [status-im2.contexts.activity-center.notification.mentions.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+   [clojure.string :as string]
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.utils.datetime :as datetime]
+   [status-im2.contexts.activity-center.notification.common.view :as common]
+   [status-im2.contexts.activity-center.notification.mentions.style :as style]
+   [utils.re-frame :as rf]))
 
 (defn message-body
   [message]

@@ -1,7 +1,8 @@
 (ns status-im.currency.core
-  (:require [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
-            [status-im.wallet.prices :as prices]))
+  (:require
+   [status-im.multiaccounts.update.core :as multiaccounts.update]
+   [status-im.utils.fx :as fx]
+   [status-im.wallet.prices :as prices]))
 
 (defn get-currency
   [db]

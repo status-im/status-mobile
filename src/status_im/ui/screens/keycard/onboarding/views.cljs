@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.keycard.onboarding.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.onboarding :as keycard.onboarding]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.utils.handlers :refer [<sub]])
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.keycard.onboarding :as keycard.onboarding]
+   [status-im.react-native.resources :as resources]
+   [status-im.ui.components.checkbox.view :as checkbox]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as bottom-toolbar]
+   [status-im.ui.components.tooltip.views :as tooltip]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.keycard.pin.views :as pin.views]
+   [status-im.ui.screens.keycard.styles :as styles]
+   [status-im.utils.handlers :refer [<sub]])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro

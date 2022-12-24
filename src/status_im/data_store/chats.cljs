@@ -1,10 +1,11 @@
 (ns status-im.data-store.chats
-  (:require [clojure.set :as clojure.set]
-            [status-im.constants :as constants]
-            [status-im.data-store.messages :as messages]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.set :as clojure.set]
+   [status-im.constants :as constants]
+   [status-im.data-store.messages :as messages]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.types :as types]
+   [taoensso.timbre :as log]))
 
 (defn rpc->type
   [{:keys [chat-type name] :as chat}]

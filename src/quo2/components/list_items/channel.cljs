@@ -1,11 +1,12 @@
 (ns quo2.components.list-items.channel
-  (:require [quo2.components.avatars.channel-avatar :as channel-avatar]
-            [quo2.components.counter.counter :as quo2.counter]
-            [quo2.components.icon :as quo2.icons]
-            [quo2.components.markdown.text :as quo2.text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.avatars.channel-avatar :as channel-avatar]
+   [quo2.components.counter.counter :as quo2.counter]
+   [quo2.components.icon :as quo2.icons]
+   [quo2.components.markdown.text :as quo2.text]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as theme]
+   [react-native.core :as rn]))
 
 (defn list-item
   [{:keys [name locked? mentions-count unread-messages?

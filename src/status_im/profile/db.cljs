@@ -1,7 +1,8 @@
 (ns status-im.profile.db
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-            [status-im.chat.constants :as chat.constants]))
+  (:require
+   [cljs.spec.alpha :as spec]
+   [clojure.string :as string]
+   [status-im.chat.constants :as chat.constants]))
 
 (defn correct-name?
   [username]

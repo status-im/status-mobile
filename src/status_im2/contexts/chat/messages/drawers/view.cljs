@@ -1,13 +1,14 @@
 (ns status-im2.contexts.chat.messages.drawers.view
-  (:require [react-native.core :as rn]
-            [status-im2.common.constants :as constants]
-            [utils.re-frame :as rf]
-            [quo2.core :as quo]
-            [i18n.i18n :as i18n]
-            [status-im2.setup.config :as config]
-            [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.components.reply :as components.reply]
-            [status-im2.common.not-implemented :as not-implemented]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [status-im.ui.components.react :as react]
+   [status-im.ui2.screens.chat.components.reply :as components.reply]
+   [status-im2.common.constants :as constants]
+   [status-im2.common.not-implemented :as not-implemented]
+   [status-im2.setup.config :as config]
+   [utils.re-frame :as rf]))
 
 (defn pin-message
   [{:keys [chat-id pinned] :as message-data}]

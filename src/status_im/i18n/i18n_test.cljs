@@ -1,10 +1,11 @@
 (ns status-im.i18n.i18n-test
-  (:require [cljs.spec.alpha :as spec]
-            [cljs.test :refer-macros [deftest is]]
-            [clojure.set :as set]
-            [clojure.string :as string]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.i18n.i18n-resources :as i18n-resources]))
+  (:require
+   [cljs.spec.alpha :as spec]
+   [cljs.test :refer-macros [deftest is]]
+   [clojure.set :as set]
+   [clojure.string :as string]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.i18n.i18n-resources :as i18n-resources]))
 ;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this
 ;;only
 ;;for old (status 1.0) code,

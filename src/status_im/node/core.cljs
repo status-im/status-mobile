@@ -1,10 +1,11 @@
 (ns status-im.node.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.native-module.core :as status]
+   [status-im.utils.config :as config]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.platform :as utils.platform]
+   [status-im.utils.types :as types]))
 
 (defn- add-custom-bootnodes
   [config network all-bootnodes]

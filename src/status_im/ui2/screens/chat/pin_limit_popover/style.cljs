@@ -1,5 +1,6 @@
 (ns status-im.ui2.screens.chat.pin-limit-popover.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+   [quo2.foundations.colors :as colors]))
 
 (defn pin-popover
   [width]

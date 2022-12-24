@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.chat.message.pinned-message
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.message.message :as message]
-            [status-im.utils.handlers :refer [<sub]]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.chat.message.message :as message]
+   [status-im.utils.handlers :refer [<sub]]))
 
 (def selected-unpin (reagent/atom nil))
 

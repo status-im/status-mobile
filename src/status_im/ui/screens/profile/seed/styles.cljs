@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.seed.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def intro-image
   {:margin-top  16

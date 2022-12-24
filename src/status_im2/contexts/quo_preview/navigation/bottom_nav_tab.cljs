@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.navigation.bottom-nav-tab
-  (:require [quo2.components.navigation.bottom-nav-tab :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [quo2.components.navigation.bottom-nav-tab :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [reagent.core :as reagent]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Type"

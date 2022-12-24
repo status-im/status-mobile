@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.contact.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def block-action-label
   {:color         colors/red

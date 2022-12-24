@@ -1,5 +1,6 @@
 (ns status-im.utils.platform
-  (:require ["react-native" :as react-native :refer (Dimensions)]))
+  (:require
+   ["react-native" :as react-native :refer (Dimensions)]))
 
 (def platform
   (.-Platform react-native))

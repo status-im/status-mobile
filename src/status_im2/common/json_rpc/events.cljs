@@ -1,10 +1,11 @@
 (ns status-im2.common.json-rpc.events
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [react-native.background-timer :as background-timer]
-            [status-im.native-module.core :as status]
-            [taoensso.timbre :as log]
-            [utils.transforms :as transforms]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [react-native.background-timer :as background-timer]
+   [status-im.native-module.core :as status]
+   [taoensso.timbre :as log]
+   [utils.transforms :as transforms]))
 
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]

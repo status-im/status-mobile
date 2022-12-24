@@ -1,18 +1,19 @@
 (ns status-im2.contexts.shell.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.safe-area :as safe-area]
-            [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
-            [status-im2.contexts.shell.cards.view :as switcher-cards]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.home-stack :as home-stack]
-            [status-im2.contexts.shell.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.linear-gradient :as linear-gradient]
+   [react-native.safe-area :as safe-area]
+   [status-im2.common.home.view :as common.home]
+   [status-im2.contexts.shell.animation :as animation]
+   [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
+   [status-im2.contexts.shell.cards.view :as switcher-cards]
+   [status-im2.contexts.shell.constants :as shell.constants]
+   [status-im2.contexts.shell.home-stack :as home-stack]
+   [status-im2.contexts.shell.style :as style]
+   [utils.re-frame :as rf]))
 
 (defn placeholder
   []

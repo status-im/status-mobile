@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.keycard.authentication-method.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 (def container
   {:flex             1

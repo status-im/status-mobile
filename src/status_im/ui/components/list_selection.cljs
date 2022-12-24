@@ -1,11 +1,12 @@
 (ns status-im.ui.components.list-selection
-  (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.action-sheet :as action-sheet]
-            [status-im.ui.components.dialog :as dialog]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.http :as http]
-            [status-im.utils.platform :as platform]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.action-sheet :as action-sheet]
+   [status-im.ui.components.dialog :as dialog]
+   [status-im.ui.components.react :as react]
+   [status-im.utils.http :as http]
+   [status-im.utils.platform :as platform]))
 
 (defn open-share
   [content]

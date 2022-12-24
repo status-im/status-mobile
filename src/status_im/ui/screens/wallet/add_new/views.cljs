@@ -1,21 +1,22 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.db :as multiaccounts.db]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [utils.security.core :as security]))
+  (:require
+   [cljs.spec.alpha :as spec]
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.db :as multiaccounts.db]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.ui.screens.keycard.pin.views :as pin.views]
+   [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+   [utils.security.core :as security]))
 
 (defn add-account-topbar
   [type]

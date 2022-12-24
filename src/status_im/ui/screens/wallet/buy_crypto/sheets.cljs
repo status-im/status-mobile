@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.buy-crypto.sheets
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+   [quo.design-system.colors :as colors]))
 
 ;; This needs to be a function because `colors/x` is a mutable reference
 ;; and changes dynamically based on the appearance settings

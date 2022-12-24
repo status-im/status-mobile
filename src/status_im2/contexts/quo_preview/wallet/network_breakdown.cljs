@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.wallet.network-breakdown
-  (:require [clojure.string :as string]
-            [quo2.components.wallet.network-breakdown :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+   [clojure.string :as string]
+   [quo2.components.wallet.network-breakdown :as quo2]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Ethereum Value"

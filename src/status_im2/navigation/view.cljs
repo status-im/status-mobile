@@ -1,22 +1,23 @@
 (ns status-im2.navigation.view
-  (:require [oops.core :refer [oget]]
-            [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
-            [status-im.ui.screens.popover.views :as popover]
-            [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-            [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
-            [status-im.ui.screens.wallet.send.views :as wallet.send.views]
-            [status-im2.common.toasts.view :as toasts] ;; TODO (14/11/22 flexsurfer) move to status-im2
-                                                       ;; namespace
-            [status-im2.navigation.screens :as screens]
-            [status-im2.setup.config :as config]
-            [status-im2.setup.hot-reload :as reloader]))
+  (:require ;; TODO (14/11/22 flexsurfer) move to status-im2
+ ;; namespace
+   [oops.core :refer [oget]]
+   [quo2.foundations.colors :as colors]
+   [re-frame.core :as re-frame]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [status-im.keycard.test-menu :as keycard.test-menu]
+   [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
+   [status-im.ui.screens.popover.views :as popover]
+   [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
+   [status-im.ui.screens.signing.views :as signing]
+   [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
+   [status-im.ui.screens.wallet.send.views :as wallet.send.views]
+   [status-im2.common.toasts.view :as toasts] ;; TODO (14/11/22 flexsurfer) move to status-im2
+   [status-im2.navigation.screens :as screens]
+   [status-im2.setup.config :as config]
+   [status-im2.setup.hot-reload :as reloader]))
 
 (defn get-screens
   []

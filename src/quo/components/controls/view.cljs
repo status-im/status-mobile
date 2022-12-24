@@ -1,13 +1,14 @@
 (ns quo.components.controls.view
-  (:require [cljs-bean.core :as bean]
-            [quo.animated :as animated]
-            [quo.components.controls.styles :as styles]
-            [quo.design-system.colors :as colors]
-            [quo.gesture-handler :as gh]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+   [cljs-bean.core :as bean]
+   [quo.animated :as animated]
+   [quo.components.controls.styles :as styles]
+   [quo.design-system.colors :as colors]
+   [quo.gesture-handler :as gh]
+   [quo.react :as react]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]
+   [status-im.ui.components.icons.icons :as icons]))
 
 (defn control-builder
   [component]

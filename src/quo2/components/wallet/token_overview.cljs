@@ -1,9 +1,10 @@
 (ns quo2.components.wallet.token-overview
-  (:require [clojure.string :as string]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [clojure.string :as string]
+   [quo2.components.icon :as icons]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 (def container-style
   {:display :flex :width "100%" :padding-left 20 :padding-right 20 :padding-top 12 :padding-bottom 12})

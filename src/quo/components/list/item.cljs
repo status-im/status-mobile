@@ -1,15 +1,16 @@
 (ns quo.components.list.item
-  (:require [quo.components.animated.pressable :as animated]
-            [quo.components.controls.view :as controls]
-            [quo.components.text :as text]
-            [quo.components.tooltip :as tooltip]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.gesture-handler :as gh]
-            [quo.haptic :as haptic]
-            [quo.platform :as platform]
-            [quo.react-native :as rn]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+   [quo.components.animated.pressable :as animated]
+   [quo.components.controls.view :as controls]
+   [quo.components.text :as text]
+   [quo.components.tooltip :as tooltip]
+   [quo.design-system.colors :as colors]
+   [quo.design-system.spacing :as spacing]
+   [quo.gesture-handler :as gh]
+   [quo.haptic :as haptic]
+   [quo.platform :as platform]
+   [quo.react-native :as rn]
+   [status-im.ui.components.icons.icons :as icons]))
 
 (defn themes
   [theme]

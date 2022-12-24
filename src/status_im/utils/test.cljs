@@ -1,5 +1,6 @@
 (ns status-im.utils.test
-  (:require [re-frame.core :as re-frame]))
+  (:require
+   [re-frame.core :as re-frame]))
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 

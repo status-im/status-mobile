@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.pairing.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.pairing.styles :as styles]))
+  (:require
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.list.views :as list]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.pairing.styles :as styles]))
 
 (def syncing (reagent/atom false))
 (def installation-name (reagent/atom ""))

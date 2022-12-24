@@ -1,13 +1,14 @@
 (ns status-im2.contexts.quo-preview.selectors.selectors
-  (:require ["react-native" :refer [StyleSheet]]
-            [oops.core :refer [oget]]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors :as quo2]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]))
+  (:require
+   ["react-native" :refer [StyleSheet]]
+   [oops.core :refer [oget]]
+   [quo.previews.preview :as preview]
+   [quo.react-native :as rn]
+   [quo2.components.markdown.text :as text]
+   [quo2.components.selectors.selectors :as quo2]
+   [quo2.foundations.colors :as colors]
+   [reagent.core :as reagent]
+   [status-im.ui.components.react :as react]))
 
 (def descriptor
   [{:label "Disabled?"

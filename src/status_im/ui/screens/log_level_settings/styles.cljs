@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.log-level-settings.styles
-  (:require [quo.design-system.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex 1})

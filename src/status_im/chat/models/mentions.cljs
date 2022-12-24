@@ -1,16 +1,17 @@
 (ns status-im.chat.models.mentions
-  (:require [clojure.string :as string]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.contact.db :as contact.db]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.string :as string]
+   [quo.react :as react]
+   [quo.react-native :as rn]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.contact.db :as contact.db]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.native-module.core :as status]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.utils :as utils]
+   [taoensso.timbre :as log]))
 
 (def at-sign "@")
 

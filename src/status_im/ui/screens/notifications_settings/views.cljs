@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.notifications-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as quo-colors]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.notifications.core :as notifications]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as quo-colors]
+   [quo.platform :as platform]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.notifications.core :as notifications]
+   [status-im.ui.components.react :as react]))
 
 (defonce server (reagent/atom ""))
 

@@ -1,11 +1,12 @@
 (ns status-im.ui.components.profile-header.view
-  (:require [quo.animated :as animated]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.react-native :as rn]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+   [quo.animated :as animated]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.design-system.spacing :as spacing]
+   [quo.react-native :as rn]
+   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+   [status-im.ui.components.icons.icons :as icons]))
 
 (def avatar-extended-size 64)
 (def avatar-minimized-size 40)

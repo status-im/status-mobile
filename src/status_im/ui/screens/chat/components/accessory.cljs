@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.chat.components.accessory
-  (:require [cljs-bean.core :as bean]
-            [quo.animated :as animated]
-            [quo.components.safe-area :refer [use-safe-area]]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.ui.components.tabbar.core :as tabbar]
-            [status-im.ui.screens.chat.components.hooks :refer [use-keyboard-dimension]]))
+  (:require
+   [cljs-bean.core :as bean]
+   [quo.animated :as animated]
+   [quo.components.safe-area :refer [use-safe-area]]
+   [quo.design-system.colors :as colors]
+   [quo.platform :as platform]
+   [quo.react :as react]
+   [quo.react-native :as rn]
+   [reagent.core :as reagent]
+   [status-im.ui.components.tabbar.core :as tabbar]
+   [status-im.ui.screens.chat.components.hooks :refer [use-keyboard-dimension]]))
 
 (def duration 250)
 

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.activity-center.notification.common.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+   [quo2.foundations.colors :as colors]))
 
 (def user-avatar-tag
   {:background-color colors/white-opa-10})

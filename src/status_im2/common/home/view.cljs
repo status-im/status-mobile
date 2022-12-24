@@ -1,11 +1,12 @@
 (ns status-im2.common.home.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.hole-view :as hole-view]
-            [status-im2.common.home.style :as style]
-            [status-im2.common.plus-button.view :as components.plus-button]
-            [utils.re-frame :as rf]))
+  (:require
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.hole-view :as hole-view]
+   [status-im2.common.home.style :as style]
+   [status-im2.common.plus-button.view :as components.plus-button]
+   [utils.re-frame :as rf]))
 
 (defn title-column
   [{:keys [label handler accessibility-label]}]

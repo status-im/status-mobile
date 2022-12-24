@@ -1,10 +1,11 @@
 (ns status-im2.subs.wallet.wallet-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [re-frame.db :as rf-db]
-            [status-im.test-helpers :as h]
-            [status-im.utils.money :as money]
-            [status-im2.subs.wallet.wallet :as wallet]
-            [utils.re-frame :as rf]))
+  (:require
+   [cljs.test :refer [deftest is testing]]
+   [re-frame.db :as rf-db]
+   [status-im.test-helpers :as h]
+   [status-im.utils.money :as money]
+   [status-im2.subs.wallet.wallet :as wallet]
+   [utils.re-frame :as rf]))
 
 (def money-zero (money/bignumber 0))
 (def money-eth (money/bignumber 8000000000000000000))

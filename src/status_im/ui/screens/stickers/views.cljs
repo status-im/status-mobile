@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.stickers.views
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.stickers.styles :as styles]
-            [status-im.utils.handlers :refer [<sub]]
-            [status-im.utils.money :as money])
+  (:require
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.fast-image :as fast-image]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.stickers.styles :as styles]
+   [status-im.utils.handlers :refer [<sub]]
+   [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn cache

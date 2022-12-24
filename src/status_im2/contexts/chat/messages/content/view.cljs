@@ -1,20 +1,21 @@
 (ns status-im2.contexts.chat.messages.content.view
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [status-im2.contexts.chat.messages.content.style :as style]
-            [status-im2.contexts.chat.messages.content.pin.view :as pin]
-            [status-im2.common.constants :as constants]
-            [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-            [status-im2.contexts.chat.messages.content.text.view :as content.text]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
-            [status-im2.contexts.chat.messages.content.status.view :as status]
-            [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im.utils.datetime :as time]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]))
+  (:require
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.ui2.screens.chat.messages.message :as old-message]
+   [status-im.utils.datetime :as time]
+   [status-im2.common.constants :as constants]
+   [status-im2.common.not-implemented :as not-implemented]
+   [status-im2.contexts.chat.messages.content.pin.view :as pin]
+   [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
+   [status-im2.contexts.chat.messages.content.status.view :as status]
+   [status-im2.contexts.chat.messages.content.style :as style]
+   [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+   [status-im2.contexts.chat.messages.content.text.view :as content.text]
+   [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+   [status-im2.contexts.chat.messages.drawers.view :as drawers]
+   [utils.re-frame :as rf]))
 
 (defn avatar
   [{:keys [response-to last-in-group? pinned quoted-message from]}]

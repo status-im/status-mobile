@@ -1,25 +1,26 @@
 (ns status-im.keycard.recovery
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.common :as common]
-            status-im.keycard.fx
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.native-module.core :as status]
-            [status-im.popover.core :as popover]
-            [status-im.utils.datetime :as utils.datetime]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.bottom-sheet.core :as bottom-sheet]
+   [status-im.constants :as constants]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.keycard.common :as common]
+   status-im.keycard.fx
+   [status-im.multiaccounts.create.core :as multiaccounts.create]
+   [status-im.multiaccounts.model :as multiaccounts.model]
+   [status-im.native-module.core :as status]
+   [status-im.popover.core :as popover]
+   [status-im.utils.datetime :as utils.datetime]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.keychain.core :as keychain]
+   [status-im.utils.platform :as platform]
+   [status-im.utils.types :as types]
+   [status-im2.navigation.events :as navigation]
+   [taoensso.timbre :as log]
+   [utils.security.core :as security]))
 
 (fx/defn pair*
   [_ password]

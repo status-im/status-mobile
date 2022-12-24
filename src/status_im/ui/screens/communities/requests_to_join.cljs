@@ -1,18 +1,19 @@
 (ns status-im.ui.screens.communities.requests-to-join
-  (:require [quo.components.animated.pressable :as animation]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.handlers :refer [<sub]]))
+  (:require
+   [quo.components.animated.pressable :as animation]
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [quo.react-native :as rn]
+   [re-frame.core :as re-frame]
+   [reagent.core :as reagent]
+   [status-im.communities.core :as communities]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.ui.components.chat-icon.screen :as chat-icon]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.topbar :as topbar]
+   [status-im.utils.handlers :refer [<sub]]))
 
 (defn request-actions
   [community-id request-id]

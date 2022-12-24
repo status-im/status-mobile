@@ -1,11 +1,12 @@
 (ns quo2.components.header
-  (:require [oops.core :refer [oget]]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]))
+  (:require
+   [oops.core :refer [oget]]
+   [quo2.components.buttons.button :as button]
+   [quo2.components.markdown.text :as text]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [reagent.core :as reagent]))
 
 (def header-height 56)
 

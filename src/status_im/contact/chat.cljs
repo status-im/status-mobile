@@ -1,9 +1,10 @@
 (ns status-im.contact.chat
-  (:require [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
-            [status-im.contact.core :as contact]
-            [status-im.utils.fx :as fx]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+   [re-frame.core :as re-frame]
+   [status-im.chat.models :as chat]
+   [status-im.contact.core :as contact]
+   [status-im.utils.fx :as fx]
+   [status-im2.navigation.events :as navigation]))
 
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]

@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.chat.extensions.views
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.design-system.colors :as colors]
+   [re-frame.core :as re-frame]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]))
 
 (defn extensions-view
   []

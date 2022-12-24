@@ -1,11 +1,12 @@
 (ns status-im2.contexts.chat.messages.pin.list.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.contexts.chat.messages.content.view :as message]
-            [utils.re-frame :as rf]
-            [status-im.utils.datetime :as time]))
+  (:require
+   [i18n.i18n :as i18n]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.utils.datetime :as time]
+   [status-im2.contexts.chat.messages.content.view :as message]
+   [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 

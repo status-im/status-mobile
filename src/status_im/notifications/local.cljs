@@ -1,20 +1,21 @@
 (ns status-im.notifications.local
-  (:require ["@react-native-community/push-notification-ios" :default pn-ios]
-            [cljs-bean.core :as bean]
-            [clojure.string :as string]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [status-im.async-storage.core :as async-storage]
-            [status-im.chat.models :as chat.models]
-            [status-im.ethereum.decode :as decode]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.notifications.android :as pn-android]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]
-            [status-im.utils.react-native :as react-native-utils]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+  (:require
+   ["@react-native-community/push-notification-ios" :default pn-ios]
+   [cljs-bean.core :as bean]
+   [clojure.string :as string]
+   [quo.platform :as platform]
+   [re-frame.core :as re-frame]
+   [status-im.async-storage.core :as async-storage]
+   [status-im.chat.models :as chat.models]
+   [status-im.ethereum.decode :as decode]
+   [status-im.ethereum.tokens :as tokens]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.notifications.android :as pn-android]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.money :as money]
+   [status-im.utils.react-native :as react-native-utils]
+   [status-im.utils.types :as types]
+   [status-im.utils.utils :as utils]))
 
 (def default-erc20-token
   {:symbol   :ERC20

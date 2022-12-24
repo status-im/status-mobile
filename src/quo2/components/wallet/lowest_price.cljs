@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.lowest-price
-  (:require [clojure.string :as string]
-            [react-native.core :as rn]))
+  (:require
+   [clojure.string :as string]
+   [react-native.core :as rn]))
 
 (def centrify
   {:style {:flex-direction  :row

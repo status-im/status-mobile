@@ -1,9 +1,10 @@
 (ns status-im2.contexts.syncing.events
-  (:require [status-im.native-module.core :as status]
-            [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]
-            [utils.security.core :as security]))
+  (:require
+   [status-im.native-module.core :as status]
+   [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]
+   [taoensso.timbre :as log]
+   [utils.re-frame :as rf]
+   [utils.security.core :as security]))
 
 (rf/defn initiate-local-pairing-with-connection-string
   {:events [:syncing/input-connection-string-for-bootstrapping]}

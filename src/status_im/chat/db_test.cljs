@@ -1,6 +1,7 @@
 (ns status-im.chat.db-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.db :as db]))
+  (:require
+   [cljs.test :refer-macros [deftest is testing]]
+   [status-im.chat.db :as db]))
 
 (deftest group-chat-name
   (testing "it prepends # if it's a public chat"

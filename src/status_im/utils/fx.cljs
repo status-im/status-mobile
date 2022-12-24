@@ -1,7 +1,8 @@
 (ns status-im.utils.fx
   (:require-macros status-im.utils.fx)
-  (:require [status-im.utils.handlers :as handlers]
-            [taoensso.timbre :as log])
+  (:require
+   [status-im.utils.handlers :as handlers]
+   [taoensso.timbre :as log])
   (:refer-clojure :exclude [merge reduce]))
 
 (defn- update-db

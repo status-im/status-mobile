@@ -1,7 +1,8 @@
 (ns quo2.components.avatars.icon-avatar
-  (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.icon :as icons]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]))
 
 (def sizes
   {:big    48

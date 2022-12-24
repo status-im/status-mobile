@@ -1,8 +1,9 @@
 (ns status-im.ui.components.plus-button
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+   [quo.core :as quo]
+   [quo.design-system.colors :as colors]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]))
 
 (def action-button-container-old
   {:position        :absolute
