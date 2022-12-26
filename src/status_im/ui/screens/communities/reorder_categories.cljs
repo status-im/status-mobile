@@ -16,7 +16,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
 
@@ -29,7 +29,7 @@
    {:title               (i18n/label :t/delete-confirmation)
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
-    :on-accept           #(>evt [:delete-community-chat community-id chat-id])}))
+    :on-accept           #(rf/dispatch [:delete-community-chat community-id chat-id])}))
 
 (defn show-delete-category-confirmation
   [community-id category-id]
@@ -37,7 +37,7 @@
    {:title               (i18n/label :t/delete-confirmation)
     :content             (i18n/label :t/delete-category-confirmation)
     :confirm-button-text (i18n/label :t/delete)
-    :on-accept           #(>evt [:delete-community-category community-id category-id])}))
+    :on-accept           #(rf/dispatch [:delete-community-category community-id category-id])}))
 
 (defn categories-tab?
   []
@@ -131,15 +131,15 @@
         chat-id                                       (string/replace id community-id "")]
     (when-not (and (= new-position position) (= new-category categoryID))
       (update-local-atom data-js)
-      (>evt [::communities/reorder-community-category-chat
-             community-id new-category chat-id new-position]))))
+      (rf/dispatch [::communities/reorder-community-category-chat
+                    community-id new-category chat-id new-position]))))
 
 (defn on-drag-end-category
   [from to data-js]
   (let [{:keys [id community-id position]} (get @data from)]
     (when (and (< to (count @data)) (not= position to) (not= id ""))
       (update-local-atom data-js)
-      (>evt [::communities/reorder-community-category community-id id to]))))
+      (rf/dispatch [::communities/reorder-community-category community-id id to]))))
 
 (defn on-drag-end-fn
   [from to data-js]
@@ -150,16 +150,16 @@
 (defn reset-data
   [categories chats]
   (reset! data
-    (if (categories-tab?)
-      categories
-      (walk/postwalk-replace
-       {:chat-id :id}
-       (reduce (fn [acc category]
-                 (-> acc
-                     (conj category)
-                     (into (get chats (:id category)))))
-               []
-               categories)))))
+          (if (categories-tab?)
+            categories
+            (walk/postwalk-replace
+             {:chat-id :id}
+             (reduce (fn [acc category]
+                       (-> acc
+                           (conj category)
+                           (into (get chats (:id category)))))
+                     []
+                     categories)))))
 
 (defn draggable-list
   []
@@ -188,11 +188,11 @@
 
 (defn view
   []
-  (let [{:keys [community-id]}                             (<sub [:get-screen-params])
+  (let [{:keys [community-id]}                             (rf/sub [:get-screen-params])
         {:keys [id name images members permissions color]}
-        (<sub [:communities/community community-id])
-        sorted-categories                                  (<sub [:communities/sorted-categories
-                                                                  community-id])
+        (rf/sub [:communities/community community-id])
+        sorted-categories                                  (rf/sub [:communities/sorted-categories
+                                                                    community-id])
         categories                                         (if (categories-tab?)
                                                              sorted-categories
                                                              (conj sorted-categories
@@ -201,7 +201,7 @@
                                                                                    sorted-categories)
                                                                     :name         (i18n/label :t/none)
                                                                     :community-id community-id}))
-        chats                                              (<sub
+        chats                                              (rf/sub
                                                             [:chats/sorted-categories-by-community-id
                                                              community-id])]
     (reset-data categories chats)

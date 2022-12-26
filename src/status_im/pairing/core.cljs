@@ -3,7 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
             [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]
@@ -56,26 +56,26 @@
   [our-installation-id installations]
   (sort (partial compare-installation our-installation-id) installations))
 
-(fx/defn send-pair-installation
+(rf/defn send-pair-installation
   {:events [:pairing.ui/pair-devices-pressed]}
   [_]
   {:json-rpc/call [{:method     "wakuext_sendPairInstallation"
                     :params     []
                     :on-success #(log/info "sent pair installation message")}]})
 
-(fx/defn prompt-dismissed
+(rf/defn prompt-dismissed
   {:events [:pairing.ui/prompt-dismissed]}
   [{:keys [db]}]
   {:db (assoc-in db [:pairing/prompt-user-pop-up] false)})
 
-(fx/defn prompt-accepted
+(rf/defn prompt-accepted
   {:events [:pairing.ui/prompt-accepted]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:pairing/prompt-user-pop-up] false)}
             (navigation/navigate-to-cofx :installations nil)))
 
-(fx/defn prompt-user-on-new-installation
+(rf/defn prompt-user-on-new-installation
   [{:keys [db]}]
   (when-not config/pairing-popup-disabled?
     {:db                   (assoc-in db [:pairing/prompt-user-pop-up] true)
@@ -87,7 +87,7 @@
                             :on-cancel           #(re-frame/dispatch [:pairing.ui/prompt-dismissed])
                             :on-accept           #(re-frame/dispatch [:pairing.ui/prompt-accepted])}}))
 
-(fx/defn set-name
+(rf/defn set-name
   "Set the name of the device"
   {:events [:pairing.ui/set-name-pressed]}
   [{:keys [db]} installation-name]
@@ -96,21 +96,21 @@
                                          {:name       installation-name
                                           :deviceType utils.platform/os}]}))
 
-(fx/defn init
+(rf/defn init
   [cofx]
   {:pairing/get-our-installations nil})
 
-(fx/defn enable
+(rf/defn enable
   [{:keys [db]} installation-id]
   {:db (assoc-in db
-        [:pairing/installations installation-id :enabled?]
-        true)})
+                 [:pairing/installations installation-id :enabled?]
+                 true)})
 
-(fx/defn disable
+(rf/defn disable
   [{:keys [db]} installation-id]
   {:db (assoc-in db
-        [:pairing/installations installation-id :enabled?]
-        false)})
+                 [:pairing/installations installation-id :enabled?]
+                 false)})
 
 (defn handle-enable-installation-response-success
   "Callback to dispatch on enable signature response"
@@ -158,7 +158,7 @@
   []
   (get-our-installations-rpc handle-get-our-installations-response-success nil))
 
-(fx/defn enable-fx
+(rf/defn enable-fx
   {:events [:pairing.ui/enable-installation-pressed]}
   [cofx installation-id]
   (if (< (count (filter :enabled? (vals (get-in cofx [:db :pairing/installations]))))
@@ -168,7 +168,7 @@
 
                         :content (i18n/label :t/pairing-maximum-number-reached-content)}}))
 
-(fx/defn disable-fx
+(rf/defn disable-fx
   {:events [:pairing.ui/disable-installation-pressed]}
   [_ installation-id]
   {:pairing/disable-installation [installation-id]})
@@ -192,7 +192,7 @@
  :pairing/get-our-installations
  get-our-installations)
 
-(fx/defn send-installation-messages
+(rf/defn send-installation-messages
   {:events [:pairing.ui/synchronize-installation-pressed]}
   [{:keys [db]}]
   (let [multiaccount                            (:multiaccount db)
@@ -209,7 +209,7 @@
    :device-type     (:deviceType metadata)
    :enabled?        enabled})
 
-(fx/defn update-installation
+(rf/defn update-installation
   {:events [:pairing.callback/set-installation-metadata-success]}
   [{:keys [db]} installation-id metadata]
   {:db (update-in db
@@ -219,7 +219,7 @@
                   :name            (:name metadata)
                   :device-type     (:deviceType metadata))})
 
-(fx/defn handle-installations
+(rf/defn handle-installations
   [{:keys [db]} installations]
   {:db (update db
                :pairing/installations
@@ -229,7 +229,7 @@
                  %
                  installations))})
 
-(fx/defn load-installations
+(rf/defn load-installations
   {:events [:pairing.callback/get-our-installations-success]}
   [{:keys [db]} installations]
   {:db (assoc db
@@ -242,16 +242,16 @@
                {}
                installations))})
 
-(fx/defn enable-installation-success
+(rf/defn enable-installation-success
   {:events [:pairing.callback/enable-installation-success]}
   [cofx installation-id]
-  (fx/merge cofx
+  (rf/merge cofx
             (enable installation-id)
             (multiaccounts.update/send-multiaccount-update)))
 
-(fx/defn disable-installation-success
+(rf/defn disable-installation-success
   {:events [:pairing.callback/disable-installation-success]}
   [cofx installation-id]
-  (fx/merge cofx
+  (rf/merge cofx
             (disable installation-id)
             (multiaccounts.update/send-multiaccount-update)))

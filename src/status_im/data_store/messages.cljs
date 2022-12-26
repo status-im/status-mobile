@@ -1,6 +1,6 @@
 (ns status-im.data-store.messages
   (:require [clojure.set :as clojure.set]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn ->rpc
@@ -100,18 +100,18 @@
                     :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
                     :on-error   #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
-(fx/defn delete-message
+(rf/defn delete-message
   [cofx id]
   (delete-message-rpc id))
 
-(fx/defn delete-messages-from
+(rf/defn delete-messages-from
   [cofx author]
   (delete-messages-from-rpc author))
 
-(fx/defn mark-messages-seen
+(rf/defn mark-messages-seen
   [cofx chat-id ids on-success]
   (mark-seen-rpc chat-id ids on-success))
 
-(fx/defn delete-messages-by-chat-id
+(rf/defn delete-messages-by-chat-id
   [cofx chat-id]
   (delete-messages-by-chat-id-rpc chat-id))

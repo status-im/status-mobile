@@ -4,16 +4,16 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
             [status-im.notifications.core :as notifications]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.wallet.core :as wallet]
             [status-im2.setup.events :as init]))
 
-(fx/defn logout-method
+(rf/defn logout-method
   {:events [::logout-method]}
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:multiaccount :key-uid])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:init-root-fx                         :progress
                :chat.ui/clear-inputs                 nil
                :chat.ui/clear-inputs-old             nil
@@ -28,12 +28,12 @@
               (wallet/clear-timeouts)
               (init/initialize-app-db))))
 
-(fx/defn logout
+(rf/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed
             :multiaccounts.update.callback/save-settings-success]}
   [cofx]
   ;; we need to disable notifications before starting the logout process
-  (fx/merge cofx
+  (rf/merge cofx
             {:dispatch       [:wallet-connect-legacy/clean-up-sessions]
              :dispatch-later [{:ms       100
                                :dispatch [::logout-method
@@ -41,7 +41,7 @@
                                            :logout?     true}]}]}
             (notifications/logout-disable)))
 
-(fx/defn show-logout-confirmation
+(rf/defn show-logout-confirmation
   {:events [:multiaccounts.logout.ui/logout-pressed]}
   [_]
   {:ui/show-confirmation
@@ -51,10 +51,10 @@
     :on-accept           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
     :on-cancel           nil}})
 
-(fx/defn biometric-logout
+(rf/defn biometric-logout
   {:events [:biometric-logout]}
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             (logout-method {:auth-method keychain/auth-method-biometric-prepare
                             :logout?     false})
             (fn [{:keys [db]}]

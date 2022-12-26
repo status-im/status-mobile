@@ -18,7 +18,7 @@
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.utils :as utils.utils]))
 
 (defn input-focus
@@ -104,13 +104,13 @@
     ;; typing. Timeout might be canceled on `on-change`.
     (when platform/ios?
       (reset!
-        timeout-id
-        (utils.utils/set-timeout
-         #(re-frame/dispatch [::mentions/on-selection-change
-                              {:start start
-                               :end   end}
-                              mentionable-users])
-         50)))
+       timeout-id
+       (utils.utils/set-timeout
+        #(re-frame/dispatch [::mentions/on-selection-change
+                             {:start start
+                              :end   end}
+                             mentionable-users])
+        50)))
     ;; NOTE(rasom): on Android we dispatch event only in case if there
     ;; was no text changes during last 50ms. `on-selection-change` is
     ;; dispatched after `on-change`, that's why there is no another way
@@ -208,7 +208,7 @@
     (when platform/ios?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
-(fx/defn set-input-text
+(rf/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui.input/set-chat-input-text]}
@@ -314,32 +314,32 @@
   (let [ens-name? (not= alias name)]
     [list-item/list-item
      (cond->
-       {:icon              [photos/member-photo public-key]
-        :size              :small
-        :text-size         :small
-        :title
-        [text/text
-         {:weight          :medium
-          :ellipsize-mode  :tail
-          :number-of-lines 1
-          :size            :small}
-         (if nickname
-           nickname
-           name)
-         (when nickname
-           [text/text
-            {:weight         :regular
-             :color          :secondary
-             :ellipsize-mode :tail
-             :size           :small}
-            " "
-            (when ens-name?
-              "@")
-            name])]
-        :title-text-weight :medium
-        :on-press
-        (fn []
-          (re-frame/dispatch [:chat.ui/select-mention text-input-ref user]))}
+      {:icon              [photos/member-photo public-key]
+       :size              :small
+       :text-size         :small
+       :title
+       [text/text
+        {:weight          :medium
+         :ellipsize-mode  :tail
+         :number-of-lines 1
+         :size            :small}
+        (if nickname
+          nickname
+          name)
+        (when nickname
+          [text/text
+           {:weight         :regular
+            :color          :secondary
+            :ellipsize-mode :tail
+            :size           :small}
+           " "
+           (when ens-name?
+             "@")
+           name])]
+       :title-text-weight :medium
+       :on-press
+       (fn []
+         (re-frame/dispatch [:chat.ui/select-mention text-input-ref user]))}
 
        ens-name?
        (assoc :subtitle alias))]))

@@ -22,7 +22,7 @@
             [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.utils.config :as config]
-            [status-im.utils.handlers :refer [<sub]])
+            [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -271,12 +271,12 @@
 
 (defn account-new
   [selected-account]
-  (let [;{:keys [name address] :as account} (<sub [:account-by-address selected-account])
-        currency        (<sub [:wallet/currency])
-        portfolio-value (<sub [:account-portfolio-value selected-account])
-        width           (<sub [:dimensions/window-width])
+  (let [;{:keys [name address] :as account} (rf/sub [:account-by-address selected-account])
+        currency        (rf/sub [:wallet/currency])
+        portfolio-value (rf/sub [:account-portfolio-value selected-account])
+        width           (rf/sub [:dimensions/window-width])
         button-width    (/ (- width 40 (* 2 12)) 3)]
-    ;fetching-error (<sub [:wallet/fetching-error])]
+    ;fetching-error (rf/sub [:wallet/fetching-error])]
     [react/view
      {:flex                    1
       :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)

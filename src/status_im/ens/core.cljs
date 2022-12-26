@@ -9,7 +9,7 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.random :as random]
             [status-im2.navigation.events :as navigation]))
 
@@ -39,16 +39,16 @@
  (fn [[chain-id name cb]]
    (ens/expire-at chain-id name cb)))
 
-(fx/defn update-ens-tx-state
+(rf/defn update-ens-tx-state
   {:events [:update-ens-tx-state]}
   [{:keys [db]} new-state username custom-domain? tx-hash]
   {:db (assoc-in db
-        [:ens/registrations tx-hash]
-        {:state          new-state
-         :username       username
-         :custom-domain? custom-domain?})})
+                 [:ens/registrations tx-hash]
+                 {:state          new-state
+                  :username       username
+                  :custom-domain? custom-domain?})})
 
-(fx/defn redirect-to-ens-summary
+(rf/defn redirect-to-ens-summary
   {:events [::redirect-to-ens-summary]}
   [cofx]
   ;; we reset navigation so that navigate back doesn't return
@@ -58,19 +58,19 @@
                              [:my-profile
                               :ens-confirmation]))
 
-(fx/defn update-ens-tx-state-and-redirect
+(rf/defn update-ens-tx-state-and-redirect
   {:events [:update-ens-tx-state-and-redirect]}
   [cofx new-state username custom-domain? tx-hash]
-  (fx/merge cofx
+  (rf/merge cofx
             (update-ens-tx-state new-state username custom-domain? tx-hash)
             (redirect-to-ens-summary)))
 
-(fx/defn clear-ens-registration
+(rf/defn clear-ens-registration
   {:events [:clear-ens-registration]}
   [{:keys [db]} tx-hash]
   {:db (update db :ens/registrations dissoc tx-hash)})
 
-(fx/defn set-state
+(rf/defn set-state
   {:events [::name-resolved]}
   [{:keys [db]} username state address]
   (when (= username
@@ -79,13 +79,13 @@
              (assoc-in [:ens/registration :state] state)
              (assoc-in [:ens/registration :address] address))}))
 
-(fx/defn save-username
+(rf/defn save-username
   {:events [::save-username]}
   [{:keys [db] :as cofx} custom-domain? username redirectToSummary]
   (let [name      (fullname custom-domain? username)
         names     (get-in db [:multiaccount :usernames] [])
         new-names (conj names name)]
-    (fx/merge cofx
+    (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :usernames
                new-names
@@ -97,7 +97,7 @@
                  name
                  {})))))
 
-(fx/defn set-pub-key
+(rf/defn set-pub-key
   {:events [::set-pub-key]}
   [{:keys [db]}]
   (let [{:keys [username address custom-domain?]} (:ens/registration db)
@@ -115,7 +115,7 @@
                            :on-result [::save-username custom-domain? username true]
                            :on-error  [::on-registration-failure]}]))))
 
-(fx/defn on-input-submitted
+(rf/defn on-input-submitted
   {:events [::input-submitted]}
   [{:keys [db] :as cofx}]
   (let [{:keys [state username custom-domain?]} (:ens/registration db)]
@@ -164,7 +164,7 @@
     5 10
     1 10))
 
-(fx/defn register-name
+(rf/defn register-name
   {:events [::register-name-pressed]}
   [{:keys [db]} address]
   (let [{:keys [username]}
@@ -207,7 +207,7 @@
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
 
-(fx/defn set-username-candidate
+(rf/defn set-username-candidate
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
   (let [{:keys [custom-domain?]} (:ens/registration db)
@@ -236,10 +236,10 @@
                              resolve-last-id
                              @resolve-last-id)]})))))
 
-(fx/defn return-to-ens-main-screen
+(rf/defn return-to-ens-main-screen
   {:events [::got-it-pressed ::cancel-pressed]}
   [{:keys [db] :as cofx} _]
-  (fx/merge cofx
+  (rf/merge cofx
             ;; clear registration data
             {:db (dissoc db :ens/registration)}
             ;; we reset navigation so that navigate back doesn't return
@@ -248,22 +248,22 @@
                                        [:my-profile
                                         :ens-main])))
 
-(fx/defn switch-domain-type
+(rf/defn switch-domain-type
   {:events [::switch-domain-type]}
   [{:keys [db] :as cofx} _]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (-> db
                      (update :ens/registration dissoc :username :state)
                      (update-in [:ens/registration :custom-domain?] not))}))
 
-(fx/defn change-address
+(rf/defn change-address
   {:events [::change-address]}
   [{:keys [db] :as cofx} _ {:keys [address]}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:ens/registration :address] address)}
             (bottom-sheet/hide-bottom-sheet)))
 
-(fx/defn save-preferred-name
+(rf/defn save-preferred-name
   {:events [::save-preferred-name]}
   [cofx name]
   (multiaccounts.update/multiaccount-update cofx
@@ -271,24 +271,24 @@
                                             name
                                             {}))
 
-(fx/defn on-registration-failure
+(rf/defn on-registration-failure
   "TODO not sure there is actually anything to do here
    it should only be called if the user cancels the signing
    Actual registration failure has not been implemented properly"
   {:events [::on-registration-failure]}
   [_ _])
 
-(fx/defn store-name-address
+(rf/defn store-name-address
   {:events [::address-resolved]}
   [{:keys [db]} username address]
   {:db (assoc-in db [:ens/names username :address] address)})
 
-(fx/defn store-name-public-key
+(rf/defn store-name-public-key
   {:events [::public-key-resolved]}
   [{:keys [db]} username public-key]
   {:db (assoc-in db [:ens/names username :public-key] public-key)})
 
-(fx/defn store-expiration-date
+(rf/defn store-expiration-date
   {:events [::get-expiration-time-success]}
   [{:keys [now db]} username timestamp]
   {:db (-> db
@@ -296,11 +296,11 @@
                      (datetime/timestamp->year-month-day-date timestamp))
            (assoc-in [:ens/names username :releasable?] (<= timestamp now)))})
 
-(fx/defn navigate-to-name
+(rf/defn navigate-to-name
   {:events [::navigate-to-name]}
   [{:keys [db] :as cofx} username]
   (let [chain-id (ethereum/chain-id db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {::get-expiration-time
                [chain-id
                 (stateofus/username username)
@@ -313,20 +313,20 @@
                 #(re-frame/dispatch [::public-key-resolved username %])]}
               (navigation/navigate-to-cofx :ens-name-details username))))
 
-(fx/defn start-registration
+(rf/defn start-registration
   {:events [::add-username-pressed ::get-started-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             (set-username-candidate (get-in db [:ens/registration :username] ""))
             (navigation/navigate-to-cofx :ens-search {})))
 
-(fx/defn remove-username
+(rf/defn remove-username
   {:events [::remove-username]}
   [{:keys [db] :as cofx} name]
   (let [names          (get-in db [:multiaccount :usernames] [])
         preferred-name (get-in db [:multiaccount :preferred-name])
         new-names      (remove #(= name %) names)]
-    (fx/merge cofx
+    (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :usernames
                new-names

@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (def options
   {constants/community-on-request-access
@@ -30,7 +30,7 @@
 
 (defn membership
   []
-  (let [{:keys [membership]} (<sub [:communities/create])]
+  (let [{:keys [membership]} (rf/sub [:communities/create])]
     [:<>
      [rn/scroll-view {}
       (doall
@@ -38,10 +38,10 @@
          ^{:key (str "option-" id)}
          [option o
           {:selected  (= id membership)
-           :on-select #(>evt [::communities/create-field :membership id])}]))]
+           :on-select #(rf/dispatch [::communities/create-field :membership id])}]))]
      [toolbar/toolbar
       {:show-border? true
        :center       [quo/button
                       {:type     :secondary
-                       :on-press #(>evt [:navigate-back])}
+                       :on-press #(rf/dispatch [:navigate-back])}
                       (i18n/label :t/done)]}]]))

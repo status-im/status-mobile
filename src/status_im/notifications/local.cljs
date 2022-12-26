@@ -10,7 +10,7 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
             [status-im.notifications.android :as pn-android]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.money :as money]
             [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.types :as types]
@@ -56,7 +56,7 @@
                        notification-event-ios
                        (fn [notification]
                          (handle-notification-press {:userInfo (bean/bean (.getData ^js
-                                                                                    notification))})))
+                                                                           notification))})))
     (.addListener ^js react-native-utils/device-event-emitter
                   notification-event-android
                   (fn [^js data]
@@ -132,14 +132,14 @@
  (fn [evt]
    (-> evt create-notification local-push-ios)))
 
-(fx/defn local-notification-android
+(rf/defn local-notification-android
   {:events [::local-notification-android]}
   [cofx event]
   (some->> event
            (create-notification cofx)
            local-push-android))
 
-(fx/defn process
+(rf/defn process
   [cofx evt]
   (if platform/ios?
     {::local-push-ios evt}

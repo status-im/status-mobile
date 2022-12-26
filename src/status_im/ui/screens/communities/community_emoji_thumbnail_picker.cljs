@@ -8,11 +8,11 @@
             [status-im.ui.components.emoji-thumbnail.styles :as styles]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.react :as react]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (defn thumbnail-preview-section
   []
-  (let [{:keys [color emoji]} (<sub [:communities/create-channel])
+  (let [{:keys [color emoji]} (rf/sub [:communities/create-channel])
         size                  styles/emoji-thumbnail-preview-size]
     [rn/view styles/emoji-thumbnail-preview
      [emoji-thumbnail-preview/emoji-thumbnail
@@ -20,25 +20,25 @@
 
 (defn color-circle
   [item]
-  (let [{:keys [color]} (<sub [:communities/create-channel])
+  (let [{:keys [color]} (rf/sub [:communities/create-channel])
         item-color      (:color item)
         key             (:key key)
         color-selected? (= (string/lower-case item-color) (string/lower-case color))]
     [react/touchable-opacity
      {:key                 key
       :accessibility-label :color-circle
-      :on-press            #(>evt [::communities/create-channel-field :color item-color])}
+      :on-press            #(rf/dispatch [::communities/create-channel-field :color item-color])}
      [rn/view {:style (styles/emoji-picker-color-border item-color color-selected?)}
       [rn/view {:style (styles/emoji-picker-color item-color)}]]]))
 
 (defn update-emoji
   [emoji]
   (when-not (string/blank? emoji)
-    (>evt [::communities/create-channel-field :emoji emoji])))
+    (rf/dispatch [::communities/create-channel-field :emoji emoji])))
 
 (defn emoji-keyboard-section
   []
-  (let [{:keys [width height]} (<sub [:dimensions/window])
+  (let [{:keys [width height]} (rf/sub [:dimensions/window])
         keyboard_height        (if (> width height)
                                  400
                                  (- height styles/emoji-picker-upper-components-size))]

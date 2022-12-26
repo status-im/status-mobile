@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.utils.handlers :refer [>evt]]
+            [utils.re-frame :as rf]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -29,24 +29,24 @@
     :background-color (colors/theme-colors colors/white colors/neutral-95)}
    [quo2/action-drawer
     (cond->
-      [[{:icon     :i/friend
-         :label    "View channel members and details"
-         :on-press #(js/alert "View channel members and details")}
-        {:icon     :i/communities
-         :label    "Mark as read"
-         :on-press #(js/alert "Mark as read")}
-        {:icon       :i/muted
-         :label      (if (:muted? @state) "Unmute channel" "Mute channel")
-         :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
-         :right-icon :i/chevron-right
-         :sub-label  (when (:muted? @state) "Muted for 15 min")}
-        {:icon       :i/scan
-         :on-press   #(js/alert "Fetch messages")
-         :right-icon :i/chevron-right
-         :label      "Fetch messages"}
-        {:icon     :i/add-user
-         :on-press #(js/alert "Share link to the channel")
-         :label    "Share link to the channel"}]]
+     [[{:icon     :i/friend
+        :label    "View channel members and details"
+        :on-press #(js/alert "View channel members and details")}
+       {:icon     :i/communities
+        :label    "Mark as read"
+        :on-press #(js/alert "Mark as read")}
+       {:icon       :i/muted
+        :label      (if (:muted? @state) "Unmute channel" "Mute channel")
+        :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
+        :right-icon :i/chevron-right
+        :sub-label  (when (:muted? @state) "Muted for 15 min")}
+       {:icon       :i/scan
+        :on-press   #(js/alert "Fetch messages")
+        :right-icon :i/chevron-right
+        :label      "Fetch messages"}
+       {:icon     :i/add-user
+        :on-press #(js/alert "Share link to the channel")
+        :label    "Share link to the channel"}]]
 
       (:show-red-options? @state)
       (conj options-with-consequences))]])
@@ -61,9 +61,9 @@
         [preview/customizer state descriptor]
         [button/button
          {:style    {:margin-horizontal 40}
-          :on-press #(>evt [:bottom-sheet/show-sheet
-                            {:content        (constantly (render-action-sheet state))
-                             :content-height 300}])}
+          :on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                   {:content        (constantly (render-action-sheet state))
+                                    :content-height 300}])}
          "See in bottom sheet"]
         [rn/view {:padding-vertical 60}
          (render-action-sheet state)]]])))

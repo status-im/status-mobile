@@ -7,12 +7,12 @@
             status-im.keycard.fx
             [status-im.keycard.mnemonic :as mnemonic]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
-(fx/defn begin-setup-button-pressed
+(rf/defn begin-setup-button-pressed
   {:keys [:keycard.ui/begin-setup-button-pressed]}
   [{:keys [db]}]
   {:db (-> db
@@ -21,7 +21,7 @@
            (assoc-in [:keycard :pin :original] [])
            (assoc-in [:keycard :pin :confirmation] []))})
 
-(fx/defn start-installation
+(rf/defn start-installation
   [{:keys [db] :as cofx}]
   (let [card-state (get-in db [:keycard :card-state])
         pin        (common/vector->string (get-in db [:keycard :pin :original]))]
@@ -33,12 +33,12 @@
 
       (do
         (log/debug (str "Cannot start keycard installation from state: " card-state))
-        (fx/merge cofx
+        (rf/merge cofx
                   {:utils/show-popup {:title   (i18n/label :t/error)
                                       :content (i18n/label :t/something-went-wrong)}}
                   (navigation/navigate-to-cofx :keycard-authentication-method nil))))))
 
-(fx/defn load-preparing-screen
+(rf/defn load-preparing-screen
   {:events [:keycard/load-preparing-screen]}
   [cofx]
   (common/show-connection-sheet
@@ -47,11 +47,11 @@
     :on-card-connected :keycard/load-preparing-screen
     :handler           start-installation}))
 
-(fx/defn load-pairing-screen
+(rf/defn load-pairing-screen
   {:events [:keycard/load-pairing-screen
             :keycard.onboarding.puk-code.ui/confirm-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc-in db [:keycard :setup-step] :pairing)}
    (common/show-connection-sheet
@@ -59,7 +59,7 @@
      :on-card-connected :keycard/load-pairing-screen
      :handler           (common/dispatch-event :keycard/pair)})))
 
-(fx/defn puk-code-next-pressed
+(rf/defn puk-code-next-pressed
   {:events [:keycard.onboarding.puk-code.ui/next-pressed]}
   [_]
   {:ui/show-confirmation {:title               (i18n/label :t/secret-keys-confirmation-title)
@@ -70,11 +70,11 @@
                                                  [:keycard.onboarding.puk-code.ui/confirm-pressed])
                           :on-cancel           #()}})
 
-(fx/defn load-finishing-screen
+(rf/defn load-finishing-screen
   {:events [:keycard.onboarding.recovery-phrase-confirm-word2.ui/next-pressed
             :keycard/load-finishing-screen]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc-in db [:keycard :setup-step] :loading-keys)}
    (common/show-connection-sheet
@@ -82,12 +82,12 @@
      :on-card-connected :keycard/load-finishing-screen
      :handler           (common/dispatch-event :keycard/generate-and-load-key)})))
 
-(fx/defn recovery-phrase-learn-more-pressed
+(rf/defn recovery-phrase-learn-more-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/learn-more-pressed]}
   [_]
   (.openURL ^js react/linking constants/keycard-integration-link))
 
-(fx/defn recovery-phrase-next-pressed
+(rf/defn recovery-phrase-next-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/next-pressed
             :keycard.ui/recovery-phrase-next-button-pressed]}
   [_]
@@ -99,13 +99,13 @@
                                        [:keycard.onboarding.recovery-phrase.ui/confirm-pressed])
                           :on-cancel #()}})
 
-(fx/defn recovery-phrase-start-confirmation
+(rf/defn recovery-phrase-start-confirmation
   [{:keys [db] :as cofx}]
   (let [mnemonic      (get-in db [:keycard :secrets :mnemonic])
         [word1 word2] (shuffle (map-indexed vector (clojure.string/split mnemonic #" ")))
         word1         (zipmap [:idx :word] word1)
         word2         (zipmap [:idx :word] word2)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (-> db
                        (assoc-in [:keycard :setup-step] :recovery-phrase-confirm-word1)
                        (assoc-in [:keycard :recovery-phrase :step] :word1)
@@ -115,14 +115,14 @@
                        (assoc-in [:keycard :recovery-phrase :word2] word2))}
               (common/remove-listener-to-hardware-back-button))))
 
-(fx/defn recovery-phrase-confirm-pressed
+(rf/defn recovery-phrase-confirm-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/confirm-pressed]}
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             (recovery-phrase-start-confirmation)
             (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase-confirm-word1 nil)))
 
-(fx/defn recovery-phrase-next-word
+(rf/defn recovery-phrase-next-word
   [{:keys [db]}]
   {:db (-> db
            (assoc-in [:keycard :recovery-phrase :step] :word2)
@@ -130,13 +130,13 @@
            (assoc-in [:keycard :recovery-phrase :input-word] nil)
            (assoc-in [:keycard :setup-step] :recovery-phrase-confirm-word2))})
 
-(fx/defn proceed-with-generating-key
+(rf/defn proceed-with-generating-key
   [{:keys [db] :as cofx}]
   (let [pin (get-in db
                     [:keycard :secrets :pin]
                     (common/vector->string (get-in db [:keycard :pin :current])))]
     (if (empty? pin)
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (-> db
                          (assoc-in [:keycard :pin]
                                    {:enter-step  :current
@@ -146,7 +146,7 @@
                 (navigation/navigate-to-cofx :keycard-onboarding-pin nil))
       (load-finishing-screen cofx))))
 
-(fx/defn recovery-phrase-confirm-word-next-pressed
+(rf/defn recovery-phrase-confirm-word-next-pressed
   {:events [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed
             :keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted]}
   [{:keys [db] :as cofx}]
@@ -155,27 +155,27 @@
         {:keys [word]} (get-in db [:keycard :recovery-phrase step])]
     (if (= word input-word)
       (if (= (:view-id db) :keycard-onboarding-recovery-phrase-confirm-word1)
-        (fx/merge cofx
+        (rf/merge cofx
                   (recovery-phrase-next-word)
                   (navigation/navigate-replace :keycard-onboarding-recovery-phrase-confirm-word2 nil))
         (proceed-with-generating-key cofx))
       {:db (assoc-in db [:keycard :recovery-phrase :confirm-error] (i18n/label :t/wrong-word))})))
 
-(fx/defn recovery-phrase-confirm-word-input-changed
+(rf/defn recovery-phrase-confirm-word-input-changed
   {:events [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed]}
   [{:keys [db]} input]
   {:db (assoc-in db [:keycard :recovery-phrase :input-word] input)})
 
-(fx/defn pair-code-input-changed
+(rf/defn pair-code-input-changed
   {:events [:keycard.onboarding.pair.ui/input-changed]}
   [{:keys [db]} input]
   {:db (assoc-in db [:keycard :secrets :password] input)})
 
-(fx/defn keycard-option-pressed
+(rf/defn keycard-option-pressed
   {:events [:onboarding.ui/keycard-option-pressed]}
   [{:keys [db] :as cofx}]
   (let [flow (get-in db [:keycard :flow])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:keycard/check-nfc-enabled nil}
               (if (= flow :import)
                 (navigation/navigate-to-cofx :keycard-recovery-intro nil)
@@ -183,16 +183,16 @@
                   (common/listen-to-hardware-back-button)
                   (navigation/navigate-to-cofx :keycard-onboarding-intro nil))))))
 
-(fx/defn start-onboarding-flow
+(rf/defn start-onboarding-flow
   {:events [:keycard/start-onboarding-flow]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db                        (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
             (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
-(fx/defn open-nfc-settings-pressed
+(rf/defn open-nfc-settings-pressed
   {:events [:keycard.onboarding.nfc-on/open-nfc-settings-pressed]}
   [_]
   {:keycard/open-nfc-settings nil})
@@ -208,7 +208,7 @@
                           :on-cancel           #(re-frame/dispatch
                                                  [:keycard.ui/recovery-phrase-cancel-pressed])}})
 
-(fx/defn recovery-phrase-confirm-word
+(rf/defn recovery-phrase-confirm-word
   {:events [:keycard.ui/recovery-phrase-confirm-word-next-button-pressed]}
   [{:keys [db]}]
   (let [step           (get-in db [:keycard :recovery-phrase :step])
@@ -220,21 +220,21 @@
         (show-recover-confirmation))
       {:db (assoc-in db [:keycard :recovery-phrase :confirm-error] (i18n/label :t/wrong-word))})))
 
-(fx/defn recovery-phrase-next-button-pressed
+(rf/defn recovery-phrase-next-button-pressed
   [{:keys [db] :as cofx}]
   (if (= (get-in db [:keycard :flow]) :create)
     (recovery-phrase-start-confirmation cofx)
     (let [mnemonic (get-in db [:multiaccounts/recover :passphrase])]
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (assoc-in db [:keycard :secrets :mnemonic] mnemonic)}
                 (mnemonic/load-loading-keys-screen)))))
 
-(fx/defn on-install-applet-and-init-card-success
+(rf/defn on-install-applet-and-init-card-success
   {:events [:keycard.callback/on-install-applet-and-init-card-success
             :keycard.callback/on-init-card-success]}
   [{:keys [db] :as cofx} secrets]
   (let [secrets' (js->clj secrets :keywordize-keys true)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (-> db
                        (assoc-in [:keycard :card-state] :init)
                        (assoc-in [:keycard :setup-step] :secret-keys)
@@ -244,17 +244,17 @@
                 :on-card-read      :keycard/check-card-state
                 :handler           (common/get-application-info :keycard/check-card-state)}))))
 
-(fx/defn on-install-applet-and-init-card-error
+(rf/defn on-install-applet-and-init-card-error
   {:events [:keycard.callback/on-install-applet-and-init-card-error
             :keycard.callback/on-init-card-error]}
   [{:keys [db] :as cofx} {:keys [code error]}]
   (log/debug "[keycard] install applet and init card error: " error)
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:keycard :setup-error] error)}
             (common/set-on-card-connected :keycard/load-preparing-screen)
             (common/process-error code error)))
 
-(fx/defn generate-and-load-key
+(rf/defn generate-and-load-key
   {:events [:keycard/generate-and-load-key]}
   [{:keys [db] :as cofx}]
   (let [{:keys [pin]}
@@ -276,22 +276,22 @@
                                                 (common/vector->string (get-in db
                                                                                [:keycard :pin
                                                                                 :current])))]
-    (fx/merge cofx
+    (rf/merge cofx
               {:keycard/generate-and-load-key
                {:mnemonic             mnemonic
                 :pin                  pin'
                 :key-uid              (:key-uid multiaccount)
                 :delete-multiaccount? (get-in db [:keycard :delete-account?])}})))
 
-(fx/defn factory-reset-card-toggle
+(rf/defn factory-reset-card-toggle
   {:events [:keycard.onboarding.intro.ui/factory-reset-card-toggle]}
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:keycard :factory-reset-card?] checked?)})
 
-(fx/defn begin-setup-pressed
+(rf/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (-> db
             (update :keycard
@@ -313,7 +313,7 @@
        :on-card-read      :keycard/check-card-state
        :handler           (common/get-application-info :keycard/check-card-state)}))))
 
-(fx/defn factory-reset
+(rf/defn factory-reset
   {:events [::factory-reset]}
   [cofx]
   (common/show-connection-sheet
@@ -322,14 +322,14 @@
     :on-card-read      :keycard/check-card-state
     :handler           (common/factory-reset :keycard/check-card-state)}))
 
-(fx/defn factory-reset-cancel
+(rf/defn factory-reset-cancel
   {:events [::factory-reset-cancel]}
   [{:keys [db] :as cofx}]
   {:db (update db :keycard dissoc :factory-reset-card?)})
 
-(fx/defn cancel-pressed
+(rf/defn cancel-pressed
   {:events [::cancel-pressed]}
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             (navigation/navigate-back)
             (common/cancel-sheet-confirm)))

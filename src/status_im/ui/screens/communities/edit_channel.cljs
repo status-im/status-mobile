@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.communities.create-channel :as create-channel]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [utils.debounce :as debounce]))
 
 (defn valid?
@@ -14,7 +14,7 @@
 
 (defn view
   []
-  (let [{:keys [name]} (<sub [:communities/create-channel])]
+  (let [{:keys [name]} (rf/sub [:communities/create-channel])]
     (fn []
       [:<>
        [create-channel/form]

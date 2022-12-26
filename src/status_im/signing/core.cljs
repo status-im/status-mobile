@@ -12,7 +12,7 @@
             [status-im.native-module.core :as status]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.signing.keycard :as signing.keycard]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
@@ -66,7 +66,7 @@
      (get-in db [:contacts/contacts to])
      {:address (ethereum/normalized-hex to)})))
 
-(fx/defn change-password
+(rf/defn change-password
   {:events [:signing.ui/password-is-changed]}
   [{db :db} password]
   (let [unmasked-pass (security/safe-unmask-data password)]
@@ -76,7 +76,7 @@
                  :error        nil
                  :enabled?     (and unmasked-pass (> (count unmasked-pass) 5)))}))
 
-(fx/defn sign-message
+(rf/defn sign-message
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed? from v4]} :message} tx
         {:keys [in-progress? password]}          sign
@@ -98,7 +98,7 @@
                                     :on-completed #(re-frame/dispatch [:signing/sign-message-completed
                                                                        %])}})))))
 
-(fx/defn send-transaction
+(rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
   [{{:signing/keys [sign tx] :as db} :db :as cofx}]
   (let [{:keys [in-progress? password]} sign
@@ -129,7 +129,7 @@
                                                             [:signing/transaction-completed %
                                                              tx-obj-to-send hashed-password])}})))))
 
-(fx/defn prepare-unconfirmed-transaction
+(rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
    {:keys [value gasPrice maxFeePerGas maxPriorityFeePerGas gas data to from hash]} symbol amount]
   (let [token       (tokens/symbol->token (:wallet/all-tokens db) symbol)
@@ -237,7 +237,7 @@
     :maxPriorityFeePerGas (when maxPriorityFeePerGas
                             (money/bignumber maxPriorityFeePerGas))}))
 
-(fx/defn show-sign
+(rf/defn show-sign
   [{:keys [db] :as cofx}]
   (let [{:signing/keys [queue]} db
         {{:keys [gas gasPrice maxFeePerGas] :as tx-obj} :tx-obj
@@ -247,7 +247,7 @@
         keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))
         wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
     (if message
-      (fx/merge
+      (rf/merge
        cofx
        {:db                 (assoc db
                                    :signing/queue (drop-last queue)
@@ -271,7 +271,7 @@
           {:data         data
            :typed?       true
            :on-completed #(re-frame/dispatch [:keycard/store-hash-and-sign-typed %])})))
-      (fx/merge
+      (rf/merge
        cofx
        {:db                 (assoc db
                                    :signing/queue (drop-last queue)
@@ -302,13 +302,13 @@
            :network-id       (get-in (ethereum/current-network db)
                                      [:config :NetworkId])}})))))
 
-(fx/defn check-queue
+(rf/defn check-queue
   [{:keys [db] :as cofx}]
   (let [{:signing/keys [tx queue]} db]
     (when (and (not tx) (seq queue))
       (show-sign cofx))))
 
-(fx/defn send-transaction-message
+(rf/defn send-transaction-message
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
   {:json-rpc/call [{:method      "wakuext_sendTransaction"
@@ -321,7 +321,7 @@
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
 
-(fx/defn send-accept-request-transaction-message
+(rf/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
   {:json-rpc/call [{:method      "wakuext_acceptRequestTransaction"
@@ -332,10 +332,10 @@
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
 
-(fx/defn transaction-result
+(rf/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
   (let [{:keys [on-result symbol amount from]} (get db :signing/tx)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db                              (dissoc db :signing/tx :signing/sign)
                :signing/show-transaction-result nil}
               (prepare-unconfirmed-transaction result tx-obj symbol amount)
@@ -344,13 +344,13 @@
               #(when on-result
                  {:dispatch (conj on-result result)}))))
 
-(fx/defn command-transaction-result
+(rf/defn command-transaction-result
   [{:keys [db] :as cofx} transaction-hash hashed-password
    {:keys [message-id chat-id from] :as tx-obj}]
   (let [{:keys [on-result symbol amount contract value]} (get db :signing/tx)
         data                                             (str (get-in db [:multiaccount :public-key])
                                                               (subs transaction-hash 2))]
-    (fx/merge
+    (rf/merge
      cofx
      {:db (dissoc db :signing/tx :signing/sign)}
      (wallet/watch-tx (get from :address) transaction-hash)
@@ -386,7 +386,7 @@
      #(when on-result
         {:dispatch (conj on-result transaction-hash)}))))
 
-(fx/defn transaction-error
+(rf/defn transaction-error
   [{:keys [db]} {:keys [code message]}]
   (let [on-error (get-in db [:signing/tx :on-error])]
     (if (= code constants/send-transaction-err-decrypt)
@@ -397,14 +397,14 @@
              (when on-error
                {:dispatch (conj on-error message)})))))
 
-(fx/defn dissoc-signing-db-entries-and-check-queue
+(rf/defn dissoc-signing-db-entries-and-check-queue
   {:events [:signing/dissoc-entries-and-check-queue]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (dissoc db :signing/tx :signing/sign)}
             check-queue))
 
-(fx/defn sign-message-completed
+(rf/defn sign-message-completed
   {:events [:signing/sign-message-completed]}
   [{:keys [db] :as cofx} result]
   (let [{:keys [result error]} (types/json->clj result)
@@ -417,7 +417,7 @@
                                    (i18n/label :t/wrong-password)
                                    (:message error))
                    :in-progress? false)}
-      (fx/merge cofx
+      (rf/merge cofx
                 (when-not (= (-> db :signing/sign :type) :pinless)
                   (dissoc-signing-db-entries-and-check-queue))
                 #(when (= (-> db :signing/sign :type) :pinless)
@@ -426,7 +426,7 @@
                 #(when on-result
                    {:dispatch (conj on-result result)})))))
 
-(fx/defn transaction-completed
+(rf/defn transaction-completed
   {:events       [:signing/transaction-completed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx response tx-obj hashed-password]
@@ -438,12 +438,12 @@
         (command-transaction-result cofx-in-progress-false result hashed-password tx-obj)
         (transaction-result cofx-in-progress-false result tx-obj)))))
 
-(fx/defn discard
+(rf/defn discard
   "Discrad transaction signing"
   {:events [:signing.ui/cancel-is-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [on-error]} (get-in db [:signing/tx])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db                 (-> db
                                        (assoc-in [:keycard :pin :status] nil)
                                        (dissoc :signing/tx :signing/sign))
@@ -458,7 +458,7 @@
   [db tx]
   (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (ethereum/default-address db)))))
 
-(fx/defn sign
+(rf/defn sign
   "Signing transaction or message, shows signing sheet
    tx
    {:tx-obj - transaction object to send https://github.com/ethereum/wiki/wiki/JavaScript-API#parameters-25
@@ -467,11 +467,11 @@
     :on-error - re-frame event vector}"
   {:events [:signing.ui/sign]}
   [{:keys [db] :as cofx} tx]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (update db :signing/queue conj (normalize-tx-obj db tx))}
             (check-queue)))
 
-(fx/defn sign-transaction-button-clicked-from-chat
+(rf/defn sign-transaction-button-clicked-from-chat
   {:events [:wallet.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
@@ -481,7 +481,7 @@
         identity                 (:current-chat-id db)
         db                       (dissoc db :wallet/prepare-transaction :signing/edit-fee)]
     (if to-norm
-      (fx/merge
+      (rf/merge
        cofx
        {:db db}
        (sign {:tx-obj (if (= symbol :ETH)
@@ -506,7 +506,7 @@
          :js-response true
          :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
 
-(fx/defn sign-transaction-button-clicked-from-request
+(rf/defn sign-transaction-button-clicked-from-request
   {:events [:wallet.ui/sign-transaction-button-clicked-from-request]}
   [{:keys [db] :as cofx} {:keys [amount from token]}]
   (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
@@ -514,7 +514,7 @@
         amount-hex                           (str "0x" (status/number-to-hex amount))
         to-norm                              (:address request-parameters)
         from-address                         (:address from)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
               (fn [cofx]
                 (sign
@@ -533,14 +533,14 @@
                              :chat-id    chat-id
                              :data       (status/encode-transfer to-norm amount-hex)})})))))
 
-(fx/defn sign-transaction-button-clicked
+(rf/defn sign-transaction-button-clicked
   {:events [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice maxFeePerGas maxPriorityFeePerGas]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (status/number-to-hex amount))
         to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
               (sign
                {:tx-obj (merge (if (eip1559/sync-enabled?)
@@ -567,17 +567,17 @@
      :params     [hash]
      :on-success handler})))
 
-(fx/defn cancel-transaction-pressed
+(rf/defn cancel-transaction-pressed
   {:events [:signing.ui/cancel-transaction-pressed]}
   [_ hash]
   {:signing/get-transaction-by-hash-fx [hash #(re-frame/dispatch [:signing/cancel-transaction %])]})
 
-(fx/defn increase-gas-pressed
+(rf/defn increase-gas-pressed
   {:events [:signing.ui/increase-gas-pressed]}
   [_ hash]
   {:signing/get-transaction-by-hash-fx [hash #(re-frame/dispatch [:signing/increase-gas %])]})
 
-(fx/defn cancel-transaction
+(rf/defn cancel-transaction
   {:events [:signing/cancel-transaction]}
   [cofx {:keys [from nonce hash]}]
   (when (and from nonce hash)
@@ -589,7 +589,7 @@
                     :cancel? true
                     :hash    hash}})))
 
-(fx/defn increase-gas
+(rf/defn increase-gas
   {:events [:signing/increase-gas]}
   [cofx {:keys [from nonce] :as tx}]
   (when (and from nonce)

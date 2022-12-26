@@ -10,7 +10,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.handlers :refer [<sub >evt-once]]))
+            [utils.debounce :as debounce]
+            [utils.re-frame :as rf]))
 
 (defn header
   [user-pk]
@@ -46,12 +47,12 @@
   []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})
-        {:keys [invite?]} (<sub [:get-screen-params])]
+        {:keys [invite?]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [contacts-data (<sub [:contacts/active])
+      (let [contacts-data (rf/sub [:contacts/active])
             {:keys [permissions
                     can-manage-users?]}
-            (<sub [:communities/edited-community])
+            (rf/sub [:communities/edited-community])
             selected @contacts-selected
             contacts (map (fn [{:keys [public-key] :as contact}]
                             (assoc contact :active (contains? selected public-key)))
@@ -83,9 +84,10 @@
                                        (zero? (count selected)))
              :accessibility-label :share-community-link
              :type                :secondary
-             :on-press            #(>evt-once
+             :on-press            #(debounce/dispatch-and-chill
                                     [(if can-invite?
                                        ::communities/invite-people-confirmation-pressed
                                        ::communities/share-community-confirmation-pressed) @user-pk
-                                     selected])}
+                                     selected]
+                                    3000)}
             (i18n/label (if can-invite? :t/invite :t/share))]}]]))))

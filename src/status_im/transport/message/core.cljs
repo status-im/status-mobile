@@ -18,19 +18,19 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as update.core]
             [status-im.pairing.core :as models.pairing]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [status-im.visibility-status-updates.core :as models.visibility-status-updates]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
 
-(fx/defn process-next
+(rf/defn process-next
   [cofx ^js response-js sync-handler]
   (if sync-handler
     (sync-handler cofx response-js true)
     {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}))
 
-(fx/defn process-response
+(rf/defn process-response
   {:events [:process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
   (let [^js communities                (.-communities response-js)
@@ -58,7 +58,7 @@
       (seq chats)
       (do
         (js-delete response-js "chats")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
 
@@ -68,7 +68,7 @@
       (seq activity-notifications)
       (do
         (js-delete response-js "activityCenterNotifications")
-        (fx/merge cofx
+        (rf/merge cofx
                   (->> activity-notifications
                        types/js->clj
                        (map data-store.activities/<-rpc)
@@ -78,7 +78,7 @@
       (seq installations)
       (let [installations-clj (types/js->clj installations)]
         (js-delete response-js "installations")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.pairing/handle-installations installations-clj)))
 
@@ -87,7 +87,7 @@
             ^js chats    (.-chatsForContacts response-js)]
         (js-delete response-js "contacts")
         (js-delete response-js "chatsForContacts")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.contact/ensure-contacts
                    (map data-store.contacts/<-rpc contacts-clj)
@@ -96,69 +96,69 @@
       (seq communities)
       (let [communities-clj (types/js->clj communities)]
         (js-delete response-js "communities")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.communities/handle-communities communities-clj)))
 
       (seq bookmarks)
       (let [bookmarks-clj (types/js->clj bookmarks)]
         (js-delete response-js "bookmarks")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (browser/handle-bookmarks bookmarks-clj)))
 
       (seq pin-messages)
       (let [pin-messages (types/js->clj pin-messages)]
         (js-delete response-js "pinMessages")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (messages.pin/receive-signal (map data-store.messages/<-rpc pin-messages))))
 
       (seq removed-chats)
       (let [removed-chats-clj (types/js->clj removed-chats)]
         (js-delete response-js "removedChats")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.communities/handle-removed-chats removed-chats-clj)))
 
       (seq requests-to-join-community)
       (let [request-js (types/js->clj (.pop requests-to-join-community))]
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.communities/handle-request-to-join request-js)))
 
       (seq emoji-reactions)
       (let [reactions (types/js->clj emoji-reactions)]
         (js-delete response-js "emojiReactions")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.reactions/receive-signal (map data-store.reactions/<-rpc reactions))))
 
       (seq invitations)
       (let [invitations (types/js->clj invitations)]
         (js-delete response-js "invitations")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.group/handle-invitations (map data-store.invitations/<-rpc invitations))))
 
       (seq removed-messages)
       (let [removed-messages-clj (types/js->clj removed-messages)]
         (js-delete response-js "removedMessages")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.message/handle-removed-messages removed-messages-clj)))
 
       (seq cleared-histories)
       (let [cleared-histories-clj (types/js->clj cleared-histories)]
         (js-delete response-js "clearedHistories")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.message/handle-cleared-histories-messages cleared-histories-clj)))
 
       (seq visibility-status-updates)
       (let [visibility-status-updates-clj (types/js->clj visibility-status-updates)]
         (js-delete response-js "statusUpdates")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/handle-visibility-status-updates
                    visibility-status-updates-clj)))
@@ -166,28 +166,28 @@
       (seq accounts)
       (do
         (js-delete response-js "accounts")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (multiaccounts.login/update-wallet-accounts (types/js->clj accounts))))
 
       (seq settings)
       (do
         (js-delete response-js "settings")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (update.core/set-many-js settings)))
 
       (seq identity-images)
       (let [images-clj (map types/js->clj identity-images)]
         (js-delete response-js "identityImages")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (update.core/optimistic :images images-clj)))
 
       (some? current-visibility-status)
       (let [current-visibility-status-clj (types/js->clj current-visibility-status)]
         (js-delete response-js "currentStatus")
-        (fx/merge cofx
+        (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/sync-visibility-status-update
                    current-visibility-status-clj))))))
@@ -237,12 +237,12 @@
   [response-js messages]
   (if (seq messages)
     (set! (.-messages response-js)
-      (.sort (to-array messages)
-             (fn [a b]
-               (- (.-clock b) (.-clock a)))))
+          (.sort (to-array messages)
+                 (fn [a b]
+                   (- (.-clock b) (.-clock a)))))
     (js-delete response-js "messages")))
 
-(fx/defn sanitize-messages-and-process-response
+(rf/defn sanitize-messages-and-process-response
   "before processing we want to filter and sort messages, so we can process first only messages which will be showed"
   {:events [:sanitize-messages-and-process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
@@ -258,7 +258,7 @@
                    :current-chat-id current-chat-id}
                   (.-messages response-js))]
       (sort-js-messages! response-js messages)
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db                   db
                  :utils/dispatch-later (concat []
                                                (when (seq statuses)
@@ -269,16 +269,16 @@
                                                     :dispatch [:watch-tx nil transaction-hash]})))}
                 (process-response response-js process-async)))))
 
-(fx/defn remove-hash
+(rf/defn remove-hash
   [{:keys [db]} envelope-hash]
   {:db (update db :transport/message-envelopes dissoc envelope-hash)})
 
-(fx/defn check-confirmations
+(rf/defn check-confirmations
   [{:keys [db] :as cofx} status chat-id message-id]
   (when-let [{:keys [pending-confirmations not-sent]}
              (get-in db [:transport/message-ids->confirmations message-id])]
     (if (zero? (dec pending-confirmations))
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (update db
                              :transport/message-ids->confirmations
                              dissoc
@@ -293,10 +293,10 @@
                            :not-sent              (or not-sent
                                                       (= :not-sent status))}]
         {:db (assoc-in db
-              [:transport/message-ids->confirmations message-id]
-              confirmations)}))))
+                       [:transport/message-ids->confirmations message-id]
+                       confirmations)}))))
 
-(fx/defn update-envelope-status
+(rf/defn update-envelope-status
   [{:keys [db] :as cofx} message-id status]
   (if-let [{:keys [chat-id]}
            (get-in db [:transport/message-envelopes message-id])]
@@ -306,13 +306,13 @@
     ;; came too early
     {:db (update-in db [:transport/message-confirmations message-id] conj status)}))
 
-(fx/defn update-envelopes-status
+(rf/defn update-envelopes-status
   [{:keys [db] :as cofx} message-id status]
   (when (or (not= status :not-sent)
             (= :online (:network db)))
-    (apply fx/merge cofx (map #(update-envelope-status % status) message-id))))
+    (apply rf/merge cofx (map #(update-envelope-status % status) message-id))))
 
-(fx/defn set-message-envelope-hash
+(rf/defn set-message-envelope-hash
   "message-type is used for tracking"
   [{:keys [db] :as cofx} chat-id message-id message-type]
   ;; Check first if the confirmation has already arrived
@@ -329,15 +329,15 @@
                                                      :message-type message-type})
                                           (update-in [:transport/message-ids->confirmations message-id]
                                                      #(or % {:pending-confirmations 1})))})]
-    (apply fx/merge cofx (conj check-confirmations-fx add-envelope-data))))
+    (apply rf/merge cofx (conj check-confirmations-fx add-envelope-data))))
 
-(fx/defn transport-message-sent
+(rf/defn transport-message-sent
   {:events [:transport/message-sent]}
   [cofx response-js]
   (let [set-hash-fxs (map (fn [{:keys [localChatId id messageType]}]
                             (set-message-envelope-hash localChatId id messageType))
                           (types/js->clj (.-messages response-js)))]
-    (apply fx/merge
+    (apply rf/merge
            cofx
            (conj set-hash-fxs
                  #(sanitize-messages-and-process-response % response-js false)))))

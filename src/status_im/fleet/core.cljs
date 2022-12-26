@@ -5,7 +5,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
 (defn current-fleet-sub
   [multiaccount]
@@ -33,7 +33,7 @@
           {}
           (node/fleets db)))
 
-(fx/defn show-save-confirmation
+(rf/defn show-save-confirmation
   {:events [:fleet.ui/fleet-selected]}
   [_ fleet]
   {:ui/show-confirmation
@@ -58,7 +58,7 @@
      :mail    (format-nodes nodes)
      :whisper (format-nodes nodes)}))
 
-(fx/defn set-nodes
+(rf/defn set-nodes
   [{:keys [db]} fleet nodes]
   {:db (-> db
            (assoc-in [:custom-fleets fleet] (nodes->fleet nodes))
@@ -72,12 +72,12 @@
                        {}
                        nodes))))})
 
-(fx/defn save
+(rf/defn save
   {:events [:fleet.ui/save-fleet-confirmed]}
   [{:keys [db now] :as cofx} fleet]
   (let [old-fleet (get-in db [:multiaccount :fleet])]
     (when (not= fleet old-fleet)
-      (fx/merge
+      (rf/merge
        cofx
        (multiaccounts.update/multiaccount-update :fleet fleet {})
        (node/prepare-new-config

@@ -6,7 +6,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.handlers :refer [<sub]]))
+            [utils.re-frame :as rf]))
 
 ;; Specs:
 ;; :visibility-status-automatic
@@ -80,13 +80,13 @@
 (defn my-icon?
   [public-key]
   (or (string/blank? public-key)
-      (= public-key (<sub [:multiaccount/public-key]))))
+      (= public-key (rf/sub [:multiaccount/public-key]))))
 
 (defn visibility-status-update
   [public-key my-icon?]
   (if my-icon?
-    (<sub [:multiaccount/current-user-visibility-status])
-    (<sub [:visibility-status-updates/visibility-status-update public-key])))
+    (rf/sub [:multiaccount/current-user-visibility-status])
+    (rf/sub [:visibility-status-updates/visibility-status-update public-key])))
 
 (defn icon-dot-accessibility-label
   [dot-color]

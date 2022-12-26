@@ -1,10 +1,10 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.constants :as constants]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
-(fx/defn send-multiaccount-update
+(rf/defn send-multiaccount-update
   [{:keys [db] :as cofx}]
   (let [multiaccount                          (:multiaccount db)
         {:keys [name preferred-name address]} multiaccount]
@@ -12,7 +12,7 @@
                       :params     [(or preferred-name name) ""]
                       :on-success #(log/debug "sent contact update")}]}))
 
-(fx/defn multiaccount-update
+(rf/defn multiaccount-update
   "Takes effects (containing :db) + new multiaccount fields, adds all effects necessary for multiaccount update.
   Optionally, one can specify a success-event to be dispatched after fields are persisted."
   [{:keys [db] :as cofx}
@@ -25,7 +25,7 @@
       (throw
        (js/Error.
         "Please shake the phone to report this error and restart the app. multiaccount is currently empty, which means something went wrong when trying to update it with"))
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db            (if setting-value
                                   (assoc-in db [:multiaccount setting] setting-value)
                                   (update db :multiaccount dissoc setting))
@@ -37,7 +37,7 @@
                            (#{:name :prefered-name} setting))
                   (send-multiaccount-update))))))
 
-(fx/defn clean-seed-phrase
+(rf/defn clean-seed-phrase
   "A helper function that removes seed phrase from storage."
   [cofx on-success]
   (multiaccount-update cofx :mnemonic nil on-success))
@@ -55,7 +55,7 @@
                      (:url)))
         synced-stickers))
 
-(fx/defn optimistic
+(rf/defn optimistic
   [{:keys [db] :as cofx} setting setting-value]
   (let [current-multiaccount (:multiaccount db)
         setting-value        (if (= :currency setting)
@@ -68,8 +68,8 @@
                                :stickers/packs-installed
                                (let [packs-installed-keys (keys (js->clj setting-value))]
                                  (reduce #(assoc-in %1
-                                           [:stickers/packs %2 :status]
-                                           constants/sticker-pack-status-installed)
+                                                    [:stickers/packs %2 :status]
+                                                    constants/sticker-pack-status-installed)
                                          db
                                          packs-installed-keys))
                                :stickers/recent-stickers
@@ -84,9 +84,9 @@
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
 
-(fx/defn set-many-js
+(rf/defn set-many-js
   [cofx settings-js]
-  (apply fx/merge
+  (apply rf/merge
          cofx
          (map
           #(optimistic
@@ -94,15 +94,15 @@
             (.-value %))
           settings-js)))
 
-(fx/defn toggle-backup-enabled
+(rf/defn toggle-backup-enabled
   {:events [:multiaccounts.ui/switch-backup-enabled]}
   [cofx enabled?]
   (multiaccount-update cofx :backup-enabled? enabled? {}))
 
-(fx/defn toggle-opensea-nfts-visibility
+(rf/defn toggle-opensea-nfts-visibility
   {:events [::toggle-opensea-nfts-visiblity]}
   [cofx visible?]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db       (assoc-in (:db cofx) [:multiaccount :opensea-enabled?] visible?)
              ;; need to add fully qualified namespace to counter circular deps
              :dispatch [:status-im.wallet.core/fetch-collectibles-collection]}

@@ -13,12 +13,12 @@
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.native-module.core :as native-module]
             [status-im.popover.core :as popover]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [status-im2.navigation.events :as navigation]
             [utils.security.core :as security]))
 
-(fx/defn key-and-storage-management-pressed
+(rf/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
   {:events [::key-and-storage-management-pressed]}
   [cofx]
@@ -29,20 +29,20 @@
      :actions-not-logged-in)
    nil))
 
-(fx/defn move-keystore-checked
+(rf/defn move-keystore-checked
   {:events [::move-keystore-checked]}
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:multiaccounts/key-storage :move-keystore-checked?] checked?)})
 
-(fx/defn reset-db-checked
+(rf/defn reset-db-checked
   {:events [::reset-db-checked]}
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] checked?)})
 
-(fx/defn navigate-back
+(rf/defn navigate-back
   {:events [::navigate-back]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (-> db
             (dissoc :recovered-account?)
@@ -53,16 +53,16 @@
                     :factory-reset-card?))}
    (navigation/navigate-back)))
 
-(fx/defn enter-seed-pressed
+(rf/defn enter-seed-pressed
   "User is logged out and probably wants to move multiaccount to Keycard. Navigate to enter seed phrase screen"
   {:events [::enter-seed-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc db :recovered-account? true)}
    (navigation/navigate-to-cofx :seed-phrase nil)))
 
-(fx/defn seed-phrase-input-changed
+(rf/defn seed-phrase-input-changed
   {:events [::seed-phrase-input-changed]}
   [{:keys [db] :as cofx} masked-seed-phrase]
   (let [seed-phrase (security/safe-unmask-data masked-seed-phrase)]
@@ -74,12 +74,12 @@
                                                 (not (mnemonic/valid-length? seed-phrase)))
                  :seed-word-count           (mnemonic/words-count seed-phrase))}))
 
-(fx/defn key-uid-seed-mismatch
+(rf/defn key-uid-seed-mismatch
   {:events [::show-seed-key-uid-mismatch-error-popup]}
   [cofx _]
   (popover/show-popover cofx {:view :seed-key-uid-mismatch}))
 
-(fx/defn key-uid-matches
+(rf/defn key-uid-matches
   {:events [::key-uid-matches]}
   [{:keys [db] :as cofx} _]
   (let [backup? (get-in db [:keycard :creating-backup?])]
@@ -108,7 +108,7 @@
            :on-success         #(re-frame/dispatch [::key-uid-matches])
            :on-error           #(re-frame/dispatch [::show-seed-key-uid-mismatch-error-popup])}))
 
-(fx/defn seed-phrase-validated
+(rf/defn seed-phrase-validated
   {:events [::seed-phrase-validated]}
   [{:keys [db] :as cofx} validation-error]
   (let [error?      (-> validation-error
@@ -130,7 +130,7 @@
                                                                   :application-info
                                                                   :key-uid)))}})))
 
-(fx/defn choose-storage-pressed
+(rf/defn choose-storage-pressed
   {:events [::choose-storage-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [seed-phrase]} (:multiaccounts/key-storage db)]
@@ -138,7 +138,7 @@
      [(mnemonic/sanitize-passphrase seed-phrase)
       #(re-frame/dispatch [::seed-phrase-validated %])]}))
 
-(fx/defn keycard-storage-pressed
+(rf/defn keycard-storage-pressed
   {:events [::keycard-storage-pressed]}
   [{:keys [db]} selected?]
   {:db (assoc-in db [:multiaccounts/key-storage :keycard-storage-selected?] selected?)})
@@ -171,7 +171,7 @@ The exact events dispatched for this flow if consumed from the UI are:
 
 We don't need to take the exact steps, just set the required state and redirect to correct screen
 "
-(fx/defn import-multiaccount
+(rf/defn import-multiaccount
   [{:keys [db] :as cofx}]
   {:dispatch                                   [:bottom-sheet/hide]
    ::multiaccounts.recover/import-multiaccount
@@ -179,27 +179,27 @@ We don't need to take the exact steps, just set the required state and redirect 
     :password      nil
     :success-event ::import-multiaccount-success}})
 
-(fx/defn delete-multiaccount-and-init-keycard-onboarding
+(rf/defn delete-multiaccount-and-init-keycard-onboarding
   {:events [::delete-multiaccount-and-init-keycard-onboarding]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    {:dispatch [:bottom-sheet/hide]
     :db       (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] true)}
    (import-multiaccount)))
 
-(fx/defn storage-selected
+(rf/defn storage-selected
   {:events [::storage-selected]}
   [{:keys [db] :as cofx}]
   (if (get-in db [:multiaccounts/key-storage :reset-db-checked?])
     (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning})
     (bottom-sheet/show-bottom-sheet cofx {:view :migrate-account-password})))
 
-(fx/defn skip-password-pressed
+(rf/defn skip-password-pressed
   {:events [::skip-password-pressed]}
   [cofx]
   (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning}))
 
-(fx/defn password-changed
+(rf/defn password-changed
   {:events [::password-changed]}
   [{db :db} password]
   (let [unmasked-pass (security/safe-unmask-data password)]
@@ -209,18 +209,18 @@ We don't need to take the exact steps, just set the required state and redirect 
                  :migration-password-error  nil
                  :migration-password-valid? (and unmasked-pass (> (count unmasked-pass) 5)))}))
 
-(fx/defn verify-password-result
+(rf/defn verify-password-result
   {:events [::verify-password-result]}
   [{:keys [db] :as cofx} result]
   (let [{:keys [error]} (types/json->clj result)]
     (if (string/blank? error)
-      (fx/merge
+      (rf/merge
        cofx
        {:db (update db :keycard dissoc :migration-password-error :migration-password-valid?)}
        (import-multiaccount))
       {:db (assoc-in db [:keycard :migration-password-error] (i18n/label :t/wrong-password))})))
 
-(fx/defn verify-password
+(rf/defn verify-password
   {:events [::verify-password]}
   [{:keys [db] :as cofx}]
   (native-module/verify-database-password
@@ -228,10 +228,10 @@ We don't need to take the exact steps, just set the required state and redirect 
    (ethereum/sha3 (security/safe-unmask-data (get-in db [:keycard :migration-password])))
    #(re-frame/dispatch [::verify-password-result %])))
 
-(fx/defn handle-multiaccount-import
+(rf/defn handle-multiaccount-import
   {:events [::import-multiaccount-success]}
   [{:keys [db] :as cofx} root-data derived-data]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (-> db
                      (update :intro-wizard
                              assoc
@@ -250,21 +250,21 @@ We don't need to take the exact steps, just set the required state and redirect 
             (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
-(fx/defn goto-multiaccounts-screen
+(rf/defn goto-multiaccounts-screen
   {:events [::hide-popover-and-goto-multiaccounts-screen]}
   [cofx _]
-  (fx/merge cofx
+  (rf/merge cofx
             (popover/hide-popover)
             (navigation/navigate-to-cofx :multiaccounts nil)))
 
-(fx/defn confirm-logout-and-goto-key-storage
+(rf/defn confirm-logout-and-goto-key-storage
   {:events [::confirm-logout-and-goto-key-storage]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc db :goto-key-storage? true)}
             (multiaccounts.logout/logout)))
 
-(fx/defn logout-and-goto-key-storage
+(rf/defn logout-and-goto-key-storage
   {:events [::logout-and-goto-key-storage]}
   [_]
   {:ui/show-confirmation

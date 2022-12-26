@@ -5,9 +5,9 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
-(fx/defn handle-messages-from-contacts-only-switched
+(rf/defn handle-messages-from-contacts-only-switched
   {:events [::messages-from-contacts-only-switched]}
   [cofx value]
   (multiaccounts.update/multiaccount-update cofx

@@ -7,7 +7,7 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
             [status-im2.common.json-rpc.events :as json-rpc]
@@ -27,12 +27,12 @@
    (react/get-from-clipboard
     #(re-frame/dispatch [:wallet.recipient/address-changed (string/trim %)]))))
 
-(fx/defn address-paste-pressed
+(rf/defn address-paste-pressed
   {:events [:wallet.recipient/address-paste-pressed]}
   [_]
   {:wallet.recipient/address-paste nil})
 
-(fx/defn set-recipient
+(rf/defn set-recipient
   {:events [::recipient-address-resolved]}
   [{:keys [db] :as cofx} raw-recipient id]
   (when (or (not id) (= id @resolve-last-id))
@@ -42,7 +42,7 @@
         (ethereum/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]
           (if (eip55/valid-address-checksum? checksum)
-            (fx/merge cofx
+            (rf/merge cofx
                       {:db (-> db
                                (assoc-in [:wallet/recipient :searching] false)
                                (assoc-in [:wallet/recipient :resolved-address] checksum))}
@@ -73,10 +73,10 @@
         :else
         {:db (assoc-in db [:wallet/recipient :searching] false)}))))
 
-(fx/defn address-changed
+(rf/defn address-changed
   {:events [:wallet.recipient/address-changed]}
   [{:keys [db] :as cofx} new-identity]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (update db
                          :wallet/recipient assoc
                          :address          new-identity
@@ -84,18 +84,18 @@
                          :searching        true)}
             (set-recipient new-identity nil)))
 
-(fx/defn recipient-modal-closed
+(rf/defn recipient-modal-closed
   {:events [:wallet/recipient-modal-closed]}
   [{:keys [db]}]
   {:db (dissoc db :wallet/recipient)})
 
-(fx/defn add-favourite
+(rf/defn add-favourite
   {:events [:wallet/add-favourite]}
   [{:keys [db] :as cofx} address name]
   (let [new-favourite {:address   address
                        :name      (or name "")
                        :favourite true}]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db            (assoc-in db [:wallet/favourites address] new-favourite)
                :json-rpc/call [{:method     "wallet_addSavedAddress"
                                 :params     [new-favourite]

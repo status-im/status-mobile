@@ -4,11 +4,11 @@
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
-(fx/defn unpair-card-pressed
+(rf/defn unpair-card-pressed
   {:events [:keycard-settings.ui/unpair-card-pressed]}
   [_]
   {:ui/show-confirmation {:title               (i18n/label :t/unpair-card)
@@ -19,27 +19,27 @@
                                                  [:keycard-settings.ui/unpair-card-confirmed])
                           :on-cancel           #()}})
 
-(fx/defn unpair-card-confirmed
+(rf/defn unpair-card-confirmed
   {:events [:keycard-settings.ui/unpair-card-confirmed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db
-                  [:keycard :pin]
-                  {:enter-step  :current
-                   :current     []
-                   :puk         []
-                   :status      nil
-                   :error-label nil
-                   :on-verified :keycard/unpair})}
+                           [:keycard :pin]
+                           {:enter-step  :current
+                            :current     []
+                            :puk         []
+                            :status      nil
+                            :error-label nil
+                            :on-verified :keycard/unpair})}
             (common/navigate-to-enter-pin-screen)))
 
-(fx/defn unpair
+(rf/defn unpair
   {:events [:keycard/unpair]}
   [{:keys [db]}]
   (let [pin (common/vector->string (get-in db [:keycard :pin :current]))]
     {:keycard/unpair {:pin pin}}))
 
-(fx/defn unpair-and-delete
+(rf/defn unpair-and-delete
   {:events [:keycard/unpair-and-delete]}
   [cofx]
   (common/show-connection-sheet
@@ -51,9 +51,9 @@
         {:keycard/unpair-and-delete
          {:pin pin}}))}))
 
-(fx/defn remove-pairing-from-multiaccount
+(rf/defn remove-pairing-from-multiaccount
   [cofx {:keys [remove-instance-uid?]}]
-  (fx/merge cofx
+  (rf/merge cofx
             (multiaccounts.update/multiaccount-update
              :keycard-pairing
              nil
@@ -68,12 +68,12 @@
                nil
                {}))))
 
-(fx/defn on-unpair-success
+(rf/defn on-unpair-success
   {:events [:keycard.callback/on-unpair-success]}
   [{:keys [db] :as cofx}]
   (let [instance-uid (get-in db [:keycard :application-info :instance-uid])
         pairings     (get-in db [:keycard :pairings])]
-    (fx/merge
+    (rf/merge
      cofx
      {:db                       (-> db
                                     (assoc-in [:keycard :secrets] nil)
@@ -89,23 +89,23 @@
      (remove-pairing-from-multiaccount nil)
      (navigation/navigate-to-cofx :keycard-settings nil))))
 
-(fx/defn on-unpair-error
+(rf/defn on-unpair-error
   {:events [:keycard.callback/on-unpair-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] unpair error" error)
-  (fx/merge cofx
+  (rf/merge cofx
             {:db                           (assoc-in db
-                                            [:keycard :pin]
-                                            {:status      nil
-                                             :error-label nil
-                                             :on-verified nil})
+                                                     [:keycard :pin]
+                                                     {:status      nil
+                                                      :error-label nil
+                                                      :on-verified nil})
              :keycard/get-application-info nil
              :utils/show-popup             {:title   ""
                                             :content (i18n/label :t/something-went-wrong)}}
             (common/clear-on-card-connected)
             (navigation/navigate-to-cofx :keycard-settings nil)))
 
-(fx/defn remove-key-with-unpair
+(rf/defn remove-key-with-unpair
   {:events [:keycard/remove-key-with-unpair]}
   [cofx]
   (common/show-connection-sheet
@@ -122,7 +122,7 @@
   (let [key-uid      (get-in db [:multiaccount :key-uid])
         instance-uid (get-in db [:keycard :application-info :instance-uid])
         pairings     (get-in db [:keycard :pairings])]
-    (fx/merge
+    (rf/merge
      cofx
      {:db                               (-> db
                                             (update :multiaccounts/multiaccounts dissoc key-uid)
@@ -152,36 +152,36 @@
      (common/clear-on-card-connected)
      (common/hide-connection-sheet))))
 
-(fx/defn on-remove-key-success
+(rf/defn on-remove-key-success
   {:events [:keycard.callback/on-remove-key-success]}
   [cofx]
   (handle-account-removal cofx true))
 
-(fx/defn on-remove-key-error
+(rf/defn on-remove-key-error
   {:events [:keycard.callback/on-remove-key-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] remove key error" error)
   (let [tag-was-lost? (common/tag-lost? (:error error))]
-    (fx/merge cofx
+    (rf/merge cofx
               (if tag-was-lost?
-                (fx/merge cofx
+                (rf/merge cofx
                           {:db (assoc-in db [:keycard :pin :status] nil)}
                           (common/set-on-card-connected :keycard/remove-key-with-unpair))
                 (common/show-wrong-keycard-alert)))))
 
-(fx/defn on-unpair-and-delete-success
+(rf/defn on-unpair-and-delete-success
   {:events [:keycard.callback/on-unpair-and-delete-success]}
   [cofx]
   (handle-account-removal cofx false))
 
-(fx/defn on-unpair-and-delete-error
+(rf/defn on-unpair-and-delete-error
   {:events [:keycard.callback/on-unpair-and-delete-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] unpair and delete error" error)
   (let [tag-was-lost? (common/tag-lost? (:error error))]
-    (fx/merge cofx
+    (rf/merge cofx
               (if tag-was-lost?
-                (fx/merge cofx
+                (rf/merge cofx
                           {:db (assoc-in db [:keycard :pin :status] nil)}
                           (common/set-on-card-connected :keycard/unpair-and-delete))
                 (common/show-wrong-keycard-alert)))))
