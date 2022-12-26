@@ -6,7 +6,7 @@
 
 (defn require-icon
   [el]
-  (let [s (str "../resources/images/icons/" el ".png")
+  (let [s (str "." "../resources/images/icons/" el ".png")
         k (string/replace el "_" "-")]
     [k `(js/require ~s)]))
 

@@ -1,11 +1,10 @@
 (ns status-im2.contexts.communities.home.view
   (:require [i18n.i18n :as i18n]
-
             [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.communities.context-drawers.community-options.view :as options]
+            [status-im2.contexts.communities.menus.community-options.view :as options]
             [utils.re-frame :as rf]))
 
 (defn render-fn

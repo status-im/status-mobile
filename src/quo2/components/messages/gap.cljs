@@ -4,6 +4,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
+            [clojure.string :as string]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 

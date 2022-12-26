@@ -9,8 +9,8 @@
             [status-im2.common.constants :as constants]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.overview.style :as style]
-            [status-im2.contexts.communities.context-drawers.community-options.view :as options]
-            [status-im2.contexts.communities.requests.actions.view :as requests.actions]
+            [status-im2.contexts.communities.menus.community-options.view :as options]
+            [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]
             [utils.re-frame :as rf]))
 
 (def knc-token-img (js/require "../resources/images/tokens/mainnet/KNC.png"))
@@ -188,7 +188,7 @@
        [quo/button
         {:on-press                  #(rf/dispatch
                                       [:bottom-sheet/show-sheet
-                                       {:content        (fn [] [requests.actions/request-to-join
+                                       {:content        (fn [] [join-menu/request-to-join
                                                                 community])
                                         :content-height 300}])
          :accessibility-label       :show-request-to-join-screen-button
@@ -329,9 +329,13 @@
                                                         :background-color (scroll-page/icon-color)}
                                                        {:icon             :i/options
                                                         :background-color (scroll-page/icon-color)
-                                                        :on-press         #(rf/dispatch  [:bottom-sheet/show-sheet
-                                                                                          {:content (fn []
-                                                                                                      [options/community-options-bottom-sheet id])}])}]}
+                                                        :on-press
+                                                        #(rf/dispatch
+                                                          [:bottom-sheet/show-sheet
+                                                           {:content
+                                                            (fn []
+                                                              [options/community-options-bottom-sheet
+                                                               id])}])}]}
                               name)]
     (fn []
       (let [page-component (memoize (render-page-content community channel-heights first-channel-height))
