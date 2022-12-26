@@ -62,7 +62,7 @@
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
-(defn add-new-sheet-view []
+(defn new-chat-bottom-sheet []
   [rn/view
    [quo2/menu-item
     {:theme                        :main
@@ -92,11 +92,12 @@
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
 
-(def add-new-sheet
-  {:content add-new-sheet-view})
+(def new-chat-bottom-sheet-comp
+  {:content new-chat-bottom-sheet})
+
 ;; Deprecated
 (def add-new
   {:content add-new-view})
 
 (def start-a-new-chat
-  {:content new-chat-aio/contact-toggle-list})
+  {:content new-chat-aio/contact-selection-list})

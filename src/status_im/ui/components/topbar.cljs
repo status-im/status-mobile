@@ -23,7 +23,7 @@
     (assoc :label label)))
 
 (defn topbar
-  [{:keys [navigation use-insets right-accessories modal? content border-bottom? new-ui? header-style] ;; remove
+  [{:keys [navigation use-insets right-accessories modal? content border-bottom? new-ui?] ;; remove
                                                                                           ;; new-ui? key,
                                                                                           ;; temp fix
     :or   {border-bottom? true
@@ -40,8 +40,7 @@
                 :insets           (when use-insets insets)
                 :left-width       (when navigation
                                     default-button-width)
-                :border-bottom    border-bottom?
-                :header-style     header-style}
+                :border-bottom    border-bottom?}
                props
                (when (seq right-accessories)
                  {:right-accessories right-accessories})

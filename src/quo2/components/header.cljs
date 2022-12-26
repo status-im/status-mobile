@@ -157,7 +157,7 @@
       [{:keys [left-accessories left-component border-bottom
                right-accessories right-component insets get-layout
                title subtitle title-component style title-align
-               background header-style]
+               background]
         :or   {title-align   :center
                border-bottom false}}]
       (let [status-bar-height (get insets :top 0)

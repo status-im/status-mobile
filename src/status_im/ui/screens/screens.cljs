@@ -592,7 +592,7 @@
     :on-focus  [::new-chat.events/new-chat-focus]
             ;;TODO accessories
     :options   {:topBar {:visible false}}
-    :component new-chat-aio/contact-toggle-list}
+    :component new-chat-aio/contact-selection-list}
 
                                         ;[Chat] New Public chat
    {:name      :new-public-chat
