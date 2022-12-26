@@ -7,7 +7,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
             [status-im.theme.core :as theme]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.utils :as utils]
@@ -112,7 +112,7 @@
  (fn [flag]
    (native-module/set-blank-preview-flag flag)))
 
-(fx/defn confirm-wallet-set-up
+(rf/defn confirm-wallet-set-up
   {:events [:multiaccounts.ui/wallet-set-up-confirmed]}
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
@@ -120,7 +120,7 @@
                                             true
                                             {}))
 
-(fx/defn confirm-home-tooltip
+(rf/defn confirm-home-tooltip
   {:events [:multiaccounts.ui/hide-home-tooltip]}
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
@@ -128,27 +128,27 @@
                                             true
                                             {}))
 
-(fx/defn switch-webview-debug
+(rf/defn switch-webview-debug
   {:events [:multiaccounts.ui/switch-webview-debug]}
   [{:keys [db] :as cofx} value]
-  (fx/merge cofx
+  (rf/merge cofx
             {::webview-debug-changed value}
             (multiaccounts.update/multiaccount-update
              :webview-debug
              (boolean value)
              {})))
 
-(fx/defn switch-preview-privacy-mode
+(rf/defn switch-preview-privacy-mode
   {:events [:multiaccounts.ui/preview-privacy-mode-switched]}
   [{:keys [db] :as cofx} private?]
-  (fx/merge cofx
+  (rf/merge cofx
             {::blank-preview-flag-changed private?}
             (multiaccounts.update/multiaccount-update
              :preview-privacy?
              (boolean private?)
              {})))
 
-(fx/defn switch-webview-permission-requests?
+(rf/defn switch-webview-permission-requests?
   {:events [:multiaccounts.ui/webview-permission-requests-switched]}
   [cofx enabled?]
   (multiaccounts.update/multiaccount-update
@@ -157,7 +157,7 @@
    (boolean enabled?)
    {}))
 
-(fx/defn switch-default-sync-period
+(rf/defn switch-default-sync-period
   {:events [:multiaccounts.ui/default-sync-period-switched]}
   [cofx value]
   (multiaccounts.update/multiaccount-update
@@ -166,7 +166,7 @@
    value
    {}))
 
-(fx/defn switch-preview-privacy-mode-flag
+(rf/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
   (let [private? (get-in db [:multiaccount :preview-privacy?])]
     {::blank-preview-flag-changed private?}))
@@ -179,23 +179,23 @@
                  :light)]
      (theme/change-theme theme))))
 
-(fx/defn switch-appearance
+(rf/defn switch-appearance
   {:events [:multiaccounts.ui/appearance-switched]}
   [cofx theme]
-  (fx/merge cofx
+  (rf/merge cofx
             {:multiaccounts.ui/switch-theme theme}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
 
-(fx/defn switch-profile-picture-show-to
+(rf/defn switch-profile-picture-show-to
   {:events [:multiaccounts.ui/profile-picture-show-to-switched]}
   [cofx id]
-  (fx/merge cofx
+  (rf/merge cofx
             {:json-rpc/call [{:method     "wakuext_changeIdentityImageShowTo"
                               :params     [id]
                               :on-success #(log/debug "picture settings changed successfully")}]}
             (multiaccounts.update/optimistic :profile-pictures-show-to id)))
 
-(fx/defn switch-appearance-profile
+(rf/defn switch-appearance-profile
   {:events [:multiaccounts.ui/appearance-profile-switched]}
   [cofx id]
   (multiaccounts.update/multiaccount-update cofx :profile-pictures-visibility id {}))
@@ -206,22 +206,22 @@
     (string/replace-first path #"file://" "")
     (log/warn "[native-module] Empty path was provided")))
 
-(fx/defn save-profile-picture
+(rf/defn save-profile-picture
   {:events [::save-profile-picture]}
   [cofx path ax ay bx by]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
                                 :params     [key-uid (clean-path path) ax ay bx by]
                                 ;; NOTE: In case of an error we can show a toast error
                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
               (bottom-sheet/hide-bottom-sheet))))
 
-(fx/defn save-profile-picture-from-url
+(rf/defn save-profile-picture-from-url
   {:events [::save-profile-picture-from-url]}
   [cofx url]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
                                 :params     [key-uid url]
                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
@@ -233,11 +233,11 @@
    [::save-profile-picture-from-url
     "https://lh3.googleusercontent.com/XuKjNm3HydsaxbPkbpGs9YyCKhn5QQk5oDC8XF2jzmPyYXeZofxFtfUDZuQ3EVmacS_BlBKzbX2ypm37YNX3n1fDJA3WndeFcPsp7Z0=w600"]))
 
-(fx/defn delete-profile-picture
+(rf/defn delete-profile-picture
   {:events [::delete-profile-picture]}
   [cofx name]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
                                 :params     [key-uid]
                                 ;; NOTE: In case of an error we could fallback to previous image in UI
@@ -246,14 +246,14 @@
               (multiaccounts.update/optimistic :images nil)
               (bottom-sheet/hide-bottom-sheet))))
 
-(fx/defn get-profile-picture
+(rf/defn get-profile-picture
   [cofx]
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
     {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
                       :params     [key-uid]
                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
 
-(fx/defn store-profile-picture
+(rf/defn store-profile-picture
   {:events [::update-local-picture]}
   [cofx pics]
   (multiaccounts.update/optimistic cofx :images pics))

@@ -12,14 +12,14 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (defn management
   []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [requests-to-join (<sub [:communities/requests-to-join-for-community community-id])
-            community (<sub [:communities/community community-id])
+      (let [requests-to-join (rf/sub [:communities/requests-to-join-for-community community-id])
+            community (rf/sub [:communities/community community-id])
             {:keys [color members permissions description name admin]} community
             roles false
             notifications false
@@ -30,11 +30,11 @@
          [quo/animated-header
           {:left-accessories  [{:icon                :main-icons/arrow-left
                                 :accessibility-label :back-button
-                                :on-press            #(>evt [:navigate-back])}]
+                                :on-press            #(rf/dispatch [:navigate-back])}]
            :right-accessories [{:icon                :main-icons/share
                                 :accessibility-label :invite-button
-                                :on-press            #(>evt [:communities/share-community-pressed
-                                                             community-id])}]
+                                :on-press            #(rf/dispatch [:communities/share-community-pressed
+                                                                    community-id])}]
            :extended-header   (profile-header/extended-header
                                {:title      name
                                 :color      (or color (rand-nth colors/chat-colors))
@@ -82,7 +82,7 @@
                 (when (pos? members-count)
                   [quo/text {:color :secondary} (str members-count)])
                 [unviewed-indicator/unviewed-indicator (count requests-to-join)]]
-               :on-press  #(>evt [:navigate-to :community-members {:community-id community-id}])
+               :on-press  #(rf/dispatch [:navigate-to :community-members {:community-id community-id}])
                :title     (i18n/label :t/members-label)
                :icon      :main-icons/group-chat}])
            (when (and admin roles)
@@ -102,25 +102,25 @@
               {:theme    :accent
                :icon     :main-icons/edit
                :title    (i18n/label :t/edit-community)
-               :on-press #(>evt [::communities/open-edit-community community-id])}])
+               :on-press #(rf/dispatch [::communities/open-edit-community community-id])}])
            [quo/list-item
             {:theme    :accent
              :icon     :main-icons/arrow-left
              :title    (i18n/label :t/leave-community)
-             :on-press #(>evt [:communities/leave community-id])}]
+             :on-press #(rf/dispatch [:communities/leave community-id])}]
            ;; Disable as not implemented yet
            (when false
              [quo/list-item
               {:theme    :negative
                :icon     :main-icons/delete
                :title    (i18n/label :t/delete)
-               :on-press #(>evt [::communities/delete-community community-id])}])]]]))))
+               :on-press #(rf/dispatch [::communities/delete-community community-id])}])]]]))))
 
 (defn management-container
   []
   (reagent/create-class
    {:display-name        "community-profile-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params])
+                           (communities/fetch-requests-to-join! (get (rf/sub [:get-screen-params])
                                                                      :community-id)))
     :reagent-render      management}))

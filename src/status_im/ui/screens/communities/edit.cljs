@@ -4,11 +4,11 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.communities.create :as community.create]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (defn edit
   []
-  (let [{:keys [name description]} (<sub [:communities/create])]
+  (let [{:keys [name description]} (rf/sub [:communities/create])]
     [:<>
      [community.create/form]
      [toolbar/toolbar
@@ -17,5 +17,5 @@
        [quo/button
         {:disabled (not (community.create/valid? name description))
          :type     :secondary
-         :on-press #(>evt [::communities/edit-confirmation-pressed])}
+         :on-press #(rf/dispatch [::communities/edit-confirmation-pressed])}
         (i18n/label :t/save)]}]]))

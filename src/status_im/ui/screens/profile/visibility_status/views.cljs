@@ -11,7 +11,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]))
 
 ;; === Code Related to visibility-status-button ===
@@ -59,8 +59,8 @@
 
 (defn visibility-status-button
   [on-press props]
-  (let [logged-in?            (<sub [:multiaccount/logged-in?])
-        {:keys [status-type]} (<sub [:multiaccount/current-user-visibility-status])
+  (let [logged-in?            (rf/sub [:multiaccount/logged-in?])
+        {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
         status-type           (if (and logged-in? (nil? status-type))
                                 (do
                                   (dispatch-visibility-status-update
@@ -167,11 +167,11 @@
         update?         (reagent/atom nil)
         request-close   (fn []
                           (reset! clear-timeout
-                            (js/setTimeout
-                             #(do (reset! current-popover nil)
-                                  (re-frame/dispatch
-                                   [:hide-visibility-status-popover]))
-                             200))
+                                  (js/setTimeout
+                                   #(do (reset! current-popover nil)
+                                        (re-frame/dispatch
+                                         [:hide-visibility-status-popover]))
+                                   200))
                           (hide-options)
                           true)
         on-show         (fn []

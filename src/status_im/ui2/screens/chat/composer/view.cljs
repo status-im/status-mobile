@@ -16,16 +16,15 @@
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [status-im.ui2.screens.chat.composer.style :as style]
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
-            [status-im.utils.handlers :refer [<sub]]
-            [status-im.utils.utils :as utils]
             [utils.re-frame :as rf]
+            [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
             [status-im.utils.platform :as platform]
             [status-im2.common.not-implemented :as not-implemented]))
 
 (defn calculate-y
   [context min-y max-y added-value chat-id set-bg-opacity]
-  (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
+  (let [input-text (:input-text (get (rf/sub [:chat/inputs]) chat-id))
         num-lines  (count (string/split input-text "\n"))]
     (if (<= 5 num-lines)
       (do (when-not (:minimized-from-handlebar? @context)
@@ -45,7 +44,7 @@
 
 (defn calculate-y-with-mentions
   [y max-y max-height chat-id suggestions reply]
-  (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
+  (let [input-text               (:input-text (get (rf/sub [:chat/inputs]) chat-id))
         num-lines                (count (string/split input-text "\n"))
         text-height              (* num-lines 22)
         mentions-height          (min 132 (+ 16 (* 46 (- (count suggestions) 1))))
@@ -168,9 +167,9 @@
        (fn []
          [:f>
           (fn []
-            (let [reply                                    (<sub [:chats/reply-message])
-                  edit                                     (<sub [:chats/edit-message])
-                  suggestions                              (<sub [:chat/mention-suggestions])
+            (let [reply                                    (rf/sub [:chats/reply-message])
+                  edit                                     (rf/sub [:chats/edit-message])
+                  suggestions                              (rf/sub [:chat/mention-suggestions])
                   images                                   (get-in (rf/sub [:chat/inputs])
                                                                    [chat-id :metadata :sending-image])
                   {window-height :height}                  (rn/use-window-dimensions)

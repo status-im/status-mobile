@@ -2,13 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [status-im.communities.core :as models.communities]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
-(fx/defn enable
+(rf/defn enable
   {:events [::enable]}
   [{{:keys [multiaccount]} :db :as cofx} site enabled?]
-  (fx/merge cofx
+  (rf/merge cofx
             (multiaccounts.update/multiaccount-update
              :link-previews-enabled-sites
              (if enabled?
@@ -16,10 +16,10 @@
                (disj (get multiaccount :link-previews-enabled-sites #{}) site))
              {})))
 
-(fx/defn enable-all
+(rf/defn enable-all
   {:events [::enable-all]}
   [{{:keys [multiaccount]} :db :as cofx} link-previews-whitelist enabled?]
-  (fx/merge cofx
+  (rf/merge cofx
             (multiaccounts.update/multiaccount-update
              :link-previews-enabled-sites
              (if enabled?
@@ -39,7 +39,7 @@
   [db community-id]
   (assoc-in db [:communities/resolve-community-info community-id] true))
 
-(fx/defn handle-community-failed-to-resolve
+(rf/defn handle-community-failed-to-resolve
   {:events [::community-failed-to-resolve]}
   [{:keys [db]} community-id]
   {:db (community-failed-to-resolve db community-id)})
@@ -48,10 +48,10 @@
   [id]
   (str "https://join.status.im/c/" id))
 
-(fx/defn handle-community-resolved
+(rf/defn handle-community-resolved
   {:events [::community-resolved]}
   [{:keys [db] :as cofx} community-id community]
-  (fx/merge cofx
+  (rf/merge cofx
             (cond-> {:db (community-resolved db community-id)}
               (some? community)
               (assoc :dispatch
@@ -59,7 +59,7 @@
                       (community-link community-id) community]))
             (models.communities/handle-community community)))
 
-(fx/defn resolve-community-info
+(rf/defn resolve-community-info
   {:events [::resolve-community-info]}
   [{:keys [db]} community-id]
   {:db            (community-resolving db community-id)
@@ -70,7 +70,7 @@
                                    (re-frame/dispatch [::community-failed-to-resolve community-id])
                                    (log/error "Failed to request community info from mailserver"))}]})
 
-(fx/defn load-link-preview-data
+(rf/defn load-link-preview-data
   {:events [::load-link-preview-data]}
   [cofx link]
   {:json-rpc/call [{:method     "wakuext_getLinkPreviewData"
@@ -81,7 +81,7 @@
                                    link
                                    {:error (str "Can't get preview data for " link)}])}]})
 
-(fx/defn cache-link-preview-data
+(rf/defn cache-link-preview-data
   {:events [::cache-link-preview-data]}
   [{{:keys [multiaccount]} :db :as cofx} site data]
   (multiaccounts.update/optimistic
@@ -95,7 +95,7 @@
                       (community-link id)
                       community]))
 
-(fx/defn should-suggest-link-preview
+(rf/defn should-suggest-link-preview
   {:events [::should-suggest-link-preview]}
   [{:keys [db] :as cofx} enabled?]
   (multiaccounts.update/multiaccount-update
@@ -104,14 +104,14 @@
    (boolean enabled?)
    {}))
 
-(fx/defn request-link-preview-whitelist
+(rf/defn request-link-preview-whitelist
   [_]
   {:json-rpc/call [{:method     "wakuext_getLinkPreviewWhitelist"
                     :params     []
                     :on-success #(re-frame/dispatch [::link-preview-whitelist-received %])
                     :on-error   #(log/error "Failed to get link preview whitelist")}]})
 
-(fx/defn save-link-preview-whitelist
+(rf/defn save-link-preview-whitelist
   {:events [::link-preview-whitelist-received]}
   [{:keys [db]} whitelist]
   {:db (assoc db

@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
@@ -35,7 +35,7 @@
                (let [{:keys [error]} (types/json->clj result)]
                  (callback error nil)))))))))))
 
-(fx/defn delete-profile
+(rf/defn delete-profile
   {:events [::delete-profile]}
   [{:keys [db] :as cofx} masked-password]
   (log/info "[delete-profile] delete")
@@ -52,7 +52,7 @@
           (re-frame/dispatch [::on-delete-profile-success result])
           (re-frame/dispatch [::on-delete-profile-failure error])))}}))
 
-(fx/defn on-delete-profile-success
+(rf/defn on-delete-profile-success
   {:events [::on-delete-profile-success]}
   [cofx]
   (log/info "[delete-profile] on-success")
@@ -61,13 +61,13 @@
     :content    (i18n/label :t/profile-deleted-content)
     :on-dismiss #(re-frame/dispatch [:logout])}})
 
-(fx/defn on-delete-profile-failure
+(rf/defn on-delete-profile-failure
   {:events [::on-delete-profile-failure]}
   [{:keys [db]} error]
   (log/info "[delete-profile] on-failure" error)
   {:db (assoc db :delete-profile/error error)})
 
-(fx/defn keep-keys-on-keycard
+(rf/defn keep-keys-on-keycard
   {:events [::keep-keys-on-keycard]}
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:delete-profile/keep-keys-on-keycard?] checked?)})

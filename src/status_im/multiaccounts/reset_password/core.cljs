@@ -4,12 +4,12 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [utils.security.core :as security]))
 
-(fx/defn on-input-change
+(rf/defn on-input-change
   {:events [::handle-input-change]}
   [{:keys [db]} input-id value]
   (let [new-password (get-in db [:multiaccount/reset-password-form-vals :new-password])
@@ -22,23 +22,23 @@
              (assoc-in [:multiaccount/reset-password-form-vals input-id] value)
              (assoc-in [:multiaccount/reset-password-errors input-id] error))}))
 
-(fx/defn clear-form-vals
+(rf/defn clear-form-vals
   {:events [::clear-form-vals]}
   [{:keys [db]}]
   {:db (dissoc db :multiaccount/reset-password-form-vals :multiaccount/reset-password-errors)})
 
-(fx/defn set-current-password-error
+(rf/defn set-current-password-error
   {:events [::handle-verification-error ::password-reset-error]}
   [{:keys [db]} error]
   {:db (assoc-in db [:multiaccount/reset-password-errors :current-password] error)})
 
-(fx/defn password-reset-success
+(rf/defn password-reset-success
   {:events [::password-reset-success]}
   [{:keys [db] :as cofx}]
   (let [{:keys [key-uid]} (:multiaccount db)
         auth-method       (get db :auth-method keychain/auth-method-none)
         new-password      (get-in db [:multiaccount/reset-password-form-vals :new-password])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (dissoc
                     db
                     :multiaccount/reset-password-form-vals
@@ -65,11 +65,11 @@
     (ethereum/sha3 (security/safe-unmask-data new-password))
     change-db-password-cb)))
 
-(fx/defn handle-verification-success
+(rf/defn handle-verification-success
   {:events [::handle-verification-success]}
   [{:keys [db] :as cofx} form-vals]
   (let [{:keys [key-uid name]} (:multiaccount db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {::change-db-password [key-uid form-vals]
                :db                  (assoc db
                                            :multiaccount/resetting-password?
@@ -92,7 +92,7 @@
                     hashed-pass
                     (partial handle-verification form-vals)))))
 
-(fx/defn reset
+(rf/defn reset
   {:events [::reset]}
   [{:keys [db]} form-vals]
   {::validate-current-password-and-reset

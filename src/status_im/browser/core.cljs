@@ -15,7 +15,7 @@
             [status-im.native-module.core :as status]
             [status-im.signing.core :as signing]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
@@ -26,11 +26,11 @@
             [utils.debounce :as debounce]
             [utils.security.core :as security]))
 
-(fx/defn update-browser-option
+(rf/defn update-browser-option
   [{:keys [db]} option-key option-value]
   {:db (assoc-in db [:browser/options option-key] option-value)})
 
-(fx/defn update-browser-options
+(rf/defn update-browser-options
   [{:keys [db]} options]
   {:db (update db :browser/options merge options)})
 
@@ -51,7 +51,7 @@
            (when url
              (string/starts-with? url "https://")))))
 
-(fx/defn remove-browser
+(rf/defn remove-browser
   {:events [:browser.ui/remove-browser-pressed]}
   [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
@@ -59,7 +59,7 @@
                     :params     [browser-id]
                     :on-success #()}]})
 
-(fx/defn clear-all-browsers
+(rf/defn clear-all-browsers
   {:events [:browser.ui/clear-all-browsers-pressed]}
   [{:keys [db]}]
   {:db            (dissoc db :browser/browsers)
@@ -83,7 +83,7 @@
     (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success url])
     (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error])))
 
-(fx/defn resolve-url
+(rf/defn resolve-url
   [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
@@ -95,7 +95,7 @@
                                            :cb       resolve-ens-contenthash-callback}}
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
 
-(fx/defn update-browser
+(rf/defn update-browser
   [{:keys [db]}
    {:keys [browser-id] :as browser}]
   (let [updated-browser (-> browser
@@ -111,7 +111,7 @@
                                                  :history-index])]
                       :on-success #()}]}))
 
-(fx/defn store-bookmark
+(rf/defn store-bookmark
   {:events [:browser/store-bookmark]}
   [{:keys [db]}
    {:keys [url] :as bookmark}]
@@ -120,25 +120,25 @@
                     :params     [bookmark]
                     :on-success #()}]})
 
-(fx/defn update-bookmark
+(rf/defn update-bookmark
   {:events [:browser/update-bookmark]}
   [{:keys [db] :as cofx}
    {:keys [url] :as bookmark}]
   (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
         new-bookmark (merge old-bookmark bookmark)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db            (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
                :json-rpc/call [{:method     "wakuext_updateBookmark"
                                 :params     [url bookmark]
                                 :on-success #()}]})))
 
-(fx/defn delete-bookmark
+(rf/defn delete-bookmark
   {:events [:browser/delete-bookmark]}
   [{:keys [db] :as cofx}
    url]
   (let [old-bookmark     (get-in db [:bookmarks/bookmarks url])
         removed-bookmark (merge old-bookmark {:removed true})]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db            (update db :bookmarks/bookmarks dissoc url)
                :json-rpc/call [{:method     "wakuext_removeBookmark"
                                 :params     [url]
@@ -148,16 +148,16 @@
   [{:keys [history-index]}]
   (pos? history-index))
 
-(fx/defn navigate-to-previous-page
+(rf/defn navigate-to-previous-page
   {:events [:browser.ui/previous-page-button-pressed]}
   [cofx]
   (let [{:keys [history-index] :as browser} (get-current-browser (:db cofx))]
     (when (can-go-back? browser)
-      (fx/merge cofx
+      (rf/merge cofx
                 (update-browser (assoc browser :history-index (dec history-index)))
                 (resolve-url nil)))))
 
-(fx/defn ignore-unsafe
+(rf/defn ignore-unsafe
   {:events [:browser/ignore-unsafe]}
   [cofx]
   (let [browser (get-current-browser (:db cofx))
@@ -168,16 +168,16 @@
   [{:keys [history-index history]}]
   (< history-index (dec (count history))))
 
-(fx/defn navigate-to-next-page
+(rf/defn navigate-to-next-page
   {:events [:browser.ui/next-page-button-pressed]}
   [cofx]
   (let [{:keys [history-index] :as browser} (get-current-browser (:db cofx))]
     (when (can-go-forward? browser)
-      (fx/merge cofx
+      (rf/merge cofx
                 (update-browser (assoc browser :history-index (inc history-index)))
                 (resolve-url nil)))))
 
-(fx/defn update-browser-history
+(rf/defn update-browser-history
   [cofx browser url]
   (let [history-index (:history-index browser)
         history       (:history browser)]
@@ -189,14 +189,14 @@
                                :history       new-history
                                :history-index new-index))))))
 
-(fx/defn resolve-ens-multihash-success
+(rf/defn resolve-ens-multihash-success
   {:events [:browser.callback/resolve-ens-multihash-success]}
   [{:keys [db] :as cofx} url]
   (let [current-url (get-current-url (get-current-browser db))
         host        (http/url-host current-url)
         path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
         gateway     url]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (-> (update db
                                :browser/options
                                assoc
@@ -204,7 +204,7 @@
                                :resolving?      false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
-(fx/defn resolve-ens-multihash-error
+(rf/defn resolve-ens-multihash-error
   {:events [:browser.callback/resolve-ens-multihash-error]}
   [{:keys [db] :as cofx}]
   (update-browser-options cofx
@@ -212,19 +212,19 @@
                            :resolving? false
                            :error?     true}))
 
-(fx/defn handle-browser-error
+(rf/defn handle-browser-error
   {:events [:browser/error-occured]}
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             (update-browser-option :error? true)
             (update-browser-option :loading? false)))
 
-(fx/defn handle-pdf
+(rf/defn handle-pdf
   [_ url]
   (when (and platform/android? (string/ends-with? url ".pdf"))
     {:browser/show-web-browser-selection url}))
 
-(fx/defn handle-message-link
+(rf/defn handle-message-link
   {:events [:browser.ui/message-link-pressed]}
   [_ link]
   (when (security/safe-link? link)
@@ -232,7 +232,7 @@
       {:dispatch [:universal-links/handle-url link]}
       {:browser/show-browser-selection link})))
 
-(fx/defn update-browser-on-nav-change
+(rf/defn update-browser-on-nav-change
   [cofx url error?]
   (let [browser     (get-current-browser (:db cofx))
         options     (get-in cofx [:db :browser/options])
@@ -250,18 +250,18 @@
                                                                (second resolved-ens)
                                                                (first resolved-ens)))
                            url)]
-        (fx/merge cofx
+        (rf/merge cofx
                   (update-browser-history browser resolved-url)
                   (handle-pdf url)
                   (resolve-url {:error? error? :resolved-url (when resolved-ens url)}))))))
 
-(fx/defn update-browser-name
+(rf/defn update-browser-name
   [cofx title]
   (let [browser (get-current-browser (:db cofx))]
     (when (and browser (not (:dapp? browser)) title (not (string/blank? title)))
       (update-browser cofx (assoc browser :name title)))))
 
-(fx/defn navigation-state-changed
+(rf/defn navigation-state-changed
   {:events [:browser/navigation-state-changed]}
   [cofx event error?]
   (let [{:strs [url loading title]} (js->clj event)
@@ -269,12 +269,12 @@
     (if (links/universal-link? url)
       (when-not (and deep-link? platform/ios?) ;; ios webview handles this
         {:dispatch [:universal-links/handle-url url]})
-      (fx/merge cofx
+      (rf/merge cofx
                 (update-browser-option :loading? loading)
                 (update-browser-name title)
                 (update-browser-on-nav-change url error?)))))
 
-(fx/defn open-url-in-current-browser
+(rf/defn open-url-in-current-browser
   "Opens a url in the current browser, which mean no new entry is added to the home page
   and history of the current browser is updated so that the user can navigate back to the
   origin url"
@@ -284,12 +284,12 @@
         normalized-url (http/normalize-and-decode-url url)]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
-      (fx/merge cofx
+      (rf/merge cofx
                 (update-browser-option :url-editing? false)
                 (update-browser-history browser normalized-url)
                 (resolve-url nil)))))
 
-(fx/defn open-url
+(rf/defn open-url
   "Opens a url in the browser. If a host can be extracted from the url and
   there is already a browser for this host, this browser is reused
   If the browser is reused, the history is flushed"
@@ -301,7 +301,7 @@
                         :history       [normalized-url]}]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (assoc db
                             :browser/options
                             {:browser-id (:browser-id browser)})}
@@ -310,12 +310,12 @@
                 (update-browser browser)
                 (resolve-url nil)))))
 
-(fx/defn open-existing-browser
+(rf/defn open-existing-browser
   "Opens an existing browser with it's history"
   {:events [:browser.ui/browser-item-selected]}
   [{:keys [db] :as cofx} browser-id]
   (let [browser (get-in db [:browser/browsers browser-id])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc db
                           :browser/options
                           {:browser-id browser-id})}
@@ -323,7 +323,7 @@
               (navigation/set-stack-root :browser-stack :browser)
               (resolve-url nil))))
 
-(fx/defn web3-error-callback
+(rf/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}
   [_ message-id message]
   {:browser/send-to-bridge
@@ -331,7 +331,7 @@
     :messageId message-id
     :error     message}})
 
-(fx/defn dapp-complete-transaction
+(rf/defn dapp-complete-transaction
   {:events [:browser.dapp/transaction-on-result]}
   [_ message-id id result]
   ;;TODO check and test id
@@ -360,7 +360,7 @@
         (ethereum/address? second-param)
         [second-param (if typed? first-param (normalize-message first-param))]))))
 
-(fx/defn send-to-bridge
+(rf/defn send-to-bridge
   {:events [:browser.callback/call-rpc]}
   [_ message]
   {:browser/send-to-bridge message})
@@ -372,7 +372,7 @@
      constants/web3-eth-sign constants/web3-keycard-sign-typed-data}
    method))
 
-(fx/defn web3-send-async
+(rf/defn web3-send-async
   [cofx dapp-name {:keys [method params id] :as payload} message-id]
   (let [message?      (web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])
@@ -432,7 +432,7 @@
                                                   :error     %1
                                                   :result    %2}])]}))))
 
-(fx/defn handle-no-permissions
+(rf/defn handle-no-permissions
   [cofx {:keys [method id]} message-id]
   (if (= method "eth_accounts")
     ;; eth_accounts returns empty array for compatibility with meta-mask
@@ -458,28 +458,28 @@
    (and (permissioned-method method)
         (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))))
 
-(fx/defn web3-send-async-read-only
+(rf/defn web3-send-async-read-only
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
   (if (has-permissions? db dapp-name method)
     (handle-no-permissions cofx payload message-id)
     (web3-send-async cofx dapp-name payload message-id)))
 
-(fx/defn handle-scanned-qr-code
+(rf/defn handle-scanned-qr-code
   {:events [:browser.bridge.callback/qr-code-scanned]}
   [cofx data {{:keys [dapp-name permission message-id]} :data}]
-  (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
+  (rf/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
             (browser.permissions/send-response-to-bridge permission message-id true data)
             (browser.permissions/process-next-permission dapp-name)
             (navigation/navigate-back)))
 
-(fx/defn handle-canceled-qr-code
+(rf/defn handle-canceled-qr-code
   {:events [:browser.bridge.callback/qr-code-canceled]}
   [cofx {{:keys [dapp-name permission message-id]} :data}]
-  (fx/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
+  (rf/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
             (browser.permissions/send-response-to-bridge permission message-id true nil)
             (browser.permissions/process-next-permission dapp-name)))
 
-(fx/defn process-bridge-message
+(rf/defn process-bridge-message
   {:events [:browser/bridge-message-received]}
   [{:keys [db] :as cofx} message]
   (let [browser                                                                    (get-current-browser
@@ -514,12 +514,12 @@
  :browser/send-to-bridge
  (fn [message]
    (let
-     [^js webview @webview-ref/webview-ref
-      msg
-      (str
-       "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
-       (types/clj->json message)
-       "');} else {setTimeout(__send, 0)}}; __send();})();")]
+    [^js webview @webview-ref/webview-ref
+     msg
+     (str
+      "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
+      (types/clj->json message)
+      "');} else {setTimeout(__send, 0)}}; __send();})();")]
      (when (and message webview)
        (.injectJavaScript webview msg)))))
 
@@ -556,10 +556,10 @@
         message (i18n/label :t/share-dapp-text {:link link})]
     (list-selection/open-share {:message message})))
 
-(fx/defn dapps-account-selected
+(rf/defn dapps-account-selected
   {:events [:dapps-account-selected]}
   [{:keys [db] :as cofx} address]
-  (fx/merge cofx
+  (rf/merge cofx
             {:browser/clear-web-data nil}
             (bottom-sheet/hide-bottom-sheet)
             (browser.permissions/clear-dapps-permissions)
@@ -569,38 +569,38 @@
                       {:dispatch [:browser.ui/browser-item-selected
                                   (get-in db [:browser/options :browser-id])]}))))
 
-(fx/defn open-empty-tab
+(rf/defn open-empty-tab
   {:events [:browser.ui/open-empty-tab]}
   [cofx]
   (debounce/clear :browser/navigation-state-changed)
   (navigation/set-stack-root cofx :browser-stack :empty-tab))
 
-(fx/defn url-input-pressed
+(rf/defn url-input-pressed
   {:events [:browser.ui/url-input-pressed]}
   [cofx _]
   (update-browser-option cofx :url-editing? true))
 
-(fx/defn url-input-blured
+(rf/defn url-input-blured
   {:events [:browser.ui/url-input-blured]}
   [cofx]
   (update-browser-option cofx :url-editing? false))
 
-(fx/defn lock-pressed
+(rf/defn lock-pressed
   {:events [:browser.ui/lock-pressed]}
   [cofx secure?]
   (update-browser-option cofx :show-tooltip (if secure? :secure :not-secure)))
 
-(fx/defn close-tooltip-pressed
+(rf/defn close-tooltip-pressed
   {:events [:browser.ui/close-tooltip-pressed]}
   [cofx]
   (update-browser-option cofx :show-tooltip nil))
 
-(fx/defn loading-started
+(rf/defn loading-started
   {:events [:browser/loading-started]}
   [cofx]
   (update-browser-options cofx {:error? false :loading? true}))
 
-(fx/defn handle-bookmarks
+(rf/defn handle-bookmarks
   [{:keys [db]} bookmarks]
   (let [changed-bookmarks (reduce (fn [acc {:keys [url] :as bookmark}]
                                     (assoc acc url bookmark))

@@ -2,13 +2,13 @@
 (ns status-im.chat.models.transport
   (:require [status-im.chat.models.message :as chat.message]
             [status-im.transport.message.core :as transport.message]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
-(fx/defn chat-ui-resend-message
+(rf/defn chat-ui-resend-message
   {:events [:chat.ui/resend-message]}
   [{:keys [db] :as cofx} chat-id message-id]
   (let [message (get-in db [:messages chat-id message-id])]
-    (fx/merge
+    (rf/merge
      cofx
      (transport.message/set-message-envelope-hash chat-id message-id (:message-type message))
      (chat.message/resend-message chat-id message-id))))

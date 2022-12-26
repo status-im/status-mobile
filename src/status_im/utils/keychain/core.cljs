@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
@@ -210,35 +210,35 @@
    (-> (.resetInternetCredentials react-native-keychain (string/lower-case key-uid))
        (.then #(when-not % (log/error (str "Error while clearing saved password.")))))))
 
-(fx/defn get-auth-method
+(rf/defn get-auth-method
   [_ key-uid]
   {:keychain/get-auth-method
    [key-uid #(re-frame/dispatch [:multiaccounts.login/get-auth-method-success % key-uid])]})
 
-(fx/defn get-user-password
+(rf/defn get-user-password
   [_ key-uid]
   {:keychain/get-user-password
    [key-uid
     #(re-frame/dispatch
       [:multiaccounts.login.callback/get-user-password-success % key-uid])]})
 
-(fx/defn get-keycard-keys
+(rf/defn get-keycard-keys
   [_ key-uid]
   {:keychain/get-keycard-keys
    [key-uid
     #(re-frame/dispatch
       [:multiaccounts.login.callback/get-keycard-keys-success key-uid %])]})
 
-(fx/defn save-user-password
+(rf/defn save-user-password
   [_ key-uid password]
   {:keychain/save-user-password [key-uid password]})
 
-(fx/defn save-keycard-keys
+(rf/defn save-keycard-keys
   [_ key-uid encryption-public-key whisper-private-key]
   {:keychain/save-keycard-keys [key-uid
                                 encryption-public-key
                                 whisper-private-key]})
-(fx/defn save-auth-method
+(rf/defn save-auth-method
   [{:keys [db]} key-uid method]
   {:db                        (assoc db :auth-method method)
    :keychain/save-auth-method [key-uid method]})

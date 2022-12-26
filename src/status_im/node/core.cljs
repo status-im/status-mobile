@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]))
 
@@ -189,7 +189,7 @@
   [db]
   (types/clj->json (get-multiaccount-node-config db)))
 
-(fx/defn save-new-config
+(rf/defn save-new-config
   "Saves a new status-go config for the current account
    This RPC method is the only way to change the node config of an account.
    NOTE: it is better used indirectly through `prepare-new-config`,
@@ -201,7 +201,7 @@ app-db"
                     :params     [:node-config config]
                     :on-success on-success}]})
 
-(fx/defn prepare-new-config
+(rf/defn prepare-new-config
   "Use this function to apply settings to the current account node config"
   [{:keys [db]} {:keys [on-success]}]
   (let [key-uid (get-in db [:multiaccount :key-uid])]

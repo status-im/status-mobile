@@ -2,7 +2,7 @@
   (:require [clojure.set :as clojure.set]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as messages]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -108,7 +108,7 @@
       rpc->type
       unmarshal-members))
 
-(fx/defn fetch-chats-rpc
+(rf/defn fetch-chats-rpc
   [_ {:keys [on-success]}]
   {:json-rpc/call [{:method      "wakuext_chatsPreview"
                     :params      []

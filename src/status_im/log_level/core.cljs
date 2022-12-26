@@ -3,14 +3,14 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
-(fx/defn save-log-level
+(rf/defn save-log-level
   {:events [:log-level.ui/change-log-level-confirmed]}
   [{:keys [db now] :as cofx} log-level]
   (let [old-log-level (get-in db [:multiaccount :log-level])]
     (when (not= old-log-level log-level)
-      (fx/merge cofx
+      (rf/merge cofx
                 (multiaccounts.update/multiaccount-update
                  :log-level
                  log-level
@@ -18,7 +18,7 @@
                 (node/prepare-new-config
                  {:on-success #(re-frame/dispatch [:logout])})))))
 
-(fx/defn show-change-log-level-confirmation
+(rf/defn show-change-log-level-confirmation
   {:events [:log-level.ui/log-level-selected]}
   [_ {:keys [name value]}]
   {:ui/show-confirmation

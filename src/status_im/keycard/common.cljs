@@ -8,7 +8,7 @@
             [status-im.popover.core :as popover]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.utils.datetime :as utils.datetime]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -24,7 +24,7 @@
   (when-let [matched-error (re-matches pin-mismatch-error error)]
     (js/parseInt (second (filter some? matched-error)))))
 
-(fx/defn dispatch-event
+(rf/defn dispatch-event
   [_ event]
   {:dispatch [event]})
 
@@ -97,24 +97,24 @@
  (fn [supported?]
    (nfc/set-nfc-supported? supported?)))
 
-(fx/defn listen-to-hardware-back-button
+(rf/defn listen-to-hardware-back-button
   [{:keys [db]}]
   (when-not (get-in db [:keycard :back-button-listener])
     {:keycard/listen-to-hardware-back-button nil}))
 
-(fx/defn remove-listener-to-hardware-back-button
+(rf/defn remove-listener-to-hardware-back-button
   [{:keys [db]}]
   (when-let [listener (get-in db [:keycard :back-button-listener])]
     {:keycard/remove-listener-to-hardware-back-button listener}))
 
-(fx/defn set-on-card-connected
+(rf/defn set-on-card-connected
   [{:keys [db]} on-connect]
   (log/debug "[keycard] set-on-card-connected" on-connect)
   {:db (-> db
            (assoc-in [:keycard :on-card-connected] on-connect)
            (assoc-in [:keycard :last-on-card-connected] nil))})
 
-(fx/defn stash-on-card-connected
+(rf/defn stash-on-card-connected
   [{:keys [db]}]
   (let [on-connect (get-in db [:keycard :on-card-connected])]
     (log/debug "[keycard] stash-on-card-connected" on-connect)
@@ -122,7 +122,7 @@
              (assoc-in [:keycard :last-on-card-connected] on-connect)
              (assoc-in [:keycard :on-card-connected] nil))}))
 
-(fx/defn restore-on-card-connected
+(rf/defn restore-on-card-connected
   [{:keys [db]}]
   (let [on-connect (or
                     (get-in db [:keycard :on-card-connected])
@@ -132,21 +132,21 @@
              (assoc-in [:keycard :on-card-connected] on-connect)
              (assoc-in [:keycard :last-on-card-connect] nil))}))
 
-(fx/defn clear-on-card-connected
+(rf/defn clear-on-card-connected
   [{:keys [db]}]
   (log/debug "[keycard] clear-on-card-connected")
   {:db (-> db
            (assoc-in [:keycard :on-card-connected] nil)
            (assoc-in [:keycard :last-on-card-connected] nil))})
 
-(fx/defn set-on-card-read
+(rf/defn set-on-card-read
   [{:keys [db]} on-connect]
   (log/debug "[keycard] set-on-card-read" on-connect)
   {:db (-> db
            (assoc-in [:keycard :on-card-read] on-connect)
            (assoc-in [:keycard :last-on-card-read] nil))})
 
-(fx/defn stash-on-card-read
+(rf/defn stash-on-card-read
   [{:keys [db]}]
   (let [on-connect (get-in db [:keycard :on-card-read])]
     (log/debug "[keycard] stash-on-card-read" on-connect)
@@ -154,7 +154,7 @@
              (assoc-in [:keycard :last-on-card-read] on-connect)
              (assoc-in [:keycard :on-card-read] nil))}))
 
-(fx/defn restore-on-card-read
+(rf/defn restore-on-card-read
   [{:keys [db]}]
   (let [on-connect (or
                     (get-in db [:keycard :on-card-read])
@@ -164,7 +164,7 @@
              (assoc-in [:keycard :on-card-read] on-connect)
              (assoc-in [:keycard :last-on-card-connect] nil))}))
 
-(fx/defn clear-on-card-read
+(rf/defn clear-on-card-read
   [{:keys [db]}]
   (log/debug "[keycard] clear-on-card-read")
   {:db (-> db
@@ -181,7 +181,7 @@
       :on-connect    ::on-card-connected
       :on-disconnect ::on-card-disconnected}]))
 
-(fx/defn show-connection-sheet-component
+(rf/defn show-connection-sheet-component
   [{:keys [db] :as cofx}
    {:keys [on-card-connected on-card-read handler]
     {:keys [on-cancel]
@@ -193,7 +193,7 @@
     (log/debug "[keycard] show-sheet-with-connection-check"
                "card-connected?"
                connected?)
-    (fx/merge
+    (rf/merge
      cofx
      {:dismiss-keyboard true}
      (bottom-sheet/show-bottom-sheet
@@ -211,7 +211,7 @@
      (when connected?
        handler))))
 
-(fx/defn show-connection-sheet
+(rf/defn show-connection-sheet
   [{:keys [db] :as cofx} args]
   (let [nfc-running? (get-in db [:keycard :nfc-running?])]
     (log/debug "show connection; already running?" nfc-running?)
@@ -219,59 +219,59 @@
       (show-connection-sheet-component cofx args)
       {:keycard/start-nfc-and-show-connection-sheet args})))
 
-(fx/defn on-nfc-ready-for-sheet
+(rf/defn on-nfc-ready-for-sheet
   {:events [:keycard.callback/show-connection-sheet]}
   [cofx args]
   (log/debug "on-nfc-ready-for-sheet")
   (show-connection-sheet-component cofx args))
 
-(fx/defn hide-connection-sheet-component
+(rf/defn hide-connection-sheet-component
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:keycard :card-read-in-progress?] false)}
             (restore-on-card-connected)
             (restore-on-card-read)
             (bottom-sheet/hide-bottom-sheet)))
 
-(fx/defn hide-connection-sheet
+(rf/defn hide-connection-sheet
   [cofx]
   (log/debug "hide-connection-sheet")
   {:keycard/stop-nfc-and-hide-connection-sheet nil})
 
-(fx/defn on-nfc-ready-to-close-sheet
+(rf/defn on-nfc-ready-to-close-sheet
   {:events [:keycard.callback/hide-connection-sheet]}
   [cofx]
   (log/debug "on-nfc-ready-to-close-sheet")
   (hide-connection-sheet-component cofx))
 
-(fx/defn clear-pin
+(rf/defn clear-pin
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc-in db
-         [:keycard :pin]
-         {:status              nil
-          :login               (get-in db [:keycard :pin :original])
-          :export-key          []
-          :sign                []
-          :puk                 []
-          :current             []
-          :original            []
-          :confirmation        []
-          :error-label         nil
-          :on-verified         (get-in db [:keycard :pin :on-verified])
-          :on-verified-failure (get-in db [:keycard :pin :on-verified])})}))
+                  [:keycard :pin]
+                  {:status              nil
+                   :login               (get-in db [:keycard :pin :original])
+                   :export-key          []
+                   :sign                []
+                   :puk                 []
+                   :current             []
+                   :original            []
+                   :confirmation        []
+                   :error-label         nil
+                   :on-verified         (get-in db [:keycard :pin :on-verified])
+                   :on-verified-failure (get-in db [:keycard :pin :on-verified])})}))
 
-(fx/defn cancel-sheet-confirm
+(rf/defn cancel-sheet-confirm
   {:events [::cancel-sheet-confirm
             :keycard/back-button-pressed]}
   [{:keys [db] :as cofx}]
   (when-not (get-in db [:keycard :card-connected?])
-    (fx/merge cofx
+    (rf/merge cofx
               (hide-connection-sheet)
               (clear-pin))))
 
-(fx/defn cancel-sheet
+(rf/defn cancel-sheet
   {:events [::cancel-sheet]}
   [_]
   {:ui/show-confirmation {:title               (i18n/label :t/keycard-cancel-setup-title)
@@ -281,7 +281,7 @@
                           :on-accept           #(re-frame/dispatch [::cancel-sheet-confirm])
                           :on-cancel           #()}})
 
-(fx/defn on-add-listener-to-hardware-back-button
+(rf/defn on-add-listener-to-hardware-back-button
   "Adds listener to hardware back button on Android.
   During keycard setup we show user a warning that setup will be cancelled
   when back button pressed. This prevents user from going back during setup
@@ -290,24 +290,24 @@
   [{:keys [db]} listener]
   {:db (assoc-in db [:keycard :back-button-listener] listener)})
 
-(fx/defn show-wrong-keycard-alert
+(rf/defn show-wrong-keycard-alert
   [_]
   (log/debug "show-wrong-keycard-alert")
   {:utils/show-popup {:title   (i18n/label :t/wrong-card)
                       :content (i18n/label :t/wrong-card-text)}})
 
-(fx/defn unauthorized-operation
+(rf/defn unauthorized-operation
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             {:utils/show-popup {:title   ""
                                 :content (i18n/label :t/keycard-unauthorized-operation)}}
             (clear-on-card-connected)
             (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 
-(fx/defn navigate-to-enter-pin-screen
+(rf/defn navigate-to-enter-pin-screen
   {:events [:keycard/navigate-to-enter-pin-screen]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:keycard :pin :current] [])}
             (navigation/navigate-to-cofx :enter-pin-settings nil)))
 
@@ -318,12 +318,12 @@
    (= error "Tag was lost.")
    (= error "NFCError:100")))
 
-(fx/defn process-error
+(rf/defn process-error
   [{:keys [db]} code error]
   (when-not (tag-lost-exception? code error)
     {:db (assoc-in db [:keycard :setup-step] :error)}))
 
-(fx/defn get-keys-from-keycard
+(rf/defn get-keys-from-keycard
   [{:keys [db]}]
   (let [key-uid (get-in db [:multiaccounts/login :key-uid])
         pin     (string/join (get-in db [:keycard :pin :login]))]
@@ -334,7 +334,7 @@
       {:db               (assoc-in db [:keycard :pin :status] :verifying)
        :keycard/get-keys {:pin pin}})))
 
-(fx/defn on-get-keys-success
+(rf/defn on-get-keys-success
   {:events [:keycard.callback/on-get-keys-success]}
   [{:keys [db] :as cofx} data]
   (let [{:keys [key-uid encryption-public-key whisper-private-key]
@@ -346,7 +346,7 @@
                                             :key-uid   key-uid
                                             :identicon identicon})
         save-keys? (get-in db [:multiaccounts/login :save-password?])]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db
                (-> db
                    (assoc-in [:keycard :pin :status] nil)
@@ -374,9 +374,9 @@
               (clear-on-card-read)
               (hide-connection-sheet))))
 
-(fx/defn blocked-or-frozen-keycard-popup
+(rf/defn blocked-or-frozen-keycard-popup
   [{:keys [db] :as cofx} card-status]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (assoc-in db [:keycard :pin :status] card-status)}
    (hide-connection-sheet)
@@ -385,15 +385,15 @@
    (when-not (or (:multiaccounts/login db) (:popover/popover db))
      (popover/show-popover {:view card-status}))))
 
-(fx/defn blocked-keycard-popup
+(rf/defn blocked-keycard-popup
   [cofx]
   (blocked-or-frozen-keycard-popup cofx :blocked-card))
 
-(fx/defn frozen-keycard-popup
+(rf/defn frozen-keycard-popup
   [cofx]
   (blocked-or-frozen-keycard-popup cofx :frozen-card))
 
-(fx/defn on-get-keys-error
+(rf/defn on-get-keys-error
   {:events [:keycard.callback/on-get-keys-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] get keys error: " error)
@@ -404,7 +404,7 @@
     (if tag-was-lost?
       {:db (assoc-in db [:keycard :pin :status] nil)}
       (if-not (nil? pin-retries-count)
-        (fx/merge
+        (rf/merge
          cofx
          {:db (-> db
                   (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
@@ -418,7 +418,7 @@
          (when (zero? pin-retries-count) (frozen-keycard-popup)))
         (show-wrong-keycard-alert)))))
 
-(fx/defn factory-reset
+(rf/defn factory-reset
   {:events [:keycard/factory-reset]}
   [{:keys [db]} on-card-read]
   (log/debug "[keycard] factory-reset")
@@ -427,7 +427,7 @@
 
 ;; Get application info
 
-(fx/defn update-pairings
+(rf/defn update-pairings
   [{:keys [db]} instance-uid pairing]
   (let [paired-on (utils.datetime/timestamp)
         pairings  (-> (get-in db [:keycard :pairings])
@@ -435,13 +435,13 @@
     {:keycard/persist-pairings pairings
      :db                       (assoc-in db [:keycard :pairings] pairings)}))
 
-(fx/defn get-application-info
+(rf/defn get-application-info
   {:events [:keycard/get-application-info]}
   [{:keys [db]} on-card-read]
   (log/debug "[keycard] get-application-info")
   {:keycard/get-application-info {:on-success on-card-read}})
 
-(fx/defn on-get-application-info-success
+(rf/defn on-get-application-info-success
   {:events [:keycard.callback/on-get-application-info-success]}
   [{:keys [db] :as cofx} info on-success]
   (let [{:keys [pin-retry-counter puk-retry-counter instance-uid new-pairing]} info
@@ -456,7 +456,7 @@
                "on-success"        on-success'
                "pin-retry-counter" pin-retry-counter
                "puk-retry-counter" puk-retry-counter)
-    (fx/merge
+    (rf/merge
      cofx
      {:db (-> db
               (assoc-in [:keycard :pin :enter-step] enter-step)
@@ -476,7 +476,7 @@
          (when on-success'
            (dispatch-event cofx on-success')))))))
 
-(fx/defn on-get-application-info-error
+(rf/defn on-get-application-info-error
   {:events [:keycard.callback/on-get-application-info-error]}
   [{:keys [db] :as cofx} error]
   (let [on-card-read           (get-in db [:keycard :on-card-read])
@@ -490,10 +490,10 @@
                last-on-card-connected)
     (when-not tag-was-lost?
       (if login?
-        (fx/merge cofx
+        (rf/merge cofx
                   (clear-on-card-read)
                   (navigation/navigate-to-cofx :not-keycard nil))
-        (fx/merge cofx
+        (rf/merge cofx
                   {:db (assoc-in db [:keycard :application-info-error] error)}
 
                   (when (contains?
@@ -504,7 +504,7 @@
                   (when on-card-read
                     (dispatch-event on-card-read)))))))
 
-(fx/defn on-card-connected
+(rf/defn on-card-connected
   {:events [::on-card-connected]}
   [{:keys [db] :as cofx} _]
   (let [instance-uid              (get-in db [:keycard :application-info :instance-uid])
@@ -517,7 +517,7 @@
     (log/debug "[keycard] on-card-connected" on-card-connected
                "on-card-read"                on-card-read)
     (when on-card-connected
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (-> db
                          (assoc-in [:keycard :card-read-in-progress?] (boolean on-card-read)))}
                 (when on-card-connected
@@ -527,11 +527,11 @@
                            (nil? on-card-connected))
                   (get-application-info on-card-read))))))
 
-(fx/defn on-card-disconnected
+(rf/defn on-card-disconnected
   {:events [::on-card-disconnected]}
   [{:keys [db] :as cofx} _]
   (log/debug "[keycard] card disconnected")
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :card-read-in-progress?] false))}
             (restore-on-card-connected)
@@ -541,7 +541,7 @@
   [db]
   (boolean (get-in db [:multiaccount :keycard-pairing])))
 
-(fx/defn verify-pin
+(rf/defn verify-pin
   {:events [:keycard/verify-pin]}
   [{:keys [db] :as cofx} {:keys [pin-step on-card-connected on-failure on-success]}]
   (let [on-success (or on-success
@@ -550,7 +550,7 @@
                        (get-in db [:keycard :pin :on-verified-failure]))
         pin-step   (or pin-step
                        (get-in db [:keycard :pin :step]))]
-    (fx/merge
+    (rf/merge
      cofx
      {:db (update-in db
                      [:keycard :pin]
@@ -563,12 +563,12 @@
        :handler
        (fn [{:keys [db] :as cofx}]
          (let [pin (vector->string (get-in db [:keycard :pin pin-step]))]
-           (fx/merge
+           (rf/merge
             cofx
             {:db                 (assoc-in db [:keycard :pin :status] :verifying)
              :keycard/verify-pin {:pin pin}})))}))))
 
-(fx/defn navigete-to-keycard-settings
+(rf/defn navigete-to-keycard-settings
   {:events [::navigate-to-keycard-settings]}
   [cofx]
   (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))

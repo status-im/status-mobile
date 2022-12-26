@@ -1,6 +1,6 @@
 (ns status-im.data-store.contacts
   (:require [clojure.set :as clojure.set]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn <-rpc
@@ -21,14 +21,14 @@
              (and (:added contact)
                   (:hasAddedUs contact)))))
 
-(fx/defn fetch-contacts-rpc
+(rf/defn fetch-contacts-rpc
   [_ on-success]
   {:json-rpc/call [{:method     "wakuext_contacts"
                     :params     []
                     :on-success #(on-success (map <-rpc %))
                     :on-error   #(log/error "failed to fetch contacts" %)}]})
 
-(fx/defn add
+(rf/defn add
   [_ public-key nickname ens-name on-success]
   {:json-rpc/call [{:method      "wakuext_addContact"
                     :params      [{:id public-key :nickname nickname :ensName ens-name}]
@@ -39,7 +39,7 @@
                                       (on-success %)))
                     :on-error    #(log/error "failed to add contact" public-key %)}]})
 
-(fx/defn set-nickname
+(rf/defn set-nickname
   [_ public-key nickname on-success]
   {:json-rpc/call [{:method      "wakuext_setContactLocalNickname"
                     :params      [{:id public-key :nickname nickname}]
@@ -53,7 +53,7 @@
                                              nickname
                                              %)}]})
 
-(fx/defn block
+(rf/defn block
   [_ contact-id on-success]
   {:json-rpc/call [{:method      "wakuext_blockContact"
                     :params      [contact-id]
@@ -61,7 +61,7 @@
                     :on-success  on-success
                     :on-error    #(log/error "failed to block contact" % contact-id)}]})
 
-(fx/defn unblock
+(rf/defn unblock
   [_ contact-id on-success]
   {:json-rpc/call [{:method      "wakuext_unblockContact"
                     :params      [contact-id]

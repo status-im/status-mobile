@@ -11,7 +11,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.router.core :as router]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
@@ -49,17 +49,17 @@
   (boolean
    (re-matches constants/regx-deep-link url)))
 
-(fx/defn handle-browse
+(rf/defn handle-browse
   [cofx {:keys [url]}]
   (log/info "universal-links: handling browse" url)
   {:browser/show-browser-selection url})
 
-(fx/defn handle-group-chat
+(rf/defn handle-group-chat
   [cofx params]
   (log/info "universal-links: handling group" params)
   (group-chats/create-from-link cofx params))
 
-(fx/defn handle-private-chat
+(rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
@@ -68,28 +68,28 @@
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
 
-(fx/defn handle-community-requests
+(rf/defn handle-community-requests
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community request  " community-id)
   (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
 
-(fx/defn handle-community
+(rf/defn handle-community
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
   (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
 
-(fx/defn handle-community-chat
+(rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
   {:dispatch [:chat.ui/navigate-to-chat chat-id]})
 
-(fx/defn handle-public-chat
+(rf/defn handle-public-chat
   [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
   (when (seq topic)
     (chat/start-public-chat cofx topic)))
 
-(fx/defn handle-view-profile
+(rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (log/info "universal-links: handling view profile" public-key)
   (cond
@@ -104,9 +104,9 @@
                                  :profile
                                  {})))
 
-(fx/defn handle-eip681
+(rf/defn handle-eip681
   [cofx data]
-  (fx/merge cofx
+  (rf/merge cofx
             (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
             (navigation/navigate-to-cofx :wallet nil)))
 
@@ -118,7 +118,7 @@
              %)
           (:multiaccount/accounts db))))
 
-(fx/defn handle-wallet-account
+(rf/defn handle-wallet-account
   [cofx {address :account}]
   (when-let [account (existing-account? cofx address)]
     (navigation/navigate-to-cofx cofx
@@ -136,7 +136,7 @@
     (re-frame/dispatch [:universal-links/handle-url url])
     (log/debug "universal-links: no url")))
 
-(fx/defn on-handle
+(rf/defn on-handle
   {:events [::match-value]}
   [cofx url {:keys [type] :as data}]
   (case type
@@ -152,7 +152,7 @@
     :wallet-account     (handle-wallet-account cofx data)
     (handle-not-found url)))
 
-(fx/defn route-url
+(rf/defn route-url
   "Match a url against a list of routes and handle accordingly"
   [{:keys [db]} url]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)
@@ -160,13 +160,13 @@
                         :uri   url
                         :cb    #(re-frame/dispatch [::match-value url %])}})
 
-(fx/defn store-url-for-later
+(rf/defn store-url-for-later
   "Store the url in the db to be processed on login"
   [{:keys [db]} url]
   (log/info :store-url-for-later)
   {:db (assoc db :universal-links/url url)})
 
-(fx/defn handle-url
+(rf/defn handle-url
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
   {:events [:universal-links/handle-url]}
@@ -175,11 +175,11 @@
     (route-url cofx url)
     (store-url-for-later cofx url)))
 
-(fx/defn process-stored-event
+(rf/defn process-stored-event
   "Return an event description for processing a url if in the database"
   [{:keys [db] :as cofx}]
   (when-let [url (:universal-links/url db)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (dissoc db :universal-links/url)}
               (handle-url url))))
 

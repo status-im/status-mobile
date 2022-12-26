@@ -14,7 +14,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.utils.handlers :refer [<sub]])
+            [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro
@@ -323,10 +323,10 @@
 
 (defn recovery-phrase-confirm-word
   []
-  (let [word (<sub [:keycard-recovery-phrase-word])]
+  (let [word (rf/sub [:keycard-recovery-phrase-word])]
     (fn []
-      (let [input-word    (<sub [:keycard-recovery-phrase-input-word])
-            error         (<sub [:keycard-recovery-phrase-confirm-error])
+      (let [input-word    (rf/sub [:keycard-recovery-phrase-input-word])
+            error         (rf/sub [:keycard-recovery-phrase-confirm-error])
             {:keys [idx]} word]
         [react/keyboard-avoiding-view
          {:style         styles/container

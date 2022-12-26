@@ -12,7 +12,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.handlers :refer [<sub]]))
+            [utils.re-frame :as rf]))
 
 (defn request-actions
   [community-id request-id]
@@ -37,7 +37,7 @@
   [{:keys [id public-key]} _ _
    {:keys [community-id
            can-manage-users?]}]
-  (let [member (or (<sub [:contacts/contact-by-identity public-key])
+  (let [member (or (rf/sub [:contacts/contact-by-identity public-key])
                    {:public-key public-key})]
     [quo/list-item
      {:title               (multiaccounts/displayed-name member)
@@ -52,10 +52,10 @@
 
 (defn requests-to-join
   []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [requests                    (<sub [:communities/requests-to-join-for-community community-id])
-            {:keys [can-manage-users?]} (<sub [:communities/community community-id])]
+      (let [requests                    (rf/sub [:communities/requests-to-join-for-community community-id])
+            {:keys [can-manage-users?]} (rf/sub [:communities/community community-id])]
         [:<>
          [topbar/topbar
           {:title    (i18n/label :t/community-requests-to-join-title)
@@ -72,6 +72,6 @@
   (reagent/create-class
    {:display-name        "community-requests-to-join-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params])
+                           (communities/fetch-requests-to-join! (get (rf/sub [:get-screen-params])
                                                                      :community-id)))
     :reagent-render      requests-to-join}))

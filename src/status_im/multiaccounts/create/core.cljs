@@ -9,7 +9,7 @@
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
             [utils.security.core :as security]))
@@ -51,7 +51,7 @@
     hashed-password
     callback)))
 
-(fx/defn create-multiaccount
+(rf/defn create-multiaccount
   {:events [:create-multiaccount]}
   [{:keys [db]} key-code]
   (let [{:keys [selected-id]} (:intro-wizard db)]
@@ -71,8 +71,8 @@
            (fn [name identicon]
              (let [derived-whisper       (derived-data constants/path-whisper-keyword)
                    derived-data-extended (assoc-in derived-data
-                                          [constants/path-whisper-keyword]
-                                          (merge derived-whisper {:name name :identicon identicon}))]
+                                                   [constants/path-whisper-keyword]
+                                                   (merge derived-whisper {:name name :identicon identicon}))]
                (re-frame/dispatch [::store-multiaccount-success key-code derived-data-extended]))))))]}))
 
 (re-frame/reg-fx
@@ -88,7 +88,7 @@
                          (mapv normalize-multiaccount-data-keys
                                (types/json->clj %))]))))
 
-(fx/defn multiaccount-generate-and-derive-addresses-success
+(rf/defn multiaccount-generate-and-derive-addresses-success
   {:events [:multiaccount-generate-and-derive-addresses-success]}
   [{:keys [db]} result]
   {:db             (update db
@@ -102,7 +102,7 @@
                                         :step                  :choose-key))))
    :navigate-to-fx :choose-name})
 
-(fx/defn generate-and-derive-addresses
+(rf/defn generate-and-derive-addresses
   {:events [:generate-and-derive-addresses]}
   [{:keys [db]}]
   {:db                                         (-> db
@@ -113,11 +113,11 @@
                                                    (dissoc :recovered-account?))
    :multiaccount-generate-and-derive-addresses nil})
 
-(fx/defn prepare-intro-wizard
+(rf/defn prepare-intro-wizard
   [{:keys [db]}]
   {:db (assoc db :intro-wizard {})})
 
-(fx/defn save-multiaccount-and-login-with-keycard
+(rf/defn save-multiaccount-and-login-with-keycard
   [_ args]
   {:keycard/save-multiaccount-and-login args})
 
@@ -132,7 +132,7 @@
     config
     accounts-data)))
 
-(fx/defn save-account-and-login
+(rf/defn save-account-and-login
   [_ key-uid multiaccount-data password settings node-config accounts-data]
   {::save-account-and-login [key-uid
                              (types/clj->json multiaccount-data)
@@ -160,7 +160,7 @@
       :path       constants/path-whisper
       :chat       true})])
 
-(fx/defn on-multiaccount-created
+(rf/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
    {:keys [address chat-key keycard-instance-uid key-uid
            keycard-pairing keycard-paired-on mnemonic recovered]
@@ -181,32 +181,32 @@
                                  :address])
         new-multiaccount
         (cond->
-          (merge
-           {;; address of the master key
-            :address                  address
+         (merge
+          {;; address of the master key
+           :address                  address
             ;; sha256 of master public key
-            :key-uid                  key-uid
+           :key-uid                  key-uid
             ;; The address from which we derive any wallet
-            :wallet-root-address
-            (get-in multiaccount
-                    [:derived
-                     constants/path-wallet-root-keyword
-                     :address])
-            :name                     name
-            :identicon                identicon
+           :wallet-root-address
+           (get-in multiaccount
+                   [:derived
+                    constants/path-wallet-root-keyword
+                    :address])
+           :name                     name
+           :identicon                identicon
             ;; public key of the chat account
-            :public-key               public-key
+           :public-key               public-key
             ;; default address for Dapps
-            :dapps-address            (:address wallet-account)
-            :latest-derived-path      0
-            :signing-phrase           signing-phrase
-            :send-push-notifications? true
-            :backup-enabled?          true
-            :installation-id          (random-guid-generator)
+           :dapps-address            (:address wallet-account)
+           :latest-derived-path      0
+           :signing-phrase           signing-phrase
+           :send-push-notifications? true
+           :backup-enabled?          true
+           :installation-id          (random-guid-generator)
             ;; default mailserver (history node) setting
-            :use-mailservers?         true
-            :recovered                recovered}
-           config/default-multiaccount)
+           :use-mailservers?         true
+           :recovered                recovered}
+          config/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys
           eip1581-address
@@ -231,7 +231,7 @@
         settings (assoc new-multiaccount
                         :networks/current-network config/default-network
                         :networks/networks        config/default-networks)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db db}
               (if keycard-multiaccount?
                 (save-multiaccount-and-login-with-keycard
@@ -250,12 +250,12 @@
                  (node/get-new-config db)
                  accounts-data)))))
 
-(fx/defn store-multiaccount-success
+(rf/defn store-multiaccount-success
   {:events       [::store-multiaccount-success]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::get-signing-phrase)]}
   [{:keys [db] :as cofx} password derived]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (dissoc db :intro-wizard)}
             (on-multiaccount-created (assoc (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
                                               (some #(when (= selected-id (:id %)) %) multiaccounts))
@@ -264,12 +264,12 @@
                                      password
                                      {:save-mnemonic? true})))
 
-(fx/defn on-key-selected
+(rf/defn on-key-selected
   {:events [:intro-wizard/on-key-selected]}
   [{:keys [db]} id]
   {:db (assoc-in db [:intro-wizard :selected-id] id)})
 
-(fx/defn on-key-storage-selected
+(rf/defn on-key-storage-selected
   {:events [:intro-wizard/on-key-storage-selected]}
   [{:keys [db]} storage-type]
   {:db (assoc-in db [:intro-wizard :selected-storage-type] storage-type)})

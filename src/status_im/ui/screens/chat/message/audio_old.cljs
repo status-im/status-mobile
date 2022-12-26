@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.slider :as slider]
             [status-im.ui.screens.chat.styles.message.audio-old :as style]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
@@ -30,17 +30,17 @@
     (when @progress-timer
       (utils/clear-interval @progress-timer))
     (reset! progress-timer
-      (utils/set-interval
-       #(when (and @state-ref (not (:slider-seeking @state-ref)))
-          (let [ct (audio/get-player-current-time @player-ref)]
-            (reset! progress-ref ct)
-            (when ct
-              (anim/start (anim/timing progress-anim
-                                       {:toValue         @progress-ref
-                                        :duration        100
-                                        :easing          (.-linear ^js anim/easing)
-                                        :useNativeDriver true})))))
-       100))))
+            (utils/set-interval
+             #(when (and @state-ref (not (:slider-seeking @state-ref)))
+                (let [ct (audio/get-player-current-time @player-ref)]
+                  (reset! progress-ref ct)
+                  (when ct
+                    (anim/start (anim/timing progress-anim
+                                             {:toValue         @progress-ref
+                                              :duration        100
+                                              :easing          (.-linear ^js anim/easing)
+                                              :useNativeDriver true})))))
+             100))))
 
 (defn update-state
   [{:keys [state-ref progress-ref progress-anim message-id seek-to-ms audio-duration-ms
@@ -206,7 +206,7 @@
          :accessibility-label :play-pause-audio-message-button
          :color               color}]])))
 
-(fx/defn on-background
+(rf/defn on-background
   {:events [:audio-message/on-background]}
   [_]
   (when (and @current-active-state-ref-ref

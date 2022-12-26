@@ -7,7 +7,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.utils.handlers :refer [<sub]]))
+            [utils.re-frame :as rf]))
 
 (def selected-unpin (reagent/atom nil))
 
@@ -64,7 +64,7 @@
 
 (defn pin-limit-popover
   []
-  (let [{:keys [message]} (<sub [:popover/popover])]
+  (let [{:keys [message]} (rf/sub [:popover/popover])]
     [react/view {:style {:flex-shrink 1}}
      [react/view
       {:style {:height          60

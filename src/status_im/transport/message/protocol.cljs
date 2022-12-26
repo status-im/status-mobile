@@ -1,6 +1,6 @@
 (ns ^{:doc "Protocol API and protocol utils"} status-im.transport.message.protocol
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn build-message
@@ -25,7 +25,7 @@
    :sticker         sticker
    :contentType     content-type})
 
-(fx/defn send-chat-messages
+(rf/defn send-chat-messages
   [_ messages]
   {:json-rpc/call [{:method      "wakuext_sendChatMessages"
                     :params      [(mapv build-message messages)]
@@ -35,7 +35,7 @@
                                     (log/warn "failed to send a message" %)
                                     (js/alert (str "failed to send a message: " %)))}]})
 
-(fx/defn send-reaction
+(rf/defn send-reaction
   [_ {:keys [message-id chat-id emoji-id]}]
   {:json-rpc/call [{:method      "wakuext_sendEmojiReaction"
                     :params      [chat-id message-id emoji-id]
@@ -43,7 +43,7 @@
                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                     :on-error    #(log/error "failed to send a reaction" %)}]})
 
-(fx/defn send-retract-reaction
+(rf/defn send-retract-reaction
   [_ {:keys [emoji-reaction-id]}]
   {:json-rpc/call [{:method      "wakuext_sendEmojiReactionRetraction"
                     :params      [emoji-reaction-id]

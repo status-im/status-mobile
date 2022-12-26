@@ -4,7 +4,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.signing.core :as signing]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [status-im.utils.wallet-connect-legacy :as wallet-connect-legacy]
             [taoensso.timbre :as log]))
@@ -134,7 +134,7 @@
  (fn [[^js connector response]]
    (.approveRequest connector (clj->js response))))
 
-(fx/defn proposal-handler
+(rf/defn proposal-handler
   {:events [:wallet-connect-legacy/proposal]}
   [{:keys [db] :as cofx} request-event connector]
   (let [proposal           (types/js->clj request-event)
@@ -150,7 +150,7 @@
                                        :wallet-connect/proposal-metadata         metadata)
      :show-wallet-connect-sheet nil}))
 
-(fx/defn clean-up-sessions
+(rf/defn clean-up-sessions
   {:events [:wallet-connect-legacy/clean-up-sessions]}
   [{:keys [db]}]
   (let [connectors (map
@@ -158,7 +158,7 @@
                     (:wallet-connect-legacy/sessions db))]
     {:wc-1-clean-up-sessions connectors}))
 
-(fx/defn session-connected
+(rf/defn session-connected
   {:events [:wallet-connect-legacy/created]}
   [{:keys [db]} session]
   (let [connector (get db :wallet-connect-legacy/proposal-connector)
@@ -189,7 +189,7 @@
                                             "wakuext_addWalletConnectSession error call back , data =>"
                                             %)}]}))
 
-(fx/defn manage-app
+(rf/defn manage-app
   {:events [:wallet-connect-legacy/manage-app]}
   [{:keys [db]} session]
   {:db                                       (assoc db
@@ -197,7 +197,7 @@
                                                     :wallet-connect/showing-app-management-sheet? true)
    :show-wallet-connect-app-management-sheet nil})
 
-(fx/defn request-handler
+(rf/defn request-handler
   {:events [:wallet-connect-legacy/request]}
   [{:keys [db] :as cofx} request-event]
   (let [request              (types/js->clj request-event)
@@ -209,12 +209,12 @@
     {:db       (assoc db :wallet-connect-legacy/pending-requests new-pending-requests)
      :dispatch [:wallet-connect-legacy/request-received request]}))
 
-(fx/defn request-handler-test
+(rf/defn request-handler-test
   {:events [:wallet-connect-legacy/request-test]}
   [{:keys [db] :as cofx}]
   {:show-wallet-connect-sheet nil})
 
-(fx/defn approve-proposal
+(rf/defn approve-proposal
   {:events [:wallet-connect-legacy/approve-proposal]}
   [{:keys [db]} account]
   (let [connector         (get db :wallet-connect-legacy/proposal-connector)
@@ -224,14 +224,14 @@
     {:hide-wallet-connect-sheet nil
      :wc-1-approve-session      [connector accounts proposal-chain-id]}))
 
-(fx/defn reject-proposal
+(rf/defn reject-proposal
   {:events [:wallet-connect-legacy/reject-proposal]}
   [{:keys [db]} account]
   (let [connector (get db :wallet-connect-legacy/proposal-connector)]
     {:hide-wallet-connect-sheet nil
      :wc-1-reject-session       connector}))
 
-(fx/defn change-session-account
+(rf/defn change-session-account
   {:events [:wallet-connect-legacy/change-session-account]}
   [{:keys [db]} session account]
   (let [connector          (:connector session)
@@ -246,7 +246,7 @@
                                                       :wallet-connect/showing-app-management-sheet?
                                                       false)}))
 
-(fx/defn disconnect-by-peer-id
+(rf/defn disconnect-by-peer-id
   {:events [:wallet-connect-legacy/disconnect-by-peer-id]}
   [{:keys [db]} peer-id]
   (let [sessions (get db :wallet-connect-legacy/sessions)]
@@ -264,7 +264,7 @@
                                     "wakuext_destroyWalletConnectSession error call back , data ===>"
                                     %)}]}))
 
-(fx/defn disconnect-session
+(rf/defn disconnect-session
   {:events [:wallet-connect-legacy/disconnect]}
   [{:keys [db]} session]
   (let [sessions  (get db :wallet-connect-legacy/sessions)
@@ -285,7 +285,7 @@
        :on-success #(log/debug "wakuext_destroyWalletConnectSession success call back , data ===>" %)
        :on-error   #(log/debug "wakuext_destroyWalletConnectSession error call back , data ===>" %)}]}))
 
-(fx/defn pair-session
+(rf/defn pair-session
   {:events [:wallet-connect-legacy/pair]}
   [{:keys [db]} {:keys [data]}]
   (log/debug "uri received ===> ")
@@ -294,7 +294,7 @@
      :dispatch                 [:navigate-back]
      :wc-1-subscribe-to-events connector}))
 
-(fx/defn update-sessions
+(rf/defn update-sessions
   {:events [:wallet-connect-legacy/update-sessions]}
   [{:keys [db] :as cofx} payload connector]
   (let [sessions        (get db :wallet-connect-legacy/sessions)
@@ -306,7 +306,7 @@
                     (conj (filter #(not= (:connector %) connector) sessions) updated-session))
              (dissoc :wallet-connect/session-managed))}))
 
-(fx/defn wallet-connect-legacy-complete-transaction
+(rf/defn wallet-connect-legacy-complete-transaction
   {:events [:wallet-connect-legacy.dapp/transaction-on-result]}
   [{:keys [db]} message-id connector result]
   (let [response {:id     message-id
@@ -314,12 +314,12 @@
     {:db                   (assoc db :wallet-connect-legacy/response response)
      :wc-1-approve-request [connector response]}))
 
-(fx/defn wallet-connect-legacy-transaction-error
+(rf/defn wallet-connect-legacy-transaction-error
   {:events [:wallet-connect-legacy.dapp/transaction-on-error]}
   [{:keys [db]} message-id connector message]
   {:wc-1-reject-request [connector message-id message]})
 
-(fx/defn wallet-connect-legacy-send-async
+(rf/defn wallet-connect-legacy-send-async
   [{:keys [db] :as cofx} {:keys [method params id] :as payload} message-id connector]
   (let [message?       (browser/web3-sign-message? method)
         sessions       (get db :wallet-connect-legacy/sessions)
@@ -360,22 +360,22 @@
          connector
          (if (= method "eth_coinbase") linked-address [linked-address]))))))
 
-(fx/defn wallet-connect-legacy-send-async-read-only
+(rf/defn wallet-connect-legacy-send-async-read-only
   [{:keys [db] :as cofx} payload id connector]
   (wallet-connect-legacy-send-async cofx payload id connector))
 
-(fx/defn process-request
+(rf/defn process-request
   {:events [:wallet-connect-legacy/request-received]}
   [{:keys [db] :as cofx} payload connector]
   (let [{:keys [id]} payload]
     (wallet-connect-legacy-send-async-read-only cofx payload id connector)))
 
-(fx/defn subscribed-to-multiple-sessions
+(rf/defn subscribed-to-multiple-sessions
   {:events [::subscribed-to-multiple-sessions]}
   [{:keys [db]} sessions]
   {:db (assoc db :wallet-connect-legacy/sessions sessions)})
 
-(fx/defn sync-app-db-with-wc-sessions
+(rf/defn sync-app-db-with-wc-sessions
   {:events [:sync-wallet-connect-app-sessions]}
   [{:keys [db]} session-data]
   (let [chain-id (get-in db [:networks/networks (:networks/current-network db) :config :NetworkId])
@@ -386,7 +386,7 @@
     (when chain-id
       {:initialize-wc-sessions [chain-id sessions]})))
 
-(fx/defn get-connector-session-from-db
+(rf/defn get-connector-session-from-db
   {:events [:get-connector-session-from-db]}
   [_]
   {:json-rpc/call [{:method     "wakuext_getWalletConnectSession"
