@@ -118,12 +118,11 @@
           (swap! albums assoc-in [album-id] [message]))
         (swap! all-messages conj message)
         (when (and album-id (> (count (get @albums album-id)) 3))
-          (do
-            (swap! all-messages (fn [data] (filterv #(not= album-id (:album-id  %)) data)))
-            (swap! all-messages conj {:album      (get @albums album-id)
-                                      :album-id     album-id
-                                      :message-id   album-id
-                                      :content-type status-im.constants/content-type-album})))))
+          (swap! all-messages (fn [data] (filterv #(not= album-id (:album-id %)) data)))
+          (swap! all-messages conj {:album        (get @albums album-id)
+                                    :album-id     album-id
+                                    :message-id   album-id
+                                    :content-type status-im.constants/content-type-album}))))
     @all-messages))
 
 (re-frame/reg-sub

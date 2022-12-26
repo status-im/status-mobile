@@ -116,6 +116,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
 =======
@@ -123,6 +124,8 @@
 =======
 
 >>>>>>> f799c6fa9... feat: album
+=======
+>>>>>>> 479cfe8a5... lint
 (defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
 >>>>>>> 2323598a4... updates
   [rn/view {:style (when platform/android? {:scaleY -1})}
