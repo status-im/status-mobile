@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.build :as build]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im2.setup.log :as log]))
@@ -65,19 +65,19 @@
               (datetime/timestamp->long-date
                (datetime/now))]))))
 
-(fx/defn dialog-closed
+(rf/defn dialog-closed
   {:events [:logging/dialog-left]}
   [{:keys [db]}]
   {:db (dissoc db :logging/dialog-shown?)})
 
-(fx/defn send-email
+(rf/defn send-email
   [_ opts callback]
   {:email/send [opts callback]})
 
-(fx/defn send-email-event
+(rf/defn send-email-event
   {:events [::send-email]}
   [{:keys [db] :as cofx} archive-uri]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
    (dialog-closed)
@@ -99,7 +99,7 @@
   [db]
   (not (string/blank? (get-in db [:multiaccount :log-level]))))
 
-(fx/defn send-logs
+(rf/defn send-logs
   {:events [:logging.ui/send-logs-pressed]}
   [{:keys [db] :as cofx} transport]
   (if (logs-enabled? db)
@@ -125,20 +125,20 @@
                              ::share-logs-file)]})
     (send-email-event cofx nil)))
 
-(fx/defn send-logs-on-error
+(rf/defn send-logs-on-error
   {:events [:logging/send-logs-on-error]}
   [{:keys [db]} error-message]
-  (fx/merge
+  (rf/merge
    {:db (assoc-in db [:bug-report/details :description] error-message)}
    (send-logs :email)))
 
-(fx/defn show-client-error
+(rf/defn show-client-error
   {:events [:show-client-error]}
   [_]
   {:utils/show-popup {:title   (i18n/label :t/cant-report-bug)
                       :content (i18n/label :t/mail-should-be-configured)}})
 
-(fx/defn show-logs-dialog
+(rf/defn show-logs-dialog
   {:events [:shake-event]}
   [{:keys [db]}]
   (when-not (:logging/dialog-shown? db)
@@ -169,21 +169,21 @@
  (fn [opts]
    (.share ^js react/sharing (clj->js opts))))
 
-(fx/defn share-archive
+(rf/defn share-archive
   [_ opts]
   {::share-archive opts})
 
-(fx/defn share-logs-file
+(rf/defn share-logs-file
   {:events [::share-logs-file]}
   [{:keys [db] :as cofx} archive-uri]
-  (fx/merge
+  (rf/merge
    cofx
    (dialog-closed)
    (share-archive
     {:title "Archived logs"
      :url   archive-uri})))
 
-(fx/defn details
+(rf/defn details
   {:events [:logging/report-details]}
   [{:keys [db]} key value]
   {:db (-> db
@@ -199,12 +199,12 @@
              (count (string/trim description)))
       (i18n/label :t/bug-report-too-short-description))))
 
-(fx/defn submit-report
+(rf/defn submit-report
   {:events [:logging/submit-report]}
   [{:keys [db] :as cofx} details steps]
   (if-let [error (validate-description db)]
     {:db (assoc db :bug-report/description-error error)}
-    (fx/merge
+    (rf/merge
      cofx
      (bottom-sheet/hide-bottom-sheet)
      (send-logs :email))))
@@ -216,7 +216,7 @@
 
 (def gh-issue-url "https://github.com/status-im/status-mobile/issues/new?labels=bug&title=%s&body=%s")
 
-(fx/defn submit-issue
+(rf/defn submit-issue
   [{:keys [db]}]
   (let [{:keys [steps description]}
         (get db :bug-report/details)
@@ -228,10 +228,10 @@
         url                         (gstring/format gh-issue-url (js/escape title) (js/escape body))]
     {::open-url url}))
 
-(fx/defn submit-gh-issue
+(rf/defn submit-gh-issue
   {:events [:logging/submit-gh-issue]}
   [{:keys [db] :as cofx} details steps]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
    (bottom-sheet/hide-bottom-sheet)

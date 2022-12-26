@@ -9,7 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [utils.debounce :as debounce]))
 
 (def selected-item (reagent/atom ""))
@@ -25,11 +25,11 @@
 
 (defn view
   []
-  (let [{:keys [community-id chat]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id chat]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [categories (<sub [:communities/sorted-categories community-id])
-            chats      (<sub [:chats/sorted-categories-by-community-id community-id])
-            comm-chat  (<sub [:chats/community-chat-by-id community-id (:chat-id chat)])
+      (let [categories (rf/sub [:communities/sorted-categories community-id])
+            chats      (rf/sub [:chats/sorted-categories-by-community-id community-id])
+            comm-chat  (rf/sub [:chats/community-chat-by-id community-id (:chat-id chat)])
             _ (reset! selected-item (:categoryID comm-chat))]
         [:<>
          [topbar/topbar
@@ -45,9 +45,9 @@
             :footer                       [quo/list-item
                                            {:theme    :accent
                                             :icon     :main-icons/channel-category
-                                            :on-press #(>evt [:open-modal
-                                                              :create-community-category
-                                                              {:community-id community-id}])
+                                            :on-press #(rf/dispatch [:open-modal
+                                                                     :create-community-category
+                                                                     {:community-id community-id}])
                                             :title    (i18n/label :t/create-category)}]
             :data                         (conj categories {:name (i18n/label :t/none) :id ""})
             :render-fn                    render-fn}]]

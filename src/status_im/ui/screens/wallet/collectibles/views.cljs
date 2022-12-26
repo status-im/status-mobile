@@ -15,7 +15,7 @@
             [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet]))
 
 (def svg-uri (reagent/adapt-react-class SvgUri))
@@ -150,8 +150,8 @@
 
 (defn nft-assets
   [{:keys [num-assets address collectible-slug]}]
-  (let [assets    (<sub [:wallet/collectible-assets-by-collection-and-address address collectible-slug])
-        fetching? (<sub [:wallet/fetching-assets-by-collectible-slug collectible-slug])]
+  (let [assets    (rf/sub [:wallet/collectible-assets-by-collection-and-address address collectible-slug])
+        fetching? (rf/sub [:wallet/fetching-assets-by-collectible-slug collectible-slug])]
     [react/view
      {:flex            1
       :flex-wrap       :wrap
@@ -177,7 +177,7 @@
 
 (defn nft-collections
   [address]
-  (let [collection (<sub [:wallet/collectible-collection address])]
+  (let [collection (rf/sub [:wallet/collectible-collection address])]
     [:<>
      (for [[index collectible] (map-indexed vector collection)]
        ^{:key (:slug collectible)}
@@ -249,7 +249,7 @@
 
 (defn nft-details-modal
   []
-  (let [nft (<sub [:wallet/selected-collectible])]
+  (let [nft (rf/sub [:wallet/selected-collectible])]
     [react/scroll-view
      [topbar/topbar
       {:navigation    {:icon :main-icons/close}

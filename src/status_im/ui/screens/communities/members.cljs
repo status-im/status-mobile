@@ -10,12 +10,12 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]
-  (>evt [:bottom-sheet/hide])
-  (>evt event))
+  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch event))
 
 (defn member-sheet
   [first-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users? admin?]
@@ -36,22 +36,22 @@
        {:theme    :negative
         :icon     :main-icons/arrow-left
         :title    (i18n/label :t/member-kick)
-        :on-press #(>evt [::communities/member-kick community-id public-key])}]])
+        :on-press #(rf/dispatch [::communities/member-kick community-id public-key])}]])
    (when can-manage-users?
      [:<>
       [quo/list-item
        {:theme    :negative
         :icon     :main-icons/cancel
         :title    (i18n/label :t/member-ban)
-        :on-press #(>evt [::communities/member-ban community-id public-key])}]])
+        :on-press #(rf/dispatch [::communities/member-ban community-id public-key])}]])
    (when admin?
      [:<>
       [quo/list-item
        {:theme    :accent
         :icon     :main-icons/make-admin
         :title    (i18n/label :t/make-moderator)
-        :on-press #(>evt [:community.member/add-role community-id public-key
-                          constants/community-member-role-moderator])}]])])
+        :on-press #(rf/dispatch [:community.member/add-role community-id public-key
+                                 constants/community-member-role-moderator])}]])])
 
 (defn render-member
   [public-key _ _
@@ -60,8 +60,8 @@
            can-manage-users?
            can-kick-users?
            admin?]}]
-  (let [member                   (<sub [:contacts/contact-by-identity public-key])
-        [first-name second-name] (<sub [:contacts/contact-two-names-by-identity public-key])]
+  (let [member                   (rf/sub [:contacts/contact-by-identity public-key])
+        [first-name second-name] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
     [quo/list-item
      {:title               first-name
       :subtitle            second-name
@@ -72,10 +72,10 @@
       :accessory           (when (not= public-key my-public-key)
                              [quo/button
                               {:on-press
-                               #(>evt [:bottom-sheet/show-sheet
-                                       {:content (fn []
-                                                   [member-sheet first-name member community-id
-                                                    can-kick-users? can-manage-users? admin?])}])
+                               #(rf/dispatch [:bottom-sheet/show-sheet
+                                              {:content (fn []
+                                                          [member-sheet first-name member community-id
+                                                           can-kick-users? can-manage-users? admin?])}])
                                :type                :icon
                                :theme               :icon
                                :accessibility-label :menu-option}
@@ -89,12 +89,12 @@
      :title               (i18n/label :t/invite-people)
      :accessibility-label :community-invite-people
      :theme               :accent
-     :on-press            #(>evt [:communities/invite-people-pressed community-id])}]
+     :on-press            #(rf/dispatch [:communities/invite-people-pressed community-id])}]
    [quo/separator {:style {:margin-vertical 8}}]])
 
 (defn requests-to-join
   [community-id]
-  (let [requests       (<sub [:communities/requests-to-join-for-community community-id])
+  (let [requests       (rf/sub [:communities/requests-to-join-for-community community-id])
         requests-count (count requests)]
     [:<>
      [quo/list-item
@@ -103,21 +103,21 @@
        [react/view {:flex-direction :row}
         (when (pos? requests-count)
           [unviewed-indicator/unviewed-indicator requests-count])]
-       :on-press  #(>evt [:navigate-to :community-requests-to-join {:community-id community-id}])
+       :on-press  #(rf/dispatch [:navigate-to :community-requests-to-join {:community-id community-id}])
        :title     (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 
 (defn members
   []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [my-public-key (<sub [:multiaccount/public-key])
+      (let [my-public-key (rf/sub [:multiaccount/public-key])
             {:keys [permissions
                     can-manage-users?
                     admin]}
-            (<sub [:communities/community community-id])
-            sorted-members (<sub [:communities/sorted-community-members
-                                  community-id])]
+            (rf/sub [:communities/community community-id])
+            sorted-members (rf/sub [:communities/sorted-community-members
+                                    community-id])]
         [:<>
          [topbar/topbar
           {:title    (i18n/label :t/community-members-title)
@@ -142,6 +142,6 @@
   (reagent/create-class
    {:display-name        "community-members-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params])
+                           (communities/fetch-requests-to-join! (get (rf/sub [:get-screen-params])
                                                                      :community-id)))
     :reagent-render      members}))

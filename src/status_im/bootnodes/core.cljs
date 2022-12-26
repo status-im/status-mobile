@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]))
 
 (def address-regex #"enode://[a-zA-Z0-9]+:?(.*)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
@@ -19,12 +19,12 @@
    :id      (string/replace id "-" "")
    :name    bootnode-name})
 
-(fx/defn fetch
+(rf/defn fetch
   [cofx id]
   (let [network (get-in cofx [:db :networks/current-network])]
     (get-in cofx [:db :multiaccount :custom-bootnodes network id])))
 
-(fx/defn set-input
+(rf/defn set-input
   {:events [:bootnodes.ui/input-changed]}
   [{:keys [db]} input-key value]
   {:db (update
@@ -38,14 +38,14 @@
                   :name (string/blank? value)
                   :url  (not (valid-address? value)))})})
 
-(fx/defn edit
+(rf/defn edit
   {:events [:bootnodes.ui/add-bootnode-pressed]}
   [{:keys [db] :as cofx} id]
   (let [{:keys [id
                 address
                 name]}
         (fetch cofx id)
-        fxs (fx/merge cofx
+        fxs (rf/merge cofx
                       (set-input :id id)
                       (set-input :url (str address))
                       (set-input :name (str name)))]
@@ -56,11 +56,11 @@
   (let [network (:networks/current-network db)]
     (get-in db [:multiaccount :custom-bootnodes-enabled? network])))
 
-(fx/defn delete
+(rf/defn delete
   [{{:keys [multiaccount] :as db} :db :as cofx} id]
   (let [network          (:networks/current-network db)
         new-multiaccount (update-in multiaccount [:custom-bootnodes network] dissoc id)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc db :multiaccount new-multiaccount)}
               (multiaccounts.update/multiaccount-update
                :custom-bootnodes
@@ -68,7 +68,7 @@
                {:success-event (when (custom-bootnodes-in-use? cofx)
                                  [:multiaccounts.update.callback/save-settings-success])}))))
 
-(fx/defn upsert
+(rf/defn upsert
   {:events       [:bootnodes.ui/save-pressed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [{{:bootnodes/keys [manage] :keys [multiaccount] :as db} :db
@@ -86,7 +86,7 @@
                                [network (:id bootnode)]
                                bootnode)]
 
-    (fx/merge cofx
+    (rf/merge cofx
               {:db       (dissoc db :bootnodes/manage)
                :dispatch [:navigate-back]}
               (multiaccounts.update/multiaccount-update
@@ -95,7 +95,7 @@
                {:success-event (when (custom-bootnodes-in-use? cofx)
                                  [:multiaccounts.update.callback/save-settings-success])}))))
 
-(fx/defn toggle-custom-bootnodes
+(rf/defn toggle-custom-bootnodes
   {:events [:bootnodes.ui/custom-bootnodes-switch-toggled]}
   [{:keys [db] :as cofx} value]
   (let [current-network    (:networks/current-network db)
@@ -106,14 +106,14 @@
      (assoc bootnodes-settings current-network value)
      {:success-event [:multiaccounts.update.callback/save-settings-success]})))
 
-(fx/defn set-bootnodes-from-qr
+(rf/defn set-bootnodes-from-qr
   {:events [:bootnodes.callback/qr-code-scanned]}
   [cofx url]
   (assoc (set-input cofx :url (string/trim url))
          :dispatch
          [:navigate-back]))
 
-(fx/defn show-delete-bootnode-confirmation
+(rf/defn show-delete-bootnode-confirmation
   {:events [:bootnodes.ui/delete-pressed]}
   [_ bootnode-id]
   {:ui/show-confirmation {:title               (i18n/label :t/delete-bootnode-title)
@@ -122,9 +122,9 @@
                           :on-accept           #(re-frame/dispatch [:bootnodes.ui/delete-confirmed
                                                                     bootnode-id])}})
 
-(fx/defn delete-bootnode
+(rf/defn delete-bootnode
   {:events [:bootnodes.ui/delete-confirmed]}
   [cofx bootnode-id]
-  (fx/merge cofx
+  (rf/merge cofx
             (delete bootnode-id)
             (navigation/navigate-back)))

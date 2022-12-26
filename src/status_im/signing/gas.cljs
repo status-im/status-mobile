@@ -6,7 +6,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.money :as money]
             [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
@@ -151,7 +151,7 @@
       validate-max-priority-fee])
     db))
 
-(fx/defn edit-value
+(rf/defn edit-value
   {:events [:signing.edit-fee.ui/edit-value]}
   [{:keys [db]} key value]
   {:db (-> db
@@ -178,7 +178,7 @@
       :tip      tip-bn
       :fee      (money/add fast-bn tip-bn)}}))
 
-(fx/defn set-fee-option
+(rf/defn set-fee-option
   {:events [:signing.edit-fee.ui/set-option]}
   [{:keys [db] :as cofx} option]
   (let [tip               (get db :wallet/current-priority-fee)
@@ -195,7 +195,7 @@
                      build-edit
                      :maxPriorityFeePerGas (money/wei->gwei tip)))}))
 
-(fx/defn set-priority-fee
+(rf/defn set-priority-fee
   {:events [:signing.edit-fee.ui/set-priority-fee]}
   [{:keys [db]} value]
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]}
@@ -216,21 +216,21 @@
              (update :signing/edit-fee build-edit :maxFeePerGas new-max-fee-value)
              validate-eip1559-fees)}))
 
-(fx/defn update-estimated-gas-success
+(rf/defn update-estimated-gas-success
   {:events [:signing/update-estimated-gas-success]}
   [{db :db} gas]
   {:db (-> db
            (assoc-in [:signing/tx :gas] gas)
            (assoc-in [:signing/edit-fee :gas-loading?] false))})
 
-(fx/defn update-gas-price-success
+(rf/defn update-gas-price-success
   {:events [:signing/update-gas-price-success]}
   [{db :db} price]
   (if (eip1559/sync-enabled?)
     (let [{:keys [normal-base-fee max-priority-fee]} price
           max-priority-fee-bn                        (money/with-precision (get-suggested-tip
                                                                             max-priority-fee)
-                                                                           0)]
+                                                       0)]
       {:db (-> db
                (assoc-in [:signing/tx :maxFeePerGas]
                          (money/to-hex (money/add max-priority-fee-bn
@@ -242,7 +242,7 @@
              (assoc-in [:signing/tx :gasPrice] price)
              (assoc-in [:signing/edit-fee :gas-price-loading?] false))}))
 
-(fx/defn update-estimated-gas-error
+(rf/defn update-estimated-gas-error
   {:events [:signing/update-estimated-gas-error]}
   [{db :db} {:keys [message]}]
   (log/warn "signing/update-estimated-gas-error" message)
@@ -250,12 +250,12 @@
            (assoc-in [:signing/edit-fee :gas-loading?] false)
            (assoc-in [:signing/tx :gas-error-message] message))})
 
-(fx/defn update-gas-price-error
+(rf/defn update-gas-price-error
   {:events [:signing/update-gas-price-error]}
   [{db :db}]
   {:db (assoc-in db [:signing/edit-fee :gas-price-loading?] false)})
 
-(fx/defn open-fee-sheet
+(rf/defn open-fee-sheet
   {:events [:signing.ui/open-fee-sheet]}
   [{{:signing/keys [tx] :as db} :db :as cofx} sheet-opts]
   (let [{:keys [gas gasPrice maxFeePerGas maxPriorityFeePerGas]} tx
@@ -275,11 +275,11 @@
                                                                    :maxFeePerGas max-fee
                                                                    :maxPriorityFeePerGas
                                                                    max-priority-fee})]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc db :signing/edit-fee edit-fee)}
               (bottom-sheet/show-bottom-sheet {:view sheet-opts}))))
 
-(fx/defn submit-fee
+(rf/defn submit-fee
   {:events [:signing.edit-fee.ui/submit]}
   [{{:signing/keys [edit-fee] :as db} :db :as cofx} force?]
   (let [{:keys [gas gasPrice maxFeePerGas maxPriorityFeePerGas]} edit-fee
@@ -292,7 +292,7 @@
     (if (and (seq errors?)
              (not force?))
       (popover/show-popover cofx {:view :fees-warning})
-      (fx/merge cofx
+      (rf/merge cofx
                 {:db (update db
                              :signing/tx           assoc
                              :gas                  (:value-number gas)
@@ -302,10 +302,10 @@
                                                                 (:value-number maxPriorityFeePerGas)))}
                 (bottom-sheet/hide-bottom-sheet)))))
 
-(fx/defn submit-nonce
+(rf/defn submit-nonce
   {:events [:signing.nonce/submit]}
   [{db :db :as cofx} nonce]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc-in db [:signing/tx :nonce] (if (string/blank? nonce) nil nonce))}
             (bottom-sheet/hide-bottom-sheet)))
 
@@ -394,7 +394,7 @@
    (money/sub (money/bignumber gas-price)
               (money/bignumber base-fee))))
 
-(fx/defn header-fetched
+(rf/defn header-fetched
   {:events [::header-fetched]}
   [{{:networks/keys [current-network networks]} :db}
    {:keys [error-callback success-callback fee-history] :as params}]

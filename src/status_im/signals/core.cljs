@@ -7,20 +7,20 @@
             [status-im.multiaccounts.login.core :as login]
             [status-im.notifications.local :as local-notifications]
             [status-im.transport.message.core :as transport.message]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.visibility-status-updates.core :as visibility-status-updates]
             [taoensso.timbre :as log]))
 
-(fx/defn status-node-started
+(rf/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]
   (log/debug "[signals] status-node-started"
              "error"
              error)
   (if error
     (cond->
-      {:db (-> db
-               (update :multiaccounts/login dissoc :processing)
-               (assoc-in [:multiaccounts/login :error]
+     {:db (-> db
+              (update :multiaccounts/login dissoc :processing)
+              (assoc-in [:multiaccounts/login :error]
                          ;; NOTE: the only currently known error is
                          ;; "file is not a database" which occurs
                          ;; when the user inputs the wrong password
@@ -29,24 +29,24 @@
                          ;; to the user
                          ;; in case of an unknown error we show the
                          ;; error
-                         (if (= error "file is not a database")
-                           (i18n/label :t/wrong-password)
-                           error)))}
+                        (if (= error "file is not a database")
+                          (i18n/label :t/wrong-password)
+                          error)))}
       (= (:view-id db) :progress)
       (assoc :dispatch [:navigate-to :login]))
     (login/multiaccount-login-success cofx)))
 
-(fx/defn summary
+(rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
   (let [previous-summary (:peers-summary db)
         peers-count      (count peers-summary)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc db
                           :peers-summary peers-summary
                           :peers-count   peers-count)}
               (visibility-status-updates/peers-summary-change peers-count))))
 
-(fx/defn wakuv2-peer-stats
+(rf/defn wakuv2-peer-stats
   [{:keys [db]} peer-stats]
   (let [previous-stats (:peer-stats db)]
     {:db (assoc db
@@ -58,7 +58,7 @@
   (log/info "local pairing signal received"
             {:signal-type signal-type}))
 
-(fx/defn process
+(rf/defn process
   {:events [:signals/signal-received]}
   [{:keys [db] :as cofx} event-str]
   ;; We only convert to clojure when strictly necessary or we know it

@@ -43,7 +43,7 @@
    [status-im.ui.components.react :as react]
    status-im.ui.screens.privacy-and-security-settings.events
    [status-im.utils.dimensions :as dimensions]
-   [status-im.utils.fx :as fx]
+   [utils.re-frame :as rf]
    status-im.utils.logging.core
    [status-im.utils.universal-links.core :as universal-links]
    [status-im.utils.utils :as utils]
@@ -95,22 +95,22 @@
  (fn []
    (dimensions/add-event-listener)))
 
-(fx/defn dismiss-keyboard
+(rf/defn dismiss-keyboard
   {:events [:dismiss-keyboard]}
   [_]
   {:dismiss-keyboard nil})
 
-(fx/defn identicon-generated
+(rf/defn identicon-generated
   {:events [:identicon-generated]}
   [{:keys [db]} path identicon]
   {:db (assoc-in db path identicon)})
 
-(fx/defn gfycat-generated
+(rf/defn gfycat-generated
   {:events [:gfycat-generated]}
   [{:keys [db]} path gfycat]
   {:db (assoc-in db path gfycat)})
 
-(fx/defn system-theme-mode-changed
+(rf/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
   [cofx _]
   (when (multiaccounts.model/logged-in? cofx)
@@ -135,7 +135,7 @@
                                                       authentication-options)
         :on-cancel           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])}))))
 
-(fx/defn on-return-from-background
+(rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
   (let [app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:multiaccount :signed-up?])
@@ -146,7 +146,7 @@
                                  (some? app-in-background-since)
                                  (>= (- now app-in-background-since)
                                      constants/ms-in-bg-for-require-bioauth))]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (dissoc db :app-in-background-since)}
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
@@ -156,17 +156,17 @@
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
-(fx/defn on-going-in-background
+(rf/defn on-going-in-background
   [{:keys [db now]}]
   {:db         (assoc db :app-in-background-since now)
    :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]})
 
-(fx/defn app-state-change
+(rf/defn app-state-change
   {:events [:app-state-change]}
   [{:keys [db] :as cofx} state]
   (let [app-coming-from-background? (= state "active")
         app-going-in-background?    (= state "background")]
-    (fx/merge cofx
+    (rf/merge cofx
               {::app-state-change-fx state
                :db                   (assoc db :app-state state)}
               #(when app-coming-from-background?
@@ -174,26 +174,26 @@
               #(when app-going-in-background?
                  (on-going-in-background %)))))
 
-(fx/defn request-permissions
+(rf/defn request-permissions
   {:events [:request-permissions]}
   [_ options]
   {:request-permissions-fx options})
 
-(fx/defn update-window-dimensions
+(rf/defn update-window-dimensions
   {:events [:update-window-dimensions]}
   [{:keys [db]} dimensions]
   {:db (assoc db :dimensions/window (dimensions/window dimensions))})
 
-(fx/defn init-timeline-chat
+(rf/defn init-timeline-chat
   {:events [:init-timeline-chat]}
   [{:keys [db] :as cofx}]
   (when-not (get-in db [:pagination-info constants/timeline-chat-id :messages-initialized?])
     (chat/preload-chat-data cofx constants/timeline-chat-id)))
 
-(fx/defn on-will-focus
+(rf/defn on-will-focus
   {:events [:screens/on-will-focus]}
   [{:keys [db] :as cofx} view-id]
-  (fx/merge cofx
+  (rf/merge cofx
             (cond
               (= :chat view-id)
               {::async-storage/set! {:chat-id (get-in cofx [:db :current-chat-id])
@@ -222,25 +222,25 @@
                nil)))
 
 ;;TODO :replace by named events
-(fx/defn set-event
+(rf/defn set-event
   {:events [:set]}
   [{:keys [db]} k v]
   {:db (assoc db k v)})
 
-(fx/defn set-view-id
+(rf/defn set-view-id
   {:events [:set-view-id]}
   [{:keys [db]} view-id]
   {:db (assoc db :view-id view-id)})
 
 ;;TODO :replace by named events
-(fx/defn set-once-event
+(rf/defn set-once-event
   {:events [:set-once]}
   [{:keys [db]} k v]
   (when-not (get db k)
     {:db (assoc db k v)}))
 
 ;;TODO :replace by named events
-(fx/defn set-in-event
+(rf/defn set-in-event
   {:events [:set-in]}
   [{:keys [db]} path v]
   {:db (assoc-in db path v)})
@@ -251,7 +251,7 @@
                            {:logoUrl :logo-url
                             :siteUrl :site-url}))
 
-(fx/defn crypto-loaded-event
+(rf/defn crypto-loaded-event
   {:events [::crypto-loaded]}
   [{:keys [db]} on-ramps]
   {:db (assoc
@@ -259,7 +259,7 @@
         :buy-crypto/on-ramps
         (map on-ramp<-rpc on-ramps))})
 
-(fx/defn buy-crypto-ui-loaded
+(rf/defn buy-crypto-ui-loaded
   {:events [:buy-crypto.ui/loaded]}
   [_]
   {:json-rpc/call [{:method     "wallet_getCryptoOnRamps"
@@ -267,10 +267,10 @@
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
-(fx/defn open-buy-crypto-screen
+(rf/defn open-buy-crypto-screen
   {:events [:buy-crypto.ui/open-screen]}
   [cofx]
-  (fx/merge
+  (rf/merge
    cofx
    (navigation/open-modal :buy-crypto nil)
    (wallet/keep-watching-history)))
@@ -288,7 +288,7 @@
     (hash id)
     (hash (str public-key id))))
 
-(fx/defn close-information-box
+(rf/defn close-information-box
   {:events [:close-information-box]}
   [{:keys [db]} id global?]
   (let [public-key (get-in db [:multiaccount :public-key])
@@ -296,7 +296,7 @@
     {::async-storage/set! {hash true}
      :db                  (assoc-in db [:information-box-states id] true)}))
 
-(fx/defn information-box-states-loaded
+(rf/defn information-box-states-loaded
   {:events [:information-box-states-loaded]}
   [{:keys [db]} hashes states]
   {:db (assoc db
@@ -307,7 +307,7 @@
                {}
                hashes))})
 
-(fx/defn load-information-box-states
+(rf/defn load-information-box-states
   {:events [:load-information-box-states]}
   [{:keys [db]}]
   (let [public-key            (get-in db [:multiaccount :public-key])

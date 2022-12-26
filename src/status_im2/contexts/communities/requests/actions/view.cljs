@@ -11,7 +11,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.list.views :as list]
-            [status-im.utils.handlers :refer [>evt]]))
+            [utils.re-frame :as rf]))
 
 ;; TODO: update with real data
 (def community-rules
@@ -139,12 +139,12 @@
                  :align-items     :center
                  :justify-content :space-evenly}}
         [button/button
-         {:on-press #(>evt [:bottom-sheet/hide])
+         {:on-press #(rf/dispatch [:bottom-sheet/hide])
           :type     :grey
           :style    {:flex 1 :margin-right 12}} (i18n/label :t/cancel)]
         [button/button
          {:on-press (fn []
-                      (>evt [::communities/join (:id community)])
-                      (>evt [:bottom-sheet/hide]))
+                      (rf/dispatch [::communities/join (:id community)])
+                      (rf/dispatch [:bottom-sheet/hide]))
           :disabled (not @agreed-to-rules?)
           :style    {:flex 1}} (i18n/label :t/join-open-community)]]])))

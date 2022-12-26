@@ -10,7 +10,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.router.core :as router]
             [status-im.utils.db :as utils.db]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
             [status-im2.navigation.events :as navigation]))
@@ -24,7 +24,7 @@
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
 
-(fx/defn new-chat-set-new-identity
+(rf/defn new-chat-set-new-identity
   {:events [:new-chat/set-new-identity]}
   [{db :db} new-identity-raw new-ens-name id]
   (let [ens-error (and (= new-identity-raw "0x") (not (string/blank? new-ens-name)))]
@@ -61,12 +61,12 @@
                                                             new-identity
                                                             @resolve-last-id])}})))))))
 
-(fx/defn clear-new-identity
+(rf/defn clear-new-identity
   {:events [::clear-new-identity ::new-chat-focus]}
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
 
-(fx/defn qr-code-handled
+(rf/defn qr-code-handled
   {:events [::qr-code-handled]}
   [{:keys [db] :as cofx} {:keys [type public-key chat-id data ens-name]}
    {:keys [new-contact? nickname] :as opts}]
@@ -81,7 +81,7 @@
         validation-result (db/validate-pub-key db chat-key)]
     (if-not validation-result
       (if new-contact?
-        (fx/merge cofx
+        (rf/merge cofx
                   (contact/add-contact chat-key nickname ens-name)
                   (navigation/navigate-to-cofx :contacts-list {}))
         (chat/start-chat cofx chat-key ens-name))
@@ -93,7 +93,7 @@
                                         (i18n/label :t/can-not-add-yourself))
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
-(fx/defn qr-code-scanned
+(rf/defn qr-code-scanned
   {:events [:contact/qr-code-scanned]}
   [{:keys [db]} data opts]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)

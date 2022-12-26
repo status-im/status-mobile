@@ -9,7 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.config :as config]
             [status-im.utils.fs :as fs]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.image-processing :as image-processing]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -110,17 +110,17 @@
     {:permissions [:read-external-storage]
      :on-allowed  (fn []
                     (-> (if end-cursor
-                            (.getPhotos
-                             CameraRoll
-                             #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
-                            (.getPhotos CameraRoll
-                                        #js {:first num :assetType "Photos" :groupTypes "All"}))
+                          (.getPhotos
+                           CameraRoll
+                           #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
+                          (.getPhotos CameraRoll
+                                      #js {:first num :assetType "Photos" :groupTypes "All"}))
                         (.then #(let [response (types/js->clj %)]
                                   (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
                                                       (:page_info response) end-cursor])))
                         (.catch #(log/warn "could not get camera roll photos"))))})))
 
-(fx/defn image-captured
+(rf/defn image-captured
   {:events [:chat.ui/image-captured]}
   [{:keys [db]} chat-id uri]
   (let [current-chat-id (or chat-id (:current-chat-id db))
@@ -129,24 +129,24 @@
                (not (get images uri)))
       {::image-selected [uri current-chat-id]})))
 
-(fx/defn on-end-reached
+(rf/defn on-end-reached
   {:events [:camera-roll/on-end-reached]}
   [_ end-cursor loading? has-next-page?]
   (when (and (not loading?) has-next-page?)
     (re-frame/dispatch [:chat.ui/camera-roll-loading-more true])
     (re-frame/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
 
-(fx/defn camera-roll-get-photos
+(rf/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
   [_ num end-cursor]
   {::camera-roll-get-photos [num end-cursor]})
 
-(fx/defn camera-roll-loading-more
+(rf/defn camera-roll-loading-more
   {:events [:chat.ui/camera-roll-loading-more]}
   [{:keys [db]} is-loading]
   {:db (assoc db :camera-roll/loading-more is-loading)})
 
-(fx/defn on-camera-roll-get-photos
+(rf/defn on-camera-roll-get-photos
   {:events [:on-camera-roll-get-photos]}
   [{:keys [db] :as cofx} photos page-info end-cursor]
   (let [photos_x (when end-cursor (:camera-roll/photos db))]
@@ -156,34 +156,34 @@
              (assoc :camera-roll/has-next-page (:has_next_page page-info))
              (assoc :camera-roll/loading-more false))}))
 
-(fx/defn clear-sending-images
+(rf/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}
   [{:keys [db]} current-chat-id]
   {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})})
 
-(fx/defn cancel-sending-image
+(rf/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
   [{:keys [db] :as cofx} chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     (clear-sending-images cofx current-chat-id)))
 
-(fx/defn cancel-sending-image-timeline
+(rf/defn cancel-sending-image-timeline
   {:events [:chat.ui/cancel-sending-image-timeline]}
   [{:keys [db] :as cofx}]
   (cancel-sending-image cofx (chat/my-profile-chat-topic db)))
 
-(fx/defn image-selected
+(rf/defn image-selected
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} current-chat-id original uri]
   {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})})
 
-(fx/defn image-unselected
+(rf/defn image-unselected
   {:events [:chat.ui/image-unselected]}
   [{:keys [db]} original]
   (let [current-chat-id (:current-chat-id db)]
     {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image] dissoc original)}))
 
-(fx/defn chat-open-image-picker
+(rf/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}
   [{:keys [db]} chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))
@@ -191,12 +191,12 @@
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker current-chat-id})))
 
-(fx/defn chat-open-image-picker-timeline
+(rf/defn chat-open-image-picker-timeline
   {:events [:chat.ui/open-image-picker-timeline]}
   [{:keys [db] :as cofx}]
   (chat-open-image-picker cofx (chat/my-profile-chat-topic db)))
 
-(fx/defn chat-show-image-picker-camera
+(rf/defn chat-show-image-picker-camera
   {:events [:chat.ui/show-image-picker-camera]}
   [{:keys [db]} chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))
@@ -204,12 +204,12 @@
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker-camera current-chat-id})))
 
-(fx/defn chat-show-image-picker-camera-timeline
+(rf/defn chat-show-image-picker-camera-timeline
   {:events [:chat.ui/show-image-picker-camera-timeline]}
   [{:keys [db] :as cofx}]
   (chat-show-image-picker-camera cofx (chat/my-profile-chat-topic db)))
 
-(fx/defn camera-roll-pick
+(rf/defn camera-roll-pick
   {:events [:chat.ui/camera-roll-pick]}
   [{:keys [db]} uri chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))
@@ -221,12 +221,12 @@
                  (not (get images uri)))
         {::image-selected [uri current-chat-id]}))))
 
-(fx/defn camera-roll-pick-timeline
+(rf/defn camera-roll-pick-timeline
   {:events [:chat.ui/camera-roll-pick-timeline]}
   [{:keys [db] :as cofx} uri]
   (camera-roll-pick cofx uri (chat/my-profile-chat-topic db)))
 
-(fx/defn save-image-to-gallery
+(rf/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}
   [_ base64-uri]
   {::save-image-to-gallery base64-uri})

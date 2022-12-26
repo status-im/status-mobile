@@ -2,7 +2,7 @@
   (:require ["functional-red-black-tree" :as rb-tree]
             [status-im.constants :as constants]
             [status-im.utils.datetime :as time]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
@@ -197,8 +197,8 @@
 
 ;; NOTE(performance): this is too expensive, probably we could mark message somehow and just hide it in
 ;; the UI
-(fx/defn rebuild-message-list
+(rf/defn rebuild-message-list
   [{:keys [db]} chat-id]
   {:db (assoc-in db
-        [:message-lists chat-id]
-        (add-many nil (vals (get-in db [:messages chat-id]))))})
+                 [:message-lists chat-id]
+                 (add-many nil (vals (get-in db [:messages chat-id]))))})

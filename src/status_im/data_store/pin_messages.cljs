@@ -1,7 +1,7 @@
 (ns status-im.data-store.pin-messages
   (:require [clojure.set :as clojure.set]
             [status-im.data-store.messages :as messages]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn <-rpc
@@ -27,7 +27,7 @@
                                     (on-success (update result :pinned-messages #(map <-rpc %)))))
                     :on-error   on-error}]})
 
-(fx/defn send-pin-message
+(rf/defn send-pin-message
   [cofx pin-message]
   {:json-rpc/call [{:method     "wakuext_sendPinMessage"
                     :params     [(messages/->rpc pin-message)]

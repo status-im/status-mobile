@@ -9,7 +9,7 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.chat.state :as view.state]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -36,7 +36,7 @@
   ;; TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
   (message-list/rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
 
-(fx/defn add-senders-to-chat-users
+(rf/defn add-senders-to-chat-users
   {:events [:chat/add-senders-to-chat-users]}
   [{:keys [db]} messages]
   (reduce (fn [acc {:keys [chat-id alias name identicon from]}]
@@ -167,42 +167,42 @@
           (update-in [:message-lists constants/timeline-chat-id] message-list/add message)))
       db)))
 
-(fx/defn process-statuses
+(rf/defn process-statuses
   {:events [:process-statuses]}
   [{:keys [db]} statuses]
   {:db (reduce reduce-js-statuses db statuses)})
 
-(fx/defn update-db-message-status
+(rf/defn update-db-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
   (when (get-in db [:messages chat-id message-id])
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc-in db
-                    [:messages chat-id message-id :outgoing-status]
-                    status)})))
+                             [:messages chat-id message-id :outgoing-status]
+                             status)})))
 
-(fx/defn update-message-status
+(rf/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
-  (fx/merge cofx
+  (rf/merge cofx
             (update-db-message-status chat-id message-id status)))
 
-(fx/defn resend-message
+(rf/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
-  (fx/merge cofx
+  (rf/merge cofx
             {:json-rpc/call [{:method     "wakuext_reSendChatMessage"
                               :params     [message-id]
                               :on-success #(log/debug "re-sent message successfully")
                               :on-error   #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
 
-(fx/defn send-message
+(rf/defn send-message
   [cofx message]
   (protocol/send-chat-messages cofx [message]))
 
-(fx/defn send-messages
+(rf/defn send-messages
   [cofx messages]
   (protocol/send-chat-messages cofx messages))
 
-(fx/defn handle-removed-messages
+(rf/defn handle-removed-messages
   {:events [::handle-removed-messages]}
   [{:keys [db] :as cofx} removed-messages]
   (let [mark-as-deleted-fx (->> removed-messages
@@ -222,7 +222,7 @@
                             removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
                              {:dispatch [:activity-center.notifications/fetch-unread-count]})]
-    (apply fx/merge
+    (apply rf/merge
            cofx
            (-> mark-as-deleted-fx
                (concat mark-as-seen-fx)
@@ -243,7 +243,7 @@
                    (<= message-clock cleared-at))
                 messages)))
 
-(fx/defn handle-cleared-histories-messages
+(rf/defn handle-cleared-histories-messages
   {:events [::handle-cleared-hisotories-messages]}
   [{:keys [db]} cleared-histories]
   {:db (reduce (fn [acc current]

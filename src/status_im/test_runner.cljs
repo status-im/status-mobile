@@ -3,7 +3,8 @@
   (:require [cljs.test :as ct]
             [clojure.string :as string]
             [shadow.test :as st]
-            [shadow.test.env :as env]))
+            [shadow.test.env :as env]
+            [utils.re-frame :as rf]))
 
 (defonce repl? (atom false))
 
@@ -111,6 +112,16 @@
 (defn ^:export main
   [& args]
   (reset-test-data!)
+  (rf/set-mergeable-keys #{:filters/load-filters
+                           :pairing/set-installation-metadata
+                           :dispatch-n
+                           :status-im.ens.core/verify-names
+                           :shh/send-direct-message
+                           :shh/remove-filter
+                           :transport/confirm-messages-processed
+                           :group-chats/extract-membership-signature
+                           :utils/dispatch-later
+                           :json-rpc/call})
 
   (let [opts (parse-args args)]
     (execute-cli opts)))

@@ -9,7 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.communities.membership :as memberships]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [status-im.utils.image :as utils.image]
             [utils.debounce :as debounce]))
 
@@ -36,8 +36,8 @@
   (js/setTimeout
    (fn []
      (react/show-image-picker
-      #(do (>evt [::communities/create-field :image (.-path ^js %)])
-           (>evt [::communities/create-field :new-image (.-path ^js %)]))
+      #(do (rf/dispatch [::communities/create-field :image (.-path ^js %)])
+           (rf/dispatch [::communities/create-field :new-image (.-path ^js %)]))
 
       crop-opts))
    300))
@@ -48,8 +48,8 @@
   (js/setTimeout
    (fn []
      (react/show-image-picker-camera
-      #(do (>evt [::communities/create-field :image (.-path ^js %)])
-           (>evt [::communities/create-field :new-image (.-path ^js %)]))
+      #(do (rf/dispatch [::communities/create-field :image (.-path ^js %)])
+           (rf/dispatch [::communities/create-field :new-image (.-path ^js %)]))
       crop-opts))
    300))
 
@@ -63,7 +63,7 @@
        :icon                :main-icons/camera
        :title               (i18n/label :t/community-image-take)
        :on-press            #(do
-                               (>evt [:bottom-sheet/hide])
+                               (rf/dispatch [:bottom-sheet/hide])
                                (take-pic))}]
      [quo/list-item
       {:accessibility-label :pick-photo
@@ -71,7 +71,7 @@
        :theme               :accent
        :title               (i18n/label :t/community-image-pick)
        :on-press            #(do
-                               (>evt [:bottom-sheet/hide])
+                               (rf/dispatch [:bottom-sheet/hide])
                                (pick-pic))}]
      (when (and has-picture (not editing?))
        [quo/list-item
@@ -80,18 +80,18 @@
          :theme               :accent
          :title               (i18n/label :t/community-image-remove)
          :on-press            #(do
-                                 (>evt [:bottom-sheet/hide])
-                                 (>evt [::communities/remove-field :image]))}])]))
+                                 (rf/dispatch [:bottom-sheet/hide])
+                                 (rf/dispatch [::communities/remove-field :image]))}])]))
 
 (defn photo-picker
   []
-  (let [{:keys [image editing?]} (<sub [:communities/create])]
+  (let [{:keys [image editing?]} (rf/sub [:communities/create])]
     [rn/view
      {:style {:padding-top 16
               :align-items :center}}
      [rn/touchable-opacity
-      {:on-press #(>evt [:bottom-sheet/show-sheet
-                         {:content (bottom-sheet (boolean image) editing?)}])}
+      {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                {:content (bottom-sheet (boolean image) editing?)}])}
       [rn/view
        {:style {:width  128
                 :height 128}}
@@ -149,7 +149,7 @@
 
 (defn form
   []
-  (let [{:keys [name description membership editing?]} (<sub [:communities/create])]
+  (let [{:keys [name description membership editing?]} (rf/sub [:communities/create])]
     [rn/scroll-view
      {:keyboard-should-persist-taps :handled
       :style                        {:flex 1}
@@ -165,7 +165,7 @@
       [quo/text-input
        {:placeholder    (i18n/label :t/name-your-community-placeholder)
         :default-value  name
-        :on-change-text #(>evt [::communities/create-field :name %])
+        :on-change-text #(rf/dispatch [::communities/create-field :name %])
         :auto-focus     true}]]
      [rn/view
       {:style {:padding-bottom     16
@@ -179,7 +179,7 @@
        {:placeholder    (i18n/label :t/give-a-short-description-community)
         :multiline      true
         :default-value  description
-        :on-change-text #(>evt [::communities/create-field :description %])}]]
+        :on-change-text #(rf/dispatch [::communities/create-field :description %])}]]
      [quo/list-header {:color :main}
       (i18n/label :t/community-thumbnail-image)]
      [photo-picker]
@@ -192,7 +192,7 @@
                                               [membership :title]
                                               :t/membership-none))
           :accessory      :text
-          :on-press       #(>evt [:navigate-to :community-membership])
+          :on-press       #(rf/dispatch [:navigate-to :community-membership])
           :chevron        true
           :size           :small}]
         [quo/list-footer
@@ -201,7 +201,7 @@
 
 (defn view
   []
-  (let [{:keys [name description]} (<sub [:communities/create])]
+  (let [{:keys [name description]} (rf/sub [:communities/create])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [form]
      [toolbar/toolbar

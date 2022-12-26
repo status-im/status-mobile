@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.currency :as currency]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.prices :as prices]
             [status-im.wallet.utils :as wallet.utils]
             [taoensso.timbre :as log]))
@@ -31,14 +31,14 @@
                       #(re-frame/dispatch [success-event %])
                       #(re-frame/dispatch [error-event %]))))
 
-(fx/defn on-update-prices-success
+(rf/defn on-update-prices-success
   {:events [::update-prices-success]}
   [{:keys [db]} prices]
   {:db (assoc db
               :prices          prices
               :prices-loading? false)})
 
-(fx/defn on-update-prices-fail
+(rf/defn on-update-prices-fail
   {:events [::update-prices-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get prices: " err)
@@ -46,7 +46,7 @@
            (assoc-error-message :prices-update :error-unable-to-get-prices)
            (assoc :prices-loading? false))})
 
-(fx/defn update-prices
+(rf/defn update-prices
   {:events [:wallet.ui/pull-to-refresh]}
   [{{:keys [network-status :wallet/all-tokens]
      {:keys [currency :wallet/visible-tokens]

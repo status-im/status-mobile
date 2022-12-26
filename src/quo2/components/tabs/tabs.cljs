@@ -139,6 +139,7 @@
             :shows-horizontal-scroll-indicator false
             :data                              data
             :key-fn                            (comp str :id)
+            :on-scroll-to-index-failed         identity
             :on-scroll                         (fn [^js e]
                                                  (when fade-end?
                                                    (let [offset-x       (oget

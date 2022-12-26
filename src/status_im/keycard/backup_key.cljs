@@ -5,26 +5,26 @@
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.signing.core :as signing.core]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
-(fx/defn backup-card-pressed
+(rf/defn backup-card-pressed
   {:events [:keycard-settings.ui/backup-card-pressed]}
   [{:keys [db] :as cofx} backup-type]
   (log/debug "[keycard] start backup")
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
             (when (:multiaccount db)
               (navigation/change-tab :profile))
             (navigation/navigate-to-cofx :seed-phrase nil)))
 
-(fx/defn recovery-card-pressed
+(rf/defn recovery-card-pressed
   {:events [:keycard-settings.ui/recovery-card-pressed]}
   [{:keys [db] :as cofx} show-warning]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db           (-> db
                                ;setting pin-retry-counter is a workaround for the way the PIN view
                                ;decides if it should accept PUK or PIN
@@ -44,7 +44,7 @@
                 :on-cancel           #()})
               (backup-card-pressed :recovery-card))))
 
-(fx/defn start-keycard-backup
+(rf/defn start-keycard-backup
   {:events [::start-keycard-backup]}
   [{:keys [db] :as cofx}]
   {::multiaccounts.recover/import-multiaccount {:passphrase    (-> db
@@ -54,10 +54,10 @@
                                                 :password      nil
                                                 :success-event ::create-backup-card}})
 
-(fx/defn create-backup-card
+(rf/defn create-backup-card
   {:events [::create-backup-card]}
   [{:keys [db] :as cofx} root-data derived-data]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db               (-> db
                                    (update :intro-wizard
                                            assoc
