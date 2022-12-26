@@ -68,8 +68,6 @@
     {:theme                        :main
      :title                        (i18n/label :t/new-chat)
      :icon-bg-color                :transparent
-    ;  :icon-container-style         {:padding-horizontal 0}
-    ;  :container-padding-horizontal {:padding-horizontal 4}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
