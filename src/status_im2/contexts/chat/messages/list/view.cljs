@@ -115,10 +115,14 @@
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
 =======
 <<<<<<< HEAD
+=======
+
+>>>>>>> f799c6fa9... feat: album
 (defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
 >>>>>>> 2323598a4... updates
   [rn/view {:style (when platform/android? {:scaleY -1})}
@@ -131,39 +135,6 @@
         (if (or deleted? deleted-for-me?)
           [content.deleted/deleted-message message-data]
           [message/message-with-reactions message-data context])]))])
-=======
-(defn render-fn
-  [{:keys [outgoing type] :as message}
-   idx
-   _
-   {:keys [group-chat public? community? current-public-key
-           chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?
-           can-delete-message-for-everyone?]}]
-  [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
-   (if (= type :datemark)
-     [quo/divider-date (:value message)]
-     (if (= type :gap)
-       ;; TODO (flexsurfer) new gap functionality is not implemented yet
-       [gap/gap message idx messages-list-ref false chat-id]
-       ; message content
-       [message/chat-message
-          (assoc message
-            :incoming-group                   (and group-chat (not outgoing))
-            :group-chat                       group-chat
-            :public?                          public?
-            :community?                       community?
-            :current-public-key               current-public-key
-            :show-input?                      show-input?
-            :message-pin-enabled              message-pin-enabled
-            :edit-enabled                     edit-enabled
-            :can-delete-message-for-everyone? can-delete-message-for-everyone?)
-<<<<<<< HEAD
-          (assoc message
-            :content-type 12))]))])
->>>>>>> ef5639b77... updates
-=======
-         ]))])
->>>>>>> b640f2420... feat: images album
 
 (defn messages-list
   [{:keys [chat
