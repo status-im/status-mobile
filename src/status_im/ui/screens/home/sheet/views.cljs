@@ -7,7 +7,8 @@
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
             [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [quo2.core :as quo2]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -63,29 +64,32 @@
 
 (defn add-new-sheet-view []
   [rn/view
-   [quo/list-item
+   [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/new-chat)
      :icon-bg-color                :transparent
-     :icon-container-style         {:padding-horizontal 0}
-     :container-padding-horizontal {:padding-horizontal 4}
+    ;  :icon-container-style         {:padding-horizontal 0}
+    ;  :container-padding-horizontal {:padding-horizontal 4}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :start-a-new-chat
      :icon                         :i/new-message
      :on-press                     #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
-   [quo/list-item
+   [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
      :icon-bg-color                :transparent
      :icon-container-style         {:padding-horizontal 0}
      :container-padding-horizontal {:padding-horizontal 4}
+     :style-props {:margin-top 18
+                   :margin-bottom 9}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :add-a-contact
      :subtitle                     (i18n/label :t/enter-a-chat-key)
+     :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
