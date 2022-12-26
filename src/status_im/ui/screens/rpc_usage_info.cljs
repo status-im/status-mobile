@@ -156,7 +156,7 @@
    {:component-did-mount
     (fn []
       (reset! rpc-refresh-interval
-        (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
+              (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
 
     :component-will-unmount (fn []
                               (utils/clear-interval @rpc-refresh-interval)

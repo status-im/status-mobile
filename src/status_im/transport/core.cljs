@@ -27,8 +27,8 @@
                       (assoc :name (if (seq name) name id))
                       (dissoc :fleet))]
               (assoc-in db
-               [:mailserver/mailservers (keyword fleet) (keyword id)]
-               updated-mailserver)))
+                        [:mailserver/mailservers (keyword fleet) (keyword id)]
+                        updated-mailserver)))
           db
           mailservers))
 

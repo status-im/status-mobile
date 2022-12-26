@@ -538,13 +538,13 @@
 (rf/defn set-setup-step
   [{:keys [db]} card-state]
   {:db (assoc-in db
-        [:keycard :setup-step]
-        (case card-state
-          :not-paired       :pair
-          :no-pairing-slots :no-slots
-          :init             :card-ready
-          :multiaccount     :import-multiaccount
-          :begin))})
+                 [:keycard :setup-step]
+                 (case card-state
+                   :not-paired       :pair
+                   :no-pairing-slots :no-slots
+                   :init             :card-ready
+                   :multiaccount     :import-multiaccount
+                   :begin))})
 
 (rf/defn show-no-keycard-applet-alert
   [_]

@@ -30,17 +30,17 @@
     (when @progress-timer
       (utils/clear-interval @progress-timer))
     (reset! progress-timer
-      (utils/set-interval
-       #(when (and @state-ref (not (:slider-seeking @state-ref)))
-          (let [ct (audio/get-player-current-time @player-ref)]
-            (reset! progress-ref ct)
-            (when ct
-              (anim/start (anim/timing progress-anim
-                                       {:toValue         @progress-ref
-                                        :duration        100
-                                        :easing          (.-linear ^js anim/easing)
-                                        :useNativeDriver true})))))
-       100))))
+            (utils/set-interval
+             #(when (and @state-ref (not (:slider-seeking @state-ref)))
+                (let [ct (audio/get-player-current-time @player-ref)]
+                  (reset! progress-ref ct)
+                  (when ct
+                    (anim/start (anim/timing progress-anim
+                                             {:toValue         @progress-ref
+                                              :duration        100
+                                              :easing          (.-linear ^js anim/easing)
+                                              :useNativeDriver true})))))
+             100))))
 
 (defn update-state
   [{:keys [state-ref progress-ref progress-anim message-id seek-to-ms audio-duration-ms

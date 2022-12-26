@@ -230,7 +230,7 @@
     (let [{:keys [normal-base-fee max-priority-fee]} price
           max-priority-fee-bn                        (money/with-precision (get-suggested-tip
                                                                             max-priority-fee)
-                                                                           0)]
+                                                       0)]
       {:db (-> db
                (assoc-in [:signing/tx :maxFeePerGas]
                          (money/to-hex (money/add max-priority-fee-bn

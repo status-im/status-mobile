@@ -31,8 +31,8 @@
                                  (do (re-frame/dispatch [:set-in [:tooltips tooltip-id] opacity])
                                      (when (< 10 cnt)
                                        (swap! tooltips assoc-in
-                                         [tooltip-id :opacity]
-                                         (- opacity 0.05)))))))
+                                              [tooltip-id :opacity]
+                                              (- opacity 0.05)))))))
                           100)]
          (swap! tooltips assoc tooltip-id {:opacity 1.0 :interval-id interval-id :cnt 0}))))))
 

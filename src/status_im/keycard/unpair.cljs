@@ -24,13 +24,13 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (assoc-in db
-                  [:keycard :pin]
-                  {:enter-step  :current
-                   :current     []
-                   :puk         []
-                   :status      nil
-                   :error-label nil
-                   :on-verified :keycard/unpair})}
+                           [:keycard :pin]
+                           {:enter-step  :current
+                            :current     []
+                            :puk         []
+                            :status      nil
+                            :error-label nil
+                            :on-verified :keycard/unpair})}
             (common/navigate-to-enter-pin-screen)))
 
 (rf/defn unpair
@@ -95,10 +95,10 @@
   (log/debug "[keycard] unpair error" error)
   (rf/merge cofx
             {:db                           (assoc-in db
-                                            [:keycard :pin]
-                                            {:status      nil
-                                             :error-label nil
-                                             :on-verified nil})
+                                                     [:keycard :pin]
+                                                     {:status      nil
+                                                      :error-label nil
+                                                      :on-verified nil})
              :keycard/get-application-info nil
              :utils/show-popup             {:title   ""
                                             :content (i18n/label :t/something-went-wrong)}}

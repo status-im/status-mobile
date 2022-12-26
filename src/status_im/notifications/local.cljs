@@ -56,7 +56,7 @@
                        notification-event-ios
                        (fn [notification]
                          (handle-notification-press {:userInfo (bean/bean (.getData ^js
-                                                                                    notification))})))
+                                                                           notification))})))
     (.addListener ^js react-native-utils/device-event-emitter
                   notification-event-android
                   (fn [^js data]

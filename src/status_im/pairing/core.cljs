@@ -103,14 +103,14 @@
 (rf/defn enable
   [{:keys [db]} installation-id]
   {:db (assoc-in db
-        [:pairing/installations installation-id :enabled?]
-        true)})
+                 [:pairing/installations installation-id :enabled?]
+                 true)})
 
 (rf/defn disable
   [{:keys [db]} installation-id]
   {:db (assoc-in db
-        [:pairing/installations installation-id :enabled?]
-        false)})
+                 [:pairing/installations installation-id :enabled?]
+                 false)})
 
 (defn handle-enable-installation-response-success
   "Callback to dispatch on enable signature response"

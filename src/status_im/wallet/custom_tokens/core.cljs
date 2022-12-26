@@ -77,8 +77,8 @@
                                                  :color    (rand-nth colors/chat-colors)}]
     (rf/merge cofx
               {:db            (assoc-in db
-                               [:wallet/all-tokens contract]
-                               (assoc new-token :custom? true))
+                                        [:wallet/all-tokens contract]
+                                        (assoc new-token :custom? true))
                :json-rpc/call [{:method     "wallet_addCustomToken"
                                 :params     [new-token]
                                 :on-success #()}]}
@@ -121,5 +121,5 @@
                             (when (field-exists? db field-key (keyword value))
                               (i18n/label :t/you-already-have-an-asset {:value value}))})}
     :decimals {:db (assoc-in db
-                    [:wallet/custom-token-screen :decimals]
-                    value)}))
+                             [:wallet/custom-token-screen :decimals]
+                             value)}))

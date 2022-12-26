@@ -267,15 +267,15 @@
                                (reset-timer timer)
                                (reset! state-cb #(update-state state))
                                (reset! max-recording-reached-cb
-                                 #(do
-                                    (when (= (:general @state) :recording)
-                                      (stop-recording {:rec-button-anim-value   rec-button-anim-value
-                                                       :ctrl-buttons-anim-value ctrl-buttons-anim-value
-                                                       :timer                   timer
-                                                       :max-recording-reached?  true}))
-                                    (utils.utils/show-popup (i18n/label :t/audio-recorder)
-                                                            (i18n/label
-                                                             :t/audio-recorder-max-ms-reached))))
+                                       #(do
+                                          (when (= (:general @state) :recording)
+                                            (stop-recording {:rec-button-anim-value   rec-button-anim-value
+                                                             :ctrl-buttons-anim-value ctrl-buttons-anim-value
+                                                             :timer                   timer
+                                                             :max-recording-reached?  true}))
+                                          (utils.utils/show-popup (i18n/label :t/audio-recorder)
+                                                                  (i18n/label
+                                                                   :t/audio-recorder-max-ms-reached))))
                                (reset! on-background-cb #(when (= (:general @state) :recording)
                                                            (pause-recording
                                                             {:rec-button-anim-value rec-button-anim-value

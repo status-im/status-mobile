@@ -200,5 +200,5 @@
 (rf/defn rebuild-message-list
   [{:keys [db]} chat-id]
   {:db (assoc-in db
-        [:message-lists chat-id]
-        (add-many nil (vals (get-in db [:messages chat-id]))))})
+                 [:message-lists chat-id]
+                 (add-many nil (vals (get-in db [:messages chat-id]))))})

@@ -5,9 +5,8 @@
             [status-im.communities.core :as communities]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im2.contexts.communities.requests.actions.style :as style]
-            [utils.re-frame :as rf]
-            [utils.requests :as requests]))
+            [status-im.ui.components.list.views :as list]
+            [utils.re-frame :as rf]))
 
 ;; TODO: update with real data
 (def community-rules
@@ -113,24 +112,20 @@
          :on-change           #(swap! agreed-to-rules? not)}
         (i18n/label :t/accept-community-rules)]
        [rn/view
-        {:style style/request-button}
-        [quo/button
-         {:accessibility-label :cancel
-          :on-press            #(rf/dispatch [:bottom-sheet/hide])
-          :type                :grey
-          :style               style/cancel-button} (i18n/label :t/cancel)]
-        [quo/button
-         {:accessibility-label :join-community-button
-          :on-press            (fn []
-                                 (when-not joined
-                                   (when can-join?
-                                     (rf/dispatch [::communities/join id]))
-                                   (rf/dispatch [:bottom-sheet/hide])
-                                   (when
-                                     (and can-request-access?
-                                          (not (pos? requested-to-join-at))
-                                          (requests/can-request-access-again? requested-to-join-at))
-                                     (rf/dispatch [::communities/request-to-join id])
-                                     (rf/dispatch [:bottom-sheet/hide]))))
-          :disabled            (not @agreed-to-rules?)
-          :style               {:flex 1}} (request-to-join-text is-open?)]]])))
+        {:style {:width           "100%"
+                 :margin-top      32
+                 :margin-bottom   16
+                 :flex            1
+                 :flex-direction  :row
+                 :align-items     :center
+                 :justify-content :space-evenly}}
+        [button/button
+         {:on-press #(rf/dispatch [:bottom-sheet/hide])
+          :type     :grey
+          :style    {:flex 1 :margin-right 12}} (i18n/label :t/cancel)]
+        [button/button
+         {:on-press (fn []
+                      (rf/dispatch [::communities/join (:id community)])
+                      (rf/dispatch [:bottom-sheet/hide]))
+          :disabled (not @agreed-to-rules?)
+          :style    {:flex 1}} (i18n/label :t/join-open-community)]]])))

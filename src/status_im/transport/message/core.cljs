@@ -1,29 +1,28 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"} status-im.transport.message.core
-  (:require
-   [clojure.string :as string]
-   [status-im.browser.core :as browser]
-   [status-im.chat.models :as models.chat]
-   [status-im.chat.models.message :as models.message]
-   [status-im.chat.models.reactions :as models.reactions]
-   [status-im.communities.core :as models.communities]
-   [status-im.constants :as constants]
-   [status-im.contact.core :as models.contact]
-   [status-im.data-store.activities :as data-store.activities]
-   [status-im.data-store.chats :as data-store.chats]
-   [status-im.data-store.contacts :as data-store.contacts]
-   [status-im.data-store.invitations :as data-store.invitations]
-   [status-im.data-store.messages :as data-store.messages]
-   [status-im.data-store.reactions :as data-store.reactions]
-   [status-im.group-chats.core :as models.group]
-   [status-im.multiaccounts.login.core :as multiaccounts.login]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.multiaccounts.update.core :as update.core]
-   [status-im.pairing.core :as models.pairing]
-   [utils.re-frame :as rf]
-   [status-im.utils.types :as types]
-   [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-   [status-im2.contexts.activity-center.events :as activity-center]
-   [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
+  (:require [clojure.string :as string]
+            [status-im.browser.core :as browser]
+            [status-im.chat.models :as models.chat]
+            [status-im.chat.models.message :as models.message]
+            [status-im.chat.models.reactions :as models.reactions]
+            [status-im.communities.core :as models.communities]
+            [status-im.constants :as constants]
+            [status-im.contact.core :as models.contact]
+            [status-im.data-store.activities :as data-store.activities]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.contacts :as data-store.contacts]
+            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.reactions :as data-store.reactions]
+            [status-im.group-chats.core :as models.group]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.update.core :as update.core]
+            [status-im.pairing.core :as models.pairing]
+            [utils.re-frame :as rf]
+            [status-im.utils.types :as types]
+            [status-im.visibility-status-updates.core :as models.visibility-status-updates]
+            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
 
 (rf/defn process-next
   [cofx ^js response-js sync-handler]
@@ -238,9 +237,9 @@
   [response-js messages]
   (if (seq messages)
     (set! (.-messages response-js)
-      (.sort (to-array messages)
-             (fn [a b]
-               (- (.-clock b) (.-clock a)))))
+          (.sort (to-array messages)
+                 (fn [a b]
+                   (- (.-clock b) (.-clock a)))))
     (js-delete response-js "messages")))
 
 (rf/defn sanitize-messages-and-process-response
@@ -294,8 +293,8 @@
                            :not-sent              (or not-sent
                                                       (= :not-sent status))}]
         {:db (assoc-in db
-              [:transport/message-ids->confirmations message-id]
-              confirmations)}))))
+                       [:transport/message-ids->confirmations message-id]
+                       confirmations)}))))
 
 (rf/defn update-envelope-status
   [{:keys [db] :as cofx} message-id status]

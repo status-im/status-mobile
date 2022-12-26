@@ -71,8 +71,8 @@
            (fn [name identicon]
              (let [derived-whisper       (derived-data constants/path-whisper-keyword)
                    derived-data-extended (assoc-in derived-data
-                                          [constants/path-whisper-keyword]
-                                          (merge derived-whisper {:name name :identicon identicon}))]
+                                                   [constants/path-whisper-keyword]
+                                                   (merge derived-whisper {:name name :identicon identicon}))]
                (re-frame/dispatch [::store-multiaccount-success key-code derived-data-extended]))))))]}))
 
 (re-frame/reg-fx
@@ -181,32 +181,32 @@
                                  :address])
         new-multiaccount
         (cond->
-          (merge
-           {;; address of the master key
-            :address                  address
+         (merge
+          {;; address of the master key
+           :address                  address
             ;; sha256 of master public key
-            :key-uid                  key-uid
+           :key-uid                  key-uid
             ;; The address from which we derive any wallet
-            :wallet-root-address
-            (get-in multiaccount
-                    [:derived
-                     constants/path-wallet-root-keyword
-                     :address])
-            :name                     name
-            :identicon                identicon
+           :wallet-root-address
+           (get-in multiaccount
+                   [:derived
+                    constants/path-wallet-root-keyword
+                    :address])
+           :name                     name
+           :identicon                identicon
             ;; public key of the chat account
-            :public-key               public-key
+           :public-key               public-key
             ;; default address for Dapps
-            :dapps-address            (:address wallet-account)
-            :latest-derived-path      0
-            :signing-phrase           signing-phrase
-            :send-push-notifications? true
-            :backup-enabled?          true
-            :installation-id          (random-guid-generator)
+           :dapps-address            (:address wallet-account)
+           :latest-derived-path      0
+           :signing-phrase           signing-phrase
+           :send-push-notifications? true
+           :backup-enabled?          true
+           :installation-id          (random-guid-generator)
             ;; default mailserver (history node) setting
-            :use-mailservers?         true
-            :recovered                recovered}
-           config/default-multiaccount)
+           :use-mailservers?         true
+           :recovered                recovered}
+          config/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys
           eip1581-address

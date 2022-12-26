@@ -167,11 +167,11 @@
         update?         (reagent/atom nil)
         request-close   (fn []
                           (reset! clear-timeout
-                            (js/setTimeout
-                             #(do (reset! current-popover nil)
-                                  (re-frame/dispatch
-                                   [:hide-visibility-status-popover]))
-                             200))
+                                  (js/setTimeout
+                                   #(do (reset! current-popover nil)
+                                        (re-frame/dispatch
+                                         [:hide-visibility-status-popover]))
+                                   200))
                           (hide-options)
                           true)
         on-show         (fn []

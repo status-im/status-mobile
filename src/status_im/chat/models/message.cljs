@@ -177,8 +177,8 @@
   (when (get-in db [:messages chat-id message-id])
     (rf/merge cofx
               {:db (assoc-in db
-                    [:messages chat-id message-id :outgoing-status]
-                    status)})))
+                             [:messages chat-id message-id :outgoing-status]
+                             status)})))
 
 (rf/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]

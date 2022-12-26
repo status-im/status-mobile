@@ -249,18 +249,18 @@
   (rf/merge
    cofx
    {:db (assoc-in db
-         [:keycard :pin]
-         {:status              nil
-          :login               (get-in db [:keycard :pin :original])
-          :export-key          []
-          :sign                []
-          :puk                 []
-          :current             []
-          :original            []
-          :confirmation        []
-          :error-label         nil
-          :on-verified         (get-in db [:keycard :pin :on-verified])
-          :on-verified-failure (get-in db [:keycard :pin :on-verified])})}))
+                  [:keycard :pin]
+                  {:status              nil
+                   :login               (get-in db [:keycard :pin :original])
+                   :export-key          []
+                   :sign                []
+                   :puk                 []
+                   :current             []
+                   :original            []
+                   :confirmation        []
+                   :error-label         nil
+                   :on-verified         (get-in db [:keycard :pin :on-verified])
+                   :on-verified-failure (get-in db [:keycard :pin :on-verified])})}))
 
 (rf/defn cancel-sheet-confirm
   {:events [::cancel-sheet-confirm

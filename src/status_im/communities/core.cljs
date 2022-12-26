@@ -524,8 +524,8 @@
   {:events [::requests-to-join-fetched]}
   [{:keys [db]} community-id requests]
   {:db (assoc-in db
-        [:communities/requests-to-join community-id]
-        (<-requests-to-join-community-rpc requests))})
+                 [:communities/requests-to-join community-id]
+                 (<-requests-to-join-community-rpc requests))})
 
 (rf/defn fetch-requests-to-join
   {:events [::fetch-requests-to-join]}

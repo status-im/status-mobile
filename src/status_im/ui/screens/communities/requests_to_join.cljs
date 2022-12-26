@@ -54,8 +54,7 @@
   []
   (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [requests                    (rf/sub [:communities/requests-to-join-for-community
-                                                 community-id])
+      (let [requests                    (rf/sub [:communities/requests-to-join-for-community community-id])
             {:keys [can-manage-users?]} (rf/sub [:communities/community community-id])]
         [:<>
          [topbar/topbar

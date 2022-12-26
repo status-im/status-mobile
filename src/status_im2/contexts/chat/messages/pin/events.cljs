@@ -67,12 +67,12 @@
               {:db (cond-> db
                      pinned
                      (->
-                       (update-in [:pin-message-lists chat-id] message-list/add message)
-                       (assoc-in [:pin-messages chat-id message-id] message))
+                      (update-in [:pin-message-lists chat-id] message-list/add message)
+                      (assoc-in [:pin-messages chat-id message-id] message))
                      (not pinned)
                      (->
-                       (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
-                       (update-in [:pin-messages chat-id] dissoc message-id)))}
+                      (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
+                      (update-in [:pin-messages chat-id] dissoc message-id)))}
               (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)
                                                          :message_id (pin-message :message-id)
                                                          :pinned     (pin-message :pinned)})

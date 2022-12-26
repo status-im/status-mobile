@@ -34,11 +34,11 @@
 (rf/defn permission-show-permission
   [{:keys [db] :as cofx} dapp-name permission message-id yield-control?]
   {:db (assoc-in db
-        [:browser/options :show-permission]
-        {:requested-permission permission
-         :message-id           message-id
-         :dapp-name            dapp-name
-         :yield-control?       yield-control?})})
+                 [:browser/options :show-permission]
+                 {:requested-permission permission
+                  :message-id           message-id
+                  :dapp-name            dapp-name
+                  :yield-control?       yield-control?})})
 
 (defn get-permission-data
   [cofx allowed-permission]

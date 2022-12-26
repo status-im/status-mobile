@@ -28,11 +28,11 @@
   {:events [:wakuv2.ui/input-changed]}
   [{:keys [db] :as cofx} input-key value]
   {:db (assoc-in db
-        [:wakuv2-nodes/manage input-key]
-        {:value value
-         :error (case input-key
-                  :name    (string/blank? value)
-                  :address (when value (not (valid-address? value))))})})
+                 [:wakuv2-nodes/manage input-key]
+                 {:value value
+                  :error (case input-key
+                           :name    (string/blank? value)
+                           :address (when value (not (valid-address? value))))})})
 
 (rf/defn enter-settings
   {:events       [:wakuv2.ui/enter-settings-pressed]

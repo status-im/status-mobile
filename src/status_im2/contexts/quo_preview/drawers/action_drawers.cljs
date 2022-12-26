@@ -29,24 +29,24 @@
     :background-color (colors/theme-colors colors/white colors/neutral-95)}
    [quo2/action-drawer
     (cond->
-      [[{:icon     :i/friend
-         :label    "View channel members and details"
-         :on-press #(js/alert "View channel members and details")}
-        {:icon     :i/communities
-         :label    "Mark as read"
-         :on-press #(js/alert "Mark as read")}
-        {:icon       :i/muted
-         :label      (if (:muted? @state) "Unmute channel" "Mute channel")
-         :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
-         :right-icon :i/chevron-right
-         :sub-label  (when (:muted? @state) "Muted for 15 min")}
-        {:icon       :i/scan
-         :on-press   #(js/alert "Fetch messages")
-         :right-icon :i/chevron-right
-         :label      "Fetch messages"}
-        {:icon     :i/add-user
-         :on-press #(js/alert "Share link to the channel")
-         :label    "Share link to the channel"}]]
+     [[{:icon     :i/friend
+        :label    "View channel members and details"
+        :on-press #(js/alert "View channel members and details")}
+       {:icon     :i/communities
+        :label    "Mark as read"
+        :on-press #(js/alert "Mark as read")}
+       {:icon       :i/muted
+        :label      (if (:muted? @state) "Unmute channel" "Mute channel")
+        :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
+        :right-icon :i/chevron-right
+        :sub-label  (when (:muted? @state) "Muted for 15 min")}
+       {:icon       :i/scan
+        :on-press   #(js/alert "Fetch messages")
+        :right-icon :i/chevron-right
+        :label      "Fetch messages"}
+       {:icon     :i/add-user
+        :on-press #(js/alert "Share link to the channel")
+        :label    "Share link to the channel"}]]
 
       (:show-red-options? @state)
       (conj options-with-consequences))]])
