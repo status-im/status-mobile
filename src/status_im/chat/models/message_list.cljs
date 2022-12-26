@@ -20,19 +20,21 @@
            from
            outgoing
            whisper-timestamp
-           deleted-for-me?]}]
+           deleted-for-me?
+           albumize]}]
   (-> {:whisper-timestamp whisper-timestamp
        :from              from
        :one-to-one?       (= constants/message-type-one-to-one message-type)
        :system-message?   (boolean
-                           (or
-                            (= constants/message-type-private-group-system-message
-                               message-type)
-                            deleted-for-me?))
+                            (or
+                              (= constants/message-type-private-group-system-message
+                                 message-type)
+                              deleted-for-me?))
        :clock-value       clock-value
        :type              :message
        :message-id        message-id
-       :outgoing          (boolean outgoing)}
+       :outgoing          (boolean outgoing)
+       :albumize          albumize}
       add-datemark
       add-timestamp))
 
@@ -44,18 +46,18 @@
   We check the time, and the author"
   [a b]
   (and
-   (not (:system-message? a))
-   (not (:system-message? b))
-   (= (:from a) (:from b))
-   (<= (js/Math.abs (- (:whisper-timestamp a) (:whisper-timestamp b))) group-ms)))
+    (not (:system-message? a))
+    (not (:system-message? b))
+    (= (:from a) (:from b))
+    (<= (js/Math.abs (- (:whisper-timestamp a) (:whisper-timestamp b))) group-ms)))
 
 (defn display-photo?
   "We display photos for other users, and not in 1-to-1 chats"
   [{:keys [system-message? one-to-one? outgoing]}]
   (or system-message?
       (and
-       (not outgoing)
-       (not one-to-one?))))
+        (not outgoing)
+        (not one-to-one?))))
 
 (defn compare-fn
   "Compare two messages, first compare by clock-value, and break ties by message-id,
@@ -79,33 +81,33 @@
   (let [last-in-group? (or (nil? next-message)
                            (not (same-group? current-message next-message)))]
     (assoc current-message
-           :first?            (nil? previous-message)
-           :first-outgoing?   (and outgoing
-                                   (not outgoing-seen?))
-           :outgoing-seen?    (or outgoing-seen?
-                                  outgoing)
-           :first-in-group?   (or (nil? previous-message)
-                                  (not (same-group? current-message previous-message)))
-           :last-in-group?    last-in-group?
-           :display-username? (and last-in-group?
-                                   (not system-message?)
-                                   (not outgoing)
-                                   (not one-to-one?))
-           :display-photo?    (display-photo? current-message))))
+      :first? (nil? previous-message)
+      :first-outgoing? (and outgoing
+                            (not outgoing-seen?))
+      :outgoing-seen? (or outgoing-seen?
+                          outgoing)
+      :first-in-group? (or (nil? previous-message)
+                           (not (same-group? current-message previous-message)))
+      :last-in-group? last-in-group?
+      :display-username? (and last-in-group?
+                              (not system-message?)
+                              (not outgoing)
+                              (not one-to-one?))
+      :display-photo? (display-photo? current-message))))
 
 (defn update-next-message
   "Update next message in the list, we set :first? to false, and check if it
   :first-outgoing? state has changed because of the insertion"
   [current-message next-message]
   (assoc
-   next-message
-   :first?          false
-   :first-outgoing? (and
-                     (not (:first-outgoing? current-message))
-                     (:first-outgoing? next-message))
-   :outgoing-seen?  (:outgoing-seen? current-message)
-   :first-in-group?
-   (not (same-group? current-message next-message))))
+    next-message
+    :first? false
+    :first-outgoing? (and
+                       (not (:first-outgoing? current-message))
+                       (:first-outgoing? next-message))
+    :outgoing-seen? (:outgoing-seen? current-message)
+    :first-in-group?
+    (not (same-group? current-message next-message))))
 
 (defn update-previous-message
   "If this is a new group, we mark the previous as the last one in the group"
@@ -116,11 +118,11 @@
     :as   previous-message}]
   (let [last-in-group? (not (same-group? current-message previous-message))]
     (assoc previous-message
-           :display-username? (and last-in-group?
-                                   (not system-message?)
-                                   (not outgoing)
-                                   (not one-to-one?))
-           :last-in-group?    last-in-group?)))
+      :display-username? (and last-in-group?
+                              (not system-message?)
+                              (not outgoing)
+                              (not one-to-one?))
+      :last-in-group? last-in-group?)))
 
 (defn get-prev-element
   "Get previous item in the iterator, and wind it back to the initial state"
@@ -148,14 +150,14 @@
                                     (get-next-element iter))
         ^js message-with-pos-data (add-group-info message previous-message next-message)]
     (cond-> (.update iter message-with-pos-data)
-      next-message
-      (-> ^js (.find next-message)
-          (.update (update-next-message message-with-pos-data next-message)))
+            next-message
+            (-> ^js (.find next-message)
+                (.update (update-next-message message-with-pos-data next-message)))
 
-      (and previous-message
-           (not= :datemark (:type previous-message)))
-      (-> ^js (.find previous-message)
-          (.update (update-previous-message message-with-pos-data previous-message))))))
+            (and previous-message
+                 (not= :datemark (:type previous-message)))
+            (-> ^js (.find previous-message)
+                (.update (update-previous-message message-with-pos-data previous-message))))))
 
 (defn remove-message
   "Remove a message in the list"

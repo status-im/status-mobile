@@ -103,6 +103,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 (rf/defn messages-loaded
 =======
 (defn find-albums [messages]
@@ -122,6 +123,14 @@
 
 =======
 >>>>>>> c341585dd... updates
+=======
+(defn mark-albums [messages]
+  (let [new-messages (atom [])]
+  (doseq [message messages]
+    (swap! new-messages conj (if (:album-id message) (assoc message :albumize true) message)))
+  @new-messages))
+
+>>>>>>> 669c096c4... feat: images album
 (fx/defn messages-loaded
 >>>>>>> 86fbedba6... updates
   "Loads more messages for current chat"
@@ -152,8 +161,7 @@
                   messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))
-          ;all-messages (find-albums all-messages)
-          ]
+          new-messages (mark-albums new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
