@@ -82,7 +82,7 @@
        [common.home/top-nav {:type :default :hide-search true}]
        [common.home/title-column
         {:label               (i18n/label :t/communities)
-         :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+         :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet {}])
          :accessibility-label :new-chat-button}]
        [discover-card/discover-card
         {:on-press            #(rf/dispatch [:navigate-to :discover-communities])

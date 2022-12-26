@@ -32,7 +32,7 @@
                :flex-grow          0
                :flex-shrink        1
                :padding-horizontal 20
-               :align-items :center}}
+               :align-items        :center}}
       [rn/view
        {:style {:width           20
                 :height          20
