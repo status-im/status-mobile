@@ -35,6 +35,7 @@
                                 :audioDurationMs          :audio-duration-ms
                                 :deleted                  :deleted?
                                 :deletedForMe             :deleted-for-me?
+                                :albumId                  :album-id
                                 :new                      :new?})
 
       (update :quoted-message
@@ -48,7 +49,6 @@
       (assoc :content {:chat-id     (:chatId message)
                        :text        (:text message)
                        :image       (:image message)
-                       :album-id    (:albumId message)
                        :sticker     (:sticker message)
                        :ens-name    (:ensName message)
                        :line-count  (:lineCount message)

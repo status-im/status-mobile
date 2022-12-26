@@ -18,7 +18,7 @@
 
 (defonce messages-list-ref (atom nil))
 
-(defonce list-key-fn #(or (:message-id %) (:value %) :nil))
+(defonce list-key-fn #(or (:message-id %) (:value %)))
 (defonce list-ref #(reset! messages-list-ref %))
 
 (defn scroll-to-bottom
@@ -133,7 +133,7 @@
           [message/message-with-reactions message-data context])]))])
 =======
 (defn render-fn
-  [{:keys [outgoing type album-id] :as message}
+  [{:keys [outgoing type] :as message}
    idx
    _
    {:keys [group-chat public? community? current-public-key
@@ -147,7 +147,6 @@
        [gap/gap message idx messages-list-ref false chat-id]
        ; message content
        [message/chat-message
-        (if-not album-id
           (assoc message
             :incoming-group                   (and group-chat (not outgoing))
             :group-chat                       group-chat
@@ -158,9 +157,13 @@
             :message-pin-enabled              message-pin-enabled
             :edit-enabled                     edit-enabled
             :can-delete-message-for-everyone? can-delete-message-for-everyone?)
+<<<<<<< HEAD
           (assoc message
             :content-type 12))]))])
 >>>>>>> ef5639b77... updates
+=======
+         ]))])
+>>>>>>> b640f2420... feat: images album
 
 (defn messages-list
   [{:keys [chat

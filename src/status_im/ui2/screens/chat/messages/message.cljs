@@ -1,4 +1,5 @@
 (ns status-im.ui2.screens.chat.messages.message
+<<<<<<< HEAD
   (:require
    [quo.design-system.colors :as quo.colors]
    [quo.react-native :as rn]
@@ -32,6 +33,45 @@
    [status-im2.contexts.chat.messages.delete-message.events]
    [utils.re-frame :as rf]
    [quo2.core :as quo])
+=======
+  (:require [quo.design-system.colors :as quo.colors]
+            [quo.react-native :as rn]
+            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as typography]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.fast-image :as fast-image]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.image.preview.views :as preview]
+            [status-im.ui.screens.chat.message.audio :as message.audio]
+            [status-im.ui.screens.chat.message.command :as message.command]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]
+            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.screens.chat.styles.message.message :as style]
+            [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.ui.screens.communities.icon :as communities.icon]
+            [status-im.ui2.screens.chat.components.reply :as components.reply]
+            [status-im.utils.config :as config]
+            [status-im.utils.datetime :as time]
+            [status-im.utils.utils :as utils]
+            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
+            [status-im2.contexts.chat.messages.delete-message-for-me.events]
+            [status-im2.contexts.chat.messages.delete-message.events]
+            [utils.re-frame :as rf]
+<<<<<<< HEAD
+            [quo2.core :as quo])
+=======
+            [utils.security.core :as security]
+            [status-im2.contexts.chat.messages.album.view :as album])
+>>>>>>> b640f2420... feat: images album
+>>>>>>> bcb0fd54e... feat: images album
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
@@ -434,11 +474,9 @@
      reaction-picker]))
 
 (defmethod ->message constants/content-type-album
-  [{:keys [album-id] :as message}
-   {:keys [on-long-press modal ref] :as reaction-picker}]
-  (println "MAMA" (get message album-id))
-  [rn/view
-   [rn/text "FUCKING ALBUM!!!!"]])
+  [message reaction-picker]
+  [message-content-wrapper message
+   [album/album-message message reaction-picker]])
 
 (defmethod ->message constants/content-type-image
   [{:keys [content in-popover? outgoing] :as message}
