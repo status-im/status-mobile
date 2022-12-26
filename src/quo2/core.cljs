@@ -1,4 +1,5 @@
 (ns quo2.core
+  (:refer-clojure :exclude [filter])
   (:require
    quo2.components.avatars.account-avatar
    quo2.components.avatars.channel-avatar
@@ -42,6 +43,7 @@
    quo2.components.notifications.toast
    quo2.components.reactions.reaction
    quo2.components.selectors.disclaimer
+   quo2.components.selectors.filter.view
    quo2.components.selectors.selectors
    quo2.components.separator
    quo2.components.settings.privacy-option
@@ -79,6 +81,7 @@
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer/disclaimer)
 (def checkbox quo2.components.selectors.selectors/checkbox)
+(def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
 
