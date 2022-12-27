@@ -138,7 +138,8 @@
 
 (defn shape-style-container
   [type icon size]
-  {:border-radius (if (and icon (#{:primary :secondary :danger} type))
+  {:height        size
+   :border-radius (if (and icon (#{:primary :secondary :danger} type))
                     24
                     (case size
                       56 12

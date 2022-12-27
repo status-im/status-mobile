@@ -108,6 +108,7 @@
          :show-cancel    false
          :style          {:border-radius 4
                           :border-width  1
+                          :color         (colors/theme-colors colors/neutral-100 colors/white)
                           :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
          :on-change-text #(do
                             (reset! state* (if (and suffix (> (count %) (count @state*)))
