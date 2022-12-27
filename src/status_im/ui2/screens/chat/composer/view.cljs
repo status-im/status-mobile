@@ -249,7 +249,7 @@
                                                             set-bg-opacity)]
               (quo.react/effect!
                #(do
-                  (let [edited? (-> (<sub [:chat/inputs])
+                  (let [edited? (-> (rf/sub [:chat/inputs])
                                     (get chat-id)
                                     :input-text
                                     (not= (-> edit

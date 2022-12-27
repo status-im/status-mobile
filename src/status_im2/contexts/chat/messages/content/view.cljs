@@ -46,19 +46,19 @@
         :verified?    ens-verified}])))
 
 (defn system-message-content
-  [{:keys [content-type quoted-message] :as message-data}]
+  [{:keys [content-type quoted-message message-id chat-id] :as message-data}]
+  (let [edat (-> [:chats/chat-messages chat-id]
+                 rf/sub
+                 (get message-id))]
   (if quoted-message
-    [not-implemented/not-implemented [pin/system-message message-data]]
+    [not-implemented/not-implemented [pin/system-message edat]]
     (case content-type
 
-      constants/content-type-system-text     [not-implemented/not-implemented
-                                              [system.text/text-content message-data]]
+      constants/content-type-system-text     [not-implemented/not-implemented [system.text/text-content edat]]
 
-      constants/content-type-community       [not-implemented/not-implemented
-                                              [old-message/community message-data]]
+      constants/content-type-community       [not-implemented/not-implemented [old-message/community edat]]
 
-      constants/content-type-contact-request [not-implemented/not-implemented
-                                              [old-message/system-contact-request message-data]])))
+      constants/content-type-contact-request [not-implemented/not-implemented [old-message/system-contact-request edat]]))))
 
 (defn user-message-content
   [{:keys [content-type quoted-message content] :as message-data}
