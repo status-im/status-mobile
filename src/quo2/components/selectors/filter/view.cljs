@@ -11,8 +11,7 @@
     (fn [{:keys [blur? override-theme on-press-out]
           :or   {override-theme (theme/get-theme)}}]
       [rn/touchable-without-feedback
-       {:test-ID             :selector-filter
-        :accessibility-label :selector-filter
+       {:accessibility-label :selector-filter
         :on-press-out        (fn []
                                (swap! pressed? not)
                                (when on-press-out
