@@ -41,7 +41,7 @@
       [quo/author
        {:profile-name display-name
         :chat-key     from
-        :time-str     (datetime/timestamp)
+        :time-str     (datetime/timestamp->time timestamp)
         :contact?     added?
         :verified?    ens-verified}])))
 
