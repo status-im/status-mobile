@@ -40,7 +40,6 @@
  :remove    {:fn-force-nl #{:noarg1-body}}
  :style-map
  {:no-comma       {:map {:comma? false}}
-  :rj-var         {:pair {:justify {:max-variance 1000}}}
   :custom-justify
   {:doc     "Justify everything using pre-1.1.2 approach"
    :binding {:justify? true :justify {:max-variance 1000}}
