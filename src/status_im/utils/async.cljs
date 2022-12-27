@@ -1,9 +1,8 @@
 (ns status-im.utils.async
   "Utility namespace containing `core.async` helper constructs"
-  (:require
-   [cljs.core.async :as async]
-   [status-im.utils.utils :as utils]
-   [taoensso.timbre :as log]))
+  (:require [cljs.core.async :as async]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (defn timeout
   [ms]

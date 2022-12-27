@@ -1,8 +1,7 @@
 (ns quo2.components.community.community-card-view
-  (:require
-   [quo2.components.community.community-view :as community-view]
-   [quo2.components.community.style :as style]
-   [react-native.core :as rn]))
+  (:require [quo2.components.community.community-view :as community-view]
+            [quo2.components.community.style :as style]
+            [react-native.core :as rn]))
 
 (defn community-card-view-item
   [{:keys [name description locked

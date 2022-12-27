@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.tags.context-tags
-  (:require
-   [quo2.components.tags.context-tags :as quo2]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.tags.context-tags :as quo2]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def group-avatar-default-params
   {:size  :small
@@ -43,9 +42,9 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:label "Name"
+  (let [state (reagent/atom {:label        "Name"
                              :channel-name "Channel"
-                             :type  :group-avatar})]
+                             :type         :group-avatar})]
     (fn []
       (let [contacts             {example-pk  {:public-key example-pk
                                                :names      {:three-words-name
@@ -94,7 +93,8 @@
             :justify-content  :center}
            (case (:type @state)
              :context-tag
-             [quo2/context-tag group-avatar-default-params {:uri example-photo2}  (:label @state) (:channel-name @state)]
+             [quo2/context-tag group-avatar-default-params {:uri example-photo2} (:label @state)
+              (:channel-name @state)]
              :group-avatar
              [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
              :public-key

@@ -1,8 +1,7 @@
 (ns quo2.components.banners.--tests--.banner-component-spec
-  (:require
-   ["@testing-library/react-native" :as rtl]
-   [quo2.components.banners.banner.view :as banner]
-   [reagent.core :as reagent]))
+  (:require ["@testing-library/react-native" :as rtl]
+            [quo2.components.banners.banner.view :as banner]
+            [reagent.core :as reagent]))
 
 (defn render-banner
   [opts]

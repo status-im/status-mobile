@@ -1,7 +1,6 @@
 (ns status-im2.common.scroll-page.style
-  (:require
-   [quo2.foundations.colors :as colors]
-   [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn image-slider
   [height]

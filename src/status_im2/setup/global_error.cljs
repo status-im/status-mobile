@@ -1,9 +1,8 @@
 (ns status-im2.setup.global-error
-  (:require
-   [clojure.string :as string]
-   [i18n.i18n :as i18n]
-   [re-frame.core :as re-frame]
-   [status-im2.common.alert.events :as alert]))
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [re-frame.core :as re-frame]
+            [status-im2.common.alert.events :as alert]))
 
 ;; Error handling code based on https://gist.github.com/pesterhazy/e6846be1b6712a9038537022d131ce46
 

@@ -1,13 +1,12 @@
 (ns quo.components.header
-  (:require
-   [oops.core :refer [oget]]
-   [quo.animated :as animated]
-   [quo.components.button.view :as button]
-   [quo.components.text :as text]
-   [quo.design-system.colors :as colors]
-   [quo.design-system.spacing :as spacing]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]))
+  (:require [oops.core :refer [oget]]
+            [quo.animated :as animated]
+            [quo.components.button.view :as button]
+            [quo.components.text :as text]
+            [quo.design-system.colors :as colors]
+            [quo.design-system.spacing :as spacing]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]))
 
 (def header-height 56)
 

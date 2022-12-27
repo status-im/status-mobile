@@ -1,12 +1,11 @@
 (ns quo2.components.avatars.user-avatar
-  (:require
-   [clojure.string :refer [blank? split upper-case]]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :refer [dark?]]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]))
+  (:require [clojure.string :refer [blank? split upper-case]]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :refer [dark?]]
+            [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]))
 
 (def sizes
   {:big    {:outer                   80

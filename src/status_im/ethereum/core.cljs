@@ -1,8 +1,7 @@
 (ns status-im.ethereum.core
-  (:require
-   [clojure.string :as string]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.native-module.core :as status]))
+  (:require [clojure.string :as string]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.native-module.core :as status]))
 
 (defn sha3
   [s]

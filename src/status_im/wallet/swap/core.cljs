@@ -1,8 +1,7 @@
 (ns status-im.wallet.swap.core
-  (:require
-   [re-frame.db :as re-frame.db]
-   [status-im.utils.fx :as fx]
-   [status-im2.navigation.events :as navigation]))
+  (:require [re-frame.db :as re-frame.db]
+            [status-im.utils.fx :as fx]
+            [status-im2.navigation.events :as navigation]))
 
 (fx/defn open-asset-selector-modal
   "source? true signinfies we are selecting the source asset. false implies selection of sink asset"

@@ -1,6 +1,5 @@
 (ns status-im.popover.core
-  (:require
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.utils.fx :as fx]))
 
 (fx/defn show-popover
   {:events [:show-popover]}

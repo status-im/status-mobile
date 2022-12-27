@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.profile.components.views
-  (:require
-   [clojure.string :as string]
-   [quo.design-system.colors :as colors]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.profile.components.styles :as styles]))
+  (:require [clojure.string :as string]
+            [quo.design-system.colors :as colors]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.profile.components.styles :as styles]))
 
 ;; settings items elements
 

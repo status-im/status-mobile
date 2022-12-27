@@ -1,14 +1,13 @@
 (ns status-im.ui.screens.wallet.request.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.eip681 :as eip681]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.copyable-text :as copyable-text]
-   [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
-   [status-im.ui.components.react :as react])
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.eip681 :as eip681]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.copyable-text :as copyable-text]
+            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
+            [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-address

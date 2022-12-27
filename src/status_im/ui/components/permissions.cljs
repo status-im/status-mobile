@@ -1,7 +1,6 @@
 (ns status-im.ui.components.permissions
-  (:require
-   ["react-native-permissions" :refer (requestMultiple PERMISSIONS RESULTS)]
-   [status-im.utils.platform :as platform]))
+  (:require ["react-native-permissions" :refer (requestMultiple PERMISSIONS RESULTS)]
+            [status-im.utils.platform :as platform]))
 
 (def permissions-map
   {:read-external-storage  (cond

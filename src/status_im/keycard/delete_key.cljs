@@ -1,8 +1,7 @@
 (ns status-im.keycard.delete-key
-  (:require
-   [status-im.keycard.common :as common]
-   [status-im.utils.fx :as fx]
-   [status-im2.navigation.events :as navigation]))
+  (:require [status-im.keycard.common :as common]
+            [status-im.utils.fx :as fx]
+            [status-im2.navigation.events :as navigation]))
 
 (fx/defn reset-card-pressed
   {:events [:keycard-settings.ui/reset-card-pressed]}

@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.chat.components.style
-  (:require
-   [quo.design-system.colors :as colors]
-   [quo.design-system.typography :as typography]
-   [quo.platform :as platform]))
+  (:require [quo.design-system.colors :as colors]
+            [quo.design-system.typography :as typography]
+            [quo.platform :as platform]))
 
 (defn toolbar
   []

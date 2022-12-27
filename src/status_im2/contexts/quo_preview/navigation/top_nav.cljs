@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.navigation.top-nav
-  (:require
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.common.home.view :as home.view]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.common.home.view :as home.view]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Type"

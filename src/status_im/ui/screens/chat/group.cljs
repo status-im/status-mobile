@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.chat.group
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.list-selection :as list-selection]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.styles.main :as style]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.universal-links.utils :as links]
-   [utils.debounce :as debounce])
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.main :as style]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.universal-links.utils :as links]
+            [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn decline-chat

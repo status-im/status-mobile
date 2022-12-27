@@ -1,19 +1,18 @@
 (ns quo.previews.main
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.previews.bottom-sheet :as bottom-sheet]
-   [quo.previews.button :as button]
-   [quo.previews.controls :as controls]
-   [quo.previews.header :as header]
-   [quo.previews.icons :as icons]
-   [quo.previews.lists :as lists]
-   [quo.previews.text :as text]
-   [quo.previews.text-input :as text-input]
-   [quo.previews.tooltip :as tooltip]
-   [quo.react-native :as rn]
-   [quo.theme :as theme]
-   [re-frame.core :as re-frame]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.previews.bottom-sheet :as bottom-sheet]
+            [quo.previews.button :as button]
+            [quo.previews.controls :as controls]
+            [quo.previews.header :as header]
+            [quo.previews.icons :as icons]
+            [quo.previews.lists :as lists]
+            [quo.previews.text :as text]
+            [quo.previews.text-input :as text-input]
+            [quo.previews.tooltip :as tooltip]
+            [quo.react-native :as rn]
+            [quo.theme :as theme]
+            [re-frame.core :as re-frame]))
 
 (def screens
   [{:name      :texts

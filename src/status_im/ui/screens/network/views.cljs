@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.network.views
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.network.core :as network]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.network.styles :as styles])
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.network.core :as network]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.network.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon

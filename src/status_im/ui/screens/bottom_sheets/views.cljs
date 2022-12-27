@@ -1,14 +1,13 @@
 (ns status-im.ui.screens.bottom-sheets.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [status-im.ui.screens.about-app.views :as about-app]
-   [status-im.ui.screens.home.sheet.views :as home.sheet]
-   [status-im.ui.screens.keycard.views :as keycard]
-   [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-   [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
-   [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
-   [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.ui.screens.home.sheet.views :as home.sheet]
+            [status-im.ui.screens.keycard.views :as keycard]
+            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
+            [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
+            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
 
 (defn bottom-sheet
   []

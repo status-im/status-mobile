@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.onboarding.welcome.views
-  (:require
-   [cljs-bean.core :as bean]
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.onboarding.welcome.styles :as styles]))
+  (:require [cljs-bean.core :as bean]
+            [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.onboarding.welcome.styles :as styles]))
 
 (defn welcome-image-wrapper
   []

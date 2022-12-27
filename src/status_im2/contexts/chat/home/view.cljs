@@ -1,15 +1,14 @@
 (ns status-im2.contexts.chat.home.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo2.core :as quo]
-   [re-frame.core :as re-frame]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im.ui2.screens.common.contact-list.view :as contact-list]
-   [status-im2.common.home.view :as common.home]
-   [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
-   [status-im2.contexts.chat.home.contact-request.view :as contact-request]
-   [utils.re-frame :as rf]))
+  (:require [i18n.i18n :as i18n]
+            [quo2.core :as quo]
+            [re-frame.core :as re-frame]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]
+            [status-im2.common.home.view :as common.home]
+            [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
+            [status-im2.contexts.chat.home.contact-request.view :as contact-request]
+            [utils.re-frame :as rf]))
 
 (defn get-item-layout
   [_ index]

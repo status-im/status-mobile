@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.communities.select-category
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.utils.handlers :refer [<sub >evt]]
-   [utils.debounce :as debounce]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.debounce :as debounce]))
 
 (def selected-item (reagent/atom ""))
 

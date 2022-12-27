@@ -1,8 +1,7 @@
 (ns quo.components.safe-area
-  (:require
-   ["react-native-safe-area-context" :as safe-area-context :refer
+  (:require ["react-native-safe-area-context" :as safe-area-context :refer
              (SafeAreaView SafeAreaProvider SafeAreaInsetsContext useSafeAreaInsets)]
-   [reagent.core :as reagent]))
+            [reagent.core :as reagent]))
 
 (def provider (reagent/adapt-react-class SafeAreaProvider))
 (def ^:private consumer-raw (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))

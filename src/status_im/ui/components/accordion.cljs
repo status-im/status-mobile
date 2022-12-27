@@ -1,10 +1,9 @@
 (ns status-im.ui.components.accordion
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [reagent.core :as reagent]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]))
 
 (defn drop-down-icon
   [{:keys [opened? dropdown-margin-left]}]

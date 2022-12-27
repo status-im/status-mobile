@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.profile.seed.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.common.styles :as components.common.styles]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.profile.seed.styles :as styles]
-   [status-im.utils.utils :as utils]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.common.styles :as components.common.styles]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.profile.seed.styles :as styles]
+            [status-im.utils.utils :as utils]))
 
 (def steps-numbers
   {:intro       1

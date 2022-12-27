@@ -1,8 +1,7 @@
 (ns status-im.notifications.android
-  (:require
-   ["react-native" :as react-native]
-   [quo.platform :as platform]
-   [taoensso.timbre :as log]))
+  (:require ["react-native" :as react-native]
+            [quo.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defn pn-android
   []

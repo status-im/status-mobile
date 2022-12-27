@@ -1,8 +1,7 @@
 (ns status-im.commands.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.utils.fx :as fx]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.utils.fx :as fx]))
 
 (fx/defn handle-prepare-accept-request-address-for-transaction
   {:events [::prepare-accept-request-address-for-transaction]}

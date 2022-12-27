@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.onboarding.keys.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.onboarding.styles :as styles]
-   [status-im.ui.screens.onboarding.views :as ui]
-   [status-im.utils.gfycat.core :as gfy]
-   [status-im.utils.identicon :as identicon]
-   [status-im.utils.utils :as utils]
-   [utils.debounce :refer [dispatch-and-chill]])
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.onboarding.styles :as styles]
+            [status-im.ui.screens.onboarding.views :as ui]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.utils :as utils]
+            [utils.debounce :refer [dispatch-and-chill]])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview choose-a-chat-name

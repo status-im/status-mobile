@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.core-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.multiaccounts.core :as ma]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.multiaccounts.core :as ma]))
 
 (def public-key
   "0x0461f576da67dc0bca9888cdb4cb28c80285b756b324109da94a081585ed6f007cf00afede6b3ee5638593674fee100b590318fc7bdb0054b8dd9445acea216ad2")

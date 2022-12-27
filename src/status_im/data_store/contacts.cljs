@@ -1,8 +1,7 @@
 (ns status-im.data-store.contacts
-  (:require
-   [clojure.set :as clojure.set]
-   [status-im.utils.fx :as fx]
-   [taoensso.timbre :as log]))
+  (:require [clojure.set :as clojure.set]
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 (defn <-rpc
   [contact]

@@ -1,9 +1,8 @@
 (ns status-im.chat.models-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.chat.models :as chat]
-   [status-im.chat.models.images :as images]
-   [status-im.utils.clocks :as utils.clocks]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.chat.models :as chat]
+            [status-im.chat.models.images :as images]
+            [status-im.utils.clocks :as utils.clocks]))
 
 (deftest clear-history-test
   (let [chat-id "1"

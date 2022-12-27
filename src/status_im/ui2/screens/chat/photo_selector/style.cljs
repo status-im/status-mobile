@@ -1,7 +1,6 @@
 (ns status-im.ui2.screens.chat.photo-selector.style
-  (:require
-   [quo2.foundations.colors :as colors]
-   [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn gradient-container
   [safe-area]

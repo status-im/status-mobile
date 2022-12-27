@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.utils.styles :as styles]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def edit-mailserver-view
   {:flex              1

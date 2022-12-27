@@ -2,11 +2,10 @@
   "The main purpose of these tests is to signal that some steps of the sign in
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.multiaccounts.login.core :as login.core]
-   [status-im.multiaccounts.login.data-test :as data]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.multiaccounts.login.core :as login.core]
+            [status-im.multiaccounts.login.data-test :as data]))
 
 (deftest on-password-input-submitted
   (testing

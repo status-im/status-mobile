@@ -1,9 +1,8 @@
 (ns status-im2.contexts.quo-preview.preview
-  (:require
-   [clojure.string :as string]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent])
+  (:require [clojure.string :as string]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent])
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (def container

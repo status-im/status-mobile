@@ -1,6 +1,5 @@
 (ns status-im2.contexts.syncing.sheets.sync-device-notice.styles
-  (:require
-   [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def sync-devices-header
   {:width "100%"})

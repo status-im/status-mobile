@@ -1,11 +1,10 @@
 (ns status-im2.contexts.syncing.sheets.sync-device-notice.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
-   [status-im2.contexts.syncing.sheets.sync-device-notice.styles :as styles]
-   [utils.re-frame :as rf]))
+  (:require [i18n.i18n :as i18n]
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
+            [status-im2.contexts.syncing.sheets.sync-device-notice.styles :as styles]
+            [utils.re-frame :as rf]))
 
 (defn sheet
   []

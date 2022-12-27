@@ -1,10 +1,9 @@
 (ns quo2.components.banners.banner.view
-  (:require
-   [quo2.components.banners.banner.style :as style]
-   [quo2.components.counter.counter :as counter]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [react-native.core :as rn]))
+  (:require [quo2.components.banners.banner.style :as style]
+            [quo2.components.counter.counter :as counter]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [react-native.core :as rn]))
 
 (defn banner
   [{:keys [show-pin? latest-pin-text pins-count on-press]}]

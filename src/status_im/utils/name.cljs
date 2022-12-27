@@ -1,6 +1,5 @@
 (ns status-im.utils.name
-  (:require
-   [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (defn too-long?
   [name max-len]

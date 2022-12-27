@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.avatars.user-avatar
-  (:require
-   [quo2.components.avatars.user-avatar :as quo2]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im.react-native.resources :as resources]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.avatars.user-avatar :as quo2]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im.react-native.resources :as resources]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"

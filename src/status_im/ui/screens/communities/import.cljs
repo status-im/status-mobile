@@ -1,12 +1,11 @@
 (ns status-im.ui.screens.communities.import
-  (:require
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.utils.handlers :refer [>evt]]))
+  (:require [quo.core :as quo]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.utils.handlers :refer [>evt]]))
 
 (defn view
   []

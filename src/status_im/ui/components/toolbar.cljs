@@ -1,7 +1,6 @@
 (ns status-im.ui.components.toolbar
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.ui.components.react :as react]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.react :as react]))
 
 (defn toolbar-container
   [{:keys [show-border? size center?]

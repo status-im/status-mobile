@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.onboarding.styles
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def wizard-title
   {:margin-bottom 16

@@ -1,8 +1,7 @@
 (ns status-im.browser.core-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.browser.core :as browser]
-   [status-im.utils.http :as http]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.browser.core :as browser]
+            [status-im.utils.http :as http]))
 
 (defn has-wrong-properties?
   [result dapp-url expected-browser]

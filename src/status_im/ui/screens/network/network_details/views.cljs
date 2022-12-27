@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.network.network-details.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.network.core :as network]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.network.styles :as st]
-   [status-im.ui.screens.network.views :as network-settings]
-   [utils.debounce :refer [dispatch-and-chill]])
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.network.core :as network]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.network.styles :as st]
+            [status-im.ui.screens.network.views :as network-settings]
+            [utils.debounce :refer [dispatch-and-chill]])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview network-details

@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.rpc-usage-info
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo.core]
-   [quo.design-system.typography :as typography]
-   [quo.react-native :as quo.react-native]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.utils :as utils]
-   [status-im2.common.json-rpc.events :as json-rpc]
-   [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo.core]
+            [quo.design-system.typography :as typography]
+            [quo.react-native :as quo.react-native]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]
+            [status-im2.common.json-rpc.events :as json-rpc]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
 (re-frame/reg-sub :rpc-usage/filter (fn [db] (get db :rpc-usage/filter)))

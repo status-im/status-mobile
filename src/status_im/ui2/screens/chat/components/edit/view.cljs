@@ -1,12 +1,11 @@
 (ns status-im.ui2.screens.chat.components.edit.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo.gesture-handler :as gesture-handler]
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [re-frame.core :as rf]
-   [react-native.core :as rn]
-   [status-im.ui2.screens.chat.components.edit.style :as style]))
+  (:require [i18n.i18n :as i18n]
+            [quo.gesture-handler :as gesture-handler]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [re-frame.core :as rf]
+            [react-native.core :as rn]
+            [status-im.ui2.screens.chat.components.edit.style :as style]))
 
 (defn edit-message
   [reset-composer-callback]

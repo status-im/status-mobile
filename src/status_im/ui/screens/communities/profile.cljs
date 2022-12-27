@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.communities.profile
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.copyable-text :as copyable-text]
-   [status-im.ui.components.profile-header.view :as profile-header]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.copyable-text :as copyable-text]
+            [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn management
   []

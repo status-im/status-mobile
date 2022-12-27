@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.privacy-and-security-settings.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.biometric.core :as biometric]
-   [status-im.multiaccounts.key-storage.core :as key-storage]
-   [status-im.multiaccounts.reset-password.core :as reset-password]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.config :as config]
-   [status-im.utils.platform :as platform])
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.multiaccounts.key-storage.core :as key-storage]
+            [status-im.multiaccounts.reset-password.core :as reset-password]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn separator

@@ -1,8 +1,7 @@
 (ns status-im.wallet.db
-  (:require
-   [status-im.i18n.i18n :as i18n]
-   [status-im.utils.money :as money]
-   [status-im.utils.priority-map :refer [empty-transaction-map]]))
+  (:require [status-im.i18n.i18n :as i18n]
+            [status-im.utils.money :as money]
+            [status-im.utils.priority-map :refer [empty-transaction-map]]))
 
 (defn- too-precise-amount?
   "Checks if number has any extra digit beyond the allowed number of decimals.

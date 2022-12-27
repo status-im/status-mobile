@@ -1,11 +1,10 @@
 (ns quo2.components.tags.context-tags
-  (:require
-   [quo2.components.avatars.group-avatar :as group-avatar]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as quo2.theme]
-   [react-native.core :as rn]))
+  (:require [quo2.components.avatars.group-avatar :as group-avatar]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo2.theme]
+            [react-native.core :as rn]))
 
 (defn padding-left-for-type
   [type]
@@ -68,13 +67,13 @@
           icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40)]
       [base-tag (assoc-in params [:style :padding-left] 3)
        [rn/image
-        {:style {:width 20
-                 :border-radius 10
-                 :background-color :white
-                 :height 20}
+        {:style  {:width            20
+                  :border-radius    10
+                  :background-color :white
+                  :height           20}
          :source photo}]
        [rn/view
-        {:style {:align-items :center
+        {:style {:align-items    :center
                  :flex-direction :row}}
         [text/text text-params (str " " name)]
         (when channel-name

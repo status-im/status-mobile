@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.community.community-list-view
-  (:require
-   [quo.previews.preview :as preview]
-   [quo.react-native :as rn]
-   [quo2.components.community.community-list-view :as community-list-view]
-   [quo2.foundations.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im2.contexts.quo-preview.community.data :as data]))
+  (:require [quo.previews.preview :as preview]
+            [quo.react-native :as rn]
+            [quo2.components.community.community-list-view :as community-list-view]
+            [quo2.foundations.colors :as colors]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.community.data :as data]))
 
 (def descriptor
   [{:label   "Notifications:"

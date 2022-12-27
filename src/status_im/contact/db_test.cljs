@@ -1,9 +1,8 @@
 (ns status-im.contact.db-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.contact.db :as contact.db]
-   [status-im.utils.gfycat.core :as gfycat]
-   [status-im.utils.identicon :as identicon]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.contact.db :as contact.db]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]))
 
 (deftest contacts-subs
   (testing "get-all-contacts-in-group-chat"

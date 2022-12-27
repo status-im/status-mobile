@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.chat.styles.input.gap
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn gap-container
   []

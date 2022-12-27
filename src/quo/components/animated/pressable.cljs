@@ -1,10 +1,9 @@
 (ns quo.components.animated.pressable
-  (:require
-   [cljs-bean.core :as bean]
-   [quo.animated :as animated]
-   [quo.gesture-handler :as gesture-handler]
-   [quo.react :as react]
-   [reagent.core :as reagent]))
+  (:require [cljs-bean.core :as bean]
+            [quo.animated :as animated]
+            [quo.gesture-handler :as gesture-handler]
+            [quo.react :as react]
+            [reagent.core :as reagent]))
 
 (def long-press-duration 500)
 (def scale-down-small 0.95)

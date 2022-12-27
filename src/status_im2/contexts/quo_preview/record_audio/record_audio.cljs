@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.record-audio.record-audio
-  (:require
-   [quo2.components.record-audio.record-audio.view :as record-audio]
-   [react-native.core :as rn]))
+  (:require [quo2.components.record-audio.record-audio.view :as record-audio]
+            [react-native.core :as rn]))
 
 (defn cool-preview
   []

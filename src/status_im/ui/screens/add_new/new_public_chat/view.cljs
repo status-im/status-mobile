@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.add-new.db :as db]
-   [status-im.chat.models :as chat.models]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.i18n.i18n-resources :as i18n-resources]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react])
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.add-new.db :as db]
+            [status-im.chat.models :as chat.models]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.i18n.i18n-resources :as i18n-resources]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat

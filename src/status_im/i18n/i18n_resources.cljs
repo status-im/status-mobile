@@ -1,8 +1,7 @@
 (ns status-im.i18n.i18n-resources
-  (:require
-   ["i18n-js" :as i18n-js]
-   ["react-native-languages" :default react-native-languages]
-   [clojure.string :as string]))
+  (:require ["i18n-js" :as i18n-js]
+            ["react-native-languages" :default react-native-languages]
+            [clojure.string :as string]))
 ;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this
 ;;only
 ;;for old (status 1.0) code,

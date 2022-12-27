@@ -1,11 +1,10 @@
 (ns quo2.components.messages.author.view
-  (:require
-   [clojure.string :as string]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.components.messages.author.style :as style]
-   [react-native.core :as rn]
-   [status-im.utils.utils :as utils]))
+  (:require [clojure.string :as string]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.messages.author.style :as style]
+            [react-native.core :as rn]
+            [status-im.utils.utils :as utils]))
 
 (def middle-dot "·")
 
@@ -94,8 +93,8 @@
             :style     style/middle-dot-chat-key}
            middle-dot])
         [text/text
-         {:monospace true
-          :size      :paragraph-2
+         {:monospace           true
+          :size                :paragraph-2
           :accessibility-label :message-timestamp
-          :style     (style/time-text ens?)}
+          :style               (style/time-text ens?)}
          time-str]]))])

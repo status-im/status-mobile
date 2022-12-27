@@ -1,6 +1,6 @@
 (ns status-im2.setup.core
   (:require ;; TODO (14/11/22 flexsurfer move to
- ;; status-im2 namespace
+   ;; status-im2 namespace
    [i18n.i18n :as i18n]
    [re-frame.core :as re-frame]
    [re-frame.interop :as interop]

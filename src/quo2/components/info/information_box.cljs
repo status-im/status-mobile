@@ -1,12 +1,11 @@
 (ns quo2.components.info.information-box
-  (:require
-   [clojure.string :as string]
-   [quo2.components.buttons.button :as quo2.button]
-   [quo2.components.icon :as quo2.icons]
-   [quo2.components.info.info-message :as info-message]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]))
+  (:require [clojure.string :as string]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.icon :as quo2.icons]
+            [quo2.components.info.info-message :as info-message]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def themes
   {:light {:default      {:bg     colors/white

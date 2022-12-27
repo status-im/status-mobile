@@ -1,7 +1,6 @@
 (ns status-im.utils.identicon
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.native-module.core :as native-module]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.native-module.core :as native-module]))
 
 (def identicon (memoize native-module/identicon))
 

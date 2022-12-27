@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.profile.visibility-status.utils
-  (:require
-   [clojure.string :as string]
-   [quo.design-system.colors :as colors]
-   [quo2.foundations.colors :as quo2.colors]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.screens.profile.visibility-status.styles :as styles]
-   [status-im.utils.datetime :as datetime]
-   [status-im.utils.handlers :refer [<sub]]))
+  (:require [clojure.string :as string]
+            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.screens.profile.visibility-status.styles :as styles]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.handlers :refer [<sub]]))
 
 ;; Specs:
 ;; :visibility-status-automatic

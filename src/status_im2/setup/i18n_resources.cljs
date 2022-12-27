@@ -1,8 +1,7 @@
 (ns status-im2.setup.i18n-resources
-  (:require
-   [clojure.string :as string]
-   [i18n.i18n :as i18n]
-   [react-native.languages :as react-native-languages]))
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [react-native.languages :as react-native-languages]))
 
 (def default-device-language (react-native-languages/get-lang-keyword))
 

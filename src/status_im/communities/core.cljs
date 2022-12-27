@@ -1,20 +1,19 @@
 (ns status-im.communities.core
-  (:require
-   [clojure.set :as clojure.set]
-   [clojure.string :as string]
-   [clojure.walk :as walk]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.async-storage.core :as async-storage]
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.constants :as constants]
-   [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.handlers :refer [>evt]]
-   [status-im.utils.universal-links.core :as universal-links]
-   [status-im2.contexts.activity-center.events :as activity-center]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [clojure.set :as clojure.set]
+            [clojure.string :as string]
+            [clojure.walk :as walk]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.async-storage.core :as async-storage]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.constants :as constants]
+            [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :refer [>evt]]
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (def crop-size 1000)
 

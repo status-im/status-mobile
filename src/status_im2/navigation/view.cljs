@@ -1,6 +1,6 @@
 (ns status-im2.navigation.view
   (:require ;; TODO (14/11/22 flexsurfer) move to status-im2
- ;; namespace
+   ;; namespace
    [oops.core :refer [oget]]
    [quo2.foundations.colors :as colors]
    [re-frame.core :as re-frame]

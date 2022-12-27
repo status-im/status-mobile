@@ -1,12 +1,11 @@
 (ns quo2.components.list-items.preview-list
-  (:require
-   [quo2.components.avatars.user-avatar :as user-avatar]
-   [quo2.components.icon :as quo2.icons]
-   [quo2.components.markdown.text :as quo2.text]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [react-native.hole-view :as hole-view]))
+  (:require [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.icon :as quo2.icons]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
+            [react-native.hole-view :as hole-view]))
 
 (def params
   {32 {:border-radius {:circular 16 :rounded 10}

@@ -1,6 +1,5 @@
 (ns status-im.chat.models.message-content
-  (:require
-   [status-im.constants :as constants]))
+  (:require [status-im.constants :as constants]))
 
 (def stylings
   [[:bold constants/regx-bold]

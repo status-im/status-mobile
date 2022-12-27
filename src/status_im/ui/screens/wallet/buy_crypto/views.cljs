@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
-  (:require
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.components.webview :as components.webview]
-   [status-im.ui.screens.browser.views :as browser.views]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets])
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.webview :as components.webview]
+            [status-im.ui.screens.browser.views :as browser.views]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
 
 (def learn-more-url "")

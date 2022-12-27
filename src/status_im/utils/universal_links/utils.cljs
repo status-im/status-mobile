@@ -1,7 +1,6 @@
 (ns status-im.utils.universal-links.utils
-  (:require
-   [goog.string :as gstring]
-   [status-im.constants :as constants]))
+  (:require [goog.string :as gstring]
+            [status-im.constants :as constants]))
 
 ;; domains should be without the trailing slash
 (def domains

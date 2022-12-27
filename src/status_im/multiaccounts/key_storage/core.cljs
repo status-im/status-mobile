@@ -1,23 +1,22 @@
 (ns status-im.multiaccounts.key-storage.core
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.mnemonic :as mnemonic]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.keycard.backup-key :as keycard.backup]
-   [status-im.keycard.common :as common]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.multiaccounts.logout.core :as multiaccounts.logout]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-   [status-im.native-module.core :as native-module]
-   [status-im.popover.core :as popover]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.types :as types]
-   [status-im2.navigation.events :as navigation]
-   [utils.security.core :as security]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.mnemonic :as mnemonic]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.backup-key :as keycard.backup]
+            [status-im.keycard.common :as common]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.logout.core :as multiaccounts.logout]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.native-module.core :as native-module]
+            [status-im.popover.core :as popover]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
+            [status-im2.navigation.events :as navigation]
+            [utils.security.core :as security]))
 
 (fx/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"

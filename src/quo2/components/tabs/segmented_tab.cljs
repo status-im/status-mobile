@@ -1,10 +1,9 @@
 (ns quo2.components.tabs.segmented-tab
-  (:require
-   [quo2.components.tabs.tab :as tab]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]))
+  (:require [quo2.components.tabs.tab :as tab]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]))
 
 (def themes
   {:light {:background-color colors/neutral-20}

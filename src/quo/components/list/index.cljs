@@ -1,8 +1,7 @@
 (ns quo.components.list.index
-  (:require
-   [quo.components.text :as text]
-   [quo.design-system.colors :as colors]
-   [quo.react-native :as rn]))
+  (:require [quo.components.text :as text]
+            [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]))
 
 (defn index
   [{:keys [title]}]

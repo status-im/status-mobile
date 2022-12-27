@@ -1,10 +1,9 @@
 (ns quo2.components.loaders.skeleton
-  (:require
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.masked-view :as masked-view]
-   [react-native.reanimated :as reanimated]
-   [reagent.core :as reagent]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.masked-view :as masked-view]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]))
 
 (def message-skeleton-height 54)
 

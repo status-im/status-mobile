@@ -1,8 +1,7 @@
 (ns quo2.components.drawers.--tests--.action-drawers-component-spec
-  (:require
-   ["@testing-library/react-native" :as rtl]
-   [quo2.components.drawers.action-drawers :as action-drawer]
-   [reagent.core :as reagent]))
+  (:require ["@testing-library/react-native" :as rtl]
+            [quo2.components.drawers.action-drawers :as action-drawer]
+            [reagent.core :as reagent]))
 
 (defn render-action-drawer
   ([options]

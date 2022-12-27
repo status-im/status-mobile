@@ -1,17 +1,16 @@
 (ns status-im.keycard.onboarding
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.keycard.common :as common]
-   status-im.keycard.fx
-   [status-im.keycard.mnemonic :as mnemonic]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.utils :as utils]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im.keycard.mnemonic :as mnemonic]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn begin-setup-button-pressed
   {:keys [:keycard.ui/begin-setup-button-pressed]}

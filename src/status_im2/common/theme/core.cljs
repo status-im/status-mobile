@@ -1,6 +1,5 @@
 (ns status-im2.common.theme.core
-  (:require
-   [react-native.core :as rn]))
+  (:require [react-native.core :as rn]))
 
 (def initial-mode (atom (rn/get-color-scheme)))
 

@@ -1,7 +1,6 @@
 (ns status-im2.subs.pairing
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.pairing.core :as pairing]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.pairing.core :as pairing]))
 
 (re-frame/reg-sub
  :pairing/installations

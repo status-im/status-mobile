@@ -1,9 +1,8 @@
 (ns quo.components.list.footer
-  (:require
-   [quo.components.text :as text]
-   [quo.design-system.spacing :as spacing]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]))
+  (:require [quo.components.text :as text]
+            [quo.design-system.spacing :as spacing]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]))
 
 (defn footer
   []

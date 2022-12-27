@@ -1,9 +1,8 @@
 (ns quo2.components.icon
-  (:require
-   [clojure.string :as string]
-   [quo2.components.icons.icons :as icons]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]))
+  (:require [clojure.string :as string]
+            [quo2.components.icons.icons :as icons]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]))
 
 (defn memo-icon-fn
   ([icon-name] (memo-icon-fn icon-name nil))

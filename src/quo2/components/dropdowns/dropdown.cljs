@@ -1,11 +1,10 @@
 (ns quo2.components.dropdowns.dropdown
-  (:require
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [reagent.core :as reagent]))
+  (:require [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]))
 
 (defn apply-anim
   [dd-height val]

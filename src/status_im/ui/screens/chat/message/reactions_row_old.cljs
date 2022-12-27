@@ -1,9 +1,8 @@
 (ns status-im.ui.screens.chat.message.reactions-row-old
-  (:require
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [status-im.constants :as constants]
-   [status-im.ui.screens.chat.message.styles :as styles]))
+  (:require [quo.core :as quo]
+            [quo.react-native :as rn]
+            [status-im.constants :as constants]
+            [status-im.ui.screens.chat.message.styles :as styles]))
 
 (defn reaction
   [{:keys [outgoing]} {:keys [own emoji-id quantity]} timeline]

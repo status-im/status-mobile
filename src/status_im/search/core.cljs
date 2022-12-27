@@ -1,6 +1,5 @@
 (ns status-im.search.core
-  (:require
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.utils.fx :as fx]))
 
 (fx/defn home-filter-changed
   {:events [:search/home-filter-changed]}

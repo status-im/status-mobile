@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.overview.view
   (:require ;; TODO move to status-im2 when
- ;; reimplemented
+   ;; reimplemented
    [i18n.i18n :as i18n]
    [oops.core :as oops]
    [quo2.core :as quo]

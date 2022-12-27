@@ -1,21 +1,20 @@
 (ns status-im.ui.screens.multiaccounts.login.views
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.ui.components.checkbox.view :as checkbox]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
-   [status-im.ui.screens.multiaccounts.login.styles :as styles]
-   [status-im.ui.screens.multiaccounts.styles :as ast]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.utils :as utils]
-   [utils.security.core :as security])
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
+            [status-im.ui.screens.multiaccounts.login.styles :as styles]
+            [status-im.ui.screens.multiaccounts.styles :as ast]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
+            [utils.security.core :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-multiaccount

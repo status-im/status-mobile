@@ -1,9 +1,8 @@
 ;;this ns is needed because of cycled deps
 (ns status-im.chat.models.transport
-  (:require
-   [status-im.chat.models.message :as chat.message]
-   [status-im.transport.message.core :as transport.message]
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.chat.models.message :as chat.message]
+            [status-im.transport.message.core :as transport.message]
+            [status-im.utils.fx :as fx]))
 
 (fx/defn chat-ui-resend-message
   {:events [:chat.ui/resend-message]}

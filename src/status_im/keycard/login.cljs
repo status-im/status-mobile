@@ -1,16 +1,15 @@
 (ns status-im.keycard.login
-  (:require
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.keycard.common :as common]
-   status-im.keycard.fx
-   [status-im.keycard.onboarding :as onboarding]
-   [status-im.keycard.recovery :as recovery]
-   [status-im.signing.core :as signing.core]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.types :as types]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im.keycard.onboarding :as onboarding]
+            [status-im.keycard.recovery :as recovery]
+            [status-im.signing.core :as signing.core]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn login-got-it-pressed
   {:events [:keycard.login.pin.ui/got-it-pressed

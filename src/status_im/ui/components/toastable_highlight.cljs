@@ -1,10 +1,9 @@
 (ns status-im.ui.components.toastable-highlight
   "A wrapped touchable highlight that presents a toast when clicked"
-  (:require
-   [quo.design-system.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im.ui.components.animation :as animation]
-   [status-im.ui.components.react :as react]))
+  (:require [quo.design-system.colors :as colors]
+            [reagent.core :as reagent]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.react :as react]))
 
 (defn hide-cue-atom
   [anim-opacity anim-y cue-atom]

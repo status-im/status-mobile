@@ -1,7 +1,6 @@
 (ns status-im.data-store.contacts-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.data-store.contacts :as c]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.data-store.contacts :as c]))
 
 (deftest contact<-rpc
   (let [contact          {:id          "pk"

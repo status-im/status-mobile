@@ -1,9 +1,8 @@
 (ns status-im2.contexts.activity-center.events
-  (:require
-   [status-im.data-store.activities :as data-store.activities]
-   [status-im2.contexts.activity-center.notification-types :as types]
-   [taoensso.timbre :as log]
-   [utils.re-frame :as rf]))
+  (:require [status-im.data-store.activities :as data-store.activities]
+            [status-im2.contexts.activity-center.notification-types :as types]
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (def defaults
   {:filter-status          :unread

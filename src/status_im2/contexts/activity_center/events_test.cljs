@@ -1,12 +1,11 @@
 (ns status-im2.contexts.activity-center.events-test
-  (:require
-   [cljs.test :refer [deftest is testing]]
-   [status-im.constants :as constants]
-   status-im.events
-   [status-im.test-helpers :as h]
-   [status-im2.contexts.activity-center.events :as activity-center]
-   [status-im2.contexts.activity-center.notification-types :as types]
-   [utils.re-frame :as rf]))
+  (:require [cljs.test :refer [deftest is testing]]
+            [status-im.constants :as constants]
+            status-im.events
+            [status-im.test-helpers :as h]
+            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.activity-center.notification-types :as types]
+            [utils.re-frame :as rf]))
 
 (h/use-log-fixture)
 

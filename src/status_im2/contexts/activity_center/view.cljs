@@ -1,17 +1,16 @@
 (ns status-im2.contexts.activity-center.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo.react :as react]
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im2.contexts.activity-center.notification-types :as types]
-   [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
-   [status-im2.contexts.activity-center.notification.contact-verification.view :as
+  (:require [i18n.i18n :as i18n]
+            [quo.react :as react]
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
+            [status-im2.contexts.activity-center.notification-types :as types]
+            [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
+            [status-im2.contexts.activity-center.notification.contact-verification.view :as
              contact-verification]
-   [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
-   [status-im2.contexts.activity-center.style :as style]
-   [utils.re-frame :as rf]))
+            [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
+            [status-im2.contexts.activity-center.style :as style]
+            [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
   []

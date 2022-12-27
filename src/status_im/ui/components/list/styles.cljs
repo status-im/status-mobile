@@ -1,7 +1,6 @@
 (ns status-im.ui.components.list.styles
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.utils.styles :as styles]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def item
   {:flex-direction     :row

@@ -1,6 +1,5 @@
 (ns status-im.audio.core
-  (:require
-   ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]))
+  (:require ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]))
 
 ;; get mediastates from react module
 (def PLAYING (.-PLAYING ^js MediaStates))

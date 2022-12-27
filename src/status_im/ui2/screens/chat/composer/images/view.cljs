@@ -1,10 +1,9 @@
 (ns status-im.ui2.screens.chat.composer.images.view
-  (:require
-   [quo2.core :as quo2]
-   [quo2.foundations.colors :as colors]
-   [re-frame.core :as rf]
-   [react-native.core :as rn]
-   [status-im.ui2.screens.chat.composer.style :as style]))
+  (:require [quo2.core :as quo2]
+            [quo2.foundations.colors :as colors]
+            [re-frame.core :as rf]
+            [react-native.core :as rn]
+            [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn image
   [item]

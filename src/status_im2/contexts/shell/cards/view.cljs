@@ -1,13 +1,12 @@
 (ns status-im2.contexts.shell.cards.view
-  (:require
-   [clojure.string :as string]
-   [i18n.i18n :as i18n]
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [status-im2.contexts.shell.cards.style :as style]
-   [status-im2.contexts.shell.constants :as shell.constants]))
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
+            [status-im2.contexts.shell.cards.style :as style]
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
 (defn content-container
   [{:keys [content-type data new-notifications? color-50]}]

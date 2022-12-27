@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.model-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.multiaccounts.model :as multiaccounts.model]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (deftest logged-in-test
   (testing "multiaccount is defined"

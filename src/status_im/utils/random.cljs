@@ -1,8 +1,7 @@
 (ns status-im.utils.random
-  (:require
-   ["chance" :as Chance]
-   [re-frame.core :as re-frame]
-   [status-im.utils.datetime :as datetime]))
+  (:require ["chance" :as Chance]
+            [re-frame.core :as re-frame]
+            [status-im.utils.datetime :as datetime]))
 
 (def chance (Chance.))
 

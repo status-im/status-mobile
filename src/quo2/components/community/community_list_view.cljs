@@ -1,13 +1,12 @@
 (ns quo2.components.community.community-list-view
-  (:require
-   [quo2.components.community.community-view :as community-view]
-   [quo2.components.community.style :as style]
-   [quo2.components.counter.counter :as counter]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]))
+  (:require [quo2.components.community.community-view :as community-view]
+            [quo2.components.community.style :as style]
+            [quo2.components.counter.counter :as counter]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]))
 
 (defn community-icon-view
   [community-icon]

@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.buttons.button
-  (:require
-   [quo2.components.buttons.button :as quo2]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.buttons.button :as quo2]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Type:"

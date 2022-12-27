@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.copyable-text :as copyable-text]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [utils.security.core :as security]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.copyable-text :as copyable-text]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [utils.security.core :as security]))
 
 (defn not-valid-password?
   [password]

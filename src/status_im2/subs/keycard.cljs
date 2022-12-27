@@ -1,10 +1,9 @@
 (ns status-im2.subs.keycard
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.keycard.common :as common]
-   [status-im.utils.datetime :as utils.datetime]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.keycard.common :as common]
+            [status-im.utils.datetime :as utils.datetime]))
 
 (re-frame/reg-sub
  :keycard/nfc-enabled?

@@ -1,9 +1,8 @@
 (ns status-im.utils.config
-  (:require
-   ["react-native-config" :default react-native-config]
-   [clojure.string :as string]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.ens :as ens]))
+  (:require ["react-native-config" :default react-native-config]
+            [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]))
 ;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this
 ;;only
 ;;for old (status 1.0) code,

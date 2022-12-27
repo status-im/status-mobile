@@ -1,21 +1,20 @@
 (ns status-im.chat.models.images
-  (:require
-   ["@react-native-community/cameraroll" :as CameraRoll]
-   ["react-native-blob-util" :default ReactNativeBlobUtil]
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.chat.models :as chat]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.permissions :as permissions]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.config :as config]
-   [status-im.utils.fs :as fs]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.image-processing :as image-processing]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.types :as types]
-   [status-im.utils.utils :as utils]
-   [taoensso.timbre :as log]))
+  (:require ["@react-native-community/cameraroll" :as CameraRoll]
+            ["react-native-blob-util" :default ReactNativeBlobUtil]
+            [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.chat.models :as chat]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.permissions :as permissions]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]
+            [status-im.utils.fs :as fs]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.image-processing :as image-processing]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (def maximum-image-size-px 2000)
 

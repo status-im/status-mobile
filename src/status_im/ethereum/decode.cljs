@@ -1,6 +1,5 @@
 (ns status-im.ethereum.decode
-  (:require
-   [status-im.utils.money :as money]))
+  (:require [status-im.utils.money :as money]))
 
 (defn uint
   [hex]

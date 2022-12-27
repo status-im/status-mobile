@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.onboarding.intro.views
-  (:require
-   [quo.animated :as animated]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.design-system.typography :as typography]
-   [quo.react-native :as rn]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.onboarding.intro.styles :as styles]))
+  (:require [quo.animated :as animated]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.design-system.typography :as typography]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.onboarding.intro.styles :as styles]))
 
 (defonce index (reagent/atom 0))
 

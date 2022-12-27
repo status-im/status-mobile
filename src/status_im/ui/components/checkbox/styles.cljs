@@ -1,6 +1,5 @@
 (ns status-im.ui.components.checkbox.styles
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def wrapper
   {:width 24 :height 24 :align-items :center :justify-content :center})

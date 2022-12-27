@@ -1,9 +1,8 @@
 (ns status-im.i18n.i18n
-  (:require
-   ["i18n-js" :as i18n]
-   [clojure.string :as string]
-   [status-im.goog.i18n :as goog.i18n]
-   [status-im.i18n.i18n-resources :as i18n-resources]))
+  (:require ["i18n-js" :as i18n]
+            [clojure.string :as string]
+            [status-im.goog.i18n :as goog.i18n]
+            [status-im.i18n.i18n-resources :as i18n-resources]))
 ;;TODO (14/11/22 flexsurfer) this namespace has been moved to the root level, we keep this only for old
 ;;(status 1.0) code,
 ;; can be removed with old code later

@@ -1,9 +1,8 @@
 (ns status-im.multiaccounts.recover.core-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.multiaccounts.create.core :as multiaccounts.create]
-   [status-im.multiaccounts.recover.core :as models]
-   [utils.security.core :as security]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.multiaccounts.recover.core :as models]
+            [utils.security.core :as security]))
 
 ;;;; helpers
 

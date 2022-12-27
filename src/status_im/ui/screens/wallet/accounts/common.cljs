@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.wallet.accounts.common
-  (:require
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [quo2.components.markdown.text :as quo2.text]
-   [quo2.foundations.colors :as quo2.colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.ui.components.chat-icon.screen :as chat-icon]
-   [status-im.ui.screens.wallet.components.views :as wallet.components]
-   [status-im.utils.utils :as utils.utils]
-   [status-im.wallet.utils :as wallet.utils]))
+  (:require [quo.core :as quo]
+            [quo.react-native :as rn]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.foundations.colors :as quo2.colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.utils.utils :as utils.utils]
+            [status-im.wallet.utils :as wallet.utils]))
 
 ;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
 ;; too fast. By updating this atom in 1s we ensure that `refreshing?` property

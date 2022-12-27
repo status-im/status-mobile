@@ -1,7 +1,6 @@
 (ns status-im.data-store.chats-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.data-store.chats :as chats]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.data-store.chats :as chats]))
 
 (deftest normalize-chat-test
   (let [chat          {:id                     "chat-id"

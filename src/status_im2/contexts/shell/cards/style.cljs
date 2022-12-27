@@ -1,6 +1,5 @@
 (ns status-im2.contexts.shell.cards.style
-  (:require
-   [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def colors-map
   {:secondary-container-bg-color colors/neutral-95

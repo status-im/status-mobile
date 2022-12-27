@@ -1,8 +1,7 @@
 (ns quo.previews.icons
-  (:require
-   [quo.design-system.colors :as colors]
-   [quo.react-native :as rn]
-   [status-im.ui.components.icons.icons :as icons]))
+  (:require [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn preview
   []

@@ -1,7 +1,6 @@
 (ns status-im.utils.money-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.utils.money :as money]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.utils.money :as money]))
 
 (deftest wei->ether
   (testing "Numeric input, 15 significant digits"

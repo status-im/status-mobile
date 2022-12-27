@@ -1,18 +1,17 @@
 (ns status-im.ui2.screens.chat.components.reply
-  (:require
-   [clojure.string :as string]
-   [i18n.i18n :as i18n]
-   [quo.react-native :as rn]
-   [quo2.components.buttons.button :as quo2.button]
-   [quo2.components.icon :as quo2.icon]
-   [quo2.components.markdown.text :as quo2.text]
-   [quo2.foundations.colors :as colors]
-   [status-im.constants :as constants]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im.ui2.screens.chat.composer.style :as styles]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [quo.react-native :as rn]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.icon :as quo2.icon]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.foundations.colors :as colors]
+            [status-im.constants :as constants]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui2.screens.chat.composer.style :as styles]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn get-quoted-text-with-mentions
   [parsed-text]

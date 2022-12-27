@@ -1,8 +1,7 @@
 (ns quo2.components.counter.--tests--.counter-component-spec
-  (:require
-   ["@testing-library/react-native" :as rtl]
-   [quo2.components.counter.counter :as counter]
-   [reagent.core :as reagent]))
+  (:require ["@testing-library/react-native" :as rtl]
+            [quo2.components.counter.counter :as counter]
+            [reagent.core :as reagent]))
 
 (defn render-counter
   ([]

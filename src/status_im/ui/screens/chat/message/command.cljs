@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.chat.message.command
-  (:require
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.commands.core :as commands]
-   [status-im.constants :as constants]
-   [status-im.ethereum.transactions.core :as transactions]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.chat-icon.screen :as chat-icon]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.money :as money]
-   [status-im.utils.utils :as utils]))
+  (:require [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.commands.core :as commands]
+            [status-im.constants :as constants]
+            [status-im.ethereum.transactions.core :as transactions]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.money :as money]
+            [status-im.utils.utils :as utils]))
 
 (defn- final-status?
   [command-state]

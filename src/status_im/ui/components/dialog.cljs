@@ -1,6 +1,5 @@
 (ns status-im.ui.components.dialog
-  (:require
-   ["react-native-dialogs" :default dialogs]))
+  (:require ["react-native-dialogs" :default dialogs]))
 
 (defn show
   [{:keys [title options cancel-text on-cancel]}]

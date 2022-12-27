@@ -1,6 +1,5 @@
 (ns status-im2.common.confirmation-drawer.style
-  (:require
-   [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn context-container
   []

@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.profile.visibility-status.views
   (:require-macros [status-im.utils.views :as views])
-  (:require
-   ["react-native" :refer (BackHandler)]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.react-native :as rn]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.constants :as constants]
-   [status-im.ui.components.animation :as anim]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.profile.visibility-status.styles :as styles]
-   [status-im.ui.screens.profile.visibility-status.utils :as utils]
-   [status-im.utils.handlers :refer [<sub]]
-   [status-im.utils.platform :as platform]))
+  (:require ["react-native" :refer (BackHandler)]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.constants :as constants]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.profile.visibility-status.styles :as styles]
+            [status-im.ui.screens.profile.visibility-status.utils :as utils]
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.platform :as platform]))
 
 ;; === Code Related to visibility-status-button ===
 

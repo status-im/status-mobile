@@ -1,16 +1,15 @@
 (ns status-im.signals.core
-  (:require
-   [status-im.chat.models.link-preview :as link.preview]
-   [status-im.chat.models.message :as models.message]
-   [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.mailserver.core :as mailserver]
-   [status-im.multiaccounts.login.core :as login]
-   [status-im.notifications.local :as local-notifications]
-   [status-im.transport.message.core :as transport.message]
-   [status-im.utils.fx :as fx]
-   [status-im.visibility-status-updates.core :as visibility-status-updates]
-   [taoensso.timbre :as log]))
+  (:require [status-im.chat.models.link-preview :as link.preview]
+            [status-im.chat.models.message :as models.message]
+            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.login.core :as login]
+            [status-im.notifications.local :as local-notifications]
+            [status-im.transport.message.core :as transport.message]
+            [status-im.utils.fx :as fx]
+            [status-im.visibility-status-updates.core :as visibility-status-updates]
+            [taoensso.timbre :as log]))
 
 (fx/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]

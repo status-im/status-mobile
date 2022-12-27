@@ -1,8 +1,7 @@
 (ns status-im.ui.components.keyboard-avoid-presentation
-  (:require
-   [oops.core :refer [oget]]
-   [reagent.core :as reagent]
-   [status-im.ui.components.react :as react]))
+  (:require [oops.core :refer [oget]]
+            [reagent.core :as reagent]
+            [status-im.ui.components.react :as react]))
 
 (defn keyboard-avoiding-view
   []

@@ -1,10 +1,9 @@
 (ns quo.components.text
-  (:require
-   [quo.animated :as animated]
-   [quo.design-system.colors :as colors]
-   [quo.design-system.typography :as typography]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]))
+  (:require [quo.animated :as animated]
+            [quo.design-system.colors :as colors]
+            [quo.design-system.typography :as typography]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]))
 
 (defn text-style
   [{:keys [size align weight monospace color style]}]

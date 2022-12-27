@@ -1,13 +1,12 @@
 (ns status-im2.contexts.chat.home.chat-list-item.view
-  (:require
-   [clojure.string :as string]
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [status-im.utils.datetime :as time]
-   [status-im2.common.home.actions.view :as actions] ;;TODO move to status-im2
-   [status-im2.contexts.chat.home.chat-list-item.style :as style]
-   [utils.re-frame :as rf]))
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [status-im.utils.datetime :as time]
+            [status-im2.common.home.actions.view :as actions] ;;TODO move to status-im2
+            [status-im2.contexts.chat.home.chat-list-item.style :as style]
+            [utils.re-frame :as rf]))
 
 (def max-subheader-length 50)
 

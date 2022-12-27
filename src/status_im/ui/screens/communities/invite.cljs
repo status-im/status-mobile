@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.communities.invite
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.utils.handlers :refer [<sub >evt-once]]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.handlers :refer [<sub >evt-once]]))
 
 (defn header
   [user-pk]

@@ -1,11 +1,10 @@
 ;reference https://eips.ethereum.org/EIPS/eip-3326 EIP-3326: Wallet Switch Ethereum Chain RPC Method
 ;(`wallet_switchEthereumChain`)
 (ns status-im.browser.eip3326
-  (:require
-   [status-im.constants :as constants]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ui.screens.browser.eip3326.sheet :as sheet]
-   [status-im.utils.fx :as fx]))
+  (:require [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ui.screens.browser.eip3326.sheet :as sheet]
+            [status-im.utils.fx :as fx]))
 
 (fx/defn deny-permission
   {:events [:eip3326.ui/dapp-permission-denied]}

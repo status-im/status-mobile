@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.communities.community-emoji-thumbnail-picker
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [status-im.communities.core :as communities]
-   [status-im.ui.components.emoji-thumbnail.color-picker :as color-picker]
-   [status-im.ui.components.emoji-thumbnail.preview :as emoji-thumbnail-preview]
-   [status-im.ui.components.emoji-thumbnail.styles :as styles]
-   [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [quo.react-native :as rn]
+            [status-im.communities.core :as communities]
+            [status-im.ui.components.emoji-thumbnail.color-picker :as color-picker]
+            [status-im.ui.components.emoji-thumbnail.preview :as emoji-thumbnail-preview]
+            [status-im.ui.components.emoji-thumbnail.styles :as styles]
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn thumbnail-preview-section
   []

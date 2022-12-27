@@ -1,16 +1,15 @@
 (ns status-im.ui.screens.chat.components.reply
-  (:require
-   [clojure.string :as string]
-   [quo.components.animated.pressable :as pressable]
-   [quo.core :as quo]
-   [quo.design-system.colors :as quo.colors]
-   [quo.react :as quo.react]
-   [quo.react-native :as rn]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.screens.chat.components.style :as styles]))
+  (:require [clojure.string :as string]
+            [quo.components.animated.pressable :as pressable]
+            [quo.core :as quo]
+            [quo.design-system.colors :as quo.colors]
+            [quo.react :as quo.react]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.screens.chat.components.style :as styles]))
 
 (def ^:private reply-symbol "↪ ")
 

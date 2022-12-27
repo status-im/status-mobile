@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.communities.icon
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.constants :as constants]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.photos :as photos]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.constants :as constants]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.photos :as photos]))
 
 (defn community-icon
   [{:keys [id name images color]}]

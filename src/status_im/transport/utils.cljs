@@ -1,6 +1,5 @@
 (ns ^{:doc "Utils for transport layer"} status-im.transport.utils
-  (:require
-   [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (defn extract-enode-id
   [enode]

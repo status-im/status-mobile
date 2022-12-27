@@ -1,6 +1,5 @@
 (ns status-im.ui.components.tooltip.animations
-  (:require
-   [status-im.ui.components.animation :as animation]))
+  (:require [status-im.ui.components.animation :as animation]))
 
 (defn animate-tooltip
   [bottom-value bottom-anim-value opacity-value delta]

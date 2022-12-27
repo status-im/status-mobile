@@ -1,8 +1,7 @@
 (ns ^{:doc "Protocol API and protocol utils"} status-im.transport.message.protocol
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.utils.fx :as fx]
-   [taoensso.timbre :as log]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 (defn build-message
   [{:keys [chat-id

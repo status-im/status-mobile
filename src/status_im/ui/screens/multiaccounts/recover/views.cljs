@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.multiaccounts.recover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.keycard.recovery :as keycard]
-   [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
-   [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im2.setup.config :as config]
-   [utils.security.core]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.recovery :as keycard]
+            [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im2.setup.config :as config]
+            [utils.security.core]))
 
 (defn hide-sheet-and-dispatch
   [event]

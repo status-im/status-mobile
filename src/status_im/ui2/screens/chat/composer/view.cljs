@@ -1,28 +1,27 @@
 (ns status-im.ui2.screens.chat.composer.view
-  (:require
-   [clojure.string :as string]
-   [i18n.i18n :as i18n]
-   [oops.core :refer [oget]]
-   [quo.components.safe-area :as safe-area]
-   [quo.react]
-   [quo.react-native :as rn :refer [navigation-const]]
-   [quo2.components.buttons.button :as quo2.button]
-   [react-native.gesture :as gesture]
-   [react-native.reanimated :as reanimated]
-   [status-im.ui.components.permissions :as permissions]
-   [status-im.ui2.screens.chat.composer.edit.view :as edit]
-   [status-im.ui2.screens.chat.composer.images.view :as composer-images]
-   [status-im.ui2.screens.chat.composer.input :as input]
-   [status-im.ui2.screens.chat.composer.mentions :as mentions]
-   [status-im.ui2.screens.chat.composer.reply :as reply]
-   [status-im.ui2.screens.chat.composer.style :as style]
-   [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
-   [status-im.utils.handlers :refer [<sub]]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.utils :as utils]
-   [status-im2.common.not-implemented :as not-implemented]
-   [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
-   [utils.re-frame :as rf]))
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [oops.core :refer [oget]]
+            [quo.components.safe-area :as safe-area]
+            [quo.react]
+            [quo.react-native :as rn :refer [navigation-const]]
+            [quo2.components.buttons.button :as quo2.button]
+            [react-native.gesture :as gesture]
+            [react-native.reanimated :as reanimated]
+            [status-im.ui.components.permissions :as permissions]
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]
+            [status-im.ui2.screens.chat.composer.images.view :as composer-images]
+            [status-im.ui2.screens.chat.composer.input :as input]
+            [status-im.ui2.screens.chat.composer.mentions :as mentions]
+            [status-im.ui2.screens.chat.composer.reply :as reply]
+            [status-im.ui2.screens.chat.composer.style :as style]
+            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
+            [status-im2.common.not-implemented :as not-implemented]
+            [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
+            [utils.re-frame :as rf]))
 
 (defn calculate-y
   [context min-y max-y added-value chat-id set-bg-opacity]
@@ -58,7 +57,8 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit images set-bg-opacity]
+(defn get-y-value
+  [context min-y max-y added-value max-height chat-id suggestions reply edit images set-bg-opacity]
   (let [y               (calculate-y context min-y max-y added-value chat-id set-bg-opacity)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions) (when (seq images) 80) (when edit 38))))
@@ -68,9 +68,11 @@
    (clean-and-minimize-composer context chat-id refs min-y false))
   ([context chat-id refs min-y edit?]
    (input/clear-input chat-id refs)
-   (swap! context assoc :y (if edit?
-                             (- min-y 38)
-                             min-y))
+   (swap! context assoc
+     :y
+     (if edit?
+       (- min-y 38)
+       min-y))
    (swap! context assoc :clear true :state :min)))
 
 (defn get-bottom-sheet-gesture
@@ -107,7 +109,9 @@
                (set-bg-opacity 0)
                (rf/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer? initial-value]
+(defn get-input-content-change
+  [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer?
+   initial-value]
   (fn [evt]
     (when-not (or blank-composer? (some? initial-value))
       (swap! context assoc :clear false))
@@ -121,7 +125,9 @@
         (set-bg-opacity 0))
       (when (not= (:state @context) :max)
         (let [offset-value (if platform/ios? 22 40)
-              new-y        (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") offset-value) offset-value))]
+              new-y        (+ min-y
+                              (- (max (oget evt "nativeEvent" "contentSize" "height") offset-value)
+                                 offset-value))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -158,7 +164,8 @@
                                       :min-y                     min-y ;minimum y value
                                       :dy                        0     ;used for gesture
                                       :pdy                       0     ;used for gesture
-                                      :state                     :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                      :state                     :min  ;:min, :custom-chat-available,
+                                                                       ;:custom-chat-unavailable, :max
                                       :clear                     false
                                       :minimized-from-handlebar? false})
            keyboard-was-shown? (atom false)
@@ -310,16 +317,18 @@
                      :size 32} :i/reaction]]
                   [rn/view {:flex 1}]
                   ;;SEND button
-                  [rn/view {:ref   send-ref
-                            :style (when (seq images)
-                                     {:width 0
-                                      :right -100})}
-                   [quo2.button/button {:icon                true
-                                        :size                32
-                                        :accessibility-label :send-message-button
-                                        :on-press            #(do (clean-and-minimize-composer-fn false)
-                                                                  (scroll-to-bottom)
-                                                                  (rf/dispatch [:chat.ui/send-current-message]))}
+                  [rn/view
+                   {:ref   send-ref
+                    :style (when (seq images)
+                             {:width 0
+                              :right -100})}
+                   [quo2.button/button
+                    {:icon                true
+                     :size                32
+                     :accessibility-label :send-message-button
+                     :on-press            #(do (clean-and-minimize-composer-fn false)
+                                               (scroll-to-bottom)
+                                               (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view

@@ -1,11 +1,10 @@
 (ns quo.previews.text
-  (:require
-   [quo.animated :as animated]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.previews.preview :as preview]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]))
+  (:require [quo.animated :as animated]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.previews.preview :as preview]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]))
 
 (def all-props
   (preview/list-comp [size   [:tiny :small :base :large :x-large :xx-large]

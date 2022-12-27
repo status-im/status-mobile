@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.chat.message.reactions
-  (:require
-   [quo.animated :as animated]
-   [quo.react :as react]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.ui.screens.chat.message.reactions-picker :as reaction-picker]
-   [status-im.ui.screens.chat.message.reactions-row :as reaction-row]))
+  (:require [quo.animated :as animated]
+            [quo.react :as react]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.ui.screens.chat.message.reactions-picker :as reaction-picker]
+            [status-im.ui.screens.chat.message.reactions-row :as reaction-row]))
 
 (defn measure-in-window
   [ref cb]

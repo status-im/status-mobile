@@ -1,15 +1,14 @@
 (ns status-im2.contexts.shell.home-stack
-  (:require
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [react-native.safe-area :as safe-area]
-   [status-im.ui.screens.profile.user.views :as profile.user]
-   [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-   [status-im2.contexts.chat.home.view :as chat] ;; TODO move to status-im2
-   [status-im2.contexts.communities.home.view :as communities]
-   [status-im2.contexts.shell.animation :as animation]
-   [status-im2.contexts.shell.constants :as shell.constants]
-   [status-im2.contexts.shell.style :as styles]))
+  (:require [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]
+            [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im2.contexts.chat.home.view :as chat] ;; TODO move to status-im2
+            [status-im2.contexts.communities.home.view :as communities]
+            [status-im2.contexts.shell.animation :as animation]
+            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.contexts.shell.style :as styles]))
 
 (defn load-stack?
   [stack-id]

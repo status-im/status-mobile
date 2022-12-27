@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.pin.banner.view
-  (:require
-   [status-im.ui2.screens.chat.pinned-banner.view :as pinned-banner]
-   [utils.re-frame :as rf]))
+  (:require [status-im.ui2.screens.chat.pinned-banner.view :as pinned-banner]
+            [utils.re-frame :as rf]))
 
 (defn banner
   [chat-id]

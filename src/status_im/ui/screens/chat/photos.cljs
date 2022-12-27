@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.chat.photos
-  (:require
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.ui.components.fast-image :as fast-image]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.styles.photos :as style]))
+  (:require [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.fast-image :as fast-image]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.photos :as style]))
 
 (def memo-photo-rend
   (memoize

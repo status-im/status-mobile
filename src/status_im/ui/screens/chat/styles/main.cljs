@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chat.styles.main
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (def toolbar-container
   {:flex           1

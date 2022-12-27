@@ -1,12 +1,11 @@
 (ns status-im2.contexts.activity-center.notification.contact-request.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [status-im.constants :as constants]
-   [status-im.utils.datetime :as datetime]
-   [status-im2.contexts.activity-center.notification.common.view :as common]
-   [utils.re-frame :as rf]))
+  (:require [i18n.i18n :as i18n]
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [status-im.constants :as constants]
+            [status-im.utils.datetime :as datetime]
+            [status-im2.contexts.activity-center.notification.common.view :as common]
+            [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [id author message last-message] :as notification}]

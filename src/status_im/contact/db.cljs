@@ -1,12 +1,11 @@
 (ns status-im.contact.db
-  (:require
-   [clojure.set :as clojure.set]
-   [clojure.string :as string]
-   [status-im.constants :as constants]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.utils.gfycat.core :as gfycat]
-   [status-im.utils.identicon :as identicon]))
+  (:require [clojure.set :as clojure.set]
+            [clojure.string :as string]
+            [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]))
 
 (defn public-key->new-contact
   [public-key]

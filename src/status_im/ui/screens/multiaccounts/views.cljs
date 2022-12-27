@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.multiaccounts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im.ui.screens.multiaccounts.sheets :as sheets]
-   [status-im.ui.screens.multiaccounts.styles :as styles]
-   [utils.security.core :as security]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.multiaccounts.sheets :as sheets]
+            [status-im.ui.screens.multiaccounts.styles :as styles]
+            [utils.security.core :as security]))
 
 (defn multiaccount-view
   [{:keys [key-uid name keycard-pairing] :as account}]

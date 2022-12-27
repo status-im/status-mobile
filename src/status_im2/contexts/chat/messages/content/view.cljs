@@ -1,21 +1,20 @@
 (ns status-im2.contexts.chat.messages.content.view
-  (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [status-im.ui2.screens.chat.messages.message :as old-message]
-   [status-im.utils.datetime :as time]
-   [status-im2.common.constants :as constants]
-   [status-im2.common.not-implemented :as not-implemented]
-   [status-im2.contexts.chat.messages.content.pin.view :as pin]
-   [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
-   [status-im2.contexts.chat.messages.content.status.view :as status]
-   [status-im2.contexts.chat.messages.content.style :as style]
-   [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-   [status-im2.contexts.chat.messages.content.text.view :as content.text]
-   [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-   [status-im2.contexts.chat.messages.drawers.view :as drawers]
-   [utils.re-frame :as rf]))
+  (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im.utils.datetime :as time]
+            [status-im2.common.constants :as constants]
+            [status-im2.common.not-implemented :as not-implemented]
+            [status-im2.contexts.chat.messages.content.pin.view :as pin]
+            [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
+            [status-im2.contexts.chat.messages.content.status.view :as status]
+            [status-im2.contexts.chat.messages.content.style :as style]
+            [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+            [status-im2.contexts.chat.messages.content.text.view :as content.text]
+            [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]
+            [utils.re-frame :as rf]))
 
 (defn avatar
   [{:keys [response-to last-in-group? pinned quoted-message from]}]
@@ -52,11 +51,14 @@
     [not-implemented/not-implemented [pin/system-message message-data]]
     (case content-type
 
-      constants/content-type-system-text     [not-implemented/not-implemented [system.text/text-content message-data]]
+      constants/content-type-system-text     [not-implemented/not-implemented
+                                              [system.text/text-content message-data]]
 
-      constants/content-type-community       [not-implemented/not-implemented [old-message/community message-data]]
+      constants/content-type-community       [not-implemented/not-implemented
+                                              [old-message/community message-data]]
 
-      constants/content-type-contact-request [not-implemented/not-implemented [old-message/system-contact-request message-data]])))
+      constants/content-type-contact-request [not-implemented/not-implemented
+                                              [old-message/system-contact-request message-data]])))
 
 (defn user-message-content
   [{:keys [content-type quoted-message content] :as message-data}
@@ -77,15 +79,20 @@
         [author message-data]
         (case content-type
 
-          constants/content-type-text    [not-implemented/not-implemented [content.text/text-content message-data]]
+          constants/content-type-text    [not-implemented/not-implemented
+                                          [content.text/text-content message-data]]
 
-          constants/content-type-emoji   [not-implemented/not-implemented [old-message/emoji message-data]]
+          constants/content-type-emoji   [not-implemented/not-implemented
+                                          [old-message/emoji message-data]]
 
-          constants/content-type-sticker [not-implemented/not-implemented [old-message/sticker message-data]]
+          constants/content-type-sticker [not-implemented/not-implemented
+                                          [old-message/sticker message-data]]
 
-          constants/content-type-image   [not-implemented/not-implemented [old-message/message-content-image message-data]]
+          constants/content-type-image   [not-implemented/not-implemented
+                                          [old-message/message-content-image message-data]]
 
-          constants/content-type-audio   [not-implemented/not-implemented [old-message/audio message-data]]
+          constants/content-type-audio   [not-implemented/not-implemented
+                                          [old-message/audio message-data]]
 
           [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
         [status/status message-data]]]]]))

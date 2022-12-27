@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.qr-scanner.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   ["react-native-camera-kit" :refer (CameraKitCamera)]
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.qr-scanner.styles :as styles]
-   [status-im.utils.config :as config]))
+  (:require ["react-native-camera-kit" :refer (CameraKitCamera)]
+            [clojure.string :as string]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.qr-scanner.styles :as styles]
+            [status-im.utils.config :as config]))
 
 (def camera (reagent/adapt-react-class CameraKitCamera))
 

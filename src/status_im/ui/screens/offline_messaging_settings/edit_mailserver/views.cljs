@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
   (:require-macros [status-im.utils.views :as views])
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]))
 
 (defn connect-button
   [id]

@@ -1,6 +1,5 @@
 (ns status-im.ui.components.typography
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def default-font-family "Inter")
 (defn default-style

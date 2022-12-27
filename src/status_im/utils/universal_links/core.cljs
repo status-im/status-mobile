@@ -1,21 +1,20 @@
 (ns status-im.utils.universal-links.core
-  (:require
-   [clojure.string :as string]
-   [goog.string :as gstring]
-   [re-frame.core :as re-frame]
-   [status-im.add-new.db :as new-chat.db]
-   [status-im.chat.models :as chat]
-   [status-im.constants :as constants]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.group-chats.core :as group-chats]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.router.core :as router]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.fx :as fx]
-   [status-im.wallet.choose-recipient.core :as choose-recipient]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
+            [re-frame.core :as re-frame]
+            [status-im.add-new.db :as new-chat.db]
+            [status-im.chat.models :as chat]
+            [status-im.constants :as constants]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.group-chats.core :as group-chats]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.router.core :as router]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.fx :as fx]
+            [status-im.wallet.choose-recipient.core :as choose-recipient]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link

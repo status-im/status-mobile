@@ -1,10 +1,9 @@
 (ns status-im.keycard.mnemonic
-  (:require
-   [status-im.keycard.common :as common]
-   status-im.keycard.fx
-   [status-im.utils.fx :as fx]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im.utils.fx :as fx]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn set-mnemonic
   [{:keys [db] :as cofx}]

@@ -1,13 +1,12 @@
 (ns status-im2.common.scroll-page.view
-  (:require
-   [oops.core :as oops]
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [reagent.core :as reagent]
-   [status-im2.common.scroll-page.style :as style]
-   [utils.re-frame :as rf]))
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.platform :as platform]
+            [reagent.core :as reagent]
+            [status-im2.common.scroll-page.style :as style]
+            [utils.re-frame :as rf]))
 
 (defn icon-color
   []

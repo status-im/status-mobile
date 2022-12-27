@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.chat.audio-message.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [goog.string :as gstring]
-   [quo.components.animated.pressable :as pressable]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.audio.core :as audio]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.native-module.core :as status]
-   [status-im.ui.components.animation :as anim]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.audio-message.styles :as styles]
-   [status-im.ui.screens.chat.components.input :as input]
-   [status-im.ui.screens.chat.components.style :as input.style]
-   [status-im.utils.fs :as fs]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.utils :as utils.utils]))
+  (:require [goog.string :as gstring]
+            [quo.components.animated.pressable :as pressable]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.audio.core :as audio]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.audio-message.styles :as styles]
+            [status-im.ui.screens.chat.components.input :as input]
+            [status-im.ui.screens.chat.components.style :as input.style]
+            [status-im.utils.fs :as fs]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils.utils]))
 
 ;; reference db levels
 (def total-silence-db -160)

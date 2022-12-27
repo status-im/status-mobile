@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.currency-settings.styles
-  (:require
-   [status-im.utils.styles :as styles]))
+  (:require [status-im.utils.styles :as styles]))
 
 (styles/def currency-item
   {:flex-direction     :row

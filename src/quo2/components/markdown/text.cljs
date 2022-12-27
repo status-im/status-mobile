@@ -1,10 +1,9 @@
 (ns quo2.components.markdown.text
-  (:require
-   [quo2.foundations.colors :as colors]
-   [quo2.foundations.typography :as typography]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]))
+  (:require [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as typography]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]))
 
 (defn text-style
   [{:keys [size align weight style]}]

@@ -1,18 +1,17 @@
 (ns status-im.wallet.recipient.core
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.ens :as ens]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.random :as random]
-   [status-im.utils.utils :as utils]
-   [status-im2.common.json-rpc.events :as json-rpc]
-   [status-im2.navigation.events :as navigation]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.random :as random]
+            [status-im.utils.utils :as utils]
+            [status-im2.common.json-rpc.events :as json-rpc]
+            [status-im2.navigation.events :as navigation]))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))

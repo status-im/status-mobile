@@ -1,18 +1,17 @@
 (ns quo2.components.code.snippet
-  (:require
-   ["react-native" :as react-native]
-   [cljs-bean.core :as bean]
-   [clojure.string :as string]
-   [oops.core :as oops]
-   [quo2.components.buttons.button :as button]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]
-   [react-native.linear-gradient :as linear-gradient]
-   [react-native.masked-view :as masked-view]
-   [react-native.syntax-highlighter :as highlighter]
-   [reagent.core :as reagent]))
+  (:require ["react-native" :as react-native]
+            [cljs-bean.core :as bean]
+            [clojure.string :as string]
+            [oops.core :as oops]
+            [quo2.components.buttons.button :as button]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
+            [react-native.masked-view :as masked-view]
+            [react-native.syntax-highlighter :as highlighter]
+            [reagent.core :as reagent]))
 
 ;; Example themes:
 ;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs

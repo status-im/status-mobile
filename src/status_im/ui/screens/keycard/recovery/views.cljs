@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.keycard.recovery.views
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.keycard.recovery :as keycard.recovery]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as bottom-toolbar]
-   [status-im.ui.components.tooltip.views :as tooltip]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.keycard.pin.views :as pin.views]
-   [status-im.ui.screens.keycard.styles :as styles]
-   [status-im.ui.screens.keycard.views :as keycard.views]
-   [status-im.utils.core :as utils.core]
-   [status-im.utils.gfycat.core :as gfy]
-   [status-im.utils.identicon :as identicon])
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.recovery :as keycard.recovery]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as bottom-toolbar]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.ui.screens.keycard.views :as keycard.views]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.identicon :as identicon])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro

@@ -1,12 +1,11 @@
 (ns status-im.ui.screens.communities.channel-details
-  (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [re-frame.core :as re-frame]
-   [status-im.communities.core :as communities]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.profile-header.view :as profile-header]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.communities.core :as communities]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn view
   []

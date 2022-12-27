@@ -1,7 +1,6 @@
 (ns status-im.currency.core-test
-  (:require
-   [cljs.test :refer-macros [deftest is]]
-   [status-im.currency.core :as models]))
+  (:require [cljs.test :refer-macros [deftest is]]
+            [status-im.currency.core :as models]))
 
 (deftest get-currency
   (is (= :usd (models/get-currency {:multiaccount {:currency :usd}})))

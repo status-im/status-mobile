@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet-connect.session-proposal.styles
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn toolbar-container
   [background-color]

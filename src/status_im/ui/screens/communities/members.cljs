@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.communities.members
-  (:require
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.ui.components.chat-icon.screen :as chat-icon]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [quo.core :as quo]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn hide-sheet-and-dispatch
   [event]

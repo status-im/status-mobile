@@ -1,20 +1,19 @@
 (ns status-im.utils.logging.core
-  (:require
-   [clojure.string :as string]
-   [goog.string :as gstring]
-   [re-frame.core :as re-frame]
-   [react-native.mail :as react-native-mail]
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.native-module.core :as status]
-   [status-im.transport.utils :as transport.utils]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.build :as build]
-   [status-im.utils.datetime :as datetime]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.types :as types]
-   [status-im2.setup.log :as log]))
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
+            [re-frame.core :as re-frame]
+            [react-native.mail :as react-native-mail]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.transport.utils :as transport.utils]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.build :as build]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]
+            [status-im2.setup.log :as log]))
 
 (def report-email "error-reports@status.im")
 

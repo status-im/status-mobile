@@ -1,9 +1,8 @@
 (ns quo2.components.wallet.network-breakdown
-  (:require
-   [quo2.components.markdown.text :as text]
-   [quo2.components.wallet.network-amount :refer [network-amount]]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]))
+  (:require [quo2.components.markdown.text :as text]
+            [quo2.components.wallet.network-amount :refer [network-amount]]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]))
 
 (defn network-breakdown
   [{:keys [top-value network-conversions labels]}]

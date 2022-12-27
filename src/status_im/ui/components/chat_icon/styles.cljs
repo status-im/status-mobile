@@ -1,7 +1,6 @@
 (ns status-im.ui.components.chat-icon.styles
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (defn default-chat-icon
   [color]

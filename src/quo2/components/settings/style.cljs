@@ -1,6 +1,5 @@
 (ns quo2.components.settings.style
-  (:require
-   [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def bullet-container
   {:width        20

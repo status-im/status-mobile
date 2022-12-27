@@ -1,6 +1,5 @@
 (ns status-im.utils.image-processing
-  (:require
-   ["react-native-image-resizer" :default image-resizer]))
+  (:require ["react-native-image-resizer" :default image-resizer]))
 
 (defn resize
   [path max-width max-height quality on-resize on-error]

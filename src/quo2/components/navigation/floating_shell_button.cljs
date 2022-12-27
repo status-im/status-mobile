@@ -1,8 +1,7 @@
 (ns quo2.components.navigation.floating-shell-button
-  (:require
-   [quo2.components.buttons.dynamic-button :as dynamic-button]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]))
+  (:require [quo2.components.buttons.dynamic-button :as dynamic-button]
+            [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]))
 
 (defn dynamic-button-view
   [type dynamic-buttons style]

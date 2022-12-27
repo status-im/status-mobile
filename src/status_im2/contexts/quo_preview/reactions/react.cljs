@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.reactions.react
-  (:require
-   [quo2.components.reactions.reaction :as quo2.reaction]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.reactions.reaction :as quo2.reaction]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Count"

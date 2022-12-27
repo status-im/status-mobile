@@ -1,6 +1,5 @@
 (ns status-im2.subs.search
-  (:require
-   [clojure.string :as string])
+  (:require [clojure.string :as string])
   (:require [clojure.string :as string]
             [status-im.utils.gfycat.core :as gfycat]
             [re-frame.core :as re-frame]

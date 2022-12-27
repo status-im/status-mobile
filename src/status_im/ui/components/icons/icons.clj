@@ -1,7 +1,6 @@
 (ns status-im.ui.components.icons.icons
-  (:require
-   [clojure.java.io :as io]
-   [clojure.string :as string]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (def icon-path "./resources/images/icons/")
 

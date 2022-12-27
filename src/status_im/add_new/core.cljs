@@ -1,20 +1,19 @@
 (ns status-im.add-new.core
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.add-new.db :as db]
-   [status-im.chat.models :as chat]
-   [status-im.contact.core :as contact]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.ens :as ens]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.router.core :as router]
-   [status-im.utils.db :as utils.db]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.random :as random]
-   [status-im.utils.utils :as utils]
-   [status-im2.navigation.events :as navigation]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.add-new.db :as db]
+            [status-im.chat.models :as chat]
+            [status-im.contact.core :as contact]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.router.core :as router]
+            [status-im.utils.db :as utils.db]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.random :as random]
+            [status-im.utils.utils :as utils]
+            [status-im2.navigation.events :as navigation]))
 
 (re-frame/reg-fx
  :resolve-public-key

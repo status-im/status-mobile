@@ -1,11 +1,10 @@
 (ns status-im.chat.models.reactions
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.data-store.reactions :as data-store.reactions]
-   [status-im.transport.message.protocol :as message.protocol]
-   [status-im.utils.fx :as fx]
-   [taoensso.timbre :as log]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.data-store.reactions :as data-store.reactions]
+            [status-im.transport.message.protocol :as message.protocol]
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
 (defn update-reaction
   [acc retracted chat-id message-id emoji-id emoji-reaction-id reaction]

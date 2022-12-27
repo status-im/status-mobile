@@ -1,12 +1,11 @@
 (ns status-im.ui.screens.communities.membership
-  (:require
-   [quo.core :as quo]
-   [quo.react-native :as rn]
-   [status-im.communities.core :as communities]
-   [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.utils.handlers :refer [<sub >evt]]))
+  (:require [quo.core :as quo]
+            [quo.react-native :as rn]
+            [status-im.communities.core :as communities]
+            [status-im.constants :as constants]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (def options
   {constants/community-on-request-access

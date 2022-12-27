@@ -1,6 +1,5 @@
 (ns quo2.components.messages.author.style
-  (:require
-   [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def container
   {:flex           1

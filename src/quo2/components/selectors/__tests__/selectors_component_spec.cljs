@@ -1,8 +1,7 @@
 (ns quo2.components.selectors.--tests--.selectors-component-spec
-  (:require
-   ["@testing-library/react-native" :as rtl]
-   [quo2.components.selectors.selectors :as selectors]
-   [reagent.core :as reagent]))
+  (:require ["@testing-library/react-native" :as rtl]
+            [quo2.components.selectors.selectors :as selectors]
+            [reagent.core :as reagent]))
 
 (defn render-toggle
   ([]

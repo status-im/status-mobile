@@ -1,6 +1,5 @@
 (ns status-im.ui.components.tabbar.core
-  (:require
-   [status-im.utils.platform :as platform]))
+  (:require [status-im.utils.platform :as platform]))
 
 (defn get-height
   []

@@ -1,6 +1,5 @@
 (ns status-im2.navigation.events
-  (:require
-   [utils.re-frame :as rf]))
+  (:require [utils.re-frame :as rf]))
 
 (defn- all-screens-params
   [db view screen-params]

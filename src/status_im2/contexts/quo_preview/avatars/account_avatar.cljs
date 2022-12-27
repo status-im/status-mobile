@@ -1,9 +1,8 @@
 (ns status-im2.contexts.quo-preview.avatars.account-avatar
-  (:require
-   [quo2.components.avatars.account-avatar :as quo2]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.avatars.account-avatar :as quo2]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Icon"

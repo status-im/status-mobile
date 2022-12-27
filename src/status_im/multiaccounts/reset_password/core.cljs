@@ -1,14 +1,13 @@
 (ns status-im.multiaccounts.reset-password.core
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.native-module.core :as status]
-   [status-im.popover.core :as popover]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.keychain.core :as keychain]
-   [status-im.utils.types :as types]
-   [utils.security.core :as security]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.native-module.core :as status]
+            [status-im.popover.core :as popover]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.types :as types]
+            [utils.security.core :as security]))
 
 (fx/defn on-input-change
   {:events [::handle-input-change]}

@@ -1,6 +1,5 @@
 (ns status-im.utils.react-native
-  (:require
-   ["react-native" :as react-native]))
+  (:require ["react-native" :as react-native]))
 
 ; Moved from status-im.ui.components.react(let's short for R), so status-im.native-module.core(short for
 ; N) don't need to have a dependency to R.

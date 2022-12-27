@@ -1,9 +1,8 @@
 (ns status-im.ui2.screens.chat.composer.edit.view
-  (:require
-   [react-native.core :as rn]
-   [status-im.ui2.screens.chat.components.edit.view :as edit]
-   [status-im.ui2.screens.chat.composer.edit.style :as style]
-   [status-im.ui2.screens.chat.composer.input :as input]))
+  (:require [react-native.core :as rn]
+            [status-im.ui2.screens.chat.components.edit.view :as edit]
+            [status-im.ui2.screens.chat.composer.edit.style :as style]
+            [status-im.ui2.screens.chat.composer.input :as input]))
 
 (defn- focus-input-on-edit
   [edit had-edit text-input-ref]

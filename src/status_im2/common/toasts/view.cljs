@@ -1,13 +1,12 @@
 (ns status-im2.common.toasts.view
-  (:require
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [react-native.gesture :as gesture]
-   [react-native.reanimated :as reanimated]
-   [reagent.core :as reagent]
-   [status-im.utils.utils :as utils.utils]
-   [status-im2.common.toasts.style :as style]
-   [utils.re-frame :as rf]))
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]
+            [status-im.utils.utils :as utils.utils]
+            [status-im2.common.toasts.style :as style]
+            [utils.re-frame :as rf]))
 
 (def ^:private slide-out-up-animation
   (-> ^js reanimated/slide-out-up-animation

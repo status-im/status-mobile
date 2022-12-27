@@ -1,15 +1,14 @@
 (ns status-im2.subs.multiaccount
-  (:require
-   [cljs.spec.alpha :as spec]
-   [clojure.set :as clojure.set]
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.fleet.core :as fleet]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.multiaccounts.db :as multiaccounts.db]
-   [status-im.utils.image-server :as image-server]
-   [utils.security.core :as security]))
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.set :as clojure.set]
+            [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.fleet.core :as fleet]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.utils.image-server :as image-server]
+            [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :multiaccount/public-key

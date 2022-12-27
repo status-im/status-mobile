@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.wallet.collectibles.views
-  (:require
-   ["react-native-svg" :refer (SvgUri)]
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.accordion :as accordion]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.wallet.components.views :as wallet.components]
-   [status-im.utils.handlers :refer [<sub]]
-   [status-im.wallet.core :as wallet]))
+  (:require ["react-native-svg" :refer (SvgUri)]
+            [clojure.string :as string]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.accordion :as accordion]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.wallet.core :as wallet]))
 
 (def svg-uri (reagent/adapt-react-class SvgUri))
 

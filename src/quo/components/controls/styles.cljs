@@ -1,7 +1,6 @@
 (ns quo.components.controls.styles
-  (:require
-   [quo.animated :as animated]
-   [quo.design-system.colors :as colors]))
+  (:require [quo.animated :as animated]
+            [quo.design-system.colors :as colors]))
 
 (defn switch-style
   [state disabled]

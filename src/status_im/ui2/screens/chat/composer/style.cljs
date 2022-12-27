@@ -1,9 +1,8 @@
 (ns status-im.ui2.screens.chat.composer.style
-  (:require
-   [quo.design-system.colors :as quo.colors]
-   [quo2.foundations.colors :as colors]
-   [quo2.foundations.typography :as quo2.typography]
-   [status-im.utils.platform :as platform]))
+  (:require [quo.design-system.colors :as quo.colors]
+            [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as quo2.typography]
+            [status-im.utils.platform :as platform]))
 
 (defn text-input
   []

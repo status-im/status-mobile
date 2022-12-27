@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.onboarding.welcome.styles
-  (:require
-   [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def welcome-view
   {:flex            1

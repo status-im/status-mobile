@@ -1,11 +1,10 @@
 (ns status-im2.subs.chat.messages
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.chat.db :as chat.db]
-   [status-im.chat.models.message-list :as models.message-list]
-   [status-im.chat.models.reactions :as models.reactions]
-   [status-im.utils.datetime :as datetime]
-   [status-im2.common.constants :as constants]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.chat.db :as chat.db]
+            [status-im.chat.models.message-list :as models.message-list]
+            [status-im.chat.models.reactions :as models.reactions]
+            [status-im.utils.datetime :as datetime]
+            [status-im2.common.constants :as constants]))
 
 (re-frame/reg-sub
  :chats/chat-messages

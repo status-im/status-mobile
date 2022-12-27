@@ -1,15 +1,14 @@
 (ns status-im2.contexts.communities.discover.view
-  (:require
-   [i18n.i18n :as i18n]
-   [oops.core :as oops] ;; TODO move to status-im2
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.screens.communities.community :as community]
-   [utils.re-frame :as rf]))
+  (:require [i18n.i18n :as i18n]
+            [oops.core :as oops] ;; TODO move to status-im2
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.screens.communities.community :as community]
+            [utils.re-frame :as rf]))
 
 (def mock-community-item-data  ;; TODO: remove once communities are loaded with this data.
   {:data {:community-color "#0052FF"

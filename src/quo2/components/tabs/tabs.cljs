@@ -1,15 +1,14 @@
 (ns quo2.components.tabs.tabs
-  (:require
-   [oops.core :refer [oget]]
-   [quo2.components.notifications.notification-dot :refer [notification-dot]]
-   [quo2.components.tabs.tab :as tab]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.linear-gradient :as linear-gradient]
-   [react-native.masked-view :as masked-view]
-   [reagent.core :as reagent]
-   [utils.collection :as utils.collection]
-   [utils.number :as utils.number]))
+  (:require [oops.core :refer [oget]]
+            [quo2.components.notifications.notification-dot :refer [notification-dot]]
+            [quo2.components.tabs.tab :as tab]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
+            [react-native.masked-view :as masked-view]
+            [reagent.core :as reagent]
+            [utils.collection :as utils.collection]
+            [utils.number :as utils.number]))
 
 (def default-tab-size 32)
 

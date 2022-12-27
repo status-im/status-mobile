@@ -1,7 +1,6 @@
 (ns status-im.keycard.test-menu
-  (:require
-   [status-im.keycard.simulated-keycard :as simulated-keycard]
-   [status-im.ui.components.react :as react]))
+  (:require [status-im.keycard.simulated-keycard :as simulated-keycard]
+            [status-im.ui.components.react :as react]))
 
 (defn button
   [label accessibility-label handler]

@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.notifications.toast
-  (:require
-   [quo2.components.buttons.button :as button]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [utils.re-frame :as rf]))
+  (:require [quo2.components.buttons.button :as button]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [utils.re-frame :as rf]))
 
 (defn toast-button
   ([id opts] (toast-button id id opts))

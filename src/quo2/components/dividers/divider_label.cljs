@@ -1,9 +1,8 @@
 (ns quo2.components.dividers.divider-label
-  (:require
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as markdown.text]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]))
+  (:require [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as markdown.text]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]))
 
 (def chevron-icon-container-width 20)
 
@@ -16,22 +15,26 @@
    increase-padding-top? -> boolean
    blur? -> boolean"
   [{:keys [label chevron-position counter-value increase-padding-top? blur?]}]
-  (let [dark? (colors/dark?)
-        border-and-counter-bg-color (if dark? (if blur? colors/white-opa-5 colors/neutral-70) colors/neutral-10)
-        padding-top (if increase-padding-top? 16 8)
-        text-and-icon-color (if dark? colors/neutral-40 colors/neutral-50)
-        counter-text-color  (if dark? colors/white colors/neutral-100)]
-    [rn/view {:accessible true
-              :accessibility-label :divider-label
-              :style {:border-top-width 1
-                      :border-top-color border-and-counter-bg-color
-                      :padding-top padding-top
-                      :padding-horizontal 16
-                      :align-items :center
-                      :flex-direction :row}}
+  (let [dark?                       (colors/dark?)
+        border-and-counter-bg-color (if dark?
+                                      (if blur? colors/white-opa-5 colors/neutral-70)
+                                      colors/neutral-10)
+        padding-top                 (if increase-padding-top? 16 8)
+        text-and-icon-color         (if dark? colors/neutral-40 colors/neutral-50)
+        counter-text-color          (if dark? colors/white colors/neutral-100)]
+    [rn/view
+     {:accessible          true
+      :accessibility-label :divider-label
+      :style               {:border-top-width   1
+                            :border-top-color   border-and-counter-bg-color
+                            :padding-top        padding-top
+                            :padding-horizontal 16
+                            :align-items        :center
+                            :flex-direction     :row}}
      (when (= chevron-position :left)
-       [rn/view {:test-ID :divider-label-icon-left
-                 :style {:margin-right 4}}
+       [rn/view
+        {:test-ID :divider-label-icon-left
+         :style   {:margin-right 4}}
         [icons/icon
          :main-icons/chevron-down
          {:color  text-and-icon-color

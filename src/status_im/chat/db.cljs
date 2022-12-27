@@ -1,6 +1,5 @@
 (ns status-im.chat.db
-  (:require
-   [status-im.constants :as constants]))
+  (:require [status-im.constants :as constants]))
 
 (defn group-chat-name
   [{:keys [public? name]}]

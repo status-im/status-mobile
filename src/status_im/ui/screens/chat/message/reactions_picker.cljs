@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.chat.message.reactions-picker
-  (:require
-   [cljs-bean.core :as bean]
-   [quo.animated :as animated]
-   [quo.components.safe-area :as safe-area]
-   [quo.core :as quo]
-   [quo.react :as react]
-   [quo.react-native :as rn]
-   [reagent.core :as reagent]
-   [status-im.constants :as constants]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.screens.chat.message.styles :as styles]))
+  (:require [cljs-bean.core :as bean]
+            [quo.animated :as animated]
+            [quo.components.safe-area :as safe-area]
+            [quo.core :as quo]
+            [quo.react :as react]
+            [quo.react-native :as rn]
+            [reagent.core :as reagent]
+            [status-im.constants :as constants]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.screens.chat.message.styles :as styles]))
 
 (def tabbar-height 36)
 (def text-input-height 54)

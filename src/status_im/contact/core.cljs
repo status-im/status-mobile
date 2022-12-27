@@ -1,14 +1,13 @@
 (ns status-im.contact.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.contact.block :as contact.block]
-   [status-im.contact.db :as contact.db]
-   [status-im.data-store.contacts :as contacts-store]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.utils.fx :as fx]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.contact.block :as contact.block]
+            [status-im.contact.db :as contact.db]
+            [status-im.data-store.contacts :as contacts-store]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.utils.fx :as fx]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}

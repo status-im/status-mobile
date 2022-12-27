@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.multiaccounts.key-storage.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [re-frame.db]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.accordion :as accordion]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.multiaccounts.key-storage.styles :as styles]
-   [status-im.ui.screens.multiaccounts.views :as multiaccounts.views]
-   [utils.security.core]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [re-frame.db]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.accordion :as accordion]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.multiaccounts.key-storage.styles :as styles]
+            [status-im.ui.screens.multiaccounts.views :as multiaccounts.views]
+            [utils.security.core]))
 
 (defn local-topbar
   [subtitle action]

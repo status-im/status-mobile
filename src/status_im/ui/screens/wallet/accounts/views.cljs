@@ -1,24 +1,23 @@
 (ns status-im.ui.screens.wallet.accounts.views
-  (:require
-   [quo.animated :as reanimated]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo2.components.buttons.button :as quo2.button]
-   [quo2.components.markdown.text :as quo2.text]
-   [quo2.components.tabs.tabs :as quo2.tabs]
-   [quo2.foundations.colors :as quo2.colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.keycard.login :as keycard.login]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.wallet.account.views :as account.views]
-   [status-im.ui.screens.wallet.accounts.common :as common]
-   [status-im.ui.screens.wallet.accounts.sheets :as sheets]
-   [status-im.ui.screens.wallet.accounts.styles :as styles]
-   [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto])
+  (:require [quo.animated :as reanimated]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.components.tabs.tabs :as quo2.tabs]
+            [quo2.foundations.colors :as quo2.colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.login :as keycard.login]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.wallet.account.views :as account.views]
+            [status-im.ui.screens.wallet.accounts.common :as common]
+            [status-im.ui.screens.wallet.accounts.sheets :as sheets]
+            [status-im.ui.screens.wallet.accounts.styles :as styles]
+            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card

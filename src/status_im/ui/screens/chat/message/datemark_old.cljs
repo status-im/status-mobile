@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.chat.message.datemark-old
-  (:require
-   [clojure.string :as string]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.styles.message.datemark-old :as style]))
+  (:require [clojure.string :as string]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.message.datemark-old :as style]))
 
 (defn chat-datemark
   [value]

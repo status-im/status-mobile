@@ -1,12 +1,11 @@
 (ns status-im.keycard.fx
-  (:require
-   ["@react-native-async-storage/async-storage" :default AsyncStorage]
-   ["react-native" :refer (BackHandler)]
-   [re-frame.core :as re-frame]
-   [status-im.keycard.card :as card]
-   [status-im.native-module.core :as status]
-   [status-im.utils.types :as types]
-   [taoensso.timbre :as log]))
+  (:require ["@react-native-async-storage/async-storage" :default AsyncStorage]
+            ["react-native" :refer (BackHandler)]
+            [re-frame.core :as re-frame]
+            [status-im.keycard.card :as card]
+            [status-im.native-module.core :as status]
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  :keycard/start-nfc

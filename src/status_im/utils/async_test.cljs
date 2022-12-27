@@ -1,8 +1,7 @@
 (ns status-im.utils.async-test
-  (:require
-   [cljs.core.async :as async]
-   [cljs.test :refer-macros [deftest is testing async]]
-   [status-im.utils.async :as async-util]))
+  (:require [cljs.core.async :as async]
+            [cljs.test :refer-macros [deftest is testing async]]
+            [status-im.utils.async :as async-util]))
 
 (deftest chunking-test
   (testing "Accumulating result works as expected for `chunked-pipe!`"

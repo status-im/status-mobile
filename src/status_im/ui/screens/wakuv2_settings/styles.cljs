@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wakuv2-settings.styles
-  (:require
-   [status-im.utils.styles :as styles]))
+  (:require [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex 1})

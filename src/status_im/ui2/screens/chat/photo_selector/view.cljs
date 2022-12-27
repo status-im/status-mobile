@@ -1,16 +1,15 @@
 (ns status-im.ui2.screens.chat.photo-selector.view
-  (:require
-   [i18n.i18n :as i18n]
-   [quo.components.safe-area :as safe-area]
-   [quo2.components.notifications.info-count :as info-count]
-   [quo2.core :as quo2]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.linear-gradient :as linear-gradient]
-   [reagent.core :as reagent]
-   [status-im.ui2.screens.chat.photo-selector.style :as style]
-   [status-im.utils.core :as utils]
-   [utils.re-frame :as rf]))
+  (:require [i18n.i18n :as i18n]
+            [quo.components.safe-area :as safe-area]
+            [quo2.components.notifications.info-count :as info-count]
+            [quo2.core :as quo2]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
+            [reagent.core :as reagent]
+            [status-im.ui2.screens.chat.photo-selector.style :as style]
+            [status-im.utils.core :as utils]
+            [utils.re-frame :as rf]))
 
 (def selected (reagent/atom []))
 

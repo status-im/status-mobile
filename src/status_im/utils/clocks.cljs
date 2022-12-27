@@ -1,6 +1,5 @@
 (ns status-im.utils.clocks
-  (:require
-   [status-im.utils.datetime :as utils.datetime]))
+  (:require [status-im.utils.datetime :as utils.datetime]))
 
 ;; We use Lamport clocks to ensure correct ordering of events in chats. This is
 ;; necessary because we operate in a distributed system and there is no central

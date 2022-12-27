@@ -1,7 +1,6 @@
 (ns status-im.async-storage.transit
-  (:require
-   [cognitect.transit :as transit]
-   [taoensso.timbre :as log]))
+  (:require [cognitect.transit :as transit]
+            [taoensso.timbre :as log]))
 
 (def reader (transit/reader :json))
 (def writer (transit/writer :json))

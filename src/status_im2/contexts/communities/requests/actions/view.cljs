@@ -1,18 +1,17 @@
 (ns status-im2.contexts.communities.requests.actions.view
-  (:require
-   [quo.react-native :as rn]
-   [quo2.components.buttons.button :as button]
-   [quo2.components.icon :as icon]
-   [quo2.components.markdown.text :as text]
-   [quo2.components.selectors.disclaimer :as disclaimer]
-   [quo2.components.tags.context-tags :as context-tags]
-   [quo2.foundations.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im.communities.core :as communities]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.list.views :as list]
-   [status-im.utils.handlers :refer [>evt]]))
+  (:require [quo.react-native :as rn]
+            [quo2.components.buttons.button :as button]
+            [quo2.components.icon :as icon]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.selectors.disclaimer :as disclaimer]
+            [quo2.components.tags.context-tags :as context-tags]
+            [quo2.foundations.colors :as colors]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.list.views :as list]
+            [status-im.utils.handlers :refer [>evt]]))
 
 ;; TODO: update with real data
 (def community-rules

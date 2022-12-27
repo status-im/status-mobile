@@ -1,7 +1,6 @@
 (ns status-im.signing.gas-test
-  (:require
-   [cljs.test :refer-macros [deftest is testing]]
-   [status-im.signing.gas :as signing.gas]))
+  (:require [cljs.test :refer-macros [deftest is testing]]
+            [status-im.signing.gas :as signing.gas]))
 
 (deftest build-edit-test
   (testing "an invalid edit"

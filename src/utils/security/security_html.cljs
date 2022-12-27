@@ -1,6 +1,5 @@
 (ns utils.security.security-html
-  (:require
-   [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 ; Taken from https://github.com/sindresorhus/is-html
 

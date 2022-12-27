@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.wallet.manage-connections.views
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.react-native :as rn]
-   [re-frame.core :as re-frame]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.wallet.manage-connections.styles :as styles]
-   [status-im.utils.utils :as utils]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.wallet.manage-connections.styles :as styles]
+            [status-im.utils.utils :as utils]))
 
 (defn print-session-info
   [session]

@@ -1,8 +1,7 @@
 (ns status-im.ui.components.emoji-thumbnail.preview
-  (:require
-   [clojure.string :as string]
-   [status-im.ui.components.emoji-thumbnail.styles :as styles]
-   [status-im.ui.components.react :as react]))
+  (:require [clojure.string :as string]
+            [status-im.ui.components.emoji-thumbnail.styles :as styles]
+            [status-im.ui.components.react :as react]))
 
 (defn emoji-thumbnail
   [emoji color size]

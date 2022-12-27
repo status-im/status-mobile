@@ -1,7 +1,6 @@
 (ns status-im.utils.priority-map
-  (:require
-   [cljs.core :as core]
-   [cljs.reader :refer [register-tag-parser!]])
+  (:require [cljs.core :as core]
+            [cljs.reader :refer [register-tag-parser!]])
   (:require-macros [cljs.core :as coreclj]))
 
 ;; from

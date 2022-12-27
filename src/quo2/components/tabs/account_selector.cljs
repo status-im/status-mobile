@@ -1,9 +1,8 @@
 (ns quo2.components.tabs.account-selector
-  (:require
-   [quo2.components.markdown.text :as quo2]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]))
+  (:require [quo2.components.markdown.text :as quo2]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def themes
   {:light {:default     {:bg           colors/neutral-10

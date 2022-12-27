@@ -1,14 +1,13 @@
 (ns status-im.pairing.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.utils.config :as config]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.platform :as utils.platform]
-   [status-im2.common.json-rpc.events :as json-rpc]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as utils.platform]
+            [status-im2.common.json-rpc.events :as json-rpc]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (defn enable-installation-rpc
   [installation-id on-success on-error]

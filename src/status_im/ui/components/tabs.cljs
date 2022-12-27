@@ -1,7 +1,6 @@
 (ns status-im.ui.components.tabs
-  (:require
-   [quo.design-system.colors :as colors]
-   [status-im.ui.components.react :as react]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.react :as react]))
 
 (defn tab-title
   [state key label active?]

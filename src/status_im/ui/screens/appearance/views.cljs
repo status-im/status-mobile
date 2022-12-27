@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.appearance.views
   (:require-macros [status-im.utils.views :as views])
-  (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.config :as config]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]))
 
 (defn button
   [label icon theme selected?]

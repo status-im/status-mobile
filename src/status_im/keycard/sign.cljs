@@ -1,13 +1,12 @@
 (ns status-im.keycard.sign
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.keycard.common :as common]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.money :as money]
-   [status-im.utils.types :as types]
-   [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.keycard.common :as common]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (fx/defn sign
   {:events [:keycard/sign]}

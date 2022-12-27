@@ -1,19 +1,18 @@
 (ns status-im.multiaccounts.core
-  (:require
-   [clojure.string :as string]
-   [quo.platform :as platform]
-   [re-frame.core :as re-frame]
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.native-module.core :as native-module]
-   [status-im.theme.core :as theme]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.gfycat.core :as gfycat]
-   [status-im.utils.identicon :as identicon]
-   [status-im.utils.utils :as utils]
-   [status-im2.common.theme.core :as utils.theme]
-   [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [quo.platform :as platform]
+            [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.native-module.core :as native-module]
+            [status-im.theme.core :as theme]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]
+            [status-im.utils.utils :as utils]
+            [status-im2.common.theme.core :as utils.theme]
+            [taoensso.timbre :as log]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx

@@ -1,18 +1,17 @@
 (ns status-im.ens.core
   (:refer-clojure :exclude [name])
-  (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.ens :as ens]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.utils.datetime :as datetime]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.random :as random]
-   [status-im2.navigation.events :as navigation]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.utils.datetime :as datetime]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.random :as random]
+            [status-im2.navigation.events :as navigation]))
 
 (defn fullname
   [custom-domain? username]

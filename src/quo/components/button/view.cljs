@@ -1,12 +1,11 @@
 (ns quo.components.button.view
-  (:require
-   [quo.components.animated.pressable :as animation]
-   [quo.components.text :as text] ;; FIXME:
-   [quo.design-system.colors :as colors]
-   [quo.design-system.spacing :as spacing]
-   [quo.haptic :as haptic]
-   [quo.react-native :as rn]
-   [status-im.ui.components.icons.icons :as icons]))
+  (:require [quo.components.animated.pressable :as animation]
+            [quo.components.text :as text] ;; FIXME:
+            [quo.design-system.colors :as colors]
+            [quo.design-system.spacing :as spacing]
+            [quo.haptic :as haptic]
+            [quo.react-native :as rn]
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn style-container
   [type]

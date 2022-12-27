@@ -1,9 +1,8 @@
 (ns quo2.components.avatars.account-avatar
-  (:require
-   [quo2.components.icon :as icons]
-   [quo2.foundations.colors :as colors]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]))
+  (:require [quo2.components.icon :as icons]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (def icon-color-value
   {:dark  (get-in colors/customization [:dark :purple])

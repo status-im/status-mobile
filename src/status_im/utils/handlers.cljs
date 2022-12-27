@@ -1,9 +1,8 @@
 (ns status-im.utils.handlers
-  (:require
-   [re-frame.core :as re-frame]
-   [re-frame.interceptor :refer [->interceptor get-coeffect]]
-   [taoensso.timbre :as log]
-   [utils.debounce :as debounce]))
+  (:require [re-frame.core :as re-frame]
+            [re-frame.interceptor :refer [->interceptor get-coeffect]]
+            [taoensso.timbre :as log]
+            [utils.debounce :as debounce]))
 
 (defn- pretty-print-event
   [ctx]
