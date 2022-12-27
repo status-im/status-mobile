@@ -1,9 +1,9 @@
-(ns status-im.component-test-helpers
+(ns test-helpers.component
   "Helpers for writing component tests using React Native Testing Library."
-  (:require-macros status-im.component-test-helpers)
+  (:require-macros test-helpers.component)
   (:require ["@testing-library/react-native" :as rtl]
-            [reagent.core :as reagent]
-            [camel-snake-kebab.core :as camel-snake-kebab]))
+            [camel-snake-kebab.core :as camel-snake-kebab]
+            [reagent.core :as reagent]))
 
 (defn render
   [component]
@@ -20,3 +20,7 @@
 (defn get-by-test-id
   [test-id]
   (rtl/screen.getByTestId (name test-id)))
+
+(defn get-by-label-text
+  [label]
+  (rtl/screen.getByLabelText (name label)))
