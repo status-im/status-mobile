@@ -42,7 +42,7 @@
    quo2.components.notifications.notification-dot
    quo2.components.notifications.toast
    quo2.components.reactions.reaction
-   quo2.components.selectors.disclaimer
+   quo2.components.selectors.disclaimer.view
    quo2.components.selectors.filter.view
    quo2.components.selectors.selectors
    quo2.components.separator
@@ -79,7 +79,7 @@
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
-(def disclaimer quo2.components.selectors.disclaimer/disclaimer)
+(def disclaimer quo2.components.selectors.disclaimer.view/view)
 (def checkbox quo2.components.selectors.selectors/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
