@@ -12,9 +12,9 @@
             [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
             [quo2.core :as quo]
             [utils.re-frame :as rf]
-            [status-im.utils.datetime :as time]
             [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [status-im2.common.not-implemented :as not-implemented]
+            [utils.datetime :as datetime]))
 
 (defn avatar
   [{:keys [response-to last-in-group? pinned quoted-message from]}]
@@ -41,7 +41,7 @@
       [quo/author
        {:profile-name display-name
         :chat-key     from
-        :time-str     (time/timestamp->time timestamp)
+        :time-str     (datetime/timestamp)
         :contact?     added?
         :verified?    ens-verified}])))
 
