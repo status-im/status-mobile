@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 (ns status-im.ui2.screens.chat.photo-selector.view
   (:require [i18n.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
