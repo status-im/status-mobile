@@ -93,8 +93,8 @@
             :style     style/middle-dot-chat-key}
            middle-dot])
         [text/text
-         {:monospace true
-          :size      :paragraph-2
+         {:monospace           true
+          :size                :paragraph-2
           :accessibility-label :message-timestamp
-          :style     (style/time-text ens?)}
+          :style               (style/time-text ens?)}
          time-str]]))])

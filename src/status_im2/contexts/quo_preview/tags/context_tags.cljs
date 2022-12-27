@@ -42,9 +42,9 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:label "Name"
+  (let [state (reagent/atom {:label        "Name"
                              :channel-name "Channel"
-                             :type  :group-avatar})]
+                             :type         :group-avatar})]
     (fn []
       (let [contacts             {example-pk  {:public-key example-pk
                                                :names      {:three-words-name
@@ -93,7 +93,8 @@
             :justify-content  :center}
            (case (:type @state)
              :context-tag
-             [quo2/context-tag group-avatar-default-params {:uri example-photo2}  (:label @state) (:channel-name @state)]
+             [quo2/context-tag group-avatar-default-params {:uri example-photo2} (:label @state)
+              (:channel-name @state)]
              :group-avatar
              [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
              :public-key

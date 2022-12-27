@@ -8,13 +8,13 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.state :as state]
-            [status-im2.contexts.chat.messages.content.view :as message]
-            [status-im2.common.constants :as constants]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [status-im.ui.screens.chat.state :as state]
+            [status-im2.common.constants :as constants]
+            [status-im2.common.not-implemented :as not-implemented]
+            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
+            [status-im2.contexts.chat.messages.content.view :as message]
+            [utils.re-frame :as rf]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -114,7 +114,8 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+(defn render-fn
+  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
@@ -126,9 +127,10 @@
           [content.deleted/deleted-message message-data]
           [message/message-with-reactions message-data context])]))])
 
-(defn messages-list [{:keys [chat
-                             pan-responder
-                             show-input?]}]
+(defn messages-list
+  [{:keys [chat
+           pan-responder
+           show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
         mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])
         messages (rf/sub [:chats/raw-chat-messages-stream chat-id])

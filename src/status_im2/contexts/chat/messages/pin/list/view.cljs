@@ -3,9 +3,9 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [status-im.utils.datetime :as time]
             [status-im2.contexts.chat.messages.content.view :as message]
-            [utils.re-frame :as rf]
-            [status-im.utils.datetime :as time]))
+            [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -27,10 +27,11 @@
     :timestamp-str       (time/timestamp->time whisper-timestamp)
     :edit-enabled        edit-enabled}])
 
-(defn pinned-messages-list [chat-id]
+(defn pinned-messages-list
+  [chat-id]
   (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
-        current-chat (rf/sub [:chats/current-chat])
-        community (rf/sub [:communities/community (:community-id current-chat)])]
+        current-chat    (rf/sub [:chats/current-chat])
+        community       (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529

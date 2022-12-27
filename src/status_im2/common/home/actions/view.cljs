@@ -1,11 +1,12 @@
 (ns status-im2.common.home.actions.view
-  (:require [i18n.i18n :as i18n]
-            [quo2.components.drawers.action-drawers :as drawer]
-            [status-im.chat.models :as chat.models]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
-    ;;status-im2
-            [status-im2.common.constants :as constants]
-            [utils.re-frame :as rf]))
+  (:require ;;TODO move to
+   ;;status-im2
+   [i18n.i18n :as i18n]
+   [quo2.components.drawers.action-drawers :as drawer]
+   [status-im.chat.models :as chat.models]
+   [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
+   [status-im2.common.constants :as constants]
+   [utils.re-frame :as rf]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
@@ -51,63 +52,63 @@
 (defn clear-history-action
   [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch
-    [:bottom-sheet/show-sheet
-     {:content (fn []
-                 (confirmation-drawer/confirmation-drawer
-                   {:title       (i18n/label :t/clear-history?)
-                    :description (i18n/label :t/clear-history-confirmation-content)
-                    :context     item
-                    :button-text (i18n/label :t/clear-history)
-                    :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
+   [:bottom-sheet/show-sheet
+    {:content (fn []
+                (confirmation-drawer/confirmation-drawer
+                 {:title       (i18n/label :t/clear-history?)
+                  :description (i18n/label :t/clear-history-confirmation-content)
+                  :context     item
+                  :button-text (i18n/label :t/clear-history)
+                  :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
 
 (defn delete-chat-action
   [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch
-    [:bottom-sheet/show-sheet
-     {:content (fn []
-                 (confirmation-drawer/confirmation-drawer
-                   {:title       (i18n/label :t/delete-chat?)
-                    :description (i18n/label :t/delete-chat-confirmation)
-                    :context     item
-                    :button-text (i18n/label :t/delete-chat)
-                    :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
+   [:bottom-sheet/show-sheet
+    {:content (fn []
+                (confirmation-drawer/confirmation-drawer
+                 {:title       (i18n/label :t/delete-chat?)
+                  :description (i18n/label :t/delete-chat-confirmation)
+                  :context     item
+                  :button-text (i18n/label :t/delete-chat)
+                  :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
 
 (defn leave-group-action
   [item chat-id]
   (hide-sheet-and-dispatch
-    [:bottom-sheet/show-sheet
-     {:content (fn []
-                 (confirmation-drawer/confirmation-drawer
-                   {:title       (i18n/label :t/leave-group?)
-                    :description (i18n/label :t/leave-chat-confirmation)
-                    :context     item
-                    :button-text (i18n/label :t/leave-group)
-                    :on-press    #(do
-                                    (rf/dispatch [:navigate-back])
-                                    (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed
-                                                              chat-id]))}))}]))
+   [:bottom-sheet/show-sheet
+    {:content (fn []
+                (confirmation-drawer/confirmation-drawer
+                 {:title       (i18n/label :t/leave-group?)
+                  :description (i18n/label :t/leave-chat-confirmation)
+                  :context     item
+                  :button-text (i18n/label :t/leave-group)
+                  :on-press    #(do
+                                  (rf/dispatch [:navigate-back])
+                                  (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed
+                                                            chat-id]))}))}]))
 
 (defn block-user-action
   [{:keys [public-key] :as item}]
   (hide-sheet-and-dispatch
-    [:bottom-sheet/show-sheet
-     {:content (fn []
-                 (confirmation-drawer/confirmation-drawer
-                   {:title       (i18n/label :t/block-user?)
-                    :description (i18n/label :t/block-contact-details)
-                    :context     item
-                    :button-text (i18n/label :t/block-user)
-                    :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed
-                                                            public-key])}))}]))
+   [:bottom-sheet/show-sheet
+    {:content (fn []
+                (confirmation-drawer/confirmation-drawer
+                 {:title       (i18n/label :t/block-user?)
+                  :description (i18n/label :t/block-contact-details)
+                  :context     item
+                  :button-text (i18n/label :t/block-user)
+                  :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed
+                                                          public-key])}))}]))
 
 (defn mute-chat-entry
   [chat-id]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon      (if muted? :i/muted :i/activity-center)
             :label     (i18n/label
-                         (if muted?
-                           :unmute-chat
-                           :mute-chat))
+                        (if muted?
+                          :unmute-chat
+                          :mute-chat))
             :on-press  (if muted?
                          #(unmute-chat-action chat-id)
                          #(mute-chat-action chat-id))
@@ -369,7 +370,7 @@
   [{:keys [chat-id admins]} inside-chat?]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])
         admin?          (get admins current-pub-key)
-        removed? (rf/sub [:group-chat/removed-from-current-chat?])]
+        removed?        (rf/sub [:group-chat/removed-from-current-chat?])]
     [(when-not removed?
        (group-details-entry chat-id))
      (when inside-chat?

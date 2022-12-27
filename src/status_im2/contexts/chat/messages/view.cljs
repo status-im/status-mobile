@@ -6,12 +6,12 @@
             [status-im.ui2.screens.chat.composer.view :as composer]
             [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
             [status-im2.common.constants :as constants]
+            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner] ;;TODO move to status-im2
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [utils.re-frame :as rf]))
 
 (defn navigate-back-handler
   []
@@ -53,14 +53,15 @@
 
       :right-section-buttons
       [{:on-press            #()
-        :style {:border-width 1 :border-color :red}
+        :style               {:border-width 1 :border-color :red}
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
 
-(defn chat-render []
+(defn chat-render
+  []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        show-input? (not (rf/sub [:group-chat/removed-from-current-chat?]))
+        show-input?                (not (rf/sub [:group-chat/removed-from-current-chat?]))
         {:keys [chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
@@ -75,8 +76,8 @@
 (defn chat
   []
   (reagent/create-class
-    {:component-did-mount    (fn []
-                               (rn/hw-back-remove-listener navigate-back-handler)
-                               (rn/hw-back-add-listener navigate-back-handler))
-     :component-will-unmount (fn [] (rn/hw-back-remove-listener navigate-back-handler))
-     :reagent-render         chat-render}))
+   {:component-did-mount    (fn []
+                              (rn/hw-back-remove-listener navigate-back-handler)
+                              (rn/hw-back-add-listener navigate-back-handler))
+    :component-will-unmount (fn [] (rn/hw-back-remove-listener navigate-back-handler))
+    :reagent-render         chat-render}))

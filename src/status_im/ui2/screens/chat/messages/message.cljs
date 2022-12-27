@@ -4,6 +4,7 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
@@ -29,8 +30,7 @@
             [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
             [status-im2.contexts.chat.messages.delete-message-for-me.events]
             [status-im2.contexts.chat.messages.delete-message.events]
-            [utils.re-frame :as rf]
-            [quo2.core :as quo])
+            [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
@@ -133,10 +133,10 @@
     [rn/view {:flex-direction :row}
      [rn/text {:style (style/message-status-text)}
       (str "["
-        (if edited-at
-          "edited"
-          (or outgoing-status ""))
-        " DEBUG]")]]))
+           (if edited-at
+             "edited"
+             (or outgoing-status ""))
+           " DEBUG]")]]))
 
 (defn quoted-message
   [{:keys [message-id chat-id]} reply pin?]
