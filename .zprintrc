@@ -8,6 +8,8 @@
              ;; no comma in map
              :no-comma
 
+             :how-to-ns
+
              :custom-justify
 
              ;; respect all newlines
@@ -26,9 +28,6 @@
   "deftest-sub"     :arg1-body
   "wait-for"        :arg1-body
   "with-deps-check" :arg1-body
-  "ns"              [:arg1-body
-                     {:list   {:respect-nl? false}
-                      :vector {:respect-nl? false}}]
   "->"              [:noarg1-body
                      {:list               {:constant-pair? false :force-nl? false}
                       :next-inner-restore [[:list :constant-pair?]]}]
