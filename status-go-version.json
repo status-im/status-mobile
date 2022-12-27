@@ -4,6 +4,7 @@
     "owner": "status-im",
     "repo": "status-go",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "d43e06f4c27a900641cd55c2a46002e6f0909c95",
     "commit-sha1": "d43e06f4c27a900641cd55c2a46002e6f0909c95",
     "src-sha256": "18n5h3yx6wxb5l1nvra868dhnyl732zvpdn3mqg4zfsjxmx82np7"
@@ -12,4 +13,9 @@
     "commit-sha1": "6abbe98cd20b639d0c7298091f00262e876f3e17",
     "src-sha256": "14hzxnmxvyjj6vgz52lblzd9081ynsj5lksh48p1d81m14zalwkb"
 >>>>>>> c436d73fc... updates
+=======
+    "version": "v0.117.1a",
+    "commit-sha1": "b4bdfd3df6cf5fb91ab2d0e9f3b38e8d1b9703e5",
+    "src-sha256": "1s50q53p1j5ysnbj88c52zb2rh1ms21pnf6bjc7wja8gzcpih2wl"
+>>>>>>> 400933751... refactor
 }

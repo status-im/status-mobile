@@ -1,6 +1,19 @@
 (ns status-im2.contexts.chat.messages.content.album.style
   (:require [quo2.foundations.colors :as colors]))
 
+(def album-container
+  {:flex-direction :row
+   :flex-wrap      :wrap
+   :border-radius  12
+   :width          293
+   :overflow       :hidden})
+
+(defn image [size index]
+  {:width         size
+   :height        size
+   :margin-left   (when (and (not= index 0) (not= index 2)) 1)
+   :margin-bottom (when (< index 2) 1)})
+
 (def overlay
   {:position         :absolute
    :width            73
