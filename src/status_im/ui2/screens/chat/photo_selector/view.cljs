@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 (ns status-im.ui2.screens.chat.photo-selector.view
   (:require [i18n.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
@@ -14,7 +22,7 @@
 (def selected (reagent/atom []))
 
 (defn bottom-gradient
-  []
+  [chat-id]
   [:f>
    (fn []
      (let [safe-area (safe-area/use-safe-area)]
@@ -28,6 +36,7 @@
            {:style    {:align-self        :stretch
                        :margin-horizontal 20}
             :on-press #(do
+                         (rf/dispatch [:chat.ui/clear-sending-images chat-id])
                          (doseq [item @selected]
                            (rf/dispatch [:chat.ui/camera-roll-pick item]))
                          (reset! selected [])
@@ -97,4 +106,5 @@
             :style                   {:border-radius 20}
             :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading?
                                                     has-next-page?])}]
-          [bottom-gradient]]))]))
+          [bottom-gradient chat-id]]))]))
+
