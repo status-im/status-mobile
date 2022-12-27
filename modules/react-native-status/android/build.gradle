@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+def getStatusGoSHA1 = { ->
+    def statusgoOverridePath = System.getenv("STATUS_GO_SRC_OVERRIDE")
+    if (statusgoOverridePath != null && statusgoOverridePath != "") {
+        logger.info("build.gradle: Using local version of status-go from ${statusgoOverridePath}")
+        return "unknown" // This value is defined in https://github.com/status-im/status-mobile/blob/develop/nix/status-go/default.nix, in `srcData.shortRev`
+    }
+
+    def jsonSlurper = new groovy.json.JsonSlurper()
+    def content = new File('../status-go-version.json').text
+    def object = jsonSlurper.parseText(content)
+
+    assert object instanceof Map
+
+    return object.get('commit-sha1').substring(0, 7)
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    implementation 'com.facebook.react:react-native:+' // from node_modules
+    implementation 'com.github.status-im:function:0.0.1'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
+}
