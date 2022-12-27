@@ -1,11 +1,14 @@
 (ns status-im2.setup.db
   (:require [react-native.core :as rn] ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [status-im.fleet.core :as fleet]
-            [status-im.wallet.db :as wallet.db]))
+            [status-im.wallet.db :as wallet.db]
+            [status-im2.contexts.activity-center.events :as activity-center]))
 
 ;; initial state of app-db
 (def app-db
-  {:contacts/contacts                  {}
+  {:activity-center                    {:filter {:status (:filter-status activity-center/defaults)
+                                                 :type   (:filter-type activity-center/defaults)}}
+   :contacts/contacts                  {}
    :pairing/installations              {}
    :group/selected-contacts            #{}
    :chats                              {}
