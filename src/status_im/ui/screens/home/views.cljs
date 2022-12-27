@@ -357,7 +357,7 @@
      :margin-horizontal 16
      :margin-top        15
      :margin-bottom     8}
-    [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
+    [quo2.text/text {:size :heading-1 :weight :semi-bold} "(i18n/label :t/messages)"]
     [plus-button]]
    [chats-list]])
 

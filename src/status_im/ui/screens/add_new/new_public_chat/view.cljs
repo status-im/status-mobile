@@ -95,7 +95,9 @@
   (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
     [react/scroll-view {:style {:flex 1}}
-     [react/view {:padding-horizontal 16}
+     [react/view {:padding-horizontal 16
+                  :border-width 1
+                  :border-color colors/blue}
       [react/view {:align-items :center :padding-vertical 8}
        [react/image
         {:source (:new-chat-header resources/ui)

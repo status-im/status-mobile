@@ -5,6 +5,7 @@
    [status-im.i18n.i18n :as i18n]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.screens.about-app.views :as about-app]
+   [status-im.ui.screens.add-new.new-contact.views :as new-contact]
    [status-im.ui.screens.add-new.new-chat.views :as new-chat]
    [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
    [status-im.ui.screens.advanced-settings.views :as advanced-settings]
@@ -610,10 +611,8 @@
 
    ;New Contact
    {:name      :new-contact
-    :on-focus  [::new-chat.events/new-chat-focus]
-    ;;TODO accessories
     :options   {:topBar {:visible false}}
-    :component new-chat/new-contact}
+    :component new-contact/new-contact}
 
    ;[Wallet] Recipient
    {:name      :recipient

@@ -261,6 +261,27 @@
   (log/debug "[native-module] hash-message")
   (.hashMessage ^js (status) message callback))
 
+(comment
+  (.hashMessage ^js (status) "hi!" #(println "back:" %))
+  (println (status))
+  (.multiAccountImportPrivateKey ^jsa (status)
+                                 (types/clj->json {:privateKey "0x123abc"})
+                                 #(println "cb:" %))
+  (.multiformatDeserializePublicKey
+   ^js (status) "zQ3shwiRy5TtMM7B4iZ8MKaGywkaaCgMqqbrnAUYrZJ1sgVWh"
+   "f" #(println "cb:" %)))
+
+(defn decompress-public-key
+  "Decompresses 33-byte compressed format to uncompressed 65-byte format"
+  [public-key callback]
+  (log/debug "[native-module] decompress-public-key")  
+  (.multiformatDeserializePublicKey ^js (status) public-key
+                                    ;; (types/clj->json {:n                    n
+                                    ;;                   :mnemonicPhraseLength mnemonic-length
+                                    ;;                   :bip39Passphrase      ""
+                                    ;;                   :paths                paths})
+                                    callback))
+
 (defn get-connection-string-for-bootstrapping-another-device
   "Generates connection string form status-go for the purpose of local pairing on the sender end"
   [config-json callback]

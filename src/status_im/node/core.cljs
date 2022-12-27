@@ -70,7 +70,7 @@
    :AutoUpdate     true
    :PeerExchange   true
    :Port           0
-   :UDPPort        0})
+   :UDPPort        9001})
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}

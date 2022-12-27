@@ -22,7 +22,7 @@
 
 (defn is-valid-eth-name?
   [ens-name]
-  (and ens-name
+  (and ens-name ; what's this for? does it do anything?
        (string? ens-name)
        (string/ends-with? ens-name ".eth")))
 
@@ -36,7 +36,9 @@
 
 (defn pubkey
   [chain-id ens-name cb]
+  (println "is-valid-eth-name?" (is-valid-eth-name? ens-name))
   {:pre [(is-valid-eth-name? ens-name)]}
+  (println "pubkey" chain-id ens-name cb)
   (json-rpc/call {:method     "ens_publicKeyOf"
                   :params     [chain-id ens-name]
                   :on-success cb

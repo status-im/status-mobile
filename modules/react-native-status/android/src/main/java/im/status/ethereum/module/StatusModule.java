@@ -941,6 +941,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void multiformatDeserializePublicKey(final String key, final String outBase, final Callback callback) {
+        Log.d(TAG, "multiformatDeserializePublicKey");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiformatDeserializePublicKey(message, outBase);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
          final String keyUID = jsonConfig.getString("keyUID");

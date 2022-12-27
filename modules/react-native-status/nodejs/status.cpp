@@ -1873,7 +1873,6 @@ void _ConnectionChange(const FunctionCallbackInfo<Value>& args) {
 	ConnectionChange(arg0, arg1);
 }
 
-
 void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountGenerateAndDeriveAddresses", _MultiAccountGenerateAndDeriveAddresses);
 	NODE_SET_METHOD(exports, "multiAccountImportPrivateKey", _MultiAccountImportPrivateKey);

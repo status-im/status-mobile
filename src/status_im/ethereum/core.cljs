@@ -164,6 +164,8 @@
 
 (defn get-current-network
   [{:networks/keys [current-network networks]}]
+  ;; (println networks current-network)
+  ;; (println (get networks current-network))
   (get networks current-network))
 
 (defn chain-keyword
