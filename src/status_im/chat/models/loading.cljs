@@ -4,9 +4,9 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [utils.re-frame :as rf]
             [status-im2.contexts.activity-center.events :as activity-center]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -101,38 +101,14 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-(rf/defn messages-loaded
-=======
-(defn find-albums [messages]
-  (let [albums-count (atom {})
-        new-messages (atom {})]
-    (doseq [message messages]
-      (let [album-id (:album-id (:content (val message)))]
-        (println "ALBUMID" album-id (get @albums-count album-id))
-        (when album-id
-          (if (get @albums-count album-id)
-            (swap! albums-count assoc-in [album-id] (inc (get @albums-count album-id)))
-            (swap! albums-count assoc-in [album-id] 1)))
-        (when (> (get @albums-count album-id) 3)
-          (println "COMPLETED AN ALBUMXXXX" (get @albums-count album-id))
-          ))))
-  messages)
-
-=======
->>>>>>> c341585dd... updates
-=======
-(defn mark-albums [messages]
+(defn mark-albums
+  [messages]
   (let [new-messages (atom [])]
-  (doseq [message messages]
-    (swap! new-messages conj (if (:album-id message) (assoc message :albumize? true) message)))
-  @new-messages))
+    (doseq [message messages]
+      (swap! new-messages conj (if (:album-id message) (assoc message :albumize true) message)))
+    @new-messages))
 
->>>>>>> 669c096c4... feat: images album
-(fx/defn messages-loaded
->>>>>>> 86fbedba6... updates
+(rf/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
   [{db :db} chat-id session-id {:keys [cursor messages]}]
@@ -159,9 +135,11 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
-          current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
-          clock-value (when cursor (cursor->clock-value cursor))
-          new-messages (mark-albums new-messages)]
+          current-clock-value                                  (get-in db
+                                                                       [:pagination-info chat-id
+                                                                        :cursor-clock-value])
+          clock-value                                          (when cursor (cursor->clock-value cursor))
+          new-messages                                         (mark-albums new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
