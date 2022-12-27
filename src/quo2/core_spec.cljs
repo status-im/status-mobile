@@ -6,4 +6,4 @@
             [quo2.components.drawers.--tests--.action-drawers-component-spec]
             [quo2.components.markdown.--tests--.text-component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]
-            [quo2.components.selectors.filter.--tests--.component-spec]))
+            [quo2.components.selectors.filter.component-spec]))

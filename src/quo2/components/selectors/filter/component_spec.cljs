@@ -1,4 +1,4 @@
-(ns quo2.components.selectors.filter.--tests--.component-spec
+(ns quo2.components.selectors.filter.component-spec
   (:require [quo2.components.selectors.filter.view :as quo]
             [test-helpers.component :as h]))
 
