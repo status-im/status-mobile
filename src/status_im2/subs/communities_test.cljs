@@ -115,3 +115,24 @@
        "0x3" {:id "0x3" :name "Civilized dolphins"}})
     (is (= {:joined ["0x1"] :pending ["0x2"] :opened ["0x3"]}
            (rf/sub [sub-name])))))
+
+(h/deftest-sub :communities/sorted-communities
+  [sub-name]
+  (testing "Empty communities list"
+    (swap! rf-db/app-db assoc
+           :communities/enabled? true
+           :communities {})
+    (is (= []
+           (rf/sub [sub-name]))))
+  (testing "communities sorted by name"
+    (swap! rf-db/app-db assoc
+           :communities/enabled? true
+           :communities
+           {"0x1" {:id "0x1" :name "Civilized monkeys"}
+            "0x2" {:id "0x2" :name "Civilized rats"}
+            "0x3" {:id "0x3" :name "Civilized dolphins"}})
+    (is (= [{:id "0x3" :name "Civilized dolphins"}
+            {:id "0x1" :name "Civilized monkeys"}
+            {:id "0x2" :name "Civilized rats"}]
+           (rf/sub [sub-name])))))
+

@@ -13,6 +13,7 @@
    quo2.components.community.community-list-view
    quo2.components.community.community-view
    quo2.components.community.discover-card
+   quo2.components.community.icon
    quo2.components.community.token-gating
    quo2.components.counter.counter
    quo2.components.dividers.date
@@ -104,6 +105,7 @@
 (def permission-tag-container quo2.components.community.community-view/permission-tag-container)
 (def discover-card quo2.components.community.discover-card/discover-card)
 (def token-gating quo2.components.community.token-gating/token-gating)
+(def community-icon quo2.components.community.icon/community-icon)
 
 ;;;; DIVIDERS
 (def divider-label quo2.components.dividers.divider-label/divider-label)

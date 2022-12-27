@@ -23,10 +23,10 @@
                          colors/neutral-20
                          colors/neutral-70)})}
    [selectors/checkbox
-    {:on-change on-change}]
-   [text/text
     {:accessibility-label accessibility-label
-     :size                :paragraph-2
-     :style               {:margin-left 8}}
+     :on-change           on-change}]
+   [text/text
+    {:size  :paragraph-2
+     :style {:margin-left 8}}
     label]])
 
