@@ -127,7 +127,7 @@
 (defn mark-albums [messages]
   (let [new-messages (atom [])]
   (doseq [message messages]
-    (swap! new-messages conj (if (:album-id message) (assoc message :albumize true) message)))
+    (swap! new-messages conj (if (:album-id message) (assoc message :albumize? true) message)))
   @new-messages))
 
 >>>>>>> 669c096c4... feat: images album

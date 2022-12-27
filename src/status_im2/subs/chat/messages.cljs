@@ -4,8 +4,7 @@
             [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.utils.datetime :as datetime]
-            [status-im2.common.constants :as constants]
-            [status-im.constants]))
+            [status-im2.common.constants :as constants]))
 
 (re-frame/reg-sub
   :chats/chat-messages
@@ -107,7 +106,7 @@
   (let [all-messages (atom [])
         albums       (atom {})]
     (doseq [message messages]
-      (let [album-id (when (:albumize message) (:album-id message))]
+      (let [album-id (when (:albumize? message) (:album-id message))]
         (if (and album-id (get @albums album-id))
           (swap! albums update-in [album-id] #(conj % message))
           (swap! albums assoc-in [album-id] [message]))
@@ -117,7 +116,7 @@
           (swap! all-messages conj {:album        (get @albums album-id)
                                     :album-id     album-id
                                     :message-id   album-id
-                                    :content-type status-im.constants/content-type-album}))))
+                                    :content-type constants/content-type-album}))))
     @all-messages))
 
 (re-frame/reg-sub
