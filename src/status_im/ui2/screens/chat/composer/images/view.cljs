@@ -3,13 +3,11 @@
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]
             [react-native.core :as rn]
-            [status-im.ui2.screens.chat.composer.style :as style]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn image
   [item]
-  [rn/view (when platform/android?
-             {:style {:margin-top 8}})
+  [rn/view
    [rn/image
     {:source {:uri (first item)}
      :style  style/small-image}]

@@ -94,7 +94,7 @@
    :border-radius    7
    :background-color colors/neutral-50
    :position         :absolute
-   :top              -7
+   :top              (if platform/android? 0 -7)
    :right            -7
    :justify-content  :center
    :align-items      :center})
