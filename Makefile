@@ -289,8 +289,8 @@ lint: export TARGET := default
 lint: ##@test Run code style checks
 	sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
-	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
-	zprint '{:search-config? true}' -fc $$TARGETS
+	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILE
 
 lint-fix: export TARGET := default
 lint-fix: ##@test Run code style checks and fix issues
