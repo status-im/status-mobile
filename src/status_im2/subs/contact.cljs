@@ -93,6 +93,7 @@
        vals)))
 
 (re-frame/reg-sub
+<<<<<<< HEAD
  :contacts/sorted-and-grouped-by-first-letter
  :<- [:contacts/active]
  :<- [:selected-contacts-count]
@@ -108,6 +109,22 @@
         (map (fn [[title data]]
                {:title title
                 :data  data})))))
+=======
+ :contacts/add-members-sections
+ :<- [:contacts/current-chat-contacts]
+ :<- [:contacts/active]
+ (fn [[members contacts]]
+   (-> (reduce
+        (fn [acc contact]
+          (let [first-char (first (:alias contact))]
+            (if (get acc first-char)
+              (update-in acc [first-char :data] #(conj % contact))
+              (assoc acc first-char {:title first-char :data [contact]}))))
+        {}
+        (utils.collection/distinct-by :public-key (concat members contacts)))
+       sort
+       vals)))
+>>>>>>> ac540a012... formatting
 
 (re-frame/reg-sub
  :contacts/sorted-contacts
