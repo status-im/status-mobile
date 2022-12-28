@@ -24,7 +24,6 @@
   (let [state (r/atom {:custom-color    :blue
                        :account-name    "Booze for Dubai"
                        :account-address "0x21a ... 49e"
-                       ;; Fixed parameters:
                        :avatar-icon     :i/placeholder
                        :on-press-menu   (fn []
                                           (js/alert "Menu button pressed"))})]
