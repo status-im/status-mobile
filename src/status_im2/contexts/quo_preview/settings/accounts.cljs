@@ -10,9 +10,9 @@
   [{:label   "Custom color"
     :key     :custom-color
     :type    :select
-    :options (mapv (fn [[k _]]
-                     {:key k, :value (string/capitalize (name k))})
-                   colors/customization)}
+    :options (map (fn [[k _]]
+                    {:key k, :value (string/capitalize (name k))})
+                  colors/customization)}
    {:label "Account name"
     :key   :account-name
     :type  :text}
