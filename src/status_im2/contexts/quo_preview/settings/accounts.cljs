@@ -27,7 +27,7 @@
                        ;; Fixed parameters:
                        :avatar-icon     :i/placeholder
                        :on-press-menu   (fn []
-                                          (prn "menu pressed"))})]
+                                          (js/alert "Menu button pressed"))})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
