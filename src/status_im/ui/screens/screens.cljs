@@ -109,7 +109,7 @@
    [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
    [status-im.ui2.screens.chat.group-details.view :as group-details]
    [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
-   [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]))
+   [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]))
 
 (defn right-button-options
   [id icon]

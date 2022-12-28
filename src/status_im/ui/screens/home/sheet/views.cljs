@@ -6,9 +6,10 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
-            [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]
+            [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im.utils.config :as config]
-            [quo2.core :as quo2]))
+            [quo2.core :as quo2]
+            [status-im.ui.screens.home.sheet.styles :as style]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -17,11 +18,7 @@
 
 (defn add-new-view []
   [rn/view
-   [rn/view {:style {:flex-direction  :row
-                     :padding-left    16
-                     :padding-right   8
-                     :justify-content :space-between
-                     :align-items     :center}}
+   [rn/view style/add-new-view-wrapper
     [quo/text {:size   :large
                :weight :bold}
      (i18n/label :t/open-home)]

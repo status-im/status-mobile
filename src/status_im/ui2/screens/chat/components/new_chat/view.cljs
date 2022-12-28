@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.components.new-chat
+(ns status-im.ui2.screens.chat.components.new-chat.view
   (:require [quo2.components.buttons.button :as button]
             [quo2.core :as quo2]
             [quo2.foundations.colors :as quo2.colors]
@@ -12,7 +12,8 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
-            [status-im.ui.components.invite.events :as invite.events]))
+            [status-im.ui.components.invite.events :as invite.events]
+            [status-im.ui2.screens.chat.components.new-chat.styles :as style]))
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
@@ -61,20 +62,10 @@
      [quo2/button {:type                      :grey
                    :icon                      true
                    :on-press                  #(rf/dispatch [:bottom-sheet/hide])
-                   :style                     {:width           32
-                                               :height          32
-                                               :border-radius   10
-                                               :margin-left     20
-                                               :margin-bottom   36
-                                               :justify-content :center
-                                               :align-items     :center}
+                   :style                     style/contact-selection-close
                    :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-90)}
       :i/close]
-     [react/view {:style {:flex-direction     :row
-                          :justify-content    :space-between
-                          :align-items        :flex-end
-                          :padding-horizontal 20
-                          :margin-bottom      16}}
+     [react/view style/contact-selection-heading
       [quo2/text {:weight :semi-bold
                   :size   :heading-1
                   :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}}
