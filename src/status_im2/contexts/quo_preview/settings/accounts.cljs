@@ -25,7 +25,7 @@
                        :account-name    "Booze for Dubai"
                        :account-address "0x21a ... 49e"
                        ;; Fixed parameters:
-                       :avatar-icon     :main-icons/placeholder
+                       :avatar-icon     :i/placeholder
                        :on-press-menu   (fn []
                                           (prn "menu pressed"))})]
     (fn []

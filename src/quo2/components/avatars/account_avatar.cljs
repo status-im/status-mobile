@@ -24,7 +24,7 @@
 (defn account-avatar
   [{:keys [size icon color]
     :or   {size  80
-           icon  :main-icons/placeholder
+           icon  :i/placeholder
            color :purple}}]
   (let [icon-color           (colors/custom-color-by-theme color 50 60)
         avatar-border-radius (get-border-radius size)
