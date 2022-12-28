@@ -28,57 +28,57 @@
    (rtl/render (reagent/as-element [selectors/radio opts]))))
 
 (js/global.test "default render of toggle component"
-                (fn []
-                  (render-toggle)
-                  (-> (js/expect (rtl/screen.getByTestId "toggle-component"))
-                      (.toBeTruthy))))
+  (fn []
+    (render-toggle)
+    (-> (js/expect (rtl/screen.getByTestId "toggle-component"))
+        (.toBeTruthy))))
 
 (js/global.test "toggle component on change is working"
-                (let [mock-fn (js/jest.fn)]
-                  (fn []
-                    (render-toggle {:on-change mock-fn})
-                    (rtl/fireEvent.press (rtl/screen.getByTestId "toggle-component"))
-                    (-> (js/expect mock-fn)
-                        (.toHaveBeenCalledTimes 1)))))
+  (let [mock-fn (js/jest.fn)]
+    (fn []
+      (render-toggle {:on-change mock-fn})
+      (rtl/fireEvent.press (rtl/screen.getByTestId "toggle-component"))
+      (-> (js/expect mock-fn)
+          (.toHaveBeenCalledTimes 1)))))
 
 (js/global.test "default render of radio component"
-                (fn []
-                  (render-radio)
-                  (-> (js/expect (rtl/screen.getByTestId "radio-component"))
-                      (.toBeTruthy))))
+  (fn []
+    (render-radio)
+    (-> (js/expect (rtl/screen.getByTestId "radio-component"))
+        (.toBeTruthy))))
 
 (js/global.test "radio component on change is working"
-                (let [mock-fn (js/jest.fn)]
-                  (fn []
-                    (render-radio {:on-change mock-fn})
-                    (rtl/fireEvent.press (rtl/screen.getByTestId "radio-component"))
-                    (-> (js/expect mock-fn)
-                        (.toHaveBeenCalledTimes 1)))))
+  (let [mock-fn (js/jest.fn)]
+    (fn []
+      (render-radio {:on-change mock-fn})
+      (rtl/fireEvent.press (rtl/screen.getByTestId "radio-component"))
+      (-> (js/expect mock-fn)
+          (.toHaveBeenCalledTimes 1)))))
 
 (js/global.test "default render of checkbox component"
-                (fn []
-                  (render-checkbox)
-                  (-> (js/expect (rtl/screen.getByTestId "checkbox-component"))
-                      (.toBeTruthy))))
+  (fn []
+    (render-checkbox)
+    (-> (js/expect (rtl/screen.getByTestId "checkbox-component"))
+        (.toBeTruthy))))
 
 (js/global.test "checkbox component on change is working"
-                (let [mock-fn (js/jest.fn)]
-                  (fn []
-                    (render-checkbox {:on-change mock-fn})
-                    (rtl/fireEvent.press (rtl/screen.getByTestId "checkbox-component"))
-                    (-> (js/expect mock-fn)
-                        (.toHaveBeenCalledTimes 1)))))
+  (let [mock-fn (js/jest.fn)]
+    (fn []
+      (render-checkbox {:on-change mock-fn})
+      (rtl/fireEvent.press (rtl/screen.getByTestId "checkbox-component"))
+      (-> (js/expect mock-fn)
+          (.toHaveBeenCalledTimes 1)))))
 
 (js/global.test "default render of checkbox-prefill component"
-                (fn []
-                  (render-checkbox-prefill)
-                  (-> (js/expect (rtl/screen.getByTestId "checkbox-prefill-component"))
-                      (.toBeTruthy))))
+  (fn []
+    (render-checkbox-prefill)
+    (-> (js/expect (rtl/screen.getByTestId "checkbox-prefill-component"))
+        (.toBeTruthy))))
 
 (js/global.test "checkbox-prefill component on change is working"
-                (let [mock-fn (js/jest.fn)]
-                  (fn []
-                    (render-checkbox-prefill {:on-change mock-fn})
-                    (rtl/fireEvent.press (rtl/screen.getByTestId "checkbox-prefill-component"))
-                    (-> (js/expect mock-fn)
-                        (.toHaveBeenCalledTimes 1)))))
+  (let [mock-fn (js/jest.fn)]
+    (fn []
+      (render-checkbox-prefill {:on-change mock-fn})
+      (rtl/fireEvent.press (rtl/screen.getByTestId "checkbox-prefill-component"))
+      (-> (js/expect mock-fn)
+          (.toHaveBeenCalledTimes 1)))))
