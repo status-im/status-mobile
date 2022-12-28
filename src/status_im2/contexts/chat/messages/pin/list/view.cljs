@@ -14,10 +14,7 @@
    _
    {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
   ;; TODO (flexsurfer) probably we don't want reactions here
-  (let [message-content-sub (-> [:chats/chat-messages chat-id]
-                                rf/sub
-                                (get message-id)
-                                (get-in [:content]))]
+  (let [message-content-sub (get-in (rf/sub [:chats/chat-messages chat-id]) [message-id :content])]
     [message/message-with-reactions
      (assoc message :content message-content-sub)
      {:group-chat          group-chat

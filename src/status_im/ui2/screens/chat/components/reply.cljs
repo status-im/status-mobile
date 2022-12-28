@@ -69,7 +69,8 @@
   (let [reply-content-sub  (-> [:chats/chat-messages chat-id]
                                rf/sub
                                (get id))
-        {:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]} reply-content-sub
+        {:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]}
+        reply-content-sub
         contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
