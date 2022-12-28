@@ -10,7 +10,7 @@
    [rn/view {:style (style/background-top custom-color)}]
    [rn/view {:style (style/background-bottom)}]])
 
-(defn avatar [{:keys [_color _icon] :as avatar-props}]
+(defn avatar [avatar-props]
   [rn/view {:style (style/avatar-border)}
    [av/account-avatar (assoc avatar-props :size 48)]])
 
