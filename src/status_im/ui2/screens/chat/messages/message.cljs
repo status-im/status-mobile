@@ -1,5 +1,4 @@
 (ns status-im.ui2.screens.chat.messages.message
-<<<<<<< HEAD
   (:require
    [quo.design-system.colors :as quo.colors]
    [quo.react-native :as rn]
@@ -33,47 +32,6 @@
    [status-im2.contexts.chat.messages.delete-message.events]
    [utils.re-frame :as rf]
    [quo2.core :as quo])
-=======
-  (:require [quo.design-system.colors :as quo.colors]
-            [quo.react-native :as rn]
-            [quo2.components.avatars.user-avatar :as user-avatar]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.image.preview.views :as preview]
-            [status-im.ui.screens.chat.message.audio :as message.audio]
-            [status-im.ui.screens.chat.message.command :as message.command]
-            [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im.ui.screens.chat.message.link-preview :as link-preview]
-            [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.screens.chat.styles.message.message :as style]
-            [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.ui2.screens.chat.components.reply :as components.reply]
-            [status-im.utils.config :as config]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.utils :as utils]
-            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-            [status-im2.contexts.chat.messages.delete-message-for-me.events]
-            [status-im2.contexts.chat.messages.delete-message.events]
-            [utils.re-frame :as rf]
-            [quo2.core :as quo])
-<<<<<<< HEAD
-=======
-            [utils.security.core :as security]
-            [status-im2.contexts.chat.messages.album.view :as album])
->>>>>>> b640f2420... feat: images album
->>>>>>> bcb0fd54e... feat: images album
-=======
->>>>>>> f799c6fa9... feat: album
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
@@ -117,15 +75,15 @@
 
     "mention"
     (conj
-      acc
-      [rn/view
-       {:style {:background-color colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
-       [rn/text
-        {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
-                          (if (system-text? content-type) typography/font-regular typography/font-medium))
-         :on-press (when-not (system-text? content-type)
-                     #(rf/dispatch [:chat.ui/show-profile literal]))}
-        [mention-element literal]]])
+     acc
+     [rn/view
+      {:style {:background-color colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
+      [rn/text
+       {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
+                         (if (system-text? content-type) typography/font-regular typography/font-medium))
+        :on-press (when-not (system-text? content-type)
+                    #(rf/dispatch [:chat.ui/show-profile literal]))}
+       [mention-element literal]]])
     "status-tag"
     (conj acc
           [rn/text
@@ -146,9 +104,9 @@
     "paragraph"
     (conj acc
           (reduce
-            (fn [acc e] (render-inline (:text content) content-type acc e))
-            [rn/text (style/text-style content-type in-popover?)]
-            children))
+           (fn [acc e] (render-inline (:text content) content-type acc e))
+           [rn/text (style/text-style content-type in-popover?)]
+           children))
 
     "blockquote"
     (conj acc
@@ -187,6 +145,7 @@
                                                 message-id)
         reply                              (assoc reply
 <<<<<<< HEAD
+<<<<<<< HEAD
                                                   :deleted?        deleted?
                                                   :deleted-for-me? deleted-for-me?
                                                   :chat-id         chat-id)]
@@ -194,6 +153,10 @@
                                              :deleted?        deleted?
                                              :deleted-for-me? deleted-for-me?)]
 >>>>>>> 4d844507d... feat: album
+=======
+                                                  :deleted?        deleted?
+                                                  :deleted-for-me? deleted-for-me?)]
+>>>>>>> ca60040c3... reformat
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
      [components.reply/reply-message reply false pin?]]))
 
@@ -203,9 +166,9 @@
    {:on-press
     (fn []
       (re-frame/dispatch
-        [:bottom-sheet/show-sheet
-         {:content        (sheets/options chat-id message-id)
-          :content-height 200}])
+       [:bottom-sheet/show-sheet
+        {:content        (sheets/options chat-id message-id)
+         :content-height 200}])
       (rn/dismiss-keyboard!))}
    [rn/view style/not-sent-view
     [rn/text {:style style/not-sent-text}
@@ -335,51 +298,51 @@
            can-delete-message-for-everyone?]
     :as   message} content]
   (on-long-press
-    (concat
-      (when (and outgoing edit-enabled)
-        [{:type     :main
-          :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
-          :label    (i18n/label :t/edit-message)
-          :icon     :i/edit
-          :id       :edit}])
-      (when show-input?
-        [{:type     :main
-          :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-          :label    (i18n/label :t/message-reply)
-          :icon     :i/reply
-          :id       :reply}])
+   (concat
+    (when (and outgoing edit-enabled)
       [{:type     :main
-        :on-press #(react/copy-to-clipboard
-                     (components.reply/get-quoted-text-with-mentions
-                       (get content :parsed-text)))
-        :label    (i18n/label :t/copy-text)
-        :icon     :i/copy
-        :id       :copy}]
-      (when message-pin-enabled
-        [{:type     :main
-          :on-press #(pin-message message)
-          :label    (i18n/label (if pinned
-                                  (if community? :t/unpin-from-channel :t/unpin-from-chat)
-                                  (if community? :t/pin-to-channel :t/pin-to-chat)))
-          :icon     :i/pin
-          :id       (if pinned :unpin :pin)}])
-      (when-not pinned
-        [{:type     :danger
-          :on-press (fn []
-                      (re-frame/dispatch
-                        [:chat.ui/delete-message-for-me message
-                         config/delete-message-for-me-undo-time-limit-ms]))
-          :label    (i18n/label :t/delete-for-me)
-          :icon     :i/delete
-          :id       :delete-for-me}])
-      (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
-        [{:type     :danger
-          :on-press #(re-frame/dispatch [:chat.ui/delete-message
-                                         message
-                                         config/delete-message-undo-time-limit-ms])
-          :label    (i18n/label :t/delete-for-everyone)
-          :icon     :i/delete
-          :id       :delete-for-all}]))))
+        :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
+        :label    (i18n/label :t/edit-message)
+        :icon     :i/edit
+        :id       :edit}])
+    (when show-input?
+      [{:type     :main
+        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+        :label    (i18n/label :t/message-reply)
+        :icon     :i/reply
+        :id       :reply}])
+    [{:type     :main
+      :on-press #(react/copy-to-clipboard
+                  (components.reply/get-quoted-text-with-mentions
+                   (get content :parsed-text)))
+      :label    (i18n/label :t/copy-text)
+      :icon     :i/copy
+      :id       :copy}]
+    (when message-pin-enabled
+      [{:type     :main
+        :on-press #(pin-message message)
+        :label    (i18n/label (if pinned
+                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
+                                (if community? :t/pin-to-channel :t/pin-to-chat)))
+        :icon     :i/pin
+        :id       (if pinned :unpin :pin)}])
+    (when-not pinned
+      [{:type     :danger
+        :on-press (fn []
+                    (re-frame/dispatch
+                     [:chat.ui/delete-message-for-me message
+                      config/delete-message-for-me-undo-time-limit-ms]))
+        :label    (i18n/label :t/delete-for-me)
+        :icon     :i/delete
+        :id       :delete-for-me}])
+    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
+      [{:type     :danger
+        :on-press #(re-frame/dispatch [:chat.ui/delete-message
+                                       message
+                                       config/delete-message-undo-time-limit-ms])
+        :label    (i18n/label :t/delete-for-everyone)
+        :icon     :i/delete
+        :id       :delete-for-all}]))))
 
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
@@ -387,9 +350,9 @@
   [rn/view style/status-container
    [rn/text {:style (style/status-text)}
     (reduce
-      (fn [acc e] (render-inline (:text content) content-type acc e))
-      [rn/text {:style (style/status-text)}]
-      (-> content :parsed-text peek :children))]])
+     (fn [acc e] (render-inline (:text content) content-type acc e))
+     [rn/text {:style (style/status-text)}]
+     (-> content :parsed-text peek :children))]])
 
 ;; EMOJI
 (defn emoji
@@ -513,9 +476,9 @@
     (when (and communities-enabled? community)
       [rn/view
        {:style (assoc (style/message-wrapper message)
-                 :margin-vertical 10
-                 :margin-left     8
-                 :width           271)}
+                      :margin-vertical 10
+                      :margin-left     8
+                      :width           271)}
        (when verified
          [rn/view (style/community-verified)
           [rn/text
@@ -538,8 +501,8 @@
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
          {:on-press #(re-frame/dispatch
-                       [:communities/navigate-to-community
-                        {:community-id (:id community)}])}
+                      [:communities/navigate-to-community
+                       {:community-id (:id community)}])}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))

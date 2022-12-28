@@ -8,7 +8,8 @@
    :width          293
    :overflow       :hidden})
 
-(defn image [size index]
+(defn image
+  [size index]
   {:width         size
    :height        size
    :margin-left   (when (and (not= index 0) (not= index 2)) 1)

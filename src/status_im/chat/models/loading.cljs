@@ -101,7 +101,8 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
-(defn mark-album [message]
+(defn mark-album
+  [message]
   (if (:album-id message)
     (assoc message :albumize? true)
     message))
@@ -137,7 +138,7 @@
                                                                        [:pagination-info chat-id
                                                                         :cursor-clock-value])
           clock-value                                          (when cursor (cursor->clock-value cursor))
-          new-messages (map mark-album new-messages)]
+          new-messages                                         (map mark-album new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]

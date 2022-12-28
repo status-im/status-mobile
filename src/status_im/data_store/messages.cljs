@@ -6,14 +6,14 @@
 (defn ->rpc
   [{:keys [content] :as message}]
   (cond-> message
-          content
-          (assoc :text (:text content)
-                 :sticker (:sticker content))
-          :always
-          (clojure.set/rename-keys {:chat-id           :chat_id
-                                    :whisper-timestamp :whisperTimestamp
-                                    :community-id      :communityId
-                                    :clock-value       :clock})))
+    content
+    (assoc :text    (:text content)
+           :sticker (:sticker content))
+    :always
+    (clojure.set/rename-keys {:chat-id           :chat_id
+                              :whisper-timestamp :whisperTimestamp
+                              :community-id      :communityId
+                              :clock-value       :clock})))
 
 (defn <-rpc
   [message]
@@ -46,16 +46,16 @@
               clojure.set/rename-keys
               {:transactionHash :transaction-hash
                :commandState    :command-state})
-      (assoc :content {:chat-id     (:chatId message)
-                       :text        (:text message)
-                       :image       (:image message)
-                       :sticker     (:sticker message)
-                       :ens-name    (:ensName message)
-                       :line-count  (:lineCount message)
-                       :parsed-text (:parsedText message)
-                       :links       (:links message)
-                       :rtl?        (:rtl message)
-                       :response-to (:responseTo message)}
+      (assoc :content  {:chat-id     (:chatId message)
+                        :text        (:text message)
+                        :image       (:image message)
+                        :sticker     (:sticker message)
+                        :ens-name    (:ensName message)
+                        :line-count  (:lineCount message)
+                        :parsed-text (:parsedText message)
+                        :links       (:links message)
+                        :rtl?        (:rtl message)
+                        :response-to (:responseTo message)}
              :outgoing (boolean (:outgoingStatus message)))
       (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText :links)))
 
