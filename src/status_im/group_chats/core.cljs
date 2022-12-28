@@ -5,112 +5,126 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.constants :as constants]
+<<<<<<< HEAD
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
+=======
+            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.fx :as fx]
+>>>>>>> 161ba1f9f... feat: group details screen
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 
-(rf/defn navigate-chat-updated
-  {:events [:navigate-chat-updated]}
-  [cofx chat-id]
-  (when (get-in cofx [:db :chats chat-id])
-    (models.chat/navigate-to-chat cofx chat-id)))
+(fx/defn navigate-chat-updated
+         {:events [:navigate-chat-updated]}
+         [cofx chat-id]
+         (when (get-in cofx [:db :chats chat-id])
+           (models.chat/navigate-to-chat cofx chat-id)))
 
-(rf/defn handle-chat-removed
-  {:events [:chat-removed]}
-  [cofx response]
-  (rf/merge cofx
-            {:db         (dissoc (:db cofx) :current-chat-id)
-             :dispatch-n [[:sanitize-messages-and-process-response response]
-                          [:pop-to-root-tab :chat-stack]]}
-            (activity-center/notifications-fetch-unread-count)))
+(fx/defn handle-chat-removed
+         {:events [:chat-removed]}
+         [cofx response]
+         (fx/merge cofx
+                   {:db         (dissoc (:db cofx) :current-chat-id)
+                    :dispatch-n [[:sanitize-messages-and-process-response response]
+                                 [:pop-to-root-tab :chat-stack]]}
+                   (activity-center/notifications-fetch-unread-count)))
 
-(rf/defn handle-chat-update
-  {:events [:chat-updated]}
-  [_ response do-not-navigate?]
-  {:dispatch-n [[:sanitize-messages-and-process-response response]
-                (when-not do-not-navigate?
-                  [:navigate-chat-updated (.-id (aget (.-chats response) 0))])]})
+(fx/defn handle-chat-update
+         {:events [:chat-updated]}
+         [_ response do-not-navigate?]
+         {:dispatch-n [[:sanitize-messages-and-process-response response]
+                       (when-not do-not-navigate?
+                         [:navigate-chat-updated (.-id (aget (.-chats response) 0))])]})
 
-(rf/defn remove-member
-  "Format group update message and sign membership"
-  {:events [:group-chats.ui/remove-member-pressed]}
-  [_ chat-id member do-not-navigate?]
-  {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
-                    :params      [nil chat-id member]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
+(fx/defn remove-member
+         "Format group update message and sign membership"
+         {:events [:group-chats.ui/remove-member-pressed]}
+         [_ chat-id member do-not-navigate?]
+         {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
+                           :params      [nil chat-id member]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 
-(rf/defn join-chat
-  {:events [:group-chats.ui/join-pressed]}
-  [_ chat-id]
-  {:json-rpc/call [{:method      "wakuext_confirmJoiningGroup"
-                    :params      [chat-id]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated %])}]})
+(fx/defn remove-members
+         {:events [:group-chats.ui/remove-members-pressed]}
+         [{{:keys [current-chat-id] :group-chat/keys [deselected-members]} :db :as cofx}]
+         {:json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
+                           :params      [nil current-chat-id deselected-members]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated % true])
+                           :on-error    #()}]})
 
-(rf/defn create
-  {:events       [:group-chats.ui/create-pressed]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [db] :as cofx} group-name]
-  (let [selected-contacts (:group/selected-contacts db)]
-    {:json-rpc/call [{:method      "wakuext_createGroupChatWithMembers"
-                      :params      [nil group-name (into [] selected-contacts)]
-                      :js-response true
-                      :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
+(fx/defn join-chat
+         {:events [:group-chats.ui/join-pressed]}
+         [_ chat-id]
+         {:json-rpc/call [{:method      "wakuext_confirmJoiningGroup"
+                           :params      [chat-id]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
-(rf/defn create-from-link
-  [cofx {:keys [chat-id invitation-admin chat-name]}]
-  (if (get-in cofx [:db :chats chat-id])
-    {:dispatch [:chat.ui/navigate-to-chat chat-id]}
-    {:json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
-                      :params      [chat-name chat-id invitation-admin]
-                      :js-response true
-                      :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
+(fx/defn create
+         {:events       [:group-chats.ui/create-pressed]
+          :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
+         [{:keys [db] :as cofx} group-name]
+         (let [selected-contacts (:group/selected-contacts db)]
+           {:json-rpc/call [{:method      "wakuext_createGroupChatWithMembers"
+                             :params      [nil group-name (into [] selected-contacts)]
+                             :js-response true
+                             :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
 
-(rf/defn make-admin
-  {:events [:group-chats.ui/make-admin-pressed]}
-  [_ chat-id member]
-  {:json-rpc/call [{:method      "wakuext_addAdminsToGroupChat"
-                    :params      [nil chat-id [member]]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated %])}]})
+(fx/defn create-from-link
+         [cofx {:keys [chat-id invitation-admin chat-name]}]
+         (if (get-in cofx [:db :chats chat-id])
+           {:dispatch [:chat.ui/navigate-to-chat chat-id]}
+           {:json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
+                             :params      [chat-name chat-id invitation-admin]
+                             :js-response true
+                             :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
 
-(rf/defn add-members
-  "Add members to a group chat"
-  {:events [:group-chats.ui/add-members-pressed]}
-  [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
-  {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                    :params      [nil current-chat-id selected-participants]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated %])}]})
+(fx/defn make-admin
+         {:events [:group-chats.ui/make-admin-pressed]}
+         [_ chat-id member]
+         {:json-rpc/call [{:method      "wakuext_addAdminsToGroupChat"
+                           :params      [nil chat-id [member]]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
-(rf/defn add-members-from-invitation
-  "Add members to a group chat"
-  {:events [:group-chats.ui/add-members-from-invitation]}
-  [{{:keys [current-chat-id] :as db} :db :as cofx} id participant]
-  {:db            (assoc-in db [:group-chat/invitations id :state] constants/invitation-state-approved)
-   :json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                    :params      [nil current-chat-id [participant]]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated %])}]})
+(fx/defn add-members
+         "Add members to a group chat"
+         {:events [:group-chats.ui/add-members-pressed]}
+         [{{:keys [current-chat-id] :group-chat/keys [selected-participants]} :db :as cofx}]
+         {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
+                           :params      [nil current-chat-id selected-participants]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 
-(rf/defn leave
-  "Leave chat"
-  {:events [:group-chats.ui/leave-chat-confirmed]}
-  [{:keys [db] :as cofx} chat-id]
-  {:json-rpc/call [{:method      "wakuext_leaveGroupChat"
-                    :params      [nil chat-id true]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-removed %])}]})
+(fx/defn add-members-from-invitation
+         "Add members to a group chat"
+         {:events [:group-chats.ui/add-members-from-invitation]}
+         [{{:keys [current-chat-id] :as db} :db :as cofx} id participant]
+         {:db            (assoc-in db [:group-chat/invitations id :state] constants/invitation-state-approved)
+          :json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
+                           :params      [nil current-chat-id [participant]]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
-(rf/defn remove
-  "Remove chat"
-  {:events [:group-chats.ui/remove-chat-confirmed]}
-  [cofx chat-id]
-  (rf/merge cofx
-            (models.chat/deactivate-chat chat-id)
-            (navigation/pop-to-root-tab :chat-stack)))
+(fx/defn leave
+         "Leave chat"
+         {:events [:group-chats.ui/leave-chat-confirmed]}
+         [{:keys [db] :as cofx} chat-id]
+         {:json-rpc/call [{:method      "wakuext_leaveGroupChat"
+                           :params      [nil chat-id true]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:chat-removed %])}]})
+
+(fx/defn remove
+         "Remove chat"
+         {:events [:group-chats.ui/remove-chat-confirmed]}
+         [cofx chat-id]
+         (fx/merge cofx
+                   (models.chat/deactivate-chat chat-id)
+                   (navigation/pop-to-root-tab :chat-stack)))
 
 (def not-blank?
   (complement string/blank?))
@@ -119,56 +133,56 @@
   [name]
   (spec/valid? not-blank? name))
 
-(rf/defn name-changed
-  "Save chat from edited profile"
-  {:events [:group-chats.ui/name-changed]}
-  [{:keys [db] :as cofx} chat-id new-name]
-  (when (valid-name? new-name)
-    {:db            (assoc-in db [:chats chat-id :name] new-name)
-     :json-rpc/call [{:method      "wakuext_changeGroupChatName"
-                      :params      [nil chat-id new-name]
-                      :js-response true
-                      :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
+(fx/defn name-changed
+         "Save chat from edited profile"
+         {:events [:group-chats.ui/name-changed]}
+         [{:keys [db] :as cofx} chat-id new-name]
+         (when (valid-name? new-name)
+           {:db            (assoc-in db [:chats chat-id :name] new-name)
+            :json-rpc/call [{:method      "wakuext_changeGroupChatName"
+                             :params      [nil chat-id new-name]
+                             :js-response true
+                             :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
 
-(rf/defn membership-retry
-  {:events [:group-chats.ui/membership-retry]}
-  [{{:keys [current-chat-id] :as db} :db}]
-  {:db (assoc-in db [:chat/memberships current-chat-id :retry?] true)})
+(fx/defn membership-retry
+         {:events [:group-chats.ui/membership-retry]}
+         [{{:keys [current-chat-id] :as db} :db}]
+         {:db (assoc-in db [:chat/memberships current-chat-id :retry?] true)})
 
-(rf/defn membership-message
-  {:events [:group-chats.ui/update-membership-message]}
-  [{{:keys [current-chat-id] :as db} :db} message]
-  {:db (assoc-in db [:chat/memberships current-chat-id :message] message)})
+(fx/defn membership-message
+         {:events [:group-chats.ui/update-membership-message]}
+         [{{:keys [current-chat-id] :as db} :db} message]
+         {:db (assoc-in db [:chat/memberships current-chat-id :message] message)})
 
-(rf/defn send-group-chat-membership-request
-  "Send group chat membership request"
-  {:events [:send-group-chat-membership-request]}
-  [{{:keys [current-chat-id chats] :as db} :db :as cofx}]
-  (let [{:keys [invitation-admin]} (get chats current-chat-id)
-        message                    (get-in db [:chat/memberships current-chat-id :message])]
-    {:db            (assoc-in db [:chat/memberships current-chat-id] nil)
-     :json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRequest"
-                      :params      [nil current-chat-id invitation-admin message]
-                      :js-response true
-                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
+(fx/defn send-group-chat-membership-request
+         "Send group chat membership request"
+         {:events [:send-group-chat-membership-request]}
+         [{{:keys [current-chat-id chats] :as db} :db :as cofx}]
+         (let [{:keys [invitation-admin]} (get chats current-chat-id)
+               message                    (get-in db [:chat/memberships current-chat-id :message])]
+           {:db            (assoc-in db [:chat/memberships current-chat-id] nil)
+            :json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRequest"
+                             :params      [nil current-chat-id invitation-admin message]
+                             :js-response true
+                             :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
-(rf/defn send-group-chat-membership-rejection
-  "Send group chat membership rejection"
-  {:events [:send-group-chat-membership-rejection]}
-  [cofx invitation-id]
-  {:json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRejection"
-                    :params      [nil invitation-id]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+(fx/defn send-group-chat-membership-rejection
+         "Send group chat membership rejection"
+         {:events [:send-group-chat-membership-rejection]}
+         [cofx invitation-id]
+         {:json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRejection"
+                           :params      [nil invitation-id]
+                           :js-response true
+                           :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
-(rf/defn handle-invitations
-  [{db :db} invitations]
-  {:db (update db
-               :group-chat/invitations
-               #(reduce (fn [acc {:keys [id] :as inv}]
-                          (assoc acc id inv))
-                        %
-                        invitations))})
+(fx/defn handle-invitations
+         [{db :db} invitations]
+         {:db (update db
+                      :group-chat/invitations
+                      #(reduce (fn [acc {:keys [id] :as inv}]
+                                 (assoc acc id inv))
+                               %
+                               invitations))})
 
 (defn member-removed?
   [{:keys [membership-update-events]} pk]
@@ -179,48 +193,63 @@
        :type
        (= constants/invitation-state-removed)))
 
-(rf/defn deselect-contact
-  {:events [:deselect-contact]}
-  [{:keys [db]} id]
-  {:db (update db :group/selected-contacts disj id)})
+(fx/defn deselect-member
+         {:events [:deselect-member]}
+         [{:keys [db]} id]
+         {:db (update db :group-chat/deselected-members conj id)})
 
-(rf/defn select-contact
-  {:events [:select-contact]}
-  [{:keys [db]} id]
-  {:db (update db :group/selected-contacts conj id)})
+(fx/defn undo-deselect-member
+         {:events [:undo-deselect-member]}
+         [{:keys [db]} id]
+         {:db (update db :group-chat/deselected-members disj id)})
 
-(rf/defn deselect-participant
-  {:events [:deselect-participant]}
-  [{:keys [db]} id]
-  {:db (update db :selected-participants disj id)})
+(fx/defn deselect-contact
+         {:events [:deselect-contact]}
+         [{:keys [db]} id]
+         {:db (update db :group/selected-contacts disj id)})
 
-(rf/defn select-participant
-  {:events [:select-participant]}
-  [{:keys [db]} id]
-  {:db (update db :selected-participants conj id)})
+(fx/defn select-contact
+         {:events [:select-contact]}
+         [{:keys [db]} id]
+         {:db (update db :group/selected-contacts conj id)})
 
-(rf/defn add-participants-toggle-list
-  {:events [:group/add-participants-toggle-list]}
-  [{db :db}]
-  {:db (assoc db :selected-participants #{})})
+(fx/defn deselect-participant
+         {:events [:deselect-participant]}
+         [{:keys [db]} id]
+         {:db (update db :group-chat/selected-participants disj id)})
 
-(rf/defn show-group-chat-profile
-  {:events [:show-group-chat-profile]}
-  [{:keys [db] :as cofx} chat-id]
-  (rf/merge cofx
-            {:db (-> db
-                     (assoc :new-chat-name (get-in db [:chats chat-id :name]))
-                     (assoc :current-chat-id chat-id))}
-            (navigation/navigate-to-cofx :group-chat-profile nil)))
+(fx/defn select-participant
+         {:events [:select-participant]}
+         [{:keys [db]} id]
+         {:db (update db :group-chat/selected-participants conj id)})
 
-(rf/defn ui-leave-chat-pressed
-  {:events [:group-chats.ui/leave-chat-pressed]}
-  [{:keys [db]} chat-id]
-  (let [chat-name (get-in db [:chats chat-id :name])]
-    {:ui/show-confirmation
-     {:title               (i18n/label :t/leave-confirmation {:chat-name chat-name})
-      :content             (i18n/label :t/leave-chat-confirmation)
-      :confirm-button-text (i18n/label :t/leave)
-      :on-accept           #(do
-                              (re-frame/dispatch [:bottom-sheet/hide])
-                              (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))
+(fx/defn clear-added-participants
+         {:events [:group/clear-added-participants]}
+         [{db :db}]
+         {:db (assoc db :group-chat/selected-participants #{})})
+
+(fx/defn clear-removed-members
+         {:events [:group/clear-removed-members]}
+         [{db :db}]
+         {:db (assoc db :group-chat/deselected-members #{})})
+
+(fx/defn show-group-chat-profile
+         {:events [:show-group-chat-profile]}
+         [{:keys [db] :as cofx} chat-id]
+         (fx/merge cofx
+                   {:db (-> db
+                            (assoc :new-chat-name (get-in db [:chats chat-id :name]))
+                            (assoc :current-chat-id chat-id))}
+                   (navigation/navigate-to-cofx :group-chat-profile nil)))
+
+(fx/defn ui-leave-chat-pressed
+         {:events [:group-chats.ui/leave-chat-pressed]}
+         [{:keys [db]} chat-id]
+         (let [chat-name (get-in db [:chats chat-id :name])]
+           {:ui/show-confirmation
+            {:title               (i18n/label :t/leave-confirmation {:chat-name chat-name})
+             :content             (i18n/label :t/leave-chat-confirmation)
+             :confirm-button-text (i18n/label :t/leave)
+             :on-accept           #(do
+                                     (re-frame/dispatch [:bottom-sheet/hide])
+                                     (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))

@@ -20,6 +20,7 @@
       (rf/dispatch [:search/home-filter-changed nil]))))
 
 (defn action-icon
+<<<<<<< HEAD
   [{:keys [public-key] :as item} {:keys [icon start-a-new-chat? group added] :as extra-data}
    user-selected? on-toggle]
   (let [{:keys [contacts]} group
@@ -27,12 +28,20 @@
         checked?           (reagent/atom (if start-a-new-chat?
                                            user-selected?
                                            member?))]
+=======
+  [{:keys [public-key] :as item} {:keys [icon group] :as extra-data}]
+  (let [{:keys [contacts admins]} group
+        member?                   (contains? contacts public-key)
+        current-pk                (rf/sub [:multiaccount/public-key])
+        admin?                    (get admins current-pk)]
+>>>>>>> 161ba1f9f... feat: group details screen
     [rn/touchable-opacity
      {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                {:content (fn [] [actions/actions item extra-data])}])
       :style    {:position :absolute
                  :right    20}}
      (if (= icon :options)
+<<<<<<< HEAD
        [quo/icon :i/options
         {:size  20
          :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
@@ -47,16 +56,32 @@
                                      (swap! added conj public-key)
                                      (reset! added (remove #(= % public-key) @added)))))}])
          checked?))]))
+=======
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+       [quo/checkbox
+        {:default-checked?    member?
+         :accessibility-label :contact-toggle-check
+         :disabled?           (and member? (not admin?))
+         :on-change           (fn [selected]
+                                (if-not member?
+                                  (if selected
+                                    (rf/dispatch [:select-participant public-key true])
+                                    (rf/dispatch [:deselect-participant public-key true]))
+                                  (if selected
+                                    (rf/dispatch [:undo-deselect-member public-key true])
+                                    (rf/dispatch [:deselect-member public-key true]))))}])]))
+>>>>>>> 161ba1f9f... feat: group details screen
 
 (defn contact-list-item
   [item _ _ {:keys [group start-a-new-chat? on-toggle] :as extra-data}]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name                                    (first (rf/sub
-                                                                [:contacts/contact-two-names-by-identity
-                                                                 public-key]))
+                                                                 [:contacts/contact-two-names-by-identity
+                                                                  public-key]))
         photo-path                                      (when (seq images)
                                                           (rf/sub [:chats/photo-path public-key]))
         current-pk                                      (rf/sub [:multiaccount/public-key])
+<<<<<<< HEAD
         user-selected?                                  (rf/sub [:is-contact-selected? public-key])]
     [rn/touchable-opacity
      (merge {:style          (style/container)
@@ -67,11 +92,22 @@
              :on-long-press  #(when (some? group)
                                 (rf/dispatch [:bottom-sheet/show-sheet
                                               {:content (fn [] [actions/actions item extra-data])}]))})
+=======
+        online?                                         (rf/sub [:visibility-status-updates/online?
+                                                                 public-key])]
+    [rn/touchable-opacity
+     (merge {:style               (style/container)
+             :accessibility-label :contact
+             :active-opacity      1
+             :on-press            #(open-chat public-key)
+             :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                                 {:content (fn [] [actions/actions item extra-data])}])})
+>>>>>>> 161ba1f9f... feat: group details screen
      [quo/user-avatar
       {:full-name         display-name
        :profile-picture   photo-path
        :status-indicator? true
-       :online?           true
+       :online?           online?
        :size              :small
        :ring?             false}]
      [rn/view {:style {:margin-left 8}}

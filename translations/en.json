@@ -1918,10 +1918,14 @@
     "show-existing-keys": "Show Existing Keys",
     "scan-sync-code": "Scan Sync Code",
     "confirm-selection": "Confirm selection",
+<<<<<<< HEAD
     "chat-with": "Chat with {{selected-user}}",
     "setup-group-chat": "Setup group chat",
     "search-contacts": "Search contacts",
     "who-are-you-looking-for": "Who are you looking for ?",
     "close-contact-search": "Close contact search",
     "selected-count-from-max": "{{selected}}/{{max}}"
+=======
+    "online": "Online"
+>>>>>>> 161ba1f9f... feat: group details screen
 }
