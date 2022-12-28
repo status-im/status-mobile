@@ -8,7 +8,11 @@
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.image-server :as image-server]
+<<<<<<< HEAD
             [status-im.constants :as constants]))
+=======
+            [utils.collection]))
+>>>>>>> 312210ef0... lint
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
