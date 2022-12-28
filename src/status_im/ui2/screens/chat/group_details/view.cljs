@@ -105,7 +105,7 @@
 (defn group-details
   []
   (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub
-                                                                                    [:chats/current-chat])
+                                                                                   [:chats/current-chat])
         members (rf/sub [:contacts/group-members-sections])
         pinned-messages (rf/sub [:chats/pinned chat-id])
         current-pk (rf/sub [:multiaccount/public-key])
@@ -159,8 +159,8 @@
                                (rf/dispatch [:group/clear-added-participants])
                                (rf/dispatch [:group/clear-removed-members])
                                (rf/dispatch
-                                 [:bottom-sheet/show-sheet
-                                  {:content (fn [] [add-members-sheet group admin?])}]))}
+                                [:bottom-sheet/show-sheet
+                                 {:content (fn [] [add-members-sheet group admin?])}]))}
        [rn/view
         {:style {:flex-direction  :row
                  :justify-content :space-between}}

@@ -20,10 +20,10 @@
     :type    :select
     :options
     (map
-      (fn [c]
-        {:key   c
-         :value c})
-      ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+     (fn [c]
+       {:key   c
+        :value c})
+     ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
 
 (defn cool-preview
   []

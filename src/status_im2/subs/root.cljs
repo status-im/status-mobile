@@ -1,32 +1,33 @@
 (ns status-im2.subs.root
- (:require [re-frame.core :as re-frame]
-           status-im2.subs.activity-center
-           status-im2.subs.bootnodes
-           status-im2.subs.browser
-           status-im2.subs.chat.chats
-           status-im2.subs.chat.messages
-           status-im2.subs.communities
-           status-im2.subs.contact
-           status-im2.subs.ens
-           status-im2.subs.general
-           status-im2.subs.home
-           status-im2.subs.keycard
-           status-im2.subs.mailservers
-           status-im2.subs.multiaccount
-           status-im2.subs.networks
-           status-im2.subs.onboarding
-           status-im2.subs.pairing
-           status-im2.subs.search
-           status-im2.subs.shell
-           status-im2.subs.stickers
-           status-im2.subs.toasts
-           status-im2.subs.wallet.signing
-           status-im2.subs.wallet.transactions
-           status-im2.subs.wallet.wallet))
+  (:require
+   [re-frame.core :as re-frame]
+   status-im2.subs.activity-center
+   status-im2.subs.bootnodes
+   status-im2.subs.browser
+   status-im2.subs.chat.chats
+   status-im2.subs.chat.messages
+   status-im2.subs.communities
+   status-im2.subs.contact
+   status-im2.subs.ens
+   status-im2.subs.general
+   status-im2.subs.home
+   status-im2.subs.keycard
+   status-im2.subs.mailservers
+   status-im2.subs.multiaccount
+   status-im2.subs.networks
+   status-im2.subs.onboarding
+   status-im2.subs.pairing
+   status-im2.subs.search
+   status-im2.subs.shell
+   status-im2.subs.stickers
+   status-im2.subs.toasts
+   status-im2.subs.wallet.signing
+   status-im2.subs.wallet.transactions
+   status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub
- [sub-name db-key]
- (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
+  [sub-name db-key]
+  (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
 ;;view
 (reg-root-key-sub :view-id :view-id)

@@ -76,8 +76,8 @@
   [item _ _ {:keys [group start-a-new-chat? on-toggle] :as extra-data}]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name                                    (first (rf/sub
-                                                                 [:contacts/contact-two-names-by-identity
-                                                                  public-key]))
+                                                                [:contacts/contact-two-names-by-identity
+                                                                 public-key]))
         photo-path                                      (when (seq images)
                                                           (rf/sub [:chats/photo-path public-key]))
         current-pk                                      (rf/sub [:multiaccount/public-key])
