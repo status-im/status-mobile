@@ -8,8 +8,6 @@
              ;; no comma in map
              :no-comma
 
-             :how-to-ns
-
              :custom-justify
 
              ;; respect all newlines

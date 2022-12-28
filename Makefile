@@ -295,7 +295,6 @@ lint: ##@test Run code style checks
 lint-fix: export TARGET := default
 lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
-	clojure-lsp clean-ns && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE
 
