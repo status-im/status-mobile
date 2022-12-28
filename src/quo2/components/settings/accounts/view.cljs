@@ -28,17 +28,12 @@
   [rn/view {:style style/card}
    [card-background {:custom-color custom-color}]
    [rn/view {:style style/card-top}
-    ;; Avatar
     [avatar {:color custom-color
              :icon  avatar-icon}]
-    ;; Menu buttom
     [menu-button {:on-press on-press-menu}]]
-
    [rn/view {:style style/card-bottom}
-    ;; Account name
     [text/text {:size :paragraph-1, :weight :semi-bold}
      account-name]
-    ;; Account address
     [text/text {:style (style/address-text)
                 :size   :paragraph-2
                 :weight :medium}
