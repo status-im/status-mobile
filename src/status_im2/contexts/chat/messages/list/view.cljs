@@ -114,7 +114,8 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
+(defn render-fn
+  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
@@ -126,9 +127,10 @@
           [content.deleted/deleted-message message-data]
           [message/message-with-reactions message-data context])]))])
 
-(defn messages-list [{:keys [chat
-                             pan-responder
-                             show-input?]}]
+(defn messages-list
+  [{:keys [chat
+           pan-responder
+           show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
         mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])
         messages (rf/sub [:chats/raw-chat-messages-stream chat-id])

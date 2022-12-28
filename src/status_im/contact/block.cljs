@@ -31,8 +31,8 @@
                                             :unviewed-mentions-count unviewed-mentions-count
                                             :last-message            last-message))]
     {:db (assoc-in db
-                   [:message-lists chat-id]
-                   (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
+          [:message-lists chat-id]
+          (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
 
 (rf/defn contact-blocked
   {:events [::contact-blocked]}

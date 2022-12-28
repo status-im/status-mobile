@@ -18,7 +18,7 @@ in mkShell {
     # build specific utilities
     clojure maven watchman
     # lint specific utilities
-    clj-kondo zprint clojure-lsp
+    clj-kondo zprint
     # other nice to have stuff
     yarn nodejs python27
   ] # and some special cases

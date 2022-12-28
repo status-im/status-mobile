@@ -15,18 +15,14 @@
 (defn filter-selector-read-toggle
   []
   (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
-    ;; TODO(@ilmotta): Replace the button by a Filter Selector.
-    ;; https://github.com/status-im/status-mobile/issues/14355
-    [quo/button
-     {:icon           true
-      :type           (if unread-filter-enabled? :primary :blur-bg-outline)
-      :size           32
+    [quo/filter
+     {:pressed?       unread-filter-enabled?
+      :blur?          true
       :override-theme :dark
-      :on-press       #(rf/dispatch [:activity-center.notifications/fetch-first-page
+      :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
                                      {:filter-status (if unread-filter-enabled?
                                                        :all
-                                                       :unread)}])}
-     :i/unread]))
+                                                       :unread)}])}]))
 
 (defn empty-tab
   []

@@ -67,6 +67,8 @@
 
 (def status-bar (.-StatusBar ^js react-native))
 
+(def style-sheet (.-StyleSheet ^js react-native))
+
 (defn status-bar-height
   []
   (.-currentHeight ^js status-bar))

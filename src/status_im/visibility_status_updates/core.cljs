@@ -123,10 +123,10 @@
   [{:keys [db] :as cofx} status-type]
   (let [events-to-dispatch-later
         (cond->
-         [{:ms       10
-           :dispatch
-           [:visibility-status-updates/update-visibility-status
-            status-type]}]
+          [{:ms       10
+            :dispatch
+            [:visibility-status-updates/update-visibility-status
+             status-type]}]
           (and
            (= status-type constants/visibility-status-inactive)
            (> (:peers-count db) 0))

@@ -19,6 +19,7 @@
                   ;; routing
                   [bidi "2.1.6"]
                   ;; test dependencies
+                  [camel-snake-kebab "0.4.3"]
                   [day8.re-frame/test "0.1.5"]
                   [com.taoensso/tufte "2.1.0"]]
 

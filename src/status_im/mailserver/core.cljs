@@ -162,8 +162,8 @@
   [{{:keys [chats] :as db} :db} {:keys [request-id topics]}]
   (when (:mailserver/current-request db)
     {:db (assoc-in db
-                   [:mailserver/current-request :request-id]
-                   request-id)}))
+          [:mailserver/current-request :request-id]
+          request-id)}))
 
 (rf/defn toggle-use-mailservers
   [cofx value]

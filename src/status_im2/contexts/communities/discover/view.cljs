@@ -35,12 +35,12 @@
                     {:featured featured?})]
     (if (= view-type :card-view)
       [quo/community-card-view-item (assoc item :width width)
-       #(rf/dispatch [:navigate-to :community-overview item])]
+       #(rf/dispatch [:navigate-to :community-overview (:id item)])]
       [quo/communities-list-view-item
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
+                         (rf/dispatch [:navigate-to :community (:id item)]))
         :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                       {:content (fn []
                                                   ;; TODO implement with quo2
@@ -111,7 +111,6 @@
 
 (defn other-communities-list
   [communities view-type]
-  (println view-type)
   [rn/flat-list
    {:key-fn                            :id
     :keyboard-should-persist-taps      :always
@@ -127,10 +126,9 @@
   []
   (let [view-type (reagent/atom :card-view)]
     (fn []
-      (let [communities        (rf/sub [:communities/communities])
-            communities-count  (count communities)
-            ; TODO move sorting to subscription
-            sorted-communities (sort-by :name communities)]
+      (let [communities                (rf/sub [:communities/sorted-communities])
+            featured-communities       (rf/sub [:communities/featured-communities])
+            featured-communities-count (count featured-communities)]
         [safe-area/consumer
          (fn []
            [rn/view
@@ -148,6 +146,6 @@
               :on-press #(rf/dispatch [:navigate-back])}
              :i/close]
             [screen-title]
-            [featured-communities-header communities-count]
-            [featured-list communities @view-type]
-            [other-communities-list sorted-communities @view-type]])]))))
+            [featured-communities-header featured-communities-count]
+            [featured-list featured-communities @view-type]
+            [other-communities-list communities @view-type]])]))))

@@ -27,10 +27,11 @@
     :timestamp-str       (time/timestamp->time whisper-timestamp)
     :edit-enabled        edit-enabled}])
 
-(defn pinned-messages-list [chat-id]
+(defn pinned-messages-list
+  [chat-id]
   (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
-        current-chat (rf/sub [:chats/current-chat])
-        community (rf/sub [:communities/community (:community-id current-chat)])]
+        current-chat    (rf/sub [:chats/current-chat])
+        community       (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529

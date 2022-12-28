@@ -43,10 +43,10 @@
   {:events [:update-ens-tx-state]}
   [{:keys [db]} new-state username custom-domain? tx-hash]
   {:db (assoc-in db
-                 [:ens/registrations tx-hash]
-                 {:state          new-state
-                  :username       username
-                  :custom-domain? custom-domain?})})
+        [:ens/registrations tx-hash]
+        {:state          new-state
+         :username       username
+         :custom-domain? custom-domain?})})
 
 (rf/defn redirect-to-ens-summary
   {:events [::redirect-to-ens-summary]}

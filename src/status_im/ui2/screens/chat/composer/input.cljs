@@ -89,13 +89,13 @@
     ;; typing. Timeout might be canceled on `on-change`.
     (when platform/ios?
       (reset!
-       timeout-id
-       (utils.utils/set-timeout
-        #(rf/dispatch [::mentions/on-selection-change
-                       {:start start
-                        :end   end}
-                       mentionable-users])
-        50)))
+        timeout-id
+        (utils.utils/set-timeout
+         #(rf/dispatch [::mentions/on-selection-change
+                        {:start start
+                         :end   end}
+                        mentionable-users])
+         50)))
     ;; NOTE(rasom): on Android we dispatch event only in case if there
     ;; was no text changes during last 50ms. `on-selection-change` is
     ;; dispatched after `on-change`, that's why there is no another way
@@ -218,7 +218,7 @@
     (.-RNSelectableTextInputManager ^js (.-NativeModules react-native))))
 
 (defonce rn-selectable-text-input
-  (reagent/adapt-react-class (.requireNativeComponent react-native "RNSelectableTextInput")))
+         (reagent/adapt-react-class (.requireNativeComponent react-native "RNSelectableTextInput")))
 
 (declare first-level-menu-items second-level-menu-items)
 

@@ -342,6 +342,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 
 (def shell-worklets #js {})
 
+(def bottom-sheet #js {})
 (def record-audio-worklets #js {})
 
 ;; Update i18n_resources.cljs
@@ -392,6 +393,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-svg"                              react-native-svg
     "../src/js/worklet_factory.js"                  worklet-factory
     "../src/js/shell_worklets.js"                   shell-worklets
+    "../src/js/bottom_sheet.js"                     bottom-sheet
     "../src/js/record_audio_worklets.js"            record-audio-worklets
     "./fleets.js"                                   default-fleets
     "./chats.js"                                    default-chats

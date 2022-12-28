@@ -6,14 +6,10 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.utils.utils :as utils]
             [status-im2.common.constants :as constants]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.home.actions.view :as home.actions]
-            [status-im2.contexts.communities.overview.style :as style] ;; TODO move to status-im2 when
-                                                                       ;; reimplemented
+            [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.requests.actions.view :as requests.actions]
             [utils.re-frame :as rf]))
 
@@ -56,7 +52,7 @@
                     :emoji                  emoji
                     :emoji-background-color channel-color
                     :on-enter-channel       (fn []
-                                              (utils/show-popup
+                                              (js/alert
                                                "Entered channel"
                                                "Wuhuu!! You successfully entered the channel :)"))
                     :gates                  {:read  [{:token          "KNC"
@@ -174,21 +170,39 @@
 
 (def channel-list-component (memoize channel-list-component-fn))
 
+(defn request-to-join-text
+  [is-open?]
+  (if is-open?
+    (i18n/label :t/join-open-community)
+    (i18n/label :t/request-to-join-community)))
+
 (defn join-community
-  [{:keys [joined can-join? requested-to-join-at community-color] :as community}]
-  (let [node-offline? (and can-join? (not joined) (pos? requested-to-join-at))]
+  [{:keys [joined can-join? requested-to-join-at
+           community-color permissions]
+    :as   community}]
+  (let [pending?      (pos? requested-to-join-at)
+        is-open?      (not= constants/community-channel-access-on-request (:access permissions))
+        node-offline? (and can-join? (not joined) (pos? requested-to-join-at))]
     [:<>
-     (when-not joined
+     (when-not (or joined pending?)
        [quo/button
         {:on-press                  #(rf/dispatch
                                       [:bottom-sheet/show-sheet
                                        {:content        (fn [] [requests.actions/request-to-join
                                                                 community])
                                         :content-height 300}])
+         :accessibility-label       :show-request-to-join-screen-button
          :override-background-color community-color
          :style                     style/join-button
          :before                    :i/communities}
-        (i18n/label :t/join-open-community)])
+        (request-to-join-text is-open?)])
+
+     (when (and (not (or joined pending?)) (not (or is-open? node-offline?)))
+       [quo/text
+        {:size  :paragraph-2
+         :style style/review-notice}
+        (i18n/label :t/community-admins-will-review-your-request)])
+
      (when node-offline?
        [quo/information-box
         {:type  :informative
@@ -196,12 +210,21 @@
          :style {:margin-top 12}}
         (i18n/label :t/request-processed-after-node-online)])]))
 
+(defn get-tag
+  [joined]
+  [quo/status-tag
+   {:status {:type (if joined :positive :pending)}
+    :label  (if joined
+              (i18n/label :t/joined)
+              (i18n/label :t/pending))}])
+
 (defn render-page-content
-  [{:keys [name description locked joined id images
-           status tokens tags]
+  [{:keys [name description locked joined images
+           status tokens tags requested-to-join-at]
     :as   community}
    channel-heights first-channel-height]
-  (let [thumbnail-image (get-in images [:thumbnail])]
+  (let [pending?        (pos? requested-to-join-at)
+        thumbnail-image (get-in images [:thumbnail])]
     (fn [scroll-height icon-top icon-size]
       [rn/view
        [rn/view {:padding-horizontal 20}
@@ -216,9 +239,10 @@
           :background-color (colors/theme-colors
                              colors/white
                              colors/neutral-90)}
-         [communities.icon/community-icon-redesign community
+         [quo/community-icon community
           (icon-size scroll-height)]]
         (when (and (not joined)
+                   (not pending?)
                    (= status :gated))
           [rn/view
            {:position :absolute
@@ -236,11 +260,7 @@
                              [quo/token-gating
                               {:community {:name             name
                                            :community-color  colors/primary-50
-                                           :community-avatar (cond
-                                                               (= id constants/status-community-id)
-                                                               (resources/get-image :status-logo)
-                                                               (seq thumbnail-image)
-                                                               thumbnail-image)
+                                           :community-avatar thumbnail-image
                                            :gates            {:join [{:token          "KNC"
                                                                       :token-img-src  knc-token-img
                                                                       :amount         200
@@ -255,12 +275,12 @@
                                                                       :amount         10
                                                                       :is-sufficient?
                                                                       false}]}}}])}])}]])
-        (when joined
+        (when (or pending? joined)
           [rn/view
            {:position :absolute
             :top      12
             :right    12}
-           [quo/status-tag {:status {:type :positive} :label (i18n/label :t/joined)}]])
+           [get-tag joined]])
         [rn/view {:margin-top 56}
          [quo/text
           {:accessibility-label :chat-name-text
@@ -268,7 +288,6 @@
            :ellipsize-mode      :tail
            :weight              :semi-bold
            :size                :heading-1} name]]
-
         [quo/text
          {:accessibility-label :community-description-text
           :number-of-lines     2
@@ -300,12 +319,12 @@
          :chevron-position :left}]])))
 
 (defn community-card-page-view
-  [{:keys [name cover] :as community}]
+  [{:keys [name images] :as community}]
   (let [channel-heights      (reagent/atom [])
         first-channel-height (reagent/atom 0)
         scroll-component     (scroll-page/scroll-page
-                              (fn [] [communities.icon/community-icon-redesign community 24])
-                              cover
+                              (fn [] [quo/community-icon community 24])
+                              {:uri (get-in images [:large :uri])}
                               {:right-section-buttons [{:icon             :i/search
                                                         :background-color (scroll-page/icon-color)}
                                                        {:icon             :i/options
@@ -328,15 +347,13 @@
 
 (defn overview
   []
-  (let [community-mock (rf/sub [:get-screen-params :community-overview]) ;TODO stop using mock data and
-                                                                         ;only pass community id
-        community      (rf/sub [:communities/community (:id community-mock)])]
+  (let [id        (rf/sub [:get-screen-params :community-overview])
+        community (rf/sub [:communities/community id])]
     [rn/view
      {:style
       {:position :absolute
        :top      (if platform/ios? 0 44)
        :width    "100%"
        :height   "110%"}}
-     [community-card-page-view
-      (merge community-mock {:joined (:joined community)})]]))
+     [community-card-page-view community]]))
 
