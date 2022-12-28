@@ -20,7 +20,8 @@
     :key   :account-address
     :type  :text}])
 
-(defn cool-preview []
+(defn cool-preview
+  []
   (let [state (r/atom {:custom-color    :blue
                        :account-name    "Booze for Dubai"
                        :account-address "0x21a ... 49e"
@@ -28,17 +29,20 @@
                        :on-press-menu   (fn []
                                           (js/alert "Menu button pressed"))})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
+      [rn/view
+       {:margin-bottom 50
+        :padding       16}
        [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 100
-                 :align-items      :center
-                 :background-color (colors/theme-colors
-                                    colors/neutral-30
-                                    colors/neutral-95)}
+       [rn/view
+        {:padding-vertical 100
+         :align-items      :center
+         :background-color (colors/theme-colors
+                            colors/neutral-30
+                            colors/neutral-95)}
         [quo/account @state]]])))
 
-(defn preview-accounts []
+(defn preview-accounts
+  []
   [rn/view {:style {:flex 1}}
    [rn/flat-list
     {:flex                      1
