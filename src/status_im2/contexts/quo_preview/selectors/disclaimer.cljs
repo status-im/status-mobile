@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.selectors.disclaimer
   (:require [quo2.components.buttons.button :as button]
-            [quo2.components.selectors.disclaimer :as quo2]
+            [quo2.components.selectors.disclaimer.view :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
@@ -16,7 +16,7 @@
        [rn/view
         {:padding-vertical 60
          :align-items      :center}
-        [quo2/disclaimer
+        [quo/view
          {:container-style {:margin-bottom 40}
           :on-change       #(swap! checked? not)}
          "I agree with the community rules"]

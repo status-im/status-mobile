@@ -19,6 +19,10 @@
              :respect-bl]
  :fn-map
  {"reg-sub"         :arg1-pair
+  "h/describe"      :arg1-body
+  "h/test"          :arg1-body
+  "global.describe" :arg1-body
+  "global.test"     :arg1-body
   "list-comp"       :binding
   "defview"         :arg1-body
   "letsubs"         :binding

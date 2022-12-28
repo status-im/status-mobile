@@ -399,13 +399,15 @@ src
 ├── react_native
 │   ├── gesture.cljs
 │   └── platform.cljs
-├── status_im
+├── status_im/
+├── status_im2
 │   ├── common
 │   │   └── components
 │   │       └── bottom_sheet.cljs
 │   ├── contexts/
 │   ├── setup/
 │   └── subs/
+├── test_helpers/
 └── utils.cljs
 ```
 
@@ -414,17 +416,23 @@ src
 - `src/quo2/`: The component library for Status Mobile.
 - `src/react_native/`: Contains only low-level constructs to help React Native
   work in tandem with Clojure(Script).
-- `src/status_im/common/`: Directories named `common` can appear at any level of
-  the directory tree. Just like directories named `utils`, their directory
+- `src/status_im2/`: Directory where we try to be as strict as possible about
+  our guidelines and where we prefer to write code for the new, redesigned
+  mobile app.
+- `src/status_im/`: Directory containing what we call "old code", not yet
+  migrated to new guidelines for the new mobile app.
+- `src/status_im2/common/`: Directories named `common` can appear at any level
+  of the directory tree. Just like directories named `utils`, their directory
   nesting level communicates their applicable limits.
-- `src/status_im/common/components/`: Contains reusable components that are not
+- `src/status_im2/common/components/`: Contains reusable components that are not
   part of the design system (quo2).
-- `src/status_im/contexts/`: Contains [bounded contexts](#glossary), like
+- `src/status_im2/contexts/`: Contains [bounded contexts](#glossary), like
   `browser/`, `messaging/`, etc. As much as possible, _bounded contexts_ should
   not directly require each other's namespaces.
-- `src/status_im/setup/`: Contains namespaces that are mostly used to initialize
-  the application, configure test runners, etc. In general, such namespaces
-  should not be required from the outside.
+- `src/status_im2/setup/`: Contains namespaces that are mostly used to
+  initialize the application, configure test runners, etc. In general, such
+  namespaces should not be required from the outside.
+- `src/test_helpers/`: Reusable utilities for writing all kinds of tests.
 - `src/status_im/subs/`: All subscriptions should live inside it.
 
 Directories named `utils/` can appear at any level of the directory tree. The
@@ -485,16 +493,24 @@ src
 [Unit tests](#glossary) should be created alongside their respective source
 implementation. We prefer them colocated with the source and not like most
 Clojure (JVM) codebases which mirror the sources in a top-level test directory.
-Component tests should be created in a separate directory `__tests__`. Example:
 
 ```
 ├── models
 │   ├── message.cljs
 │   └── message_test.cljs
-├── __tests__
-│   └── input_bla_test.cljs
 ├── models.cljs
 └── models_test.cljs
+```
+
+Component tests should be created in a separate directory `__tests__`, colocated
+with the source. When the entire component implementation is isolated under a
+single directory, create a test file named `component_spec.cljs` instead.
+
+```
+└── filter
+    ├── component_spec.cljs
+    ├── style.cljs
+    └── view.cljs
 ```
 
 There's no hard rule on how integration test namespaces should be split, but

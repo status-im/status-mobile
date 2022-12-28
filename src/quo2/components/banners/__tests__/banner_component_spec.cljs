@@ -8,10 +8,10 @@
   (rtl/render (reagent/as-element [banner/banner opts])))
 
 (js/global.test "basic render of banner component"
-                (fn []
-                  (render-banner {:pins-count      "5"
-                                  :latest-pin-text "this message"})
-                  (-> (js/expect (rtl/screen.getByText "this message"))
-                      (.toBeTruthy))
-                  (-> (js/expect (rtl/screen.getByText "5"))
-                      (.toBeTruthy))))
+  (fn []
+    (render-banner {:pins-count      "5"
+                    :latest-pin-text "this message"})
+    (-> (js/expect (rtl/screen.getByText "this message"))
+        (.toBeTruthy))
+    (-> (js/expect (rtl/screen.getByText "5"))
+        (.toBeTruthy))))

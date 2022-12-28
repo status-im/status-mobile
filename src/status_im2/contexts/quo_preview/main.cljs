@@ -1,4 +1,5 @@
 (ns status-im2.contexts.quo-preview.main
+  (:refer-clojure :exclude [filter])
   (:require
    [quo2.components.buttons.button :as quo2-button]
    [quo2.components.markdown.text :as quo2-text]
@@ -47,6 +48,7 @@
    [status-im2.contexts.quo-preview.reactions.react :as react]
    [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
    [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
+   [status-im2.contexts.quo-preview.selectors.filter :as filter]
    [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
    [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
    [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -184,6 +186,9 @@
    :selectors             [{:name      :disclaimer
                             :insets    {:top false}
                             :component disclaimer/preview-disclaimer}
+                           {:name      :filter
+                            :insets    {:top false}
+                            :component filter/preview}
                            {:name      :selectors
                             :insets    {:top false}
                             :component selectors/preview-selectors}]
