@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im.utils.datetime :as datetime] 
+            [status-im.utils.datetime :as datetime]
             [status-im2.common.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
@@ -24,8 +24,7 @@
 (defn view
   [{:keys [author chat-name chat-id message] :as notification}]
   [rn/touchable-without-feedback
-   {:underlay-color :none
-    :on-press (fn []
+   {:on-press (fn []
                 (rf/dispatch [:hide-popover])
                 (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
    [quo/activity-log

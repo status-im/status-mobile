@@ -107,7 +107,7 @@
 
      types/mention
      [mentions/view notification]
-     
+
      types/reply
      [reply/view notification]
 
