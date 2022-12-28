@@ -20,6 +20,7 @@
    [status-im2.setup.config :as config]
    [status-im2.setup.dev :as dev]
    status-im2.setup.events
+   status-im2.setup.datetime
    [status-im2.setup.global-error :as global-error]
    [status-im2.setup.i18n-resources :as i18n-resources]
    [status-im2.setup.log :as log]

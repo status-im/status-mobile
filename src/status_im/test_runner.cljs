@@ -4,7 +4,11 @@
             [clojure.string :as string]
             [shadow.test :as st]
             [shadow.test.env :as env]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [i18n.i18n :as i18n]
+            [status-im2.setup.i18n-resources :as i18n-resources]))
+
+(i18n/init (name i18n-resources/default-device-language) (clj->js i18n-resources/translations-by-locale))
 
 (defonce repl? (atom false))
 

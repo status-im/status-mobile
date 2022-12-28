@@ -3,6 +3,9 @@
             [clojure.string :as string]
             [status-im.goog.i18n :as goog.i18n]))
 
+(set! (.-fallbacks i18n) true)
+(set! (.-defaultSeparator i18n) "/")
+
 (defn init
   [default-device-language translations-by-locale]
   (set! (.-fallbacks i18n) true)
