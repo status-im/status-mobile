@@ -150,16 +150,16 @@
 (defn reset-data
   [categories chats]
   (reset! data
-          (if (categories-tab?)
-            categories
-            (walk/postwalk-replace
-             {:chat-id :id}
-             (reduce (fn [acc category]
-                       (-> acc
-                           (conj category)
-                           (into (get chats (:id category)))))
-                     []
-                     categories)))))
+    (if (categories-tab?)
+      categories
+      (walk/postwalk-replace
+       {:chat-id :id}
+       (reduce (fn [acc category]
+                 (-> acc
+                     (conj category)
+                     (into (get chats (:id category)))))
+               []
+               categories)))))
 
 (defn draggable-list
   []

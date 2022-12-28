@@ -68,8 +68,8 @@
                                :stickers/packs-installed
                                (let [packs-installed-keys (keys (js->clj setting-value))]
                                  (reduce #(assoc-in %1
-                                                    [:stickers/packs %2 :status]
-                                                    constants/sticker-pack-status-installed)
+                                           [:stickers/packs %2 :status]
+                                           constants/sticker-pack-status-installed)
                                          db
                                          packs-installed-keys))
                                :stickers/recent-stickers

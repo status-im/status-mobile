@@ -13,20 +13,20 @@
   (rf/merge cofx
             {:db
              (assoc-in db
-                       [:keycard :pin]
-                       {:enter-step       :current
-                        :current          []
-                        :puk              []
-                        :original         []
-                        :confirmation     []
-                        :puk-original     []
-                        :puk-confirmation []
-                        :status           nil
-                        :error-label      nil
-                        :on-verified      (case changing
-                                            :pin     :keycard/proceed-to-change-pin
-                                            :puk     :keycard/proceed-to-change-puk
-                                            :pairing :keycard/proceed-to-change-pairing)})}
+              [:keycard :pin]
+              {:enter-step       :current
+               :current          []
+               :puk              []
+               :original         []
+               :confirmation     []
+               :puk-original     []
+               :puk-confirmation []
+               :status           nil
+               :error-label      nil
+               :on-verified      (case changing
+                                   :pin     :keycard/proceed-to-change-pin
+                                   :puk     :keycard/proceed-to-change-puk
+                                   :pairing :keycard/proceed-to-change-pairing)})}
             (common/navigate-to-enter-pin-screen)))
 
 (rf/defn proceed-to-change-pin
@@ -141,11 +141,11 @@
         puk-restore? (get-in db [:keycard :pin :puk-restore?])]
     (rf/merge cofx
               {:db               (assoc-in db
-                                           [:keycard :pin]
-                                           {:status       nil
-                                            :login        pin
-                                            :confirmation []
-                                            :error-label  nil})
+                                  [:keycard :pin]
+                                  {:status       nil
+                                   :login        pin
+                                   :confirmation []
+                                   :error-label  nil})
                :utils/show-popup {:title   ""
                                   :content (i18n/label :t/pin-changed)}}
               (common/hide-connection-sheet)
@@ -160,11 +160,11 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db               (assoc-in db
-                                         [:keycard :pin]
-                                         {:status           nil
-                                          :puk-original     []
-                                          :puk-confirmation []
-                                          :error-label      nil})
+                                [:keycard :pin]
+                                {:status           nil
+                                 :puk-original     []
+                                 :puk-confirmation []
+                                 :error-label      nil})
              :utils/show-popup {:title   ""
                                 :content (i18n/label :t/puk-changed)}}
             (common/hide-connection-sheet)
@@ -175,10 +175,10 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db               (assoc-in db
-                                         [:keycard :pin]
-                                         {:status       nil
-                                          :pairing-code nil
-                                          :error-label  nil})
+                                [:keycard :pin]
+                                {:status       nil
+                                 :pairing-code nil
+                                 :error-label  nil})
              :utils/show-popup {:title   ""
                                 :content (i18n/label :t/pairing-changed)}}
             (common/hide-connection-sheet)

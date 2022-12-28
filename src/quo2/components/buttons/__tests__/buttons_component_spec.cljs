@@ -8,21 +8,21 @@
    (rtl/render (reagent/as-element [button/button options label]))))
 
 (js/global.test "default render of button component"
-  (fn []
-    (render-button {:accessibility-label "test-button"} "")
-    (-> (js/expect (rtl/screen.getByLabelText "test-button"))
-        (.toBeTruthy))))
+                (fn []
+                  (render-button {:accessibility-label "test-button"} "")
+                  (-> (js/expect (rtl/screen.getByLabelText "test-button"))
+                      (.toBeTruthy))))
 
 (js/global.test "button renders with a label"
-  (fn []
-    (render-button {} "test-label")
-    (-> (js/expect (rtl/screen.getByText "test-label"))
-        (.toBeTruthy))))
+                (fn []
+                  (render-button {} "test-label")
+                  (-> (js/expect (rtl/screen.getByText "test-label"))
+                      (.toBeTruthy))))
 
 (js/global.test "button on-press works"
-  (let [event (js/jest.fn)]
-    (fn []
-      (render-button {:on-press event} "test-label")
-      (rtl/fireEvent.press (rtl/screen.getByText "test-label"))
-      (-> (js/expect event)
-          (.toHaveBeenCalledTimes 1)))))
+                (let [event (js/jest.fn)]
+                  (fn []
+                    (render-button {:on-press event} "test-label")
+                    (rtl/fireEvent.press (rtl/screen.getByText "test-label"))
+                    (-> (js/expect event)
+                        (.toHaveBeenCalledTimes 1)))))

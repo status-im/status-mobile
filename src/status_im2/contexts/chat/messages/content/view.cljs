@@ -51,11 +51,14 @@
     [not-implemented/not-implemented [pin/system-message message-data]]
     (case content-type
 
-      constants/content-type-system-text     [not-implemented/not-implemented [system.text/text-content message-data]]
+      constants/content-type-system-text     [not-implemented/not-implemented
+                                              [system.text/text-content message-data]]
 
-      constants/content-type-community       [not-implemented/not-implemented [old-message/community message-data]]
+      constants/content-type-community       [not-implemented/not-implemented
+                                              [old-message/community message-data]]
 
-      constants/content-type-contact-request [not-implemented/not-implemented [old-message/system-contact-request message-data]])))
+      constants/content-type-contact-request [not-implemented/not-implemented
+                                              [old-message/system-contact-request message-data]])))
 
 (defn user-message-content
   [{:keys [content-type quoted-message content] :as message-data}

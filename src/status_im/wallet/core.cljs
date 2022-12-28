@@ -1,35 +1,36 @@
 (ns status-im.wallet.core
-  (:require [clojure.set :as clojure.set]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.async-storage.core :as async-storage]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.contact.db :as contact.db]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.popover.core :as popover.core]
-            [status-im.qr-scanner.core :as qr-scaner]
-            [status-im.signing.eip1559 :as eip1559]
-            [status-im.signing.gas :as signing.gas]
-            [status-im.utils.config :as config]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.datetime :as datetime]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils.utils]
-            [status-im.wallet.db :as wallet.db]
-            [status-im.wallet.prices :as prices]
-            status-im.wallet.recipient.core
-            [status-im.wallet.utils :as wallet.utils]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+   [clojure.set :as clojure.set]
+   [clojure.string :as string]
+   [re-frame.core :as re-frame]
+   [status-im.async-storage.core :as async-storage]
+   [status-im.bottom-sheet.core :as bottom-sheet]
+   [status-im.contact.db :as contact.db]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.ethereum.ens :as ens]
+   [status-im.ethereum.stateofus :as stateofus]
+   [status-im.ethereum.tokens :as tokens]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.multiaccounts.update.core :as multiaccounts.update]
+   [status-im.popover.core :as popover.core]
+   [status-im.qr-scanner.core :as qr-scaner]
+   [status-im.signing.eip1559 :as eip1559]
+   [status-im.signing.gas :as signing.gas]
+   [status-im.utils.config :as config]
+   [status-im.utils.core :as utils.core]
+   [status-im.utils.datetime :as datetime]
+   [utils.re-frame :as rf]
+   [status-im.utils.mobile-sync :as mobile-network-utils]
+   [status-im.utils.money :as money]
+   [status-im.utils.utils :as utils.utils]
+   [status-im.wallet.db :as wallet.db]
+   [status-im.wallet.prices :as prices]
+   status-im.wallet.recipient.core
+   [status-im.wallet.utils :as wallet.utils]
+   [status-im2.common.json-rpc.events :as json-rpc]
+   [status-im2.navigation.events :as navigation]
+   [taoensso.timbre :as log]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -286,8 +287,8 @@
   {:events [::update-balance-success]}
   [{:keys [db]} address balance]
   {:db (assoc-in db
-                 [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
-                 (money/bignumber balance))})
+        [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
+        (money/bignumber balance))})
 
 (rf/defn set-cached-balances
   {:events [::set-cached-balances]}
@@ -328,18 +329,18 @@
   [{:keys [db]} balances]
   (let [accounts (get-in db [:wallet :accounts])]
     {:db (assoc-in db
-                   [:wallet :accounts]
-                   (reduce (fn [acc [address balances]]
-                             (assoc-in acc
-                                       [address :balance]
-                                       (reduce (fn [acc [token-symbol balance]]
-                                                 (assoc acc
-                                                        token-symbol
-                                                        (money/bignumber balance)))
-                                               (get-in accounts [address :balance])
-                                               balances)))
-                           accounts
-                           balances))}))
+          [:wallet :accounts]
+          (reduce (fn [acc [address balances]]
+                    (assoc-in acc
+                     [address :balance]
+                     (reduce (fn [acc [token-symbol balance]]
+                               (assoc acc
+                                      token-symbol
+                                      (money/bignumber balance)))
+                             (get-in accounts [address :balance])
+                             balances)))
+                  accounts
+                  balances))}))
 
 (rf/defn set-zero-balances
   [cofx {:keys [address]}]
@@ -873,8 +874,8 @@
   {:events [:wallet.transactions/add-all-filters]}
   [{:keys [db]}]
   {:db (assoc-in db
-                 [:wallet :filters]
-                 wallet.db/default-wallet-filters)})
+        [:wallet :filters]
+        wallet.db/default-wallet-filters)})
 
 (rf/defn settings-navigate-back-pressed
   {:events [:wallet.settings.ui/navigate-back-pressed]}

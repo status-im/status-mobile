@@ -8,7 +8,7 @@
    (rtl/render (reagent/as-element [text/text options value]))))
 
 (js/global.test "text renders with text"
-  (fn []
-    (render-text {} "hello")
-    (-> (js/expect (rtl/screen.getByText "hello"))
-        (.toBeTruthy))))
+                (fn []
+                  (render-text {} "hello")
+                  (-> (js/expect (rtl/screen.getByText "hello"))
+                      (.toBeTruthy))))

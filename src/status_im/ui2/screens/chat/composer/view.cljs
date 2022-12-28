@@ -321,16 +321,18 @@
                      :size 32} :i/reaction]]
                   [rn/view {:flex 1}]
                   ;;SEND button
-                  [rn/view {:ref   send-ref
-                            :style (when (seq images)
-                                     {:width 0
-                                      :right -100})}
-                   [quo2.button/button {:icon                true
-                                        :size                32
-                                        :accessibility-label :send-message-button
-                                        :on-press            #(do (clean-and-minimize-composer-fn (some? edit))
-                                                                  (scroll-to-bottom)
-                                                                  (rf/dispatch [:chat.ui/send-current-message]))}
+                  [rn/view
+                   {:ref   send-ref
+                    :style (when (seq images)
+                             {:width 0
+                              :right -100})}
+                   [quo2.button/button
+                    {:icon                true
+                     :size                32
+                     :accessibility-label :send-message-button
+                     :on-press            #(do (clean-and-minimize-composer-fn false)
+                                               (scroll-to-bottom)
+                                               (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view
