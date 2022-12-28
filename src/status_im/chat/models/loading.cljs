@@ -101,12 +101,10 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
-(defn mark-albums
-  [messages]
-  (let [new-messages (atom [])]
-    (doseq [message messages]
-      (swap! new-messages conj (if (:album-id message) (assoc message :albumize true) message)))
-    @new-messages))
+(defn mark-album [message]
+  (if (:album-id message)
+    (assoc message :albumize? true)
+    message))
 
 (rf/defn messages-loaded
   "Loads more messages for current chat"
@@ -139,7 +137,7 @@
                                                                        [:pagination-info chat-id
                                                                         :cursor-clock-value])
           clock-value                                          (when cursor (cursor->clock-value cursor))
-          new-messages                                         (mark-albums new-messages)]
+          new-messages (map mark-album new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
