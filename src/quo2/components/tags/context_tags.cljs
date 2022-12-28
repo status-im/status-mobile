@@ -67,13 +67,13 @@
           icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40)]
       [base-tag (assoc-in params [:style :padding-left] 3)
        [rn/image
-        {:style {:width 20
-                 :border-radius 10
-                 :background-color :white
-                 :height 20}
+        {:style  {:width            20
+                  :border-radius    10
+                  :background-color :white
+                  :height           20}
          :source photo}]
        [rn/view
-        {:style {:align-items :center
+        {:style {:align-items    :center
                  :flex-direction :row}}
         [text/text text-params (str " " name)]
         (when channel-name

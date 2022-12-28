@@ -27,12 +27,14 @@
      {:on-press            on-press
       :accessibility-label accessibility-label
       :style               (style/reaction neutral?)}
-     [icons/icon emoji {:no-color true
-                        :size     16}]
-     [text/text {:size            :paragraph-2
-                 :weight          :semi-bold
-                 :flex-direction  :row
-                 :align-items     :center
-                 :justify-content :center}
+     [icons/icon emoji
+      {:no-color true
+       :size     16}]
+     [text/text
+      {:size            :paragraph-2
+       :weight          :semi-bold
+       :flex-direction  :row
+       :align-items     :center
+       :justify-content :center}
       (when (pos? numeric-value)
         (str " " numeric-value))]]))

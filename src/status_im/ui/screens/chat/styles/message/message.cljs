@@ -48,8 +48,8 @@
 
 (defn message-status-text
   []
-  {:font-size   10
-   :line-height 10
+  {:font-size    10
+   :line-height  10
    :border-color :red
    :border-width 1
    :color        :red})
@@ -105,7 +105,8 @@
   {:flex-direction :row
    :margin-top     1})
 
-(defn pinned-by-text []
+(defn pinned-by-text
+  []
   {:margin-left 5})
 
 (def message-author-touchable

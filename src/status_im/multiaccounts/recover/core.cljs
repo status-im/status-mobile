@@ -259,8 +259,8 @@
   [{:keys [db]}]
   (let [passphrase (get-in db [:intro-wizard :passphrase])]
     {:db (assoc-in db
-                   [:intro-wizard :passphrase-word-count]
-                   (mnemonic/words-count passphrase))}))
+          [:intro-wizard :passphrase-word-count]
+          (mnemonic/words-count passphrase))}))
 
 (rf/defn run-validation
   [{:keys [db] :as cofx}]

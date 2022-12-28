@@ -87,111 +87,114 @@
   (rf-test/run-test-async
    (rf/dispatch [:setup/app-started])
    (rf-test/wait-for
-    ;; use initialize-view because it has the longest avg. time and
-    ;; is dispatched by initialize-multiaccounts (last non-view event)
-    [:setup/initialize-view]
-    (assert-app-initialized))))
+     ;; use initialize-view because it has the longest avg. time and
+     ;; is dispatched by initialize-multiaccounts (last non-view event)
+     [:setup/initialize-view]
+     (assert-app-initialized))))
 
 (deftest create-account-test
   (log/info "====== create-account-test ==================")
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!) ; generate 5 new keys
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded) ; assert keys are generated
-     (create-multiaccount!) ; create a multiaccount
-     (rf-test/wait-for ; wait for login
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (logout!)
-      (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an
-                                                 ; inconsistent state between tests
-                        (assert-logout)))))))
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!) ; generate 5 new keys
+     (rf-test/wait-for
+       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+       (assert-multiaccount-loaded) ; assert keys are generated
+       (create-multiaccount!) ; create a multiaccount
+       (rf-test/wait-for ; wait for login
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (logout!)
+         (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
+                                                    ; an
+                                                    ; inconsistent state between tests
+           (assert-logout)))))))
 
 (deftest create-community-test
   (log/info "====== create-community-test ==================")
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!) ; generate 5 new keys
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success]
-     (assert-multiaccount-loaded) ; assert keys are generated
-     (create-multiaccount!) ; create a multiaccount
-     (rf-test/wait-for ; wait for login
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:status-im.communities.core/open-create-community])
-      (doseq [[k v] (dissoc community :membership)]
-        (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
-      (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
-      (rf-test/wait-for
-       [:status-im.communities.core/community-created]
-       (assert-community-created)
-       (logout!)
-       (rf-test/wait-for [::logout/logout-method]
-                         (assert-logout))))))))
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!) ; generate 5 new keys
+     (rf-test/wait-for
+       [:multiaccount-generate-and-derive-addresses-success]
+       (assert-multiaccount-loaded) ; assert keys are generated
+       (create-multiaccount!) ; create a multiaccount
+       (rf-test/wait-for ; wait for login
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (rf/dispatch-sync [:status-im.communities.core/open-create-community])
+         (doseq [[k v] (dissoc community :membership)]
+           (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
+         (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
+         (rf-test/wait-for
+           [:status-im.communities.core/community-created]
+           (assert-community-created)
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method]
+             (assert-logout))))))))
 
 (deftest create-wallet-account-test
   (log/info "====== create-wallet-account-test ==================")
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!) ; generate 5 new keys
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success]
-     (assert-multiaccount-loaded) ; assert keys are generated
-     (create-multiaccount!) ; create a multiaccount
-     (rf-test/wait-for ; wait for login
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (create-new-account!) ; create a new account
-      (rf-test/wait-for
-       [:wallet.accounts/account-stored]
-       (assert-new-account-created) ; assert account was created
-       (logout!)
-       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an
-                                                  ; inconsistent state between tests
-                         (assert-logout))))))))
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!) ; generate 5 new keys
+     (rf-test/wait-for
+       [:multiaccount-generate-and-derive-addresses-success]
+       (assert-multiaccount-loaded) ; assert keys are generated
+       (create-multiaccount!) ; create a multiaccount
+       (rf-test/wait-for ; wait for login
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (create-new-account!) ; create a new account
+         (rf-test/wait-for
+           [:wallet.accounts/account-stored]
+           (assert-new-account-created) ; assert account was created
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
+                                                      ; an
+                                                      ; inconsistent state between tests
+             (assert-logout))))))))
 
 (deftest back-up-seed-phrase-test
   (log/info "========= back-up-seed-phrase-test ==================")
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success]
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!)
      (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:set-in [:my-profile/seed :step] :12-words]) ; display seed phrase to user
-      (rf/dispatch-sync [:my-profile/enter-two-random-words]) ; begin prompting user for seed words
-      (let [ma    @(rf/subscribe [:multiaccount])
-            seed  @(rf/subscribe [:my-profile/seed])
-            word1 (second (:first-word seed))
-            word2 (second (:second-word seed))]
-        (is (= 12 (count (string/split (:mnemonic ma) #" ")))) ; assert 12-word seed phrase
-        (rf/dispatch-sync [:set-in [:my-profile/seed :word] word1])
-        (rf/dispatch-sync [:my-profile/set-step :second-word])
-        (rf/dispatch-sync [:set-in [:my-profile/seed :word] word2])
-        ;; TODO: refactor (defn next-handler) & (defn enter-word) to improve test coverage?
-        (rf/dispatch [:my-profile/finish])
-        (rf-test/wait-for
-         [:my-profile/finish-success]
-         (is (nil? @(rf/subscribe [:mnemonic]))) ; assert seed phrase has been removed
-         (logout!)
-         (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                    ; an inconsistent state between tests
-                           (assert-logout)))))))))
+       [:multiaccount-generate-and-derive-addresses-success]
+       (assert-multiaccount-loaded)
+       (create-multiaccount!)
+       (rf-test/wait-for
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (rf/dispatch-sync [:set-in [:my-profile/seed :step] :12-words]) ; display seed phrase to user
+         (rf/dispatch-sync [:my-profile/enter-two-random-words]) ; begin prompting user for seed words
+         (let [ma    @(rf/subscribe [:multiaccount])
+               seed  @(rf/subscribe [:my-profile/seed])
+               word1 (second (:first-word seed))
+               word2 (second (:second-word seed))]
+           (is (= 12 (count (string/split (:mnemonic ma) #" ")))) ; assert 12-word seed phrase
+           (rf/dispatch-sync [:set-in [:my-profile/seed :word] word1])
+           (rf/dispatch-sync [:my-profile/set-step :second-word])
+           (rf/dispatch-sync [:set-in [:my-profile/seed :word] word2])
+           ;; TODO: refactor (defn next-handler) & (defn enter-word) to improve test coverage?
+           (rf/dispatch [:my-profile/finish])
+           (rf-test/wait-for
+             [:my-profile/finish-success]
+             (is (nil? @(rf/subscribe [:mnemonic]))) ; assert seed phrase has been removed
+             (logout!)
+             (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
+                                                        ; in
+                                                        ; an inconsistent state between tests
+               (assert-logout)))))))))
 
 (def multiaccount-name "Narrow Frail Lemming")
 (def multiaccount-mnemonic
@@ -203,29 +206,30 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (rf/dispatch-sync [:init-root :onboarding])
-    (rf/dispatch-sync [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-    (rf/dispatch-sync [:status-im.multiaccounts.recover.core/enter-phrase-pressed])
-    (rf/dispatch-sync [:multiaccounts.recover/enter-phrase-input-changed
-                       (security/mask-data multiaccount-mnemonic)])
-    (rf/dispatch [:multiaccounts.recover/enter-phrase-next-pressed])
-    (rf-test/wait-for
-     [:status-im.multiaccounts.recover.core/import-multiaccount-success]
-     (rf/dispatch-sync [:multiaccounts.recover/re-encrypt-pressed])
-     (rf/dispatch [:multiaccounts.recover/enter-password-next-pressed password])
+     [:setup/initialize-view]
+     (rf/dispatch-sync [:init-root :onboarding])
+     (rf/dispatch-sync [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+     (rf/dispatch-sync [:status-im.multiaccounts.recover.core/enter-phrase-pressed])
+     (rf/dispatch-sync [:multiaccounts.recover/enter-phrase-input-changed
+                        (security/mask-data multiaccount-mnemonic)])
+     (rf/dispatch [:multiaccounts.recover/enter-phrase-next-pressed])
      (rf-test/wait-for
-      [:status-im.multiaccounts.recover.core/store-multiaccount-success]
-      (let [multiaccount @(rf/subscribe [:multiaccount])] ; assert multiaccount is recovered
-        (is (= multiaccount-key-uid (:key-uid multiaccount)))
-        (is (= multiaccount-name (:name multiaccount))))
-      (rf-test/wait-for ; wait for login
-       [::transport/messenger-started]
-       (assert-messenger-started)
-       (logout!)
-       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an
-                                                  ; inconsistent state between tests
-                         (assert-logout))))))))
+       [:status-im.multiaccounts.recover.core/import-multiaccount-success]
+       (rf/dispatch-sync [:multiaccounts.recover/re-encrypt-pressed])
+       (rf/dispatch [:multiaccounts.recover/enter-password-next-pressed password])
+       (rf-test/wait-for
+         [:status-im.multiaccounts.recover.core/store-multiaccount-success]
+         (let [multiaccount @(rf/subscribe [:multiaccount])] ; assert multiaccount is recovered
+           (is (= multiaccount-key-uid (:key-uid multiaccount)))
+           (is (= multiaccount-name (:name multiaccount))))
+         (rf-test/wait-for ; wait for login
+           [::transport/messenger-started]
+           (assert-messenger-started)
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
+                                                      ; an
+                                                      ; inconsistent state between tests
+             (assert-logout))))))))
 
 (def chat-id
   "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")
@@ -235,88 +239,91 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!)
      (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-      (rf-test/wait-for
-       [:status-im.chat.models/one-to-one-chat-created]
-       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
-       (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-       (logout!)
-       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an
-                                                  ; inconsistent state between tests
-                         (assert-logout))))))))
+       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+       (assert-multiaccount-loaded)
+       (create-multiaccount!)
+       (rf-test/wait-for
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
+         (rf-test/wait-for
+           [:status-im.chat.models/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
+                                                      ; an
+                                                      ; inconsistent state between tests
+             (assert-logout))))))))
 
 (deftest delete-chat-test
   (log/info "========= delete-chat-test ==================")
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!)
      (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-      (rf-test/wait-for
-       [:status-im.chat.models/one-to-one-chat-created]
-       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
-       (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-       (is @(rf/subscribe [:chats/chat chat-id]))
-       (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
-       (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
+       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+       (assert-multiaccount-loaded)
+       (create-multiaccount!)
        (rf-test/wait-for
-        [::chat.models/chat-deactivated]
-        (is (not @(rf/subscribe [:chats/chat chat-id])))
-        (logout!)
-        (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an
-                                                   ; inconsistent state between tests
-                          (assert-logout)))))))))
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
+         (rf-test/wait-for
+           [:status-im.chat.models/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+           (is @(rf/subscribe [:chats/chat chat-id]))
+           (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
+           (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
+           (rf-test/wait-for
+             [::chat.models/chat-deactivated]
+             (is (not @(rf/subscribe [:chats/chat chat-id])))
+             (logout!)
+             (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
+                                                        ; in an
+                                                        ; inconsistent state between tests
+               (assert-logout)))))))))
 
 (deftest mute-chat-test
   (log/info "========= mute-chat-test ==================")
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
+     [:setup/initialize-view]
+     (generate-and-derive-addresses!)
      (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-      (rf-test/wait-for
-       [:status-im.chat.models/one-to-one-chat-created]
-       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
-       (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-       (is @(rf/subscribe [:chats/chat chat-id]))
-       (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
+       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+       (assert-multiaccount-loaded)
+       (create-multiaccount!)
        (rf-test/wait-for
-        [::chat.models/mute-chat-toggled-successfully]
-        (is @(rf/subscribe [:chats/muted chat-id]))
-        (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id false])
-        (rf-test/wait-for
-         [::chat.models/mute-chat-toggled-successfully]
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
+         (rf-test/wait-for
+           [:status-im.chat.models/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+           (is @(rf/subscribe [:chats/chat chat-id]))
+           (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
+           (rf-test/wait-for
+             [::chat.models/mute-chat-toggled-successfully]
+             (is @(rf/subscribe [:chats/muted chat-id]))
+             (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id false])
+             (rf-test/wait-for
+               [::chat.models/mute-chat-toggled-successfully]
 
-         (is (not @(rf/subscribe [:chats/muted chat-id])))
-         (logout!)
-         (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                    ; an inconsistent state between tests
-                           (assert-logout))))))))))
+               (is (not @(rf/subscribe [:chats/muted chat-id])))
+               (logout!)
+               (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is
+                                                          ; not in
+                                                          ; an inconsistent state between tests
+                 (assert-logout))))))))))
 
 (comment
   (run-tests))
