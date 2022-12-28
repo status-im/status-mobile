@@ -32,9 +32,9 @@
              :icon  avatar-icon}]
     [menu-button {:on-press on-press-menu}]]
    [rn/view {:style style/card-bottom}
-    [text/text {:size :paragraph-1, :weight :semi-bold}
+    [text/text {:size :paragraph-1 :weight :semi-bold}
      account-name]
-    [text/text {:style (style/address-text)
+    [text/text {:style  (style/address-text)
                 :size   :paragraph-2
                 :weight :medium}
      account-address]]])
