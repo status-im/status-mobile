@@ -7,7 +7,6 @@
            :height        160
            :width         160})
 
-;; Card Background
 (defn background-top [custom-color]
   {:position                :absolute
    :top                     0
@@ -29,7 +28,6 @@
                       colors/white
                       colors/neutral-90)})
 
-;; Avatar
 (defn avatar-border []
   {:margin          2
    :justify-content :center
@@ -42,7 +40,6 @@
                      colors/white
                      colors/neutral-90)})
 
-;; Menu button
 (def menu-button-container {:justify-content :center
                             :align-items     :center
                             :align-self      :flex-start})
@@ -50,18 +47,16 @@
   {:background-color (colors/theme-colors
                       colors/white-opa-40
                       colors/neutral-80-opa-40)})
-;; Address text
+
 (defn address-text []
   {:color (colors/theme-colors
            colors/neutral-50
            colors/neutral-40)})
 
-;; Top content
 (def card-top {:flex-direction  :row
                :align-items     :center
                :justify-content :space-between})
 
-;; Bottom content
 (def card-bottom {:flex              1
                   :margin-horizontal 4
                   :margin-top        4})
