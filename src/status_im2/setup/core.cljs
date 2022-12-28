@@ -51,6 +51,8 @@
   ;; TODO(parvesh) - Remove while moving functionality to status-go
   (async-storage/get-item :selected-stack-id #(animation/selected-stack-id-loaded %))
 
+  (async-storage/get-item :screen-height #(reset! animation/screen-height %))
+
   (dev/setup)
 
   (re-frame/dispatch-sync [:setup/app-started]))

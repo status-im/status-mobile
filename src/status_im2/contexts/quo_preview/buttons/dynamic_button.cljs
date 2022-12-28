@@ -22,7 +22,7 @@
                :value "Search"}
               {:key   :search-with-label
                :value "Search With Label"}
-              {:key   :bottom
+              {:key   :scroll-to-bottom
                :value "Bottom"}]}
    {:label "Count"
     :key   :count
