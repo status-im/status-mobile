@@ -2,7 +2,8 @@
   (:require [quo2.core :as quo]
             [i18n.i18n :as i18n]))
 
-(defn deleted-message [{:keys [deleted? deleted-undoable-till timestamp-str deleted-for-me-undoable-till]}]
+(defn deleted-message
+  [{:keys [deleted? deleted-undoable-till timestamp-str deleted-for-me-undoable-till]}]
   [quo/system-message
    {:type             :deleted
     :label            (if deleted? :message-deleted :message-deleted-for-you)

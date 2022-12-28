@@ -53,11 +53,12 @@
 
       :right-section-buttons
       [{:on-press            #()
-        :style {:border-width 1 :border-color :red}
+        :style               {:border-width 1 :border-color :red}
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
-(defn chat-render []
+(defn chat-render
+  []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}

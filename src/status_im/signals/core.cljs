@@ -18,9 +18,9 @@
              error)
   (if error
     (cond->
-     {:db (-> db
-              (update :multiaccounts/login dissoc :processing)
-              (assoc-in [:multiaccounts/login :error]
+      {:db (-> db
+               (update :multiaccounts/login dissoc :processing)
+               (assoc-in [:multiaccounts/login :error]
                          ;; NOTE: the only currently known error is
                          ;; "file is not a database" which occurs
                          ;; when the user inputs the wrong password
@@ -29,9 +29,9 @@
                          ;; to the user
                          ;; in case of an unknown error we show the
                          ;; error
-                        (if (= error "file is not a database")
-                          (i18n/label :t/wrong-password)
-                          error)))}
+                         (if (= error "file is not a database")
+                           (i18n/label :t/wrong-password)
+                           error)))}
       (= (:view-id db) :progress)
       (assoc :dispatch [:navigate-to :login]))
     (login/multiaccount-login-success cofx)))

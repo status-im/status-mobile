@@ -117,8 +117,8 @@
   (when (and (fn? trigger-fn)
              (fn? on-trigger))
     {:db (assoc-in db
-                   [:ethereum/watched-transactions transaction-id]
-                   watch-params)}))
+          [:ethereum/watched-transactions transaction-id]
+          watch-params)}))
 
 (rf/defn check-transaction
   "Check if the transaction has been triggered and applies the effects returned
@@ -164,8 +164,8 @@
                              hash))]
       (rf/merge cofx
                 {:db (assoc-in db
-                               [:wallet :accounts address :transactions unique-id]
-                               (assoc transfer :hash unique-id))}
+                      [:wallet :accounts address :transactions unique-id]
+                      (assoc transfer :hash unique-id))}
                 (check-transaction transfer)))))
 
 (defn get-min-known-block
@@ -226,8 +226,8 @@
      (reduce
       (fn [accounts address]
         (assoc-in accounts
-                  [(eip55/address->checksum address) fetching-type]
-                  state))
+         [(eip55/address->checksum address) fetching-type]
+         state))
       accounts
       addresses))))
 
@@ -243,10 +243,10 @@
   [{:keys [db] :as cofx} address]
   (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)]
     {:db (assoc-in db
-                   [:wallet :fetching address :all-fetched?]
-                   (if syncing-allowed?
-                     :all
-                     :all-preloaded))}))
+          [:wallet :fetching address :all-fetched?]
+          (if syncing-allowed?
+            :all
+            :all-preloaded))}))
 
 (rf/defn delete-pending-transactions
   [{:keys [db]} address transactions]

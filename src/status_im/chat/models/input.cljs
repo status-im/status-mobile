@@ -37,8 +37,8 @@
   {:events [:chat.ui/set-timeline-input-text]}
   [{db :db} new-input]
   {:db (assoc-in db
-                 [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
-                 (text->emoji new-input))})
+        [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
+        (text->emoji new-input))})
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
@@ -83,9 +83,9 @@
    :show-cooldown-warning nil
    :db                    (assoc db
                                  :chat/cooldowns               (if
-                                                                (=
-                                                                 chat.constants/cooldown-reset-threshold
-                                                                 cooldowns)
+                                                                 (=
+                                                                  chat.constants/cooldown-reset-threshold
+                                                                  cooldowns)
                                                                  0
                                                                  cooldowns)
                                  :chat/spam-messages-frequency 0

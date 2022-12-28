@@ -150,7 +150,8 @@
 
 (defn nft-assets
   [{:keys [num-assets address collectible-slug]}]
-  (let [assets    (rf/sub [:wallet/collectible-assets-by-collection-and-address address collectible-slug])
+  (let [assets    (rf/sub [:wallet/collectible-assets-by-collection-and-address address
+                           collectible-slug])
         fetching? (rf/sub [:wallet/fetching-assets-by-collectible-slug collectible-slug])]
     [react/view
      {:flex            1
