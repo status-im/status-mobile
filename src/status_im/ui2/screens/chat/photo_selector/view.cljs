@@ -14,11 +14,11 @@
 (def selected (reagent/atom []))
 
 (defn bottom-gradient
-  [chat-id]
+  [chat-id selected-images]
   [:f>
    (fn []
      (let [safe-area (safe-area/use-safe-area)]
-       (when (pos? (count @selected))
+       (when (or (pos? (count @selected)) selected-images)
          [linear-gradient/linear-gradient
           {:colors [:black :transparent]
            :start  {:x 0 :y 1}
@@ -98,5 +98,5 @@
             :style                   {:border-radius 20}
             :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading?
                                                     has-next-page?])}]
-          [bottom-gradient chat-id]]))]))
+          [bottom-gradient chat-id selected-images]]))]))
 
