@@ -114,20 +114,8 @@
     [rn/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
-=======
-<<<<<<< HEAD
-=======
-
->>>>>>> f799c6fa9... feat: album
-=======
->>>>>>> 479cfe8a5... lint
-(defn render-fn [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ context]
->>>>>>> 2323598a4... updates
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
