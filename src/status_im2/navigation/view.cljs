@@ -126,7 +126,7 @@
 (def sheet-comp
   (reagent/reactify-component
    (fn []
-     ^{:key (str "seet" @reloader/cnt)}
+     ^{:key (str "sheet" @reloader/cnt)}
      [safe-area/safe-area-provider
       [inactive]
       [bottom-sheets/bottom-sheet]
