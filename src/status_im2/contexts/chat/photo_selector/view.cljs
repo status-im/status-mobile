@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.photo-selector.view
+(ns status-im2.contexts.chat.photo-selector.view
   (:require [i18n.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :as info-count]
@@ -7,7 +7,7 @@
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [reagent.core :as reagent]
-            [status-im.ui2.screens.chat.photo-selector.style :as style]
+            [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
             [utils.re-frame :as rf]))
 
@@ -25,39 +25,44 @@
            :end    {:x 0 :y 0}
            :style  (style/gradient-container safe-area)}
           [quo2/button
-           {:style    {:align-self        :stretch
-                       :margin-horizontal 20}
-            :on-press #(do
-                         (rf/dispatch [:chat.ui/clear-sending-images chat-id])
-                         (doseq [item @selected]
-                           (rf/dispatch [:chat.ui/camera-roll-pick item]))
-                         (reset! selected [])
-                         (rf/dispatch [:bottom-sheet/hide]))}
+           {:style               {:align-self        :stretch
+                                  :margin-horizontal 20}
+            :on-press            #(do
+                                    (rf/dispatch [:chat.ui/clear-sending-images chat-id])
+                                    (doseq [item @selected]
+                                      (rf/dispatch [:chat.ui/camera-roll-pick item]))
+                                    (reset! selected [])
+                                    (rf/dispatch [:bottom-sheet/hide]))
+            :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 
 (defn clear-button
   []
   (when (pos? (count @selected))
     [rn/touchable-opacity
-     {:on-press #(reset! selected [])
-      :style    (style/clear-container)}
+     {:on-press            #(reset! selected [])
+      :style               (style/clear-container)
+      :accessibility-label :clear}
      [quo2/text {:weight :medium} (i18n/label :t/clear)]]))
 
 (defn image
   [item index _ {:keys [window-width]}]
   [rn/touchable-opacity
-   {:active-opacity 1
-    :on-press       (fn []
-                      (if (some #{item} @selected)
-                        (reset! selected (vec (remove #(= % item) @selected)))
-                        (swap! selected conj item)))}
+   {:active-opacity      1
+    :on-press            (fn []
+                           (if (some #{item} @selected)
+                             (reset! selected (vec (remove #(= % item) @selected)))
+                             (swap! selected conj item)))
+    :accessibility-label (str "image-" index)}
    [rn/image
     {:source {:uri item}
      :style  (style/image window-width index)}]
    (when (some #{item} @selected)
      [rn/view {:style (style/overlay window-width)}])
    (when (some #{item} @selected)
-     [info-count/info-count {:style style/image-count}
+     [info-count/info-count
+      {:style               style/image-count
+       :accessibility-label (str "count-" index)}
       (inc (utils/first-index #(= item %) @selected))])])
 
 (defn photo-selector
@@ -99,4 +104,5 @@
             :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading?
                                                     has-next-page?])}]
           [bottom-gradient chat-id selected-images]]))]))
+
 

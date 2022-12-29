@@ -15,7 +15,7 @@
             [status-im.ui2.screens.chat.composer.mentions :as mentions]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [status-im.ui2.screens.chat.composer.style :as style]
-            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
+            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
             [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]

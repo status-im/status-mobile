@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.photo-selector.style
+(ns status-im2.contexts.chat.photo-selector.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]))
 
@@ -68,3 +68,4 @@
    :border-radius 8
    :top           8
    :right         8})
+

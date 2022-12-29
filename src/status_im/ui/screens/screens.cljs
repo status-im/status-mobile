@@ -107,8 +107,7 @@
    [status-im.ui.screens.wallet.settings.views :as wallet-settings]
    [status-im.ui.screens.wallet.swap.views :as wallet.swap]
    [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-   [status-im.ui2.screens.chat.group-details.view :as group-details]
-   [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]))
+   [status-im.ui2.screens.chat.group-details.view :as group-details]))
 
 (defn right-button-options
   [id icon]
@@ -205,10 +204,6 @@
     ;TODO custom subtitle
     :options   {:topBar {:visible false}}
     :component pin-messages/pinned-messages}
-
-   {:name      :photo-selector
-    :options   {:topBar {:visible false}}
-    :component photo-selector/photo-selector}
 
    {:name      :group-chat-profile
     ;;TODO animated-header
