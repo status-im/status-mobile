@@ -32,17 +32,19 @@
 
 (defn init
   []
+
   (log/setup config/log-level)
   (global-error/register-handler)
   (when platform/android?
     (status/set-soft-input-mode status/adjust-resize))
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
-  (i18n/init (name i18n-resources/default-device-language)
-             (clj->js i18n-resources/translations-by-locale))
-  (react-native-languages/add-change-listener #(fn [lang]
-                                                 (i18n/set-language lang)
-                                                 (i18n-resources/load-language lang)))
+  (i18n/init)
+
+  (react-native-languages/add-change-listener
+   #(fn [lang]
+      (i18n/load-language lang i18n-resources/loaded-languages)
+      (i18n/set-language lang)))
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
 

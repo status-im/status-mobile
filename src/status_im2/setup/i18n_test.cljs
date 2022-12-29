@@ -3,12 +3,11 @@
             [cljs.test :refer-macros [deftest is]]
             [clojure.set :as set]
             [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [status-im2.setup.i18n-resources :as i18n-resources]))
+            [i18n.i18n :as i18n]))
 
 ;; english as source of truth
 (def labels
-  (set (keys (js->clj (:en i18n-resources/translations-by-locale)
+  (set (keys (js->clj (:en i18n/translations-by-locale)
                       :keywordize-keys
                       true))))
 
@@ -17,7 +16,7 @@
 
 (defn labels-for-all-locales
   []
-  (->> i18n-resources/translations-by-locale
+  (->> i18n/translations-by-locale
        (mapcat #(-> % val (js->clj :keywordize-keys true) keys))
        set))
 
@@ -1025,14 +1024,14 @@
 
 ;; locales
 
-(def locales (set (keys i18n-resources/translations-by-locale)))
+(def locales (set (keys i18n/translations-by-locale)))
 
 (spec/def ::locale locales)
 (spec/def ::locales (spec/coll-of ::locale :kind set? :into #{}))
 
 (defn locale->labels
   [locale]
-  (-> i18n-resources/translations-by-locale (get locale) (js->clj :keywordize-keys true) keys set))
+  (-> i18n/translations-by-locale (get locale) (js->clj :keywordize-keys true) keys set))
 
 (defn locale->checkpoint
   [locale]
