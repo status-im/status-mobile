@@ -6,3 +6,7 @@
 
 (def tag-text
   {:color colors/white})
+
+(def lowercase-text
+  {:color          colors/white
+   :text-transform :lowercase})
