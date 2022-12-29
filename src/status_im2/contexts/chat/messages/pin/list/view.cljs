@@ -10,22 +10,23 @@
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn message-render-fn
-  [{:keys [whisper-timestamp] :as message}
+  [{:keys [whisper-timestamp message-id chat-id] :as message}
    _
    {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
   ;; TODO (flexsurfer) probably we don't want reactions here
-  [message/message-with-reactions
-   message
-   {:group-chat          group-chat
-    :public?             public?
-    :community?          community?
-    :current-public-key  current-public-key
-    :show-input?         show-input?
-    :message-pin-enabled true
-    :in-pinned-view?     true
-    :pinned              true
-    :timestamp-str       (time/timestamp->time whisper-timestamp)
-    :edit-enabled        edit-enabled}])
+  (let [message-content-sub (get-in (rf/sub [:chats/chat-messages chat-id]) [message-id :content])]
+    [message/message-with-reactions
+     (assoc message :content message-content-sub)
+     {:group-chat          group-chat
+      :public?             public?
+      :community?          community?
+      :current-public-key  current-public-key
+      :show-input?         show-input?
+      :message-pin-enabled true
+      :in-pinned-view?     true
+      :pinned              true
+      :timestamp-str       (time/timestamp->time whisper-timestamp)
+      :edit-enabled        edit-enabled}]))
 
 (defn pinned-messages-list
   [chat-id]

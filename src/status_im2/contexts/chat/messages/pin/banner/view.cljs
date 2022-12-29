@@ -5,7 +5,12 @@
 (defn banner
   [chat-id]
   (let [pinned-messages (rf/sub [:chats/pinned chat-id])
-        latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
+        latest-pin-id   (-> pinned-messages
+                            vals
+                            last
+                            (get :message-id))
+        latest-pin-text (get-in (rf/sub [:chats/chat-messages chat-id])
+                                [latest-pin-id :content :text])
         pins-count      (count (seq pinned-messages))]
     (when (> pins-count 0)
       ;; TODO (flexsurfer) this should be banner component in quo2
