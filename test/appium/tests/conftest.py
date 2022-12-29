@@ -12,9 +12,6 @@ import tests
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
 from tests import test_suite_data, appium_container
-# from support.testrail_report import TestrailReport
-#
-# testrail_report = TestrailReport()
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
@@ -245,8 +242,9 @@ def pytest_runtest_makereport(item, call):
         is_group = "xdist_group" in item.keywords._markers or "xdist_group" in item.parent.keywords._markers
         error_intro, error = 'Test setup failed:', ''
         final_error = '%s %s' % (error_intro, error)
-        if hasattr(report, 'wasxfail') and str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) \
-                in str(item.config.getoption("run_testrail_ids")):
+        # if hasattr(report, 'wasxfail') and str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) \
+        #         in str(item.config.getoption("run_testrail_ids")):
+        if hasattr(report, 'wasxfail'):
             if '[NOTRUN]' in report.wasxfail:
                 test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
                 test_suite_data.current_test.create_new_testrun()

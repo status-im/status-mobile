@@ -309,6 +309,7 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
             "Message 1", "Message 2", "Message 3", "Message 4"
 
     @marks.testrail_id(702732)
+    @marks.xfail(reason="blocked by #14637")
     def test_group_chat_pin_messages(self):
         self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
 

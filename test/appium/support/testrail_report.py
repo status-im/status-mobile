@@ -127,6 +127,7 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['group_chat'] = 50964
         test_cases['pr']['community_single'] = 50983
         test_cases['pr']['community_multiple'] = 50982
+        test_cases['pr']['activity_centre'] = 50984
 
         ## Nightly e2e
         # test_cases['nightly']['medium'] = 736
