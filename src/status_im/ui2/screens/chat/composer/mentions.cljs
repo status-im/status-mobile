@@ -11,7 +11,8 @@
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
-    [rn/touchable-opacity {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])}
+    [rn/touchable-opacity {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])
+                           :accessibility-label (str "Press to select " (or nickname alias nickname) " As mention")}
      ;;TODO quo2 item should be used
      [list-item/list-item
       (cond->
@@ -58,4 +59,5 @@
           :key-fn                    first
           :render-fn                 mention-item
           :render-data               text-input-ref
-          :content-container-style   {:padding-bottom 12}}]]))])
+          :content-container-style   {:padding-bottom 12}
+          :accessibility-label       :mentions-list}]]))])
