@@ -11,33 +11,33 @@
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
-    [rn/touchable-opacity {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])
-                           :accessibility-label (str "Press to mention " (or nickname alias nickname) " in your message")}
+    [rn/touchable-opacity
+     {:on-press            #(rf/dispatch [:chat.ui/select-mention text-input-ref user])
+      :accessibility-label (str "Press to mention " (or nickname alias nickname) " in your message")}
      ;;TODO quo2 item should be used
      [list-item/list-item
       (cond->
         {:icon              [photos/member-photo public-key]
          :size              :small
          :text-size         :small
-         :title
-         [text/text
-          {:weight          :medium
-           :ellipsize-mode  :tail
-           :number-of-lines 1
-           :size            :small}
-          (if nickname
-            nickname
-            name)
-          (when nickname
-            [text/text
-             {:weight         :regular
-              :color          :secondary
-              :ellipsize-mode :tail
-              :size           :small}
-             " "
-             (when ens-name?
-               "@")
-             name])]
+         :title             [text/text
+                             {:weight          :medium
+                              :ellipsize-mode  :tail
+                              :number-of-lines 1
+                              :size            :small}
+                             (if nickname
+                               nickname
+                               name)
+                             (when nickname
+                               [text/text
+                                {:weight         :regular
+                                 :color          :secondary
+                                 :ellipsize-mode :tail
+                                 :size           :small}
+                                " "
+                                (when ens-name?
+                                  "@")
+                                name])]
          :title-text-weight :medium}
         ens-name?
         (assoc :subtitle alias))]]))
