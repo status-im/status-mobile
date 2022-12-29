@@ -6,7 +6,7 @@
    [reagent.core :as reagent]
    [status-im.chat.models.images :as images]
    [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.animation :as animation]
    [status-im.ui.components.fast-image :as fast-image]

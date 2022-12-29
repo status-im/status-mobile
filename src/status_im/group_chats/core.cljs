@@ -5,8 +5,8 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
             [utils.re-frame :as rf]
+            [i18n.i18n :as i18n]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 

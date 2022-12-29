@@ -7,7 +7,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.token-tag :as token-tag]
             [quo2.foundations.colors :as colors]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.fast-image :as fast-image]))
 
 (def ^:private token-tag-horizontal-spacing 7)

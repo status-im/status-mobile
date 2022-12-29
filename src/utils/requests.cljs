@@ -1,5 +1,5 @@
 (ns utils.requests
-  (:require [status-im.utils.datetime :as datetime]))
+  (:require [utils.datetime :as datetime]))
 
 (def request-cooldown-ms (* 24 60 60 1000))
 

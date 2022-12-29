@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]

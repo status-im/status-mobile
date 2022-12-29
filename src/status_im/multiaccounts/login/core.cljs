@@ -15,7 +15,7 @@
    [status-im.ethereum.tokens :as tokens]
    [status-im.ethereum.transactions.core :as transactions]
    [status-im.fleet.core :as fleet]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.keycard.common :as keycard.common]
    [status-im.mobile-sync-settings.core :as mobile-network]
    [status-im.multiaccounts.biometric.core :as biometric]

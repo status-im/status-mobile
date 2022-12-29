@@ -2,7 +2,7 @@
   (:require [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.components.description :as description]
             [status-im.ui.screens.keycard.components.keycard-animation :refer [animated-circles]]

@@ -1,9 +1,9 @@
 (ns status-im2.subs.wallet.transactions
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.notifications.core :as notifications]
-            [status-im.utils.datetime :as datetime]
+            [utils.datetime :as datetime]
             [status-im.utils.money :as money]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]))

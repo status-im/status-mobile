@@ -4,7 +4,7 @@
             [re-frame.db :as re-frame.db]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.keycard :as keycard]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.native-module.core :as status]

@@ -3,7 +3,7 @@
             [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.constants :as constants]
-            [status-im.utils.datetime :as datetime]
+            [utils.datetime :as datetime]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.re-frame :as rf]))
 

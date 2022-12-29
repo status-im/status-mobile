@@ -4,7 +4,7 @@
             [status-im.commands.core :as commands]
             [status-im.constants :as constants]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

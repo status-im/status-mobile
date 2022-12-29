@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.icons.icons :as icons]

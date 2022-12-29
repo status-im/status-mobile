@@ -4,7 +4,7 @@
             [reagent.core :as reagent]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
@@ -19,7 +19,7 @@
             [status-im.ui.screens.chat.message.reactions-old :as reactions]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.status.styles :as styles]
-            [status-im.utils.datetime :as datetime]))
+            [utils.datetime :as datetime]))
 
 (defonce messages-list-ref (atom nil))
 (def image-max-dimension 192)
