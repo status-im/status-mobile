@@ -1,9 +1,9 @@
 (ns quo2.components.settings.accounts.view
-  (:require [quo.react-native :as rn]
-            [quo2.components.avatars.account-avatar :as av]
+  (:require [quo2.components.avatars.account-avatar :as account-avatar]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
-            [quo2.components.settings.accounts.style :as style]))
+            [quo2.components.settings.accounts.style :as style]
+            [react-native.core :as rn]))
 
 (defn card-background
   [{:keys [custom-color]}]
@@ -14,7 +14,7 @@
 (defn avatar
   [avatar-props]
   [rn/view {:style (style/avatar-border)}
-   [av/account-avatar (assoc avatar-props :size 48)]])
+   [account-avatar/account-avatar (assoc avatar-props :size 48)]])
 
 (defn menu-button
   [{:keys [on-press]}]

@@ -3,7 +3,7 @@
             [quo2.components.settings.accounts.view :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [reagent.core :as r]
+            [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -22,12 +22,12 @@
 
 (defn cool-preview
   []
-  (let [state (r/atom {:custom-color    :blue
-                       :account-name    "Booze for Dubai"
-                       :account-address "0x21a ... 49e"
-                       :avatar-icon     :i/placeholder
-                       :on-press-menu   (fn []
-                                          (js/alert "Menu button pressed"))})]
+  (let [state (reagent/atom {:custom-color    :blue
+                             :account-name    "Booze for Dubai"
+                             :account-address "0x21a ... 49e"
+                             :avatar-icon     :i/placeholder
+                             :on-press-menu   (fn []
+                                                (js/alert "Menu button pressed"))})]
     (fn []
       [rn/view
        {:margin-bottom 50
