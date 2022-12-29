@@ -91,6 +91,7 @@
          visible?          :visible?
          backdrop-dismiss? :backdrop-dismiss?
          expandable?       :expandable?
+         selected-item     :selected-item
          :or               {show-handle?      true
                             backdrop-dismiss? true
                             expandable?       false}}
@@ -107,9 +108,10 @@
      (fn [insets]
        [:f>
         (fn []
-          (let [{window-height :height
-                 window-width  :width}
+          (let [{height       :height
+                 window-width :width}
                 (rn/use-window-dimensions)
+                window-height (if selected-item (- height 72) height)
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
                 bg-height (max (min @content-height bg-height-expanded) 200)
@@ -205,22 +207,26 @@
                         {:transform [{:translateY translate-y}]}
                         {:width  window-width
                          :height window-height})}
-               [rn/view {:style (styles/background)}
-                [rn/keyboard-avoiding-view
-                 {:behaviour (if platform/ios? :padding :height)
-                  :style     {:flex 1}}
-                 [rn/view
-                  {:style     {:position       :absolute
-                               :left           0
-                               :right          0
-                               :top            0
-                               :padding-top    styles/border-radius
-                               :padding-bottom (:bottom insets)}
-                   :on-layout (when-not (and
-                                         (some? @content-height)
-                                         (> @content-height 0))
-                                on-content-layout)}
-                  children]]
+               [rn/view {:style (styles/container)}
+                (when selected-item
+                  [rn/view {:style styles/selected-background}
+                   [selected-item]])
+                [rn/view {:style (styles/background)}
+                 [rn/keyboard-avoiding-view
+                  {:behaviour (if platform/ios? :padding :height)
+                   :style     {:flex 1}}
+                  [rn/view
+                   {:style     {:position       :absolute
+                                :left           0
+                                :right          0
+                                :top            0
+                                :padding-top    styles/border-radius
+                                :padding-bottom (:bottom insets)}
+                    :on-layout (when-not (and
+                                          (some? @content-height)
+                                          (> @content-height 0))
+                                 on-content-layout)}
+                   children]]
 
-                (when show-handle?
-                  [rn/view {:style (styles/handle)}])]]]]))])]))
+                 (when show-handle?
+                   [rn/view {:style (styles/handle)}])]]]]]))])]))

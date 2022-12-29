@@ -118,7 +118,8 @@
      [rn/view
       {:flex-direction :row
        :border-radius  16
-       :align-items    :center}
+       :align-items    :center
+       :height         48}
 
       (when community-icon
         [community-icon-view community-icon])

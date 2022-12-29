@@ -22,14 +22,25 @@
    :top              0
    :background-color colors/neutral-100})
 
+(defn container
+  []
+  {:position :absolute
+   :left     0
+   :right    0
+   :top      0
+   :bottom   0
+   :overflow :hidden})
+
+(def selected-background
+  {:border-radius     12
+   :margin-horizontal 8
+   :margin-bottom     10
+   :height            48
+   :background-color  (colors/theme-colors colors/white colors/neutral-90)})
+
 (defn background
   []
-  {:position                :absolute
-   :left                    0
-   :right                   0
-   :top                     0
-   :bottom                  0
+  {:background-color        (colors/theme-colors colors/white colors/neutral-95)
+   :flex                    1
    :border-top-left-radius  border-radius
-   :border-top-right-radius border-radius
-   :overflow                :hidden
-   :background-color        (colors/theme-colors colors/white colors/neutral-95)})
+   :border-top-right-radius border-radius})

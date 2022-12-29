@@ -16,9 +16,12 @@
                        (rf/dispatch [:communities/load-category-states id])
                        (rf/dispatch [:dismiss-keyboard])
                        (rf/dispatch [:navigate-to-nav2 :community {:community-id id}]))
-      :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                    {:content (fn []
-                                                [home.actions/actions community-item])}])}
+      :on-long-press #(rf/dispatch
+                       [:bottom-sheet/show-sheet
+                        {:content  (fn []
+                                     [home.actions/actions community-item])
+                         :selected-item (fn []
+                                          [quo/communities-membership-list-item nil community-item])}])}
      community-item]))
 
 (defn get-item-layout-js
@@ -56,9 +59,8 @@
   (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
         tab                     @selected-tab]
     [rn/view
-     {:style {:padding-left     20
-              :padding-right    8
-              :padding-vertical 12}}
+     {:style {:padding-horizontal 20
+              :padding-vertical   12}}
      (case tab
        :joined
        [communities-list (:joined ids-by-user-involvement)]
