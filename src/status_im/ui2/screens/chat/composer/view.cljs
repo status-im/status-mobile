@@ -250,21 +250,27 @@
                                                             max-height
                                                             set-bg-opacity)]
               (quo.react/effect!
-               #(do
-                  (when (and @keyboard-was-shown? (not keyboard-shown))
-                    (swap! context assoc :state :min)
-                    (set-bg-opacity 0))
-                  (when (and blank-composer? (not (seq images)) (not edit))
-                    (clean-and-minimize-composer-fn false))
-                  (when (seq images)
-                    (input/show-send refs))
-                  (reset! keyboard-was-shown? keyboard-shown)
-                  (if (#{:max :custom-chat-unavailable} (:state @context))
-                    (set-bg-opacity 1)
-                    (set-bg-opacity 0))
-                  (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
-                  (reanimated/set-shared-value shared-height
-                                               (reanimated/with-timing (min y max-height)))))
+               (fn []
+                 (let [input-text (-> [:chat/inputs]
+                                      rf/sub
+                                      (get chat-id)
+                                      :input-text)
+                       edited?    (not= input-text (-> edit :content :text))]
+                   (when (and @keyboard-was-shown? (not keyboard-shown))
+                     (swap! context assoc :state :min)
+                     (set-bg-opacity 0))
+                   (when (and blank-composer? (empty? images) (not edit))
+                     (clean-and-minimize-composer-fn false))
+                   (if (or (seq images) (and (not blank-composer?) edited?))
+                     (input/show-send refs)
+                     (input/hide-send refs))
+                   (reset! keyboard-was-shown? keyboard-shown)
+                   (if (#{:max :custom-chat-unavailable} (:state @context))
+                     (set-bg-opacity 1)
+                     (set-bg-opacity 0))
+                   (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
+                   (reanimated/set-shared-value shared-height
+                                                (reanimated/with-timing (min y max-height))))))
               [reanimated/view
                {:style (reanimated/apply-animations-to-style
                         {:height shared-height}
@@ -325,7 +331,7 @@
                     {:icon                true
                      :size                32
                      :accessibility-label :send-message-button
-                     :on-press            #(do (clean-and-minimize-composer-fn false)
+                     :on-press            #(do (clean-and-minimize-composer-fn (some? edit))
                                                (scroll-to-bottom)
                                                (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
