@@ -1,7 +1,6 @@
 (ns status-im.ui.components.topbar
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [quo2.core :as quo2]
             [quo2.foundations.colors :as quo2.colors]))
 
 (def default-button-width 48)

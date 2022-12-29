@@ -7,8 +7,7 @@
             [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.address :as utils.address]
-            [utils.re-frame :as rf]
-            [quo.react :as react]))
+            [utils.re-frame :as rf]))
 
 (defn open-chat
   [chat-id]
