@@ -590,17 +590,17 @@
 
    {:name      :new-chat-aio
     :on-focus  [::new-chat.events/new-chat-focus]
-            ;;TODO accessories
+    ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component new-chat-aio/contact-selection-list}
 
-                                        ;[Chat] New Public chat
+   ;[Chat] New Public chat
    {:name      :new-public-chat
     :insets    {:bottom true}
     :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
     :component new-public-chat/new-public-chat}
 
-   ;[Group chat] Add participants	
+   ;[Group chat] Add participants
    {:name      :add-participants-toggle-list
     :on-focus  [:group/add-participants-toggle-list]
     :insets    {:bottom true}

@@ -99,8 +99,10 @@
  (fn [[contacts selected-contacts-count]]
    (->> contacts
         (filter :mutual?)
-        (map #(assoc % :allow-new-users? (< selected-contacts-count
-                                            (dec constants/max-group-chat-participants))))
+        (map #(assoc %
+                     :allow-new-users?
+                     (< selected-contacts-count
+                        (dec constants/max-group-chat-participants))))
         (group-by (comp (fnil string/upper-case "") first :alias))
         (sort-by (fn [[title]] title))
         (map (fn [[title data]]

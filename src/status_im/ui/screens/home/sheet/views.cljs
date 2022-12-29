@@ -16,11 +16,13 @@
   (rf/dispatch [:bottom-sheet/hide])
   (rf/dispatch event))
 
-(defn add-new-view []
+(defn add-new-view
+  []
   [rn/view
    [rn/view style/add-new-view-wrapper
-    [quo/text {:size   :large
-               :weight :bold}
+    [quo/text
+     {:size   :large
+      :weight :bold}
      (i18n/label :t/open-home)]
     [quo/button
      {:type                :icon
@@ -59,26 +61,28 @@
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
-(defn new-chat-bottom-sheet []
+(defn new-chat-bottom-sheet
+  []
   [rn/view
    [quo2/menu-item
-    {:theme                        :main
-     :title                        (i18n/label :t/new-chat)
-     :icon-bg-color                :transparent
-     :container-padding-vertical   12
-     :title-column-style           {:margin-left 2}
-     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label          :start-a-new-chat
-     :icon                         :i/new-message
-     :on-press                     #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
+    {:theme                      :main
+     :title                      (i18n/label :t/new-chat)
+     :icon-bg-color              :transparent
+     :container-padding-vertical 12
+     :title-column-style         {:margin-left 2}
+     :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
+     :accessibility-label        :start-a-new-chat
+     :icon                       :i/new-message
+     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                                                            :start-a-new-chat])}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
      :icon-bg-color                :transparent
      :icon-container-style         {:padding-horizontal 0}
      :container-padding-horizontal {:padding-horizontal 4}
-     :style-props {:margin-top 18
-                   :margin-bottom 9}
+     :style-props                  {:margin-top    18
+                                    :margin-bottom 9}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)

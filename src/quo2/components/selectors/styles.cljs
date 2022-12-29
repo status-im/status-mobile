@@ -1,4 +1,4 @@
-(ns quo2.components.selectors.styles 
+(ns quo2.components.selectors.styles
   (:require [quo2.foundations.colors :as colors]))
 
 (defn get-color
@@ -20,7 +20,8 @@
      (colors/alpha colors/neutral-20 (if disabled? 0.4 1))
      (colors/alpha colors/neutral-70 (if disabled? 0.3 1)))))
 
-(defn checkbox-toggle [checked? disabled? blurred-background?]
+(defn checkbox-toggle
+  [checked? disabled? blurred-background?]
   {:flex             1
    :border-radius    6
    :border-width     (if @checked? 0 1)

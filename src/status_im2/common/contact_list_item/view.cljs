@@ -20,7 +20,8 @@
       (rf/dispatch [:search/home-filter-changed nil]))))
 
 (defn action-icon
-  [{:keys [public-key] :as item} {:keys [icon start-a-new-chat? group added] :as extra-data} user-selected? on-toggle]
+  [{:keys [public-key] :as item} {:keys [icon start-a-new-chat? group added] :as extra-data}
+   user-selected? on-toggle]
   (let [{:keys [contacts]} group
         member?            (contains? contacts public-key)
         checked?           (reagent/atom (if start-a-new-chat?
@@ -32,17 +33,20 @@
       :style    {:position :absolute
                  :right    20}}
      (if (= icon :options)
-       [quo/icon :i/options {:size  20
-                             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-       @(reagent/track! (fn []
-                         [quo/checkbox
-                          {:default-checked? @checked?
-                           :on-change        (fn [selected]
-                                               (if start-a-new-chat?
-                                                 (on-toggle true @checked? public-key)
-                                                 (if selected
-                                                   (swap! added conj public-key)
-                                                   (reset! added (remove #(= % public-key) @added)))))}]) checked?))]))
+       [quo/icon :i/options
+        {:size  20
+         :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+       @(reagent/track!
+         (fn []
+           [quo/checkbox
+            {:default-checked? @checked?
+             :on-change        (fn [selected]
+                                 (if start-a-new-chat?
+                                   (on-toggle true @checked? public-key)
+                                   (if selected
+                                     (swap! added conj public-key)
+                                     (reset! added (remove #(= % public-key) @added)))))}])
+         checked?))]))
 
 (defn contact-list-item
   [item _ _ {:keys [group start-a-new-chat? on-toggle] :as extra-data}]
@@ -74,15 +78,17 @@
       [rn/view {:style {:flex-direction :row}}
        [quo/text {:weight :semi-bold} display-name]
        (if ens-verified
-         [rn/view {:style {:margin-left 5
-                           :margin-top  4}}
+         [rn/view
+          {:style {:margin-left 5
+                   :margin-top  4}}
           [quo/icon :i/verified
            {:no-color true
             :size     12
             :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
          (when added?
-           [rn/view {:style {:margin-left 5
-                             :margin-top  4}}
+           [rn/view
+            {:style {:margin-left 5
+                     :margin-top  4}}
             [quo/icon :i/contact
              {:no-color true
               :size     12
