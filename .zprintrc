@@ -1,0 +1,48 @@
+;; -*- mode: clojure -*-
+;; vi: ft=clojure
+{:width     105
+ :style     [;; community style
+             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#community
+             :community
+
+             ;; no comma in map
+             :no-comma
+
+             :custom-justify
+
+             ;; respect all newlines
+             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-nl
+             :respect-nl
+
+             ;; respect blank line
+             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-bl
+             :respect-bl]
+ :fn-map
+ {"reg-sub"         :arg1-pair
+  "h/describe"      :arg1-body
+  "h/test"          :arg1-body
+  "global.describe" :arg1-body
+  "global.test"     :arg1-body
+  "list-comp"       :binding
+  "defview"         :arg1-body
+  "letsubs"         :binding
+  "testing"         :arg1-body
+  "deftest-sub"     :arg1-body
+  "wait-for"        :arg1-body
+  "with-deps-check" :arg1-body
+  "->"              [:noarg1-body
+                     {:list               {:constant-pair? false :force-nl? false}
+                      :next-inner-restore [[:list :constant-pair?]]}]
+  "set!"            "reset!"
+  "assoc-when"      "assoc"
+  "assoc-some"      "assoc"
+  "conj-when"       "conj"
+  "conj-some"       "conj"}
+ :remove    {:fn-force-nl #{:noarg1-body}}
+ :style-map
+ {:no-comma       {:map {:comma? false}}
+  :custom-justify
+  {:doc     "Justify everything using pre-1.1.2 approach"
+   :binding {:justify? true :justify {:max-variance 1000}}
+   :map     {:justify? true :justify {:max-variance 1000}}
+   :pair    {:justify? true :justify {:max-variance 1000}}}}}
