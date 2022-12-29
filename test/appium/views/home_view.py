@@ -3,7 +3,7 @@ import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import test_dapp_url
-from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox
+from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
 from views.base_view import BaseView
 
 
@@ -283,6 +283,13 @@ class HomeView(BaseView):
                                                           accessibility_id="accept-and-add-activity-center")
         self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
                                                                   "@content-desc='checkbox-off'])[1]")
+        # Tabs and elements on Messages view
+        self.recent_tab = Button(self.driver, accessibility_id="tab-recent")
+        self.groups_tab = Button(self.driver, accessibility_id="tab-groups")
+        self.contacts_tab = Button(self.driver, accessibility_id="tab-contacts")
+        self.contact_new_badge = Button(self.driver, accessibility_id="notification-dot")
+        self.pending_contact_request_text = Text(self.driver, xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
+
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
@@ -311,6 +318,7 @@ class HomeView(BaseView):
 
         # New UI
         self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
+        self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
@@ -421,6 +429,16 @@ class HomeView(BaseView):
         self.driver.info("## Community is created successfully!", device=False)
         return chat_view.get_community_by_name(name)
 
+    def import_community(self, key):
+        self.driver.info("## Importing community")
+        import_button = Button(self.driver, translation_id="import")
+        self.plus_button.click()
+        chat_view = self.communities_button.click()
+        chat_view.chat_options.click()
+        chat_view.element_by_translation_id("import-community").wait_and_click()
+        EditBox(self.driver, xpath="//android.widget.EditText").set_value(key)
+        import_button.click_until_absense_of_element(import_button)
+
     def join_public_chat(self, chat_name: str):
         self.driver.info("## Creating public chat %s" % chat_name, device=False)
         self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
@@ -470,3 +488,6 @@ class HomeView(BaseView):
         self.driver.info("Getting PN by '%s'" % pn_text)
         expected_element = PushNotificationElement(self.driver, pn_text)
         return expected_element if expected_element.is_element_displayed(60) else False
+
+    def contact_details(self, username):
+        return Button(self.driver, xpath="//*[contains(@text,'%s')]/../android.view.ViewGroup/android.widget.ImageView" % username)

@@ -1284,6 +1284,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702731)
+    @marks.xfail(reason="blocked by #14637")
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
         self.chat_1.send_message(self.message_1)

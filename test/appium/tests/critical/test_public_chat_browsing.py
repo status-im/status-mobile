@@ -541,39 +541,39 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
-    @marks.testrail_id(702847)
-    # TODO long press and assertion of text in input field is currently not working on e2e builds. needs to be investigated
-    @marks.skip('needs to be refactored')
-    def test_community_copy_and_paste_message_in_chat_input(self):
-        message_text = {'text_message': 'mmmeowesage_text'}
-        formatted_message = {'message_with_link': 'https://status.im'
-                             }
-        message_input = self.channel.chat_message_input
-        if not message_input.is_element_displayed():
-            self.home.communities_tab.double_click()
-            self.home.get_chat(self.community_name, community=True).click()
-            self.community.get_chat(self.channel_name).click()
-        message_input.send_keys(message_text['text_message'])
-        self.channel.send_message_button.click()
-
-        self.channel.copy_message_text(message_text['text_message'])
-
-        message_input.paste_text_from_clipboard()
-        if message_input.text != message_text['text_message']:
-            self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
-        message_input.clear()
-
-        for message in formatted_message:
-            message_input.send_keys(formatted_message[message])
-            self.channel.send_message_button.click()
-
-            self.channel.copy_message_text(formatted_message[message])
-            message_input.paste_text_from_clipboard()
-            if message_input.text != formatted_message[message]:
-                self.errors.append('Message %s text was not copied in community channel' % formatted_message[message])
-            message_input.clear()
-
-        self.errors.verify_no_errors()
+    # @marks.testrail_id(702847)
+    # # TODO long press and assertion of text in input field is currently not working on e2e builds. needs to be investigated
+    # @marks.skip('needs to be refactored')
+    # def test_community_copy_and_paste_message_in_chat_input(self):
+    #     message_text = {'text_message': 'mmmeowesage_text'}
+    #     formatted_message = {'message_with_link': 'https://status.im'
+    #                          }
+    #     message_input = self.channel.chat_message_input
+    #     if not message_input.is_element_displayed():
+    #         self.home.communities_tab.double_click()
+    #         self.home.get_chat(self.community_name, community=True).click()
+    #         self.community.get_chat(self.channel_name).click()
+    #     message_input.send_keys(message_text['text_message'])
+    #     self.channel.send_message_button.click()
+    #
+    #     self.channel.copy_message_text(message_text['text_message'])
+    #
+    #     message_input.paste_text_from_clipboard()
+    #     if message_input.text != message_text['text_message']:
+    #         self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
+    #     message_input.clear()
+    #
+    #     for message in formatted_message:
+    #         message_input.send_keys(formatted_message[message])
+    #         self.channel.send_message_button.click()
+    #
+    #         self.channel.copy_message_text(formatted_message[message])
+    #         message_input.paste_text_from_clipboard()
+    #         if message_input.text != formatted_message[message]:
+    #             self.errors.append('Message %s text was not copied in community channel' % formatted_message[message])
+    #         message_input.clear()
+    #
+    #     self.errors.verify_no_errors()
 
 
 @pytest.mark.xdist_group(name="one_2")
@@ -713,54 +713,54 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         channel_1_element.click()
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702844)
-    @marks.skip("Until preview component will be developed")
-    def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
-                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
-                                      'subtitle': 'GitHub'},
-                        'yotube': {
-                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                            'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'}
-                        # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
-                        # 'twitter': {
-                        #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
-                        #     'txt': "We've rethought how we translate content, allowing us to translate",
-                        #     'subtitle': 'Twitter'
-                        # }
-                        }
-
-        self.home_1.just_fyi("Check enabling and sending first gif")
-        self.channel_2.send_message(giphy_url)
-        # workaround to get chat view focused
-        self.channel_2.send_message(giphy_url)
-        self.channel_2.element_by_translation_id("dont-ask").click()
-        # workaround to get chat view focused
-        self.channel_1.send_message(giphy_url)
-        self.channel_1.element_by_text("Enable").wait_and_click()
-
-        self.channel_1.element_by_translation_id("enable-all").wait_and_click()
-        self.channel_1.click_system_back_button()
-        if not self.channel_1.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("No preview is shown for %s" % giphy_url)
-        for key in preview_urls:
-            self.home_2.just_fyi("Checking %s preview case" % key)
-            data = preview_urls[key]
-            self.channel_2.send_message(data['url'])
-            message = self.channel_1.get_preview_message_by_text(data['url'])
-            if data['txt'] not in message.preview_title.text:
-                self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
-            if message.preview_subtitle.text != data['subtitle']:
-                self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
-
-        self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
-        if self.channel_2.element_by_translation_id("enable").is_element_displayed():
-            self.errors.append("Enable button is still shown after clicking on 'Don't ask again'")
-        if self.channel_2.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("Preview is shown for sender without permission")
-        self.errors.verify_no_errors()
+    # @marks.testrail_id(702844)
+    # @marks.skip("Until preview component will be developed")
+    # def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
+    #     giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
+    #     preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
+    #                                   'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
+    #                                   'subtitle': 'GitHub'},
+    #                     'yotube': {
+    #                         'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+    #                         'txt': 'Status & Keycard – Hardware-Enforced Security',
+    #                         'subtitle': 'YouTube'}
+    #                     # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
+    #                     # 'twitter': {
+    #                     #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
+    #                     #     'txt': "We've rethought how we translate content, allowing us to translate",
+    #                     #     'subtitle': 'Twitter'
+    #                     # }
+    #                     }
+    #
+    #     self.home_1.just_fyi("Check enabling and sending first gif")
+    #     self.channel_2.send_message(giphy_url)
+    #     # workaround to get chat view focused
+    #     self.channel_2.send_message(giphy_url)
+    #     self.channel_2.element_by_translation_id("dont-ask").click()
+    #     # workaround to get chat view focused
+    #     self.channel_1.send_message(giphy_url)
+    #     self.channel_1.element_by_text("Enable").wait_and_click()
+    #
+    #     self.channel_1.element_by_translation_id("enable-all").wait_and_click()
+    #     self.channel_1.click_system_back_button()
+    #     if not self.channel_1.get_preview_message_by_text(giphy_url).preview_image:
+    #         self.errors.append("No preview is shown for %s" % giphy_url)
+    #     for key in preview_urls:
+    #         self.home_2.just_fyi("Checking %s preview case" % key)
+    #         data = preview_urls[key]
+    #         self.channel_2.send_message(data['url'])
+    #         message = self.channel_1.get_preview_message_by_text(data['url'])
+    #         if data['txt'] not in message.preview_title.text:
+    #             self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+    #         if message.preview_subtitle.text != data['subtitle']:
+    #             self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+    #
+    #     self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
+    #     if self.channel_2.element_by_translation_id("enable").is_element_displayed():
+    #         self.errors.append("Enable button is still shown after clicking on 'Don't ask again'")
+    #     if self.channel_2.get_preview_message_by_text(giphy_url).preview_image:
+    #         self.errors.append("Preview is shown for sender without permission")
+    #     self.errors.verify_no_errors()
 
     @marks.testrail_id(702842)
     def test_community_mark_all_messages_as_read(self):
