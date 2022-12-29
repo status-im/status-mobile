@@ -207,9 +207,9 @@
                         {:transform [{:translateY translate-y}]}
                         {:width  window-width
                          :height window-height})}
-               [rn/view {:style (styles/container)}
+               [rn/view {:style styles/container}
                 (when selected-item
-                  [rn/view {:style styles/selected-background}
+                  [rn/view {:style (styles/selected-background)}
                    [selected-item]])
                 [rn/view {:style (styles/background)}
                  [rn/keyboard-avoiding-view

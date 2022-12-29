@@ -22,8 +22,7 @@
    :top              0
    :background-color colors/neutral-100})
 
-(defn container
-  []
+(def container
   {:position :absolute
    :left     0
    :right    0
@@ -31,7 +30,8 @@
    :bottom   0
    :overflow :hidden})
 
-(def selected-background
+(defn selected-background
+  []
   {:border-radius     12
    :margin-horizontal 8
    :margin-bottom     10

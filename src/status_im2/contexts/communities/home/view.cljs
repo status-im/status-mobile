@@ -18,10 +18,10 @@
                        (rf/dispatch [:navigate-to-nav2 :community {:community-id id}]))
       :on-long-press #(rf/dispatch
                        [:bottom-sheet/show-sheet
-                        {:content  (fn []
-                                     [home.actions/actions community-item])
+                        {:content       (fn []
+                                          [home.actions/actions community-item])
                          :selected-item (fn []
-                                          [quo/communities-membership-list-item nil community-item])}])}
+                                          [quo/communities-membership-list-item {} community-item])}])}
      community-item]))
 
 (defn get-item-layout-js
