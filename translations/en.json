@@ -1478,6 +1478,8 @@
     "set-custom-fee": "Set custom fee",
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
+    "add-a-contact": "Add a contact",
+    "enter-a-chat-key": "Enter a chat key or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",
@@ -1915,5 +1917,11 @@
     "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
     "show-existing-keys": "Show Existing Keys",
     "scan-sync-code": "Scan Sync Code",
-    "confirm-selection": "Confirm selection"
+    "confirm-selection": "Confirm selection",
+    "chat-with": "Chat with {{selected-user}}",
+    "setup-group-chat": "Setup group chat",
+    "search-contacts": "Search contacts",
+    "who-are-you-looking-for": "Who are you looking for ?",
+    "close-contact-search": "Close contact search",
+    "selected-count-from-max": "{{selected}}/{{max}}"
 }

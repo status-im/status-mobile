@@ -12,13 +12,6 @@
    :text-align        :center
    :color             colors/gray})
 
-(def toolbar-header-container
-  {:align-items :center})
-
-(defn toolbar-sub-header
-  []
-  {:color colors/gray})
-
 (def no-contacts
   {:flex            1
    :justify-content :center

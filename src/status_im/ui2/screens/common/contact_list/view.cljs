@@ -9,8 +9,10 @@
   [quo/divider-label {:label title}])
 
 (defn contact-list
-  [data]
-  (let [contacts (rf/sub [:contacts/filtered-active-sections])]
+  [{:keys [start-a-new-chat?] :as data}]
+  (let [contacts (if start-a-new-chat?
+                   (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+                   (rf/sub [:contacts/filtered-active-sections]))]
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false
