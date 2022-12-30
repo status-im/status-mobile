@@ -7,7 +7,8 @@
             [status-im2.setup.config :as config]
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [status-im2.common.not-implemented :as not-implemented]
+            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]))
 
 (defn pin-message
   [{:keys [chat-id pinned] :as message-data}]
@@ -51,15 +52,19 @@
        :id       (if pinned :unpin :pin)}])
    (when-not pinned
      [{:type     :danger
-       :on-press #(rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                constants/delete-message-for-me-undo-time-limit-ms])
+       :on-press #(do
+                    (close-bottom-sheet-fn nil)
+                    (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                                 constants/delete-message-for-me-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
-       :on-press #(rf/dispatch [:chat.ui/delete-message message-data
-                                constants/delete-message-undo-time-limit-ms])
+       :on-press #(do
+                    (close-bottom-sheet-fn nil)
+                    (rf/dispatch [:chat.ui/delete-message message-data
+                                constants/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))
@@ -107,7 +112,7 @@
                                        (rf/dispatch [:models.reactions/send-emoji-reaction
                                                      {:message-id message-id
                                                       :emoji-id   id}]))
-                                     (rf/dispatch [:bottom-sheet/hide]))})
+                                     (close-bottom-sheet-fn nil))})
             icon]])))]))
 
 (defn reactions-and-actions
@@ -133,7 +138,7 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:bottom-sheet/hide]))}]))
+                                      (close-bottom-sheet-fn nil))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
 

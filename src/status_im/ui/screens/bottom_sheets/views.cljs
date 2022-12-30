@@ -8,7 +8,8 @@
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]))
 
 (defn bottom-sheet
   []
@@ -47,10 +48,16 @@
           (merge key-storage/migrate-account-password)
 
           (= view :pinned-messages-list)
-          (merge {:content pin.list/pinned-messages-list}))]
+          (merge {:content pin.list/pinned-messages-list})
+          
+          (= view :drawer/reactions)
+          (merge {:content drawers/reactions}))]
     (reagent/create-class {:reagent-render         (fn []
-                                                     [bottom-sheet/bottom-sheet (if (= view :new-chat-bottom-sheet)
+                                                     [bottom-sheet/bottom-sheet (case view
+                                                                                  :new-chat-bottom-sheet
                                                                                   (assoc opts :initial-height 150)
+                                                                                  :drawer/reactions
+                                                                                  (assoc opts :initial-height 100)
                                                                                   opts)
                                                       (when content
                                                         [content (when options options)])])

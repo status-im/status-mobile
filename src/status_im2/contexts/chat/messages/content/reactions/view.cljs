@@ -2,8 +2,7 @@
   (:require [status-im2.common.constants :as constants]
             [quo2.core :as quo]
             [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]))
+            [utils.re-frame :as rf]))
 
 (defn message-reactions-row
   [chat-id message-id]
@@ -27,5 +26,7 @@
                                                    :emoji-id   emoji-id}]))
             :accessibility-label (str "emoji-reaction-" emoji-id)}]])
        [quo/add-reaction
-        {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                  {:content (fn [] [drawers/reactions chat-id message-id])}])}]])))
+        {:on-press #(do
+                      (rf/dispatch [:dismiss-keyboard])
+                      (rf/dispatch [:bottom-sheet/show-sheet :drawer/reactions :chat-id    chat-id
+                                    :message-id message-id]))}]])))

@@ -69,8 +69,10 @@
      {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
       :style          {:border-radius 16}
       :on-press       #()
-      :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                     {:content (drawers/reactions-and-actions message-data context)}])}
+      :on-long-press  #(do
+                         (rf/dispatch [:dismiss-keyboard])
+                         (rf/dispatch [:bottom-sheet/show-sheet
+                                       {:content (drawers/reactions-and-actions message-data context)}]))}
      [rn/view {:padding-vertical 8}
       (when (and (seq response-to) quoted-message)
         [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
