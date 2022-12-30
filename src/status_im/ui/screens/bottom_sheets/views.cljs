@@ -49,16 +49,17 @@
 
           (= view :pinned-messages-list)
           (merge {:content pin.list/pinned-messages-list})
-          
+
           (= view :drawer/reactions)
           (merge {:content drawers/reactions}))]
     (reagent/create-class {:reagent-render         (fn []
-                                                     [bottom-sheet/bottom-sheet (case view
-                                                                                  :new-chat-bottom-sheet
-                                                                                  (assoc opts :initial-height 150)
-                                                                                  :drawer/reactions
-                                                                                  (assoc opts :initial-height 100)
-                                                                                  opts)
+                                                     [bottom-sheet/bottom-sheet
+                                                      (case view
+                                                        :new-chat-bottom-sheet
+                                                        (assoc opts :initial-height 150)
+                                                        :drawer/reactions
+                                                        (assoc opts :initial-height 100)
+                                                        opts)
                                                       (when content
                                                         [content (when options options)])])
                            :component-will-unmount (fn []

@@ -55,7 +55,7 @@
        :on-press #(do
                     (close-bottom-sheet-fn nil)
                     (rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                 constants/delete-message-for-me-undo-time-limit-ms]))
+                                  constants/delete-message-for-me-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
@@ -64,7 +64,7 @@
        :on-press #(do
                     (close-bottom-sheet-fn nil)
                     (rf/dispatch [:chat.ui/delete-message message-data
-                                constants/delete-message-undo-time-limit-ms]))
+                                  constants/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))
