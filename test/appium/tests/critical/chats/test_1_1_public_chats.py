@@ -1284,7 +1284,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702731)
-    @marks.xfail(reason="blocked by #14637")
+    @marks.xfail(reason="blocked by #14672")
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
         self.chat_1.send_message(self.message_1)
@@ -1360,11 +1360,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                     "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
                             chat_number + 1)
                 )
+        # workaround for 14672
+        self.chat_1.tap_by_coordinates(500, 100)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
+        # self.home_1.click_system_back_button_until_element_is_shown()
         self.home_1.browser_tab.click()  # temp, until profile is on browser tab
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.chats_tab.click()
