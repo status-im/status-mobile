@@ -1,12 +1,7 @@
 (ns quo2.components.avatars.account-avatar
   (:require [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
             [react-native.core :as rn]))
-
-(def icon-color-value
-  {:dark  (get-in colors/customization [:dark :purple])
-   :light (get-in colors/customization [:light :purple])})
 
 (defn get-border-radius
   [size]
@@ -27,12 +22,11 @@
     20 11))
 
 (defn account-avatar
-  [{:keys [size icon]
-    :or   {size 80
-           icon :main-icons/placeholder}}]
-  (let [icon-color           (if (theme/dark?)
-                               (:dark icon-color-value)
-                               (:light icon-color-value))
+  [{:keys [size icon color]
+    :or   {size  80
+           icon  :i/placeholder
+           color :purple}}]
+  (let [icon-color           (colors/custom-color-by-theme color 50 60)
         avatar-border-radius (get-border-radius size)
         inner-icon-size      (get-inner-icon-sizes size)]
     [rn/view

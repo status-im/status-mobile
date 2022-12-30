@@ -63,6 +63,7 @@
    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
+   [status-im2.contexts.quo-preview.settings.accounts :as accounts]
    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
 
 (def screens-categories
@@ -194,7 +195,10 @@
                             :component selectors/preview-selectors}]
    :settings              [{:name      :privacy-option
                             :insets    {:top false}
-                            :component privacy-option/preview-options}]
+                            :component privacy-option/preview-options}
+                           {:name      :accounts
+                            :insets    {:top false}
+                            :component accounts/preview-accounts}]
    :tabs                  [{:name      :segmented
                             :insets    {:top false}
                             :component segmented/preview-segmented}
