@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.home.sheet.views
-  (:require [quo.core :as quo]
+  (:require [i18n.i18n :as i18n]
+            [quo.core :as quo]
+            [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]
-            [i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
+            [status-im.ui.screens.home.sheet.styles :as style]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im.utils.config :as config]
-            [quo2.core :as quo2]
-            [status-im.ui.screens.home.sheet.styles :as style]))
+            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]))
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (close-bottom-sheet-fn nil)
   (rf/dispatch event))
 
 (defn add-new-view
