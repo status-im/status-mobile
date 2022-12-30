@@ -4,7 +4,8 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.style :as style]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]))
 
 (defn avatar
   [group-chat color display-name photo-path]
@@ -56,7 +57,7 @@
           [quo/button
            {:type     :grey
             :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(rf/dispatch [:bottom-sheet/hide])}
+            :on-press #(close-bottom-sheet-fn nil)}
            (i18n/label :t/close)]
           [quo/button
            {:type     :danger

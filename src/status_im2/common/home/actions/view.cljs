@@ -1,9 +1,11 @@
 (ns status-im2.common.home.actions.view
-  (:require [i18n.i18n :as i18n]
+  (:require ;;TODO move to
+ ;;status-im2
+            [i18n.i18n :as i18n]
             [quo2.components.drawers.action-drawers :as drawer]
             [status-im.chat.models :as chat.models]
+            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
-                                                                                 ;;status-im2
             [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]))
 
@@ -25,7 +27,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (close-bottom-sheet-fn nil)
   (rf/dispatch event))
 
 (defn show-profile-action
@@ -51,7 +53,7 @@
 
 (defn clear-history-action
   [{:keys [chat-id] :as item}]
-  (hide-sheet-and-dispatch
+  (rf/dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
@@ -64,7 +66,7 @@
 
 (defn delete-chat-action
   [{:keys [chat-id] :as item}]
-  (hide-sheet-and-dispatch
+  (rf/dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
