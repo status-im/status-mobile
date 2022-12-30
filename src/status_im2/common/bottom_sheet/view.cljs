@@ -117,7 +117,7 @@
                 window-height (if selected-item (- height 72) height)
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
-                bg-height (max (min @content-height bg-height-expanded) 150)
+                bg-height (max (min @content-height bg-height-expanded) (or initial-height 200))
                 bottom-sheet-dy (reanimated/use-shared-value 0)
                 pan-y (reanimated/use-shared-value 0)
                 translate-y (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y)
