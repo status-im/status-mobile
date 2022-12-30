@@ -2,13 +2,14 @@
   (:require [i18n.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :as info-count]
-            [quo2.core :as quo2]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
+            [quo.react]
             [utils.re-frame :as rf]))
 
 (def selected (reagent/atom []))
@@ -18,32 +19,36 @@
   [:f>
    (fn []
      (let [safe-area (safe-area/use-safe-area)]
-       (when (or (pos? (count @selected)) selected-images)
+       (when (or (seq @selected) selected-images)
          [linear-gradient/linear-gradient
           {:colors [:black :transparent]
            :start  {:x 0 :y 1}
            :end    {:x 0 :y 0}
            :style  (style/gradient-container safe-area)}
-          [quo2/button
+          [quo/button
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
-            :on-press            #(do
-                                    (rf/dispatch [:chat.ui/clear-sending-images chat-id])
-                                    (doseq [item @selected]
-                                      (rf/dispatch [:chat.ui/camera-roll-pick item]))
-                                    (reset! selected [])
-                                    (rf/dispatch [:bottom-sheet/hide]))
+            :on-press            (fn []
+                                   (rf/dispatch [:chat.ui/clear-sending-images chat-id])
+                                   (doseq [item @selected]
+                                     (rf/dispatch [:chat.ui/camera-roll-pick item]))
+                                   (reset! selected [])
+                                   (rf/dispatch [:bottom-sheet/hide]))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 
 (defn clear-button
   []
-  (when (pos? (count @selected))
+  (when (seq @selected)
     [rn/touchable-opacity
      {:on-press            #(reset! selected [])
       :style               (style/clear-container)
       :accessibility-label :clear}
-     [quo2/text {:weight :medium} (i18n/label :t/clear)]]))
+     [quo/text {:weight :medium} (i18n/label :t/clear)]]))
+
+(defn remove-selected
+  [coll item]
+  (vec (remove #(= % item) coll)))
 
 (defn image
   [item index _ {:keys [window-width]}]
@@ -51,7 +56,8 @@
    {:active-opacity      1
     :on-press            (fn []
                            (if (some #{item} @selected)
-                             (reset! selected (vec (remove #(= % item) @selected)))
+                             ;(reset! selected (vec (remove #(= % item) @selected)))
+                             (swap! selected remove-selected item)
                              (swap! selected conj item)))
     :accessibility-label (str "image-" index)}
    [rn/image
@@ -68,7 +74,7 @@
 (defn photo-selector
   [chat-id]
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
-  (let [selected-images (keys (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image]))]
+  (let [selected-images (keys (rf/sub [:chats/sending-image]))]
     (when selected-images
       (reset! selected (vec selected-images)))
     [:f>
@@ -83,17 +89,15 @@
           [rn/touchable-opacity
            {:on-press #(js/alert "Camera: not implemented")
             :style    (style/camera-button-container)}
-           [quo2/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+           [quo/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
           [rn/view
-           {:style {:flex-direction :row
-                    :position       :absolute
-                    :align-self     :center}}
-           [quo2/text {:weight :medium} (i18n/label :t/recent)]
+           {:style style/title-container}
+           [quo/text {:weight :medium} (i18n/label :t/recent)]
            [rn/view {:style (style/chevron-container)}
-            [quo2/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
+            [quo/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
           [clear-button]
           [rn/flat-list
-           {:key-fn                  (fn [item] item)
+           {:key-fn                  identity
             :render-fn               image
             :render-data             {:window-width window-width}
             :data                    camera-roll-photos

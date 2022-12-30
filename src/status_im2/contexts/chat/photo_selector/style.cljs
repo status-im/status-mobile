@@ -37,6 +37,11 @@
    :margin-left      20
    :margin-bottom    24})
 
+(def title-container
+  {:flex-direction :row
+   :position       :absolute
+   :align-self     :center})
+
 (defn chevron-container
   []
   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
