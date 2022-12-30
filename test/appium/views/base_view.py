@@ -746,6 +746,10 @@ class BaseView(object):
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=keycard)
 
+    def tap_by_coordinates(self, x, y):
+        action = TouchAction(self.driver)
+        action.press(None, x, y).perform()
+
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):
         string_source = self.driver.page_source

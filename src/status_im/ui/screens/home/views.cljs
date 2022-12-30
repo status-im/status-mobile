@@ -9,7 +9,7 @@
    [reagent.core :as reagent]
    [status-im.add-new.core :as new-chat]
    [status-im.add-new.db :as db]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.qr-scanner.core :as qr-scanner]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -263,7 +263,7 @@
   (views/letsubs [logging-in? [:multiaccounts/login]]
     [components.plus-button/plus-button-old
      {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}]))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 
@@ -272,7 +272,7 @@
   (views/letsubs [logging-in? [:multiaccounts/login]]
     [components.plus-button/plus-button-old
      {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}]))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 

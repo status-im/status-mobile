@@ -1,15 +1,15 @@
 (ns status-im.ui.components.topbar
-  (:require [quo.core :as quo]
-            [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [quo.core :as quo]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (def default-button-width 48)
 
 (defn default-navigation
   [modal? {:keys [on-press label icon]}]
-  (cond-> {:icon                (if modal? :main-icons/close :main-icons/arrow-left)
+  (cond-> {:icon                (if modal? :i/close :i/arrow-left)
            :accessibility-label :back-button
-           :on-press            #(re-frame/dispatch [:navigate-back])}
+           :on-press            #(re-frame/dispatch [:navigate-back :bottom-sheet/hide])}
     on-press
     (assoc :on-press on-press)
 

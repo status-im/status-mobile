@@ -9,6 +9,7 @@
 
 ;; Atoms
 (def selected-stack-id (atom nil))
+(def screen-height (atom nil))
 (def home-stack-state (atom shell.constants/close-with-animation))
 (def pass-through? (atom false)) ;; TODO - Use dynamic pass-through for transparent bottom tabs
 (def shared-values-atom (atom nil))
@@ -47,6 +48,7 @@
 (defn calculate-home-stack-position
   []
   (let [{:keys [width height]} (shell.constants/dimensions)
+        height                 (or @screen-height height)
         bottom-nav-tab-width   90
         minimize-scale         (/ bottom-nav-tab-width width)
         empty-space-half-scale (/ (- 1 minimize-scale) 2)

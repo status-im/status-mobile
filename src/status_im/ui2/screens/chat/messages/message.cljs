@@ -10,7 +10,7 @@
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
    [status-im.constants :as constants]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.fast-image :as fast-image]
    [status-im.ui.components.react :as react]
@@ -25,7 +25,7 @@
    [status-im.ui.screens.communities.icon :as communities.icon]
    [status-im.ui2.screens.chat.components.reply :as components.reply]
    [status-im.utils.config :as config]
-   [status-im.utils.datetime :as time]
+   [utils.datetime :as datetime]
    [status-im.utils.utils :as utils]
    [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
    [status-im2.contexts.chat.messages.delete-message-for-me.events]
@@ -145,7 +145,8 @@
                                                 message-id)
         reply                              (assoc reply
                                                   :deleted?        deleted?
-                                                  :deleted-for-me? deleted-for-me?)]
+                                                  :deleted-for-me? deleted-for-me?
+                                                  :chat-id         chat-id)]
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
      [components.reply/reply-message reply false pin?]]))
 
@@ -205,7 +206,7 @@
         [text/text props " • "]
         [text/text
          (assoc props :accessibility-label :message-timestamp)
-         (time/to-short-str timestamp)]]))])
+         (datetime/to-short-str timestamp)]]))])
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"

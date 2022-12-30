@@ -46,6 +46,7 @@
    quo2.components.selectors.filter.view
    quo2.components.selectors.selectors
    quo2.components.separator
+   quo2.components.settings.accounts.view
    quo2.components.settings.privacy-option
    quo2.components.tabs.account-selector
    quo2.components.tabs.tabs
@@ -128,3 +129,4 @@
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
+(def account quo2.components.settings.accounts.view/account)

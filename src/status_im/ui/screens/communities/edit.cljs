@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.communities.edit
   (:require [quo.core :as quo]
             [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.communities.create :as community.create]
             [utils.re-frame :as rf]))

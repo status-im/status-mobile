@@ -4,7 +4,7 @@
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.backup-key :as keycard.backup]
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.core :as multiaccounts]

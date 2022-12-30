@@ -2,7 +2,9 @@
   (:require [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.components.selectors.styles :as style]))
+
 
 (defn- get-color
   [checked? disabled? blurred-background?]
@@ -66,13 +68,13 @@
                      (colors/alpha colors/neutral-100 (if disabled? 0.3 1))
                      (colors/alpha colors/white (if disabled? 0.3 1)))}]])]])))
 
+
 (defn checkbox
   [{:keys [default-checked?]}]
   (let [checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style accessibility-label]}]
+    (fn [{:keys [on-change disabled? blurred-background? container-style]}]
       [rn/touchable-without-feedback
-       {:accessibility-label accessibility-label
-        :on-press            (handle-press disabled? on-change checked?)}
+       {:on-press (handle-press disabled? on-change checked?)}
        [rn/view
         {:style (merge
                  container-style
@@ -108,6 +110,34 @@
              {:size  20
               :color colors/white}]])]]])))
 
+;; TODO (Omar): issue https://github.com/status-im/status-mobile/issues/14681
+;(defn checkbox
+;  [{:keys [default-checked?]}]
+;  (let [checked? (reagent/atom (or default-checked? false))]
+;    @(reagent/track
+;      (fn [{:keys [on-change disabled? blurred-background? container-style]}]
+;        [rn/touchable-without-feedback
+;         {:on-press (handle-press disabled? on-change checked?)}
+;         [rn/view
+;          {:style (merge
+;                   container-style
+;                   {:height 20
+;                    :width  20})}
+;          [rn/view
+;           {:style               (style/checkbox-toggle checked? disabled? blurred-background?)
+;            :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
+;            :accessibility-role  :checkbox
+;            :testID              "checkbox-component"}
+;           (when @checked?
+;             [rn/view
+;              {:style
+;               {:height 20
+;                :width  20}}
+;              [icons/icon :i/check-small
+;               {:size  20
+;                :color colors/white}]])]]])
+;      checked?)))
+
 (defn radio
   [{:keys [default-checked?]}]
   (let [checked? (reagent/atom (or default-checked? false))]
@@ -121,7 +151,9 @@
                                 :width            20
                                 :border-radius    20
                                 :border-width     1
-                                :border-color     (get-color @checked? disabled? blurred-background?)
+                                :border-color     (style/get-color @checked?
+                                                                   disabled?
+                                                                   blurred-background?)
                                 :background-color (when-not blurred-background?
                                                     (colors/theme-colors colors/white
                                                                          (colors/alpha colors/neutral-80
@@ -135,7 +167,7 @@
           {:margin-left      :auto
            :height           14
            :width            14
-           :background-color (when @checked? (get-color @checked? disabled? blurred-background?))
+           :background-color (when @checked? (style/get-color @checked? disabled? blurred-background?))
            :border-radius    20
            :margin-right     :auto
            :margin-top       :auto
@@ -153,7 +185,9 @@
                                {:height           20
                                 :width            30
                                 :border-radius    20
-                                :background-color (get-color @checked? disabled? blurred-background?)})
+                                :background-color (style/get-color @checked?
+                                                                   disabled?
+                                                                   blurred-background?)})
          :accessibility-label (str "toggle-" (if @checked? "on" "off"))
          :accessibility-role  :checkbox
          :testID              "toggle-component"}

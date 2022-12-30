@@ -7,7 +7,8 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.image-server :as image-server]))
+            [status-im.utils.image-server :as image-server]
+            [utils.collection]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -88,6 +89,22 @@
               (assoc acc first-char {:title first-char :data [contact]}))))
         {}
         contacts)
+       sort
+       vals)))
+
+(re-frame/reg-sub
+ :contacts/add-members-sections
+ :<- [:contacts/current-chat-contacts]
+ :<- [:contacts/active]
+ (fn [[members contacts]]
+   (-> (reduce
+        (fn [acc contact]
+          (let [first-char (first (:alias contact))]
+            (if (get acc first-char)
+              (update-in acc [first-char :data] #(conj % contact))
+              (assoc acc first-char {:title first-char :data [contact]}))))
+        {}
+        (utils.collection/distinct-by :public-key (concat members contacts)))
        sort
        vals)))
 
@@ -292,6 +309,5 @@
              (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
              (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
              (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
-
 
 

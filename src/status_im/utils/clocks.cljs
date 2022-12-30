@@ -1,5 +1,5 @@
 (ns status-im.utils.clocks
-  (:require [status-im.utils.datetime :as utils.datetime]))
+  (:require [utils.datetime :as datetime]))
 
 ;; We use Lamport clocks to ensure correct ordering of events in chats. This is
 ;; necessary because we operate in a distributed system and there is no central
@@ -73,11 +73,11 @@
 
 (defn- ->timestamp-bid
   []
-  (utils.datetime/timestamp))
+  (datetime/timestamp))
 
 (defn max-timestamp
   []
-  (+ one-month-in-ms (utils.datetime/timestamp)))
+  (+ one-month-in-ms (datetime/timestamp)))
 ; The timestamp has an upper limit of Number.MAX_SAFE_INTEGER
 ; A malicious client could send a crafted message with timestamp = Number.MAX_SAFE_INTEGER
 ; which effectively would DoS the chat, as any new message would get

@@ -27,6 +27,12 @@
           (= view :add-new)
           (merge home.sheet/add-new)
 
+          (= view :new-chat-bottom-sheet)
+          (merge home.sheet/new-chat-bottom-sheet-comp)
+
+          (= view :start-a-new-chat)
+          (merge home.sheet/start-a-new-chat)
+
           (= view :keycard.login/more)
           (merge keycard/more-sheet)
 

@@ -604,7 +604,7 @@ class PinnedMessagesList(BaseElement):
         return message_element
 
     def get_message_pinned_by_text(self, text):
-        xpath = "//*[starts-with(@text,'%s')]/../../../../*[@content-desc='pinned-by']/android.widget.TextView" % text
+        xpath = "//*[starts-with(@text,'%s')]/../../../*[@content-desc='pinned-by']/android.widget.TextView" % text
         pinned_by_element = Text(self.driver, prefix=self.locator, xpath=xpath)
         self.driver.info("Looking for a pinned by message with text: %s" % text)
         return pinned_by_element

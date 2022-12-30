@@ -10,7 +10,7 @@
             [reagent.core :as reagent]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.composer.style :as style]
             [utils.re-frame :as rf]

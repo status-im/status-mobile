@@ -96,6 +96,6 @@
    [common.home/top-nav {:type :default}]
    [common.home/title-column
     {:label               (i18n/label :t/messages)
-     :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+     :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet {}])
      :accessibility-label :new-chat-button}]
    [tabs]])

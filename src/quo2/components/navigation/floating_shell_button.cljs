@@ -50,4 +50,4 @@
            [dynamic-button-view :mention dynamic-buttons {:margin-left 8}]
            [dynamic-button-view :notification-down dynamic-buttons {:margin-left 8}]
            [dynamic-button-view :notification-up dynamic-buttons {:margin-left 8}]
-           [dynamic-button-view :bottom dynamic-buttons {:margin-left 8}]]]]))]))
+           [dynamic-button-view :scroll-to-bottom dynamic-buttons {:margin-left 8}]]]]))]))

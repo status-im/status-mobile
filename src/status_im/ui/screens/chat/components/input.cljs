@@ -11,7 +11,7 @@
             [reagent.core :as reagent]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]

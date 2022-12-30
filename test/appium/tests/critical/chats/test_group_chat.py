@@ -205,6 +205,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.homes[0].just_fyi('Admin creates group chat')
         self.chat_name = self.homes[0].get_random_chat_name()
+        self.homes[0].communities_tab.click()
         self.chats[0] = self.homes[0].create_group_chat(user_names_to_add=[self.usernames[1]],
                                                         group_chat_name=self.chat_name,
                                                         new_ui=True)
@@ -214,7 +215,6 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(self.message_before_adding)
 
     @marks.testrail_id(702807)
-    # @marks.xfail(reason="test may fail as sometimes message 'Hey admin' is not delivered; needs investigation")
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
@@ -241,9 +241,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)
-    # @marks.xfail(
-    #     reason="mysterious issue when PNs are not fetched from offline,
-    #     can not reproduce on real devices; needs investigation")
+    @marks.xfail(reason="mysterious issue when PNs are not fetched from offline,can not reproduce on real devices; needs investigation")
     def test_group_chat_offline_pn(self):
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
         chat_name = 'for_offline_pn'
@@ -299,6 +297,8 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
         self.home_2.click_system_back_button_until_element_is_shown()
+        # workaround for group chat new UI
+        self.home_1.communities_tab.click()
         self.group_chat_name = "Group Chat"
         self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
                                                           group_chat_name=self.group_chat_name,
@@ -309,6 +309,7 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
             "Message 1", "Message 2", "Message 3", "Message 4"
 
     @marks.testrail_id(702732)
+    @marks.xfail(reason="blocked by #14637")
     def test_group_chat_pin_messages(self):
         self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
 

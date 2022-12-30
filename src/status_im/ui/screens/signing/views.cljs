@@ -8,7 +8,7 @@
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
    [status-im.ethereum.tokens :as tokens]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.keycard.common :as keycard.common]
    [status-im.multiaccounts.core :as multiaccounts]
    [status-im.react-native.resources :as resources]

@@ -31,7 +31,7 @@
      :notification-up   :i/arrow-up
      :search-with-label :i/search
      :search            :i/search
-     :bottom            :i/arrow-down)
+     :scroll-to-bottom  :i/arrow-down)
    {:size            12
     :color           (get-icon-and-text-color type)
     :container-style {:margin-top    6
@@ -43,7 +43,7 @@
                                        :notification-up   2
                                        :search-with-label 8
                                        :search            6
-                                       :bottom            6)
+                                       :scroll-to-bottom  6)
                       :margin-right  (case type
                                        :jump-to           8
                                        :mention           2
@@ -51,12 +51,12 @@
                                        :notification-up   8
                                        :search-with-label 4
                                        :search            6
-                                       :bottom            6)}}])
+                                       :scroll-to-bottom  6)}}])
 
 (defn dynamic-button
   "[dynamic-button opts]
    opts
-   {:type                :jump-to/:mention/:notification-down/:notification-up/:search/:search-with-label/:bottom
+   {:type                :jump-to/:mention/:notification-down/:notification-up/:search/:search-with-label/:scroll-to-bottom
     :on-press            fn
     :count               mentions or notifications count
     :customization-color customize jump-to and mention button color}"
@@ -77,7 +77,7 @@
                   :border-radius    12
                   :background-color (get-button-color type @pressed? (or customization-color :primary))}
                  style)}
-        (when (#{:mention :search :search-with-label :bottom} type)
+        (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
           [icon-view type])
         (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
           [text/text

@@ -2,7 +2,7 @@
   (:require
    [quo.design-system.colors :as colors]
    [status-im.add-new.core :as new-chat.events]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.screens.about-app.views :as about-app]
    [status-im.ui.screens.add-new.new-chat.views :as new-chat]
@@ -107,8 +107,9 @@
    [status-im.ui.screens.wallet.settings.views :as wallet-settings]
    [status-im.ui.screens.wallet.swap.views :as wallet.swap]
    [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-   [status-im.ui2.screens.chat.group-details.view :as group-details]
-   [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]))
+   [status-im2.contexts.chat.group-details.view :as group-details]
+   [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
+   [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]))
 
 (defn right-button-options
   [id icon]
@@ -587,11 +588,17 @@
     :options   {:topBar {:visible false}}
     :component contact/nickname}
 
-   ;[Group chat] Edit group chat name
-   {:name      :edit-group-chat-name
+   {:name      :new-chat-aio
+    :on-focus  [::new-chat.events/new-chat-focus]
+    ;;TODO accessories
+    :options   {:topBar {:visible false}}
+    :component new-chat-aio/contact-selection-list}
+
+   ;[Chat] New Public chat
+   {:name      :new-public-chat
     :insets    {:bottom true}
-    :options   {:topBar {:title {:text (i18n/label :t/edit-group)}}}
-    :component group-chat/edit-group-chat-name}
+    :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
+    :component new-public-chat/new-public-chat}
 
    ;[Group chat] Add participants
    {:name      :add-participants-toggle-list

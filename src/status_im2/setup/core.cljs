@@ -20,6 +20,7 @@
    [status-im2.setup.config :as config]
    [status-im2.setup.dev :as dev]
    status-im2.setup.events
+   status-im2.setup.datetime
    [status-im2.setup.global-error :as global-error]
    [status-im2.setup.i18n-resources :as i18n-resources]
    [status-im2.setup.log :as log]
@@ -31,22 +32,26 @@
 
 (defn init
   []
+
   (log/setup config/log-level)
   (global-error/register-handler)
   (when platform/android?
     (status/set-soft-input-mode status/adjust-resize))
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
-  (i18n/init (name i18n-resources/default-device-language)
-             (clj->js i18n-resources/translations-by-locale))
-  (react-native-languages/add-change-listener #(fn [lang]
-                                                 (i18n/set-language lang)
-                                                 (i18n-resources/load-language lang)))
+  (i18n/init)
+
+  (react-native-languages/add-change-listener
+   #(fn [lang]
+      (i18n/load-language lang i18n-resources/loaded-languages)
+      (i18n/set-language lang)))
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
 
   ;; TODO(parvesh) - Remove while moving functionality to status-go
   (async-storage/get-item :selected-stack-id #(animation/selected-stack-id-loaded %))
+
+  (async-storage/get-item :screen-height #(reset! animation/screen-height %))
 
   (dev/setup)
 

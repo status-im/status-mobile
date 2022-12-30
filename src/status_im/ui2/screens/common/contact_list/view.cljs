@@ -10,12 +10,14 @@
 
 (defn contact-list
   [data]
-  (let [contacts (rf/sub [:contacts/filtered-active-sections])]
+  (let [contacts (if (:group data)
+                   (rf/sub [:contacts/add-members-sections])
+                   (rf/sub [:contacts/filtered-active-sections]))]
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
-      :content-container-style        {:padding-bottom 120}
+      :content-container-style        {:padding-bottom 20}
       :render-data                    data
       :render-fn                      contact-list-item/contact-list-item}]))

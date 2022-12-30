@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.profile-header.view :as profile-header]
             [utils.re-frame :as rf]))
 

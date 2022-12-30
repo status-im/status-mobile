@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
-            [status-im.utils.datetime :as utils.datetime]))
+            [utils.datetime :as datetime]))
 
 (re-frame/reg-sub
  :keycard/nfc-enabled?
@@ -122,7 +122,7 @@
  :keycard-paired-on
  (fn [db]
    (some-> (get-in db [:multiaccount :keycard-paired-on])
-           (utils.datetime/timestamp->year-month-day-date))))
+           (datetime/timestamp->year-month-day-date))))
 
 (re-frame/reg-sub
  :keycard-multiaccount-pairing

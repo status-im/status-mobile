@@ -3,12 +3,12 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.nfc :as nfc]
             [status-im.popover.core :as popover]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-            [status-im.utils.datetime :as utils.datetime]
             [utils.re-frame :as rf]
+            [utils.datetime :as datetime]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -429,7 +429,7 @@
 
 (rf/defn update-pairings
   [{:keys [db]} instance-uid pairing]
-  (let [paired-on (utils.datetime/timestamp)
+  (let [paired-on (datetime/timestamp)
         pairings  (-> (get-in db [:keycard :pairings])
                       (assoc instance-uid {:pairing pairing :paired-on paired-on}))]
     {:keycard/persist-pairings pairings

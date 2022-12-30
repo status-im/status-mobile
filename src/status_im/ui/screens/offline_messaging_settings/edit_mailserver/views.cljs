@@ -3,7 +3,7 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]

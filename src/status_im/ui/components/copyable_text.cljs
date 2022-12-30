@@ -1,7 +1,7 @@
 (ns status-im.ui.components.copyable-text
   (:require [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.react :as react]))
 

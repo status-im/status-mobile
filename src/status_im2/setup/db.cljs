@@ -13,7 +13,8 @@
    :group/selected-contacts            #{}
    :chats                              {}
    :current-chat-id                    nil
-   :selected-participants              #{}
+   :group-chat/selected-participants   #{}
+   :group-chat/deselected-members      #{}
    :sync-state                         :done
    :link-previews-whitelist            []
    :app-state                          "active"

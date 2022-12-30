@@ -8,7 +8,7 @@ from timeit import timeit
 from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
@@ -378,7 +378,7 @@ class Button(BaseElement):
             try:
                 self.find_element().click()
                 counter += 1
-            except (NoSuchElementException, TimeoutException):
+            except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
                 return self.navigate()
 
 
