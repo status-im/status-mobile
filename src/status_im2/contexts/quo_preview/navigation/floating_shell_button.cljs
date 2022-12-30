@@ -41,7 +41,7 @@
     (= scroll-type :notification-down)
     (assoc :notification-down {:on-press #() :count 8})
     (= scroll-type :scroll-to-bottom)
-    (assoc :bottom {:on-press #()})))
+    (assoc :scroll-to-bottom {:on-press #()})))
 
 (defn cool-preview
   []
