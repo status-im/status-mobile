@@ -55,7 +55,11 @@
        :on-press #(do
                     (close-bottom-sheet-fn nil)
                     (rf/dispatch [:chat.ui/delete-message-for-me message-data
+<<<<<<< HEAD
                                   constants/delete-message-for-me-undo-time-limit-ms]))
+=======
+                                 constants/delete-message-for-me-undo-time-limit-ms]))
+>>>>>>> 559fd9bc7 (Handle reaction drawer height)
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
