@@ -23,7 +23,7 @@
      (fn [c]
        {:key   c
         :value c})
-     (keys colors/customization))}])
+     ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
 
 (defn cool-preview
   []

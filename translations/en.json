@@ -1923,5 +1923,6 @@
     "search-contacts": "Search contacts",
     "who-are-you-looking-for": "Who are you looking for ?",
     "close-contact-search": "Close contact search",
-    "selected-count-from-max": "{{selected}}/{{max}}"
+    "selected-count-from-max": "{{selected}}/{{max}}",
+    "online": "Online"
 }

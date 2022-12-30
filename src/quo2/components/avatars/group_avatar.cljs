@@ -24,7 +24,9 @@
         :align-items      :center
         :justify-content  :center
         :border-radius    (/ container-size 2)
-        :background-color (colors/custom-color-by-theme color 50 60)}
+        ;:background-color (colors/custom-color-by-theme color 50 60) ; TODO: this is temporary only.
+        ;Issue: https://github.com/status-im/status-mobile/issues/14566
+        :background-color color}
        [icon/icon :i/group
         {:size  icon-size
          :color colors/white-opa-70}]])))
