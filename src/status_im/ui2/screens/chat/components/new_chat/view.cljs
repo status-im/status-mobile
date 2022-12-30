@@ -13,7 +13,8 @@
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
-            [status-im.ui2.screens.chat.components.new-chat.styles :as style]))
+            [status-im.ui2.screens.chat.components.new-chat.styles :as style]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (defn- on-toggle
   [allow-new-users? checked? public-key]
@@ -71,8 +72,8 @@
      [quo2/button
       {:type                      :grey
        :icon                      true
-       :on-press                  #(rf/dispatch [:bottom-sheet/hide])
-       :style                     style/contact-selection-close
+       :on-press                  #(bottom-sheet/close-bottom-sheet-fn nil)
+                                   :style                     style/contact-selection-close
        :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                             quo2.colors/neutral-90)}
       :i/close]

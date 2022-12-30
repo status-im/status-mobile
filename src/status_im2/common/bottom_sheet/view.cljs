@@ -83,6 +83,15 @@
                (and @expanded? (< end-pan-y collapse-threshold))
                (reset! expanded? false))))))))
 
+(defn close-bottom-sheet-fn [on-cancel]
+  (reset! show-bottom-sheet? false)
+  (when (fn? on-cancel) (on-cancel))
+  (timer/set-timeout
+   #(do
+      (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
+      (reset-atoms))
+   animation-delay))
+
 (defn bottom-sheet
   [props children]
   (let [{on-cancel         :on-cancel
@@ -96,14 +105,7 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
-        close-bottom-sheet (fn []
-                             (reset! show-bottom-sheet? false)
-                             (when (fn? on-cancel) (on-cancel))
-                             (timer/set-timeout
-                              #(do
-                                 (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
-                                 (reset-atoms))
-                              animation-delay))]
+        close-bottom-sheet #(close-bottom-sheet-fn on-cancel)]
     [safe-area/consumer
      (fn [insets]
        [:f>
@@ -114,7 +116,7 @@
                 window-height (if selected-item (- height 72) height)
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
-                bg-height (max (min @content-height bg-height-expanded) 200)
+                bg-height (max (min @content-height bg-height-expanded) 150)
                 bottom-sheet-dy (reanimated/use-shared-value 0)
                 pan-y (reanimated/use-shared-value 0)
                 translate-y (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y)

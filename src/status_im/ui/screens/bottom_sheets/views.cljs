@@ -7,7 +7,8 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
+            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
+            [reagent.core :as reagent]))
 
 (defn bottom-sheet
   []
@@ -47,6 +48,10 @@
 
           (= view :pinned-messages-list)
           (merge {:content pin.list/pinned-messages-list}))]
-    [bottom-sheet/bottom-sheet opts
-     (when content
-       [content (when options options)])]))
+    (reagent/create-class {:reagent-render (fn []
+                                             [bottom-sheet/bottom-sheet opts
+                                              (when content
+                                                [content (when options options)])])
+                           :component-will-unmount (fn []
+                                                     (when @bottom-sheet/show-bottom-sheet?
+                                                       (bottom-sheet/reset-atoms)))})))
