@@ -261,6 +261,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.text_message = 'first message in community'
         self.community_name = self.home_1.get_random_chat_name()
         self.channel_name = self.home_1.get_random_chat_name()
+        self.home_1.communities_tab.click()
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
         self.community_1 = CommunityView(self.drivers[0])
         self.community_1.send_invite_to_community(self.default_username_2)
