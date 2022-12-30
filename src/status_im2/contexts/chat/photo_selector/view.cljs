@@ -9,8 +9,8 @@
             [reagent.core :as reagent]
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
-            [quo.react]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (def selected (reagent/atom []))
 
@@ -36,7 +36,9 @@
           [quo/button
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
-            :on-press            #(on-press-confirm-selection chat-id)
+            :on-press            (fn []
+                                   (bottom-sheet/close-bottom-sheet-fn nil)
+                                   (on-press-confirm-selection chat-id))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 
