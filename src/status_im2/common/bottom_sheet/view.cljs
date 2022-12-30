@@ -83,7 +83,8 @@
                (and @expanded? (< end-pan-y collapse-threshold))
                (reset! expanded? false))))))))
 
-(defn close-bottom-sheet-fn [on-cancel]
+(defn close-bottom-sheet-fn
+  [on-cancel]
   (reset! show-bottom-sheet? false)
   (when (fn? on-cancel) (on-cancel))
   (timer/set-timeout

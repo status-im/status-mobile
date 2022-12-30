@@ -48,10 +48,10 @@
 
           (= view :pinned-messages-list)
           (merge {:content pin.list/pinned-messages-list}))]
-    (reagent/create-class {:reagent-render (fn []
-                                             [bottom-sheet/bottom-sheet opts
-                                              (when content
-                                                [content (when options options)])])
+    (reagent/create-class {:reagent-render         (fn []
+                                                     [bottom-sheet/bottom-sheet opts
+                                                      (when content
+                                                        [content (when options options)])])
                            :component-will-unmount (fn []
                                                      (when @bottom-sheet/show-bottom-sheet?
                                                        (bottom-sheet/reset-atoms)))})))

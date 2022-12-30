@@ -73,7 +73,7 @@
       {:type                      :grey
        :icon                      true
        :on-press                  #(bottom-sheet/close-bottom-sheet-fn nil)
-                                   :style                     style/contact-selection-close
+       :style                     style/contact-selection-close
        :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                             quo2.colors/neutral-90)}
       :i/close]
