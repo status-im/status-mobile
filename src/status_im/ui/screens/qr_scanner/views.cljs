@@ -6,7 +6,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]

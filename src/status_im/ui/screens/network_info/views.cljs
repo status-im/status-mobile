@@ -4,8 +4,8 @@
             [status-im.ethereum.decode :as decode]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
-            [status-im.utils.datetime :as time]
-            [status-im2.common.json-rpc.events :as json-rpc]))
+            [status-im2.common.json-rpc.events :as json-rpc]
+            [utils.datetime :as datetime]))
 
 (defn get-block
   [block callback]
@@ -21,7 +21,7 @@
 
 (defn to-date
   [timestamp]
-  (time/timestamp->long-date
+  (datetime/timestamp->long-date
    (* 1000 timestamp)))
 
 (defn check-lag

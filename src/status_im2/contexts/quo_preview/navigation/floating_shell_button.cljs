@@ -4,7 +4,7 @@
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -41,7 +41,7 @@
     (= scroll-type :notification-down)
     (assoc :notification-down {:on-press #() :count 8})
     (= scroll-type :scroll-to-bottom)
-    (assoc :bottom {:on-press #()})))
+    (assoc :scroll-to-bottom {:on-press #()})))
 
 (defn cool-preview
   []

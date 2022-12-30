@@ -19,6 +19,7 @@
 
 ;; status bar height is not included in : the dimensions/window for devices with a notch
 ;; https://github.com/facebook/react-native/issues/23693#issuecomment-662860819
+;; More info - https://github.com/status-im/status-mobile/issues/14633
 (defn dimensions
   []
   (let [{:keys [width height]} (rf/sub [:dimensions/window])]

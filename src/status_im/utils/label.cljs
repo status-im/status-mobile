@@ -1,5 +1,5 @@
 (ns status-im.utils.label
-  (:require [status-im.i18n.i18n :as i18n]))
+  (:require [i18n.i18n :as i18n]))
 
 (defn stringify
   [keyword-or-number]

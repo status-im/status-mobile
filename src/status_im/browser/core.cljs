@@ -11,7 +11,7 @@
    [status-im.constants :as constants]
    [status-im.ethereum.core :as ethereum]
    [status-im.ethereum.ens :as ens]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.multiaccounts.update.core :as multiaccounts.update]
    [status-im.native-module.core :as status]
    [status-im.signing.core :as signing]

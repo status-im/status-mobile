@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]

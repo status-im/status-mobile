@@ -5,7 +5,7 @@
             [react-native.core :as rn]
             [status-im2.contexts.chat.messages.content.view :as message]
             [utils.re-frame :as rf]
-            [status-im.utils.datetime :as time]))
+            [utils.datetime :as datetime]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -25,7 +25,7 @@
       :message-pin-enabled true
       :in-pinned-view?     true
       :pinned              true
-      :timestamp-str       (time/timestamp->time whisper-timestamp)
+      :timestamp-str       (datetime/timestamp->time whisper-timestamp)
       :edit-enabled        edit-enabled}]))
 
 (defn pinned-messages-list

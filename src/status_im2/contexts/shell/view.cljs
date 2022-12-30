@@ -1,11 +1,13 @@
 (ns status-im2.contexts.shell.view
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
+            [oops.core :refer [oget]]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.safe-area :as safe-area]
             [status-im2.common.home.view :as common.home]
+            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
             [status-im2.contexts.shell.cards.view :as switcher-cards]
@@ -111,7 +113,13 @@
   [:f>
    (fn []
      (let [shared-values (animation/calculate-shared-values)]
-       [:<>
+       [rn/view
+        {:style     {:flex 1}
+         :on-layout (when-not @animation/screen-height
+                      (fn [evt]
+                        (let [height (oget evt "nativeEvent" "layout" "height")]
+                          (reset! animation/screen-height height)
+                          (async-storage/set-item! :screen-height height))))}
         [shell]
         [bottom-tabs/bottom-tabs]
         [home-stack/home-stack]

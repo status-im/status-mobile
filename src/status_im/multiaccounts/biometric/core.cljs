@@ -2,7 +2,7 @@
   (:require ["react-native-touch-id" :default touchid]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]

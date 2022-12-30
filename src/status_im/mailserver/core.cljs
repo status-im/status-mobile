@@ -1,7 +1,7 @@
 (ns ^{:doc "Mailserver events and API"} status-im.mailserver.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [utils.re-frame :as rf]

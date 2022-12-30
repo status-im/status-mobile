@@ -6,7 +6,7 @@
    [reagent.core :as reagent]
    [status-im.browser.core :as browser]
    [status-im.browser.webview-ref :as webview-ref]
-   [status-im.i18n.i18n :as i18n]
+   [i18n.i18n :as i18n]
    [status-im.qr-scanner.core :as qr-scanner]
    [status-im.ui.components.chat-icon.screen :as chat-icon]
    [status-im.ui.components.connectivity.view :as connectivity]

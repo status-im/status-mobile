@@ -5,7 +5,7 @@
             [quo.react :as quo.react]
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.components.style :as styles]))
 

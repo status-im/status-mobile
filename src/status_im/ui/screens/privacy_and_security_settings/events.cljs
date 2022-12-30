@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]

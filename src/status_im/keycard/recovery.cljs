@@ -5,15 +5,15 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.keycard.common :as common]
             status-im.keycard.fx
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
-            [status-im.utils.datetime :as utils.datetime]
             [utils.re-frame :as rf]
+            [utils.datetime :as datetime]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
@@ -40,7 +40,7 @@
             :keycard.onboarding.pair.ui/next-pressed]}
   [{:keys [db] :as cofx}]
   (let [pairing   (get-in db [:keycard :secrets :pairing])
-        paired-on (get-in db [:keycard :secrets :paired-on] (utils.datetime/timestamp))]
+        paired-on (get-in db [:keycard :secrets :paired-on] (datetime/timestamp))]
     (rf/merge cofx
               (if pairing
                 {:db (-> db
@@ -369,7 +369,7 @@
                                         (assoc-in [:keycard :pin :status] :verifying)
                                         (assoc-in [:keycard :secrets]
                                                   {:pairing   pairing'
-                                                   :paired-on (utils.datetime/timestamp)}))
+                                                   :paired-on (datetime/timestamp)}))
                :keycard/import-keys
                {:pin        pin
                 :on-success :keycard.callback/on-generate-and-load-key-success}})))

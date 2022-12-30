@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.community.data
   (:require [quo.design-system.colors :as quo.colors]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 
 (def thumbnail

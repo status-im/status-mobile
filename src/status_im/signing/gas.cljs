@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
             [utils.re-frame :as rf]

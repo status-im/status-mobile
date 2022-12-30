@@ -4,7 +4,10 @@
             [clojure.string :as string]
             [shadow.test :as st]
             [shadow.test.env :as env]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [i18n.i18n :as i18n]))
+
+(i18n/init)
 
 (defonce repl? (atom false))
 

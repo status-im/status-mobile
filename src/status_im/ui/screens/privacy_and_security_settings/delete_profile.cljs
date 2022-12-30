@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             status-im.keycard.delete-key
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]

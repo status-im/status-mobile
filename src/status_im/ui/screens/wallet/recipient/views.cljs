@@ -6,7 +6,7 @@
             [reagent.core :as reagent]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n.i18n :as i18n]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.icons :as icons]

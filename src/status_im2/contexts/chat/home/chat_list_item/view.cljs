@@ -3,7 +3,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.utils.datetime :as time]
+            [utils.datetime :as datetime]
             [status-im2.common.home.actions.view :as actions] ;;TODO move to status-im2
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.re-frame :as rf]))
@@ -99,7 +99,7 @@
    [quo/text
     {:size  :label
      :style (style/timestamp)}
-    (time/to-short-str timestamp)]])
+    (datetime/to-short-str timestamp)]])
 
 (defn avatar-view
   [group-chat color display-name photo-path chat-id]

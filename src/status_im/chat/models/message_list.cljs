@@ -1,17 +1,17 @@
 (ns status-im.chat.models.message-list
   (:require ["functional-red-black-tree" :as rb-tree]
             [status-im.constants :as constants]
-            [status-im.utils.datetime :as time]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.datetime :as datetime]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
   ;;TODO this is slow
-  (assoc msg :datemark (time/day-relative whisper-timestamp)))
+  (assoc msg :datemark (datetime/day-relative whisper-timestamp)))
 
 (defn- add-timestamp
   [{:keys [whisper-timestamp] :as msg}]
-  (assoc msg :timestamp-str (time/timestamp->time whisper-timestamp)))
+  (assoc msg :timestamp-str (datetime/timestamp->time whisper-timestamp)))
 
 (defn prepare-message
   [{:keys [message-id
