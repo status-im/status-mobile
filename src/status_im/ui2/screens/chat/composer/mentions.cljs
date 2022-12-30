@@ -13,7 +13,7 @@
   (let [ens-name? (not= alias name)]
     [rn/touchable-opacity
      {:on-press            #(rf/dispatch [:chat.ui/select-mention text-input-ref user])
-      :accessibility-label (str "Press to mention " (or nickname alias nickname) " in your message")}
+      :accessibility-label :mention-item}
      ;;TODO quo2 item should be used
      [list-item/list-item
       (cond->
@@ -25,9 +25,7 @@
                               :ellipsize-mode  :tail
                               :number-of-lines 1
                               :size            :small}
-                             (if nickname
-                               nickname
-                               name)
+                             (or nickname name)
                              (when nickname
                                [text/text
                                 {:weight         :regular
