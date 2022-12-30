@@ -49,7 +49,9 @@
           (= view :pinned-messages-list)
           (merge {:content pin.list/pinned-messages-list}))]
     (reagent/create-class {:reagent-render         (fn []
-                                                     [bottom-sheet/bottom-sheet opts
+                                                     [bottom-sheet/bottom-sheet (if (= view :new-chat-bottom-sheet)
+                                                                                  (assoc opts :initial-height 150)
+                                                                                  opts)
                                                       (when content
                                                         [content (when options options)])])
                            :component-will-unmount (fn []
