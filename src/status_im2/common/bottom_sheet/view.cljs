@@ -12,11 +12,11 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]))
 
-(def bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
+(def ^:private bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
 
-(def animation-delay 450)
+(def ^:private animation-delay 450)
 
-(defn with-animation
+(defn- with-animation
   [value & [options callback]]
   (reanimated/with-spring
    value
@@ -26,11 +26,11 @@
             options)
    callback))
 
-(def content-height (reagent/atom nil))
+(def ^:private content-height (reagent/atom nil))
 (def show-bottom-sheet? (reagent/atom nil))
-(def keyboard-was-shown? (reagent/atom false))
-(def expanded? (reagent/atom false))
-(def gesture-running? (reagent/atom false))
+(def ^:private keyboard-was-shown? (reagent/atom false))
+(def ^:private expanded? (reagent/atom false))
+(def ^:private gesture-running? (reagent/atom false))
 
 (defn reset-atoms
   []
@@ -40,7 +40,7 @@
   (reset! keyboard-was-shown? false)
   (reset! gesture-running? false))
 
-(defn get-bottom-sheet-gesture
+(defn- get-bottom-sheet-gesture
   [pan-y translate-y bg-height bg-height-expanded
    window-height keyboard-shown disable-drag? expandable?
    show-bottom-sheet? expanded? close-bottom-sheet]
