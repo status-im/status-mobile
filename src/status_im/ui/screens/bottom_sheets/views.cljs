@@ -9,49 +9,49 @@
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
             [reagent.core :as reagent]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]))
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]
+            [status-im.ui.components.react :as react]))
 
 (defn bottom-sheet
   []
   (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
-         :as   opts}
-        (cond-> {:visible? show?}
-          (map? view)
-          (merge view)
+         :as   opts}  (cond-> {:visible? show?}
+                        (map? view)
+                        (merge view)
 
-          (= view :mobile-network)
-          (merge mobile-network-settings/settings-sheet)
+                        (= view :mobile-network)
+                        (merge mobile-network-settings/settings-sheet)
 
-          (= view :mobile-network-offline)
-          (merge mobile-network-settings/offline-sheet)
+                        (= view :mobile-network-offline)
+                        (merge mobile-network-settings/offline-sheet)
 
-          (= view :add-new)
-          (merge home.sheet/add-new)
+                        (= view :add-new)
+                        (merge home.sheet/add-new)
 
-          (= view :new-chat-bottom-sheet)
-          (merge home.sheet/new-chat-bottom-sheet-comp)
+                        (= view :new-chat-bottom-sheet)
+                        (merge home.sheet/new-chat-bottom-sheet-comp)
 
-          (= view :start-a-new-chat)
-          (merge home.sheet/start-a-new-chat)
+                        (= view :start-a-new-chat)
+                        (merge home.sheet/start-a-new-chat)
 
-          (= view :keycard.login/more)
-          (merge keycard/more-sheet)
+                        (= view :keycard.login/more)
+                        (merge keycard/more-sheet)
 
-          (= view :learn-more)
-          (merge about-app/learn-more)
+                        (= view :learn-more)
+                        (merge about-app/learn-more)
 
-          (= view :recover-sheet)
-          (merge recover.views/bottom-sheet)
+                        (= view :recover-sheet)
+                        (merge recover.views/bottom-sheet)
 
-          (= view :migrate-account-password)
-          (merge key-storage/migrate-account-password)
+                        (= view :migrate-account-password)
+                        (merge key-storage/migrate-account-password)
 
-          (= view :pinned-messages-list)
-          (merge {:content pin.list/pinned-messages-list})
+                        (= view :pinned-messages-list)
+                        (merge {:content pin.list/pinned-messages-list})
 
-          (= view :drawer/reactions)
-          (merge {:content drawers/reactions}))]
+                        (= view :drawer/reactions)
+                        (merge {:content drawers/reactions}))]
     (reagent/create-class {:reagent-render         (fn []
                                                      [bottom-sheet/bottom-sheet
                                                       (case view
@@ -62,6 +62,9 @@
                                                         opts)
                                                       (when content
                                                         [content (when options options)])])
+                           :component-did-mount    (fn []
+                                                     (react/hw-back-add-listener #(bottom-sheet/close-bottom-sheet-fn nil)))
                            :component-will-unmount (fn []
+                                                     (react/hw-back-remove-listener #(bottom-sheet/close-bottom-sheet-fn nil))
                                                      (when @bottom-sheet/show-bottom-sheet?
                                                        (bottom-sheet/reset-atoms)))})))
