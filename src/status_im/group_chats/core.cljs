@@ -5,17 +5,8 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.constants :as constants]
-<<<<<<< HEAD
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-=======
-            [status-im.i18n.i18n :as i18n]
-<<<<<<< HEAD
-            [status-im.utils.fx :as fx]
->>>>>>> 161ba1f9f... feat: group details screen
-=======
-            [utils.re-frame :as rf]
->>>>>>> ac540a012... formatting
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 
@@ -48,16 +39,7 @@
   {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                     :params      [nil chat-id member]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
-
-(rf/defn remove-members
-  {:events [:group-chats.ui/remove-members-pressed]}
-  [{{:keys [current-chat-id] :group-chat/keys [deselected-members]} :db :as cofx}]
-  {:json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
-                    :params      [nil current-chat-id deselected-members]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-updated % true])
-                    :on-error    #()}]})
+                    :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
 
 (rf/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
@@ -97,14 +79,11 @@
 (rf/defn add-members
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
-  [{{:keys [current-chat-id] :group-chat/keys [selected-participants]} :db :as cofx}]
+  [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
   {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
                     :params      [nil current-chat-id selected-participants]
                     :js-response true
-                    :on-success  #(do
-                                    (println "aaa" selected-participants)
-                                    (re-frame/dispatch [:chat-updated % true]))
-                   }]})
+                    :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
 (rf/defn add-members-from-invitation
   "Add members to a group chat"
@@ -200,16 +179,6 @@
        :type
        (= constants/invitation-state-removed)))
 
-(rf/defn deselect-member
-  {:events [:deselect-member]}
-  [{:keys [db]} id]
-  {:db (update db :group-chat/deselected-members conj id)})
-
-(rf/defn undo-deselect-member
-  {:events [:undo-deselect-member]}
-  [{:keys [db]} id]
-  {:db (update db :group-chat/deselected-members disj id)})
-
 (rf/defn deselect-contact
   {:events [:deselect-contact]}
   [{:keys [db]} id]
@@ -223,22 +192,17 @@
 (rf/defn deselect-participant
   {:events [:deselect-participant]}
   [{:keys [db]} id]
-  {:db (update db :group-chat/selected-participants disj id)})
+  {:db (update db :selected-participants disj id)})
 
 (rf/defn select-participant
   {:events [:select-participant]}
   [{:keys [db]} id]
-  {:db (update db :group-chat/selected-participants conj id)})
+  {:db (update db :selected-participants conj id)})
 
-(rf/defn clear-added-participants
-  {:events [:group/clear-added-participants]}
+(rf/defn add-participants-toggle-list
+  {:events [:group/add-participants-toggle-list]}
   [{db :db}]
-  {:db (assoc db :group-chat/selected-participants #{})})
-
-(rf/defn clear-removed-members
-  {:events [:group/clear-removed-members]}
-  [{db :db}]
-  {:db (assoc db :group-chat/deselected-members #{})})
+  {:db (assoc db :selected-participants #{})})
 
 (rf/defn show-group-chat-profile
   {:events [:show-group-chat-profile]}

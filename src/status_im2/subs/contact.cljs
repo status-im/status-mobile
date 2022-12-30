@@ -8,11 +8,7 @@
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.image-server :as image-server]
-<<<<<<< HEAD
-            [status-im.constants :as constants]))
-=======
             [utils.collection]))
->>>>>>> 312210ef0... lint
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -97,23 +93,6 @@
        vals)))
 
 (re-frame/reg-sub
-<<<<<<< HEAD
- :contacts/sorted-and-grouped-by-first-letter
- :<- [:contacts/active]
- :<- [:selected-contacts-count]
- (fn [[contacts selected-contacts-count]]
-   (->> contacts
-        (filter :mutual?)
-        (map #(assoc %
-                     :allow-new-users?
-                     (< selected-contacts-count
-                        (dec constants/max-group-chat-participants))))
-        (group-by (comp (fnil string/upper-case "") first :alias))
-        (sort-by (fn [[title]] title))
-        (map (fn [[title data]]
-               {:title title
-                :data  data})))))
-=======
  :contacts/add-members-sections
  :<- [:contacts/current-chat-contacts]
  :<- [:contacts/active]
@@ -128,7 +107,6 @@
         (utils.collection/distinct-by :public-key (concat members contacts)))
        sort
        vals)))
->>>>>>> ac540a012... formatting
 
 (re-frame/reg-sub
  :contacts/sorted-contacts
@@ -331,6 +309,5 @@
              (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
              (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
              (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
-
 
 
