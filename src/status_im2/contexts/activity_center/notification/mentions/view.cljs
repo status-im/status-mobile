@@ -14,7 +14,7 @@
   (let [parsed-text          (get-in message [:content :parsed-text])
         parsed-text-children (:children (first parsed-text))]
     (into [quo/text
-           {:number-of-lines     2
+           {:number-of-lines     1
             :style               style/tag-text
             :accessibility-label :activity-message-body
             :size                :paragraph-1}]
@@ -29,16 +29,16 @@
                        parsed-text-children))))
 
 (defn view
-  [{:keys [author chat-name chat-id message] :as notification}]
-  [rn/touchable-without-feedback
+  [{:keys [author chat-name chat-id message read timestamp]}]
+  [rn/touchable-opacity
    {:on-press (fn []
                 (rf/dispatch [:hide-popover])
                 (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
    [quo/activity-log
     {:title     (i18n/label :t/mention)
      :icon      :i/mention
-     :timestamp (datetime/timestamp->relative (:timestamp notification))
-     :unread?   (not (:read notification))
+     :timestamp (datetime/timestamp->relative timestamp)
+     :unread?   (not read)
      :context   [[common/user-avatar-tag author]
                  [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
                  ;; TODO (@smohamedjavid): The `group-avatar-tag` component

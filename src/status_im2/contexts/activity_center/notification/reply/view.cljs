@@ -4,10 +4,10 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im.utils.datetime :as datetime]
             [status-im2.common.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
+            [utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
 ;; NOTE: Replies support text, image and stickers only.
@@ -21,15 +21,15 @@
     constants/content-type-sticker [old-message/sticker message]))
 
 (defn view
-  [{:keys [author chat-name chat-id message read] :as notification}]
-  [rn/touchable-without-feedback
+  [{:keys [author chat-name chat-id message read timestamp]}]
+  [rn/touchable-opacity
    {:on-press (fn []
                 (rf/dispatch [:hide-popover])
                 (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
    [quo/activity-log
     {:title     (i18n/label :t/message-reply)
      :icon      :i/reply
-     :timestamp (datetime/timestamp->relative (:timestamp notification))
+     :timestamp (datetime/timestamp->relative timestamp)
      :unread?   (not read)
      :context   [[common/user-avatar-tag author]
                  [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
@@ -39,4 +39,5 @@
                    :color          colors/primary-50
                    :style          style/tag
                    :text-style     style/tag-text}]]
-     :message   {:body (get-message-content message)}}]])
+     :message   {:body-number-of-lines 1
+                 :body                 (get-message-content message)}}]])
