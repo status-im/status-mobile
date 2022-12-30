@@ -1,9 +1,11 @@
 (ns status-im2.common.home.actions.view
-  (:require [i18n.i18n :as i18n]
+  (:require ;;TODO move to
+ ;;status-im2
+            [i18n.i18n :as i18n]
             [quo2.components.drawers.action-drawers :as drawer]
             [status-im.chat.models :as chat.models]
+            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
-                                                                                 ;;status-im2
             [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]
             [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]))
