@@ -10,48 +10,51 @@
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]
+<<<<<<< HEAD
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.multiaccounts.sheets :as multiaccounts-sheet]))
+=======
+            [status-im.ui.components.react :as react]))
+>>>>>>> 660ab495b (Listen for hardware backbutton and dismiss)
 
 (defn bottom-sheet
   []
   (let [dismiss-bottom-sheet-callback #(bottom-sheet/close-bottom-sheet-fn nil)
         {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
-         :as   opts}
-        (cond-> {:visible? show?}
-          (map? view)
-          (merge view)
+         :as   opts}  (cond-> {:visible? show?}
+                        (map? view)
+                        (merge view)
 
-          (= view :mobile-network)
-          (merge mobile-network-settings/settings-sheet)
+                        (= view :mobile-network)
+                        (merge mobile-network-settings/settings-sheet)
 
-          (= view :mobile-network-offline)
-          (merge mobile-network-settings/offline-sheet)
+                        (= view :mobile-network-offline)
+                        (merge mobile-network-settings/offline-sheet)
 
-          (= view :add-new)
-          (merge home.sheet/add-new)
+                        (= view :add-new)
+                        (merge home.sheet/add-new)
 
-          (= view :new-chat-bottom-sheet)
-          (merge home.sheet/new-chat-bottom-sheet-comp)
+                        (= view :new-chat-bottom-sheet)
+                        (merge home.sheet/new-chat-bottom-sheet-comp)
 
-          (= view :start-a-new-chat)
-          (merge home.sheet/start-a-new-chat)
+                        (= view :start-a-new-chat)
+                        (merge home.sheet/start-a-new-chat)
 
-          (= view :keycard.login/more)
-          (merge keycard/more-sheet)
+                        (= view :keycard.login/more)
+                        (merge keycard/more-sheet)
 
-          (= view :learn-more)
-          (merge about-app/learn-more)
+                        (= view :learn-more)
+                        (merge about-app/learn-more)
 
-          (= view :recover-sheet)
-          (merge recover.views/bottom-sheet)
+                        (= view :recover-sheet)
+                        (merge recover.views/bottom-sheet)
 
-          (= view :migrate-account-password)
-          (merge key-storage/migrate-account-password)
+                        (= view :migrate-account-password)
+                        (merge key-storage/migrate-account-password)
 
-          (= view :pinned-messages-list)
-          (merge {:content pin.list/pinned-messages-list})
+                        (= view :pinned-messages-list)
+                        (merge {:content pin.list/pinned-messages-list})
 
           (= view :drawer/reactions)
           (merge {:content drawers/reactions})
