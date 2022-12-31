@@ -9,7 +9,8 @@
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (defn back-button
   []
@@ -76,7 +77,7 @@
            deselected-members      (rf/sub [:group-chat/deselected-members])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
-         {:on-press            #(rf/dispatch [:bottom-sheet/hide])
+         {:on-press            #(bottom-sheet/close-bottom-sheet-fn nil)
           :accessibility-label :close-manage-members
           :style               (style/close-icon)}
          [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
@@ -97,7 +98,7 @@
                                   (rf/dispatch [:group-chats.ui/add-members-pressed])
                                   (js/setTimeout #(rf/dispatch [:group-chats.ui/remove-members-pressed])
                                                  500)
-                                  (rf/dispatch [:bottom-sheet/hide]))
+                                  (bottom-sheet/close-bottom-sheet-fn nil))
            :disabled            (and (zero? (count selected-participants))
                                      (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])
