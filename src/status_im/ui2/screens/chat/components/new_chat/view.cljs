@@ -8,13 +8,16 @@
             [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
-            [status-im.ui.screens.chat.sheets :refer [hide-sheet-and-dispatch]]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+
+(defn- hide-sheet-and-dispatch [evt-vec]
+  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch evt-vec))
 
 (defn- on-toggle
   [allow-new-users? checked? public-key]

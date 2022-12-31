@@ -9,13 +9,7 @@
             [status-im.ui.components.react :as rn]
             [status-im.ui.screens.home.sheet.styles :as style]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
-            [status-im.utils.config :as config]
-            [status-im2.common.bottom-sheet.view :refer [close-bottom-sheet-fn]]))
-
-(defn hide-sheet-and-dispatch
-  [event]
-  (close-bottom-sheet-fn nil)
-  (rf/dispatch event))
+            [status-im.utils.config :as config]))
 
 (defn add-new-view
   []
@@ -29,7 +23,7 @@
      {:type                :icon
       :theme               :icon
       :accessibility-label :universal-qr-scanner
-      :on-press            #(hide-sheet-and-dispatch
+      :on-press            #(rf/dispatch
                              [::qr-scanner/scan-code
                               {:handler ::qr-scanner/on-scan-success}])}
      :main-icons/qr]]
@@ -38,27 +32,27 @@
      :title               (i18n/label :t/start-new-chat)
      :accessibility-label :start-1-1-chat-button
      :icon                :main-icons/one-on-one-chat
-     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-chat])}]
+     :on-press            #(rf/dispatch [:open-modal :new-chat])}]
    (when config/group-chat-enabled?
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
        :icon                :main-icons/group-chat
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}])
+       :on-press            #(rf/dispatch [:contact.ui/start-group-chat-pressed])}])
    [quo/list-item
     {:theme               :accent
      :title               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
-     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
+     :on-press            #(rf/dispatch [:open-modal :new-public-chat])}]
    (when @(rf/subscribe [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)
        :accessibility-label :communities-button
        :icon                :main-icons/communities
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
+       :on-press            #(rf/dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
@@ -74,7 +68,7 @@
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}])}]
+     :on-press                   #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
@@ -90,7 +84,7 @@
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
-     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
+     :on-press                     #(rf/dispatch [:open-modal :new-contact])}]])
 
 
 (def new-chat-bottom-sheet-comp
