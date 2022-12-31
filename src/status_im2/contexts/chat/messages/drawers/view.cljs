@@ -77,7 +77,7 @@
        :emoji-reaction-id))
 
 (defn reactions
-  [chat-id message-id]
+  [{:keys [chat-id message-id]}]
   (let [reactions     (rf/sub [:chats/message-reactions message-id chat-id])
         own-reactions (reduce (fn [acc {:keys [emoji-id own emoji-reaction-id]}]
                                 (if own

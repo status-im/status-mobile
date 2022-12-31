@@ -28,5 +28,4 @@
        [quo/add-reaction
         {:on-press (fn []
                      (rf/dispatch [:dismiss-keyboard])
-                     (rf/dispatch [:bottom-sheet/show-sheet :drawer/reactions :chat-id chat-id
-                                   :message-id message-id]))}]])))
+                     (rf/dispatch [:bottom-sheet/show-sheet :drawer/reactions {:chat-id chat-id :message-id message-id}]))}]])))
