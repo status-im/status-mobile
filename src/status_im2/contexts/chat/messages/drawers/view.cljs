@@ -124,7 +124,7 @@
           admin-actions  (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
-       [reactions chat-id message-id]
+       [reactions {:chat-id chat-id :message-id message-id}]
 
        ;; MAIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}
