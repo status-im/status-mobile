@@ -62,8 +62,7 @@
 
 (defn contact-selection-list
   []
-  (let [contacts                                     (rf/sub
-                                                      [:contacts/sorted-and-grouped-by-first-letter])
+  (let [contacts                                     (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count                      (rf/sub [:selected-contacts-count])
         one-contact-selected?                        (= selected-contacts-count 1)
         contacts-selected?                           (pos? selected-contacts-count)
