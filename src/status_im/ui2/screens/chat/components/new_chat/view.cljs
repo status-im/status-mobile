@@ -21,7 +21,8 @@
   (bottom-sheet/close-bottom-sheet-fn nil)
   (rf/dispatch event))
 
-(defn- hide-sheet-and-dispatch [evt-vec]
+(defn- hide-sheet-and-dispatch
+  [evt-vec]
   (bottom-sheet/close-bottom-sheet-fn nil)
   (rf/dispatch evt-vec))
 
