@@ -15,7 +15,8 @@
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
-(defn- hide-sheet-and-dispatch [evt-vec]
+(defn- hide-sheet-and-dispatch
+  [evt-vec]
   (bottom-sheet/close-bottom-sheet-fn nil)
   (rf/dispatch evt-vec))
 
@@ -62,7 +63,7 @@
 (defn contact-selection-list
   []
   (let [contacts                                     (rf/sub
-                                                      [:contacts/grouped-by-first-letter])
+                                                      [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count                      (rf/sub [:selected-contacts-count])
         one-contact-selected?                        (= selected-contacts-count 1)
         contacts-selected?                           (pos? selected-contacts-count)
