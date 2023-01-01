@@ -166,7 +166,7 @@
                                         (assoc-in ["0xtest" :mutual?] false)
                                         (assoc-in ["0xtest2" :mutual?] false)
                                         (assoc-in ["0xtest3" :mutual?] false))]
-      ;; TODO(@ibrkhalil,2023-01-01): Replace with update-vals when update the ClojureScript API
+      ;; TODO(@ibrkhalil,2023-01-01): Replace with update-vals when we update the ClojureScript API
       (swap! rf-db/app-db merge
         (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
       (is (empty? (rf/sub [sub-name])))))
