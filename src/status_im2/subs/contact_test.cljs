@@ -4,7 +4,6 @@
             [status-im.test-helpers :as h]
             status-im2.subs.contact
             [utils.re-frame :as rf]))
-
 (def ^:private contacts-sample-data
   {:selected-contacts-count 1
    :contacts/contacts       {"0xtest"  {:last-updated          1672582629695
