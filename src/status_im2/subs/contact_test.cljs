@@ -67,6 +67,95 @@
                                         :has-added-us          true
                                         :contact-request-state 1}}})
 
+(def ^:private expected-sorted-contacts
+  '({:title "F"
+     :data  ({:active?               true
+              :last-updated          1672582629695
+              :mutual?               true
+              :blocked?              false
+              :contactRequestClock   0
+              :images                {}
+              :added                 true
+              :name                  "slim.shady"
+              :added?                true
+              :Removed               false
+              :trustStatus           0
+              :alias                 "Fake Slim Shady"
+              :bio                   ""
+              :IsSyncing             false
+              :display-name          ""
+              :ens-verified          true
+              :socialLinks           nil
+              :blocked               false
+              :allow-new-users?      true
+              :verificationStatus    0
+              :lastUpdatedLocally    1672582563204
+              :public-key            "0xtest"
+              :names                 {:nickname         nil
+                                      :display-name     ""
+                                      :three-words-name "Fake Slim Shady"
+                                      :ens-name         "@slim.shady"}
+              :has-added-us          true
+              :contact-request-state 1})}
+    {:title "I"
+     :data  ({:active?               true
+              :last-updated          1672582629695
+              :mutual?               true
+              :blocked?              false
+              :contactRequestClock   0
+              :images                {}
+              :added                 true
+              :name                  "slim.shady"
+              :added?                true
+              :Removed               false
+              :trustStatus           0
+              :alias                 "Instant noodles"
+              :bio                   ""
+              :IsSyncing             false
+              :display-name          ""
+              :ens-verified          true
+              :socialLinks           nil
+              :blocked               false
+              :allow-new-users?      true
+              :verificationStatus    0
+              :lastUpdatedLocally    1672582563204
+              :public-key            "0xtest"
+              :names                 {:nickname         nil
+                                      :display-name     ""
+                                      :three-words-name "Instant noodles"
+                                      :ens-name         "@slim.shady"}
+              :has-added-us          true
+              :contact-request-state 1})}
+    {:title "R"
+     :data  ({:active?               true
+              :last-updated          1672582629695
+              :mutual?               true
+              :blocked?              false
+              :contactRequestClock   0
+              :images                {}
+              :added                 true
+              :name                  "slim.shady"
+              :added?                true
+              :Removed               false
+              :trustStatus           0
+              :alias                 "Real Slim Shady"
+              :bio                   ""
+              :IsSyncing             false
+              :display-name          ""
+              :ens-verified          true
+              :socialLinks           nil
+              :blocked               false
+              :allow-new-users?      true
+              :verificationStatus    0
+              :lastUpdatedLocally    1672582563204
+              :public-key            "0xtest"
+              :names                 {:nickname         nil
+                                      :display-name     ""
+                                      :three-words-name "Real Slim Shady"
+                                      :ens-name         "@slim.shady"}
+              :has-added-us          true
+              :contact-request-state 1})}))
+
 (h/deftest-sub :contacts/sorted-and-grouped-by-first-letter
   [sub-name]
   (testing "Returning empty sequence when no contacts"
@@ -83,93 +172,7 @@
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
-    (let [expected '({:title "F"
-                      :data  ({:active?               true
-                               :last-updated          1672582629695
-                               :mutual?               true
-                               :blocked?              false
-                               :contactRequestClock   0
-                               :images                {}
-                               :added                 true
-                               :name                  "slim.shady"
-                               :added?                true
-                               :Removed               false
-                               :trustStatus           0
-                               :alias                 "Fake Slim Shady"
-                               :bio                   ""
-                               :IsSyncing             false
-                               :display-name          ""
-                               :ens-verified          true
-                               :socialLinks           nil
-                               :blocked               false
-                               :allow-new-users?      true
-                               :verificationStatus    0
-                               :lastUpdatedLocally    1672582563204
-                               :public-key            "0xtest"
-                               :names                 {:nickname         nil
-                                                       :display-name     ""
-                                                       :three-words-name "Fake Slim Shady"
-                                                       :ens-name         "@slim.shady"}
-                               :has-added-us          true
-                               :contact-request-state 1})}
-                     {:title "I"
-                      :data  ({:active?               true
-                               :last-updated          1672582629695
-                               :mutual?               true
-                               :blocked?              false
-                               :contactRequestClock   0
-                               :images                {}
-                               :added                 true
-                               :name                  "slim.shady"
-                               :added?                true
-                               :Removed               false
-                               :trustStatus           0
-                               :alias                 "Instant noodles"
-                               :bio                   ""
-                               :IsSyncing             false
-                               :display-name          ""
-                               :ens-verified          true
-                               :socialLinks           nil
-                               :blocked               false
-                               :allow-new-users?      true
-                               :verificationStatus    0
-                               :lastUpdatedLocally    1672582563204
-                               :public-key            "0xtest"
-                               :names                 {:nickname         nil
-                                                       :display-name     ""
-                                                       :three-words-name "Instant noodles"
-                                                       :ens-name         "@slim.shady"}
-                               :has-added-us          true
-                               :contact-request-state 1})}
-                     {:title "R"
-                      :data  ({:active?               true
-                               :last-updated          1672582629695
-                               :mutual?               true
-                               :blocked?              false
-                               :contactRequestClock   0
-                               :images                {}
-                               :added                 true
-                               :name                  "slim.shady"
-                               :added?                true
-                               :Removed               false
-                               :trustStatus           0
-                               :alias                 "Real Slim Shady"
-                               :bio                   ""
-                               :IsSyncing             false
-                               :display-name          ""
-                               :ens-verified          true
-                               :socialLinks           nil
-                               :blocked               false
-                               :allow-new-users?      true
-                               :verificationStatus    0
-                               :lastUpdatedLocally    1672582563204
-                               :public-key            "0xtest"
-                               :names                 {:nickname         nil
-                                                       :display-name     ""
-                                                       :three-words-name "Real Slim Shady"
-                                                       :ens-name         "@slim.shady"}
-                               :has-added-us          true
-                               :contact-request-state 1})})
+    (let [expected                        expected-sorted-contacts
           contact-list-without-identicons (map (fn [contact-group]
                                                  (update contact-group
                                                          :data
