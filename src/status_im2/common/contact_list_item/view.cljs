@@ -46,15 +46,32 @@
                     :right    20}}
         (if (= icon :options)
           [quo/icon :i/options
+<<<<<<< HEAD
            {:size  20
             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+=======
+           {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+>>>>>>> 17d3ad846 (Formatting)
           (react/use-memo
            (fn []
              [quo/checkbox
               {:default-checked?    @checked?
                :accessibility-label :contact-toggle-check
                :disabled?           (and member? (not admin?))
+<<<<<<< HEAD
                :on-change           on-check}])
+=======
+               :on-change           (fn [selected]
+                                      (if start-a-new-chat?
+                                        (on-toggle true @checked? public-key)
+                                        (if-not member?
+                                          (if selected
+                                            (rf/dispatch [:select-participant public-key true])
+                                            (rf/dispatch [:deselect-participant public-key true]))
+                                          (if selected
+                                            (rf/dispatch [:undo-deselect-member public-key true])
+                                            (rf/dispatch [:deselect-member public-key true])))))}])
+>>>>>>> 17d3ad846 (Formatting)
            [checked?]))])]))
 
 (defn contact-list-item
