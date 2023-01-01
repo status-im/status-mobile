@@ -172,8 +172,7 @@
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
-    (let [expected                        expected-sorted-contacts
-          contact-list-without-identicons (map (fn [contact-group]
+    (let [contact-list-without-identicons (map (fn [contact-group]
                                                  (update contact-group
                                                          :data
                                                          #(map (fn [contact]
@@ -183,4 +182,4 @@
       ;; TODO(@ibrkhalil,2023-01-01): Find out why identicons get auto generated timestamps on their
       ;; value, Making tests fail
 
-      (is (= expected contact-list-without-identicons)))))
+      (is (= expected-sorted-contacts contact-list-without-identicons)))))
