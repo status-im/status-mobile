@@ -16,9 +16,9 @@
             [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (defn- hide-sheet-and-dispatch
-  [evt-vec]
+  [event]
   (bottom-sheet/close-bottom-sheet-fn nil)
-  (rf/dispatch evt-vec))
+  (rf/dispatch event))
 
 (defn- on-toggle
   [allow-new-users? checked? public-key]

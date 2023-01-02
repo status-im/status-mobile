@@ -4,6 +4,7 @@
             [status-im.test-helpers :as h]
             status-im2.subs.contact
             [utils.re-frame :as rf]))
+
 (def ^:private contacts-sample-data
   {:selected-contacts-count 1
    :contacts/contacts       {"0xtest"  {:last-updated          1672582629695
@@ -166,9 +167,8 @@
                                         (assoc-in ["0xtest" :mutual?] false)
                                         (assoc-in ["0xtest2" :mutual?] false)
                                         (assoc-in ["0xtest3" :mutual?] false))]
-      ;; TODO(@ibrkhalil,2023-01-01): Replace with update-vals when we update the ClojureScript API
       (swap! rf-db/app-db merge
-        (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
+             (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
@@ -179,7 +179,5 @@
                                                                  (dissoc contact :identicon))
                                                                %)))
                                                (rf/sub [sub-name]))]
-      ;; TODO(@ibrkhalil,2023-01-01): Find out why identicons get auto generated timestamps on their
-      ;; value, Making tests fail
 
       (is (= expected-sorted-contacts contact-list-without-identicons)))))

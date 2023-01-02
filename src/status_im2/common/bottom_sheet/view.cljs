@@ -88,9 +88,9 @@
   (reset! show-bottom-sheet? false)
   (when (fn? on-cancel) (on-cancel))
   (timer/set-timeout
-   #(do
-      (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
-      (reset-atoms))
+   (fn []
+     (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
+     (reset-atoms))
    animation-delay))
 
 (defn bottom-sheet
