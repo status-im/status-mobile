@@ -4,6 +4,7 @@
             [status-im.test-helpers :as h]
             status-im2.subs.contact
             [utils.re-frame :as rf]))
+
 (def ^:private contacts-sample-data
   {:selected-contacts-count 1
    :contacts/contacts       {"0xtest"  {:last-updated          1672582629695
@@ -167,7 +168,7 @@
                                         (assoc-in ["0xtest2" :mutual?] false)
                                         (assoc-in ["0xtest3" :mutual?] false))]
       (swap! rf-db/app-db merge
-        (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
+             (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
