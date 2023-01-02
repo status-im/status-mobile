@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.photo-selector.style
+(ns status-im2.contexts.chat.photo-selector.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]))
 
@@ -37,6 +37,11 @@
    :margin-left      20
    :margin-bottom    24})
 
+(def title-container
+  {:flex-direction :row
+   :position       :absolute
+   :align-self     :center})
+
 (defn chevron-container
   []
   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
@@ -68,3 +73,4 @@
    :border-radius 8
    :top           8
    :right         8})
+
