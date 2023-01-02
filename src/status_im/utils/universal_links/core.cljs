@@ -82,16 +82,16 @@
 
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
-  [{:keys [db]} cofx de-serialised-key]
-  (navigation/navigate-to-cofx cofx :community {:community-id de-serialised-key})
+  [{:keys [db]} cofx deserialized-key]
+  (navigation/navigate-to-cofx cofx :community {:community-id deserialized-key})
 )
 
 (rf/defn handle-desktop-community
   [cofx {:keys [community-id]}]
   (status/deserialize-and-compress-key
    community-id
-   (fn [de-serialised-key]
-     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str de-serialised-key)])
+   (fn [deserialized-key]
+     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str deserialized-key)])
    )
   )
 )

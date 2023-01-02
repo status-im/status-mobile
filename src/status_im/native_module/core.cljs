@@ -317,13 +317,13 @@
              :public-key public-key})
   (.decompressPublicKey ^js (status) public-key callback))
 
-(defn compress-given-key
-  "Provides any key to status-go and gets back a 33bit compressed key back"
-  [some-key callback]
+(defn compress-public-key
+  "Provides a public key to status-go and gets back a 33bit compressed key back"
+  [public-key callback]
   (log/info "[native-module] Compressing some key"
-            {:fn         :compress-given-key
-             :public-key some-key})
-  (.compressPublicKey ^js (status) some-key callback))
+            {:fn         :compress-public-key
+             :public-key public-key})
+  (.compressPublicKey ^js (status) public-key callback))
 
 (defn hash-typed-data
   "used for keycard"

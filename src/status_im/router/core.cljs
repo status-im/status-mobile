@@ -199,6 +199,12 @@
   {:type    :wallet-account
    :account (when account (string/lower-case account))})
 
+(defn community-route-type
+  [route-params]
+  (if (string/starts-with? (:community-id route-params) "z")
+    :desktop-community
+    :community))
+
 (defn handle-uri
   [chain chats uri cb]
   (let [{:keys [handler route-params query-params]} (match-uri uri)]
@@ -229,10 +235,7 @@
       (cb {:type handler :community-id (:community-id route-params)})
 
       (= handler :community)
-      (cb {:type         (if (string/starts-with? (:community-id route-params) "z")
-                           :desktop-community
-                           :community
-                         )
+      (cb {:type         (community-route-type route-params)
            :community-id (:community-id route-params)})
 
       (= handler :community-chat)
