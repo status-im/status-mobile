@@ -212,15 +212,17 @@
   "cs")
 
 (def serialization-key
-  "We pass this serialization key as a parameter to MultiformatSerializePublicKey function at status-go,
-  This key determines the output base of the serialisation.
-  according to https://specs.status.im/spec/2#public-key-serialization we serialise keys with base58btc encoding"
+  "We pass this serialization key as a parameter to MultiformatSerializePublicKey
+  function at status-go, This key determines the output base of the serialization.
+  according to https://specs.status.im/spec/2#public-key-serialization we serialize
+  keys with base58btc encoding"
   "z")
 
-(def de-serialization-key
-  "We pass this de-serialization key as a parameter to MultiformatDeserializePublicKey function at status-go,
-  This key determines the output base of the deserialisation.
-  according to https://specs.status.im/spec/2#public-key-serialization we deserialise keys with base16 hexadecimal encoding"
+(def deserialization-key
+  "We pass this deserialization key as a parameter to MultiformatDeserializePublicKey
+  function at status-go, This key determines the output base of the deserialization.
+  according to https://specs.status.im/spec/2#public-key-serialization we deserialize
+  keys with base16 hexadecimal encoding"
   "f")
 
 (def multi-code-prefix
