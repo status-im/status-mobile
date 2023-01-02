@@ -3,18 +3,8 @@
             [status-im.chat.db :as chat.db]
             [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
-<<<<<<< HEAD
             [utils.datetime :as datetime]
             [status-im2.common.constants :as constants]))
-=======
-            [status-im.utils.datetime :as datetime]
-<<<<<<< HEAD
-            [status-im2.common.constants :as constants]
-            [status-im.constants]))
->>>>>>> 0424ac6e4... feat: images album
-=======
-            [status-im2.common.constants :as constants]))
->>>>>>> 96852e1ba... refactor
 
 (re-frame/reg-sub
  :chats/chat-messages
