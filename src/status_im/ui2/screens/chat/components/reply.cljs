@@ -64,14 +64,9 @@
     (i18n/label :t/message-deleted)]])
 
 (defn reply-message
-  [{:keys [chat-id id]}
+  [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]}
    in-chat-input? pin?]
-  (let [reply-content-sub  (-> [:chats/chat-messages chat-id]
-                               rf/sub
-                               (get id))
-        {:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]}
-        reply-content-sub
-        contact-name       (rf/sub [:contacts/contact-name-by-identity from])
+  (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
     [rn/view
