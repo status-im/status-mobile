@@ -14,6 +14,14 @@
 
 (def selected (reagent/atom []))
 
+(defn on-press-confirm-selection
+  [chat-id]
+  (rf/dispatch [:chat.ui/clear-sending-images chat-id])
+  (doseq [item @selected]
+    (rf/dispatch [:chat.ui/camera-roll-pick item]))
+  (reset! selected [])
+  (rf/dispatch [:bottom-sheet/hide]))
+
 (defn bottom-gradient
   [chat-id selected-images]
   [:f>
@@ -28,12 +36,7 @@
           [quo/button
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
-            :on-press            (fn []
-                                   (rf/dispatch [:chat.ui/clear-sending-images chat-id])
-                                   (doseq [item @selected]
-                                     (rf/dispatch [:chat.ui/camera-roll-pick item]))
-                                   (reset! selected [])
-                                   (rf/dispatch [:bottom-sheet/hide]))
+            :on-press            #(on-press-confirm-selection chat-id)
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 
@@ -56,7 +59,6 @@
    {:active-opacity      1
     :on-press            (fn []
                            (if (some #{item} @selected)
-                             ;(reset! selected (vec (remove #(= % item) @selected)))
                              (swap! selected remove-selected item)
                              (swap! selected conj item)))
     :accessibility-label (str "image-" index)}

@@ -152,8 +152,6 @@
  (fn [[chat-id inputs]]
    (get-in inputs [chat-id :metadata :sending-image])))
 
-
-
 (re-frame/reg-sub
  :chats/timeline-chat-input-text
  :<- [:chats/timeline-chat-input]
