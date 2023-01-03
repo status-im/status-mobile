@@ -8,14 +8,14 @@
             [react-native.core :as rn]))
 
 (def ^:private themes
-  {:container        {:light {:background-color colors/white-opa-70}
-                      :dark  {:background-color colors/neutral-80-opa-70}}
-   :text             {:light {:color colors/neutral-100}
-                      :dark  {:color colors/white}}
-   :icon             {:light {:color colors/neutral-100}
-                      :dark  {:color colors/white}}
-   :action-container {:light {:background-color :colors/neutral-80-opa-5}
-                      :dark  {:background-color :colors/white-opa-5}}})
+  {:container        {:dark  {:background-color colors/white-opa-70}
+                      :light {:background-color colors/neutral-80-opa-70}}
+   :text             {:dark  {:color colors/neutral-100}
+                      :light {:color colors/white}}
+   :icon             {:dark  {:color colors/neutral-100}
+                      :light {:color colors/white}}
+   :action-container {:dark  {:background-color :colors/neutral-80-opa-5}
+                      :light {:background-color :colors/white-opa-5}}})
 
 (defn- merge-theme-style
   [component-key styles]
