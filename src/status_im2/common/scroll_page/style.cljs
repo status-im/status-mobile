@@ -3,12 +3,12 @@
             [react-native.platform :as platform]))
 
 (defn image-slider
-  [height]
+  [size]
   {:top     (if platform/ios? 0 -64)
    ;; -64 is needed on android as the scroll doesn't
    ;; bounce so this slider won't disapear otherwise
-   :height  height
-   :width   height
+   :height  size
+   :width   size
    :z-index 4
    :flex    1})
 

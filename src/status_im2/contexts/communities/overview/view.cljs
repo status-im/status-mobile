@@ -289,8 +289,7 @@
         [quo/community-tags tags]
         [preview-user-list]
         [join-community community]]
-       [channel-list-component channel-heights first-channel-height]
-      ])))
+       [channel-list-component channel-heights first-channel-height]])))
 
 (defn render-sticky-header
   [channel-heights first-channel-height]
