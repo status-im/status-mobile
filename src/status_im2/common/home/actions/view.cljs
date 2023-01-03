@@ -8,19 +8,20 @@
             [utils.re-frame :as rf]))
 
 (defn- entry
-  [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
+  [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
   {:pre [(keyword? icon)
          (string? label)
          (fn? on-press)
          (boolean? danger?)
          (boolean? chevron?)]}
-  {:icon         icon
-   :label        label
-   :on-press     on-press
-   :danger?      danger?
-   :sub-label    sub-label
-   :right-icon   (when chevron? :i/chevron-right)
-   :add-divider? add-divider?})
+  {:icon                icon
+   :label               label
+   :on-press            on-press
+   :danger?             danger?
+   :sub-label           sub-label
+   :right-icon          (when chevron? :i/chevron-right)
+   :add-divider?        add-divider?
+   :accessibility-label accessibility-label})
 
 (defn hide-sheet-and-dispatch
   [event]

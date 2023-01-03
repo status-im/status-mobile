@@ -26,7 +26,7 @@
      [quo/text {:style {:margin-left 10}} extra-text]]))
 
 (defn confirmation-drawer
-  [{:keys [title description context button-text on-press extra-action extra-text]}]
+  [{:keys [title description context button-text on-press extra-action extra-text accessibility-label]}]
   (let [extra-action-selected? (reagent/atom false)]
     (fn []
       (let [{:keys [group-chat chat-id public-key color name]} context
@@ -38,7 +38,8 @@
                                                                           id]))
             photo-path                                         (when-not (empty? (:images contact))
                                                                  (rf/sub [:chats/photo-path id]))]
-        [rn/view {:style {:margin-horizontal 20}}
+        [rn/view {:style               {:margin-horizontal 20}
+                  :accessibility-label accessibility-label}
          [quo/text
           {:weight :semi-bold
            :size   :heading-1} title]
