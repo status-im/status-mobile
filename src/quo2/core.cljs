@@ -52,6 +52,7 @@
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
    quo2.components.tags.status-tags
+   quo2.components.profile.profile-card.view
    quo2.components.tags.tags))
 
 (def toast quo2.components.notifications.toast/toast)
@@ -126,6 +127,9 @@
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
+
+;;;; PROFILE
+(def profile-card quo2.components.profile.profile-card.view/profile-card)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
