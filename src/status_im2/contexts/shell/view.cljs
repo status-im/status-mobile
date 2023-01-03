@@ -47,7 +47,7 @@
    (i18n/label :t/jump-to)])
 
 (defn render-card
-  [{:keys [id type content] :as card}]
+  [{:keys [id type channel-id] :as card}]
   (let [card-data (case type
                     shell.constants/one-to-one-chat-card
                     (rf/sub [:shell/one-to-one-chat-card id])
@@ -56,11 +56,10 @@
                     (rf/sub [:shell/private-group-chat-card id])
 
                     shell.constants/community-card
-                    (if content
-                      (rf/sub [:shell/community-channel-card
-                               id (get-in content [:data :channel-id])
-                               content])
-                      (rf/sub [:shell/community-card id]))
+                    (rf/sub [:shell/community-card id])
+
+                    shell.constants/community-channel-card
+                    (rf/sub [:shell/community-channel-card channel-id])
 
                     nil)]
     [switcher-cards/card (merge card card-data)]))

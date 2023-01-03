@@ -1,6 +1,7 @@
 (ns utils.datetime
   (:require [cljs-time.coerce :as t.coerce]
             [cljs-time.core :as t]
+            [goog.string :as gstring]
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [i18n.i18n :as i18n]
@@ -250,3 +251,9 @@
 (defn to-ms
   [sec]
   (* 1000 sec))
+
+(defn ms-to-duration
+  "milisecods to mm:ss format"
+  [ms]
+  (let [sec (quot ms 1000)]
+    (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))

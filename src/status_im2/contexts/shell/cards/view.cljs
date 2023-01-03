@@ -5,59 +5,85 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
+            [status-im2.common.constants :as constants]
             [status-im2.contexts.shell.cards.style :as style]
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 (defn content-container
-  [{:keys [content-type data new-notifications? color-50]}]
+  [type {:keys [content-type data new-notifications? color-50 community-info community-channel]}]
   [rn/view {:style (style/content-container new-notifications?)}
-   ;; TODO - Use status-im2.common.shell.constants for content type
-   (case content-type
-     :text                           [quo/text
-                                      {:size            :paragraph-2
-                                       :weight          :regular
-                                       :number-of-lines 1
-                                       :ellipsize-mode  :tail
-                                       :style           style/last-message-text}
-                                      data]
-     :photo                          [quo/preview-list
-                                      {:type               :photo
-                                       :more-than-99-label (i18n/label :counter-99-plus)
-                                       :size               24
-                                       :override-theme     :dark} data]
-     :sticker                        [fast-image/fast-image
-                                      {:source (:source data)
-                                       :style  style/sticker}]
-     :gif                            [fast-image/fast-image
-                                      {:source (:source data)
-                                       :style  style/gif}]
-     :channel                        [rn/view
-                                      {:style {:flex-direction :row
-                                               :align-items    :center}}
-                                      [quo/channel-avatar
-                                       {:emoji                  (:emoji data)
-                                        :emoji-background-color (colors/alpha color-50 0.1)}]
-                                      [quo/text
-                                       {:size            :paragraph-2
-                                        :weight          :medium
-                                        :number-of-lines 1
-                                        :ellipsize-mode  :tail
-                                        :style           style/community-channel}
-                                       (:channel-name data)]]
-     :community-info                 (case (:type data)
-                                       :pending             [quo/status-tag
-                                                             {:status         {:type :pending}
-                                                              :label          (i18n/label :t/pending)
-                                                              :size           :small
-                                                              :override-theme :dark}]
-                                       :kicked              [quo/status-tag
-                                                             {:status         {:type :negative}
-                                                              :size           :small
-                                                              :override-theme :dark
-                                                              :label          (i18n/label :t/kicked)}]
-                                       (:count :permission) [:<>]) ;; Add components for these cases
-     (:audio :community :link :code) ;; Components not available
-     [:<>])])
+   (case type
+     shell.constants/community-card
+     (case (:type community-info)
+       :pending             [quo/status-tag
+                             {:status         {:type :pending}
+                              :label          (i18n/label :t/pending)
+                              :size           :small
+                              :override-theme :dark}]
+       :kicked              [quo/status-tag
+                             {:status         {:type :negative}
+                              :size           :small
+                              :override-theme :dark
+                              :label          (i18n/label :t/kicked)}]
+       (:count :permission) [:<>]) ;; Add components for these cases
+
+     shell.constants/community-channel-card
+     [rn/view
+      {:style {:flex-direction :row
+               :align-items    :center}}
+      [quo/channel-avatar
+       {:emoji                  (:emoji community-channel)
+        :emoji-background-color (colors/alpha color-50 0.1)}]
+      [quo/text
+       {:size            :paragraph-2
+        :weight          :medium
+        :number-of-lines 1
+        :ellipsize-mode  :tail
+        :style           style/community-channel}
+       (:channel-name community-channel)]]
+
+     (case content-type
+       constants/content-type-text
+       [quo/text
+        {:size            :paragraph-2
+         :weight          :regular
+         :number-of-lines 1
+         :ellipsize-mode  :tail
+         :style           style/last-message-text}
+        data]
+
+       constants/content-type-image
+       [quo/preview-list
+        {:type               :photo
+         :more-than-99-label (i18n/label :counter-99-plus)
+         :size               24
+         :override-theme     :dark} data]
+
+       constants/content-type-sticker
+       [fast-image/fast-image
+        {:source (:source data)
+         :style  style/sticker}]
+
+
+       constants/content-type-gif
+       [fast-image/fast-image
+        {:source (:source data)
+         :style  style/gif}]
+
+       constants/content-type-audio
+       [quo/audio-tag data {:override-theme :dark}]
+
+       constants/content-type-community
+       [quo/community-tag
+        (:avatar data)
+        (:community-name data)
+        {:override-theme :dark}]
+
+       (constants/content-type-link) ;; Components not available
+       ;; Code snippet content type is not supported yet
+       [:<>]
+
+       nil))])
 
 (defn notification-container
   [{:keys [notification-indicator counter-label color-60]}]
@@ -70,9 +96,9 @@
      [rn/view {:style (style/unread-dot color-60)}])])
 
 (defn bottom-container
-  [{:keys [new-notifications?] :as content}]
+  [type {:keys [new-notifications?] :as content}]
   [:<>
-   [content-container content]
+   [content-container type content]
    (when new-notifications?
      [notification-container content])])
 
@@ -92,7 +118,8 @@
       :size           :large
       :override-theme :dark}]
 
-    shell.constants/community-card
+    (shell.constants/community-card
+     shell.constants/community-channel-card)
     (if (:source avatar-params)
       [fast-image/fast-image
        {:source (:source avatar-params)
@@ -106,19 +133,41 @@
         (string/upper-case (first (:name avatar-params)))]])))
 
 (defn subtitle
-  [{:keys [content-type data]}]
-  (case content-type
-    :text           (i18n/label :t/message)
-    :photo          (i18n/label :t/n-photos {:count (count data)})
-    :sticker        (i18n/label :t/sticker)
-    :gif            (i18n/label :t/gif)
-    :audio          (i18n/label :t/audio-message)
-    :community      (i18n/label :t/link-to-community)
-    :link           (i18n/label :t/external-link)
-    :code           (i18n/label :t/code-snippet)
-    :channel        (i18n/label :t/community-channel)
-    :community-info (i18n/label :t/community)
-    (i18n/label :t/community)))
+  [type {:keys [content-type data]}]
+  (case type
+    shell.constants/community-card
+    (i18n/label :t/community)
+
+    shell.constants/community-channel-card
+    (i18n/label :t/community-channel)
+
+    (case content-type
+      constants/content-type-text
+      (i18n/label :t/message)
+
+      constants/content-type-image
+      (i18n/label
+       (if (= (count data) 1)
+         :t/one-photo
+         :t/n-photos)
+       {:count (count data)})
+
+      constants/content-type-sticker
+      (i18n/label :t/sticker)
+
+      constants/content-type-gif
+      (i18n/label :t/gif)
+
+      constants/content-type-audio
+      (i18n/label :t/audio-message)
+
+      constants/content-type-community
+      (i18n/label :t/link-to-community)
+
+      constants/content-type-link
+      (i18n/label :t/external-link)
+
+      "")))
 
 ;; Screens Card
 (defn screens-card
@@ -144,8 +193,8 @@
         {:size   :paragraph-2
          :weight :medium
          :style  style/subtitle}
-        (subtitle content)]
-       [bottom-container (merge {:color-50 color-50 :color-60 color-60} content)]]
+        (subtitle type content)]
+       [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
       (when avatar-params
         [rn/view {:style style/avatar-container}
          [avatar avatar-params type customization-color]])
@@ -188,30 +237,26 @@
 (defn card
   [{:keys [type] :as data}]
   (case type
-
-    shell.constants/empty-card              ;; Placeholder
+    shell.constants/empty-card            ;; Placeholder
     [empty-card]
 
-    shell.constants/one-to-one-chat-card    ;; Screens Card
+    (shell.constants/one-to-one-chat-card ;; Screens Card
+     shell.constants/private-group-chat-card
+     shell.constants/community-card
+     shell.constants/community-channel-card)
     [screens-card data]
 
-    shell.constants/private-group-chat-card ;; Screens Card
-    [screens-card data]
-
-    shell.constants/community-card          ;; Screens Card
-    [screens-card data]
-
-    shell.constants/browser-card            ;; Browser Card
+    shell.constants/browser-card         ;; Browser Card
     [browser-card data]
 
-    shell.constants/wallet-card             ;; Wallet Card
+    shell.constants/wallet-card          ;; Wallet Card
     [wallet-card data]
 
-    shell.constants/wallet-collectible      ;; Wallet Card
+    shell.constants/wallet-collectible   ;; Wallet Card
     [wallet-collectible data]
 
-    shell.constants/wallet-graph            ;; Wallet Card
+    shell.constants/wallet-graph         ;; Wallet Card
     [wallet-graph data]
 
-    shell.constants/communities-discover    ;; Home Card
+    shell.constants/communities-discover ;; Home Card
     [communities-discover data]))

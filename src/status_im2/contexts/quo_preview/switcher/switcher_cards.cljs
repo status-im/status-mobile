@@ -2,6 +2,7 @@
   (:require [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.common.constants :as constants]
             [status-im.react-native.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.contexts.shell.cards.view :as switcher-cards]
@@ -19,6 +20,8 @@
                :value "Group Messaging"}
               {:key   shell.constants/community-card
                :value "Community Card"}
+              {:key   shell.constants/community-channel-card
+               :value "Community Channel Card"}
               {:key   shell.constants/browser-card
                :value "Browser Card"}
               {:key   shell.constants/wallet-card
@@ -51,26 +54,20 @@
    {:label   "Content Type"
     :key     :content-type
     :type    :select
-    :options [{:key   :text
+    :options [{:key   constants/content-type-text
                :value :text}
-              {:key   :photo
+              {:key   constants/content-type-image
                :value :photo}
-              {:key   :sticker
+              {:key   constants/content-type-sticker
                :value :sticker}
-              {:key   :gif
+              {:key   constants/content-type-gif
                :value :gif}
-              {:key   :audio
+              {:key   constants/content-type-audio
                :value :audio}
-              {:key   :community
+              {:key   constants/content-type-community
                :value :community}
-              {:key   :link
-               :value :link}
-              {:key   :code
-               :value :code}
-              {:key   :channel
-               :value :channel}
-              {:key   :community-info
-               :value :community-info}]}
+              {:key   constants/content-type-link
+               :value :link}]}
    {:label "Last Message"
     :key   :last-message
     :type  :text}
@@ -90,6 +87,7 @@
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
 (def gif {:source (resources/get-mock-image :gif)})
+(def coinbase-community (resources/get-mock-image :coinbase))
 
 (def photos-list
   [{:source (resources/get-mock-image :photo1)}
@@ -102,13 +100,27 @@
 (defn get-mock-content
   [data]
   (case (:content-type data)
-    :text                           (:last-message data)
-    :photo                          photos-list
-    :sticker                        sticker
-    :gif                            gif
-    :channel                        {:emoji "🍑" :channel-name "# random"}
-    :community-info                 {:type :kicked}
-    (:audio :community :link :code) nil))
+    constants/content-type-text
+    (:last-message data)
+
+    constants/content-type-image
+    photos-list
+
+    constants/content-type-sticker
+    sticker
+
+    constants/content-type-gif
+    gif
+
+    constants/content-type-audio
+    "00:32"
+
+    constants/content-type-community
+    {:avatar         coinbase-community
+     :community-name "Coinbase"}
+
+    constants/content-type-link
+    nil))
 
 (defn get-mock-data
   [{:keys [type] :as data}]
@@ -120,11 +132,19 @@
               :notification-indicator (:notification-indicator data)
               :counter-label          (:counter-label data)
               :content-type           (:content-type data)
+              :community-channel      {:emoji "🍑" :channel-name "# random"}
+              :community-info         {:type :kicked}
               :data                   (get-mock-content data)}}
    (case type
-     shell.constants/one-to-one-chat-card    {:avatar-params {:full-name (:title data)}}
-     shell.constants/private-group-chat-card {}
-     shell.constants/community-card          {:avatar-params community-avatar}
+     shell.constants/one-to-one-chat-card
+     {:avatar-params {:full-name (:title data)}}
+
+     shell.constants/private-group-chat-card
+     {}
+
+     (shell.constants/community-card
+      shell.constants/community-channel-card)
+     {:avatar-params community-avatar}
      {})))
 
 (defn cool-preview
@@ -136,7 +156,7 @@
                              :banner?                false
                              :notification-indicator :counter
                              :counter-label          2
-                             :content-type           :text
+                             :content-type           constants/content-type-text
                              :last-message           "This is fantastic! Ethereum"
                              :preview-label-color    colors/white})]
     (fn []
@@ -151,7 +171,7 @@
 (defn preview-switcher-cards
   []
   [rn/view
-   {:background-color colors/neutral-100
+   {:background-color (colors/theme-colors colors/white colors/neutral-90)
     :flex             1}
    [rn/flat-list
     {:flex                      1

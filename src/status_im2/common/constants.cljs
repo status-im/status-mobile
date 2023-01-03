@@ -13,6 +13,8 @@
 (def ^:const content-type-community 9)
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
+(def ^:const content-type-gif 12)
+(def ^:const content-type-link 13)
 
 (def ^:const contact-request-state-none 0)
 (def ^:const contact-request-state-mutual 1)
