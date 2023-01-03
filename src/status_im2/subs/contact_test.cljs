@@ -174,7 +174,7 @@
 =======
 >>>>>>> 140ec965e (Comments)
       (swap! rf-db/app-db merge
-             (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
+        (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
