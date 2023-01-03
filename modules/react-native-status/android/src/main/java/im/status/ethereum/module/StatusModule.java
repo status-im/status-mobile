@@ -63,6 +63,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.function.Function;
 import java.util.Map;
 import java.util.Stack;
 import java.util.zip.ZipEntry;
@@ -134,6 +135,21 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "Activity doesn't exist");
         return false;
 
+    }
+
+
+    private void runFunctionInSeparateThread(Function<Void, String[]> func, Callback callback) {
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = () -> {
+            String[] res = func.apply(null);
+            callback.invoke(res);
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     public String getNoBackupDirectory() {
@@ -1216,25 +1232,31 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void generateAliasAndIdenticonAsync(final String seed, final Callback callback) {
-        Log.d(TAG, "generateAliasAndIdenticonAsync");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
+//         Log.d(TAG, "generateAliasAndIdenticonAsync");
+//         if (!checkAvailability()) {
+//             callback.invoke(false);
+//             return;
+//         }
+//
+//         Runnable r = new Runnable() {
+//             @Override
+//             public void run() {
+//                 String resIdenticon = Statusgo.identicon(seed);
+//                 String resAlias = Statusgo.generateAlias(seed);
+//
+//                 Log.d(TAG, resIdenticon);
+//                 Log.d(TAG, resAlias);
+//                 callback.invoke(resAlias, resIdenticon);
+//             }
+//         };
+//
+//         StatusThreadPoolExecutor.getInstance().execute(r);
+             runFunctionInSeparateThread(() -> {
                 String resIdenticon = Statusgo.identicon(seed);
                 String resAlias = Statusgo.generateAlias(seed);
+                return new String[]{resAlias, resIdenticon};
+            }, callback);
 
-                Log.d(TAG, resIdenticon);
-                Log.d(TAG, resAlias);
-                callback.invoke(resAlias, resIdenticon);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @Override
