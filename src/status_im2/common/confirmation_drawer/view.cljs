@@ -38,8 +38,9 @@
                                                                           id]))
             photo-path                                         (when-not (empty? (:images contact))
                                                                  (rf/sub [:chats/photo-path id]))]
-        [rn/view {:style               {:margin-horizontal 20}
-                  :accessibility-label accessibility-label}
+        [rn/view
+         {:style               {:margin-horizontal 20}
+          :accessibility-label accessibility-label}
          [quo/text
           {:weight :semi-bold
            :size   :heading-1} title]
