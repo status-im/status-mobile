@@ -4,10 +4,11 @@
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
             [status-im.chat.models :as chat.models]
-            [i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react])
+            [status-im.ui.components.react :as react]
+            [status-im2.setup.i18n-resources :as i18n-resources]
+            [i18n.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat
@@ -73,8 +74,8 @@
 
 (defn get-language-topic
   []
-  (let [lang      (subs (name i18n/default-device-language) 0 2)
-        lang3     (subs (name i18n/default-device-language) 0 3)
+  (let [lang      (subs (name i18n-resources/default-device-language) 0 2)
+        lang3     (subs (name i18n-resources/default-device-language) 0 3)
         lang-name (or (get lang-names lang3) (get lang-names lang))]
     (when-not (= lang "en")
       (or lang-name (str "status-" lang)))))

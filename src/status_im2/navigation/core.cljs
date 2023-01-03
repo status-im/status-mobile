@@ -10,8 +10,7 @@
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
-            [utils.re-frame :as rf] ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-  ))
+            [utils.re-frame :as rf]))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp

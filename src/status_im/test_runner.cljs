@@ -5,9 +5,7 @@
             [shadow.test :as st]
             [shadow.test.env :as env]
             [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]))
-
-(i18n/init)
+            status-im2.setup.i18n-resources))
 
 (defonce repl? (atom false))
 
