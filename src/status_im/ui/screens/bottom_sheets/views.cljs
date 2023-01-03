@@ -73,7 +73,7 @@
           (merge {:content drawers/reactions}))]
 =======
           (merge {:content drawers/reactions})
-          
+
           (= view :generate-a-new-key)
           (merge {:content multiaccounts-sheet/actions-sheet}))]
 >>>>>>> dd763bfb4 (issue 2 and question 2)
@@ -91,9 +91,13 @@
                                  (when content
                                    [content (when options options)])])
       :component-did-mount    (fn []
-                                (react/hw-back-add-listener #(bottom-sheet/close-bottom-sheet-fn nil)))
+                                (react/hw-back-add-listener dismiss-bottom-sheet-callback))
       :component-will-unmount (fn []
+<<<<<<< HEAD
                                 (react/hw-back-remove-listener #(bottom-sheet/close-bottom-sheet-fn nil))
 >>>>>>> 93028d0fc (Lint)
+=======
+                                (react/hw-back-remove-listener dismiss-bottom-sheet-callback)
+>>>>>>> ed0f535ca (Issue 6, Use same function signature for adding and removing hw event listenr on back button)
                                 (when @bottom-sheet/show-bottom-sheet?
                                   (bottom-sheet/reset-atoms)))})))
