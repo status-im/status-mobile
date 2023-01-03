@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [abs set delay divide])
   (:require ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
             ["react-native-redash/lib/module/v1" :as redash]
+            ["@react-native-community/blur" :as blur]
             [oops.core :refer [ocall oget]]
             [quo.gesture-handler :as gh]
             quo.react
@@ -16,6 +17,7 @@
 (def scroll-view (reagent/adapt-react-class (.-ScrollView animated)))
 (def code (reagent/adapt-react-class (.-Code animated)))
 (def animated-flat-list (create-animated-component gh/flat-list-raw))
+(def blur-view (create-animated-component (.-BlurView blur)))
 
 (defn flat-list
   [props]
