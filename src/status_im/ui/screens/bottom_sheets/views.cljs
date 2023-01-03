@@ -55,6 +55,7 @@
 
           (= view :drawer/reactions)
 <<<<<<< HEAD
+<<<<<<< HEAD
           (merge {:content drawers/reactions})
           (= view :generate-a-new-key)
           (merge {:content multiaccounts-sheet/actions-sheet}))]
@@ -70,6 +71,12 @@
                                 (react/hw-back-remove-listener dismiss-bottom-sheet-callback)
 =======
           (merge {:content drawers/reactions}))]
+=======
+          (merge {:content drawers/reactions})
+          
+          (= view :generate-a-new-key)
+          (merge {:content multiaccounts-sheet/actions-sheet}))]
+>>>>>>> dd763bfb4 (issue 2 and question 2)
     (reagent/create-class
      {:reagent-render         (fn []
                                 [bottom-sheet/bottom-sheet
@@ -77,6 +84,8 @@
                                    :new-chat-bottom-sheet
                                    (assoc opts :initial-height 150)
                                    :drawer/reactions
+                                   (assoc opts :initial-height 100)
+                                   :generate-a-new-key
                                    (assoc opts :initial-height 100)
                                    opts)
                                  (when content

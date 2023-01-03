@@ -1939,6 +1939,9 @@
     "contact-request-chat-pending": "Your contact request is pending",
     "contact-request-chat-add": "Add {{name}} to send a message",
     "connect-with-users": "Connect with users",
+<<<<<<< HEAD
     "invite-friends-and-family": "Invite your friends and family to Status",
     "you-have-no-contacts": "You have no contacts"
+=======
+>>>>>>> dd763bfb4 (issue 2 and question 2)
 }
