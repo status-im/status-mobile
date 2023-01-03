@@ -10,7 +10,8 @@
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.multiaccounts.sheets :as multiaccounts-sheet]))
 
 (defn bottom-sheet
   []
@@ -52,7 +53,10 @@
           (merge {:content pin.list/pinned-messages-list})
 
           (= view :drawer/reactions)
-          (merge {:content drawers/reactions}))]
+          (merge {:content drawers/reactions})
+          
+          (= view :generate-a-new-key)
+          (merge {:content multiaccounts-sheet/actions-sheet}))]
     (reagent/create-class
      {:reagent-render         (fn []
                                 [bottom-sheet/bottom-sheet
@@ -60,6 +64,8 @@
                                    :new-chat-bottom-sheet
                                    (assoc opts :initial-height 150)
                                    :drawer/reactions
+                                   (assoc opts :initial-height 100)
+                                   :generate-a-new-key
                                    (assoc opts :initial-height 100)
                                    opts)
                                  (when content

@@ -69,7 +69,10 @@
     {:theme                      :main
      :title                      (i18n/label :t/new-chat)
      :icon-bg-color              :transparent
+     :type                       :transparent
      :container-padding-vertical 12
+     :style-props {:border-bottom-width 1
+                   :border-color (colors/theme-colors colors/neutral-10 colors/neutral-90)}
      :title-column-style         {:margin-left 2}
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
@@ -77,8 +80,9 @@
      :on-press                   #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
    [quo2/menu-item
     {:theme                        :main
-     :title                        (i18n/label :t/add-a-contact)
+     :title                        (i18n/label :t/connect-with-users)
      :icon-bg-color                :transparent
+     :type                         :transparent
      :icon-container-style         {:padding-horizontal 0}
      :container-padding-horizontal {:padding-horizontal 4}
      :style-props                  {:margin-top    18
@@ -86,7 +90,7 @@
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label          :add-a-contact
+     :accessibility-label          :connect-with-users
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user

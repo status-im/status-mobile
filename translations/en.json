@@ -1492,7 +1492,7 @@
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
     "add-a-contact": "Add a contact",
-    "enter-a-chat-key": "Enter a chat key or scan a QR",
+    "enter-a-chat-key": "Add a chatkey or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",
@@ -1937,5 +1937,6 @@
     "selected-count-from-max": "{{selected}}/{{max}}",
     "online": "Online",
     "contact-request-chat-pending": "Your contact request is pending",
-    "contact-request-chat-add": "Add {{name}} to send a message"
+    "contact-request-chat-add": "Add {{name}} to send a message",
+    "connect-with-users": "Connect with users",
 }

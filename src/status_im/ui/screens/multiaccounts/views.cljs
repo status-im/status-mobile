@@ -41,8 +41,7 @@
 
 (defn topbar-button
   []
-  (re-frame/dispatch [:bottom-sheet/show-sheet
-                      {:content sheets/actions-sheet}]))
+  (re-frame/dispatch [:bottom-sheet/show-sheet :generate-a-new-key {}]))
 
 (defview multiaccounts
   []
