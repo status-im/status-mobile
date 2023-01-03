@@ -290,7 +290,7 @@
         [preview-user-list]
         [join-community community]]
        [channel-list-component channel-heights first-channel-height]
-       ])))
+      ])))
 
 (defn render-sticky-header
   [channel-heights first-channel-height]
@@ -330,7 +330,7 @@
             sticky-header  (memoize (render-sticky-header channel-heights first-channel-height))]
         (fn []
           (scroll-component
-            sticky-header
+           sticky-header
            page-component))))))
 
 (defn overview

@@ -8,7 +8,7 @@
    ;; -64 is needed on android as the scroll doesn't
    ;; bounce so this slider won't disapear otherwise
    :height  height
-   :width height
+   :width   height
    :z-index 4
    :flex    1})
 
@@ -44,7 +44,8 @@
    :height        24
    :margin-right  8})
 
-(defn display-picture-container [animation]
+(defn display-picture-container
+  [animation]
   {:transform        [{:scale animation}]
    :border-radius    40
    :border-width     1
@@ -54,8 +55,8 @@
    :left             17
    :padding          2
    :background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)})
+                      colors/white
+                      colors/neutral-90)})
 
 (def display-picture
   {:border-radius 50

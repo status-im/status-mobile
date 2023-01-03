@@ -14,8 +14,8 @@
 (defn icon-color
   []
   (colors/theme-colors
-    colors/white-opa-40
-    colors/neutral-80-opa-40))
+   colors/white-opa-40
+   colors/neutral-80-opa-40))
 
 (def negative-scroll-position-0 (if platform/ios? -44 0))
 (def scroll-position-0 (if platform/ios? 44 0))
@@ -23,10 +23,10 @@
 (defn diff-with-max-min
   [value maximum minimum]
   (->>
-    (+ value scroll-position-0)
-    (- maximum)
-    (max minimum)
-    (min maximum)))
+   (+ value scroll-position-0)
+   (- maximum)
+   (max minimum)
+   (min maximum)))
 
 (defn scroll-page-header
   [scroll-height name page-nav cover sticky-header]
@@ -35,25 +35,28 @@
      (let [input-range         (if platform/ios? [-47 10] [0 150])
            output-range        (if platform/ios? [-100 0] [-169 -45])
            y                   (animated/value @scroll-height)
-           translate-animation (animated/interpolate y {:inputRange  input-range
-                                                        :outputRange output-range
-                                                        :extrapolate (:clamp animated/extrapolate)})
+           translate-animation (animated/interpolate y
+                                                     {:inputRange  input-range
+                                                      :outputRange output-range
+                                                      :extrapolate (:clamp animated/extrapolate)})
            opacity-animation   (reanimated/use-shared-value 0)
            threshold           (if platform/ios? 30 170)]
        (quo.react/effect!
-         #(reanimated/set-shared-value opacity-animation (reanimated/with-timing (if (>= @scroll-height threshold) 1 0))))
+        #(reanimated/set-shared-value opacity-animation
+                                      (reanimated/with-timing (if (>= @scroll-height threshold) 1 0))))
        [:<>
         [animated/blur-view
          {:blur-amount   32
           :blur-type     :xlight
           :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
           :style         (merge
-                           {:transform [{:translateY translate-animation}]}
-                           style/blur-slider)}]
+                          {:transform [{:translateY translate-animation}]}
+                          style/blur-slider)}]
         [rn/view {:style {:z-index 6 :margin-top (if platform/ios? 44 0)}}
-         [reanimated/view {:style (reanimated/apply-animations-to-style
-                                    {:opacity opacity-animation}
-                                    style/sticky-header-title)}
+         [reanimated/view
+          {:style (reanimated/apply-animations-to-style
+                   {:opacity opacity-animation}
+                   style/sticky-header-title)}
           [rn/image
            {:source cover
             :style  style/sticky-header-image}]
@@ -76,7 +79,7 @@
                                      :icon-background-color (icon-color)
                                      :on-press              #(rf/dispatch [:navigate-back])}}]
          (when sticky-header [sticky-header @scroll-height])
-         ]]))])
+        ]]))])
 
 (defn scroll-page
   [cover page-nav name]
@@ -128,16 +131,20 @@
       [:f>
        (fn []
          (let [y         (animated/value @scroll-height)
-               animation (animated/interpolate y {:inputRange  input-range
-                                                  :outputRange [1.2 0.5]
-                                                  :extrapolate (:clamp animated/extrapolate)})]
+               animation (animated/interpolate y
+                                               {:inputRange  input-range
+                                                :outputRange [1.2 0.5]
+                                                :extrapolate (:clamp animated/extrapolate)})]
            [:<>
             [scroll-page-header scroll-height name page-nav cover sticky-header]
             [rn/scroll-view
-             {:style                           (style/scroll-view-container (diff-with-max-min @scroll-height 16 0))
+             {:style                           (style/scroll-view-container
+                                                (diff-with-max-min @scroll-height 16 0))
               :shows-vertical-scroll-indicator false
-              :scroll-event-throttle           1
-              :on-scroll                       #(swap! scroll-height (fn [] (int (oops/oget % "nativeEvent.contentOffset.y"))))}
+              :scroll-event-throttle           4
+              :on-scroll                       #(swap! scroll-height
+                                                  (fn []
+                                                    (int (oops/oget % "nativeEvent.contentOffset.y"))))}
              [rn/view {:style {:height 151}}
               [rn/image
                {:source cover
@@ -148,8 +155,8 @@
                 {:flex             1
                  :border-radius    (diff-with-max-min @scroll-height 16 0)
                  :background-color (colors/theme-colors
-                                     colors/white
-                                     colors/neutral-90)}
+                                    colors/white
+                                    colors/neutral-90)}
 
                 [animated/view
                  {:style (style/display-picture-container animation)}
