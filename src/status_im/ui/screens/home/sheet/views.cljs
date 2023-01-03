@@ -9,7 +9,13 @@
             [status-im.ui.components.react :as rn]
             [status-im.ui.screens.home.sheet.styles :as style]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+
+(defn- hide-sheet-and-dispatch
+  [event]
+  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch event))
 
 (defn add-new-view
   []
@@ -84,7 +90,7 @@
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
-     :on-press                     #(rf/dispatch [:open-modal :new-contact])}]])
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
 
 (def new-chat-bottom-sheet-comp
