@@ -63,7 +63,8 @@
    :sticker              (js/require "../resources/images/mock/sticker.png")
    :user-picture-female2 (js/require "../resources/images/mock/user_picture_female2.png")
    :user-picture-male4   (js/require "../resources/images/mock/user_picture_male4.png")
-   :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")})
+   :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")
+   :coinbase             (js/require "../resources/images/mock/coinbase.png")})
 
 (defn get-theme-image
   [k]

@@ -1,10 +1,10 @@
 (ns status-im2.contexts.shell.events
-  (:require [re-frame.core :as re-frame]
+  (:require [utils.re-frame :as rf]
+            [re-frame.core :as re-frame]
             [status-im2.common.constants :as constants]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
             [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.shell.animation :as animation]
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Effects
 
@@ -59,14 +59,10 @@
          :db                           (assoc-in
                                         db
                                         [:shell/switcher-cards (:community-id chat)]
-                                        {:type    shell.constants/community-card
-                                         :id      (:community-id chat)
-                                         :clock   now
-                                         :content {:content-type :channel
-                                                   :data         {:emoji        (:emoji chat)
-                                                                  :channel-id   (:chat-id chat)
-                                                                  :channel-name (:chat-name
-                                                                                 chat)}}})}
+                                        {:type       shell.constants/community-channel-card
+                                         :id         (:community-id chat)
+                                         :clock      now
+                                         :channel-id (:chat-id chat)})}
 
         nil))
 
@@ -75,9 +71,10 @@
      :db                           (assoc-in
                                     db
                                     [:shell/switcher-cards (:community-id id)]
-                                    {:type  shell.constants/community-card
-                                     :id    (:community-id id)
-                                     :clock now})}
+                                    {:type       shell.constants/community-card
+                                     :id         (:community-id id)
+                                     :clock      now
+                                     :channel-id nil})}
 
     nil))
 
