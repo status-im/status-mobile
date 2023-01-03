@@ -55,7 +55,6 @@
 
           (= view :drawer/reactions)
           (merge {:content drawers/reactions})
-
           (= view :generate-a-new-key)
           (merge {:content multiaccounts-sheet/actions-sheet}))]
     (reagent/create-class
