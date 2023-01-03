@@ -45,7 +45,8 @@
              :on-press            (fn []
                                     (rf/dispatch [:pin-message/hide-pin-limit-modal chat-id])
                                     (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list
-                                                  chat-id]))
+                                                  chat-id])
+                                    (rf/dispatch [:dismiss-keyboard]))
              :style               style/view-pinned-messages}
             [quo/text {:size :paragraph-2 :weight :medium :color colors/white}
              (i18n/label :t/view-pinned-messages)]]]

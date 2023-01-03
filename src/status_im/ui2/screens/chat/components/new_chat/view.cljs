@@ -59,7 +59,7 @@
    [quo2/button
     {:type     :grey
      :on-press #(hide-sheet-and-dispatch [:open-modal :new-contact])}
-    (i18n/label :t/connect-with-users)]])
+    (i18n/label :t/add-a-contact)]])
 
 (defn contact-selection-list
   []

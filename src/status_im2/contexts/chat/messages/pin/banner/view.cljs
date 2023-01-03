@@ -15,6 +15,8 @@
     [quo/banner
      {:latest-pin-text latest-pin-text
       :pins-count      pins-count
-      :on-press        #(rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id])}]))
+      :on-press        (fn [] 
+                         (rf/dispatch [:dismiss-keyboard])
+                         (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}]))
 
 

@@ -137,6 +137,7 @@
        {:style               (style/action-container color)
         :accessibility-label :pinned-messages
         :on-press            (fn []
+                               (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}
        [rn/view
         {:style {:flex-direction  :row
