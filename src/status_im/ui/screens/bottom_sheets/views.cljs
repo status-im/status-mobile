@@ -15,7 +15,8 @@
 
 (defn bottom-sheet
   []
-  (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
+  (let [dismiss-bottom-sheet-callback #(bottom-sheet/close-bottom-sheet-fn nil)
+        {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible? show?}
@@ -54,7 +55,7 @@
 
           (= view :drawer/reactions)
           (merge {:content drawers/reactions})
-          
+
           (= view :generate-a-new-key)
           (merge {:content multiaccounts-sheet/actions-sheet}))]
     (reagent/create-class
@@ -71,8 +72,8 @@
                                  (when content
                                    [content (when options options)])])
       :component-did-mount    (fn []
-                                (react/hw-back-add-listener #(bottom-sheet/close-bottom-sheet-fn nil)))
+                                (react/hw-back-add-listener dismiss-bottom-sheet-callback))
       :component-will-unmount (fn []
-                                (react/hw-back-remove-listener #(bottom-sheet/close-bottom-sheet-fn nil))
+                                (react/hw-back-remove-listener dismiss-bottom-sheet-callback)
                                 (when @bottom-sheet/show-bottom-sheet?
                                   (bottom-sheet/reset-atoms)))})))
