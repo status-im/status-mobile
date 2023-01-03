@@ -167,7 +167,7 @@
                                         (assoc-in ["0xtest2" :mutual?] false)
                                         (assoc-in ["0xtest3" :mutual?] false))]
       (swap! rf-db/app-db merge
-             (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
+        (update contacts-sample-data :contacts/contacts remove-contact-as-mutual))
       (is (empty? (rf/sub [sub-name])))))
   (testing "Returning sorted contacts"
     (swap! rf-db/app-db merge contacts-sample-data)
