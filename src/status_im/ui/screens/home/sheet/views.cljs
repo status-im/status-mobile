@@ -95,7 +95,7 @@
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
-     :on-press                     #(rf/dispatch [:open-modal :new-contact])}]])
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
 
 (def new-chat-bottom-sheet-comp
