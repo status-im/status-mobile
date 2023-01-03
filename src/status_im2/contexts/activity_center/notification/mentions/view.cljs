@@ -9,6 +9,13 @@
             [status-im2.contexts.activity-center.notification.mentions.style :as style]
             [utils.re-frame :as rf]))
 
+(def tag-params
+  {:size           :small
+   :override-theme :dark
+   :color          colors/primary-50
+   :style          style/tag
+   :text-style     style/tag-text})
+
 (defn message-body
   [message]
   (let [parsed-text          (get-in message [:content :parsed-text])
@@ -30,24 +37,24 @@
 
 (defn view
   [{:keys [author chat-name chat-id message read timestamp]}]
-  [rn/touchable-opacity
-   {:on-press (fn []
-                (rf/dispatch [:hide-popover])
-                (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
-   [quo/activity-log
-    {:title     (i18n/label :t/mention)
-     :icon      :i/mention
-     :timestamp (datetime/timestamp->relative timestamp)
-     :unread?   (not read)
-     :context   [[common/user-avatar-tag author]
-                 [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
-                 ;; TODO (@smohamedjavid): The `group-avatar-tag` component
-                 ;; does NOT support displaying channel name along with community/chat name.
-                 ;; Need to update the component to support it.
-                 [quo/group-avatar-tag chat-name
-                  {:size           :small
-                   :override-theme :dark
-                   :color          colors/primary-50
-                   :style          style/tag
-                   :text-style     style/tag-text}]]
-     :message   {:body (message-body message)}}]])
+  (let [chat                    (rf/sub [:chats/chat chat-id])
+        community-id            (:community-id chat)
+        is-chat-from-community? (not (nil? community-id))
+        community               (rf/sub [:communities/community community-id])
+        community-name          (:name community)
+        community-image         (get-in community [:images :thumbnail :uri])]
+    [rn/touchable-opacity
+     {:on-press (fn []
+                  (rf/dispatch [:hide-popover])
+                  (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
+     [quo/activity-log
+      {:title     (i18n/label :t/mention)
+       :icon      :i/mention
+       :timestamp (datetime/timestamp->relative timestamp)
+       :unread?   (not read)
+       :context   [[common/user-avatar-tag author]
+                   [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
+                   (if is-chat-from-community?
+                     [quo/context-tag tag-params {:uri community-image} community-name chat-name]
+                     [quo/group-avatar-tag chat-name tag-params])]
+       :message   {:body (message-body message)}}]]))
