@@ -152,9 +152,9 @@
       (is (= "Jan 1, 1973" (datetime/timestamp->relative 94694400000))))
 
     (testing "formats 7 days ago or older, but in the current year"
-      (is (= "03 Mar" (datetime/timestamp->relative 163091745000)))
-      (is (= "02 Mar" (datetime/timestamp->relative 163004400000)))
-      (is (= "01 Jan" (datetime/timestamp->relative 157820400000))))
+      (is (= "03 Mar 3:15 PM" (datetime/timestamp->relative 163091745000)))
+      (is (= "02 Mar 3:00 PM" (datetime/timestamp->relative 163004400000)))
+      (is (= "01 Jan 3:00 PM" (datetime/timestamp->relative 157820400000))))
 
     (testing "formats dates within the last 6 days"
       (is (= "Sat 3:15 PM" (datetime/timestamp->relative 163523745000)))
@@ -168,9 +168,9 @@
       (is (= "Yesterday 11:59 PM" (datetime/timestamp->relative 163641599000))))
 
     (testing "formats today, at various timestamps"
-      (is (= "3:15 PM" (datetime/timestamp->relative 163696545000)))
-      (is (= "12:00 PM" (datetime/timestamp->relative 163684800000)))
-      (is (= "12:00 AM" (datetime/timestamp->relative 163641600000))))))
+      (is (= "Today 3:15 PM" (datetime/timestamp->relative 163696545000)))
+      (is (= "Today 12:00 PM" (datetime/timestamp->relative 163684800000)))
+      (is (= "Today 12:00 AM" (datetime/timestamp->relative 163641600000))))))
 
 #_((deftest day-relative-before-yesterday-force-24H-test
      (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
