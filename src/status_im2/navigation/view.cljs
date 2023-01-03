@@ -12,8 +12,7 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
             [status-im.ui.screens.wallet.send.views :as wallet.send.views]
-            [status-im2.common.toasts.view :as toasts] ;; TODO (14/11/22 flexsurfer) move to status-im2
-                                                       ;; namespace
+            [status-im2.common.toasts.view :as toasts]
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.config :as config]
             [status-im2.setup.hot-reload :as reloader]))

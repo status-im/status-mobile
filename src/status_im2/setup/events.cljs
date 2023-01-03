@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.theme :as quo.theme]
             [quo2.theme :as quo2.theme]
-            [re-frame.core :as re-frame] ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
+            [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.utils.keychain.core :as keychain]
