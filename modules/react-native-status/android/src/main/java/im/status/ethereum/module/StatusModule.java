@@ -59,6 +59,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -527,45 +529,46 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+   private void executeRunnableStatusGoMethod(final String methodName, final Callback callback, final Object... args) {
+       if (!checkAvailability()) {
+           callback.invoke(false);
+           return;
+       }
+
+       Runnable runnableTask = new Runnable() {
+           @Override
+           public void run() {
+               String res = "";
+               try {
+                   Method method = Statusgo.class.getMethod(methodName);
+                   if (args.length > 0) {
+                       res = (String) method.invoke(null, args);
+                   } else {
+                       res = (String) method.invoke(null);
+                   }
+               } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                   e.printStackTrace();
+               }
+               callback.invoke(res);
+           }
+       };
+
+       StatusThreadPoolExecutor.getInstance().execute(runnableTask);
+   }
+
     @ReactMethod
     public void verify(final String address, final String password, final Callback callback) {
-        Log.d(TAG, "verify");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
         Activity currentActivity = getCurrentActivity();
 
         final String absRootDirPath = this.getNoBackupDirectory();
         final String newKeystoreDir = pathCombine(absRootDirPath, "keystore");
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.verifyAccountPassword(newKeystoreDir, address, password);
-
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("verify", callback, "");
     }
 
     @ReactMethod
     public void verifyDatabasePassword(final String keyUID, final String password, final Callback callback) {
-        Log.d(TAG, "verifyDatabasePassword");
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.verifyDatabasePassword(keyUID, password);
-
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("verifyDatabasePassword", callback, keyUID, password);
     }
 
     public String getKeyStorePath(String keyUID) {
@@ -736,208 +739,57 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void addPeer(final String enode, final Callback callback) {
-        Log.d(TAG, "addPeer");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.addPeer(enode);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("addPeer", callback, enode);
     }
 
     @ReactMethod
     public void multiAccountStoreAccount(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountStoreAccount");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountStoreAccount(json);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountStoreAccount", callback, json);
     }
 
     @ReactMethod
     public void multiAccountLoadAccount(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountLoadAccount");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountLoadAccount(json);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountLoadAccount", callback, json);
     }
 
     @ReactMethod
     public void multiAccountReset(final Callback callback) {
-        Log.d(TAG, "multiAccountReset");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountReset();
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountReset", callback, "");
     }
 
     @ReactMethod
     public void multiAccountDeriveAddresses(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountDeriveAddresses");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountDeriveAddresses(json);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountDeriveAddresses", callback, json);
     }
 
     @ReactMethod
     public void multiAccountGenerateAndDeriveAddresses(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountGenerateAndDeriveAddresses");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountGenerateAndDeriveAddresses(json);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountGenerateAndDeriveAddresses", callback, json);
     }
 
     @ReactMethod
     public void multiAccountStoreDerived(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountStoreDerived");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountStoreDerivedAccounts(json);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountStoreDerivedAccounts", callback, json);
     }
 
     @ReactMethod
     public void multiAccountImportMnemonic(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountImportMnemonic");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountImportMnemonic(json);
-                callback.invoke(res);
-            }
-        };
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountImportMnemonic", callback, json);
     }
 
     @ReactMethod
     public void multiAccountImportPrivateKey(final String json, final Callback callback) {
-        Log.d(TAG, "multiAccountImportPrivateKey");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.multiAccountImportPrivateKey(json);
-                callback.invoke(res);
-            }
-        };
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("multiAccountImportPrivateKey", callback, json);
     }
 
     @ReactMethod
     public void hashTransaction(final String txArgsJSON, final Callback callback) {
-        Log.d(TAG, "hashTransaction");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.hashTransaction(txArgsJSON);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("hashTransaction", callback, txArgsJSON);
     }
 
     @ReactMethod
     public void hashMessage(final String message, final Callback callback) {
-        Log.d(TAG, "hashMessage");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.hashMessage(message);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("hashMessage", callback, message);
     }
 
     @ReactMethod
@@ -947,20 +799,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
          final String keyStorePath = this.getKeyStorePath(keyUID);
          jsonConfig.put("keystorePath", keyStorePath);
 
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable runnableTask = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonConfig.toString());
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(runnableTask);
+        executeRunnableStatusGoMethod("getConnectionStringForBootstrappingAnotherDevice", callback, jsonConfig.toString());
     }
 
     @ReactMethod
@@ -969,20 +808,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
          final String keyStorePath = pathCombine(this.getNoBackupDirectory(), "/keystore");
          jsonConfig.put("keystorePath", keyStorePath);
 
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable runnableTask = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.inputConnectionStringForBootstrapping(connectionString,jsonConfig.toString());
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(runnableTask);
+        executeRunnableStatusGoMethod("inputConnectionStringForBootstrapping", callback, connectionString, jsonConfig.toString());
     }
 
     @ReactMethod
@@ -1077,154 +903,43 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void hashTypedData(final String data, final Callback callback) {
-        Log.d(TAG, "hashTypedData");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.hashTypedData(data);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("hashTypedData", callback, data);
     }
 
     @ReactMethod
     public void hashTypedDataV4(final String data, final Callback callback) {
-        Log.d(TAG, "hashTypedDataV4");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.hashTypedDataV4(data);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("hashTypedDataV4", callback, data);
     }
 
     @ReactMethod
     public void sendTransactionWithSignature(final String txArgsJSON, final String signature, final Callback callback) {
-        Log.d(TAG, "sendTransactionWithSignature");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.sendTransactionWithSignature(txArgsJSON, signature);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("sendTransactionWithSignature", callback, txArgsJSON, signature);
     }
 
     @ReactMethod
     public void sendTransaction(final String txArgsJSON, final String password, final Callback callback) {
-        Log.d(TAG, "sendTransaction");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.sendTransaction(txArgsJSON, password);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("sendTransaction", callback, txArgsJSON, password);
     }
 
     @ReactMethod
     public void signMessage(final String rpcParams, final Callback callback) {
-        Log.d(TAG, "signMessage");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.signMessage(rpcParams);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("signMessage", callback, rpcParams);
     }
 
     @ReactMethod
     public void recover(final String rpcParams, final Callback callback) {
-        Log.d(TAG, "recover");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.recover(rpcParams);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("recover", callback, rpcParams);
     }
 
     @ReactMethod
     public void signTypedData(final String data, final String account, final String password, final Callback callback) {
-        Log.d(TAG, "signTypedData");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.signTypedData(data, account, password);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("signTypedData", callback, data, account, password);
     }
 
     @ReactMethod
     public void signTypedDataV4(final String data, final String account, final String password, final Callback callback) {
-        Log.d(TAG, "signTypedDataV4");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
+        executeRunnableStatusGoMethod("signTypedDataV4", callback, data, account, password);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.signTypedDataV4(data, account, password);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     @ReactMethod
@@ -1330,28 +1045,12 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void callRPC(final String payload, final Callback callback) {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.callRPC(payload);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("callRPC", callback, payload);
     }
 
     @ReactMethod
     public void callPrivateRPC(final String payload, final Callback callback) {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.callPrivateRPC(payload);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("callPrivateRPC", callback, payload);
     }
 
     @ReactMethod
@@ -1415,104 +1114,29 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
-        Log.d(TAG, "extractGroupMembershipSignatures");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.extractGroupMembershipSignatures(signaturePairs);
-
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("extractGroupMembershipSignatures", callback, signaturePairs);
     }
 
     @ReactMethod
     public void signGroupMembership(final String content, final Callback callback) {
-        Log.d(TAG, "signGroupMembership");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.signGroupMembership(content);
-
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("signGroupMembership", callback, content);
     }
 
     @ReactMethod
     public void getNodeConfig(final Callback callback) {
-        Log.d(TAG, "getNodeConfig");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.getNodeConfig();
-
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+         executeRunnableStatusGoMethod("getNodeConfig", callback, "");
     }
 
     @ReactMethod
     public void deleteMultiaccount(final String keyUID, final Callback callback) {
-        Log.d(TAG, "deleteMultiaccount");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
         final String keyStoreDir = this.getKeyStorePath(keyUID);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.deleteMultiaccount(keyUID, keyStoreDir);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("deleteMultiaccount", callback, keyUID, keyStoreDir);
     }
 
     @ReactMethod
     public void deleteImportedKey(final String keyUID, final String address, final String password, final Callback callback) {
-        Log.d(TAG, "deleteImportedKey");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
         final String keyStoreDir = this.getKeyStorePath(keyUID);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.deleteImportedKey(address, password, keyStoreDir);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("deleteImportedKey", callback, address, password, keyStoreDir);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -1522,23 +1146,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void generateAliasAsync(final String seed, final Callback callback) {
-        Log.d(TAG, "generateAliasAsync");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.generateAlias(seed);
-
-                Log.d(TAG, res);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("generateAlias", callback, seed);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -1603,23 +1211,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) {
-        Log.d(TAG, "identiconAsync");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.identicon(seed);
-
-                Log.d(TAG, res);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("identicon", callback, seed);
     }
 
     @ReactMethod
@@ -1665,23 +1257,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void validateMnemonic(final String seed, final Callback callback) {
-        Log.d(TAG, "validateMnemonic");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String resValidateMnemonic = Statusgo.validateMnemonic(seed);
-
-                Log.d(TAG, resValidateMnemonic);
-                callback.invoke(resValidateMnemonic);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("validateMnemonic", callback, seed);
     }
 
     @ReactMethod
@@ -1749,18 +1325,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void convertToKeycardAccount(final String keyUID, final String accountData, final String options, final String password, final String newPassword, final Callback callback) {
-        Log.d(TAG, "convertToKeycardAccount");
-
         final String keyStoreDir = this.getKeyStorePath(keyUID);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String result = Statusgo.convertToKeycardAccount(keyStoreDir, accountData, options, password, newPassword);
-                callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod("validateMnemonic", callback, keyStoreDir, accountData, options, password, newPassword);
     }
 
 }
