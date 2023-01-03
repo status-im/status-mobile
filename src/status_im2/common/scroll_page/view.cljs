@@ -1,6 +1,7 @@
 (ns status-im2.common.scroll-page.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
+            [quo.react]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.blur :as blur]
