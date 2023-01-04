@@ -81,19 +81,21 @@
            context))))
 
 (defn- activity-message
-  [{:keys [title body]}]
+  [{:keys [title body title-number-of-lines body-number-of-lines]}]
   [rn/view {:style style/message-container}
    (when title
      [text/text
       {:size                :paragraph-2
        :accessibility-label :activity-message-title
-       :style               style/message-title}
+       :style               style/message-title
+       :number-of-lines     title-number-of-lines}
       title])
    (if (string? body)
      [text/text
       {:style               style/message-body
        :accessibility-label :activity-message-body
-       :size                :paragraph-1}
+       :size                :paragraph-1
+       :number-of-lines     body-number-of-lines}
       body]
      body)])
 
