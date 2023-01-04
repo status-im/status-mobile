@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.messages.album.style
+(ns status-im2.contexts.chat.messages.content.album.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def overlay
