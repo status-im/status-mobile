@@ -122,7 +122,8 @@
                                                     (if one-contact-selected?
                                                       (hide-sheet-and-dispatch [:chat.ui/start-chat
                                                                                 public-key])
-                                                      (hide-sheet-and-dispatch [:navigate-to :new-group])))}
+                                                      (hide-sheet-and-dispatch [:navigate-to
+                                                                                :new-group])))}
                            (if one-contact-selected?
                              (i18n/label :t/chat-with {:selected-user first-username})
                              (i18n/label :t/setup-group-chat))]}])]))])

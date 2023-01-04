@@ -71,8 +71,9 @@
      :icon-bg-color              :transparent
      :type                       :transparent
      :container-padding-vertical 12
-     :style-props {:border-bottom-width 1
-                   :border-color (colors/theme-colors colors/neutral-10 colors/neutral-90)}
+     :style-props                {:border-bottom-width 1
+                                  :border-color        (colors/theme-colors colors/neutral-10
+                                                                            colors/neutral-90)}
      :title-column-style         {:margin-left 2}
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
