@@ -144,9 +144,9 @@
   (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id])
                                                 message-id)
         reply                              (assoc reply
-                                             :deleted?        deleted?
-                                             :deleted-for-me? deleted-for-me?
-                                             :chat-id         chat-id)]
+                                                  :deleted?        deleted?
+                                                  :deleted-for-me? deleted-for-me?
+                                                  :chat-id         chat-id)]
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
      [components.reply/reply-message reply false pin?]]))
 
