@@ -14,7 +14,8 @@
             [utils.re-frame :as rf]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.native-module.core :as status]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -76,7 +77,21 @@
 (rf/defn handle-community
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
-  (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
+  (navigation/navigate-to-cofx cofx :community {:community-id community-id})
+)
+
+(rf/defn handle-navigation-to-desktop-community-from-mobile
+  {:events [:handle-navigation-to-desktop-community-from-mobile]}
+  [{:keys [db]} cofx deserialized-key]
+  (navigation/navigate-to-cofx cofx :community {:community-id deserialized-key})
+)
+
+(rf/defn handle-desktop-community
+  [cofx {:keys [community-id]}]
+  (status/deserialize-and-compress-key
+   community-id
+   (fn [deserialized-key]
+     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str deserialized-key)]))))
 
 (rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
@@ -145,6 +160,7 @@
     :private-chat       (handle-private-chat cofx data)
     :community-requests (handle-community-requests cofx data)
     :community          (handle-community cofx data)
+    :desktop-community  (handle-desktop-community cofx data)
     :community-chat     (handle-community-chat cofx data)
     :contact            (handle-view-profile cofx data)
     :browser            (handle-browse cofx data)
