@@ -135,11 +135,16 @@
                                                       (hide-sheet-and-dispatch [:chat.ui/start-chat
                                                                                 public-key])
 <<<<<<< HEAD
+<<<<<<< HEAD
                                                       (hide-sheet-and-dispatch [:navigate-to
                                                                                 :new-group])))}
 =======
                                                       (hide-sheet-and-dispatch [:navigate-to :new-group])))}
 >>>>>>> 67d594e01 (Issue 4)
+=======
+                                                      (hide-sheet-and-dispatch [:navigate-to
+                                                                                :new-group])))}
+>>>>>>> 299aa8e99 (Lint)
                            (if one-contact-selected?
                              (i18n/label :t/chat-with {:selected-user first-username})
                              (i18n/label :t/setup-group-chat))]}])]))])
