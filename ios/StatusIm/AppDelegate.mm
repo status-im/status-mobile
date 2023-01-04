@@ -95,7 +95,7 @@ static void InitializeFlipper(UIApplication *application) {
       bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
   #endif
 
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"RnDiffApp", nil);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"StatusIm", nil);
 
   #if DEBUG
     //InitializeFlipper(application);
@@ -157,11 +157,43 @@ static void InitializeFlipper(UIApplication *application) {
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
+
+#if RCT_NEW_ARCH_ENABLED
+#pragma mark - RCTCxxBridgeDelegate
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                             delegate:self
+                                                            jsInvoker:bridge.jsCallInvoker];
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, _turboModuleManager);
+}
+#pragma mark RCTTurboModuleManagerDelegate
+- (Class)getModuleClassFromName:(const char *)name
+{
+  return RCTCoreModulesClassProvider(name);
+}
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return nullptr;
+}
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                     initParams:
+                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
+}
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  return RCTAppSetupDefaultModuleFromClass(moduleClass);
+}
+#endif
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
   if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BLANK_PREVIEW"]) {
