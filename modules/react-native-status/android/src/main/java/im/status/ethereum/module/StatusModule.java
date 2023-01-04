@@ -63,6 +63,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.Map;
 import java.util.Stack;
@@ -138,18 +139,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
 
-    private void runStatusGoMethodInSeparateThread(Supplier<String[]> func, Callback callback) {
-       if (!checkAvailability()) {
-          callback.invoke(false);
-          return;
-       }
+    private void runStatusGoMethodInSeparateThread(Object func, Callback callback) {
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-       Runnable r = () -> {
-          String[] res = func.get();
-          callback.invoke(res);
-       };
+        Runnable r = () -> {
+            Object res = null;
+            if (func instanceof Function) {
+                res = ((Function) func).apply(null);
+            } else if (func instanceof Supplier) {
+                res = ((Supplier) func).get();
+            }
+            callback.invoke(res);
+        };
 
-       StatusThreadPoolExecutor.getInstance().execute(r);
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     public String getNoBackupDirectory() {
