@@ -142,7 +142,9 @@
               :shows-vertical-scroll-indicator false
               :scroll-event-throttle           8
               :on-scroll                       (fn [event]
-                                                 (reset! scroll-height (int (oops/oget event "nativeEvent.contentOffset.y"))))}
+                                                 (reset! scroll-height
+                                                   (int (oops/oget event
+                                                                   "nativeEvent.contentOffset.y"))))}
              [rn/view {:style {:height 151}}
               [rn/image
                {:source cover
