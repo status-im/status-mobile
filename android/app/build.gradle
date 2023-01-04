@@ -3,6 +3,7 @@ apply plugin: "com.android.application"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
+import org.apache.tools.ant.taskdefs.condition.Os
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 
 /**
@@ -132,6 +133,15 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+/**
+ * Architectures to build native code for.
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+
 def getCommitHash = { ->
     if (project.hasProperty("commitHash")) {
         return project.commitHash
@@ -161,7 +171,7 @@ def getVersionName = { ->
         }
         /* Necessary because Android Studio uses wrong PWD.
          * Is actually absolute directory path of this file. */
-        def configDir = project.projectDir.toString() 
+        def configDir = project.projectDir.toString()
         version = new File(configDir + '/../../VERSION').text
         return version.replaceAll("\\s","")
     }
@@ -183,12 +193,20 @@ def getEnvOrConfig = { varName ->
 }
 
 android {
+    ndkVersion rootProject.ext.ndkVersion
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
+        }
+
+//     kotlin {
+//         jvmToolchain {
+//             languageVersion.set(JavaLanguageVersion.of("11"))
+//         }
+//     }
 
     defaultConfig {
         applicationId "im.status.ethereum"
@@ -205,7 +223,70 @@ android {
                 abiFilters getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
             }
         }
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+
+        if (isNewArchitectureEnabled()) {
+            // We configure the NDK build only if you decide to opt-in for the New Architecture.
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "APP_PLATFORM=android-21",
+                        "APP_STL=c++_shared",
+                        "NDK_TOOLCHAIN_VERSION=clang",
+                        "GENERATED_SRC_DIR=$buildDir/generated/source",
+                        "PROJECT_BUILD_DIR=$buildDir",
+                        "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
+                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++17"
+                    // Make sure this target name is the same you specify inside the
+                    // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
+                    targets "rndiffapp_appmodules"
+                }
+            }
+        }
     }
+   if (isNewArchitectureEnabled()) {
+           // We configure the NDK build only if you decide to opt-in for the New Architecture.
+           externalNativeBuild {
+               ndkBuild {
+                   path "$projectDir/src/main/jni/Android.mk"
+               }
+           }
+           def reactAndroidProjectDir = project(':ReactAndroid').projectDir
+           def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
+               dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+               from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+               into("$buildDir/react-ndk/exported")
+           }
+           def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
+               dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+               from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+               into("$buildDir/react-ndk/exported")
+           }
+           afterEvaluate {
+               // If you wish to add a custom TurboModule or component locally,
+               // you should uncomment this line.
+               // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
+               preDebugBuild.dependsOn(packageReactNdkDebugLibs)
+               preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+
+               // Due to a bug inside AGP, we have to explicitly set a dependency
+               // between configureNdkBuild* tasks and the preBuild tasks.
+               // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+               configureNdkBuildRelease.dependsOn(preReleaseBuild)
+               configureNdkBuildDebug.dependsOn(preDebugBuild)
+               reactNativeArchitectures().each { architecture ->
+                   tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+                       dependsOn("preDebugBuild")
+                   }
+                   tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+                       dependsOn("preReleaseBuild")
+                   }
+               }
+           }
+       }
+
+
     /**
      * Arbitrary project metadata
      * https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html
@@ -289,7 +370,7 @@ android {
             def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
-                output.versionCodeOverride = versionCodes.get(abi) + defaultConfig.versionCode
+                output.versionCodeOverride = versionCodes.get(abi) + defaultConfig.versionCode * 1000
             }
 
         }
@@ -348,7 +429,19 @@ dependencies {
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'com.facebook.fresco:fresco:2.2.0'
     implementation 'com.facebook.fresco:animated-gif:2.2.0'
-    implementation "com.squareup.okhttp3:okhttp-tls:3.12.12"
+    implementation "com.squareup.okhttp3:okhttp-tls:4.9.1"
+}
+
+if (isNewArchitectureEnabled()) {
+    // If new architecture is enabled, we let you build RN from source
+    // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
+    // This will be applied to all the imported transtitive dependency.
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.facebook.react:react-native"))
+                    .using(project(":ReactAndroid")).because("On New Architecture we're building React Native from source")
+        }
+    }
 }
 
 def getLocalNDKDir = { ->
@@ -384,3 +477,11 @@ task hemroidBuild(type: Exec) {
 preBuild.dependsOn hemroidBuild
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
