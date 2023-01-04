@@ -1,24 +1,29 @@
 (ns react-native.reanimated
-  (:require ["react-native" :as rn]
+  (:require ["react-native" :as react-native]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-reanimated" :default reanimated :refer
-             (useSharedValue useAnimatedStyle
-                             withTiming
-                             withDelay
-                             withSpring
-                             withRepeat
-                             Easing
-                             Keyframe
-                             cancelAnimation
-                             SlideInUp
-                             SlideOutUp
-                             LinearTransition)]
+             (Easing
+              FadeInLeft
+              FadeOutRight
+              Keyframe
+              LinearTransition
+              SlideInUp
+              SlideOutUp
+              cancelAnimation
+              useAnimatedStyle
+              useSharedValue
+              withDelay
+              withRepeat
+              withSpring
+              withTiming)]
             [clojure.string :as string]
             [reagent.core :as reagent]))
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
 (def slide-out-up-animation SlideOutUp)
+(def fade-in-left-animation FadeInLeft)
+(def fade-out-right-animation FadeOutRight)
 (def linear-transition LinearTransition)
 
 ;; Animated Components
@@ -26,7 +31,7 @@
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
-(def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
+(def touchable-opacity (create-animated-component (.-TouchableOpacity ^js react-native)))
 
 (def linear-gradient (create-animated-component LinearGradient))
 

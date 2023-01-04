@@ -3,6 +3,7 @@
             [quo.react :as react]
             [quo2.core :as quo]
             [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
@@ -96,7 +97,13 @@
 
 (defn render-notification
   [notification index]
-  [rn/view {:style (style/notification-container index)}
+  [reanimated/view
+   {:style    (style/notification-container index)
+    ;; The `:layout` property is only necessary when not rendering notifications
+    ;; in a FlatList.
+    :layout   reanimated/linear-transition
+    :entering (-> ^js reanimated/fade-in-left-animation (.duration 250) (.delay (* index 100)))
+    :exiting  (-> ^js reanimated/fade-out-right-animation (.duration 150))}
    (case (:type notification)
      types/contact-verification
      [contact-verification/view notification {}]
@@ -120,11 +127,31 @@
               window-width  (rf/sub [:dimensions/window-width])]
           [rn/view {:style (style/screen-container window-width top bottom)}
            [header]
-           [rn/flat-list
-            {:data                      notifications
-             :content-container-style   {:flex-grow 1}
-             :empty-component           [empty-tab]
-             :key-fn                    :id
-             :on-scroll-to-index-failed identity
-             :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-             :render-fn                 render-notification}]]))])])
+           ;; Set to true to see insertions/removals causing the layout to
+           ;; animate correctly. When false, the FlatList is not animated at all
+           ;; on layout changes.
+           ;;
+           ;; Issue:
+           ;; https://github.com/software-mansion/react-native-reanimated/issues/2737
+           (if true
+             (if (seq notifications)
+               (map-indexed (fn [index notification]
+                              ^{:key (:id notification)}
+                              [render-notification notification index])
+                            notifications)
+               [empty-tab])
+             [rn/flat-list-animated
+              {:data                      notifications
+               ;; This property seems to be necessary to tell Reanimated which
+               ;; transition to use to animate layout changes. Unfortunately it
+               ;; doesn't work.
+               ;;
+               ;; Comment:
+               ;; https://github.com/software-mansion/react-native-reanimated/issues/2737#issuecomment-1077956272
+               :item-layout-animation     reanimated/linear-transition
+               :content-container-style   {:flex-grow 1}
+               :empty-component           [empty-tab]
+               :key-fn                    :id
+               :on-scroll-to-index-failed identity
+               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+               :render-fn                 render-notification}])]))])])

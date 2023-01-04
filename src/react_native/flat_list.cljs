@@ -1,8 +1,10 @@
 (ns react-native.flat-list
   (:require ["react-native" :as react-native]
+            ["react-native-reanimated" :default reanimated]
             [reagent.core :as reagent]))
 
 (def react-native-flat-list (reagent/adapt-react-class (.-FlatList ^js react-native)))
+(def react-native-flat-list-animated (reagent/adapt-react-class (.-FlatList ^js reanimated)))
 
 (defn- wrap-render-fn
   [f render-data]
@@ -39,3 +41,7 @@
 (defn flat-list
   [props]
   [react-native-flat-list (base-list-props props)])
+
+(defn flat-list-animated
+  [props]
+  [react-native-flat-list-animated (base-list-props props)])

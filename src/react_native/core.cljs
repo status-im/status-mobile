@@ -24,6 +24,7 @@
   (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
 
 (def flat-list flat-list/flat-list)
+(def flat-list-animated flat-list/flat-list-animated)
 
 (def section-list section-list/section-list)
 

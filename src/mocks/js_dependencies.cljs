@@ -240,6 +240,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
                         :timing                  nil
                         :onChange                nil
                         :View                    #js {}
+                        :FlatList                #js {}
                         :Image                   #js {}
                         :ScrollView              #js {}
                         :Text                    #js {}
