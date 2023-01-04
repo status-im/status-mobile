@@ -277,7 +277,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="three_2")
+@pytest.mark.xdist_group(name="two_2")
 @marks.new_ui_critical
 class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
 
