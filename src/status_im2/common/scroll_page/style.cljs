@@ -14,7 +14,7 @@
 
 (def blur-slider
   {:z-index  5
-   :top      (if platform/ios? 0 0)
+   :top      0
    ;; -64 is needed on android as the scroll doesn't
    ;; bounce so this slider won't disapear otherwise
    :position :absolute
