@@ -45,10 +45,16 @@ in {
   };
 
   # Package version adjustments
-  gradle = super.gradle_5;
-  nodejs = super.nodejs-18_x;
-  yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
-  openjdk = super.openjdk8_headless;
+#  gradle = super.gradle.overrideAttrs (oldAttrs: {
+#      version = "7.3";
+#      src = builtins.fetchurl "https://services.gradle.org/distributions/gradle-7.3-bin.zip";
+#      sha256 = "0hmpkjpj2x2d7w89nh1b1vvixjv0qww9yf1dlp29rppi3q3q2s2s";
+#    });
+  gradle = super.gradle_7;
+#  gradle = gradle_7_3;
+  nodejs = super.nodejs-16_x;
+  yarn = super.yarn.override { nodejs = super.nodejs-16_x; };
+  openjdk = super.openjdk11_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "13.3";
     allowHigher = true;
