@@ -29,14 +29,14 @@ let
     jar = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}";
       sha256 = getAttr platform {
-        linux = "cd15ab8df57a3fa31068b970362ec2061237e54fa8b0d7d5bf22f44fcf4d6ee2";
+        linux = "sha256-oxlBy5aJcb+FgHvy6Qmbi33GsubEuXVbYSHuD4O1wIY=";
         osx = "sha256-zRWrjfV6P6MQaLlwNi7CBhI35U+osNfVvyL0T89NbuI=";
       };
     };
     sha = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}.sha1";
       sha256 = getAttr platform {
-        linux = "0ipmkl911hf17g2pb39jjkwrbb07p0cd1qd10p2fl8d1icxf63sz";
+        linux = "sha256-GlvbIDXnrjUga/NkmODJUZX+K5UtU/0fua5a8QY02+E=";
         osx = "sha256-83WpYPsyVk/E9nddy2qUSAh+cBZ1PsS0N9516Tga35o=";
       };
     };
