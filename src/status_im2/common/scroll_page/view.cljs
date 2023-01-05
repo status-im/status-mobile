@@ -53,8 +53,9 @@
           :blur-type     :xlight
           :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
           :style         (style/blur-slider translate-animation)}]
-        [rn/view {:style {:z-index 6
-                          :margin-top (if platform/ios? 44 0)}}
+        [rn/view
+         {:style {:z-index    6
+                  :margin-top (if platform/ios? 44 0)}}
          [reanimated/view
           {:style (style/sticky-header-title opacity-animation)}
           [rn/image
