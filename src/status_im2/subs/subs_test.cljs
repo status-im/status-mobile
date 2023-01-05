@@ -29,18 +29,18 @@
 (deftest login-ma-keycard-pairing
   (testing "returns nil when no :multiaccounts/login"
     (let [res (onboarding/login-ma-keycard-pairing
-                {:multiaccounts/login nil
-                 :multiaccounts/multiaccounts
-                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
-                {})]
+               {:multiaccounts/login         nil
+                :multiaccounts/multiaccounts
+                {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
+               {})]
       (is (nil? res))))
 
   (testing "returns :keycard-pairing when :multiaccounts/login is present"
     (let [res (onboarding/login-ma-keycard-pairing
-                {:multiaccounts/login {:key-uid "0x1"}
-                 :multiaccounts/multiaccounts
-                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
-                {})]
+               {:multiaccounts/login         {:key-uid "0x1"}
+                :multiaccounts/multiaccounts
+                {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
+               {})]
       (is (= res "keycard-pairing-code")))))
 
 (def messages-state
