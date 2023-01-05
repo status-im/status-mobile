@@ -10,6 +10,7 @@
             [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
             [status-im2.contexts.chat.messages.content.status.view :as status]
             [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+            [status-im2.contexts.chat.messages.content.album.view :as album]
             [quo2.core :as quo]
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
@@ -93,6 +94,8 @@
 
           constants/content-type-audio   [not-implemented/not-implemented
                                           [old-message/audio message-data]]
+
+          constants/content-type-album   [album/album-message message-data]
 
           [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
         [status/status message-data]]]]]))

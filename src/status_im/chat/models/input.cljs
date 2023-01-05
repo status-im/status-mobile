@@ -184,9 +184,11 @@
 
 (defn build-image-messages
   [{db :db} chat-id]
-  (let [images (get-in db [:chat/inputs chat-id :metadata :sending-image])]
+  (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
+        album-id (str (random-uuid))]
     (mapv (fn [[_ {:keys [uri]}]]
             {:chat-id      chat-id
+             :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
              :text         (i18n/label :t/update-to-see-image {"locale" "en"})})

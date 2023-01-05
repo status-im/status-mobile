@@ -102,6 +102,25 @@
  (fn [messages]
    (empty? messages)))
 
+(defn albumize-messages
+  [messages]
+  (get (reduce (fn [{:keys [messages albums]} message]
+                 (let [album-id (when (:albumize? message) (:album-id message))
+                       albums   (cond-> albums album-id (update album-id conj message))
+                       messages (if (and album-id (> (count (get albums album-id)) 3))
+                                  (conj (filterv #(not= album-id (:album-id %)) messages)
+                                        {:album        (get albums album-id)
+                                         :album-id     album-id
+                                         :message-id   album-id
+                                         :content-type constants/content-type-album})
+                                  (conj messages message))]
+                   {:messages messages
+                    :albums   albums}))
+               {:messages []
+                :albums   {}}
+               messages)
+       :messages))
+
 (re-frame/reg-sub
  :chats/raw-chat-messages-stream
  (fn [[_ chat-id] _]
@@ -126,7 +145,8 @@
                                   (datetime/timestamp)
                                   chat-type
                                   joined
-                                  loading-messages?))))))
+                                  loading-messages?)
+           (albumize-messages))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-profile-messages-stream (atom nil))

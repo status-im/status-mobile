@@ -147,9 +147,10 @@
 
 (re-frame/reg-sub
  :chats/sending-image
- :<- [:chats/current-chat-inputs]
- (fn [{:keys [metadata]}]
-   (:sending-image metadata)))
+ :<- [:chats/current-chat-id]
+ :<- [:chat/inputs]
+ (fn [[chat-id inputs]]
+   (get-in inputs [chat-id :metadata :sending-image])))
 
 (re-frame/reg-sub
  :chats/timeline-chat-input-text

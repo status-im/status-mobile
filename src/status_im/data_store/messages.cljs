@@ -35,6 +35,7 @@
                                 :audioDurationMs          :audio-duration-ms
                                 :deleted                  :deleted?
                                 :deletedForMe             :deleted-for-me?
+                                :albumId                  :album-id
                                 :new                      :new?})
 
       (update :quoted-message
