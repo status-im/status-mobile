@@ -101,4 +101,4 @@
   [f]
   (let [fn-ref (use-ref f)]
     (oops/oset! fn-ref "current" f)
-    (use-effect-once (fn [] #((oops/oget fn-ref "current"))))))
+    (use-effect-once (fn [] (fn [] (oops/ocall! fn-ref "current"))))))
