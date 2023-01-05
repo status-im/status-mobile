@@ -91,6 +91,4 @@
     [into
      [rn/view
       {:style style/outmost-transparent-container}]
-     (->> toasts-ordered
-          reverse
-          (map (fn [id] ^{:key id} [container id])))]))
+     (map (fn [id] ^{:key id} [container id]) toasts-ordered)]))
