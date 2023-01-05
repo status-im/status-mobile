@@ -1,18 +1,18 @@
 (ns status-im.data-store.visibility-status-updates
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [re-frame.core :as re-frame]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn <-rpc
   [visibility-status-update]
-  (clojure.set/rename-keys visibility-status-update
-                           {:publicKey  :public-key
-                            :statusType :status-type}))
+  (set/rename-keys visibility-status-update
+                   {:publicKey  :public-key
+                    :statusType :status-type}))
 (defn <-rpc-settings
   [settings]
   (-> settings
-      (clojure.set/rename-keys
+      (set/rename-keys
        {:current-user-status :current-user-visibility-status})
       (update :current-user-visibility-status <-rpc)))
 

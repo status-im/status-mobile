@@ -11,6 +11,8 @@
                 taoensso.tufte/defnp               clojure.core/defn}
  :linters      {:consistent-alias  {:level   :error
                                     :aliases {clojure.string  string
+                                              clojure.set     set
+                                              clojure.walk    walk
                                               taoensso.timbre log}}
                 :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
                 ;; TODO remove number when this is fixed

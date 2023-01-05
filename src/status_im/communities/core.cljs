@@ -1,5 +1,5 @@
 (ns status-im.communities.core
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [clojure.string :as string]
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
@@ -28,10 +28,10 @@
 
 (defn <-request-to-join-community-rpc
   [r]
-  (clojure.set/rename-keys r
-                           {:communityId :community-id
-                            :publicKey   :public-key
-                            :chatId      :chat-id}))
+  (set/rename-keys r
+                   {:communityId :community-id
+                    :publicKey   :public-key
+                    :chatId      :chat-id}))
 
 (defn <-requests-to-join-community-rpc
   [requests]
@@ -64,12 +64,12 @@
 (defn <-rpc
   [c]
   (-> c
-      (clojure.set/rename-keys {:canRequestAccess            :can-request-access?
-                                :canManageUsers              :can-manage-users?
-                                :canDeleteMessageForEveryone :can-delete-message-for-everyone?
-                                :canJoin                     :can-join?
-                                :requestedToJoinAt           :requested-to-join-at
-                                :isMember                    :is-member?})
+      (set/rename-keys {:canRequestAccess            :can-request-access?
+                        :canManageUsers              :can-manage-users?
+                        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
+                        :canJoin                     :can-join?
+                        :requestedToJoinAt           :requested-to-join-at
+                        :isMember                    :is-member?})
       (update :members walk/stringify-keys)
       (update :chats <-chats-rpc)
       (update :categories <-categories-rpc)))

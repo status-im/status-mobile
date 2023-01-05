@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.communities.reorder-categories
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [clojure.string :as string]
             [clojure.walk :as walk]
             [quo.core :as quo]
@@ -48,7 +48,7 @@
   [{:keys [id community-id] :as home-item} is-active? drag]
   (let [chat-id          (string/replace id community-id "")
         background-color (if is-active? colors/gray-lighter colors/white)
-        home-item        (clojure.set/rename-keys home-item {:id :chat-id})]
+        home-item        (set/rename-keys home-item {:id :chat-id})]
     [rn/view
      {:accessibility-label :chat-item
       :style               (merge styles/category-item
