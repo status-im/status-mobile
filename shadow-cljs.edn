@@ -83,7 +83,7 @@
    :optimizations    :simple
    :target           :node-test
    ;; When running tests without a REPL you can uncomment below line to `make test-watch` a specific file
-   :ns-regexp        "status-im2.subs.subs-test$"
+   ;;:ns-regexp        "status-im2.subs.subs-test$"
    :main
    status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl

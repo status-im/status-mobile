@@ -62,4 +62,4 @@
 
 (deftest find-albums
   (testing "Finding albums in the messages list"
-    (is (= (messages/find-albums messages-state) messages-albumized-state))))
+    (is (= (messages/albumize-messages messages-state) messages-albumized-state))))
