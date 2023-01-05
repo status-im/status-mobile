@@ -69,7 +69,6 @@
                 <data android:scheme="ethereum" />
             </intent-filter>
         </activity>
-        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
         <service android:name="im.status.ethereum.pushnotifications.ForegroundService"></service>
         <provider
             android:name="androidx.core.content.FileProvider"
