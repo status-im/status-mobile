@@ -1,10 +1,12 @@
 (ns status-im2.contexts.shell.events
   (:require [utils.re-frame :as rf]
             [re-frame.core :as re-frame]
+            [status-im.utils.core :as utils]
             [status-im2.common.constants :as constants]
             [status-im2.navigation.events :as navigation]
             [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im.data-store.switcher-cards :as switcher-cards-store]))
 
 ;; Effects
 
@@ -29,59 +31,76 @@
 
 ;; Events
 
-(rf/defn add-switcher-card
-  {:events [:shell/add-switcher-card]}
-  [{:keys [db now] :as cofx} view-id id]
+(rf/defn switcher-cards-loaded
+  {:events [:shell/switcher-cards-loaded]}
+  [{:keys [db]} loaded-switcher-cards]
+  {:db (assoc db
+              :shell/switcher-cards
+              (utils/index-by :card-id (switcher-cards-store/<-rpc loaded-switcher-cards)))})
+
+(defn calculate-card-data
+  [db now view-id id]
   (case view-id
     :chat
     (let [chat (get-in db [:chats id])]
       (case (:chat-type chat)
         constants/one-to-one-chat-type
-        {:shell/navigate-from-shell-fx :chats-stack
-         :db                           (assoc-in
-                                        db
-                                        [:shell/switcher-cards id]
-                                        {:type  shell.constants/one-to-one-chat-card
-                                         :id    id
-                                         :clock now})}
+        {:navigate-from :chats-stack
+         :card-id       id
+         :switcher-card {:type      shell.constants/one-to-one-chat-card
+                         :card-id   id
+                         :clock     now
+                         :screen-id id}}
 
         constants/private-group-chat-type
-        {:shell/navigate-from-shell-fx :chats-stack
-         :db                           (assoc-in
-                                        db
-                                        [:shell/switcher-cards id]
-                                        {:type  shell.constants/private-group-chat-card
-                                         :id    id
-                                         :clock now})}
+        {:navigate-from :chats-stack
+         :card-id       id
+         :switcher-card {:type      shell.constants/private-group-chat-card
+                         :card-id   id
+                         :clock     now
+                         :screen-id id}}
 
         constants/community-chat-type
-        {:shell/navigate-from-shell-fx :communities-stack
-         :db                           (assoc-in
-                                        db
-                                        [:shell/switcher-cards (:community-id chat)]
-                                        {:type       shell.constants/community-channel-card
-                                         :id         (:community-id chat)
-                                         :clock      now
-                                         :channel-id (:chat-id chat)})}
+        {:navigate-from :communities-stack
+         :card-id       (:community-id chat)
+         :switcher-card {:type      shell.constants/community-channel-card
+                         :card-id   (:community-id chat)
+                         :clock     now
+                         :screen-id (:chat-id chat)}}
 
         nil))
 
     :community
-    {:shell/navigate-from-shell-fx :communities-stack
-     :db                           (assoc-in
-                                    db
-                                    [:shell/switcher-cards (:community-id id)]
-                                    {:type       shell.constants/community-card
-                                     :id         (:community-id id)
-                                     :clock      now
-                                     :channel-id nil})}
-
+    {:navigate-from :communities-stack
+     :card-id       (:community-id id)
+     :switcher-card {:type      shell.constants/community-card
+                     :card-id   (:community-id id)
+                     :clock     now
+                     :screen-id (:community-id id)}}
     nil))
+
+(rf/defn add-switcher-card
+  {:events [:shell/add-switcher-card]}
+  [{:keys [db now] :as cofx} view-id id]
+  (let [card-data     (calculate-card-data db now view-id id)
+        switcher-card (:switcher-card card-data)]
+    (when card-data
+      (rf/merge
+       cofx
+       {:db                           (assoc-in
+                                       db
+                                       [:shell/switcher-cards (:card-id card-data)]
+                                       switcher-card)
+        :shell/navigate-from-shell-fx (:navigate-from card-data)}
+       (switcher-cards-store/upsert-switcher-card-rpc switcher-card)))))
 
 (rf/defn close-switcher-card
   {:events [:shell/close-switcher-card]}
-  [{:keys [db]} id]
-  {:db (update-in db [:shell/switcher-cards] dissoc id)})
+  [{:keys [db] :as cofx} card-id]
+  (rf/merge
+   cofx
+   {:db (update db :shell/switcher-cards dissoc card-id)}
+   (switcher-cards-store/delete-switcher-card-rpc card-id)))
 
 (rf/defn navigate-to-jump-to
   {:events [:shell/navigate-to-jump-to]}

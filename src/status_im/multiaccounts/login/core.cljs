@@ -9,6 +9,7 @@
    [status-im.data-store.chats :as data-store.chats]
    [status-im.data-store.invitations :as data-store.invitations]
    [status-im.data-store.settings :as data-store.settings]
+   [status-im.data-store.switcher-cards :as switcher-cards-store]
    [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
    [status-im.ethereum.core :as ethereum]
    [status-im.ethereum.eip55 :as eip55]
@@ -473,7 +474,8 @@
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
-              (visibility-status-updates-store/fetch-visibility-status-updates-rpc))))
+              (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
+              (switcher-cards-store/fetch-switcher-cards-rpc))))
 
 (defn get-new-auth-method
   [auth-method save-password?]
