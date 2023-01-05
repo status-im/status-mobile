@@ -1,6 +1,7 @@
 (ns react-native.reanimated
   (:require ["react-native" :as rn]
             ["react-native-linear-gradient" :default LinearGradient]
+            ["@react-native-community/blur" :as blur]
             ["react-native-reanimated" :default reanimated :refer
              (useSharedValue useAnimatedStyle
                              withTiming
@@ -30,6 +31,7 @@
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 
 (def linear-gradient (create-animated-component LinearGradient))
+(def blur-view (create-animated-component (.-BlurView blur)))
 
 ;; Hooks
 (def use-shared-value useSharedValue)
@@ -67,11 +69,14 @@
 (def worklet-factory (js/require "../src/js/worklet_factory.js"))
 
 (defn interpolate
-  [shared-value input-range output-range]
-  (.interpolateValue ^js worklet-factory
-                     shared-value
-                     (clj->js input-range)
-                     (clj->js output-range)))
+  ([shared-value input-range output-range]
+   (interpolate shared-value input-range output-range nil))
+  ([shared-value input-range output-range extrapolation]
+   (.interpolateValue ^js worklet-factory
+                      shared-value
+                      (clj->js input-range)
+                      (clj->js output-range)
+                      (clj->js extrapolation))))
 
 ;;;; Component Animations
 
