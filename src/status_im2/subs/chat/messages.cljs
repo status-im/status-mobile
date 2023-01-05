@@ -106,7 +106,7 @@
   [messages]
   (get (reduce (fn [{:keys [messages albums]} message]
                  (let [album-id (when (:albumize? message) (:album-id message))
-                       albums   (cond-> albums album-id (update album-id #(conj % message)))
+                       albums   (cond-> albums album-id (update album-id conj message))
                        messages (if (and album-id (> (count (get albums album-id)) 3))
                                   (conj (filterv #(not= album-id (:album-id %)) messages)
                                         {:album        (get albums album-id)

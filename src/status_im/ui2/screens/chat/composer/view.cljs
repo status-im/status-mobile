@@ -161,9 +161,9 @@
      (let [min-y               112
            context             (atom {:y                         min-y ;current y value
                                       :min-y                     min-y ;minimum y value
-                                      :dy                        0 ;used for gesture
-                                      :pdy                       0 ;used for gesture
-                                      :state                     :min ;:min, :custom-chat-available,
+                                      :dy                        0     ;used for gesture
+                                      :pdy                       0     ;used for gesture
+                                      :state                     :min  ;:min, :custom-chat-available,
                                       ;:custom-chat-unavailable, :max
                                       :clear                     false
                                       :minimized-from-handlebar? false})
@@ -304,9 +304,7 @@
                                   :on-allowed  #(rf/dispatch
                                                  [:bottom-sheet/show-sheet
                                                   {:content (fn []
-                                                              (photo-selector/photo-selector
-                                                               chat-id))}])
-
+                                                              (photo-selector/photo-selector chat-id))}])
                                   :on-denied   (fn []
                                                  (utils/set-timeout
                                                   #(utils/show-popup (i18n/label :t/error)
