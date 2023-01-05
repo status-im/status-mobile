@@ -1,11 +1,11 @@
-(ns status-im.test-helpers
+(ns test-helpers.unit
   "Utilities for simplifying the process of writing tests and improving test
   readability.
 
   Avoid coupling this namespace with particularities of the Status' domain, thus
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
-  (:require-macros status-im.test-helpers)
+  (:require-macros test-helpers.unit)
   (:require [re-frame.core :as rf]
             [re-frame.db :as rf-db]
             [re-frame.events :as rf-events]
