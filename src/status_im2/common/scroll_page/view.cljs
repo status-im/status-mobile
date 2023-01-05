@@ -8,7 +8,6 @@
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
             [utils.re-frame :as rf]
-            [quo.react]
             [react-native.reanimated :as reanimated]))
 
 (defn icon-color
