@@ -90,9 +90,10 @@
                                                [1.2 0.5]
                                                {:extrapolateLeft  "clamp"
                                                 :extrapolateRight "clamp"})]
-       ;(rn/use-effect  #(reanimated/set-shared-value y @scroll-height)
-       ;               [@scroll-height])
-       (quo.react/effect! #(reanimated/set-shared-value y @scroll-height))
+       (rn/use-effect #(do
+                         (reanimated/set-shared-value y @scroll-height)
+                         js/undefined)
+                      [@scroll-height])
        [reanimated/view
         {:style (style/display-picture-container animation)}
         [rn/image
