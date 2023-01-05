@@ -102,7 +102,7 @@
  (fn [messages]
    (empty? messages)))
 
-(defn find-albums
+(defn albumize-messages
   [messages]
   (get (reduce (fn [{:keys [messages albums]} message]
                  (let [album-id (when (:albumize? message) (:album-id message))
@@ -146,7 +146,7 @@
                                   chat-type
                                   joined
                                   loading-messages?)
-           (find-albums))))))
+           (albumize-messages))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-profile-messages-stream (atom nil))
