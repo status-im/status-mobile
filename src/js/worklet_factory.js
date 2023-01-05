@@ -1,4 +1,4 @@
-import { useDerivedValue, interpolate, Extrapolation } from 'react-native-reanimated';
+import { useDerivedValue, interpolate } from 'react-native-reanimated';
 
 // Generic Worklets
 
