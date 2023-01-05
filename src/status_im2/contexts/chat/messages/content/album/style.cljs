@@ -4,8 +4,6 @@
 (def album-container
   {:flex-direction :row
    :flex-wrap      :wrap
-   :border-radius  12
-   :width          293
    :overflow       :hidden})
 
 (defn image
