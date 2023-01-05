@@ -40,8 +40,7 @@
                on-dismissed #((get toast-opts :on-dismissed identity) id)
                translate-y  (reanimated/use-shared-value 0)
                create-timer (fn []
-                              (reset! timer (utils.utils/set-timeout #(do (close!) (on-dismissed))
-                                                                     duration)))
+                              (reset! timer (utils.utils/set-timeout close! duration)))
                pan
                (->
                  (gesture/gesture-pan)
