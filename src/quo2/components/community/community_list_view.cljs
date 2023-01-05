@@ -53,9 +53,8 @@
            props)
     [rn/view {:flex 1}
      [rn/view (style/list-info-container)
-      (when community-icon
-        [community-icon/community-icon
-         {:images community-icon} 32])
+      [community-icon/community-icon
+       {:images community-icon} 32]
       [rn/view
        {:flex              1
         :margin-horizontal 12}
@@ -91,14 +90,15 @@
            tokens
            locked?]}]
   [rn/touchable-highlight
-   (merge {:underlay-color colors/primary-50-opa-5
+   (merge {:underlay-color (colors/theme-colors
+                            colors/neutral-5
+                            colors/neutral-95)
            :style          {:border-radius 12}}
           props)
    [rn/view {:flex 1}
     [rn/view (style/membership-info-container)
-     (when community-icon
-       [community-icon/community-icon
-        {:images community-icon} 32])
+     [community-icon/community-icon
+      {:images community-icon} 32]
      [rn/view
       {:flex            1
        :margin-left     12

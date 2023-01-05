@@ -30,9 +30,19 @@
    :bottom   0
    :overflow :hidden})
 
+(defn content-style
+  [insets]
+  {:position       :absolute
+   :left           0
+   :right          0
+   :top            0
+   :padding-top    border-radius
+   :padding-bottom (:bottom insets)})
+
 (defn selected-background
   []
   {:border-radius     12
+   :padding-left      12
    :margin-horizontal 8
    :margin-bottom     10
    :height            48

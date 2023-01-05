@@ -19,7 +19,7 @@
       :on-long-press #(rf/dispatch
                        [:bottom-sheet/show-sheet
                         {:content       (fn []
-                                          [home.actions/actions community-item])
+                                          [home.actions/actions id])
                          :selected-item (fn []
                                           [quo/communities-membership-list-item {} community-item])}])}
      community-item]))

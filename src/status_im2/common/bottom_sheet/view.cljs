@@ -216,12 +216,7 @@
                   {:behaviour (if platform/ios? :padding :height)
                    :style     {:flex 1}}
                   [rn/view
-                   {:style     {:position       :absolute
-                                :left           0
-                                :right          0
-                                :top            0
-                                :padding-top    styles/border-radius
-                                :padding-bottom (:bottom insets)}
+                   {:style     (styles/content-style insets)
                     :on-layout (when-not (and
                                           (some? @content-height)
                                           (> @content-height 0))
