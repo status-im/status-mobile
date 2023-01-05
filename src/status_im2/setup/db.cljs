@@ -34,6 +34,7 @@
    :chat/spam-messages-frequency       0
    :chats-home-list                    #{}
    :home-items-show-number             20
+   :toasts                             {:ordered '() :toasts {}}
    :tooltips                           {}
    :dimensions/window                  (rn/get-window)
    :registry                           {}
