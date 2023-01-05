@@ -1,5 +1,5 @@
 (ns status-im.signing.core
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
@@ -596,4 +596,4 @@
     (sign cofx
           {:tx-obj (-> tx
                        (select-keys [:from :to :value :input :gas :nonce :hash])
-                       (clojure.set/rename-keys {:input :data}))})))
+                       (set/rename-keys {:input :data}))})))

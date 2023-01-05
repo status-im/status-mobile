@@ -1,5 +1,5 @@
 (ns status-im.data-store.pin-messages
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [status-im.data-store.messages :as messages]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
@@ -8,8 +8,8 @@
   [message]
   (-> message
       (merge (messages/<-rpc (message :message)))
-      (clojure.set/rename-keys {:pinnedAt :pinned-at
-                                :pinnedBy :pinned-by})
+      (set/rename-keys {:pinnedAt :pinned-at
+                        :pinnedBy :pinned-by})
       (dissoc :message)))
 
 (defn pinned-message-by-chat-id-rpc
@@ -21,9 +21,9 @@
   {:json-rpc/call [{:method     "wakuext_chatPinnedMessages"
                     :params     [chat-id cursor limit]
                     :on-success (fn [result]
-                                  (let [result (clojure.set/rename-keys result
-                                                                        {:pinnedMessages
-                                                                         :pinned-messages})]
+                                  (let [result (set/rename-keys result
+                                                                {:pinnedMessages
+                                                                 :pinned-messages})]
                                     (on-success (update result :pinned-messages #(map <-rpc %)))))
                     :on-error   on-error}]})
 

@@ -1,6 +1,6 @@
 (ns status-im.wallet.core
   (:require
-   [clojure.set :as clojure.set]
+   [clojure.set :as set]
    [clojure.string :as string]
    [re-frame.core :as re-frame]
    [status-im.async-storage.core :as async-storage]
@@ -360,7 +360,7 @@
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :wallet/visible-tokens
-               (update visible-tokens chain clojure.set/union chain-visible-tokens)
+               (update visible-tokens chain set/union chain-visible-tokens)
                {})
               (update-tokens-balances balances)
               (prices/update-prices))))

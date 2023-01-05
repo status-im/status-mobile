@@ -1,5 +1,5 @@
 (ns status-im.contact.db
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
@@ -68,8 +68,8 @@
   (let [current-contact (some->
                          current-account
                          (select-keys [:name :preferred-name :public-key :identicon :images])
-                         (clojure.set/rename-keys {:name           :alias
-                                                   :preferred-name :name}))
+                         (set/rename-keys {:name           :alias
+                                           :preferred-name :name}))
         all-contacts    (cond-> contacts
                           current-contact
                           (assoc public-key current-contact))]
