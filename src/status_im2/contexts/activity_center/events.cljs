@@ -41,6 +41,12 @@
 
 ;;;; Notification reconciliation
 
+(defn- notification-type->filter-type
+  [type]
+  (if (some types/membership [type])
+    types/membership
+    type))
+
 (defn- update-notifications
   "Insert `new-notifications` in `db-notifications`.
 
@@ -50,8 +56,9 @@
   If the number of existing notifications cached in the app db becomes
   ~excessively~ big, this implementation will probably need to be revisited."
   [db-notifications new-notifications]
-  (reduce (fn [acc {:keys [id type read] :as notification}]
-            (let [remove-notification (fn [data]
+  (reduce (fn [acc {:keys [id read] :as notification}]
+            (let [filter-type         (notification-type->filter-type (:type notification))
+                  remove-notification (fn [data]
                                         (remove #(= id (:id %)) data))
                   insert-and-sort     (fn [data]
                                         (->> notification
@@ -59,16 +66,16 @@
                                              (sort-by (juxt :timestamp :id))
                                              reverse))]
               (as-> acc $
-                (update-in $ [type :all :data] remove-notification)
+                (update-in $ [filter-type :all :data] remove-notification)
                 (update-in $ [types/no-type :all :data] remove-notification)
-                (update-in $ [type :unread :data] remove-notification)
+                (update-in $ [filter-type :unread :data] remove-notification)
                 (update-in $ [types/no-type :unread :data] remove-notification)
-                (if (or (:dismissed notification) (:accepted notification))
+                (if (:dismissed notification)
                   $
                   (cond-> (-> $
-                              (update-in [type :all :data] insert-and-sort)
+                              (update-in [filter-type :all :data] insert-and-sort)
                               (update-in [types/no-type :all :data] insert-and-sort))
-                    (not read) (update-in [type :unread :data] insert-and-sort)
+                    (not read) (update-in [filter-type :unread :data] insert-and-sort)
                     (not read) (update-in [types/no-type :unread :data] insert-and-sort))))))
           db-notifications
           new-notifications))
@@ -143,6 +150,26 @@
   [cofx notification]
   (notifications-reconcile cofx [(assoc notification :read true)]))
 
+;;;; Membership
+
+(rf/defn accept-notification
+  {:events [:activity-center.notifications/accept]}
+  [{:keys [db]} notification-id]
+  (when-let [notification (get-notification db notification-id)]
+    {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
+                      :params     [[notification-id]]
+                      :on-success #(rf/dispatch [:activity-center.notifications/accept-success
+                                                 notification %])
+                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                 notification-id
+                                                 :accept-notification
+                                                 %])}]}))
+
+(rf/defn accept-notification-success
+  {:events [:activity-center.notifications/accept-success]}
+  [cofx notification response]
+  (notifications-reconcile cofx [(assoc notification :read true :accepted true)]))
+
 ;;;; Contact verification
 
 (rf/defn contact-verification-decline
@@ -213,6 +240,18 @@
     :all    status-all
     99))
 
+(defn filter-type->rpc-param
+  [filter-type]
+  (cond
+    (coll? filter-type)
+    filter-type
+
+    (= types/no-type filter-type)
+    nil
+
+    :else
+    [filter-type]))
+
 (rf/defn notifications-fetch
   [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
@@ -221,7 +260,10 @@
                        [:activity-center :notifications filter-type filter-status :loading?]
                        true)
        :json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
-                        :params     [cursor per-page filter-type (status filter-status)]
+                        :params     [cursor
+                                     per-page
+                                     (filter-type->rpc-param filter-type)
+                                     (status filter-status)]
                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
                                                    filter-type filter-status reset-data? %])
                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error

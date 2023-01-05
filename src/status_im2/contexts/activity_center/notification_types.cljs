@@ -11,5 +11,10 @@
 
 ;; TODO: Replace with correct enum values once status-go implements them.
 (def ^:const tx 66612)
-(def ^:const membership 66613)
 (def ^:const system 66614)
+
+(def ^:const membership
+  "Membership is like a logical group of notifications with different types, i.e.
+  it doesn't have a corresponding type in the backend. Think of the collection
+  as a composite key of actual types."
+  #{private-group-chat})
