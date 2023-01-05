@@ -53,14 +53,10 @@
          {:blur-amount   32
           :blur-type     :xlight
           :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
-          :style         (reanimated/apply-animations-to-style
-                          {:transform [{:translateY translate-animation}]}
-                          style/blur-slider)}]
+          :style         (style/blur-slider translate-animation)}]
         [rn/view {:style {:z-index 6 :margin-top (if platform/ios? 44 0)}}
          [reanimated/view
-          {:style (reanimated/apply-animations-to-style
-                   {:opacity opacity-animation}
-                   style/sticky-header-title)}
+          {:style (style/sticky-header-title opacity-animation)}
           [rn/image
            {:source cover
             :style  style/sticky-header-image}]
@@ -98,9 +94,7 @@
        ;               [@scroll-height])
        (quo.react/effect! #(reanimated/set-shared-value y @scroll-height))
        [reanimated/view
-        {:style (reanimated/apply-animations-to-style
-                 {:transform [{:scale animation}]}
-                 style/display-picture-container)}
+        {:style (style/display-picture-container animation)}
         [rn/image
          {:source cover
           :style  style/display-picture}]]))])
