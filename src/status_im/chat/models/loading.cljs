@@ -101,13 +101,11 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
-;; When a user receives a list of 4 image messages (for example) while inside the chat screen we
-;; shouldn't group
-;; the images into albums. When the user exists the chat screen then enters the chat screen again, we
-;; now
-;; need to
-;; group the images into albums. The albumize? boolean is used to know whether we need to group these
-;; images into albums now or not. The album-id can't be used for this because it will always be there.
+;; For example, when a user receives a list of 4 image messages while inside the chat screen we
+;; shouldn't group the images into albums. When the user exists the chat screen then enters the
+;; chat screen again, we now need to group the images into albums (like WhatsApp). The albumize?
+;; boolean is used to know whether we need to group these images into albums now or not. The
+;; album-id can't be used for this because it will always be there.
 (defn mark-album
   [message]
   (if (:album-id message)
