@@ -25,10 +25,11 @@
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
- (fn [{:keys [tx-obj hashed-password cb]}]
+ (fn [{:keys [tx-obj hashed-password cb on-error]}]
    (status/send-transaction (types/clj->json tx-obj)
                             hashed-password
-                            cb)))
+                            cb
+                            on-error)))
 
 (re-frame/reg-fx
  :signing/show-transaction-error
@@ -42,22 +43,22 @@
 
 (re-frame/reg-fx
  :signing.fx/sign-message
- (fn [{:keys [params on-completed]}]
+ (fn [{:keys [params on-completed on-error]}]
    (status/sign-message (types/clj->json params)
-                        on-completed)))
+                        on-completed on-error)))
 
 (re-frame/reg-fx
  :signing.fx/recover-message
- (fn [{:keys [params on-completed]}]
+ (fn [{:keys [params on-completed on-error]}]
    (status/recover-message (types/clj->json params)
-                           on-completed)))
+                           on-completed on-error)))
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
- (fn [{:keys [v4 data account on-completed hashed-password]}]
+ (fn [{:keys [v4 data account on-completed on-error hashed-password]}]
    (if v4
-     (status/sign-typed-data-v4 data account hashed-password on-completed)
-     (status/sign-typed-data data account hashed-password on-completed))))
+     (status/sign-typed-data-v4 data account hashed-password on-completed on-error)
+     (status/sign-typed-data data account hashed-password on-completed on-error))))
 
 (defn get-contact
   [db to]
@@ -91,12 +92,17 @@
                                        :account         from
                                        :hashed-password hashed-password
                                        :on-completed    #(re-frame/dispatch
-                                                          [:signing/sign-message-completed %])}}
+                                                          [:signing/sign-message-completed %])
+                                       :on-error        (fn [error-message]
+                                                          (log/debug "error while sign-typed-data-v4" error-message))}}
          {:signing.fx/sign-message {:params       {:data     data
                                                    :password hashed-password
                                                    :account  from}
                                     :on-completed #(re-frame/dispatch [:signing/sign-message-completed
-                                                                       %])}})))))
+                                                                       %])
+                                    :on-error        (fn [error-message]
+                                                       (log/debug "error while sign-typed-data" error-message))
+                                    }})))))
 
 (rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
@@ -127,7 +133,9 @@
                                          :hashed-password hashed-password
                                          :cb              #(re-frame/dispatch
                                                             [:signing/transaction-completed %
-                                                             tx-obj-to-send hashed-password])}})))))
+                                                             tx-obj-to-send hashed-password])
+                                         :on-error        (fn [error-message]
+                                                            (log/debug "error while status/send-transaction" error-message))}})))))
 
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
@@ -379,7 +387,10 @@
               (if message-id
                 [:sign/send-accept-transaction-message message-id transaction-hash res]
                 [:sign/send-transaction-message
-                 chat-id value contract transaction-hash res])))}
+                 chat-id value contract transaction-hash res])))
+           :on-error
+           (fn [error-message]
+             (log/debug "error while signing.keycard/hash-message" error-message))}
           :signing/show-transaction-result nil}))
      (prepare-unconfirmed-transaction transaction-hash tx-obj symbol amount)
      (check-queue)

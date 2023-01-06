@@ -787,7 +787,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback successCallback, final Callback errorCallback = null) throws JSONException {
+    public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback successCallback, final Callback errorCallback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
          final String keyUID = jsonConfig.getString("keyUID");
          final String keyStorePath = this.getKeyStorePath(keyUID);

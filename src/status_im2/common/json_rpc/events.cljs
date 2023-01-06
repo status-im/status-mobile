@@ -42,7 +42,9 @@
              (on-error (transforms/js->clj (.-error response-js)))
              (on-success (if js-response
                            (.-result response-js)
-                           (transforms/js->clj (.-result response-js)))))))))))
+                           (transforms/js->clj (.-result response-js))))))))
+     (fn [error-message]
+       (log/debug "error while status/call-private-rpc" error-message)))))
 
 (re-frame/reg-fx
  :json-rpc/call

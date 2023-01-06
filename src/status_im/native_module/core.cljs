@@ -126,33 +126,33 @@
    this function is used after storing an account when you still want to
    derive accounts from it, because saving an account flushes the loaded keys
    from memory"
-  [address hashed-password callback]
+  [address hashed-password success-callback error-callback]
   (log/debug "[native-module] multiaccount-load-account")
   (.multiAccountLoadAccount ^js (status)
                             (types/clj->json {:address  address
                                               :password hashed-password})
-                            callback))
+                            success-callback error-callback))
 
 (defn multiaccount-reset
   "TODO: this function is not used anywhere
    if usage isn't planned, remove"
-  [callback]
+  [success-callback error-callback]
   (log/debug "[native-module]  multiaccount-reset")
   (.multiAccountReset ^js (status)
-                      callback))
+                      success-callback error-callback))
 
 (defn multiaccount-derive-addresses
   "NOTE: this should be named derive-accounts
    this only derive addresses, they still need to be stored
    with `multiaccount-store-derived` if you want to be able to
    reuse the derived addresses later"
-  [account-id paths callback]
+  [account-id paths success-callback error-callback]
   (log/debug "[native-module]  multiaccount-derive-addresses")
   (when (status)
     (.multiAccountDeriveAddresses ^js (status)
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
-                                  callback)))
+                                  success-callback error-callback)))
 
 (defn multiaccount-store-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -162,7 +162,7 @@
    and chat accounts, you need to load the account again with
    `multiaccount-load-account` before using `multiaccount-store-derived`
    and the id of the account stored will have changed"
-  [account-id key-uid hashed-password callback]
+  [account-id key-uid hashed-password success-callback error-callback]
   (log/debug "[native-module] multiaccount-store-account")
   (when (status)
     (init-keystore
@@ -170,11 +170,11 @@
      #(.multiAccountStoreAccount ^js (status)
                                  (types/clj->json {:accountID account-id
                                                    :password  hashed-password})
-                                 callback))))
+       success-callback error-callback))))
 
 (defn multiaccount-store-derived
   "NOTE: beware, the password has to be sha3 hashed"
-  [account-id key-uid paths hashed-password callback]
+  [account-id key-uid paths hashed-password success-callback error-callback]
   (log/debug "[native-module] multiaccount-store-derived"
              "account-id"
              account-id)
@@ -184,49 +184,49 @@
                                (types/clj->json {:accountID account-id
                                                  :paths     paths
                                                  :password  hashed-password})
-                               callback)))
+   success-callback error-callback)))
 
 (defn multiaccount-generate-and-derive-addresses
   "used to generate multiple multiaccounts for onboarding
    NOTE: nothing is saved so you will need to use
    `multiaccount-store-account` on the selected multiaccount
    to store the key"
-  [n mnemonic-length paths callback]
+  [n mnemonic-length paths success-callback error-callback]
   (log/debug "[native-module]  multiaccount-generate-and-derive-addresses")
   (.multiAccountGenerateAndDeriveAddresses ^js (status)
                                            (types/clj->json {:n                    n
                                                              :mnemonicPhraseLength mnemonic-length
                                                              :bip39Passphrase      ""
                                                              :paths                paths})
-                                           callback))
+                                           success-callback error-callback))
 
 (defn multiaccount-import-mnemonic
-  [mnemonic password callback]
+  [mnemonic password success-callback error-callback]
   (log/debug "[native-module] multiaccount-import-mnemonic")
   (.multiAccountImportMnemonic ^js (status)
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
-                               callback))
+                               success-callback error-callback))
 
 (defn multiaccount-import-private-key
-  [private-key callback]
+  [private-key success-callback error-callback]
   (log/debug "[native-module] multiaccount-import-private-key")
   (.multiAccountImportPrivateKey ^js (status)
                                  (types/clj->json {:privateKey private-key})
-                                 callback))
+                                 success-callback error-callback))
 
 (defn verify
   "NOTE: beware, the password has to be sha3 hashed"
-  [address hashed-password callback]
+  [address hashed-password success-callback error-callback]
   (log/debug "[native-module] verify")
-  (.verify ^js (status) address hashed-password callback))
+  (.verify ^js (status) address hashed-password success-callback error-callback))
 
 (defn verify-database-password
   "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid hashed-password callback]
+  [key-uid hashed-password success-callback error-callback]
   (log/debug "[native-module] verify-database-password")
-  (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
+  (.verifyDatabasePassword ^js (status) key-uid hashed-password success-callback error-callback))
 
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key]}]
@@ -242,42 +242,42 @@
   (.setSoftInputMode ^js (status) mode))
 
 (defn call-rpc
-  [payload callback]
+  [payload success-callback error-callback]
   (log/debug "[native-module] call-rpc")
-  (.callRPC ^js (status) payload callback))
+  (.callRPC ^js (status) payload success-callback error-callback))
 
 (defn call-private-rpc
-  [payload callback]
-  (.callPrivateRPC ^js (status) payload callback))
+  [payload success-callback error-callback]
+  (.callPrivateRPC ^js (status) payload success-callback error-callback))
 
 (defn hash-transaction
   "used for keycard"
-  [rpcParams callback]
+  [rpcParams success-callback error-callback]
   (log/debug "[native-module] hash-transaction")
-  (.hashTransaction ^js (status) rpcParams callback))
+  (.hashTransaction ^js (status) rpcParams success-callback error-callback))
 
 (defn hash-message
   "used for keycard"
-  [message callback]
+  [message success-callback error-callback]
   (log/debug "[native-module] hash-message")
-  (.hashMessage ^js (status) message callback))
+  (.hashMessage ^js (status) message success-callback error-callback))
 
 (defn get-connection-string-for-bootstrapping-another-device
   "Generates connection string form status-go for the purpose of local pairing on the sender end"
-  [config-json callback]
+  [config-json success-callback error-callback]
   (log/info "[native-module] Fetching Connection String"
             {:fn          :get-connection-string-for-bootstrapping-another-device
              :config-json config-json})
-  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json callback))
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json success-callback error-callback))
 
 (defn input-connection-string-for-bootstrapping
   "Provides connection string to status-go for the purpose of local pairing on the receiver end"
-  [connection-string config-json callback]
+  [connection-string config-json success-callback error-callback]
   (log/info "[native-module] Sending Connection String"
             {:fn                :input-connection-string-for-bootstrapping
              :config-json       config-json
              :connection-string connection-string})
-  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json success-callback error-callback))
 
 (defn deserialize-and-compress-key
   "Provides a community id (public key) to status-go which is first deserialized
@@ -293,7 +293,7 @@
 
 (defn public-key->compressed-key
   "Provides public key to status-go and gets back a compressed key via serialization"
-  [public-key callback]
+  [public-key success-callback error-callback]
   (let [serialization-key constants/serialization-key
         multi-code-prefix constants/multi-code-prefix
         multi-code-key    (str multi-code-prefix (subs public-key 2))]
@@ -301,24 +301,24 @@
               {:fn             :public-key->compressed-key
                :public-key     public-key
                :multi-code-key multi-code-key})
-    (.multiformatSerializePublicKey ^js (status) multi-code-key serialization-key callback)))
+    (.multiformatSerializePublicKey ^js (status) multi-code-key serialization-key success-callback error-callback)))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
-  [public-key callback]
+  [public-key success-callback error-callback]
   (let [deserialization-key constants/deserialization-key]
     (log/info "[native-module] Deserializing compressed key"
               {:fn         :compressed-key->public-key
                :public-key public-key})
-    (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback)))
+    (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key success-callback error-callback)))
 
 (defn decompress-public-key
   "Provides compressed key to status-go and gets back the uncompressed public key"
-  [public-key callback]
+  [public-key success-callback error-callback]
   (log/info "[native-module] Decompressing public key"
             {:fn         :decompress-public-key
              :public-key public-key})
-  (.decompressPublicKey ^js (status) public-key callback))
+  (.decompressPublicKey ^js (status) public-key success-callback error-callback))
 
 (defn compress-public-key
   "Provides a public key to status-go and gets back a 33bit compressed key back"
@@ -330,60 +330,61 @@
 
 (defn hash-typed-data
   "used for keycard"
-  [data callback]
+  [data success-callback error-callback]
   (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData ^js (status) data callback))
+  (.hashTypedData ^js (status) data success-callback error-callback))
 
 (defn hash-typed-data-v4
   "used for keycard"
-  [data callback]
+  [data success-callback error-callback]
   (log/debug "[native-module] hash-typed-data-v4")
-  (.hashTypedDataV4 ^js (status) data callback))
+  (.hashTypedDataV4 ^js (status) data success-callback error-callback))
 
 (defn send-transaction-with-signature
   "used for keycard"
-  [rpcParams sig callback]
+  [rpcParams sig success-callback error-callback]
   (log/debug "[native-module] send-transaction-with-signature")
-  (.sendTransactionWithSignature ^js (status) rpcParams sig callback))
+  (.sendTransactionWithSignature ^js (status) rpcParams sig success-callback error-callback))
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
-  [rpcParams callback]
+  [rpcParams success-callback error-callback]
   (log/debug "[native-module] sign-message")
-  (.signMessage ^js (status) rpcParams callback))
+  (.signMessage ^js (status) rpcParams success-callback error-callback))
 
 (defn recover-message
-  [rpcParams callback]
+  [rpcParams success-callback error-callback]
   (log/debug "[native-module] recover")
-  (.recover ^js (status) rpcParams callback))
+  (.recover ^js (status) rpcParams success-callback error-callback))
 
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
-  [rpcParams hashed-password callback]
+  [rpcParams hashed-password success-callback error-callback]
   (log/debug "[native-module] send-transaction")
-  (.sendTransaction ^js (status) rpcParams hashed-password callback))
+  (.sendTransaction ^js (status) rpcParams hashed-password success-callback error-callback))
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
-  [data account hashed-password callback]
+  [data account hashed-password success-callback error-callback]
   (log/debug "[native-module] sign-typed-data")
-  (.signTypedData ^js (status) data account hashed-password callback))
+  (.signTypedData ^js (status) data account hashed-password success-callback error-callback))
 
 (defn sign-typed-data-v4
   "NOTE: beware, the password has to be sha3 hashed"
-  [data account hashed-password callback]
+  [data account hashed-password success-callback error-callback]
   (log/debug "[native-module] sign-typed-data-v4")
-  (.signTypedDataV4 ^js (status) data account hashed-password callback))
+  (.signTypedDataV4 ^js (status) data account hashed-password success-callback error-callback))
 
 (defn send-logs
   [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")
   (.sendLogs ^js (status) dbJson js-logs callback))
 
+;; siddarthkay : this function is not used anywhere, maybe we should get rid of it
 (defn add-peer
-  [enode on-result]
+  [enode success-callback error-callback]
   (log/debug "[native-module] add-peer")
-  (.addPeer ^js (status) enode on-result))
+  (.addPeer ^js (status) enode success-callback error-callback))
 
 (defn close-application
   []
@@ -432,20 +433,22 @@
      :build-id  (.-buildId status)
      :device-id (.-deviceId status)}))
 
+;;siddarthkay : couldn't find usages of this method anywhere, do we need it?
 (defn extract-group-membership-signatures
-  [signature-pairs callback]
+  [signature-pairs success-callback error-callback]
   (log/debug "[native-module] extract-group-membership-signatures")
-  (.extractGroupMembershipSignatures ^js (status) signature-pairs callback))
+  (.extractGroupMembershipSignatures ^js (status) signature-pairs success-callback error-callback))
 
+;;siddarthkay : couldn't find usages of this method anywhere, do we need it?
 (defn sign-group-membership
-  [content callback]
+  [content success-callback error-callback]
   (log/debug "[native-module] sign-group-membership")
-  (.signGroupMembership ^js (status) content callback))
+  (.signGroupMembership ^js (status) content success-callback error-callback))
 
 (defn get-node-config
-  [callback]
+  [success-callback error-callback]
   (log/debug "[native-module] get-node-config")
-  (.getNodeConfig ^js (status) callback))
+  (.getNodeConfig ^js (status) success-callback error-callback))
 
 (defn update-mailservers
   [enodes on-result]
@@ -484,9 +487,9 @@
 
 (defn generate-gfycat-async
   "Generate a 3 words random name based on the user public-key, asynchronously"
-  [public-key callback]
+  [public-key success-callback error-callback]
   {:pre [(utils.db/valid-public-key? public-key)]}
-  (.generateAliasAsync ^js (status) public-key callback))
+  (.generateAliasAsync ^js (status) public-key success-callback error-callback))
 
 (defn identicon
   "Generate a icon based on a string, synchronously"
@@ -556,8 +559,8 @@
 
 (defn identicon-async
   "Generate a icon based on a string, asynchronously"
-  [seed callback]
-  (.identiconAsync ^js (status) seed callback))
+  [seed success-callback error-callback]
+  (.identiconAsync ^js (status) seed success-callback error-callback))
 
 (defn gfycat-identicon-async
   "Generate an icon based on a string and 3 words random name asynchronously"
@@ -567,22 +570,22 @@
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
-  [mnemonic callback]
+  [mnemonic success-callback error-callback]
   (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic ^js (status) mnemonic callback))
+  (.validateMnemonic ^js (status) mnemonic success-callback error-callback))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
   key files."
-  [key-uid callback]
+  [key-uid success-callback error-callback]
   (log/debug "[native-module] delete-multiaccount")
-  (.deleteMultiaccount ^js (status) key-uid callback))
+  (.deleteMultiaccount ^js (status) key-uid success-callback error-callback))
 
 (defn delete-imported-key
   "Delete imported key file."
-  [key-uid address hashed-password callback]
+  [key-uid address hashed-password success-callback error-callback]
   (log/debug "[native-module] delete-imported-key")
-  (.deleteImportedKey ^js (status) key-uid address hashed-password callback))
+  (.deleteImportedKey ^js (status) key-uid address hashed-password success-callback error-callback))
 
 (defn activate-keep-awake
   []
@@ -602,14 +605,14 @@
 
 ;; passwords are hashed
 (defn reset-password
-  [key-uid current-password# new-password# callback]
+  [key-uid current-password# new-password# success-callback error-callback]
   (log/debug "[native-module] change-database-password")
   (init-keystore
    key-uid
-   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))
+   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# success-callback error-callback)))
 
 (defn convert-to-keycard-account
-  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
+  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password success-callback error-callback]
   (log/debug "[native-module] convert-to-keycard-account")
   (.convertToKeycardAccount ^js (status)
                             key-uid
@@ -617,4 +620,5 @@
                             (types/clj->json settings)
                             current-password#
                             new-password
-                            callback))
+                            success-callback
+                            error-callback))

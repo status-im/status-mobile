@@ -260,7 +260,9 @@
          (status/login-with-keycard login-params)
          (throw
           (js/Error.
-           "Please shake the phone to report this error and restart the app. Migration failed unexpectedly.")))))))
+           "Please shake the phone to report this error and restart the app. Migration failed unexpectedly."))))
+    (fn [error-message]
+      (log/debug "error while status/convert-to-keycard-account" error-message)))))
 
 (rf/defn migrate-account
   [{:keys [db] :as cofx}]

@@ -16,7 +16,8 @@
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [status-im2.navigation.events :as navigation]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [taoensso.timbre :as log]))
 
 (rf/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
@@ -155,7 +156,9 @@
         (let [{:keys [error]} (types/json->clj result)]
           (if-not (string/blank? error)
             (on-error error)
-            (on-success))))))))
+            (on-success))))
+      (fn [error-message]
+        (log/debug "error while native-module/delete-imported-key" error-message))))))
 
 #_"Multiaccount has been deleted from device. We now need to emulate the restore seed phrase process, and make the user land on Keycard setup screen.
 To ensure that keycard setup works, we need to:
@@ -226,7 +229,10 @@ We don't need to take the exact steps, just set the required state and redirect 
   (native-module/verify-database-password
    (get-in db [:multiaccounts/login :key-uid])
    (ethereum/sha3 (security/safe-unmask-data (get-in db [:keycard :migration-password])))
-   #(re-frame/dispatch [::verify-password-result %])))
+   #(re-frame/dispatch [::verify-password-result %])
+   (fn [error-message]
+     (log/debug "error while native-module/verify-database-password" error-message))
+   ))
 
 (rf/defn handle-multiaccount-import
   {:events [::import-multiaccount-success]}

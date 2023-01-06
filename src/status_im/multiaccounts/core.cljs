@@ -17,8 +17,8 @@
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
  ::validate-mnemonic
- (fn [[passphrase callback]]
-   (native-module/validate-mnemonic passphrase callback)))
+ (fn [[passphrase success-callback error-callback]]
+   (native-module/validate-mnemonic passphrase success-callback error-callback)))
 
 (defn contact-names
   "Returns map of all existing names for contact"

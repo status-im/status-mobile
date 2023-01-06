@@ -97,7 +97,11 @@
                         {:address    address
                          :public-key publicKey
                          :type       type
-                         :path       (normalize-path path)}])))))))))))))
+                         :path       (normalize-path path)}]))))
+                (fn [error-message]
+                  (log/debug "error while status/multiaccount-store-derived" error-message))))))
+         (fn [error-message]
+           (log/debug "error while status/multiaccount-derive-addresses" error-message)))))))
 
 (def pass-error
   "cannot retrieve a valid key for a given account: could not decrypt key with given password")
@@ -114,7 +118,9 @@
          id
          key-uid
          hashed-password
-         (account-stored path type))))))
+         (account-stored path type)
+         (fn [error-message]
+           (log/debug "error while status/multiaccount-store-account" error-message)))))))
 
 (re-frame/reg-fx
  ::verify-password
@@ -122,7 +128,9 @@
    (status/verify
     address
     hashed-password
-    #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password]))))
+    #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password])
+    (fn [error-message]
+      (log/debug "error while status/verify" error-message)))))
 
 (re-frame/reg-fx
  ::generate-account
@@ -131,7 +139,10 @@
      (status/multiaccount-load-account
       address
       hashed-password
-      (derive-and-store-account key-uid path hashed-password :generated accounts)))))
+      (derive-and-store-account key-uid path hashed-password :generated accounts)
+      (fn [error-message]
+        (log/debug "error while status/multiaccount-load-account" error-message))
+      ))))
 
 (re-frame/reg-fx
  ::import-account-seed
@@ -139,14 +150,18 @@
    (status/multiaccount-import-mnemonic
     (mnemonic/sanitize-passphrase (security/unmask passphrase))
     ""
-    (derive-and-store-account key-uid constants/path-default-wallet hashed-password :seed accounts))))
+    (derive-and-store-account key-uid constants/path-default-wallet hashed-password :seed accounts)
+    (fn [error-message]
+      (log/debug "error while status/multiaccount-import-mnemonic" error-message)))))
 
 (re-frame/reg-fx
  ::import-account-private-key
  (fn [{:keys [private-key hashed-password key-uid]}]
    (status/multiaccount-import-private-key
     (string/trim (security/unmask private-key))
-    (store-account key-uid constants/path-default-wallet hashed-password :key))))
+    (store-account key-uid constants/path-default-wallet hashed-password :key)
+    (fn [error-message]
+      (log/debug "error while status/multiaccount-import-private-key" error-message)))))
 
 (rf/defn generate-new-account
   [{:keys [db]} hashed-password]

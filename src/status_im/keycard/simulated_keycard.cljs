@@ -276,7 +276,12 @@
                                {:name name :identicon photo-path})]
                    (reset! derived-acc
                      {:root-key root-data
-                      :derived  derived-data-extended})))))))))))
+                      :derived  derived-data-extended}))))))
+          (fn [error-message]
+            (log/debug "error while status/convert-to-keycard-account" error-message))
+          )))
+     (fn [error-message]
+       (log/debug "error while status/multiaccount-derive-addresses" error-message))))
   (when (= password (get @state :password))
     (swap! state assoc-in [:application-info :paired?] true)
     (later #(on-success (str (rand-int 10000000))))))
@@ -300,7 +305,10 @@
                    (let [{:keys [error]} (types/json->clj result)]
                      (if-not (string/blank? error)
                        (log/error error)
-                       (on-deletion-success))))))
+                       (on-deletion-success))))
+                 (fn [error-message]
+                   (log/debug "error while status/delete-multiaccount" error-message))
+                 ))
               (fn [cb] (cb)))]
         (deletion-wrapper
          (fn []
@@ -312,7 +320,10 @@
              constants/path-whisper
              constants/path-default-wallet]
             account-password
-            #(on-success response))))))))
+            #(on-success response)
+            (fn [error-message]
+              (log/debug "error while status/multiaccount-store-derived" error-message))
+            )))))))
 
 (defn unblock-pin
   [{:keys [puk new-pin on-success on-failure]}]
@@ -423,7 +434,16 @@
                              {:keys [publicKey]}        (get result (keyword path))]
                          (if error
                            (on-failure error)
-                           (on-success publicKey))))))))))))))))
+                           (on-success publicKey))))
+                     (fn [error-message]
+                       (log/debug "error while status/multiaccount-store-derived" error-message))))))
+              (fn [error-message]
+                (log/debug "error while status/multiaccount-derive-addresses" error-message))
+
+              ))))
+       (fn [error-message]
+         (log/debug "error while status/multiaccount-load-account" error-message))
+       ))))
 
 (defn unpair-and-delete [_])
 
@@ -444,7 +464,10 @@
                   constants/path-whisper
                   constants/path-default-wallet]
                  account-password
-                 #(on-success keys)))
+                 #(on-success keys)
+                 (fn [error-message]
+                   (log/debug "error while status/multiaccount-store-derived" error-message))
+                 ))
               #(on-success
                 {:key-uid               (get-in @state [:application-info :key-uid])
                  :instance-uid          (get-in @state [:application-info :instance-uid])
@@ -480,7 +503,10 @@
                                           types/json->clj
                                           :result
                                           ethereum/normalized-hex)]
-                        (on-success signature)))))
+                        (on-success signature)))
+                    (fn [error-message]
+                      (log/debug "error while status/sign-message" error-message))
+                    ))
                  (status/sign-typed-data
                   data
                   address
@@ -490,7 +516,10 @@
                                         types/json->clj
                                         :result
                                         ethereum/normalized-hex)]
-                      (on-success signature))))))))
+                      (on-success signature)))
+                  (fn [error-message]
+                    (log/debug "error while status/sign-typed-data" error-message))
+                  )))))
 
 (defn sign-typed-data
   [args]
@@ -511,8 +540,8 @@
   (status/login-with-config key-uid multiaccount-data password node/login-node-config))
 
 (defn send-transaction-with-signature
-  [{:keys [transaction on-completed]}]
-  (status/send-transaction transaction account-password on-completed))
+  [{:keys [transaction on-completed on-error]}]
+  (status/send-transaction transaction account-password on-completed on-error))
 
 (defn delete-multiaccount-before-migration
   [{:keys [on-success]}]

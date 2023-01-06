@@ -310,8 +310,8 @@
   (status/login-with-keycard args))
 
 (defn send-transaction-with-signature
-  [{:keys [transaction signature on-completed]}]
-  (status/send-transaction-with-signature transaction signature on-completed))
+  [{:keys [transaction signature on-completed on-error]}]
+  (status/send-transaction-with-signature transaction signature on-completed on-error))
 
 (defn delete-multiaccount-before-migration
   [{:keys [key-uid on-success on-error]}]
@@ -321,7 +321,10 @@
      (let [{:keys [error]} (types/json->clj result)]
        (if-not (string/blank? error)
          (on-error error)
-         (on-success))))))
+         (on-success))))
+   (fn [error-message]
+     (log/debug "error while status/delete-multiaccount" error-message))
+   ))
 
 (defrecord RealKeycard []
   keycard/Keycard

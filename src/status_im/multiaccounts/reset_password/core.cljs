@@ -7,7 +7,8 @@
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [taoensso.timbre :as log]))
 
 (rf/defn on-input-change
   {:events [::handle-input-change]}
@@ -63,7 +64,9 @@
     key-uid
     (ethereum/sha3 (security/safe-unmask-data current-password))
     (ethereum/sha3 (security/safe-unmask-data new-password))
-    change-db-password-cb)))
+    change-db-password-cb
+    (fn [error-message]
+      (log/debug "error while status/reset-password" error-message)))))
 
 (rf/defn handle-verification-success
   {:events [::handle-verification-success]}
@@ -90,7 +93,9 @@
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data current-password))]
      (status/verify address
                     hashed-pass
-                    (partial handle-verification form-vals)))))
+                    (partial handle-verification form-vals)
+                    (fn [error-message]
+                      (log/debug "error while status/verify" error-message))))))
 
 (rf/defn reset
   {:events [::reset]}

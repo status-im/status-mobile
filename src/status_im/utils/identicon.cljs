@@ -1,6 +1,7 @@
 (ns status-im.utils.identicon
   (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as native-module]))
+            [status-im.native-module.core :as native-module]
+            [taoensso.timbre :as log]))
 
 (def identicon (memoize native-module/identicon))
 
@@ -12,4 +13,7 @@
    (for [key-path key-path-seq]
      (let [public-key         (first key-path)
            path-for-identicon (second key-path)]
-       (identicon-async public-key #(re-frame/dispatch [:identicon-generated path-for-identicon %]))))))
+       (identicon-async public-key
+                        #(re-frame/dispatch [:identicon-generated path-for-identicon %])
+                        (fn [error-message]
+                           (log/debug "error while status/identicon-async" error-message)))))))

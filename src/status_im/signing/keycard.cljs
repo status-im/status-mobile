@@ -8,20 +8,20 @@
 
 (re-frame/reg-fx
  ::hash-transaction
- (fn [{:keys [transaction on-completed]}]
-   (status/hash-transaction (types/clj->json transaction) on-completed)))
+ (fn [{:keys [transaction on-completed on-error]}]
+   (status/hash-transaction (types/clj->json transaction) on-completed on-error)))
 
 (re-frame/reg-fx
  ::hash-message
- (fn [{:keys [message on-completed]}]
-   (status/hash-message message on-completed)))
+ (fn [{:keys [message on-completed on-error]}]
+   (status/hash-message message on-completed on-error)))
 
 (re-frame/reg-fx
  ::hash-typed-data
- (fn [{:keys [v4 data on-completed]}]
+ (fn [{:keys [v4 data on-completed on-error]}]
    (if v4
-     (status/hash-typed-data-v4 data on-completed)
-     (status/hash-typed-data data on-completed))))
+     (status/hash-typed-data-v4 data on-completed on-error)
+     (status/hash-typed-data data on-completed on-error))))
 
 (defn prepare-transaction
   [{:keys [gas gasPrice data nonce tx-obj] :as params}]

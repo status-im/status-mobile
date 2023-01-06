@@ -418,7 +418,9 @@
                                                       [:browser.callback/call-rpc
                                                        {:type      constants/web3-send-async-callback
                                                         :messageId message-id
-                                                        :result    (types/json->clj %)}])}}
+                                                        :result    (types/json->clj %)}])
+                                      :on-error (fn [error-message]
+                                                  (log/debug "error while status/recover-message" error-message))}}
         (= method "wallet_switchEthereumChain")
         (eip3326/handle-switch-ethereum-chain cofx dapp-name id message-id (first params))
 
@@ -534,7 +536,10 @@
         (do
           (log/warn :web3-response-error)
           (callback "web3-response-error" nil))
-        (callback nil (.parse js/JSON response)))))))
+        (callback nil (.parse js/JSON response))))
+    (fn [error-message]
+      (log/debug "error while status/call-rpc" error-message))
+    )))
 
 (re-frame/reg-fx
  :browser/show-browser-selection

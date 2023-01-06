@@ -12,6 +12,7 @@
             [utils.re-frame :as rf]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
+            [taoensso.timbre :as log]
             [utils.security.core :as security]))
 
 (defn normalize-derived-data-keys
@@ -40,7 +41,7 @@
 
 (re-frame/reg-fx
  ::store-multiaccount
- (fn [[id key-uid hashed-password callback]]
+ (fn [[id key-uid hashed-password callback on-error]]
    (status/multiaccount-store-derived
     id
     key-uid
@@ -49,7 +50,8 @@
      constants/path-whisper
      constants/path-default-wallet]
     hashed-password
-    callback)))
+    callback
+    on-error)))
 
 (rf/defn create-multiaccount
   {:events [:create-multiaccount]}
@@ -86,7 +88,10 @@
      constants/path-default-wallet]
     #(re-frame/dispatch [:multiaccount-generate-and-derive-addresses-success
                          (mapv normalize-multiaccount-data-keys
-                               (types/json->clj %))]))))
+                               (types/json->clj %))])
+    (fn [error-message]
+      (log/debug "error while status/multiaccount-generate-and-derive-addresses" error-message))
+    )))
 
 (rf/defn multiaccount-generate-and-derive-addresses-success
   {:events [:multiaccount-generate-and-derive-addresses-success]}

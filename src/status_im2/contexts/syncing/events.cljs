@@ -13,7 +13,10 @@
     (status/input-connection-string-for-bootstrapping
      connection-string
      config-map
-     #(log/info "this is response from initiate-local-pairing-with-connection-string " %))))
+     #(log/info "this is response from initiate-local-pairing-with-connection-string " %)
+     (fn [error-message]
+       (log/debug "error while status/input-connection-string-for-bootstrapping" error-message))
+     )))
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
@@ -28,4 +31,6 @@
         [:bottom-sheet/show-sheet
          {:show-handle? false
           :content      (fn []
-                          [sheet/qr-code-view-with-connection-string connection-string])}])))))
+                          [sheet/qr-code-view-with-connection-string connection-string])}]))
+     (fn [error-message]
+       (log/debug "error with preparations-for-connection-string, " error-message)))))

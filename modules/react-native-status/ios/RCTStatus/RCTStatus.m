@@ -306,7 +306,7 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
-                  successCallback:(nullable RCTResponseSenderBlock)successCallback
+                  successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
 
@@ -322,9 +322,7 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
     NSString *substring = @"error";
     if ([result containsString:substring]) {
-        if (errorCallback != nil) {
-             errorCallback(@[result]);
-        }
+        errorCallback(@[result]);
     } else {
         successCallback(@[result]);
     }
