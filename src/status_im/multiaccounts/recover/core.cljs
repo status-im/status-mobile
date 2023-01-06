@@ -116,8 +116,7 @@
                               {:name name :identicon identicon})]
                   (re-frame/dispatch [success-event root-data derived-data-extended]))))))
          (fn [error-message]
-           (log/debug "error while status/multiaccount-derive-addresses" error-message))
-        )))
+           (log/debug "error while status/multiaccount-derive-addresses" error-message)))))
     (fn [error-message]
       (log/debug "error while status/multiaccount-import-mnemonic" error-message)))))
 

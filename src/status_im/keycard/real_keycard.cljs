@@ -323,8 +323,7 @@
          (on-error error)
          (on-success))))
    (fn [error-message]
-     (log/debug "error while status/delete-multiaccount" error-message))
-  ))
+     (log/debug "error while status/delete-multiaccount" error-message))))
 
 (defrecord RealKeycard []
   keycard/Keycard

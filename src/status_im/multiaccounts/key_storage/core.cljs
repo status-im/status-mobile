@@ -231,8 +231,7 @@ We don't need to take the exact steps, just set the required state and redirect 
    (ethereum/sha3 (security/safe-unmask-data (get-in db [:keycard :migration-password])))
    #(re-frame/dispatch [::verify-password-result %])
    (fn [error-message]
-     (log/debug "error while native-module/verify-database-password" error-message))
-  ))
+     (log/debug "error while native-module/verify-database-password" error-message))))
 
 (rf/defn handle-multiaccount-import
   {:events [::import-multiaccount-success]}

@@ -539,8 +539,7 @@
           (callback "web3-response-error" nil))
         (callback nil (.parse js/JSON response))))
     (fn [error-message]
-      (log/debug "error while status/call-rpc" error-message))
-   )))
+      (log/debug "error while status/call-rpc" error-message)))))
 
 (re-frame/reg-fx
  :browser/show-browser-selection

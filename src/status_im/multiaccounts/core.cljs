@@ -265,5 +265,4 @@
    prn
    (fn [error-message]
      (log/debug "error while status/validate-mnemonic"
-                error-message))
-  ))
+                error-message))))

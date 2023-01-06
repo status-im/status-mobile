@@ -278,8 +278,7 @@
                      {:root-key root-data
                       :derived  derived-data-extended}))))))
           (fn [error-message]
-            (log/debug "error while status/convert-to-keycard-account" error-message))
-         )))
+            (log/debug "error while status/convert-to-keycard-account" error-message)))))
      (fn [error-message]
        (log/debug "error while status/multiaccount-derive-addresses" error-message))))
   (when (= password (get @state :password))
@@ -307,8 +306,7 @@
                        (log/error error)
                        (on-deletion-success))))
                  (fn [error-message]
-                   (log/debug "error while status/delete-multiaccount" error-message))
-                ))
+                   (log/debug "error while status/delete-multiaccount" error-message))))
               (fn [cb] (cb)))]
         (deletion-wrapper
          (fn []
@@ -322,8 +320,7 @@
             account-password
             #(on-success response)
             (fn [error-message]
-              (log/debug "error while status/multiaccount-store-derived" error-message))
-           )))))))
+              (log/debug "error while status/multiaccount-store-derived" error-message)))))))))
 
 (defn unblock-pin
   [{:keys [puk new-pin on-success on-failure]}]
@@ -438,12 +435,9 @@
                      (fn [error-message]
                        (log/debug "error while status/multiaccount-store-derived" error-message))))))
               (fn [error-message]
-                (log/debug "error while status/multiaccount-derive-addresses" error-message))
-
-             ))))
+                (log/debug "error while status/multiaccount-derive-addresses" error-message))))))
        (fn [error-message]
-         (log/debug "error while status/multiaccount-load-account" error-message))
-      ))))
+         (log/debug "error while status/multiaccount-load-account" error-message))))))
 
 (defn unpair-and-delete [_])
 
@@ -466,8 +460,7 @@
                  account-password
                  #(on-success keys)
                  (fn [error-message]
-                   (log/debug "error while status/multiaccount-store-derived" error-message))
-                ))
+                   (log/debug "error while status/multiaccount-store-derived" error-message))))
               #(on-success
                 {:key-uid               (get-in @state [:application-info :key-uid])
                  :instance-uid          (get-in @state [:application-info :instance-uid])
@@ -505,8 +498,7 @@
                                           ethereum/normalized-hex)]
                         (on-success signature)))
                     (fn [error-message]
-                      (log/debug "error while status/sign-message" error-message))
-                   ))
+                      (log/debug "error while status/sign-message" error-message))))
                  (status/sign-typed-data
                   data
                   address
@@ -518,8 +510,7 @@
                                         ethereum/normalized-hex)]
                       (on-success signature)))
                   (fn [error-message]
-                    (log/debug "error while status/sign-typed-data" error-message))
-                 )))))
+                    (log/debug "error while status/sign-typed-data" error-message)))))))
 
 (defn sign-typed-data
   [args]
