@@ -45,7 +45,8 @@
         #(do
            (reanimated/set-shared-value y @scroll-height)
            (reanimated/set-shared-value opacity-animation
-                                        (reanimated/with-timing (if (>= @scroll-height threshold) 1 0))))
+                                        (reanimated/with-timing (if (>= @scroll-height threshold) 1 0)
+                                                                (clj->js {:duration 100}))))
         [@scroll-height])
        [:<>
         [reanimated/blur-view
@@ -141,7 +142,7 @@
         {:style                           (style/scroll-view-container
                                            (diff-with-max-min @scroll-height 16 0))
          :shows-vertical-scroll-indicator false
-         :scroll-event-throttle           16
+         :scroll-event-throttle           8
          :on-scroll                       (fn [event]
                                             (reset! scroll-height (int
                                                                    (oops/oget
