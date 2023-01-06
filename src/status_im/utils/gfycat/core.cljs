@@ -24,5 +24,4 @@
                                             #(re-frame/dispatch [:gfycat-generated path-for-gfycat
                                                                  %])
                                             (fn [error-message]
-                                              (log/debug "error while status/generate-gfycat-async" error-message))
-                                            )))))
+                                              (log/debug "error while status/generate-gfycat-async" error-message)))))))

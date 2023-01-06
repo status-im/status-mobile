@@ -141,8 +141,7 @@
       hashed-password
       (derive-and-store-account key-uid path hashed-password :generated accounts)
       (fn [error-message]
-        (log/debug "error while status/multiaccount-load-account" error-message))
-      ))))
+        (log/debug "error while status/multiaccount-load-account" error-message))))))
 
 (re-frame/reg-fx
  ::import-account-seed
