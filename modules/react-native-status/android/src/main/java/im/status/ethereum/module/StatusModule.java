@@ -874,7 +874,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void deserializeAndCompressKey(final String desktopKey, final Callback callback) throws JSONException {
+    public void deserializeAndCompressKey(final String desktopKey, final Callback successCallback, final Callback errorCallback) throws JSONException {
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -884,7 +884,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.deserializeAndCompressKey(desktopKey);
-                callback.invoke(res);
+                 if (res.contains("error")) {
+                    errorCallback.invoke(res);
+                } else {
+                    successCallback.invoke(res);
+                }
             }
         };
 

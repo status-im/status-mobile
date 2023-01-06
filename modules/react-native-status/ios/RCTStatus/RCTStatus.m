@@ -366,9 +366,16 @@ RCT_EXPORT_METHOD(compressPublicKey:(NSString *)multiCodecKey
 }
 
 RCT_EXPORT_METHOD(deserializeAndCompressKey:(NSString *)desktopKey
-                  callback:(RCTResponseSenderBlock)callback) {
+                  successCallback:(RCTResponseSenderBlock)successCallback
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  ) {
     NSString *result = StatusgoDeserializeAndCompressKey(desktopKey);
-    callback(@[result]);
+    NSString *substring = @"error";
+    if ([result containsString:substring]) {
+        errorCallback(@[result]);
+    } else {
+        successCallback(@[result]);
+    }
 }
 
 RCT_EXPORT_METHOD(hashTypedData:(NSString *)data

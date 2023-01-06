@@ -91,7 +91,10 @@
   (status/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
-     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str deserialized-key)]))))
+     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str deserialized-key)]))
+   (fn [error-message]
+     (log/debug "error while status/deserialize-and-compress-key" error-message)
+   )))
 
 (rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
