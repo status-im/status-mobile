@@ -42,7 +42,8 @@
 
 (defn toast-undo-action
   [duration on-press]
-  [toast-action-container {:on-press on-press}
+  [toast-action-container
+   {:on-press on-press :accessibility-label :toast-undo-action}
    [rn/view {:style {:margin-right 5}}
     [count-down-circle/circle-timer {:duration duration}]]
    [text/text
@@ -65,7 +66,10 @@
     [rn/view {:style {:padding 2}} left]
     [rn/view {:style {:padding 4 :flex 1}}
      [text/text
-      {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {})}
+      {:size                :paragraph-2
+       :weight              :medium
+       :style               (merge-theme-style :text {})
+       :accessibility-label :toast-content}
       middle]]
     (when right right)]])
 
