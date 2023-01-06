@@ -77,10 +77,14 @@
   [chat-id]
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
   (let [selected-images (keys (rf/sub [:chats/sending-image]))]
-    (when selected-images
-      (reset! selected (vec selected-images)))
     [:f>
      (fn []
+       (rn/use-effect-once
+         #(do
+            (if selected-images
+              (reset! selected (vec selected-images))
+              (reset! selected []))
+            js/undefined))
        (let [{window-height :height window-width :width} (rn/use-window-dimensions)
              safe-area                                   (safe-area/use-safe-area)
              camera-roll-photos                          (rf/sub [:camera-roll/photos])

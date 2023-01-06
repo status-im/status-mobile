@@ -89,8 +89,7 @@
           constants/content-type-sticker [not-implemented/not-implemented
                                           [old-message/sticker message-data]]
 
-          constants/content-type-image   [not-implemented/not-implemented
-                                          [old-message/message-content-image message-data]]
+          constants/content-type-image   [old-message/message-content-image message-data]
 
           constants/content-type-audio   [not-implemented/not-implemented
                                           [old-message/audio message-data]]

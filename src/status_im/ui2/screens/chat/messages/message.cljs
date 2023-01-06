@@ -248,20 +248,36 @@
      [rn/view (style/delivery-status)
       [message-delivery-status message]]]))
 
-(def image-max-width 260)
-(def image-max-height 192)
+(def image-max-width 320)
+(def image-max-height 190)
+
+;(defn image-set-size
+;  [dimensions]
+;  (fn [evt]
+;    (let [width  (.-width (.-nativeEvent evt))
+;          height (.-height (.-nativeEvent evt))]
+;      (if (< width height)
+;        ;; if width less than the height we reduce width proportionally to height
+;        (let [k (/ height image-max-height)]
+;          (when (not= (/ width k) (first @dimensions))
+;            (reset! dimensions {:width (/ width k) :height image-max-height :loaded true})))
+;        (swap! dimensions assoc :loaded true)))))
 
 (defn image-set-size
   [dimensions]
   (fn [evt]
     (let [width  (.-width (.-nativeEvent evt))
-          height (.-height (.-nativeEvent evt))]
-      (if (< width height)
-        ;; if width less than the height we reduce width proportionally to height
-        (let [k (/ height image-max-height)]
-          (when (not= (/ width k) (first @dimensions))
-            (reset! dimensions {:width (/ width k) :height image-max-height :loaded true})))
-        (swap! dimensions assoc :loaded true)))))
+          height (.-height (.-nativeEvent evt))
+          image-max-width  (if (> width height) 320 190)
+          image-max-height (if (> width height) 190 320)]
+      (if (> height width)
+        (let [calculated-height (* (min height image-max-height) (/ (max width image-max-width) width))
+              calculated-width (* (max width image-max-width) (/ (min height image-max-height) height))]
+          (reset! dimensions {:width calculated-width :height calculated-height :loaded true}))
+
+        (let [calculated-height (* (max height image-max-height) (/ (min width image-max-width) width))
+              calculated-width (* (min width image-max-width) (/ (max height image-max-height) height))]
+          (reset! dimensions {:width calculated-width :height calculated-height :loaded true}))))))
 
 (defmulti ->message :content-type)
 
