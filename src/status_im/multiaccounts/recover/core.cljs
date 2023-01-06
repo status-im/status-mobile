@@ -117,7 +117,7 @@
                   (re-frame/dispatch [success-event root-data derived-data-extended]))))))
          (fn [error-message]
            (log/debug "error while status/multiaccount-derive-addresses" error-message))
-         )))
+        )))
     (fn [error-message]
       (log/debug "error while status/multiaccount-import-mnemonic" error-message)))))
 
@@ -187,8 +187,9 @@
                                         #(re-frame/dispatch [:multiaccounts.recover/phrase-validated
                                                              %])
                                         (fn [error-message]
-                                          (log/debug "error while status/validate-mnemonic" error-message))
-                                        ]}))
+                                          (log/debug "error while status/validate-mnemonic"
+                                                     error-message))
+                                       ]}))
 
 (rf/defn continue-to-import-mnemonic
   {:events [::continue-pressed]}

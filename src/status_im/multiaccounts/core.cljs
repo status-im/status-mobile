@@ -262,4 +262,8 @@
   ;; Test seed for Dim Venerated Yaffle, it's not here by mistake, this is just a test account
   (native-module/validate-mnemonic
    "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo"
-   prn))
+   prn
+   (fn [error-message]
+     (log/debug "error while status/validate-mnemonic"
+                error-message))
+  ))

@@ -180,7 +180,8 @@
   {:db                               (assoc-in db [:add-account :step] :generating)
    ::multiaccounts/validate-mnemonic [(security/safe-unmask-data passphrase)
                                       #(re-frame/dispatch [:wallet.accounts/seed-validated
-                                                           % passphrase hashed-password])]})
+                                                           % passphrase hashed-password])
+                                     ]})
 
 (rf/defn new-account-seed-validated
   {:events [:wallet.accounts/seed-validated]}

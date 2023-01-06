@@ -16,4 +16,4 @@
        (identicon-async public-key
                         #(re-frame/dispatch [:identicon-generated path-for-identicon %])
                         (fn [error-message]
-                           (log/debug "error while status/identicon-async" error-message)))))))
+                          (log/debug "error while status/identicon-async" error-message)))))))

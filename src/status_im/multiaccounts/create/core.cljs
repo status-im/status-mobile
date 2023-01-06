@@ -91,7 +91,7 @@
                                (types/json->clj %))])
     (fn [error-message]
       (log/debug "error while status/multiaccount-generate-and-derive-addresses" error-message))
-    )))
+   )))
 
 (rf/defn multiaccount-generate-and-derive-addresses-success
   {:events [:multiaccount-generate-and-derive-addresses-success]}

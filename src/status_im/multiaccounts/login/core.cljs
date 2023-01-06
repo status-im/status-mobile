@@ -382,10 +382,10 @@
 (rf/defn get-node-config
   [_]
   (status/get-node-config
-    #(re-frame/dispatch [::get-node-config-callback %])
+   #(re-frame/dispatch [::get-node-config-callback %])
    (fn [error-message]
      (log/debug "error while status/get-node-config" error-message))
-   ))
+  ))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}

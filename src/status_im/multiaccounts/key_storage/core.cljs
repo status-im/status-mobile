@@ -232,7 +232,7 @@ We don't need to take the exact steps, just set the required state and redirect 
    #(re-frame/dispatch [::verify-password-result %])
    (fn [error-message]
      (log/debug "error while native-module/verify-database-password" error-message))
-   ))
+  ))
 
 (rf/defn handle-multiaccount-import
   {:events [::import-multiaccount-success]}
@@ -286,8 +286,14 @@ We don't need to take the exact steps, just set the required state and redirect 
    "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo"
    nil
    (fn [result]
-     (prn (types/json->clj result))))
+     (prn (types/json->clj result)))
+   (fn [error-message]
+     (log/debug "error while native-module/multiaccount-import-mnemonic"
+                error-message)))
   ;; check delete account output
   (native-module/delete-multiaccount "0x3831d0f22996a65970a214f0a94bfa9a63a21dac235d8dadb91be8e32e7d3ab7"
                                      (fn [result]
-                                       (prn ::--delete-account-res-> result))))
+                                       (prn ::--delete-account-res-> result))
+                                     (fn [error-message]
+                                       (log/debug "error while native-module/delete-multiaccount"
+                                                  error-message))))

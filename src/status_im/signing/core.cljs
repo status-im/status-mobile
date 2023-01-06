@@ -45,13 +45,15 @@
  :signing.fx/sign-message
  (fn [{:keys [params on-completed on-error]}]
    (status/sign-message (types/clj->json params)
-                        on-completed on-error)))
+                        on-completed
+                        on-error)))
 
 (re-frame/reg-fx
  :signing.fx/recover-message
  (fn [{:keys [params on-completed on-error]}]
    (status/recover-message (types/clj->json params)
-                           on-completed on-error)))
+                           on-completed
+                           on-error)))
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
@@ -94,15 +96,17 @@
                                        :on-completed    #(re-frame/dispatch
                                                           [:signing/sign-message-completed %])
                                        :on-error        (fn [error-message]
-                                                          (log/debug "error while sign-typed-data-v4" error-message))}}
+                                                          (log/debug "error while sign-typed-data-v4"
+                                                                     error-message))}}
          {:signing.fx/sign-message {:params       {:data     data
                                                    :password hashed-password
                                                    :account  from}
                                     :on-completed #(re-frame/dispatch [:signing/sign-message-completed
                                                                        %])
-                                    :on-error        (fn [error-message]
-                                                       (log/debug "error while sign-typed-data" error-message))
-                                    }})))))
+                                    :on-error     (fn [error-message]
+                                                    (log/debug "error while sign-typed-data"
+                                                               error-message))
+                                   }})))))
 
 (rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
@@ -135,7 +139,9 @@
                                                             [:signing/transaction-completed %
                                                              tx-obj-to-send hashed-password])
                                          :on-error        (fn [error-message]
-                                                            (log/debug "error while status/send-transaction" error-message))}})))))
+                                                            (log/debug
+                                                             "error while status/send-transaction"
+                                                             error-message))}})))))
 
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash

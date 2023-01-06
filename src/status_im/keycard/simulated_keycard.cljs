@@ -279,7 +279,7 @@
                       :derived  derived-data-extended}))))))
           (fn [error-message]
             (log/debug "error while status/convert-to-keycard-account" error-message))
-          )))
+         )))
      (fn [error-message]
        (log/debug "error while status/multiaccount-derive-addresses" error-message))))
   (when (= password (get @state :password))
@@ -308,7 +308,7 @@
                        (on-deletion-success))))
                  (fn [error-message]
                    (log/debug "error while status/delete-multiaccount" error-message))
-                 ))
+                ))
               (fn [cb] (cb)))]
         (deletion-wrapper
          (fn []
@@ -323,7 +323,7 @@
             #(on-success response)
             (fn [error-message]
               (log/debug "error while status/multiaccount-store-derived" error-message))
-            )))))))
+           )))))))
 
 (defn unblock-pin
   [{:keys [puk new-pin on-success on-failure]}]
@@ -440,10 +440,10 @@
               (fn [error-message]
                 (log/debug "error while status/multiaccount-derive-addresses" error-message))
 
-              ))))
+             ))))
        (fn [error-message]
          (log/debug "error while status/multiaccount-load-account" error-message))
-       ))))
+      ))))
 
 (defn unpair-and-delete [_])
 
@@ -467,7 +467,7 @@
                  #(on-success keys)
                  (fn [error-message]
                    (log/debug "error while status/multiaccount-store-derived" error-message))
-                 ))
+                ))
               #(on-success
                 {:key-uid               (get-in @state [:application-info :key-uid])
                  :instance-uid          (get-in @state [:application-info :instance-uid])
@@ -506,7 +506,7 @@
                         (on-success signature)))
                     (fn [error-message]
                       (log/debug "error while status/sign-message" error-message))
-                    ))
+                   ))
                  (status/sign-typed-data
                   data
                   address
@@ -519,7 +519,7 @@
                       (on-success signature)))
                   (fn [error-message]
                     (log/debug "error while status/sign-typed-data" error-message))
-                  )))))
+                 )))))
 
 (defn sign-typed-data
   [args]

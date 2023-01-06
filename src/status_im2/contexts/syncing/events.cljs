@@ -16,7 +16,7 @@
      #(log/info "this is response from initiate-local-pairing-with-connection-string " %)
      (fn [error-message]
        (log/debug "error while status/input-connection-string-for-bootstrapping" error-message))
-     )))
+    )))
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}

@@ -36,7 +36,7 @@
                  (callback error nil)))
              (fn [error-message]
                (log/debug "error while status/delete-multiaccount" error-message))
-             ))))
+            ))))
       (fn [error-message]
         (log/debug "error while status/verify" error-message))))))
 

@@ -131,7 +131,8 @@
   (.multiAccountLoadAccount ^js (status)
                             (types/clj->json {:address  address
                                               :password hashed-password})
-                            success-callback error-callback))
+                            success-callback
+                            error-callback))
 
 (defn multiaccount-reset
   "TODO: this function is not used anywhere
@@ -139,7 +140,8 @@
   [success-callback error-callback]
   (log/debug "[native-module]  multiaccount-reset")
   (.multiAccountReset ^js (status)
-                      success-callback error-callback))
+                      success-callback
+                      error-callback))
 
 (defn multiaccount-derive-addresses
   "NOTE: this should be named derive-accounts
@@ -152,7 +154,8 @@
     (.multiAccountDeriveAddresses ^js (status)
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
-                                  success-callback error-callback)))
+                                  success-callback
+                                  error-callback)))
 
 (defn multiaccount-store-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -170,7 +173,8 @@
      #(.multiAccountStoreAccount ^js (status)
                                  (types/clj->json {:accountID account-id
                                                    :password  hashed-password})
-       success-callback error-callback))))
+                                 success-callback
+                                 error-callback))))
 
 (defn multiaccount-store-derived
   "NOTE: beware, the password has to be sha3 hashed"
@@ -184,7 +188,8 @@
                                (types/clj->json {:accountID account-id
                                                  :paths     paths
                                                  :password  hashed-password})
-   success-callback error-callback)))
+                               success-callback
+                               error-callback)))
 
 (defn multiaccount-generate-and-derive-addresses
   "used to generate multiple multiaccounts for onboarding
@@ -198,7 +203,8 @@
                                                              :mnemonicPhraseLength mnemonic-length
                                                              :bip39Passphrase      ""
                                                              :paths                paths})
-                                           success-callback error-callback))
+                                           success-callback
+                                           error-callback))
 
 (defn multiaccount-import-mnemonic
   [mnemonic password success-callback error-callback]
@@ -207,14 +213,16 @@
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
-                               success-callback error-callback))
+                               success-callback
+                               error-callback))
 
 (defn multiaccount-import-private-key
   [private-key success-callback error-callback]
   (log/debug "[native-module] multiaccount-import-private-key")
   (.multiAccountImportPrivateKey ^js (status)
                                  (types/clj->json {:privateKey private-key})
-                                 success-callback error-callback))
+                                 success-callback
+                                 error-callback))
 
 (defn verify
   "NOTE: beware, the password has to be sha3 hashed"
@@ -268,7 +276,10 @@
   (log/info "[native-module] Fetching Connection String"
             {:fn          :get-connection-string-for-bootstrapping-another-device
              :config-json config-json})
-  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json success-callback error-callback))
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (status)
+                                                     config-json
+                                                     success-callback
+                                                     error-callback))
 
 (defn input-connection-string-for-bootstrapping
   "Provides connection string to status-go for the purpose of local pairing on the receiver end"
@@ -277,7 +288,11 @@
             {:fn                :input-connection-string-for-bootstrapping
              :config-json       config-json
              :connection-string connection-string})
-  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json success-callback error-callback))
+  (.inputConnectionStringForBootstrapping ^js (status)
+                                          connection-string
+                                          config-json
+                                          success-callback
+                                          error-callback))
 
 (defn deserialize-and-compress-key
   "Provides a community id (public key) to status-go which is first deserialized
@@ -301,7 +316,11 @@
               {:fn             :public-key->compressed-key
                :public-key     public-key
                :multi-code-key multi-code-key})
-    (.multiformatSerializePublicKey ^js (status) multi-code-key serialization-key success-callback error-callback)))
+    (.multiformatSerializePublicKey ^js (status)
+                                    multi-code-key
+                                    serialization-key
+                                    success-callback
+                                    error-callback)))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
@@ -310,7 +329,11 @@
     (log/info "[native-module] Deserializing compressed key"
               {:fn         :compressed-key->public-key
                :public-key public-key})
-    (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key success-callback error-callback)))
+    (.multiformatDeserializePublicKey ^js (status)
+                                      public-key
+                                      deserialization-key
+                                      success-callback
+                                      error-callback)))
 
 (defn decompress-public-key
   "Provides compressed key to status-go and gets back the uncompressed public key"
@@ -609,10 +632,16 @@
   (log/debug "[native-module] change-database-password")
   (init-keystore
    key-uid
-   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# success-callback error-callback)))
+   #(.reEncryptDbAndKeystore ^js (status)
+                             key-uid
+                             current-password#
+                             new-password#
+                             success-callback
+                             error-callback)))
 
 (defn convert-to-keycard-account
-  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password success-callback error-callback]
+  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password success-callback
+   error-callback]
   (log/debug "[native-module] convert-to-keycard-account")
   (.convertToKeycardAccount ^js (status)
                             key-uid
