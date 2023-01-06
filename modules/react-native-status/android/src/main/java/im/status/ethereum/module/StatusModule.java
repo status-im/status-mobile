@@ -538,12 +538,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         Runnable runnableTask = () -> {
-            String res = method.get();
-             if (res.contains("error")) {
-                errorCallback.invoke(res);
-             } else {
-                successCallback.invoke(res);
-             }
+            String response = method.get();
+            try {
+                final JSONObject responseJSON = new JSONObject(response);
+                if (responseJSON.has("error")) {
+                    errorCallback.invoke(response);
+                } else {
+                    successCallback.invoke(response);
+                }
+            } catch (JSONException e) {
+                Log.d(TAG, "JSONException for executeRunnableStatusGoMethod" +  e.getMessage());
+            }
+
         };
 
         StatusThreadPoolExecutor.getInstance().execute(runnableTask);
