@@ -1,6 +1,6 @@
 (ns status-im2.subs.multiaccount
   (:require [cljs.spec.alpha :as spec]
-            [clojure.set :as clojure.set]
+            [clojure.set :as set]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
@@ -23,7 +23,7 @@
    (some->
     current-account
     (select-keys [:name :preferred-name :public-key :identicon :image :images])
-    (clojure.set/rename-keys {:name :alias})
+    (set/rename-keys {:name :alias})
     (multiaccounts/contact-with-names))))
 
 (re-frame/reg-sub

@@ -32,9 +32,9 @@
            :outline         {:icon-color           colors/neutral-50
                              :icon-secondary-color colors/neutral-50
                              :label-color          colors/neutral-100
-                             :border-color         {:default  colors/neutral-20
+                             :border-color         {:default  colors/neutral-30
                                                     :pressed  colors/neutral-40
-                                                    :disabled colors/neutral-20}}
+                                                    :disabled colors/neutral-30}}
            :ghost           {:icon-color           colors/neutral-50
                              :icon-secondary-color colors/neutral-50
                              :label-color          colors/neutral-100
@@ -138,7 +138,8 @@
 
 (defn shape-style-container
   [type icon size]
-  {:border-radius (if (and icon (#{:primary :secondary :danger} type))
+  {:height        size
+   :border-radius (if (and icon (#{:primary :secondary :danger} type))
                     24
                     (case size
                       56 12

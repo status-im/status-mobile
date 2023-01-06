@@ -45,11 +45,13 @@
    [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
    [status-im2.contexts.quo-preview.notifications.toast :as toast]
    [status-im2.contexts.quo-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
+   [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
    [status-im2.contexts.quo-preview.reactions.react :as react]
    [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
    [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
    [status-im2.contexts.quo-preview.selectors.filter :as filter]
    [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
+   [status-im2.contexts.quo-preview.settings.accounts :as accounts]
    [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
    [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
    [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
@@ -63,7 +65,6 @@
    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-   [status-im2.contexts.quo-preview.settings.accounts :as accounts]
    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
 
 (def screens-categories
@@ -175,6 +176,9 @@
    :posts-and-attachments [{:name      :messages-skeleton
                             :insets    {:top false}
                             :component messages-skeleton/preview-messages-skeleton}]
+   :profile               [{:name      :profile-card
+                            :insets    {:top false}
+                            :component profile-card/preview-profile-card}]
    :reactions             [{:name      :react
                             :insets    {:top false}
                             :component react/preview-react}]

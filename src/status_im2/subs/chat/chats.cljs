@@ -291,12 +291,6 @@
    (:sending-contact-request metadata)))
 
 (re-frame/reg-sub
- :chats/sending-image
- :<- [:chats/current-chat-inputs]
- (fn [{:keys [metadata]}]
-   (:sending-image metadata)))
-
-(re-frame/reg-sub
  :chats/timeline-sending-image
  :<- [:chats/timeline-chat-input]
  (fn [{:keys [metadata]}]

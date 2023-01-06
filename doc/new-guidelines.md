@@ -364,7 +364,7 @@ actually subscribing to them, so reframe's signal graph gets validated too.
       (is (= expected (recipes [current-user all-recipes location]))))))
 
 ;; good
-(require '[status-im.test-helpers :as h])
+(require '[test-helpers.unit :as h])
 
 (re-frame/reg-sub
  :user/recipes

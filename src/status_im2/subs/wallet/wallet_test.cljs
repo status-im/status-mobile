@@ -1,7 +1,7 @@
 (ns status-im2.subs.wallet.wallet-test
   (:require [cljs.test :refer [deftest is testing]]
             [re-frame.db :as rf-db]
-            [status-im.test-helpers :as h]
+            [test-helpers.unit :as h]
             [status-im.utils.money :as money]
             [status-im2.subs.wallet.wallet :as wallet]
             [utils.re-frame :as rf]))

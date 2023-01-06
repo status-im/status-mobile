@@ -1,16 +1,18 @@
-{:lint-as      {status-im.utils.views/defview      clojure.core/defn
-                status-im.utils.views/letsubs      clojure.core/let
-                reagent.core/with-let              clojure.core/let
-                status-im.utils.fx/defn            clj-kondo.lint-as/def-catch-all
-                utils.re-frame/defn                clj-kondo.lint-as/def-catch-all
-                quo.react/with-deps-check          clojure.core/fn
-                quo.previews.preview/list-comp     clojure.core/for
-                status-im.utils.styles/def         clojure.core/def
-                status-im.utils.styles/defn        clojure.core/defn
-                status-im.test-helpers/deftest-sub clojure.core/defn
-                taoensso.tufte/defnp               clojure.core/defn}
+{:lint-as      {status-im.utils.views/defview  clojure.core/defn
+                status-im.utils.views/letsubs  clojure.core/let
+                reagent.core/with-let          clojure.core/let
+                status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
+                utils.re-frame/defn            clj-kondo.lint-as/def-catch-all
+                quo.react/with-deps-check      clojure.core/fn
+                quo.previews.preview/list-comp clojure.core/for
+                status-im.utils.styles/def     clojure.core/def
+                status-im.utils.styles/defn    clojure.core/defn
+                test-helpers.unit/deftest-sub  clojure.core/defn
+                taoensso.tufte/defnp           clojure.core/defn}
  :linters      {:consistent-alias  {:level   :error
                                     :aliases {clojure.string  string
+                                              clojure.set     set
+                                              clojure.walk    walk
                                               taoensso.timbre log}}
                 :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
                 ;; TODO remove number when this is fixed

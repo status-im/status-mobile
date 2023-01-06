@@ -1,7 +1,7 @@
 (ns status-im2.subs.communities-test
   (:require [cljs.test :refer [is testing use-fixtures]]
             [re-frame.db :as rf-db]
-            [status-im.test-helpers :as h]
+            [test-helpers.unit :as h]
             status-im2.subs.communities
             [utils.re-frame :as rf]))
 
@@ -135,4 +135,3 @@
             {:id "0x1" :name "Civilized monkeys"}
             {:id "0x2" :name "Civilized rats"}]
            (rf/sub [sub-name])))))
-

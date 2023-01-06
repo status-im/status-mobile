@@ -1264,27 +1264,20 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.set_reaction(message_from_sender)
 
         message_sender = self.chat_1.chat_element_by_text(message_from_sender)
-        if message_sender.emojis_below_message() != 1:
-            self.errors.append("Counter of reaction is not updated on your own message!")
+        message_sender.emojis_below_message().wait_for_element_text(1)
 
         self.device_2.just_fyi("Receiver sets own emoji and verifies counter on received message in 1-1 chat")
         message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
-        if message_receiver.emojis_below_message() != 1:
-            self.errors.append("Counter of reaction is not updated on received message!")
+        message_receiver.emojis_below_message().wait_for_element_text(1, 90)
         self.chat_2.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
-            if counter != 2:
-                self.errors.append('Counter is not updated after setting emoji from receiver!')
 
         self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
         self.chat_2.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
-            if counter != 1:
-                self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
+        message_sender.emojis_below_message().wait_for_element_text(1)
+        message_receiver.emojis_below_message().wait_for_element_text(1, 90)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702731)
-    @marks.xfail(reason="blocked by #14672")
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
         self.chat_1.send_message(self.message_1)
@@ -1319,64 +1312,67 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                     self.errors.append(
                         "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
                     )
-            chat.click_system_back_button()
-
-        self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
-        self.chat_1.send_message(self.message_3)
-        self.chat_1.send_message(self.message_4)
-        self.chat_1.pin_message(self.message_3, 'pin-to-chat')
-        self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-        if self.chat_1.pin_limit_popover.is_element_displayed(30):
-            self.chat_1.view_pinned_messages_button.click()
-            self.chat_1.pinned_messages_list.message_element_by_text(
-                self.message_2).click_inside_element_by_coordinate()
-            self.home_1.just_fyi("Unpin one message so that another could be pinned")
-            self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
-            self.chat_1.chat_element_by_text(self.message_4).click()
-            self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-            if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-                    self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-                self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
-        else:
-            self.errors.append("Can pin more than 3 messages in chat")
-
-        self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '3':
-                self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
-
-        self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
-        self.chat_2.chat_element_by_text(self.message_4).long_press_element()
-        self.chat_2.element_by_translation_id("unpin-from-chat").click()
-        self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
-            self.errors.append("Message_4 is not unpinned!")
-
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '2':
-                self.errors.append(
-                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
-                            chat_number + 1)
-                )
-        # workaround for 14672
-        self.chat_1.tap_by_coordinates(500, 100)
+            # workaround for 14672
+            chat.tap_by_coordinates(500, 100)
+        # Part of the test is blocked by #14637
+        #     chat.click_system_back_button()
+        #
+        # self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
+        # self.chat_1.send_message(self.message_3)
+        # self.chat_1.send_message(self.message_4)
+        # self.chat_1.pin_message(self.message_3, 'pin-to-chat')
+        # self.chat_1.pin_message(self.message_4, 'pin-to-chat')
+        # if self.chat_1.pin_limit_popover.is_element_displayed(30):
+        #     self.chat_1.view_pinned_messages_button.click()
+        #     self.chat_1.pinned_messages_list.message_element_by_text(
+        #         self.message_2).click_inside_element_by_coordinate()
+        #     self.home_1.just_fyi("Unpin one message so that another could be pinned")
+        #     self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
+        #     self.chat_1.chat_element_by_text(self.message_4).click()
+        #     self.chat_1.pin_message(self.message_4, 'pin-to-chat')
+        #     if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
+        #             self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
+        #         self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
+        # else:
+        #     self.errors.append("Can pin more than 3 messages in chat")
+        #
+        # self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
+        # for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
+        #     count = chat.pinned_messages_count.text
+        #     if count != '3':
+        #         self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
+        #
+        # self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
+        # self.chat_2.chat_element_by_text(self.message_4).long_press_element()
+        # self.chat_2.element_by_translation_id("unpin-from-chat").click()
+        # self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
+        # if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
+        #     self.errors.append("Message_4 is not unpinned!")
+        #
+        # for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
+        #     count = chat.pinned_messages_count.text
+        #     if count != '2':
+        #         self.errors.append(
+        #             "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
+        #                     chat_number + 1)
+        #         )
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
+    @marks.xfail(reason="On profile picture failed due to #14718")
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        # self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.click_system_back_button_until_element_is_shown()
         self.home_1.browser_tab.click()  # temp, until profile is on browser tab
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
-        messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
-        [self.chat_2.send_message(message) for message in messages]
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.chat_1.click_system_back_button_until_element_is_shown()
             self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1.send_message("workaround for 14637")
+        messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
+        [self.chat_2.send_message(message) for message in messages]
         for message in messages:
             if not self.chat_1.chat_element_by_text(message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % message)

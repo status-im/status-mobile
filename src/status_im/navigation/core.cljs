@@ -2,7 +2,7 @@
   (:require ["react-native" :as rn]
             ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
             ["react-native-navigation" :refer (Navigation)]
-            [clojure.set :as clojure.set]
+            [clojure.set :as set]
             [quo.components.text-input :as quo.text-input]
             [quo.design-system.colors :as quo.colors]
             [re-frame.core :as re-frame]
@@ -299,7 +299,7 @@
           (fn [^js evn]
             (let [selected-tab-index (.-selectedTabIndex evn)
                   comp               (get tab-root-ids selected-tab-index)
-                  tab-key            (get (clojure.set/map-invert tab-key-idx) selected-tab-index)]
+                  tab-key            (get (set/map-invert tab-key-idx) selected-tab-index)]
               (re-frame/dispatch [:set :current-tab tab-key])
               (when (= @state/root-comp-id comp)
                 (when (= :chat tab-key)

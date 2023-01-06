@@ -1,7 +1,6 @@
 (ns status-im2.setup.config
   (:require [clojure.string :as string]
-            [react-native.config :as react-native-config] ;; TODO (14/11/22 flexsurfer move to status-im2
-                                                          ;; namespace
+            [react-native.config :as react-native-config]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]))
 

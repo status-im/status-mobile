@@ -1,4 +1,4 @@
-(ns status-im.test-helpers
+(ns test-helpers.unit
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.walk :as walk]))
@@ -34,7 +34,7 @@
   Example:
 
   ```clojure
-  (require '[status-im.test-helpers :as h])
+  (require '[test-helpers.unit :as h])
 
   (h/deftest-sub :wallet/sorted-tokens
     [sub-name]
@@ -60,7 +60,7 @@
   "Register log fixture which allows inspecting all calls to `taoensso.timbre/log`.
 
   Usage: Simply call this macro once per test namespace, and use the
-  `status-im.test-helpers/logs` atom to deref the collection of all logs for the
+  `test-helpers.unit/logs` atom to deref the collection of all logs for the
   test under execution.
 
   In Clojure(Script), we can rely on fixtures for each `cljs.deftest`, but not
@@ -69,8 +69,8 @@
   []
   `(cljs.test/use-fixtures
     :each
-    {:before status-im.test-helpers/log-fixture-before
-     :after  status-im.test-helpers/log-fixture-after}))
+    {:before test-helpers.unit/log-fixture-before
+     :after  test-helpers.unit/log-fixture-after}))
 
 (defmacro run-test-sync
   "Wrap around `re-frame.test/run-test-sync` to make it work with our aliased

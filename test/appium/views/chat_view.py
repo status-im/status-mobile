@@ -265,7 +265,7 @@ class ChatElementByText(Text):
                 except NoSuchElementException:
                     return 0
 
-        return int(EmojisNumber(self.driver, self.locator).text)
+        return EmojisNumber(self.driver, self.locator)
 
     @property
     def pinned_by_label(self):

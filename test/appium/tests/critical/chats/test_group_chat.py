@@ -267,6 +267,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             if not self.homes[0].element_by_text(message).is_element_displayed(30):
                 self.errors.append('%s PN was not fetched from offline' % message)
         self.homes[0].click_system_back_button()
+        self.homes[0].chats_tab.click()
         self.homes[0].get_chat(chat_name).click()
 
         self.homes[0].just_fyi("check that messages are shown for every member")
@@ -277,7 +278,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="three_2")
+@pytest.mark.xdist_group(name="two_2")
 @marks.new_ui_critical
 class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
 
