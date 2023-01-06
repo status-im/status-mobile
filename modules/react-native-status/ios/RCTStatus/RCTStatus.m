@@ -306,7 +306,9 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
-                  callback:(RCTResponseSenderBlock)callback) {
+                  successCallback:(nullable RCTResponseSenderBlock)successCallback
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  ) {
 
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
@@ -318,7 +320,14 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
 
     NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
-    callback(@[result]);
+    NSString *substring = @"error";
+    if ([result containsString:substring]) {
+        if (errorCallback != nil) {
+             errorCallback(@[result]);
+        }
+    } else {
+        successCallback(@[result]);
+    }
 }
 
 RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
