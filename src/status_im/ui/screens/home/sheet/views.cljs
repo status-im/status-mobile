@@ -38,20 +38,20 @@
      :title               (i18n/label :t/start-new-chat)
      :accessibility-label :start-1-1-chat-button
      :icon                :main-icons/one-on-one-chat
-     :on-press            #(rf/dispatch [:open-modal :new-chat])}]
+     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-chat])}]
    (when config/group-chat-enabled?
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/start-group-chat)
        :accessibility-label :start-group-chat-button
        :icon                :main-icons/group-chat
-       :on-press            #(rf/dispatch [:contact.ui/start-group-chat-pressed])}])
+       :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}])
    [quo/list-item
     {:theme               :accent
      :title               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
-     :on-press            #(rf/dispatch [:open-modal :new-public-chat])}]
+     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
    (when @(rf/subscribe [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
