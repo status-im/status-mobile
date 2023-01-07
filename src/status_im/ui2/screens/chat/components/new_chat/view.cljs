@@ -15,14 +15,6 @@
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
             [quo.react :as quo.react]))
-<<<<<<< HEAD
-
-(defn- hide-sheet-and-dispatch
-  [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
-  (rf/dispatch event))
-=======
->>>>>>> 67d594e01 (Issue 4)
 
 (defn- hide-sheet-and-dispatch
   [event]
@@ -85,15 +77,7 @@
            {:keys [nickname ens-name three-words-name]} names
            first-username                               (or ens-name nickname three-words-name)
            no-contacts?                                 (empty? contacts)]
-<<<<<<< HEAD
-<<<<<<< HEAD
        [react/view {:style {:height (* window-height 0.9)}}
-=======
-       [react/view {:style {:height (* window-height 0.95)}}
->>>>>>> 67d594e01 (Issue 4)
-=======
-       [react/view {:style {:height (* window-height 0.9)}}
->>>>>>> b8770e8ed (Remove manual specification of height)
         [quo2/button
          {:type                      :grey
           :icon                      true
@@ -138,17 +122,8 @@
                                                     (if one-contact-selected?
                                                       (hide-sheet-and-dispatch [:chat.ui/start-chat
                                                                                 public-key])
-<<<<<<< HEAD
-<<<<<<< HEAD
                                                       (hide-sheet-and-dispatch [:navigate-to
                                                                                 :new-group])))}
-=======
-                                                      (hide-sheet-and-dispatch [:navigate-to :new-group])))}
->>>>>>> 67d594e01 (Issue 4)
-=======
-                                                      (hide-sheet-and-dispatch [:navigate-to
-                                                                                :new-group])))}
->>>>>>> 299aa8e99 (Lint)
                            (if one-contact-selected?
                              (i18n/label :t/chat-with {:selected-user first-username})
                              (i18n/label :t/setup-group-chat))]}])]))])
