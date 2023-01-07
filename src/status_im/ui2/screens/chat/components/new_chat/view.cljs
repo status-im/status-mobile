@@ -77,7 +77,7 @@
            {:keys [nickname ens-name three-words-name]} names
            first-username                               (or ens-name nickname three-words-name)
            no-contacts?                                 (empty? contacts)]
-       [react/view {:style {:height (* window-height 0.95)}}
+       [react/view {:style {:height (* window-height 0.9)}}
         [quo2/button
          {:type                      :grey
           :icon                      true
