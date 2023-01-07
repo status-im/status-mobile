@@ -1,7 +1,7 @@
 (ns status-im2.subs.contact-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
-            [status-im.test-helpers :as h]
+            [test-helpers.unit :as h]
             status-im2.subs.contact
             [utils.re-frame :as rf]))
 
