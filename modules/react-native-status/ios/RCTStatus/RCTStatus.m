@@ -195,6 +195,13 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     callback(@[zipFile.absoluteString]);
 }
 
+- (BOOL)responseContainsErrorKey:(NSString *)response {
+    NSData *responseData = [response dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *responseDictionary = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil];
+    return [responseDictionary objectForKey:@"error"]!= nil;
+}
+
+
 RCT_EXPORT_METHOD(exportLogs:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"exportLogs() method called");
@@ -208,12 +215,12 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoAddPeer(enode);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
     }
+    
 #if DEBUG
   NSLog(@"AddPeer() method called");
 #endif
@@ -228,8 +235,7 @@ RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *result = StatusgoDeleteMultiaccount(keyUID, multiaccountKeystoreDir.path);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -247,8 +253,7 @@ RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *result = StatusgoDeleteImportedKey(address, password, multiaccountKeystoreDir.path);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -263,8 +268,7 @@ RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
     NSLog(@"MultiAccountGenerateAndDeriveAddresses() method called");
 #endif
     NSString *result = StatusgoMultiAccountGenerateAndDeriveAddresses(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -279,8 +283,7 @@ RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
     NSLog(@"MultiAccountStoreAccount() method called");
 #endif
     NSString *result = StatusgoMultiAccountStoreAccount(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -295,8 +298,7 @@ RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
     NSLog(@"MultiAccountLoadAccount() method called");
 #endif
     NSString *result = StatusgoMultiAccountLoadAccount(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -310,8 +312,7 @@ RCT_EXPORT_METHOD(multiAccountReset:(RCTResponseSenderBlock)successCallback
     NSLog(@"MultiAccountReset() method called");
 #endif
     NSString *result = StatusgoMultiAccountReset();
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -326,8 +327,7 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
     NSLog(@"MultiAccountStoreDerived() method called");
 #endif
     NSString *result = StatusgoMultiAccountStoreDerivedAccounts(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -342,8 +342,7 @@ RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
     NSLog(@"MultiAccountImportPrivateKey() method called");
 #endif
     NSString *result = StatusgoMultiAccountImportPrivateKey(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -358,8 +357,7 @@ RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON
     NSLog(@"HashTransaction() method called");
 #endif
     NSString *result = StatusgoHashTransaction(txArgsJSON);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -374,8 +372,7 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
     NSLog(@"hashMessage() method called");
 #endif
     NSString *result = StatusgoHashMessage(message);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -396,8 +393,7 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
 
     NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -421,8 +417,7 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
 
     NSString *result = StatusgoInputConnectionStringForBootstrapping(cs,modifiedConfigJSON);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -435,8 +430,7 @@ RCT_EXPORT_METHOD(multiformatSerializePublicKey:(NSString *)multiCodecKey
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoMultiformatSerializePublicKey(multiCodecKey,base58btc);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -449,8 +443,7 @@ RCT_EXPORT_METHOD(multiformatDeserializePublicKey:(NSString *)multiCodecKey
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoMultiformatDeserializePublicKey(multiCodecKey,base58btc);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -462,8 +455,7 @@ RCT_EXPORT_METHOD(decompressPublicKey:(NSString *)multiCodecKey
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoDecompressPublicKey(multiCodecKey);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -475,8 +467,7 @@ RCT_EXPORT_METHOD(compressPublicKey:(NSString *)multiCodecKey
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoCompressPublicKey(multiCodecKey);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -488,8 +479,7 @@ RCT_EXPORT_METHOD(deserializeAndCompressKey:(NSString *)desktopKey
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   ) {
     NSString *result = StatusgoDeserializeAndCompressKey(desktopKey);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -504,8 +494,7 @@ RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
     NSLog(@"hashTypedData() method called");
 #endif
     NSString *result = StatusgoHashTypedData(data);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -520,8 +509,7 @@ RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
     NSLog(@"hashTypedDataV4() method called");
 #endif
     NSString *result = StatusgoHashTypedDataV4(data);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -537,8 +525,7 @@ RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
     NSLog(@"sendTransactionWithSignature() method called");
 #endif
     NSString *result = StatusgoSendTransactionWithSignature(txArgsJSON, signature);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -553,8 +540,7 @@ RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
     NSLog(@"MultiAccountImportMnemonic() method called");
 #endif
     NSString *result = StatusgoMultiAccountImportMnemonic(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -569,8 +555,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSLog(@"MultiAccountDeriveAddresses() method called");
 #endif
     NSString *result = StatusgoMultiAccountDeriveAddresses(json);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -821,8 +806,7 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
 
     NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -838,8 +822,7 @@ RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
     NSLog(@"VerifyDatabasePassword() method called");
 #endif
     NSString *result = StatusgoVerifyDatabasePassword(keyUID, password);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -857,8 +840,7 @@ RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
 #endif
     // changes password and re-encrypts keystore
     NSString *result = StatusgoChangeDatabasePassword(keyUID, currentPassword, newPassword);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -878,8 +860,7 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *result = StatusgoConvertToKeycardAccount(multiaccountKeystoreDir.path, accountData, settings, currentPassword, newPassword);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -910,8 +891,7 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
     NSLog(@"SignMessage() method called");
 #endif
     NSString *result = StatusgoSignMessage(message);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -929,8 +909,7 @@ RCT_EXPORT_METHOD(recover:(NSString *)message
     NSLog(@"Recover() method called");
 #endif
     NSString *result = StatusgoRecover(message);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -950,8 +929,7 @@ RCT_EXPORT_METHOD(signTypedData:(NSString *)data
     NSLog(@"SignTypedData() method called");
 #endif
     NSString *result = StatusgoSignTypedData(data, account, password);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -971,8 +949,7 @@ RCT_EXPORT_METHOD(signTypedDataV4:(NSString *)data
     NSLog(@"SignTypedDataV4() method called");
 #endif
     NSString *result = StatusgoSignTypedDataV4(data, account, password);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -990,8 +967,7 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
     NSLog(@"SignGroupMembership() method called");
 #endif
     NSString *result = StatusgoSignGroupMembership(content);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1009,8 +985,7 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
     NSLog(@"ExtractGroupMembershipSignatures() method called");
 #endif
     NSString *result = StatusgoExtractGroupMembershipSignatures(content);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1027,8 +1002,7 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)successCallback
     NSLog(@"GetNodeConfig() method called");
 #endif
     NSString *result = StatusgoGetNodeConfig();
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1085,8 +1059,7 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *result = StatusgoCallRPC(payload);
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *substring = @"error";
-            if ([result containsString:substring]) {
+            if ([self responseContainsErrorKey:result]) {
                 errorCallback(@[result]);
             } else {
                 successCallback(@[result]);
@@ -1107,8 +1080,7 @@ RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
     NSLog(@"generateAliasAsync() method called");
 #endif
     NSString *result = StatusgoGenerateAlias(publicKey);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1174,8 +1146,7 @@ RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     NSLog(@"validateMnemonic() method called");
 #endif
     NSString *result = StatusgoValidateMnemonic(seed);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1190,8 +1161,7 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
     NSLog(@"identiconAsync() method called");
 #endif
     NSString *result = StatusgoIdenticon(publicKey);
-    NSString *substring = @"error";
-    if ([result containsString:substring]) {
+    if ([self responseContainsErrorKey:result]) {
         errorCallback(@[result]);
     } else {
         successCallback(@[result]);
@@ -1216,8 +1186,7 @@ RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *result = StatusgoCallPrivateRPC(payload);
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *substring = @"error";
-            if ([result containsString:substring]) {
+            if ([self responseContainsErrorKey:result]) {
                 errorCallback(@[result]);
             } else {
                 successCallback(@[result]);
