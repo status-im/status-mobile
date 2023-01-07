@@ -80,14 +80,7 @@
     (reagent/create-class
      {:reagent-render         (fn []
                                 [bottom-sheet/bottom-sheet
-                                 (case view
-                                   :new-chat-bottom-sheet
-                                   (assoc opts :initial-height 150)
-                                   :drawer/reactions
-                                   (assoc opts :initial-height 100)
-                                   :generate-a-new-key
-                                   (assoc opts :initial-height 100)
-                                   opts)
+                                 opts
                                  (when content
                                    [content (when options options)])])
       :component-did-mount    (fn []

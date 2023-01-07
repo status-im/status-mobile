@@ -86,10 +86,14 @@
            first-username                               (or ens-name nickname three-words-name)
            no-contacts?                                 (empty? contacts)]
 <<<<<<< HEAD
+<<<<<<< HEAD
        [react/view {:style {:height (* window-height 0.9)}}
 =======
        [react/view {:style {:height (* window-height 0.95)}}
 >>>>>>> 67d594e01 (Issue 4)
+=======
+       [react/view {:style {:height (* window-height 0.9)}}
+>>>>>>> b8770e8ed (Remove manual specification of height)
         [quo2/button
          {:type                      :grey
           :icon                      true
