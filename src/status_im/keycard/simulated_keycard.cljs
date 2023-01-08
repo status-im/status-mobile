@@ -300,7 +300,7 @@
                 (js/alert "OH SHEET")
                 (status/delete-multiaccount
                  key-uid
-                 (fn [result]
+                 (fn [_]
                    (on-deletion-success))
                  (fn [error-message]
                    (log/debug "error while status/delete-multiaccount" error-message))))
@@ -408,28 +408,26 @@
        hashed-password
        (fn [value]
          (let [{:keys [id]} (types/json->clj value)]
-             (status/multiaccount-derive-addresses
-              id
-              [path]
-              (fn [derived]
-                (let [derived-address (get-in (types/json->clj derived) [(keyword path) :address])]
-                  (if (some (fn [a] (= derived-address (get a :address))) accounts)
-                    (re-frame/dispatch [::new-account-error :account-error
-                                        (i18n/label :t/account-exists-title)])
-                    (status/multiaccount-store-derived
-                     id
-                     key-uid
-                     [path]
-                     hashed-password
-                     (fn [result]
-                       (let [{:keys [publicKey]}        (get result (keyword path))]
-                         (on-success publicKey)
-                         ))
-                     (fn [error-message]
-                       (on-failure error-message))))))
-              (fn [error-message]
-                (log/debug "error while status/multiaccount-derive-addresses" error-message)))
-             ))
+           (status/multiaccount-derive-addresses
+            id
+            [path]
+            (fn [derived]
+              (let [derived-address (get-in (types/json->clj derived) [(keyword path) :address])]
+                (if (some (fn [a] (= derived-address (get a :address))) accounts)
+                  (re-frame/dispatch [::new-account-error :account-error
+                                      (i18n/label :t/account-exists-title)])
+                  (status/multiaccount-store-derived
+                   id
+                   key-uid
+                   [path]
+                   hashed-password
+                   (fn [result]
+                     (let [{:keys [publicKey]} (get result (keyword path))]
+                       (on-success publicKey)))
+                   (fn [error-message]
+                     (on-failure error-message))))))
+            (fn [error-message]
+              (log/debug "error while status/multiaccount-derive-addresses" error-message)))))
        (fn [error-message]
          (re-frame/dispatch [::new-account-error :password-error error-message]))))))
 

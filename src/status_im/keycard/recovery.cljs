@@ -1,6 +1,5 @@
 (ns status-im.keycard.recovery
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
@@ -256,10 +255,10 @@
     password
     encryption-pass
     #(status/login-with-keycard login-params)
-    (fn [error-message]
+    (fn [_]
       (throw
-        (js/Error.
-          "Please shake the phone to report this error and restart the app. Migration failed unexpectedly."))))))
+       (js/Error.
+        "Please shake the phone to report this error and restart the app. Migration failed unexpectedly."))))))
 
 (rf/defn migrate-account
   [{:keys [db] :as cofx}]

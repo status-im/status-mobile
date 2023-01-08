@@ -146,13 +146,13 @@
 
 (re-frame/reg-fx
  ::delete-imported-key
- (fn [{:keys [key-uid address password on-success on-error]}]
+ (fn [{:keys [key-uid address password on-success]}]
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data password))]
      (native-module/delete-imported-key
       key-uid
       (string/lower-case (subs address 2))
       hashed-pass
-      (fn [result]
+      (fn [_]
         (on-success))
       (fn [error-message]
         (log/debug "error while native-module/delete-imported-key" error-message))))))

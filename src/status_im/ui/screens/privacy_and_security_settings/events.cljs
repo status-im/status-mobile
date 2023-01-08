@@ -24,7 +24,7 @@
      (status/verify
       address
       hashed-password
-      (fn [result]
+      (fn [_]
         (status/delete-multiaccount
          key-uid
          (fn [result]
@@ -32,7 +32,7 @@
              (callback error nil)))
          (fn [error-message]
            (log/debug "error while status/delete-multiaccount" error-message))))
-      (fn [error-message]
+      (fn [_]
         (callback :wrong-password nil))))))
 
 (rf/defn delete-profile
