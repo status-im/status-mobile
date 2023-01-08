@@ -210,7 +210,7 @@
     (if platform/android?
       [selectable-text-input chat-id props children]
       [rn/text-input props
-       children])))
+       [children]])))
 
 (defn selectable-text-input-manager
   []
