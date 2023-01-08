@@ -27,6 +27,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
+  (rf/dispatch [:bottom-sheet/hide])
   (bottom-sheet/close-bottom-sheet-fn nil)
   (rf/dispatch event))
 
