@@ -175,7 +175,6 @@
          :editable                 (not cooldown-enabled?)
          :blur-on-submit           false
          :auto-focus               false
-         :default-value            initial-value
          :on-focus                 #(set-active-panel nil)
          :max-length               chat.constants/max-text-size
          :placeholder-text-color   (:text-02 @quo.colors/theme)
@@ -195,22 +194,21 @@
          (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
          :on-text-input            (partial on-text-input mentionable-users chat-id)}
         input-with-mentions (rf/sub [:chat/input-with-mentions])
-        children            (fn []
-                              (if mentions-enabled?
-                                (map-indexed
-                                 (fn [index [_ text]]
-                                   ^{:key (str index "_" type "_" text)}
-                                   [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
-                                    text])
-                                 input-with-mentions)
-                                (get @input-texts chat-id)))]
+        children (if mentions-enabled?
+                   (map-indexed
+                    (fn [index [type text]]
+                      ^{:key (str index "_" type "_" text)}
+                      [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
+                       text])
+                    input-with-mentions)
+                   (get @input-texts chat-id))]
     (reset! text-input-ref (:text-input-ref refs))
     ;when ios implementation for selectable-text-input is ready, we need remove this condition and use
     ;selectable-text-input directly.
     (if platform/android?
       [selectable-text-input chat-id props children]
       [rn/text-input props
-       [children]])))
+       children])))
 
 (defn selectable-text-input-manager
   []
