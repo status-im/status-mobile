@@ -88,18 +88,16 @@
                 [path]
                 hashed-password
                 (fn [result]
-                  (let [{:keys [error] :as result}  (types/json->clj result)
-                        {:keys [publicKey address]} (get result (keyword path))]
-                    (if error
-                      (re-frame/dispatch [::new-account-error :account-error error])
-                      (re-frame/dispatch
-                       [:wallet.accounts/account-stored
-                        {:address    address
-                         :public-key publicKey
-                         :type       type
-                         :path       (normalize-path path)}]))))
+                  (let [{:keys [publicKey address]} (get result (keyword path))]
+                    (re-frame/dispatch
+                     [:wallet.accounts/account-stored
+                      {:address    address
+                       :public-key publicKey
+                       :type       type
+                       :path       (normalize-path path)}])
+                    ))
                 (fn [error-message]
-                  (log/debug "error while status/multiaccount-store-derived" error-message))))))
+                  (re-frame/dispatch [::new-account-error :account-error error-message]))))))
          (fn [error-message]
            (log/debug "error while status/multiaccount-derive-addresses" error-message)))))))
 

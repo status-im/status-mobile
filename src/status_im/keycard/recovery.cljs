@@ -255,14 +255,11 @@
     settings
     password
     encryption-pass
-    #(let [{:keys [error]} (types/json->clj %)]
-       (if (string/blank? error)
-         (status/login-with-keycard login-params)
-         (throw
-          (js/Error.
-           "Please shake the phone to report this error and restart the app. Migration failed unexpectedly."))))
+    #(status/login-with-keycard login-params)
     (fn [error-message]
-      (log/debug "error while status/convert-to-keycard-account" error-message)))))
+      (throw
+        (js/Error.
+          "Please shake the phone to report this error and restart the app. Migration failed unexpectedly."))))))
 
 (rf/defn migrate-account
   [{:keys [db] :as cofx}]
