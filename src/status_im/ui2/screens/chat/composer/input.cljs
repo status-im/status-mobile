@@ -16,7 +16,9 @@
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils.utils]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [quo.previews.text-input :as text-input]
+            [status-im2.contexts.quo-preview.markdown.text :as text]))
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled? (reagent/atom {}))
@@ -194,14 +196,14 @@
          (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
          :on-text-input            (partial on-text-input mentionable-users chat-id)}
         input-with-mentions (rf/sub [:chat/input-with-mentions])
-        children (if mentions-enabled?
-                   (map-indexed
-                    (fn [index [type text]]
-                      ^{:key (str index "_" type "_" text)}
-                      [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
-                       text])
-                    input-with-mentions)
-                   (get @input-texts chat-id))]
+        children            (if mentions-enabled?
+                              (map-indexed
+                               (fn [index [type text]]
+                                 ^{:key (str index "_" type "_" text)}
+                                 [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
+                                  text])
+                               input-with-mentions)
+                              (get @input-texts chat-id))]
     (reset! text-input-ref (:text-input-ref refs))
     ;when ios implementation for selectable-text-input is ready, we need remove this condition and use
     ;selectable-text-input directly.
@@ -221,9 +223,8 @@
 (declare first-level-menu-items second-level-menu-items)
 
 (defn update-input-text
-  [{:keys [text-input chat-id]} text]
-  (on-text-change text chat-id)
-  (.setNativeProps ^js text-input (clj->js {:text text})))
+  [{:keys [chat-id]} text]
+  (on-text-change text chat-id))
 
 (re-frame/reg-fx
  :set-text-input-value
@@ -336,7 +337,7 @@
                                   (oops/ocall manager :startActionMode text-input-handle))))
 
       :reagent-render
-      (fn [_]
+      (fn [chat-id {:keys [style ref on-selection-change] :as props} children]
         (let [ref                 #(do (reset! text-input-ref %)
                                        (when ref
                                          (quo.react/set-ref-val! ref %)))
@@ -378,4 +379,4 @@
                                           :on-selection        on-selection})]
           [rn-selectable-text-input {:menuItems @menu-items :style style}
            [rn/text-input props
-            [children]]]))})))
+            children]]))})))
