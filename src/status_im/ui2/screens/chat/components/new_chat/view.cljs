@@ -14,7 +14,8 @@
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [quo.react :as quo.react]))
+            [quo.react :as quo.react]
+            [quo.components.safe-area :as safe-area]))
 
 (defn- hide-sheet-and-dispatch
   [event]
@@ -76,7 +77,8 @@
            added?                                       (reagent/atom '())
            {:keys [nickname ens-name three-words-name]} names
            first-username                               (or ens-name nickname three-words-name)
-           no-contacts?                                 (empty? contacts)]
+           no-contacts?                                 (empty? contacts)
+           safe-area                                    (safe-area/use-safe-area)]
        [react/view {:style {:height (* window-height 0.9)}}
         [quo2/button
          {:type                      :grey
@@ -118,6 +120,7 @@
             :center       [button/button
                            {:type                :primary
                             :accessibility-label :next-button
+                            :style               (style/chat-button safe-area)
                             :on-press            #(do
                                                     (if one-contact-selected?
                                                       (hide-sheet-and-dispatch [:chat.ui/start-chat
