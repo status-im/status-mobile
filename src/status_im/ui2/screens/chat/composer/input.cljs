@@ -221,7 +221,7 @@
 (declare first-level-menu-items second-level-menu-items)
 
 (defn update-input-text
-  [{:keys [chat-id]} text]
+  [{:keys [text-input chat-id]} text]
   (on-text-change text chat-id))
 
 (re-frame/reg-fx
