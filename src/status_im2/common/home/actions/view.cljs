@@ -79,7 +79,7 @@
 
 (defn leave-group-action
   [item chat-id]
-  (hide-sheet-and-dispatch
+  (rf/dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
@@ -95,7 +95,7 @@
 
 (defn block-user-action
   [{:keys [public-key] :as item}]
-  (hide-sheet-and-dispatch
+  (rf/dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
