@@ -20,7 +20,8 @@
            from
            outgoing
            whisper-timestamp
-           deleted-for-me?]}]
+           deleted-for-me?
+           albumize?]}]
   (-> {:whisper-timestamp whisper-timestamp
        :from              from
        :one-to-one?       (= constants/message-type-one-to-one message-type)
@@ -32,7 +33,8 @@
        :clock-value       clock-value
        :type              :message
        :message-id        message-id
-       :outgoing          (boolean outgoing)}
+       :outgoing          (boolean outgoing)
+       :albumize?         albumize?}
       add-datemark
       add-timestamp))
 

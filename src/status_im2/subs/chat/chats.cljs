@@ -146,6 +146,13 @@
    (get inputs (chat.models/profile-chat-topic public-key))))
 
 (re-frame/reg-sub
+ :chats/sending-image
+ :<- [:chats/current-chat-id]
+ :<- [:chat/inputs]
+ (fn [[chat-id inputs]]
+   (get-in inputs [chat-id :metadata :sending-image])))
+
+(re-frame/reg-sub
  :chats/timeline-chat-input-text
  :<- [:chats/timeline-chat-input]
  (fn [input]
@@ -282,12 +289,6 @@
  :<- [:chats/current-chat-inputs]
  (fn [{:keys [metadata]}]
    (:sending-contact-request metadata)))
-
-(re-frame/reg-sub
- :chats/sending-image
- :<- [:chats/current-chat-inputs]
- (fn [{:keys [metadata]}]
-   (:sending-image metadata)))
 
 (re-frame/reg-sub
  :chats/timeline-sending-image

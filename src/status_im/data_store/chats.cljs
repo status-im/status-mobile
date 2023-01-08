@@ -1,5 +1,5 @@
 (ns status-im.data-store.chats
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as messages]
             [utils.re-frame :as rf]
@@ -58,19 +58,19 @@
 (defn <-rpc
   [chat]
   (-> chat
-      (clojure.set/rename-keys {:id                     :chat-id
-                                :communityId            :community-id
-                                :syncedFrom             :synced-from
-                                :syncedTo               :synced-to
-                                :membershipUpdateEvents :membership-update-events
-                                :deletedAtClockValue    :deleted-at-clock-value
-                                :chatType               :chat-type
-                                :unviewedMessagesCount  :unviewed-messages-count
-                                :unviewedMentionsCount  :unviewed-mentions-count
-                                :lastMessage            :last-message
-                                :lastClockValue         :last-clock-value
-                                :invitationAdmin        :invitation-admin
-                                :profile                :profile-public-key})
+      (set/rename-keys {:id                     :chat-id
+                        :communityId            :community-id
+                        :syncedFrom             :synced-from
+                        :syncedTo               :synced-to
+                        :membershipUpdateEvents :membership-update-events
+                        :deletedAtClockValue    :deleted-at-clock-value
+                        :chatType               :chat-type
+                        :unviewedMessagesCount  :unviewed-messages-count
+                        :unviewedMentionsCount  :unviewed-mentions-count
+                        :lastMessage            :last-message
+                        :lastClockValue         :last-clock-value
+                        :invitationAdmin        :invitation-admin
+                        :profile                :profile-public-key})
       rpc->type
       unmarshal-members
       (update :last-message #(when % (messages/<-rpc %)))

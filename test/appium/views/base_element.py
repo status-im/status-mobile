@@ -148,10 +148,13 @@ class BaseElement(object):
         counter = 0
         self.driver.info("Wait for text element `%s` to be equal to `%s`" % (self.name, text))
         while True:
+            text_element = self.find_element().text
+            if isinstance(text, int):
+                text_element = int(text_element.strip())
             if counter >= wait_time:
                 self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
-                    self.find_element().text, text, wait_time))
-            elif self.find_element().text != text:
+                    text_element, text, wait_time))
+            elif text_element != text:
                 counter += 10
                 time.sleep(10)
             else:

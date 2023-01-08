@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
-            [status-im.ui2.screens.chat.pin-limit-popover.style :as style] ;; TODO move to status-im2
+            [status-im.ui2.screens.chat.pin-limit-popover.style :as style]
             [utils.re-frame :as rf]))
 
 ;; TODO (flexsurfer) this should be an in-app notification component in quo2
@@ -56,6 +56,6 @@
                                 :right    16}}
          [quo/icon :i/close
           {:color (colors/theme-colors colors/white colors/neutral-100)
-           :size  8}]]]))])
+           :size  12}]]]))])
 
 

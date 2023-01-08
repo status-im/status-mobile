@@ -1,12 +1,12 @@
 (ns status-im.data-store.contacts
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn <-rpc
   [contact]
   (-> contact
-      (clojure.set/rename-keys
+      (set/rename-keys
        {:id                     :public-key
         :ensVerifiedAt          :ens-verified-at
         :displayName            :display-name

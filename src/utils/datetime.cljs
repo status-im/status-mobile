@@ -1,6 +1,7 @@
 (ns utils.datetime
   (:require [cljs-time.coerce :as t.coerce]
             [cljs-time.core :as t]
+            [goog.string :as gstring]
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [i18n.i18n :as i18n]
@@ -56,6 +57,7 @@
 
 ;;;; Date formats
 (defn- short-date-format [_] "dd MMM")
+(defn- short-date-format-with-time [_] "dd MMM h:mm a")
 
 (defn- datetime-within-one-week-format
   [^js locsym]
@@ -85,6 +87,7 @@
 (def date-fmt (get-formatter-fn medium-date-format))
 (def time-fmt (get-formatter-fn short-time-format))
 (def short-date-fmt (get-formatter-fn short-date-format))
+(def short-date-with-time-fmt (get-formatter-fn short-date-format-with-time))
 (def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
 ;;;; Utilities
@@ -141,10 +144,14 @@
 
 (defn timestamp->relative
   [ms]
-  (let [datetime (t.coerce/from-long ms)]
+  (let [datetime (-> ms
+                     t.coerce/from-long
+                     (t/plus time-zone-offset))]
     (cond
       (today? datetime)
-      (.format ^js (time-fmt) datetime)
+      (str (string/capitalize (i18n/label :t/datetime-today))
+           " "
+           (.format ^js (time-fmt) datetime))
 
       (within-last-n-days? datetime 1)
       (str (string/capitalize (i18n/label :t/datetime-yesterday))
@@ -155,7 +162,7 @@
       (.format ^js (datetime-within-one-week-fmt) datetime)
 
       (current-year? datetime)
-      (.format ^js (short-date-fmt) datetime)
+      (.format ^js (short-date-with-time-fmt) datetime)
 
       (previous-years? datetime)
       (.format ^js (date-fmt) datetime))))
@@ -250,3 +257,9 @@
 (defn to-ms
   [sec]
   (* 1000 sec))
+
+(defn ms-to-duration
+  "milisecods to mm:ss format"
+  [ms]
+  (let [sec (quot ms 1000)]
+    (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))

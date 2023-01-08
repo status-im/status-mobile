@@ -179,7 +179,9 @@
         :on-layout                    on-messages-view-layout})]
      [quo/floating-shell-button
       (merge {:jump-to
-              {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+              {:on-press #(do
+                            (rf/dispatch [:close-chat])
+                            (rf/dispatch [:shell/navigate-to-jump-to]))
                :label    (i18n/label :t/jump-to)}}
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))

@@ -4,9 +4,9 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [utils.re-frame :as rf]
             [status-im2.contexts.activity-center.events :as activity-center]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -101,6 +101,17 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
+;; For example, when a user receives a list of 4 image messages while inside the chat screen we
+;; shouldn't group the images into albums. When the user exists the chat screen then enters the
+;; chat screen again, we now need to group the images into albums (like WhatsApp). The albumize?
+;; boolean is used to know whether we need to group these images into albums now or not. The
+;; album-id can't be used for this because it will always be there.
+(defn mark-album
+  [message]
+  (if (:album-id message)
+    (assoc message :albumize? true)
+    message))
+
 (rf/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
@@ -131,8 +142,8 @@
           current-clock-value                                  (get-in db
                                                                        [:pagination-info chat-id
                                                                         :cursor-clock-value])
-          clock-value                                          (when cursor
-                                                                 (cursor->clock-value cursor))]
+          clock-value                                          (when cursor (cursor->clock-value cursor))
+          new-messages                                         (map mark-album new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]

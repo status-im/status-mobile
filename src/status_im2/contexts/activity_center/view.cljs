@@ -9,6 +9,7 @@
             [status-im2.contexts.activity-center.notification.contact-verification.view :as
              contact-verification]
             [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
+            [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
             [utils.re-frame :as rf]))
 
@@ -106,6 +107,9 @@
 
      types/mention
      [mentions/view notification]
+
+     types/reply
+     [reply/view notification]
 
      nil)])
 

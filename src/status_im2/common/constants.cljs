@@ -13,6 +13,9 @@
 (def ^:const content-type-community 9)
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
+(def ^:const content-type-gif 12)
+(def ^:const content-type-link 13)
+(def ^:const content-type-album 14)
 
 (def ^:const contact-request-state-none 0)
 (def ^:const contact-request-state-mutual 1)
@@ -198,3 +201,20 @@
 
 (def ^:const delete-message-undo-time-limit-ms 4000)
 (def ^:const delete-message-for-me-undo-time-limit-ms 4000)
+
+(def ^:const album-image-sizes
+  {4        {0 146
+             1 146
+             2 146
+             3 146}
+   5        {0 146
+             1 146
+             2 97
+             3 97
+             4 97}
+   :default {0 146
+             1 146
+             2 72.5
+             3 72.5
+             4 72.5
+             5 72.5}})

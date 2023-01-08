@@ -51,9 +51,13 @@
    :accessibility-label :shell-placeholder-view})
 
 (def placeholder-image
-  {:margin-top 186
-   :width      120
-   :height     120})
+  {:margin-top    186
+   :width         120
+   :height        120
+   ;; Code to remove once placeholder image/vector will be available
+   :border-width  5
+   :border-radius 10
+   :border-color  :red})
 
 (def placeholder-title
   {:margin-top 20

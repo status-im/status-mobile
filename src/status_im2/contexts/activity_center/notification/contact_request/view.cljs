@@ -17,7 +17,7 @@
                     ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen
                     ;; looks completely broken if it has never been opened
                     ;; before for the accepted contact.
-                    [rn/touchable-without-feedback
+                    [rn/touchable-opacity
                      {:on-press (fn []
                                   (rf/dispatch [:hide-popover])
                                   (rf/dispatch [:contact.ui/send-message-pressed

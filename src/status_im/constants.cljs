@@ -205,9 +205,26 @@
 (def ^:const community-member-role-manage-users 2)
 (def ^:const community-member-role-moderator 3)
 
-(def local-pairing-connection-string-identifier
+(def ^:const local-pairing-connection-string-identifier
   "If any string begins with cs we know its a connection string.
   This is useful when we read QR codes we know it is a connection string if it begins with this identifier.
   An example of a connection string is -> cs2:5vd6J6:Jfc:27xMmHKEYwzRGXcvTtuiLZFfXscMx4Mz8d9wEHUxDj4p7:EG7Z13QScfWBJNJ5cprszzDQ5fBVsYMirXo8MaQFJvpF:3 "
   "cs")
 
+(def ^:const serialization-key
+  "We pass this serialization key as a parameter to MultiformatSerializePublicKey
+  function at status-go, This key determines the output base of the serialization.
+  according to https://specs.status.im/spec/2#public-key-serialization we serialize
+  keys with base58btc encoding"
+  "z")
+
+(def ^:const deserialization-key
+  "We pass this deserialization key as a parameter to MultiformatDeserializePublicKey
+  function at status-go, This key determines the output base of the deserialization.
+  according to https://specs.status.im/spec/2#public-key-serialization we deserialize
+  keys with base16 hexadecimal encoding"
+  "f")
+
+(def ^:const multi-code-prefix
+  "We prefix our keys with 0xe701 prior to serialisation them"
+  "0xe701")

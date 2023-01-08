@@ -15,7 +15,7 @@
             [status-im.ui2.screens.chat.composer.mentions :as mentions]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [status-im.ui2.screens.chat.composer.style :as style]
-            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
+            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
             [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
@@ -164,7 +164,7 @@
                                       :dy                        0     ;used for gesture
                                       :pdy                       0     ;used for gesture
                                       :state                     :min  ;:min, :custom-chat-available,
-                                                                       ;:custom-chat-unavailable, :max
+                                      ;:custom-chat-unavailable, :max
                                       :clear                     false
                                       :minimized-from-handlebar? false})
            keyboard-was-shown? (atom false)
@@ -188,19 +188,19 @@
                                                                 360)
                                                               (:top insets)
                                                               (:status-bar-height @navigation-const)) ; 360
-                                                                                                      ; -
-                                                                                                      ; default
-                                                                                                      ; height
+                  ; -
+                  ; default
+                  ; height
                   max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56
-                                                                                                    ; -
-                                                                                                    ; top-bar
-                                                                                                    ; height
+                  ; -
+                  ; top-bar
+                  ; height
                   added-value                              (if (and (not (seq suggestions))
                                                                     (or edit reply))
                                                              38
                                                              0) ; increased height
-                                                                ; of input box
-                                                                ; needed when reply
+                  ; of input box
+                  ; needed when reply
                   min-y                                    (+ min-y (when (or edit reply) 38))
                   bg-opacity                               (reanimated/use-shared-value 0)
                   bg-bottom                                (reanimated/use-shared-value (-

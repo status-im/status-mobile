@@ -1,5 +1,5 @@
 (ns status-im.utils.views
-  (:require [clojure.walk :as w]))
+  (:require [clojure.walk :as walk]))
 
 (defn atom?
   [sub]
@@ -9,9 +9,9 @@
 (defn walk-sub
   [sub form->sym]
   (if (coll? sub)
-    (w/postwalk (fn [f]
-                  (or (form->sym f) f))
-                sub)
+    (walk/postwalk (fn [f]
+                     (or (form->sym f) f))
+                   sub)
     (or (form->sym sub) sub)))
 
 (defn prepare-subs

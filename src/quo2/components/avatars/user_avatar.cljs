@@ -141,7 +141,7 @@
      (if profile-picture
        ;; display image
        [fast-image/fast-image
-        {:source {:uri profile-picture}
+        {:source profile-picture
          :style  (container-styling inner-dimensions outer-dimensions)}]
        ;; else display initials
        [container inner-dimensions outer-dimensions

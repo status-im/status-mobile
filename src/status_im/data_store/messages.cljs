@@ -1,5 +1,5 @@
 (ns status-im.data-store.messages
-  (:require [clojure.set :as clojure.set]
+  (:require [clojure.set :as set]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
@@ -10,39 +10,40 @@
     (assoc :text    (:text content)
            :sticker (:sticker content))
     :always
-    (clojure.set/rename-keys {:chat-id           :chat_id
-                              :whisper-timestamp :whisperTimestamp
-                              :community-id      :communityId
-                              :clock-value       :clock})))
+    (set/rename-keys {:chat-id           :chat_id
+                      :whisper-timestamp :whisperTimestamp
+                      :community-id      :communityId
+                      :clock-value       :clock})))
 
 (defn <-rpc
   [message]
   (-> message
-      (clojure.set/rename-keys {:id                       :message-id
-                                :whisperTimestamp         :whisper-timestamp
-                                :editedAt                 :edited-at
-                                :contactVerificationState :contact-verification-state
-                                :contactRequestState      :contact-request-state
-                                :commandParameters        :command-parameters
-                                :gapParameters            :gap-parameters
-                                :messageType              :message-type
-                                :localChatId              :chat-id
-                                :communityId              :community-id
-                                :contentType              :content-type
-                                :clock                    :clock-value
-                                :quotedMessage            :quoted-message
-                                :outgoingStatus           :outgoing-status
-                                :audioDurationMs          :audio-duration-ms
-                                :deleted                  :deleted?
-                                :deletedForMe             :deleted-for-me?
-                                :new                      :new?})
+      (set/rename-keys {:id                       :message-id
+                        :whisperTimestamp         :whisper-timestamp
+                        :editedAt                 :edited-at
+                        :contactVerificationState :contact-verification-state
+                        :contactRequestState      :contact-request-state
+                        :commandParameters        :command-parameters
+                        :gapParameters            :gap-parameters
+                        :messageType              :message-type
+                        :localChatId              :chat-id
+                        :communityId              :community-id
+                        :contentType              :content-type
+                        :clock                    :clock-value
+                        :quotedMessage            :quoted-message
+                        :outgoingStatus           :outgoing-status
+                        :audioDurationMs          :audio-duration-ms
+                        :deleted                  :deleted?
+                        :deletedForMe             :deleted-for-me?
+                        :albumId                  :album-id
+                        :new                      :new?})
 
       (update :quoted-message
-              clojure.set/rename-keys
+              set/rename-keys
               {:parsedText :parsed-text :communityId :community-id})
       (update :outgoing-status keyword)
       (update :command-parameters
-              clojure.set/rename-keys
+              set/rename-keys
               {:transactionHash :transaction-hash
                :commandState    :command-state})
       (assoc :content  {:chat-id     (:chatId message)

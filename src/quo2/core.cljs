@@ -52,6 +52,7 @@
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
    quo2.components.tags.status-tags
+   quo2.components.profile.profile-card.view
    quo2.components.tags.tags))
 
 (def toast quo2.components.notifications.toast/toast)
@@ -74,6 +75,8 @@
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def context-tag quo2.components.tags.context-tags/context-tag)
 (def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
+(def audio-tag quo2.components.tags.context-tags/audio-tag)
+(def community-tag quo2.components.tags.context-tags/community-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
@@ -126,6 +129,9 @@
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
+
+;;;; PROFILE
+(def profile-card quo2.components.profile.profile-card.view/profile-card)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
