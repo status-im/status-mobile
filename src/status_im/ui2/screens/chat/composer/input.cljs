@@ -16,9 +16,7 @@
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils.utils]
-            [utils.transforms :as transforms]
-            [quo.previews.text-input :as text-input]
-            [status-im2.contexts.quo-preview.markdown.text :as text]))
+            [utils.transforms :as transforms]))
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled? (reagent/atom {}))
