@@ -19,7 +19,8 @@
             [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
             [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (defn chats
   []
@@ -453,7 +454,7 @@
     :content             (i18n/label :t/clear-history-confirmation-content)
     :confirm-button-text (i18n/label :t/clear-history-action)
     :on-accept           #(do
-                            (re-frame/dispatch [:bottom-sheet/hide])
+                            (bottom-sheet/close-bottom-sheet-fn nil)
                             (re-frame/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn gaps-failed
@@ -522,7 +523,7 @@
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
-                            (re-frame/dispatch [:bottom-sheet/hide])
+                            (bottom-sheet/close-bottom-sheet-fn nil)
                             (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}})
 
 (rf/defn decrease-unviewed-count

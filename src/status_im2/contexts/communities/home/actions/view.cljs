@@ -2,11 +2,12 @@
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
             [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (bottom-sheet/close-bottom-sheet-fn nil)
   (rf/dispatch event))
 
 (def not-joined-options
@@ -87,7 +88,7 @@
              :align-items     :center
              :justify-content :space-evenly}}
     [quo/button
-     {:on-press #(rf/dispatch [:bottom-sheet/hide])
+     {:on-press #(bottom-sheet/close-bottom-sheet-fn nil)
       :type     :grey
       :style    {:flex         1
                  :margin-right 12}}

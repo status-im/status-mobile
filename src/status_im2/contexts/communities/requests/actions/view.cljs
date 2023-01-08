@@ -7,7 +7,8 @@
             [status-im.react-native.resources :as resources]
             [status-im2.contexts.communities.requests.actions.style :as style]
             [utils.re-frame :as rf]
-            [utils.requests :as requests]))
+            [utils.requests :as requests]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
 
 ;; TODO: update with real data
 (def community-rules
@@ -116,7 +117,7 @@
         {:style style/request-button}
         [quo/button
          {:accessibility-label :cancel
-          :on-press            #(rf/dispatch [:bottom-sheet/hide])
+          :on-press            #(bottom-sheet/close-bottom-sheet-fn nil)
           :type                :grey
           :style               style/cancel-button} (i18n/label :t/cancel)]
         [quo/button
@@ -125,12 +126,12 @@
                                  (when-not joined
                                    (when can-join?
                                      (rf/dispatch [::communities/join id]))
-                                   (rf/dispatch [:bottom-sheet/hide])
+                                   (bottom-sheet/close-bottom-sheet-fn nil)
                                    (when
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))
                                           (requests/can-request-access-again? requested-to-join-at))
                                      (rf/dispatch [::communities/request-to-join id])
-                                     (rf/dispatch [:bottom-sheet/hide]))))
+                                     (bottom-sheet/close-bottom-sheet-fn nil))))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))

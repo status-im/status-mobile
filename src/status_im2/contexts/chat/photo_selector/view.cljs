@@ -20,7 +20,7 @@
   (doseq [item @selected]
     (rf/dispatch [:chat.ui/camera-roll-pick item]))
   (reset! selected [])
-  (rf/dispatch [:bottom-sheet/hide]))
+  (bottom-sheet/close-bottom-sheet-fn nil))
 
 (defn bottom-gradient
   [chat-id selected-images]
