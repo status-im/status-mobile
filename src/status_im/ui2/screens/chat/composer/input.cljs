@@ -380,4 +380,4 @@
                                           :on-selection        on-selection})]
           [rn-selectable-text-input {:menuItems @menu-items :style style}
            [rn/text-input props
-            children]]))})))
+            [children]]]))})))
