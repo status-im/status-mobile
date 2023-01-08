@@ -23,9 +23,10 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
-  [{:keys [public-key added? blocked? ens-name] :as contact} muted?]
+  [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
   (concat [{:label               (i18n/label :t/chat)
             :icon                :main-icons/message
+            :disabled            (not mutual?)
             :action              #(re-frame/dispatch [:contact.ui/send-message-pressed
                                                       {:public-key public-key
                                                        :ens-name   ens-name}])
@@ -177,6 +178,7 @@
   [{:keys [icon label action selected disabled negative]}]
   [react/touchable-highlight
    {:on-press            action
+    :disabled            disabled
     :style               {:flex 1}
     :accessibility-label (str label "-item-button")}
    [react/view {:flex 1 :align-items :center}
