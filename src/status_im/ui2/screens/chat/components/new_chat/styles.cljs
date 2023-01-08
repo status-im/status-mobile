@@ -16,6 +16,7 @@
    :justify-content :center
    :align-items     :center})
 
-(defn chat-button [{:keys [bottom]}]
-    {:position :absolute
-     :bottom   (- bottom 50)})
+(defn chat-button
+  [{:keys [bottom]}]
+  {:position :absolute
+   :bottom   (- bottom 50)})
