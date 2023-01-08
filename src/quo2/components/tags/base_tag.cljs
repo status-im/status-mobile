@@ -16,25 +16,21 @@
            {:width size})))
 
 (defn base-tag
-  "opts
-   {:type :icon/:emoji/:label/:permission
-    :size 32/24}
-    :labelled true"
   [_]
-  (fn [{:keys [id size disabled border-color border-width background-color on-press
-               accessibility-label label type]
+  (fn [{:keys [id size disabled? border-color border-width background-color on-press
+               accessibility-label labelled? type]
         :or   {size 32}} children]
     [rn/touchable-without-feedback
-     (merge {:disabled            disabled
+     (merge {:disabled            disabled?
              :accessibility-label accessibility-label}
             (when on-press
               {:on-press #(on-press id)}))
      [rn/view
       {:style (merge (style-container size
-                                      disabled
+                                      disabled?
                                       border-color
                                       border-width
                                       background-color
-                                      label
+                                      labelled?
                                       type))}
       children]]))

@@ -46,12 +46,12 @@
      ^{:key id}
      [rn/view {:margin-right 8}
       [tag/tag
-       {:id       id
-        :size     24
-        :label    tag-label
-        :type     :emoji
-        :labelled true
-        :resource resource}]])])
+       {:id        id
+        :size      24
+        :label     tag-label
+        :type      :emoji
+        :labelled? true
+        :resource  resource}]])])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]

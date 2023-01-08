@@ -78,7 +78,6 @@
 (def audio-tag quo2.components.tags.context-tags/audio-tag)
 (def community-tag quo2.components.tags.context-tags/community-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
-(def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def status-tag quo2.components.tags.status-tags/status-tag)

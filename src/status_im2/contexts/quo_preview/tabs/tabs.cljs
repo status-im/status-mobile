@@ -12,11 +12,15 @@
     :options [{:key   32
                :value "32"}
               {:key   24
-               :value "24"}]}])
+               :value "24"}]}
+   {:label "Scrollable:"
+    :key   :scrollable?
+    :type  :boolean}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:size 32})]
+  (let [state (reagent/atom {:size        32
+                             :scrollable? false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -33,7 +37,11 @@
                                    {:id 2 :label "Tab 2"}
                                    {:id 3 :label "Tab 3"}
                                    {:id 4 :label "Tab 4"}]
-                  :on-change      #(println "Active tab" %)})]]]])))
+                  :on-change      #(println "Active tab" %)}
+                 (when (:scrollable? @state)
+                   {:scroll-on-press?    true
+                    :fade-end-percentage 0.4
+                    :fade-end?           true}))]]]])))
 
 (defn preview-tabs
   []
