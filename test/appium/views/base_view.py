@@ -378,6 +378,9 @@ class BaseView(object):
         counter = 0
         if element == 'home':
             element = self.chats_tab
+        elif element == 'chat':
+            chat = self.get_chat_view()
+            element = chat.chat_message_input
             # Old UI
             # element = self.home_button
         while not element.is_element_displayed(1) and counter <= attempts:
