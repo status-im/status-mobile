@@ -37,8 +37,8 @@ let
   githubSrc = let
     owner = "status-im";
     repo = "nimbus-eth1";
-    rev = "4019492cd873101078b6d2bd414dc9c1b4a4fff5";
-    sha256 = "sha256-vsUZVUTHsU6kQn0nsyC9Y8d71IBAjG+YhX/vVLxMzqc=";
+    rev = "1199e476397e271b889e54680dc632e47bc01dd6";
+    sha256 = "sha256-egx+I4h/V/56QRBtlaZffc3hrq7IaZCqL2Lm5XNqH1c=";
     version = "0.1";
   in rec {
     inherit owner repo rev sha256 version;

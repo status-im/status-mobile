@@ -175,8 +175,8 @@ let
   };
 
 in stdenv.mkDerivation rec {
-  pname = "liblcproxy";
-  name = "liblcproxy";
+  pname = "libverifproxy";
+  name = "libverifproxy";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
   buildInputs = with pkgs; [ wget git which tcl cmake libtool];
@@ -212,15 +212,15 @@ in stdenv.mkDerivation rec {
       --cpu:${nimCpu} \
       --os:${nimPlatform} \
       -d:disableMarchNative" \
-    liblcproxy
+    libverifproxy
 
    '';
 
   installPhase = ''
     mkdir -p $out
-    cp build/liblcproxy/liblcproxy* $out/
-    cp build/liblcproxy/lcproxy.h $out/
-    cp build/liblcproxy/nimbase.h $out/
+    cp build/libverifproxy/libverifproxy* $out/
+    cp build/libverifproxy/verifproxy.h $out/
+    cp build/libverifproxy/nimbase.h $out/
   '';
 }
 
