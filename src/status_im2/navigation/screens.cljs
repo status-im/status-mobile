@@ -8,7 +8,11 @@
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
-            [status-im2.setup.config :as config]))
+            [status-im2.setup.config :as config]
+            [quo.design-system.colors :as colors]
+            [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
+            [status-im2.navigation.state :as state]
+            [utils.re-frame :as rf]))
 
 (def components
   [])
@@ -27,6 +31,20 @@
            {:name      :chat
             :options   {:topBar {:visible false}}
             :component chat/chat}
+
+           {:name      :images-horizontal
+            :insets    {:top false :bottom false}
+            :options   {:topBar        {:visible false}
+                        :navigationBar {:backgroundColor colors/black-persist}
+                        :statusBar     {:backgroundColor colors/black-persist
+                                        :style           :light}
+                        :animations    {:push {:sharedElementTransitions [{:fromId        "xyz"
+                                                                           :toId          "xyz"
+                                                                           :interpolation {:type :decelerate}}]}
+                                        :pop {:sharedElementTransitions [{:fromId        "xyz"
+                                                                          :toId          "xyz"
+                                                                          :interpolation {:type :decelerate}}]}}}
+            :component images-horizontal/images-horizontal}
 
            {:name      :discover-communities
             :options   {:topBar {:visible false}}

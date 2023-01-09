@@ -17,6 +17,7 @@
 (def image (reagent/adapt-react-class (.-Image ^js react-native)))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
+(def safe-area-view (reagent/adapt-react-class (.-SafeAreaView ^js react-native)))
 
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
@@ -66,6 +67,10 @@
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
+
+(defn set-status-bar-style
+  [style]
+  (.setBarStyle (.-StatusBar ^js react-native) style))
 
 (def style-sheet (.-StyleSheet ^js react-native))
 

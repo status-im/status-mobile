@@ -15,7 +15,8 @@
             [status-im2.common.toasts.view :as toasts]
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.config :as config]
-            [status-im2.setup.hot-reload :as reloader]))
+            [status-im2.setup.hot-reload :as reloader]
+            [utils.re-frame :as rf]))
 
 (defn get-screens
   []
@@ -39,9 +40,12 @@
 
 (defn wrapped-screen-style
   [{:keys [insets style]} insets-obj]
+  (let [view-id (rf/sub [:view-id])]
   (merge
    {:flex             1
-    :background-color (colors/theme-colors colors/white colors/neutral-100)}
+    ;:background-color (if (= view-id :images-horizontal) "#000" (colors/theme-colors colors/white colors/neutral-100))
+    :background-color  (colors/theme-colors colors/white colors/neutral-100)
+    }
    style
    (when (get insets :bottom)
      {:padding-bottom (+ (oget insets-obj "bottom")
@@ -50,7 +54,7 @@
    (when (get insets :top true)
      {:padding-top (+ (oget insets-obj "top")
                       (get style :padding-top)
-                      (get style :padding-vertical))})))
+                      (get style :padding-vertical))}))))
 
 (defn inactive
   []
