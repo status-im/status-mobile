@@ -63,14 +63,14 @@
         user-selected?                                  (rf/sub [:is-contact-selected? public-key])]
     [rn/touchable-opacity
      (merge
-       {:style               (style/container)
-        :accessibility-label :contact
-        :active-opacity      1
-        :on-press            #(if start-a-new-chat?
-                                (on-toggle true user-selected? public-key)
-                                (open-chat public-key))
-        :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
-                                            {:content (fn [] [actions/actions item extra-data])}])})
+      {:style               (style/container)
+       :accessibility-label :contact
+       :active-opacity      1
+       :on-press            #(if start-a-new-chat?
+                               (on-toggle true user-selected? public-key)
+                               (open-chat public-key))
+       :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                           {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar
       {:full-name         display-name
        :profile-picture   photo-path
