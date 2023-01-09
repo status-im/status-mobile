@@ -98,10 +98,8 @@
      (i18n/label :t/leave-community)]]])
 
 (defn actions
-  []
-  (let [community-mock (rf/sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and
-                                                                         ;;only pass community id
-        community      (rf/sub [:communities/community (:id community-mock)])]
+  [id]
+  (let [community (rf/sub [:communities/community id])]
     [quo/action-drawer
      [(get (if (:joined community)
              (joined-options (:id community))

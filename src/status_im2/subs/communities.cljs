@@ -137,7 +137,7 @@
    :muted?                (:muted community)
    :unread-messages?      (pos? (:unviewed-messages-count counts))
    :unread-mentions-count (:unviewed-mentions-count counts)
-   :community-icon        (get-in community [:images :thumbnail :uri])})
+   :community-icon        (:images community)})
 
 (re-frame/reg-sub
  :communities/home-item
