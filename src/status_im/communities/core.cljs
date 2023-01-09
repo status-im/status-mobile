@@ -108,11 +108,6 @@
   [_ response-js]
   {:dispatch [:sanitize-messages-and-process-response response-js]})
 
-#_[:toasts/create
-         {:icon       :placeholder
-          :icon-color "green"
-          :text       "Undo pressed"}]
-
 (rf/defn left
   {:events [::left]}
   [cofx response-js]
