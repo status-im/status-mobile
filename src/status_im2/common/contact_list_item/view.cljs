@@ -14,9 +14,7 @@
   (let [view-id (rf/sub [:view-id])]
     (when (= view-id :shell-stack)
       (rf/dispatch [:dismiss-keyboard])
-      (if platform/android?
-        (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-        (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+      (rf/dispatch [:chat.ui/show-profile chat-id])
       (rf/dispatch [:search/home-filter-changed nil]))))
 
 (defn action-icon
@@ -65,15 +63,14 @@
         user-selected?                                  (rf/sub [:is-contact-selected? public-key])]
     [rn/touchable-opacity
      (merge
-      {:style               (style/container)
-       :accessibility-label :contact
-       :active-opacity      1
-       :on-press            #(if start-a-new-chat?
-                               (on-toggle true user-selected? public-key)
-                               (open-chat public-key))
-       :on-long-press       #(when (some? group)
-                               (rf/dispatch [:bottom-sheet/show-sheet
-                                             {:content (fn [] [actions/actions item extra-data])}]))})
+       {:style               (style/container)
+        :accessibility-label :contact
+        :active-opacity      1
+        :on-press            #(if start-a-new-chat?
+                                (on-toggle true user-selected? public-key)
+                                (open-chat public-key))
+        :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                            {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar
       {:full-name         display-name
        :profile-picture   photo-path
