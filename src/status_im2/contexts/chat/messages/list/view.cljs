@@ -142,7 +142,8 @@
          one-to-one?
          (not contact-added?))
         bottom-space 15]
-    [:<>
+    [rn/view
+     {:style {:flex 1}}
      ;;DO NOT use anonymous functions for handlers
      [rn/flat-list
       (merge
@@ -164,7 +165,7 @@
         :on-viewable-items-changed    on-viewable-items-changed
         :on-end-reached               list-on-end-reached
         :on-scroll-to-index-failed    identity            ;;don't remove this
-        :content-container-style      {:padding-top    (+ bottom-space 16)
+        :content-container-style      {:padding-top    (+ bottom-space 32)
                                        :padding-bottom 16}
         :scroll-indicator-insets      {:top bottom-space} ;;ios only
         :keyboard-dismiss-mode        :interactive
@@ -186,4 +187,4 @@
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
       {:position :absolute
-       :bottom   12}]]))
+       :bottom   6}]]))
