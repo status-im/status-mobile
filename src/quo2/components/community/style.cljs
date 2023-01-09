@@ -77,19 +77,20 @@
                       colors/white
                       colors/neutral-90)})
 
-(defn list-view-content-container
+(defn list-info-container
   []
-  {:flex-direction   :row
-   :border-radius    16
-   :align-items      :center
-   :background-color (colors/theme-colors
-                      colors/white
-                      colors/neutral-90)})
+  {:flex-direction     :row
+   :border-radius      16
+   :padding-horizontal 12
+   :align-items        :center
+   :padding-vertical   8})
 
-(defn list-view-chat-icon
+(defn membership-info-container
   []
-  {:border-radius 32
-   :padding       12})
+  {:flex-direction :row
+   :border-radius  16
+   :align-items    :center
+   :height         48})
 
 (defn community-title-description-container
   [margin-top]
