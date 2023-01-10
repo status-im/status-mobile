@@ -10,31 +10,6 @@
 
 (def rectangular-style-count 3)
 
-(defn border-tlr
-  [index]
-  (when (= index 0) 12))
-
-(defn border-trr
-  [index count album-style]
-  (when (or (and (= index 1) (not= count rectangular-style-count))
-            (and (= index 0) (= count rectangular-style-count) (= album-style :landscape))
-            (and (= index 1) (= count rectangular-style-count) (= album-style :portrait)))
-    12))
-
-(defn border-blr
-  [index count album-style]
-  (when (or (and (= index 0) (< count rectangular-style-count))
-            (and (= index 2) (> count rectangular-style-count))
-            (and (= index 1) (= count rectangular-style-count) (= album-style :landscape))
-            (and (= index 0) (= count rectangular-style-count) (= album-style :portrait)))
-    12))
-
-(defn border-brr
-  [index count]
-  (when (or (and (= index 1) (< count rectangular-style-count))
-            (and (= index (- (min count constants/max-album-photos) 1)) (> count 2)))
-    12))
-
 (defn find-size
   [size-arr album-style]
   (if (= album-style :landscape)
@@ -79,8 +54,7 @@
              (when (and (> images-count constants/max-album-photos)
                         (= index (- constants/max-album-photos 1)))
                [rn/view
-                {:style (merge style/overlay
-                               {:border-bottom-right-radius (border-brr index images-count)})}
+                {:style style/overlay}
                 [quo/text
                  {:weight :bold
                   :size   :heading-2

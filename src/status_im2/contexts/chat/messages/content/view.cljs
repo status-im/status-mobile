@@ -17,7 +17,8 @@
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [status-im.utils.utils :as utils]))
 
 (defn avatar
   [{:keys [content last-in-group? pinned quoted-message from]}]
