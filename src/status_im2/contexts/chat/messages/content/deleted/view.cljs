@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.deleted.view
-  (:require [quo2.core :as quo]
-            [i18n.i18n :as i18n]))
+  (:require [i18n.i18n :as i18n]
+            [quo2.core :as quo]))
 
 (defn deleted-message
   [{:keys [deleted? deleted-undoable-till timestamp-str deleted-for-me-undoable-till]}]
