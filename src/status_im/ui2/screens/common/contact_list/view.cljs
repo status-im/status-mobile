@@ -11,7 +11,7 @@
 (defn contact-list
   [data]
   (let [contacts (if (:group data)
-                   (rf/sub [:contacts/add-members-sections])
+                   (rf/sub [:contacts/grouped-by-first-letter])
                    (rf/sub [:contacts/filtered-active-sections]))]
     [rn/section-list
      {:key-fn                         :title
