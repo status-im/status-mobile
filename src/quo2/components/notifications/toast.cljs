@@ -8,14 +8,14 @@
             [react-native.core :as rn]))
 
 (def ^:private themes
-  {:container        {:light {:background-color colors/white-opa-70}
-                      :dark  {:background-color colors/neutral-80-opa-70}}
-   :text             {:light {:color colors/neutral-100}
-                      :dark  {:color colors/white}}
-   :icon             {:light {:color colors/neutral-100}
-                      :dark  {:color colors/white}}
-   :action-container {:light {:background-color :colors/neutral-80-opa-5}
-                      :dark  {:background-color :colors/white-opa-5}}})
+  {:container        {:dark  {:background-color colors/white-opa-70}
+                      :light {:background-color colors/neutral-80-opa-70}}
+   :text             {:dark  {:color colors/neutral-100}
+                      :light {:color colors/white}}
+   :icon             {:dark  {:color colors/neutral-100}
+                      :light {:color colors/white}}
+   :action-container {:dark  {:background-color :colors/neutral-80-opa-5}
+                      :light {:background-color :colors/white-opa-5}}})
 
 (defn- merge-theme-style
   [component-key styles]
@@ -23,7 +23,9 @@
 
 (defn toast-action-container
   [{:keys [on-press style]} & children]
-  [rn/touchable-highlight {:on-press on-press}
+  [rn/touchable-highlight
+   {:on-press       on-press
+    :underlay-color :transparent}
    [into
     [rn/view
      {:style (merge
@@ -40,7 +42,8 @@
 
 (defn toast-undo-action
   [duration on-press]
-  [toast-action-container {:on-press on-press}
+  [toast-action-container
+   {:on-press on-press :accessibility-label :toast-undo-action}
    [rn/view {:style {:margin-right 5}}
     [count-down-circle/circle-timer {:duration duration}]]
    [text/text
@@ -63,7 +66,10 @@
     [rn/view {:style {:padding 2}} left]
     [rn/view {:style {:padding 4 :flex 1}}
      [text/text
-      {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {})}
+      {:size                :paragraph-2
+       :weight              :medium
+       :style               (merge-theme-style :text {})
+       :accessibility-label :toast-content}
       middle]]
     (when right right)]])
 

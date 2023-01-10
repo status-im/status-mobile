@@ -191,9 +191,12 @@ class ChatElementByText(Text):
 
     @property
     def status(self) -> str:
-        sent = Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='sent']")
-        delivered = Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='delivered']")
+        sending = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':sending')]")
+        sent = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':sent')]")
+        delivered = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':delivered')]")
         status = ''
+        if sending.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
+            status = 'sending'
         if sent.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
             status = 'sent'
         if delivered.is_element_displayed(30, ignored_exceptions=NoSuchElementException):
@@ -638,9 +641,9 @@ class ChatView(BaseView):
 
         # Chat input
         self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")
+        self.cancel_reply_button = Button(self.driver, accessibility_id="reply-cancel-button")
         self.quote_username_in_message_input = EditBox(self.driver,
-                                                       xpath="//android.view.ViewGroup[@content-desc='cancel-message-reply']/..//android.widget.TextView[1]")
-        self.cancel_reply_button = Button(self.driver, accessibility_id="cancel-message-reply")
+                                                       xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
         self.chat_item = Button(self.driver, xpath="(//*[@content-desc='chat-item'])[1]")
         self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
         self.commands_button = CommandsButton(self.driver)
@@ -921,6 +924,12 @@ class ChatView(BaseView):
         element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def add_remove_same_reaction(self, message: str, emoji: str = 'thumbs-up'):
+        self.driver.info("Adding one more '%s' reaction or removing an added one" % emoji)
+        key = emojis[emoji]
+        element = Button(self.driver, accessibility_id='emoji-reaction-%s' % key)
+        element.click()
 
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()

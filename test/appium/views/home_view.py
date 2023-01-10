@@ -293,7 +293,7 @@ class HomeView(BaseView):
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
-        self.delete_chat_button = Button(self.driver, accessibility_id="delete-chat-button")
+        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history-button")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-all-read-button")
 
@@ -468,7 +468,7 @@ class HomeView(BaseView):
         self.driver.info("Deleting chat '%s' by long press" % username)
         self.get_chat(username).long_press_element()
         self.delete_chat_button.click()
-        self.delete_button.click()
+        self.delete_chat_button.click()
 
     def leave_chat_long_press(self, username):
         self.driver.info("Leaving chat '%s' by long press" % username)

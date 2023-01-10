@@ -206,58 +206,60 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 
 (def react-native-reanimated
   #js
-   {:default          #js
-                       {:createAnimatedComponent identity
-                        :eq                      nil
-                        :greaterOrEq             nil
-                        :greaterThan             nil
-                        :lessThan                nil
-                        :lessOrEq                nil
-                        :add                     nil
-                        :diff                    nil
-                        :divide                  nil
-                        :sub                     nil
-                        :multiply                nil
-                        :abs                     nil
-                        :min                     nil
-                        :max                     nil
-                        :neq                     nil
-                        :and                     nil
-                        :or                      nil
-                        :not                     nil
-                        :set                     nil
-                        :startClock              nil
-                        :stopClock               nil
-                        :Value                   nil
-                        :Clock                   nil
-                        :debug                   nil
-                        :log                     nil
-                        :event                   nil
-                        :cond                    nil
-                        :block                   nil
-                        :interpolateNode         nil
-                        :call                    nil
-                        :timing                  nil
-                        :onChange                nil
-                        :View                    #js {}
-                        :Image                   #js {}
-                        :ScrollView              #js {}
-                        :Text                    #js {}
-                        :Extrapolate             #js {:CLAMP nil}
-                        :Code                    #js {}}
-    :EasingNode       #js
-                       {:bezier identity
-                        :linear identity}
-    :clockRunning     nil
-    :useSharedValue   (fn [])
-    :useAnimatedStyle (fn [])
-    :withTiming       (fn [])
-    :withDelay        (fn [])
-    :Easing           #js {:bezier identity}
-    :Keyframe         (fn [])
-    :SlideOutUp       js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
-    :SlideInUp        js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
-    :LinearTransition js/__STATUS_MOBILE_JS_IDENTITY_PROXY__})
+   {:default                #js
+                             {:createAnimatedComponent identity
+                              :eq                      nil
+                              :greaterOrEq             nil
+                              :greaterThan             nil
+                              :lessThan                nil
+                              :lessOrEq                nil
+                              :add                     nil
+                              :diff                    nil
+                              :divide                  nil
+                              :sub                     nil
+                              :multiply                nil
+                              :abs                     nil
+                              :min                     nil
+                              :max                     nil
+                              :neq                     nil
+                              :and                     nil
+                              :or                      nil
+                              :not                     nil
+                              :set                     nil
+                              :startClock              nil
+                              :stopClock               nil
+                              :Value                   nil
+                              :Clock                   nil
+                              :debug                   nil
+                              :log                     nil
+                              :event                   nil
+                              :cond                    nil
+                              :block                   nil
+                              :interpolateNode         nil
+                              :call                    nil
+                              :timing                  nil
+                              :onChange                nil
+                              :View                    #js {}
+                              :Image                   #js {}
+                              :ScrollView              #js {}
+                              :Text                    #js {}
+                              :Extrapolate             #js {:CLAMP nil}
+                              :Code                    #js {}}
+    :EasingNode             #js
+                             {:bezier identity
+                              :linear identity}
+    :clockRunning           nil
+    :useSharedValue         (fn [])
+    :useAnimatedStyle       (fn [])
+    :withTiming             (fn [])
+    :withDelay              (fn [])
+    :Easing                 #js {:bezier identity}
+    :Keyframe               (fn [])
+    :enableLayoutAnimations (fn [])
+    :SlideOutUp             js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
+    :SlideInUp              js/__STATUS_MOBILE_JS_IDENTITY_PROXY__
+    :LinearTransition       js/__STATUS_MOBILE_JS_IDENTITY_PROXY__})
+
 (def react-native-gesture-handler
   #js
    {:default                  #js {}

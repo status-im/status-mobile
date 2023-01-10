@@ -283,6 +283,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5373)
+    # moved
     def test_1_1_chat_emoji_send_reply_and_open_link(self):
         self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
@@ -1230,6 +1231,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1 = self.home_1.get_profile_view()
+        self.profile_2 = self.home_2.get_profile_view()
         users = self.loop.run_until_complete(run_in_parallel(
             ((self.home_1.get_public_key_and_username, True),
              (self.home_2.get_public_key_and_username, True))
@@ -1238,6 +1240,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.public_key_2, self.default_username_2 = users[1]
 
         self.profile_1.switch_push_notifications()
+        self.profile_2.switch_push_notifications()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
         self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.contacts_button)
@@ -1269,12 +1272,61 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Receiver sets own emoji and verifies counter on received message in 1-1 chat")
         message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
         message_receiver.emojis_below_message().wait_for_element_text(1, 90)
-        self.chat_2.set_reaction(message_from_sender)
+        self.chat_2.add_remove_same_reaction(message_from_sender)
+        message_receiver.emojis_below_message().wait_for_element_text(2)
+        message_sender.emojis_below_message().wait_for_element_text(2, 90)
 
         self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
-        self.chat_2.set_reaction(message_from_sender)
-        message_sender.emojis_below_message().wait_for_element_text(1)
-        message_receiver.emojis_below_message().wait_for_element_text(1, 90)
+        self.chat_2.add_remove_same_reaction(message_from_sender)
+        message_receiver.emojis_below_message().wait_for_element_text(1)
+        message_sender.emojis_below_message().wait_for_element_text(1, 90)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702782)
+    def test_1_1_chat_emoji_send_reply_and_open_link(self):
+        self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
+        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
+        self.chat_1.send_message(emoji.emojize(emoji_name))
+        for chat in self.chat_1, self.chat_2:
+            if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
+                self.errors.append('Message with emoji was not sent or received in 1-1 chat')
+        self.chat_1.quote_message(emoji_unicode)
+        actual_text = self.chat_1.quote_username_in_message_input.text
+        if actual_text != "You":
+            self.errors.append("'You' is not displayed in reply quote snippet replying to own message, '%s' instead" % actual_text)
+
+        self.chat_1.just_fyi("Clear quote and check there is not snippet anymore")
+        self.chat_1.cancel_reply_button.click()
+        if self.chat_1.cancel_reply_button.is_element_displayed():
+            self.errors.append("Message quote kept in public chat input after it was cancelled")
+
+        self.chat_1.just_fyi("Send reply")
+        self.chat_1.quote_message(emoji_unicode)
+        reply_to_message_from_sender = "hey, reply"
+        self.chat_1.send_message(reply_to_message_from_sender)
+
+        self.chat_1.just_fyi("Receiver verifies received reply...")
+        if self.chat_2.chat_element_by_text(reply_to_message_from_sender).replied_message_text != emoji_unicode:
+            self.errors.append("No reply received in 1-1 chat")
+
+        self.home_1.just_fyi("Check that link can be opened and replied from 1-1 chat")
+        reply = 'reply to link'
+        url_message = 'Test with link: https://status.im/ here should be nothing unusual.'
+        self.chat_1.send_message(url_message)
+        self.chat_2.chat_element_by_text(url_message).wait_for_element(20)
+        self.chat_2.quote_message(url_message)
+        self.chat_2.send_message(reply)
+        replied_message = self.chat_1.chat_element_by_text(reply)
+        if replied_message.replied_message_text != url_message:
+            self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
+        # The "open_in_status" feature is not implemented yet
+        # url_message = 'http://status.im'
+        # self.chat_1.send_message(url_message)
+        # self.chat_2.element_starts_with_text(url_message, 'button').click()
+        # web_view = self.chat_2.open_in_status_button.click()
+        # if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+        #     self.errors.append('URL was not opened from 1-1 chat')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702731)
@@ -1412,19 +1464,80 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702733)
-    def test_1_1_chat_text_message_delete_push_disappear(self):
+    @marks.testrail_id(702813)
+    def test_1_1_chat_push_emoji(self):
+        message_no_pn, message = 'No PN', 'Text push notification'
+
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.browser_tab.click()  # temp, until profile is on browser tab
+        self.home_1.chats_tab.click()
+
+        self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1.send_message(message)
+
+        self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
+        self.device_1.click_system_back_button_until_element_is_shown()
+        self.device_1.browser_tab.click()  # temp, until profile is on browser tab
+        self.device_1.click_system_home_button()
+
+        self.device_2.just_fyi("Check text push notification and tap it")
+        self.device_2.open_notification_bar()
+        if not self.home_2.get_pn(message):
+            self.device_2.driver.fail("Push notification with text was not received")
+        chat_2 = self.device_2.click_upon_push_notification_by_text(message)
+
+        self.device_2.just_fyi("Send emoji message to Device 1 while it's on background")
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        chat_2.send_message(emoji.emojize(emoji_message))
+
+        self.device_1.just_fyi("Device 1 checks PN with emoji")
+        self.device_1.open_notification_bar()
+        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
+            self.device_1.driver.fail("Push notification with emoji was not received")
+        chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
+
+        self.device_1.just_fyi("Check Device 1 is actually on chat")
+        if not (chat_1.element_by_text_part(message).is_element_displayed()
+                and chat_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            self.device_1.driver.fail("Failed to open chat view after tap on PN")
+
+        self.device_1.just_fyi("Checks there are no PN after message was seen")
+        [device.open_notification_bar() for device in (self.device_1, self.device_2)]
+        if (self.device_2.element_by_text_part(message).is_element_displayed()
+                or self.device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            self.errors.append("PN are keep staying after message was seen by user")
+        [device.click_system_back_button_until_element_is_shown(element='chat') for device in (self.device_1, self.device_2)]
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702733)
+    def test_1_1_chat_text_message_edit_delete_push_disappear(self):
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.home_1.get_chat(self.default_username_2).click()
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.home_1.get_chat(self.default_username_1).click()
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         message_after_edit_1_1 = 'smth I should edit'
+        message_to_delete_for_me = 'message to delete for me'
         self.chat_2.send_message(message_after_edit_1_1)
         chat_1_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
         chat_1_element.long_press_element()
         for action in ("edit", "delete-for-everyone"):
             if self.chat_1.element_by_translation_id(action).is_element_displayed():
                 self.errors.append('Option to %s someone else message available!' % action)
-        self.home_1.click_system_back_button()
+        self.home_1.tap_by_coordinates(500, 100)
+
+        self.device_2.just_fyi("Delete message for me and check it is only deleted for the author")
+        self.chat_2.send_message(message_to_delete_for_me)
+        self.chat_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
+        if not self.chat_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(20):
+            self.errors.append("Deleted for me message is shown in chat for the author of message")
+        if not self.chat_2.element_by_translation_id('message-deleted-for-you').is_element_displayed(20):
+            self.errors.append("System message about deletion for you is not displayed")
+        if not self.chat_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(20):
+            self.errors.append("Deleted for me message is deleted for both users")
 
         self.device_2.just_fyi("Delete message for everyone and check it is not shown in chat preview on home")
         self.chat_2.delete_message_in_chat(message_after_edit_1_1)
@@ -1437,7 +1550,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
         message_to_delete = 'DELETE ME'
-        self.home_1.put_app_to_background()
         self.chat_2.send_message(message_to_delete)
         self.home_1.open_notification_bar()
         if not self.home_1.get_pn(message_to_delete):
@@ -1445,7 +1557,73 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.delete_message_in_chat(message_to_delete)
         pn_to_disappear = self.home_1.get_pn(message_to_delete)
         if pn_to_disappear:
-            if not pn_to_disappear.is_element_disappeared(30):
+            if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
+        [device.click_system_back_button_until_element_is_shown() for device in (self.device_1, self.device_2)]
+        self.errors.verify_no_errors()
 
+    # skipped to move to another 1-1 group
+    # @marks.testrail_id(702783)
+    # def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
+    #     self.home_1.get_home_view()
+    #     self.home_2.chats_tab.click()
+    #
+    #     self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
+    #     self.home_1.toggle_airplane_mode()
+    #     self.home_2.toggle_airplane_mode()
+    #     # Not implemented yet
+    #     # self.home_1.connection_offline_icon.wait_and_click(20)
+    #     # for element in self.home_1.not_connected_to_node_text, self.home_1.not_connected_to_peers_text:
+    #     #     if not element.is_element_displayed():
+    #     #         self.errors.append(
+    #     #             'Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
+    #     # self.home_1.click_system_back_button()
+    #
+    #     message_1 = 'test message'
+    #
+    #     self.home_2.just_fyi('Device2 checks "Sending" status when sending message from offline')
+    #     self.home_2.get_chat(username=self.default_username_1).click()
+    #     self.chat_2.send_message(message_1)
+    #     chat_element = self.chat_2.chat_element_by_text(message_1)
+    #     if chat_element.status != 'sending':
+    #         self.errors.append('Message status is not "Sending", it is %s!' % chat_element.status)
+    #
+    #     self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "Sent"')
+    #     self.chat_2.toggle_airplane_mode()
+    #     if chat_element.status != 'sent':
+    #         self.errors.append('Message status is not "Sent", it is %s!' % chat_element.status)
+    #
+    #     self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
+    #     self.home_1.toggle_airplane_mode()
+    #     self.home_1.get_home_view()
+    #     chat_element = self.home_1.get_chat(self.default_username_2, wait_time=60)
+    #     chat_element.click()
+    #     self.chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(20)
+    #
+    #     self.home_2.just_fyi('Device2 checks offline fetching for another message, check delivered status for first message')
+    #     if self.chat_2.chat_element_by_text(message_1).status != 'delivered':
+    #         self.errors.append(
+    #             'Message status is not "Delivered", it is %s!' % self.chat_2.chat_element_by_text(message_1).status)
+    #     self.home_1.toggle_airplane_mode()
+    #     message_2 = 'one more message'
+    #     self.chat_2.send_message(message_2)
+    #     self.home_1.toggle_airplane_mode()
+    #     chat_1 = chat_element.click()
+    #     chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
+    #     self.errors.verify_no_errors()
+
+    @marks.testrail_id(702784)
+    def test_1_1_chat_delete_via_long_press_relogin(self):
+        self.home_1.driver.quit()
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.chats_tab.click()
+
+        self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
+        self.home_2.delete_chat_long_press(username=self.default_username_1)
+        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
+            self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.default_username_1)
+        self.home_2.reopen_app()
+        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed(15):
+            self.errors.append(
+                    'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.default_username_1)
         self.errors.verify_no_errors()

@@ -26,6 +26,11 @@
       (.damping 20)
       (.stiffness 300)))
 
+(defn toast
+  [id]
+  (let [toast-opts (rf/sub [:toasts/toast id])]
+    [quo/toast toast-opts]))
+
 (defn container
   [id]
   (let [dismissed-locally? (reagent/atom false)
@@ -35,13 +40,11 @@
     (fn []
       [:f>
        (fn []
-         (let [toast-opts   (rf/sub [:toasts/toast id])
-               duration     (get toast-opts :duration 3000)
-               on-dismissed #((get toast-opts :on-dismissed identity) id)
-               translate-y  (reanimated/use-shared-value 0)
+         (let [duration     (or (rf/sub [:toasts/toast-cursor id :duration]) 3000)
+               on-dismissed #((or (rf/sub [:toasts/toast-cursor id :on-dismissed]) identity) id)
                create-timer (fn []
-                              (reset! timer (utils.utils/set-timeout #(do (close!) (on-dismissed))
-                                                                     duration)))
+                              (reset! timer (utils.utils/set-timeout close! duration)))
+               translate-y  (reanimated/use-shared-value 0)
                pan
                (->
                  (gesture/gesture-pan)
@@ -84,7 +87,7 @@
               :style    (reanimated/apply-animations-to-style
                          {:transform [{:translateY translate-y}]}
                          style/each-toast-container)}
-             [quo/toast toast-opts]]]))])))
+             [toast id]]]))])))
 
 (defn toasts
   []
@@ -92,6 +95,4 @@
     [into
      [rn/view
       {:style style/outmost-transparent-container}]
-     (->> toasts-ordered
-          reverse
-          (map (fn [id] ^{:key id} [container id])))]))
+     (map (fn [id] ^{:key id} [container id]) toasts-ordered)]))

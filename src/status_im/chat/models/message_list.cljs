@@ -1,8 +1,8 @@
 (ns status-im.chat.models.message-list
   (:require ["functional-red-black-tree" :as rb-tree]
             [status-im.constants :as constants]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [utils.re-frame :as rf]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
@@ -20,6 +20,7 @@
            from
            outgoing
            whisper-timestamp
+           deleted?
            deleted-for-me?
            albumize?]}]
   (-> {:whisper-timestamp whisper-timestamp
@@ -29,6 +30,7 @@
                            (or
                             (= constants/message-type-private-group-system-message
                                message-type)
+                            deleted?
                             deleted-for-me?))
        :clock-value       clock-value
        :type              :message
