@@ -82,7 +82,8 @@
      :on-press                   (fn []
                                    (bottom-sheet/close-bottom-sheet-fn nil)
                                    (timer/set-timeout
-                                    #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat]) bottom-sheet/animation-delay))}]
+                                    #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])
+                                    bottom-sheet/animation-delay))}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/connect-with-users)
@@ -99,7 +100,11 @@
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
-     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
+     :on-press                     (fn []
+                                     (bottom-sheet/close-bottom-sheet-fn nil)
+                                     (timer/set-timeout
+                                      #(rf/dispatch [:open-modal :new-contact])
+                                      bottom-sheet/animation-delay))}]])
 
 
 (def new-chat-bottom-sheet-comp
