@@ -171,11 +171,10 @@
  :<- [:multiaccount/public-key]
  :<- [:communities/current-community]
  :<- [:contacts/blocked-set]
- :<- [:contacts/contacts]
+ :<- [:contacts/contacts-raw]
  :<- [:chat/inputs]
- :<- [:mutual-contact-requests/enabled?]
  (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts
-       inputs mutual-contact-requests-enabled?]]
+       inputs]]
    (when current-chat
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
@@ -191,23 +190,35 @@
        (assoc :show-input? true)
 
        (not group-chat)
-       (assoc :show-input?
-              (and
-               (or
-                (not mutual-contact-requests-enabled?)
-                (get-in inputs [chat-id :metadata :sending-contact-request])
-                (and mutual-contact-requests-enabled?
-                     (= constants/contact-request-state-mutual
-                        (get-in contacts [chat-id :contact-request-state]))))
-               (not (contains? blocked-users-set chat-id))))))))
+       (assoc
+        :contact-request-state (get-in contacts [chat-id :contact-request-state])
+        :show-input?
+        (and
+         (or
+          (get-in inputs [chat-id :metadata :sending-contact-request])
+          (= constants/contact-request-state-mutual
+             (get-in contacts [chat-id :contact-request-state])))
+         (not (contains? blocked-users-set chat-id))))))))
 
 (re-frame/reg-sub
  :chats/current-chat-chat-view
  :<- [:chats/current-chat]
  (fn [current-chat]
    (select-keys current-chat
-                [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color
-                 :chat-name :synced-to :synced-from :community-id :emoji])))
+                [:chat-id
+                 :show-input?
+                 :group-chat
+                 :admins
+                 :invitation-admin
+                 :public?
+                 :chat-type
+                 :color
+                 :contact-request-state
+                 :chat-name
+                 :synced-to
+                 :synced-from
+                 :community-id
+                 :emoji])))
 
 (re-frame/reg-sub
  :current-chat/metadata

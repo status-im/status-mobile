@@ -7,6 +7,8 @@
             [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
             [status-im2.common.constants :as constants]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
+            [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
+             contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner] ;;TODO move to status-im2
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
@@ -62,8 +64,11 @@
 
 (defn chat-render
   []
-  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
+  (let [{:keys [chat-id
+                contact-request-state
+                show-input?]
+         :as   chat}
+        (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:position :relative :flex 1}}
      [rn/view
       {:style {:position         :absolute
@@ -74,14 +79,15 @@
 
       [pin.banner/banner chat-id]
       [not-implemented/not-implemented
-       [pin-limit-popover/pin-limit-popover chat-id]]
-     ]
+       [pin-limit-popover/pin-limit-popover chat-id]]]
      [page-nav]
-
-
      [messages.list/messages-list {:chat chat :show-input? show-input?}]
-     (when show-input?
-       [composer/composer chat-id])]))
+     (cond (and (not show-input?)
+                contact-request-state)
+           [contact-requests.bottom-drawer/view chat-id contact-request-state]
+
+           show-input?
+           [composer/composer chat-id])]))
 
 (defn chat
   []

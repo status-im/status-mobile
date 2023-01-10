@@ -4,7 +4,6 @@
             [status-im.contact.block :as contact.block]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
@@ -150,15 +149,6 @@
              nickname
              #(re-frame/dispatch [:sanitize-messages-and-process-response %]))
             (navigation/navigate-back)))
-
-(rf/defn switch-mutual-contact-requests-enabled
-  {:events [:multiaccounts.ui/switch-mutual-contact-requests-enabled]}
-  [cofx enabled?]
-  (multiaccounts.update/multiaccount-update
-   cofx
-   :mutual-contact-enabled?
-   enabled?
-   nil))
 
 (rf/defn set-search-query
   {:events [:contacts/set-search-query]}
