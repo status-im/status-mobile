@@ -335,3 +335,8 @@
   {:events [:chat.ui/update-shared-element-id]}
   [{:keys [db]} shared-element-id]
   {:db (assoc db :shared-element-id shared-element-id)})
+
+(rf/defn close-lightbox
+  {:events [:chat.ui/close-lightbox]}
+  [{:keys [db]} value]
+  {:db (assoc db :close-lightbox value)})

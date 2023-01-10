@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
+<<<<<<< HEAD
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -12,6 +13,20 @@
     [utils.datetime :as datetime]
     [react-native.gesture :as gesture]
     [oops.core :refer [oget]]))
+=======
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   [react-native.reanimated :as reanimated]
+   [utils.re-frame :as rf]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [status-im2.contexts.chat.lightbox.style :as style]
+   [utils.datetime :as datetime]
+   [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
+   [oops.core :refer [oget]]))
+>>>>>>> 950c1852e (feat: zoomable image)
 
 (def flat-list-ref (atom nil))
 (def small-list-ref (atom nil))
@@ -21,33 +36,21 @@
 (defn toggle-opacity
   [opacity-value border-value transparent?]
   (let [opacity (reanimated/get-shared-value opacity-value)]
-    (reanimated/set-shared-value opacity-value (reanimated/with-timing (if (= opacity 1) 0 1)))
-    (reanimated/set-shared-value border-value (reanimated/with-timing (if (= opacity 1) 0 12)))
-    (reset! transparent? (not @transparent?))))
+    (if (= opacity 1)
+      (do
+        (reanimated/set-shared-value opacity-value (reanimated/with-timing 0))
+        (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
+      (do
+        (reset! transparent? (not @transparent?))
+        (js/setTimeout #(reanimated/set-shared-value opacity-value (reanimated/with-timing 1)) 50)))
+    (reanimated/set-shared-value border-value (reanimated/with-timing (if (= opacity 1) 0 12)))))
 
 (defn image
-  [message opacity-value border-value transparent?]
-  [:f>
-   (fn []
-     (let [shared-element-id (rf/sub [:shared-element-id])
-           width             (:width (rn/get-window))
-           height            (* (or (:image-height message) 1000)
-                                (/ width (or (:image-width message) 1000)))]
-       [gesture/tap-gesture-handler
-        {:on-handler-state-change (fn [e]
-                                    (when (= (oget e "nativeEvent.state") (:active gesture/states))
-                                      (toggle-opacity opacity-value border-value transparent?)))}
-        [rn/view {:style {:flex-direction :row}}
-         [reanimated/view
-          {:style (reanimated/apply-animations-to-style
-                   {:border-radius border-value}
-                   {:overflow :hidden})}
-          [fast-image/fast-image
-           {:source    {:uri (:image (:content message))}
-            :style     {:width  width
-                        :height height}
-            :native-ID (when (= shared-element-id (:message-id message)) :shared-element)}]]
-         [rn/view {:style {:width 16}}]]]))])
+  [message index _ {:keys [opacity-value border-value transparent?]}]
+  [rn/view {:style {:flex-direction :row}}
+   [zoomable-image/zoomable-image message index border-value
+    #(toggle-opacity opacity-value border-value transparent?)]
+   [rn/view {:style {:width 16}}]])
 
 
 (defn get-item-layout
@@ -68,14 +71,16 @@
     (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))])))
 
 (defn top-view
-  [{:keys [from timestamp]} insets opacity-value transparent?]
+  [{:keys [from timestamp]} insets opacity-value index]
   [:f>
    (fn []
      (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))]
        [reanimated/view
         {:style (style/top-view-container (:top insets) opacity-value)}
         [rn/touchable-opacity
-         {:on-press #(when-not @transparent? (rf/dispatch [:navigate-back]))
+         {:on-press #(rf/dispatch (if platform/ios?
+                                    [:chat.ui/close-lightbox @index]
+                                    [:navigate-back]))
           :style    style/close-container}
          [quo/icon :close {:size 20 :color colors/white}]]
         [rn/view {:style {:margin-left 12}}
@@ -161,7 +166,10 @@
            transparent?             (reagent/atom false)
            opacity-value            (reanimated/use-shared-value 1)
            border-value             (reanimated/use-shared-value 12)
-           window-width             (:width (rn/get-window))]
+           window-width             (:width (rn/get-window))
+           callback                 (fn [e]
+                                      (on-viewable-items-changed e
+                                                                 scroll-index))]
        (reset! data messages)
        [safe-area/consumer
         (fn [insets]
@@ -170,22 +178,24 @@
              ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
              (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
              [rn/view {:style style/container-view}
-              [top-view (first messages) insets opacity-value transparent?]
+              (when-not @transparent?
+                [top-view (first messages) insets opacity-value scroll-index])
               [rn/flat-list
                {:ref                       #(reset! flat-list-ref %)
                 :key-fn                    :message-id
                 :style                     {:width (+ window-width 16)}
                 :data                      @data
-                :render-fn                 (fn [item] [image item opacity-value border-value
-                                                       transparent?])
+                :render-fn                 image
+                :render-data               {:opacity-value opacity-value
+                                            :border-value  border-value
+                                            :transparent?  transparent?}
                 :horizontal                true
                 :paging-enabled            true
                 :get-item-layout           get-item-layout
                 :viewability-config        {:view-area-coverage-percent-threshold 50}
-                :on-viewable-items-changed (rn/use-callback (fn [e]
-                                                              (on-viewable-items-changed e
-                                                                                         scroll-index)))
+                :on-viewable-items-changed callback
                 :content-container-style   {:justify-content :center
                                             :align-items     :center}}]
-              [bottom-view messages index scroll-index insets opacity-value]])])]))])
+              (when-not @transparent?
+                [bottom-view messages index scroll-index insets opacity-value])])])]))])
 
