@@ -17,7 +17,7 @@
     {:width (second size-arr) :height (first size-arr) :album-style album-style}))
 
 (defn album-message
-  [{:keys [albumize?] :as message}]
+  [{:keys [albumize?] :as message} context on-long-press]
   (let [shared-element-id (rf/sub [:shared-element-id])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
@@ -40,13 +40,15 @@
             [rn/touchable-opacity
              {:key            (:message-id item)
               :active-opacity 1
+              ;; issue: https://github.com/status-im/status-mobile/issues/14995
+              :on-long-press  #(js/alert "Action drawer for albums is not supported yet")
               :on-press       (fn []
                                 (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
                                 (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
                                                               {:messages (:album message) :index index}])
                                                100))}
              [fast-image/fast-image
-              {:style     (style/image dimensions index portrait?)
+              {:style     (style/image dimensions index portrait? images-count)
                :source    {:uri (:image (:content item))}
                :native-ID (when (and (= shared-element-id (:message-id item))
                                      (< index constants/max-album-photos))
@@ -64,5 +66,5 @@
       [:<>
        (map-indexed
         (fn [index item]
-          [image/image-message index item])
+          [image/image-message index item context on-long-press])
         (:album message))])))
