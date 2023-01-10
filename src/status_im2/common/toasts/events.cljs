@@ -17,11 +17,11 @@
                      (update :toasts assoc :ordered ordered :toasts toasts)
                      (update :toasts dissoc :hide-toasts-timer-set))}
 
-            (and (not update?) (= (count ordered) 1))
-            (assoc :show-toasts [])
+      (and (not update?) (= (count ordered) 1))
+      (assoc :show-toasts [])
 
-            (not (:id opts))
-            (update-in [:db :toasts :next-toast-number] inc))))
+      (not (:id opts))
+      (update-in [:db :toasts :next-toast-number] inc))))
 
 (rf/defn hide-toasts-with-check
   {:events [:toasts/hide-with-check]}
