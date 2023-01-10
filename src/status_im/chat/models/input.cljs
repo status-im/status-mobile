@@ -192,8 +192,9 @@
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
              :text         input-text
-             :image-width  width
-             :image-height height})
+             ;:image-width  width
+             ;:image-height height
+             })
           images)))
 
 (rf/defn clean-input
