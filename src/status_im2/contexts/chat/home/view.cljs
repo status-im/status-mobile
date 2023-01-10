@@ -68,7 +68,9 @@
         [:<>
          [quo/discover-card
           {:title       (i18n/label :t/invite-friends-to-status)
-           :description (i18n/label :t/share-invite-link)}]
+           :description (i18n/label :t/share-invite-link)
+           ;; TEMPORARY. WILL REMOVE AFTER QA TESTING.
+           :on-press    #(rf/dispatch [:navigate-to :animated-header-list])}]
          [quo/tabs
           {:style          {:margin-left   20
                             :margin-bottom 20

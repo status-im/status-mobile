@@ -15,6 +15,7 @@
                              SlideOutUp
                              LinearTransition)]
             [reagent.core :as reagent]
+            [react-native.flat-list :as rn-flat-list]
             [utils.collection]))
 
 ;; Animations
@@ -27,6 +28,10 @@
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
+(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList reanimated)))
+(defn flat-list
+  [props]
+  [reanimated-flat-list (rn-flat-list/base-list-props props)])
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 
 (def linear-gradient (create-animated-component LinearGradient))
@@ -35,7 +40,6 @@
 ;; Hooks
 (def use-shared-value useSharedValue)
 (def use-animated-style useAnimatedStyle)
-
 ;; Animations
 (def with-timing withTiming)
 (def with-delay withDelay)
