@@ -9,7 +9,7 @@
 
 (def ^:private themes
   {:container        {:dark  {:background-color colors/white-opa-70}
-                      :light {:background-color colors/neutral-80-opa-70}}
+                      :light {:background-color colors/neutral-80-opa-90}}
    :text             {:dark  {:color colors/neutral-100}
                       :light {:color colors/white}}
    :icon             {:dark  {:color colors/neutral-100}
@@ -51,8 +51,8 @@
     [i18n/label :t/undo]]])
 
 (defn- toast-container
-  [{:keys [left middle right]}]
-  [rn/view {:style {:padding-left 12 :padding-right 12}}
+  [{:keys [left middle right container-style]}]
+  [rn/view {:style (merge {:padding-left 12 :padding-right 12} container-style)}
    [rn/view
     {:style (merge-theme-style :container
                                {:flex-direction   :row
@@ -74,14 +74,15 @@
     (when right right)]])
 
 (defn toast
-  [{:keys [icon icon-color text action undo-duration undo-on-press]}]
+  [{:keys [icon icon-color text action undo-duration undo-on-press container-style]}]
   [toast-container
-   {:left   (when icon
-              [icon/icon icon
-               {:container-style {:width 20 :height 20}
-                :color           (or icon-color
-                                     (get-in themes [:icon (theme/get-theme) :color]))}])
-    :middle text
-    :right  (if undo-duration
-              [toast-undo-action undo-duration undo-on-press]
-              action)}])
+   {:left            (when icon
+                       [icon/icon icon
+                        {:container-style {:width 20 :height 20}
+                         :color           (or icon-color
+                                              (get-in themes [:icon (theme/get-theme) :color]))}])
+    :middle          text
+    :right           (if undo-duration
+                       [toast-undo-action undo-duration undo-on-press]
+                       action)
+    :container-style container-style}])

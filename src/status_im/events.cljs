@@ -161,8 +161,10 @@
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]
-  {:db         (assoc db :app-in-background-since now)
-   :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]})
+  {:db (assoc db :app-in-background-since now)
+   ;; event not implemented
+   ;; :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]
+  })
 
 (rf/defn app-state-change
   {:events [:app-state-change]}

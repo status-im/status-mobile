@@ -16,8 +16,7 @@
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]
-            [status-im.utils.utils :as utils]))
+            [utils.datetime :as datetime]))
 
 (defn avatar
   [{:keys [content last-in-group? pinned quoted-message from]}]
@@ -51,12 +50,20 @@
     (let [display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity from]))
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
+<<<<<<< HEAD
        {:profile-name   display-name
         :short-chat-key (utils/get-shortened-address (or compressed-key
                                                          from))
         :time-str       (datetime/timestamp->time timestamp)
         :contact?       added?
         :verified?      ens-verified}])))
+=======
+       {:profile-name display-name
+        :chat-key     from
+        :time-str     (datetime/timestamp->time timestamp)
+        :contact?     added?
+        :verified?    ens-verified}])))
+>>>>>>> e9cf18df1... feat: photo & album selector screens
 
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]

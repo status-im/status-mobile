@@ -2,11 +2,11 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
             [status-im2.contexts.chat.messages.content.album.style :as style]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.image.view :as image]))
-(def max-display-count 6)
 
 (def rectangular-style-count 3)
 
@@ -32,7 +32,7 @@
 (defn border-brr
   [index count]
   (when (or (and (= index 1) (< count rectangular-style-count))
-            (and (= index (- (min count max-display-count) 1)) (> count 2)))
+            (and (= index (- (min count constants/max-album-photos) 1)) (> count 2)))
     12))
 
 (defn find-size
@@ -57,7 +57,7 @@
        {:style (style/album-container portrait?)}
        (map-indexed
         (fn [index item]
-          (let [images-size-key (if (< images-count max-display-count) images-count :default)
+          (let [images-size-key (if (< images-count constants/max-album-photos) images-count :default)
                 size            (get-in constants/album-image-sizes [images-size-key index])
                 dimensions      (if (not= images-count rectangular-style-count)
                                   {:width size :height size}
@@ -67,6 +67,7 @@
               :active-opacity 1
               :on-press       (fn []
                                 (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
+<<<<<<< HEAD
                                 (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
                                                               (:album message) index])
                                                100))
@@ -78,11 +79,19 @@
                             :border-top-right-radius    (border-trr index images-count album-style)
                             :border-bottom-left-radius  (border-blr index images-count album-style)
                             :border-bottom-right-radius (border-brr index images-count)})
+=======
+                                (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
+                                                              {:messages (:album message) :index index}])
+                                               100))}
+             [fast-image/fast-image
+              {:style     (style/image dimensions index portrait?)
+>>>>>>> 865b9d3e3... feat: photo & album selector screens
                :source    {:uri (:image (:content item))}
                :native-ID (when (and (= shared-element-id (:message-id item))
-                                     (< index max-display-count))
+                                     (< index constants/max-album-photos))
                             :shared-element)}]
-             (when (and (> images-count max-display-count) (= index (- max-display-count 1)))
+             (when (and (> images-count constants/max-album-photos)
+                        (= index (- constants/max-album-photos 1)))
                [rn/view
                 {:style (merge style/overlay
                                {:border-bottom-right-radius (border-brr index images-count)})}
@@ -90,9 +99,14 @@
                  {:weight :bold
                   :size   :heading-2
                   :style  {:color colors/white}}
+<<<<<<< HEAD
                  (str "+" (- images-count (dec max-display-count)))]])]))
         (:album message))]
 
+=======
+                 (str "+" (- images-count (dec constants/max-album-photos)))]])]))
+        (:album message))]
+>>>>>>> 865b9d3e3... feat: photo & album selector screens
       [:<>
        (map-indexed
         (fn [index item]

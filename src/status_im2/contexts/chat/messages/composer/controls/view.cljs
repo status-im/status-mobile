@@ -5,7 +5,6 @@
             [utils.i18n :as i18n]
             [quo2.core :as quo]
             [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
             [status-im2.contexts.chat.messages.composer.controls.style :as style]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im.ui.components.permissions :as permissions]
@@ -45,9 +44,7 @@
                 (permissions/request-permissions
                  {:permissions [:read-external-storage :write-external-storage]
                   :on-allowed  #(rf/dispatch
-                                 [:bottom-sheet/show-sheet
-                                  {:content (fn []
-                                              (photo-selector/photo-selector chat-id))}])
+                                 [:open-modal :photo-selector {:chat-id chat-id}])
                   :on-denied   (fn []
                                  (background-timer/set-timeout
                                   #(utils-old/show-popup (i18n/label :t/error)

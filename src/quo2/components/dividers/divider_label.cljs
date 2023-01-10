@@ -14,7 +14,7 @@
    counter-value -> number
    increase-padding-top? -> boolean
    blur? -> boolean"
-  [{:keys [label chevron-position counter-value increase-padding-top? blur?]}]
+  [{:keys [label chevron-position counter-value increase-padding-top? blur? container-style]}]
   (let [dark?                       (colors/dark?)
         border-and-counter-bg-color (if dark?
                                       (if blur? colors/white-opa-5 colors/neutral-70)
@@ -25,12 +25,13 @@
     [rn/view
      {:accessible          true
       :accessibility-label :divider-label
-      :style               {:border-top-width   1
-                            :border-top-color   border-and-counter-bg-color
-                            :padding-top        padding-top
-                            :padding-horizontal 16
-                            :align-items        :center
-                            :flex-direction     :row}}
+      :style               (merge {:border-top-width   1
+                                   :border-top-color   border-and-counter-bg-color
+                                   :padding-top        padding-top
+                                   :padding-horizontal 16
+                                   :align-items        :center
+                                   :flex-direction     :row}
+                                  container-style)}
      (when (= chevron-position :left)
        [rn/view
         {:test-ID :divider-label-icon-left
