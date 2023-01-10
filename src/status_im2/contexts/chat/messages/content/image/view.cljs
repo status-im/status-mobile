@@ -35,15 +35,13 @@
             shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
          {:active-opacity 1
-          ;:on-press #(rf/dispatch [:chat.ui/navigate-to-horizontal-images [message] [@dimensions] (:message-id message)])
           :on-press       (fn []
-                            ;(swap! state/shared-element assoc :id (:message-id message))
                             (rf/dispatch [:chat.ui/update-shared-element-id (:message-id message)])
-                            (rf/dispatch [:chat.ui/navigate-to-horizontal-images [message] [@dimensions] (:message-id message)]))
+                            (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images [message] [@dimensions]]) 0))
           }
          [fast-image/fast-image
           {:source   {:uri (:image content)}
            :on-load  (image-set-size dimensions)
            :on-error #(swap! dimensions assoc :error true)
            :style    (dissoc style-opts :outgoing)
-           :nativeID (when (= shared-element-id (:message-id message)) "xyz")}]]))))
+           :nativeID (when (= shared-element-id (:message-id message)) :shared-element)}]]))))

@@ -321,8 +321,8 @@
 
 (rf/defn navigate-to-horizontal-images
    {:events [:chat.ui/navigate-to-horizontal-images]}
-   [cofx messages dimensions shared-element-id]
-   (navigation/navigate-to cofx :images-horizontal {:messages messages :dimensions dimensions :shared-element-id shared-element-id}))
+   [cofx messages dimensions]
+   (navigation/navigate-to cofx :images-horizontal {:messages messages :dimensions dimensions}))
 
 (rf/defn update-shared-element-id
          {:events [:chat.ui/update-shared-element-id]}

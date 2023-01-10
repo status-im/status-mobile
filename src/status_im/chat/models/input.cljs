@@ -186,12 +186,15 @@
   [{db :db} chat-id input-text]
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
-    (mapv (fn [[_ {:keys [uri]}]]
+    (println "kkkzzz" images)
+    (mapv (fn [[_ {:keys [uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
-             :text         input-text})
+             :text         input-text
+             :image-width width
+             :image-height height})
           images)))
 
 (rf/defn clean-input
@@ -220,6 +223,7 @@
   (let [image-messages (build-image-messages cofx current-chat-id input-text)
         text-message   (when-not (seq image-messages) (build-text-message cofx input-text current-chat-id))
         messages       (keep identity (conj image-messages text-message))]
+    (println "iii" image-messages)
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))

@@ -18,9 +18,11 @@
   [chat-id]
   (rf/dispatch [:chat.ui/clear-sending-images chat-id])
   (doseq [item @selected]
-    (rf/dispatch [:chat.ui/camera-roll-pick item]))
+    (rf/dispatch [:chat.ui/camera-roll-pick item])
+    )
   (reset! selected [])
-  (rf/dispatch [:bottom-sheet/hide]))
+  (rf/dispatch [:bottom-sheet/hide])
+  )
 
 (defn bottom-gradient
   [chat-id selected-images]
@@ -63,7 +65,7 @@
                              (swap! selected conj item)))
     :accessibility-label (str "image-" index)}
    [rn/image
-    {:source {:uri item}
+    {:source {:uri (:uri item)}
      :style  (style/image window-width index)}]
    (when (some #{item} @selected)
      [rn/view {:style (style/overlay window-width)}])

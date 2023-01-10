@@ -271,6 +271,7 @@
                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                    (reanimated/set-shared-value shared-height
                                                 (reanimated/with-timing (min y max-height))))))
+              (println "iiixx" images)
               [reanimated/view
                {:style (reanimated/apply-animations-to-style
                         {:height shared-height}

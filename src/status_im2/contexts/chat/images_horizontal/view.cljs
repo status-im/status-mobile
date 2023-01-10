@@ -26,12 +26,11 @@
   (let [dimensions (nth dimensions-arr index)]
      [fast-image/fast-image
       {:source   {:uri (:image (:content message))}
-       ;:on-load  (image-set-size dimensions)
        :on-error #(swap! dimensions assoc :error true)
        :style    {:width         (:width (rn/get-window))
                   :height        (* (:height dimensions) (/ (:width (rn/get-window)) (:width dimensions)))
                   :border-radius 12}
-       :nativeID (when (= shared-element-id (:message-id message)) "xyz")}]
+       :nativeID (when (= shared-element-id (:message-id message)) :shared-element)}]
     ))
 
 (defn images-horizontal

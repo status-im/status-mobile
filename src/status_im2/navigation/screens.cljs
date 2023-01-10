@@ -38,11 +38,11 @@
                         :navigationBar {:backgroundColor colors/black-persist}
                         :statusBar     {:backgroundColor colors/black-persist
                                         :style           :light}
-                        :animations    {:push {:sharedElementTransitions [{:fromId        "xyz"
-                                                                           :toId          "xyz"
+                        :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
+                                                                           :toId          :shared-element
                                                                            :interpolation {:type :decelerate}}]}
-                                        :pop {:sharedElementTransitions [{:fromId        "xyz"
-                                                                          :toId          "xyz"
+                                        :pop {:sharedElementTransitions [{:fromId        :shared-element
+                                                                          :toId          :shared-element
                                                                           :interpolation {:type :decelerate}}]}}}
             :component images-horizontal/images-horizontal}
 

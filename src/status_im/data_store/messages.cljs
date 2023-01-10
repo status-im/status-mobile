@@ -36,6 +36,8 @@
                         :deleted                  :deleted?
                         :deletedForMe             :deleted-for-me?
                         :albumId                  :album-id
+                        :imageWidth               :image-width
+                        :imageHeight              :image-height
                         :new                      :new?})
 
       (update :quoted-message
