@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.address :as utils.address]
@@ -50,7 +49,7 @@
                                       (rf/dispatch [:deselect-member public-key true])))))}])]))
 
 (defn contact-list-item
-  [item _ _ {:keys [group start-a-new-chat? on-toggle] :as extra-data}]
+  [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name                                    (first (rf/sub
                                                                 [:contacts/contact-two-names-by-identity
