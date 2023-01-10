@@ -186,7 +186,6 @@
   [{db :db} chat-id input-text]
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
-    (println "kkkzzz" images)
     (mapv (fn [[_ {:keys [uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id

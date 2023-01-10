@@ -144,6 +144,7 @@
                                                                         :cursor-clock-value])
           clock-value                                          (when cursor (cursor->clock-value cursor))
           new-messages                                         (map mark-album new-messages)]
+      (println "QAQAQA" all-messages new-messages)
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
