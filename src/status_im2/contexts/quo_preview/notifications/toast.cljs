@@ -10,7 +10,7 @@
   ([text id opts]
    (let [toast-opts (rf/sub [:toasts/toast id])
          dismiss!   #(rf/dispatch [:toasts/close id])
-         toast!     #(rf/dispatch [:toasts/upsert id opts])
+         toast!     #(rf/dispatch [:toasts/upsert (assoc opts :id id)])
          dismissed? (not toast-opts)]
      [rn/view {:style {:margin-bottom 10}}
       [button/button
@@ -34,7 +34,7 @@
     :duration      4000
     :undo-duration 4
     :undo-on-press #(do
-                      (rf/dispatch [:toasts/create
+                      (rf/dispatch [:toasts/upsert
                                     {:icon       :placeholder
                                      :icon-color "green"
                                      :text       "Undo pressed"}])
@@ -53,7 +53,7 @@
     :undo-on-press
     #(do
        (rf/dispatch
-        [:toasts/create
+        [:toasts/upsert
          {:icon :placeholder :icon-color "green" :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
@@ -78,8 +78,8 @@
              :on-press
              #(rf/dispatch
                [:toasts/upsert
-                "Toast: 30s duration"
-                {:icon       :placeholder
+                {:id         "Toast: 30s duration"
+                 :icon       :placeholder
                  :icon-color "red"
                  :text       (str "This is an updated example toast" " - " (swap! suffix inc))
                  :duration   3000}])}

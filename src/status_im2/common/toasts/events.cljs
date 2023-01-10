@@ -3,25 +3,25 @@
 
 (rf/defn upsert
   {:events [:toasts/upsert]}
-  [{:keys [db]} id opts]
-  (let [{:keys [ordered toasts]} (:toasts db)
-        update?                  (some #(= % id) ordered)
-        ordered                  (if (not update?) (conj ordered id) ordered)
-        toasts                   (assoc toasts id opts)
-        db                       (-> db
-                                     (update :toasts assoc :ordered ordered :toasts toasts)
-                                     (update :toasts dissoc :hide-toasts-timer-set))]
-    (if (and (not update?) (= (count ordered) 1))
-      {:show-toasts []
-       :db          db}
-      {:db db})))
-
-(rf/defn create
-  {:events [:toasts/create]}
   [{:keys [db]} opts]
-  (let [next-toast-id (or (get-in [:toasts :next-toast-id] db) 1)]
-    {:db       (assoc-in db [:toasts :next-toast-id] (inc next-toast-id))
-     :dispatch [:toasts/upsert (str "toast-" next-toast-id) opts]}))
+  (let [{:keys [ordered toasts]} (:toasts db)
+        next-toast-number        (get-in db [:toasts :next-toast-number] 1)
+        id                       (or (:id opts)
+                                     (str "toast-" next-toast-number))
+        update?                  (some #(= % id) ordered)
+        ordered                  (if (not update?)
+                                   (conj ordered id)
+                                   ordered)
+        toasts                   (assoc toasts id (dissoc opts :id))]
+    (cond-> {:db (-> db
+                     (update :toasts assoc :ordered ordered :toasts toasts)
+                     (update :toasts dissoc :hide-toasts-timer-set))}
+
+      (and (not update?) (= (count ordered) 1))
+      (assoc :show-toasts [])
+
+      (not (:id opts))
+      (update-in [:db :toasts :next-toast-number] inc))))
 
 (rf/defn hide-toasts-with-check
   {:events [:toasts/hide-with-check]}

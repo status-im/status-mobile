@@ -4,6 +4,7 @@
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
+            [i18n.i18n :as i18n]
             [status-im.async-storage.core :as async-storage]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.constants :as constants]
@@ -11,6 +12,7 @@
             [utils.re-frame :as rf]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.common.toasts.events :as toasts]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
@@ -110,15 +112,28 @@
 (rf/defn left
   {:events [::left]}
   [cofx response-js]
-  (rf/merge cofx
-            (handle-response cofx response-js)
-            (navigation/pop-to-root-tab :chat-stack)
-            (activity-center/notifications-fetch-unread-count)))
+  (let [community-name (aget response-js "communities" 0 "name")]
+    (rf/merge cofx
+              (handle-response cofx response-js)
+              (toasts/upsert {:icon       :placeholder
+                              :icon-color (:positive-01 @colors/theme)
+                              :text       (i18n/label :t/left-community {:community community-name})})
+              (navigation/navigate-back)
+              (activity-center/notifications-fetch-unread-count))))
 
 (rf/defn joined
   {:events [::joined ::requested-to-join]}
   [cofx response-js]
-  (handle-response cofx response-js))
+  (let [[event-name _] (:event cofx)
+        community-name (aget response-js "communities" 0 "name")]
+    (rf/merge cofx
+              (handle-response cofx response-js)
+              (toasts/upsert {:icon       :placeholder
+                              :icon-color (:positive-01 @colors/theme)
+                              :text       (i18n/label (if (= event-name ::joined)
+                                                        :t/joined-community
+                                                        :t/requested-to-join-community)
+                                                      {:community community-name})}))))
 
 (rf/defn export
   {:events [::export-pressed]}
