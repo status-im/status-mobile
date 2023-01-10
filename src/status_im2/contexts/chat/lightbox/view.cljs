@@ -94,7 +94,7 @@
      (let [{:keys [messages index]} (rf/sub [:get-screen-params])
            atoms                    {:flat-list-ref      (atom nil)
                                      :small-list-ref     (atom nil)
-                                     :scroll-index-lock? (atom false)
+                                     :scroll-index-lock? (atom true)
                                      :insets-atom        (atom nil)}
            ;; The initial value of data is the image that was pressed (and not the whole album) in order
            ;; for the transition animation to execute properly, otherwise it would animate towards
@@ -103,9 +103,11 @@
            scroll-index             (reagent/atom index)
            transparent?             (reagent/atom false)
            window                   (rf/sub [:dimensions/window])
-           animations               {:border         (common/use-val 12)
-                                     :opacity        (common/use-val 1)
+           animations               {:border         (common/use-val (if platform/ios? 0 12))
+                                     :opacity        (common/use-val 0)
                                      :rotate         (common/use-val "0deg")
+                                     :top-layout     (common/use-val -10)
+                                     :bottom-layout  (common/use-val 10)
                                      :top-view-y     (common/use-val 0)
                                      :top-view-x     (common/use-val 0)
                                      :top-view-width (common/use-val (:width window))
@@ -124,11 +126,21 @@
                ;; RNN does not support landscape-right
                (when (and enabled? (not= result orientation/landscape-right))
                  (handle-orientation result scroll-index window animations atoms)))))))
-       (rn/use-effect-once (fn []
-                             (when @(:flat-list-ref atoms)
-                               (.scrollToIndex ^js @(:flat-list-ref atoms)
-                                               #js {:animated false :index index}))
-                             js/undefined))
+       (rn/use-effect (fn []
+                        (when @(:flat-list-ref atoms)
+                          (.scrollToIndex ^js @(:flat-list-ref atoms)
+                                          #js {:animated false :index index}))
+                        (js/setTimeout (fn []
+                                         (common/set-val-timing (:opacity animations) 1)
+                                         (common/set-val-timing (:top-layout animations) 0)
+                                         (common/set-val-timing (:bottom-layout animations) 0)
+                                         (common/set-val-timing (:border animations) 12))
+                                       (if platform/ios? 250 100))
+                        (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
+                        (fn []
+                          (rf/dispatch [:chat.ui/zoom-out-signal nil])
+                          (when platform/android?
+                            (rf/dispatch [:chat.ui/lightbox-scale 1])))))
        [safe-area/consumer
         (fn [insets]
           (let [curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
@@ -164,7 +176,7 @@
                :paging-enabled                    true
                :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
                :viewability-config                {:view-area-coverage-percent-threshold 50
-                                                   :wait-for-interaction                 true}
+                                                   :wait-for-interaction                 false}
                :shows-vertical-scroll-indicator   false
                :shows-horizontal-scroll-indicator false
                :on-viewable-items-changed         callback
@@ -173,3 +185,4 @@
              (when (and (not @transparent?) (not landscape?))
                [bottom-view/bottom-view messages index scroll-index insets animations
                 item-width atoms])]))]))])
+

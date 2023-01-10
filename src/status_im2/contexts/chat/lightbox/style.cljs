@@ -10,19 +10,19 @@
 
 ;;;; TOP-VIEW
 (defn top-view-container
-  [top-inset {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg]} window-width
+  [top-inset {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg top-layout]}
+   window-width
    bg-color]
   (reanimated/apply-animations-to-style
    (if platform/ios?
-     {:transform        [{:rotate rotate}
+     {:transform        [{:translateY top-layout}
+                         {:rotate rotate}
                          {:translateY top-view-y}
                          {:translateX top-view-x}]
       :opacity          opacity
       :width            top-view-width
       :background-color top-view-bg}
-     {:transform [{:rotate rotate}
-                  {:translateY top-view-y}
-                  {:translateX top-view-x}]
+     {:transform [{:translateY top-layout}]
       :opacity   opacity})
    {:position           :absolute
     :padding-horizontal 20
@@ -48,9 +48,10 @@
 
 ;;;; BOTTOM-VIEW
 (defn gradient-container
-  [insets {:keys [opacity]}]
+  [insets {:keys [opacity bottom-layout]}]
   (reanimated/apply-animations-to-style
-   {:opacity opacity}
+   {:transform [{:translateY bottom-layout}]
+    :opacity   opacity}
    {:position       :absolute
     :bottom         0
     :padding-bottom (:bottom insets)

@@ -5,6 +5,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.re-frame :as rf]
+    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.common :as common]))
 
 (def small-image-size 40)
@@ -61,18 +62,20 @@
          :start  {:x 0 :y 1}
          :end    {:x 0 :y 0}
          :style  (style/gradient-container insets animations)}
-        [rn/text
-         {:style style/text-style} text]
+        (when (not= text "placeholder")
+          [rn/text {:style style/text-style} text])
         [rn/flat-list
-         {:ref                     #(reset! (:small-list-ref atoms) %)
-          :key-fn                  :message-id
-          :style                   {:height small-list-height}
-          :data                    messages
-          :render-fn               small-image
-          :render-data             {:scroll-index scroll-index
-                                    :atoms        atoms}
-          :horizontal              true
-          :get-item-layout         get-small-item-layout
-          :separator               [rn/view {:style {:width 8}}]
-          :initial-scroll-index    index
-          :content-container-style (style/content-container padding-horizontal)}]]))])
+         {:ref                               #(reset! (:small-list-ref atoms) %)
+          :key-fn                            :message-id
+          :style                             {:height small-list-height}
+          :data                              messages
+          :render-fn                         small-image
+          :render-data                       {:scroll-index scroll-index
+                                              :atoms        atoms}
+          :horizontal                        true
+          :shows-horizontal-scroll-indicator false
+          :get-item-layout                   get-small-item-layout
+          :separator                         [rn/view {:style {:width 8}}]
+          :initial-scroll-index              index
+          :content-container-style           (style/content-container padding-horizontal)}]]))])
+

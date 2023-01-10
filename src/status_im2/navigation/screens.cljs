@@ -44,11 +44,13 @@
                  :navigationBar {:backgroundColor colors/black-persist}
                  :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                                     :toId          :shared-element
-                                                                    :interpolation {:type :decelerate}}]}
+                                                                    :interpolation {:type   :decelerate
+                                                                                    :factor 1.5}}]}
                                  :pop  {:sharedElementTransitions [{:fromId        :shared-element
                                                                     :toId          :shared-element
                                                                     :interpolation {:type
-                                                                                    :decelerate}}]}}}
+                                                                                    :decelerate
+                                                                                    :factor 1.5}}]}}}
      :component lightbox/lightbox}
     {:name      :photo-selector
      :options   {:topBar {:visible false}}

@@ -353,3 +353,8 @@
   [{:keys [db]} value]
   {:db (assoc db :lightbox/orientation value)})
 
+(rf/defn lightbox-scale
+  {:events [:chat.ui/lightbox-scale]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/scale value)})
+

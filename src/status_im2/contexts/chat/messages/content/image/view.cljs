@@ -21,7 +21,7 @@
         [rn/touchable-opacity
          {:active-opacity 1
           :key            message-id
-          :style          {:margin-top (when (> index 0) 20)}
+          :style          {:margin-top (when (> index 0) 10)}
           :on-long-press  on-long-press
           :on-press       (fn []
                             (rf/dispatch [:chat.ui/update-shared-element-id message-id])
