@@ -93,7 +93,7 @@
        vals)))
 
 (re-frame/reg-sub
- :contacts/add-members-sections
+ :contacts/sorted-and-grouped-by-first-letter
  :<- [:contacts/current-chat-contacts]
  :<- [:contacts/active]
  (fn [[members contacts]]
