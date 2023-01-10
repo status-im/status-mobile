@@ -13,13 +13,13 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]
+            status-im2.common.bottom-sheet.view
             [quo.react :as quo.react]
             [quo.components.safe-area :as safe-area]))
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch [:dismiss-bottom-sheet])
   (rf/dispatch event))
 
 (defn- on-toggle
@@ -83,7 +83,7 @@
         [quo2/button
          {:type                      :grey
           :icon                      true
-          :on-press                  #(bottom-sheet/close-bottom-sheet-fn nil)
+          :on-press                  #(rf/dispatch [:dismiss-bottom-sheet])
           :style                     style/contact-selection-close
           :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                                quo2.colors/neutral-90)}

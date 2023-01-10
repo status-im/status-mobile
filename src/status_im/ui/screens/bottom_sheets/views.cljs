@@ -15,7 +15,7 @@
 
 (defn bottom-sheet
   []
-  (let [dismiss-bottom-sheet-callback #(bottom-sheet/close-bottom-sheet-fn nil)
+  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch [:dismiss-bottom-sheet])
         {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}

@@ -10,7 +10,7 @@
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            status-im2.common.bottom-sheet.view))
 
 (def selected (reagent/atom []))
 
@@ -20,7 +20,7 @@
   (doseq [item @selected]
     (rf/dispatch [:chat.ui/camera-roll-pick item]))
   (reset! selected [])
-  (bottom-sheet/close-bottom-sheet-fn nil))
+  (rf/dispatch [:dismiss-bottom-sheet]))
 
 (defn bottom-gradient
   [chat-id selected-images]
@@ -37,7 +37,7 @@
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
             :on-press            (fn []
-                                   (bottom-sheet/close-bottom-sheet-fn nil)
+                                   (rf/dispatch [:dismiss-bottom-sheet])
                                    (on-press-confirm-selection chat-id))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])

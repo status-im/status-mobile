@@ -2,11 +2,11 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [i18n.i18n :as i18n]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            status-im2.common.bottom-sheet.view))
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
+  (re-frame/dispatch [:dismiss-bottom-sheet])
   (re-frame/dispatch event))
 
 (defn actions-sheet

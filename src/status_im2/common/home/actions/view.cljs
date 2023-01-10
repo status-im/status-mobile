@@ -28,7 +28,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch [:dismiss-bottom-sheet])
   (timer/set-timeout (fn []
                        (rf/dispatch event))
                      bottom-sheet/animation-delay))

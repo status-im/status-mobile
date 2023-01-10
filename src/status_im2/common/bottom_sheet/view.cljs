@@ -10,7 +10,8 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [utils.re-frame :as rf]))
 
 (def ^:private bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
 
@@ -92,6 +93,16 @@
      (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
      (reset-atoms))
    animation-delay))
+
+(re-frame/reg-fx
+ :dismiss-bottom-sheet
+ (fn []
+   (close-bottom-sheet-fn nil)))
+
+(rf/defn dismiss-bottom-sheet
+  {:events [:dismiss-bottom-sheet]}
+  [_]
+  {:dismiss-bottom-sheet nil})
 
 (defn bottom-sheet
   [props children]

@@ -15,7 +15,7 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch [:dismiss-bottom-sheet])
   (rf/dispatch event))
 
 (defn add-new-view
@@ -80,7 +80,7 @@
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
      :on-press                   (fn []
-                                   (bottom-sheet/close-bottom-sheet-fn nil)
+                                   (rf/dispatch [:dismiss-bottom-sheet])
                                    (timer/set-timeout
                                     #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])
                                     bottom-sheet/animation-delay))}]
@@ -101,7 +101,7 @@
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
      :on-press                     (fn []
-                                     (bottom-sheet/close-bottom-sheet-fn nil)
+                                     (rf/dispatch [:dismiss-bottom-sheet])
                                      (timer/set-timeout
                                       #(rf/dispatch [:open-modal :new-contact])
                                       bottom-sheet/animation-delay))}]])

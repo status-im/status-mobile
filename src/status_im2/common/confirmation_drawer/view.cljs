@@ -5,7 +5,7 @@
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.style :as style]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            status-im2.common.bottom-sheet.view))
 
 (defn avatar
   [group-chat color display-name photo-path]
@@ -57,7 +57,7 @@
           [quo/button
            {:type     :grey
             :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(bottom-sheet/close-bottom-sheet-fn nil)}
+            :on-press #(rf/dispatch [:dismiss-bottom-sheet])}
            (i18n/label :t/close)]
           [quo/button
            {:type     :danger

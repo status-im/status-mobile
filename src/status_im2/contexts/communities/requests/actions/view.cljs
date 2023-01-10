@@ -8,7 +8,7 @@
             [status-im2.contexts.communities.requests.actions.style :as style]
             [utils.re-frame :as rf]
             [utils.requests :as requests]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            status-im2.common.bottom-sheet.view))
 
 ;; TODO: update with real data
 (def community-rules
@@ -117,7 +117,7 @@
         {:style style/request-button}
         [quo/button
          {:accessibility-label :cancel
-          :on-press            #(bottom-sheet/close-bottom-sheet-fn nil)
+          :on-press            #(rf/dispatch [:dismiss-bottom-sheet])
           :type                :grey
           :style               style/cancel-button} (i18n/label :t/cancel)]
         [quo/button
@@ -126,12 +126,12 @@
                                  (when-not joined
                                    (when can-join?
                                      (rf/dispatch [::communities/join id]))
-                                   (bottom-sheet/close-bottom-sheet-fn nil)
+                                   (rf/dispatch [:dismiss-bottom-sheet])
                                    (when
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))
                                           (requests/can-request-access-again? requested-to-join-at))
                                      (rf/dispatch [::communities/request-to-join id])
-                                     (bottom-sheet/close-bottom-sheet-fn nil))))
+                                     (rf/dispatch [:dismiss-bottom-sheet]))))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))

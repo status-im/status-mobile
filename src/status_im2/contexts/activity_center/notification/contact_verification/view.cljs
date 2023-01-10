@@ -6,11 +6,11 @@
             [utils.datetime :as datetime]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            status-im2.common.bottom-sheet.view))
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]
-  (bottom-sheet/close-bottom-sheet-fn nil)
+  (rf/dispatch [:dismiss-bottom-sheet])
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch event))
 
