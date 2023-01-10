@@ -10,7 +10,8 @@
             [status-im.ui.screens.home.sheet.styles :as style]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im.utils.config :as config]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]))
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]
+            [react-native.background-timer :as timer]))
 
 (defn- hide-sheet-and-dispatch
   [event]
@@ -78,7 +79,10 @@
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
+     :on-press                   (fn []
+                                   (bottom-sheet/close-bottom-sheet-fn nil)
+                                   (timer/set-timeout
+                                    #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat]) bottom-sheet/animation-delay))}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/connect-with-users)
