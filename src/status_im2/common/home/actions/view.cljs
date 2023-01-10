@@ -7,7 +7,8 @@
    [status-im2.common.bottom-sheet.view :as bottom-sheet]
    [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
    [status-im2.common.constants :as constants]
-   [utils.re-frame :as rf]))
+   [utils.re-frame :as rf]
+   [react-native.background-timer :as timer]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -27,9 +28,10 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
   (bottom-sheet/close-bottom-sheet-fn nil)
-  (rf/dispatch event))
+  (timer/set-timeout (fn []
+                       (rf/dispatch event))
+                     bottom-sheet/animation-delay))
 
 (defn show-profile-action
   [chat-id]
@@ -46,15 +48,15 @@
 
 (defn mute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id true]))
+  (rf/dispatch [::chat.models/mute-chat-toggled chat-id true]))
 
 (defn unmute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id false]))
+  (rf/dispatch [::chat.models/mute-chat-toggled chat-id false]))
 
 (defn clear-history-action
   [{:keys [chat-id] :as item}]
-  (rf/dispatch
+  (hide-sheet-and-dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
@@ -67,7 +69,7 @@
 
 (defn delete-chat-action
   [{:keys [chat-id] :as item}]
-  (rf/dispatch
+  (hide-sheet-and-dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
@@ -80,7 +82,7 @@
 
 (defn leave-group-action
   [item chat-id]
-  (rf/dispatch
+  (hide-sheet-and-dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer
@@ -96,7 +98,7 @@
 
 (defn block-user-action
   [{:keys [public-key] :as item}]
-  (rf/dispatch
+  (hide-sheet-and-dispatch
    [:bottom-sheet/show-sheet
     {:content (fn []
                 (confirmation-drawer/confirmation-drawer

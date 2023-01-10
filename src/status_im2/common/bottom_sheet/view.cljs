@@ -14,7 +14,7 @@
 
 (def ^:private bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
 
-(def ^:private animation-delay 450)
+(def animation-delay 450)
 
 (defn- with-animation
   [value & [options callback]]
