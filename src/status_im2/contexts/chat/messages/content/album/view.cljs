@@ -4,7 +4,12 @@
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.contexts.chat.messages.content.album.style :as style]
+<<<<<<< HEAD
             [status-im2.constants :as constants]))
+=======
+            [status-im2.common.constants :as constants]
+            [utils.re-frame :as rf]))
+>>>>>>> cc112eeb1... updates
 
 (def max-display-count 6)
 
@@ -32,15 +37,21 @@
     (fn [index item]
       (let [images-count    (count (:album message))
             images-size-key (if (< images-count 6) images-count :default)
-            size            (get-in constants/album-image-sizes [images-size-key index])]
-        [rn/view {:key (:message-id item)}
+            size            (get-in constants/album-image-sizes [images-size-key index])
+            shared-element-id (rf/sub [:shared-element-id])]
+        [rn/touchable-opacity {:key (:message-id item)
+                               :active-opacity 1
+                               :on-press       (fn []
+                                                 (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
+                                                 (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images (:album message) index]) 0))}
          [fast-image/fast-image
           {:style  (merge (style/image size index)
                           {:border-top-left-radius     (border-tlr index)
                            :border-top-right-radius    (border-trr index)
                            :border-bottom-left-radius  (border-blr index images-count)
                            :border-bottom-right-radius (border-brr index images-count)})
-           :source {:uri (:image (:content item))}}]
+           :source {:uri (:image (:content item))}
+           :nativeID (when (= shared-element-id (:message-id item)) :shared-element)}]
          (when (and (> images-count max-display-count) (= index (- max-display-count 1)))
            [rn/view
             {:style (merge style/overlay {:border-bottom-right-radius (border-brr index images-count)})}

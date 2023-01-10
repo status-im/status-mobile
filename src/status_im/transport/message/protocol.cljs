@@ -6,6 +6,8 @@
 (defn build-message
   [{:keys [chat-id
            album-id
+           image-width
+           image-height
            text
            response-to
            ens-name
@@ -17,6 +19,8 @@
            content-type]}]
   {:chatId          chat-id
    :albumId         album-id
+   :imageWidth      image-width
+   :imageHeight     image-height
    :text            text
    :responseTo      response-to
    :ensName         ens-name
@@ -32,7 +36,9 @@
   {:json-rpc/call [{:method      "wakuext_sendChatMessages"
                     :params      [(mapv build-message messages)]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [:transport/message-sent %])
+                    :on-success  #(do
+                                    (println "AAA" %)
+                                    (re-frame/dispatch [:transport/message-sent %]))
                     :on-error    #(do
                                     (log/warn "failed to send a message" %)
                                     (js/alert (str "failed to send a message: " %)))}]})

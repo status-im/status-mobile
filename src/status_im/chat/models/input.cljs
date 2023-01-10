@@ -147,15 +147,17 @@
        :ens-name     preferred-name})))
 
 (defn build-image-messages
-  [{db :db} chat-id]
+  [{db :db} chat-id input-text]
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
-    (mapv (fn [[_ {:keys [uri]}]]
+    (mapv (fn [[_ {:keys [uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
-             :text         (i18n/label :t/update-to-see-image {"locale" "en"})})
+             :image-width width
+             :image-height height
+             :text         (or input-text "placeholder")})
           images)))
 
 (rf/defn clean-input
@@ -180,6 +182,7 @@
               (mentions/clear-cursor))))
 
 (rf/defn send-messages
+<<<<<<< HEAD
   [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id)
         text-message   (build-text-message cofx input-text current-chat-id)
@@ -187,6 +190,30 @@
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
+=======
+       [{:keys [db] :as cofx} input-text current-chat-id]
+       (let [image-messages (build-image-messages cofx current-chat-id input-text)
+             text-message   (when-not (seq image-messages) (build-text-message cofx input-text current-chat-id))
+             messages       (keep identity (conj image-messages text-message))]
+         (when (seq messages)
+           (rf/merge cofx
+                     (clean-input (:current-chat-id db))
+                     (process-cooldown)
+                     (chat.message/send-messages messages)))))
+
+(rf/defn send-my-status-message
+  "when not empty, proceed by sending text message with public key topic"
+  {:events [:profile.ui/send-my-status-message]}
+  [{db :db :as cofx}]
+  (let [current-chat-id      (chat/my-profile-chat-topic db)
+        {:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
+        image-messages       (build-image-messages cofx current-chat-id input-text)
+        text-message         (build-text-message cofx input-text current-chat-id)
+        messages             (keep identity (conj image-messages text-message))]
+    (when (seq messages)
+      (rf/merge cofx
+                (clean-input current-chat-id)
+>>>>>>> 2ee75ae1c... updates
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message

@@ -11,10 +11,14 @@
   ;; so we need some magic here with paddings so close button isn't cut
   [rn/view {:padding-top 12 :padding-bottom 8 :padding-right 12}
    [rn/image
-    {:source {:uri (first item)}
+    {:source {:uri (:uri (val item))}
      :style  style/small-image}]
    [rn/touchable-opacity
+<<<<<<< HEAD
     {:on-press #(rf/dispatch [:chat.ui/image-unselected (first item)])
+=======
+    {:on-press (fn [] (rf/dispatch [:chat.ui/image-unselected (val item)]))
+>>>>>>> 729c8b485... updates
      :style    style/remove-photo-container
      :hit-slop {:right  5
                 :left   5
