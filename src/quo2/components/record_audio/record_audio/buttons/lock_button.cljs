@@ -2,7 +2,7 @@
   (:require [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.core :refer [use-effect]]
             [quo2.components.record-audio.record-audio.helpers :refer
              [animate-linear-with-delay
@@ -14,13 +14,13 @@
   [recording? ready-to-lock? locked?]
   [:f>
    (fn []
-     (let [translate-x-y             (reanimated/use-shared-value 20)
-           opacity                   (reanimated/use-shared-value 0)
-           connector-opacity         (reanimated/use-shared-value 0)
-           width                     (reanimated/use-shared-value 24)
-           height                    (reanimated/use-shared-value 12)
-           border-radius-first-half  (reanimated/use-shared-value 8)
-           border-radius-second-half (reanimated/use-shared-value 8)
+     (let [translate-x-y             (ra/use-val 20)
+           opacity                   (ra/use-val 0)
+           connector-opacity         (ra/use-val 0)
+           width                     (ra/use-val 24)
+           height                    (ra/use-val 12)
+           border-radius-first-half  (ra/use-val 8)
+           border-radius-second-half (ra/use-val 8)
            start-x-y-animation       (fn []
                                        (animate-linear-with-delay translate-x-y 8 50 116.66)
                                        (animate-easing-with-delay connector-opacity 1 0 80)
@@ -70,14 +70,14 @@
                        (reset-x-y-animation)))
                    [@locked?])
        [:<>
-        [reanimated/view {:style (style/lock-button-container opacity)}
-         [reanimated/view
+        [ra/view {:style (style/lock-button-container opacity)}
+         [ra/view
           {:style (style/lock-button-connector connector-opacity
                                                width
                                                height
                                                border-radius-first-half
                                                border-radius-second-half)}]]
-        [reanimated/view
+        [ra/view
          {:style          (style/lock-button translate-x-y opacity)
           :pointer-events :none}
          [icons/icon (if @ready-to-lock? :i/locked :i/unlocked)

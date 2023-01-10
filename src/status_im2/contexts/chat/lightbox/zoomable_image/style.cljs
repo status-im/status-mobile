@@ -1,13 +1,13 @@
 (ns status-im2.contexts.chat.lightbox.zoomable-image.style
   (:require
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as ra]))
 
 (defn container
   [{:keys [width height]}
    {:keys [pan-x pan-y pinch-x pinch-y scale]}
    set-full-height?]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateX pan-x}
                 {:translateY pan-y}
                 {:translateX pinch-x}
@@ -22,7 +22,7 @@
   [{:keys [image-width image-height]}
    {:keys [rotate rotate-scale]}
    border-radius]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform     [{:rotate rotate}
                     {:scale rotate-scale}]
     :border-radius border-radius}

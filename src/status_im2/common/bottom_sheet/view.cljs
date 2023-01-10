@@ -8,7 +8,7 @@
             [react-native.gesture :as gesture]
             [react-native.hooks :as hooks]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]))
 
@@ -18,7 +18,7 @@
 
 (defn with-animation
   [value & [options callback]]
-  (reanimated/with-spring
+  (ra/with-spring
    value
    (clj->js (merge {:mass      2
                     :stiffness 500
@@ -45,12 +45,12 @@
                  max-pan-down (if @expanded?
                                 bg-height-expanded
                                 bg-height)]
-             (reanimated/set-shared-value pan-y
-                                          (max
-                                           (min
-                                            (.-translationY evt)
-                                            max-pan-down)
-                                           max-pan-up))))))
+             (ra/set-val pan-y
+                         (max
+                          (min
+                           (.-translationY evt)
+                           max-pan-down)
+                          max-pan-up))))))
       (gesture/on-end
        (fn [_]
          (reset! gesture-running? false)
@@ -127,8 +127,8 @@
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
                 bg-height (max (min @content-height bg-height-expanded) 109)
-                bottom-sheet-dy (reanimated/use-shared-value 0)
-                pan-y (reanimated/use-shared-value 0)
+                bottom-sheet-dy (ra/use-val 0)
+                pan-y (ra/use-val 0)
                 translate-y (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y)
                 bg-opacity
                 (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height)
@@ -136,11 +136,11 @@
                                     (let [height (oget evt "nativeEvent" "layout" "height")]
                                       (reset! content-height height)))
                 on-expanded (fn []
-                              (reanimated/set-shared-value bottom-sheet-dy bg-height-expanded)
-                              (reanimated/set-shared-value pan-y 0))
+                              (ra/set-val bottom-sheet-dy bg-height-expanded)
+                              (ra/set-val pan-y 0))
                 on-collapsed (fn []
-                               (reanimated/set-shared-value bottom-sheet-dy bg-height)
-                               (reanimated/set-shared-value pan-y 0))
+                               (ra/set-val bottom-sheet-dy bg-height)
+                               (ra/set-val pan-y 0))
                 bottom-sheet-gesture (get-bottom-sheet-gesture
                                       pan-y
                                       translate-y
@@ -185,38 +185,38 @@
                                   @show-bottom-sheet?
                                   (if @expanded?
                                     (do
-                                      (reanimated/set-shared-value
+                                      (ra/set-val
                                        bottom-sheet-dy
                                        (with-animation (+ bg-height-expanded (.-value pan-y))))
                                       ;; Workaround for
-                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                      ;; https://github.com/software-mansion/react-native-ra/issues/1758#issue-817145741
                                       ;; withTiming/withSpring callback not working
                                       ;; on-expanded should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
                                       (timer/set-timeout on-expanded animation-delay))
                                     (do
-                                      (reanimated/set-shared-value
+                                      (ra/set-val
                                        bottom-sheet-dy
                                        (with-animation (+ bg-height (.-value pan-y))))
                                       ;; Workaround for
-                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                      ;; https://github.com/software-mansion/react-native-ra/issues/1758#issue-817145741
                                       ;; withTiming/withSpring callback not working
                                       ;; on-collapsed should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
                                       (timer/set-timeout on-collapsed animation-delay)))
 
                                   (= @show-bottom-sheet? false)
-                                  (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
+                                  (ra/set-val bottom-sheet-dy (with-animation 0)))))
                            [@show-bottom-sheet? @expanded? @gesture-running?])
 
             [:<>
              [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}
-              [reanimated/view
-               {:style (reanimated/apply-animations-to-style
+              [ra/view
+               {:style (ra/apply-animations-to-style
                         {:opacity bg-opacity}
                         styles/backdrop)}]]
-             (cond->> [reanimated/view
-                       {:style (reanimated/apply-animations-to-style
+             (cond->> [ra/view
+                       {:style (ra/apply-animations-to-style
                                 {:transform [{:translateY translate-y}]}
                                 {:width  window-width
                                  :height window-height})}

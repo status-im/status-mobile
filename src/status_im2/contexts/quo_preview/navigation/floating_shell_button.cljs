@@ -2,7 +2,7 @@
   (:require [quo2.components.navigation.floating-shell-button :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -56,7 +56,7 @@
           {:padding-vertical 60
            :align-items      :center}
           [quo2/floating-shell-button (mock-data @state)
-           nil (reanimated/use-shared-value 1)]]]])]))
+           nil (ra/use-val 1)]]]])]))
 
 (defn preview-floating-shell-button
   []

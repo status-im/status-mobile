@@ -3,7 +3,7 @@
     [quo2.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
+    [react-native.reanimated :as ra]
     [react-native.safe-area :as safe-area]
     [react-native.fast-image :as fast-image]
     [reagent.core :as reagent]
@@ -18,16 +18,16 @@
 
 (defn interpolate
   [value input-range output-range]
-  (reanimated/interpolate value
-                          input-range
-                          output-range
-                          {:extrapolateLeft  "clamp"
-                           :extrapolateRight "clamp"}))
+  (ra/interpolate value
+                  input-range
+                  output-range
+                  {:extrapolateLeft  "clamp"
+                   :extrapolateRight "clamp"}))
 
 (defn scroll-handler
   [event initial-y scroll-y]
   (let [current-y (- (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
-    (reanimated/set-shared-value scroll-y current-y)))
+    (ra/set-val scroll-y current-y)))
 
 (defn header
   [{:keys [theme-color display-picture-comp cover-uri title-comp]} top-inset scroll-y]
@@ -45,9 +45,9 @@
         {:style  {:width  "100%"
                   :height cover-height}
          :source {:uri cover-uri}}])
-     [reanimated/view {:style (style/header-bottom-part border-animation)}
+     [ra/view {:style (style/header-bottom-part border-animation)}
       [title-comp]]
-     [reanimated/view {:style (style/entity-picture size-animation)}
+     [ra/view {:style (style/entity-picture size-animation)}
       [display-picture-comp image-animation]]]))
 
 (defn animated-header-list
@@ -64,7 +64,7 @@
            initial-y         (if platform/ios? (- (:top insets)) 0)]
        [:f>
         (fn []
-          (let [scroll-y                (reanimated/use-shared-value initial-y)
+          (let [scroll-y                (ra/use-val initial-y)
                 opacity-animation       (interpolate scroll-y
                                                      [(* threshold 0.33) (* threshold 0.66)]
                                                      [0 1])
@@ -80,14 +80,14 @@
               {:active-opacity 1
                :style          (style/button-container {:right 20})}
               [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-             [reanimated/blur-view
+             [ra/blur-view
               {:blurAmount   32
                :blurType     :light
                :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
                :style        (style/blur-view opacity-animation)}
-              [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
+              [ra/view {:style (style/header-comp translate-animation title-opacity-animation)}
                [header-comp]]]
-             [reanimated/flat-list
+             [ra/flat-list
               {:data                  [nil]
                :render-fn             main-comp
                :key-fn                str

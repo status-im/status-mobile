@@ -1,10 +1,10 @@
 (ns quo2.components.record-audio.record-audio.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn animated-circle
   [scale opacity color]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:scale scale}]
     :opacity   opacity}
    {:width           56
@@ -19,7 +19,7 @@
 
 (defn record-button-big-container
   [translate-x translate-y opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateY translate-y}
                 {:translateX translate-x}]
     :opacity   opacity}
@@ -44,7 +44,7 @@
 
 (defn record-button-big-red-overlay
   [red-overlay-opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity red-overlay-opacity}
    {:position         :absolute
     :top              0
@@ -55,7 +55,7 @@
 
 (defn record-button-big-gray-overlay
   [gray-overlay-opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity gray-overlay-opacity}
    {:position         :absolute
     :top              0
@@ -66,7 +66,7 @@
 
 (defn record-button-big-icon-container
   [icon-opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity icon-opacity}
    {}))
 
@@ -78,7 +78,7 @@
 
 (defn send-button-container
   [opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity opacity}
    {:justify-content :center
     :align-items     :center
@@ -90,7 +90,7 @@
 
 (defn send-button-connector
   [opacity width height border-radius-first-half border-radius-second-half]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
     :height                     height
@@ -106,7 +106,7 @@
 
 (defn send-button
   [translate-y opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateY translate-y}]
     :opacity   opacity}
    {:justify-content  :center
@@ -125,7 +125,7 @@
 
 (defn lock-button-container
   [opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity opacity}
    {:transform       [{:rotate "45deg"}]
     :justify-content :center
@@ -138,7 +138,7 @@
 
 (defn lock-button-connector
   [opacity width height border-radius-first-half border-radius-second-half]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
     :height                     height
@@ -154,7 +154,7 @@
 
 (defn lock-button
   [translate-x-y opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateX translate-x-y}
                 {:translateY translate-x-y}]
     :opacity   opacity}
@@ -172,7 +172,7 @@
 
 (defn delete-button-container
   [opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity opacity}
    {:justify-content :center
     :align-items     :center
@@ -184,7 +184,7 @@
 
 (defn delete-button-connector
   [opacity width height border-radius-first-half border-radius-second-half]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
     :height                     height
@@ -200,7 +200,7 @@
 
 (defn delete-button
   [scale translate-x opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateX translate-x}
                 {:scale scale}]
     :opacity   opacity}
@@ -217,7 +217,7 @@
 
 (defn record-button-container
   [opacity]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity opacity}
    {:margin-bottom 32
     :margin-right  32}))

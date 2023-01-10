@@ -5,11 +5,11 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.hole-view :as hole-view]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn toggle-background-color
   [background-color press-out? pass-through?]
-  (reanimated/set-shared-value
+  (ra/set-val
    background-color
    (cond
      press-out?    "transparent"
@@ -31,14 +31,14 @@
            on-press pass-through? icon-color-anim accessibility-label test-ID]}]
   [:f>
    (fn []
-     (let [icon-animated-style       (reanimated/apply-animations-to-style
+     (let [icon-animated-style       (ra/apply-animations-to-style
                                       {:tint-color icon-color-anim}
                                       {:width       24
                                        :height      24
                                        :margin-left 33
                                        :margin-top  8})
-           background-color          (reanimated/use-shared-value "transparent")
-           background-animated-style (reanimated/apply-animations-to-style
+           background-color          (ra/use-val "transparent")
+           background-animated-style (ra/apply-animations-to-style
                                       {:background-color background-color}
                                       {:width         90
                                        :height        40
@@ -49,7 +49,7 @@
          :on-press-in         #(toggle-background-color background-color false pass-through?)
          :on-press-out        #(toggle-background-color background-color true pass-through?)
          :accessibility-label accessibility-label}
-        [reanimated/view {:style background-animated-style}
+        [ra/view {:style background-animated-style}
          ;; In android animations are not working for the animated components which are nested by
          ;; hole-view,
          ;; Interestingly this only happens when hole view and blur view are used together
@@ -69,10 +69,10 @@
 
                       :else
                       [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
-            [reanimated/image
+            [ra/image
              {:style  icon-animated-style
               :source (icons/icon-source (keyword (str icon 24)))}]]
-           [reanimated/image
+           [ra/image
             {:style  icon-animated-style
              :source (icons/icon-source (keyword (str icon 24)))}])
          (when new-notifications?

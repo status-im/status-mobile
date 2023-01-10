@@ -4,7 +4,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]))
 
 (def header-height 56)
@@ -162,7 +162,7 @@
                border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
-        [reanimated/view
+        [ra/view
          {:style (header-wrapper-style {:height        height
                                         :background    background
                                         :border-bottom border-bottom})}

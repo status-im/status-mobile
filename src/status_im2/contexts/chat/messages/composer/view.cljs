@@ -4,7 +4,7 @@
             [react-native.core :as rn]
             [react-native.hooks :as hooks]
             [react-native.gesture :as gesture]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.background-timer :as background-timer]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.composer.style :as style]
@@ -43,7 +43,7 @@
         (gesture/on-start
          (fn [_]
            (if keyboard-shown
-             (swap! gesture-values assoc :pan-y (reanimated/get-shared-value translate-y))
+             (swap! gesture-values assoc :pan-y (ra/get-val translate-y))
              (input/input-focus text-input-ref))))
         (gesture/on-update
          (fn [evt]
@@ -51,7 +51,7 @@
              (let [tY (oget evt "translationY")]
                (swap! gesture-values assoc :dy (- tY (:pdy @gesture-values)))
                (swap! gesture-values assoc :pdy tY)
-               (reanimated/set-shared-value
+               (ra/set-val
                 translate-y
                 (max (min (+ tY (:pan-y @gesture-values)) (- min-y)) (- max-y)))))))
         (gesture/on-end
@@ -129,12 +129,12 @@
    :bg-bottom         bg-bottom
    :window-height     window-height
    :set-bg-opacity    (fn [value]
-                        (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-                        (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
+                        (ra/set-val bg-bottom (if (= value 1) 0 (- window-height)))
+                        (ra/set-val bg-opacity (ra/with-timing value)))
    :set-translate-y   (fn [value]
-                        (reanimated/set-shared-value translate-y (reanimated/with-timing value)))
+                        (ra/set-val translate-y (ra/with-timing value)))
    :set-parent-height (fn [value]
-                        (reanimated/set-shared-value parent-height (reanimated/with-timing value)))})
+                        (ra/set-val parent-height (ra/with-timing value)))})
 
 ;; IMPORTANT! PLEASE READ BEFORE MAKING CHANGES
 
@@ -165,9 +165,9 @@
 
                {window-height :height} (rn/use-window-dimensions)
                {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-               translate-y (reanimated/use-shared-value 0)
-               bg-opacity (reanimated/use-shared-value 0)
-               bg-bottom (reanimated/use-shared-value (- window-height))
+               translate-y (ra/use-val 0)
+               bg-opacity (ra/use-val 0)
+               bg-bottom (ra/use-val (- window-height))
 
                suggestions? (and (seq suggestions)
                                  keyboard-shown
@@ -190,7 +190,7 @@
                              (when (or edit reply) 38)
                              (when (seq images) 80))))
 
-               parent-height (reanimated/use-shared-value min-y)
+               parent-height (ra/use-val min-y)
                max-parent-height (Math/abs (- max-y 110 (:bottom insets)))
 
                params
@@ -201,14 +201,14 @@
                input-content-change (get-input-content-change params)
                bottom-sheet-gesture (get-bottom-sheet-gesture params)]
            (effect! params)
-           [reanimated/view
-            {:style (reanimated/apply-animations-to-style
+           [ra/view
+            {:style (ra/apply-animations-to-style
                      {:height parent-height}
                      {})}
             ;;;;input
             [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-             [reanimated/view
-              {:style (reanimated/apply-animations-to-style
+             [ra/view
+              {:style (ra/apply-animations-to-style
                        {:transform [{:translateY translate-y}]}
                        (style/input-bottom-sheet window-height))}
               [rn/view {:style (style/bottom-sheet-handle)}]
@@ -225,8 +225,8 @@
               [mentions/mentions params insets]
               [controls/view send-ref params insets chat-id images #(clean-and-minimize params)])
             ;;;;black background
-            [reanimated/view
-             {:style (reanimated/apply-animations-to-style
+            [ra/view
+             {:style (ra/apply-animations-to-style
                       {:opacity   bg-opacity
                        :transform [{:translateY bg-bottom}]}
                       (style/bottom-sheet-background window-height))}]]))])))

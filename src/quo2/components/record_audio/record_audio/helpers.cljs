@@ -1,9 +1,9 @@
 (ns quo2.components.record-audio.record-audio.helpers
-  (:require [react-native.reanimated :as reanimated]))
+  (:require [react-native.reanimated :as ra]))
 
 (defn animate-linear
   [shared-value value duration]
-  (reanimated/animate-shared-value-with-timing
+  (ra/animate
    shared-value
    value
    duration
@@ -11,26 +11,26 @@
 
 (defn animate-linear-with-delay
   [shared-value value duration delay]
-  (reanimated/animate-shared-value-with-delay
+  (ra/animate-delay
    shared-value
    value
+   delay
    duration
-   :linear
-   delay))
+   :linear))
 
 (defn animate-linear-with-delay-loop
   [shared-value value duration delay]
-  (reanimated/animate-shared-value-with-delay-repeat
+  (ra/animate-delay-repeat
    shared-value
    value
-   duration
-   :linear
    delay
-   -1))
+   -1
+   duration
+   :linear))
 
 (defn animate-easing
   [shared-value value duration]
-  (reanimated/animate-shared-value-with-timing
+  (ra/animate
    shared-value
    value
    duration
@@ -38,13 +38,13 @@
 
 (defn animate-easing-with-delay
   [shared-value value duration delay]
-  (reanimated/animate-shared-value-with-delay
+  (ra/animate-delay
    shared-value
    value
+   delay
    duration
-   :easing1
-   delay))
+   :easing1))
 
 (defn set-value
   [shared-value value]
-  (reanimated/set-shared-value shared-value value))
+  (ra/set-val shared-value value))

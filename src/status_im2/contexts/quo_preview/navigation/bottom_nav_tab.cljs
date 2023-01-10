@@ -2,7 +2,7 @@
   (:require [quo2.components.navigation.bottom-nav-tab :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -56,8 +56,8 @@
         pass-through? (reagent/cursor state [:pass-through?])]
     [:f>
      (fn []
-       (let [icon-color-anim (reanimated/use-shared-value colors/white)]
-         (reanimated/set-shared-value
+       (let [icon-color-anim (ra/use-val colors/white)]
+         (ra/set-val
           icon-color-anim
           (get-icon-color @selected? @pass-through?))
          [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

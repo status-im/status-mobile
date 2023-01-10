@@ -4,7 +4,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [status-im.ui2.screens.chat.pin-limit-popover.style :as style]
             [utils.re-frame :as rf]))
 
@@ -16,17 +16,17 @@
    (fn []
      (let [width                 (rf/sub [:dimensions/window-width])
            show-pin-limit-modal? (rf/sub [:chats/pin-modal chat-id])
-           opacity-animation     (reanimated/use-shared-value 0)
-           z-index-animation     (reanimated/use-shared-value -1)]
+           opacity-animation     (ra/use-val 0)
+           z-index-animation     (ra/use-val -1)]
        (react/effect!
         #(do
-           (reanimated/set-shared-value opacity-animation
-                                        (reanimated/with-timing (if show-pin-limit-modal? 1 0)))
-           (reanimated/set-shared-value z-index-animation
-                                        (reanimated/with-timing (if show-pin-limit-modal? 10 -1)))))
+           (ra/set-val opacity-animation
+                       (ra/with-timing (if show-pin-limit-modal? 1 0)))
+           (ra/set-val z-index-animation
+                       (ra/with-timing (if show-pin-limit-modal? 10 -1)))))
        (when show-pin-limit-modal?
-         [reanimated/view
-          {:style               (reanimated/apply-animations-to-style
+         [ra/view
+          {:style               (ra/apply-animations-to-style
                                  {:opacity opacity-animation
                                   :z-index z-index-animation}
                                  (style/pin-popover width))

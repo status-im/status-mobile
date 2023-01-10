@@ -1,7 +1,7 @@
 (ns quo2.components.navigation.floating-shell-button
   (:require [quo2.components.buttons.dynamic-button :as dynamic-button]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn dynamic-button-view
   [type dynamic-buttons style]
@@ -28,12 +28,12 @@
                                    :margin-horizontal 12
                                    :pointer-events    :box-none}
                                   style)
-            animated-style (reanimated/apply-animations-to-style
+            animated-style (ra/apply-animations-to-style
                             (if opacity-anim
                               {:opacity opacity-anim}
                               {})
                             original-style)]
-        [reanimated/view {:style animated-style}
+        [ra/view {:style animated-style}
          ;; Left Section
          [rn/view {:style {:flex 1}}
           [dynamic-button-view :search dynamic-buttons

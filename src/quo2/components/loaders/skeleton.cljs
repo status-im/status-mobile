@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.masked-view :as masked-view]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]))
 
 (def message-skeleton-height 54)
@@ -30,12 +30,12 @@
            author-width            (content-width :author)
            message-width           (content-width :message)
            {window-width :width}   (rn/use-window-dimensions)
-           translate-x             (reanimated/use-shared-value (- window-width))
-           animated-gradient-style (reanimated/apply-animations-to-style
+           translate-x             (ra/use-val (- window-width))
+           animated-gradient-style (ra/apply-animations-to-style
                                     {:transform [{:translateX translate-x}]}
                                     {:width  window-width
                                      :height "100%"})]
-       (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
+       (ra/animate-repeat translate-x window-width (- 1) false 1000 :linear)
        [masked-view/masked-view
         {:style       {:height message-skeleton-height}
          :maskElement (reagent/as-element
@@ -70,7 +70,7 @@
         [rn/view
          {:style {:flex             1
                   :background-color color}}
-         [reanimated/linear-gradient
+         [ra/linear-gradient
           {:colors [color color loading-color color color]
            :start  {:x 0 :y 0}
            :end    {:x 1 :y 0}

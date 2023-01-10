@@ -5,8 +5,7 @@
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.common :as common]
+    [react-native.reanimated :as ra]
     [utils.re-frame :as rf]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -20,18 +19,18 @@
 
 (defn toggle-opacity
   [opacity-value border-value transparent? index {:keys [small-list-ref]}]
-  (let [opacity (reanimated/get-shared-value opacity-value)]
+  (let [opacity (ra/get-val opacity-value)]
     (if (= opacity 1)
       (do
-        (common/set-val-timing opacity-value 0)
+        (ra/animate opacity-value 0)
         (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
       (do
         (reset! transparent? (not @transparent?))
-        (reanimated/animate-shared-value-with-delay-default-easing opacity-value 1 300 50)
+        (ra/animate-delay opacity-value 1 50)
         (js/setTimeout #(when @small-list-ref
                           (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
                        100)))
-    (common/set-val-timing border-value (if (= opacity 1) 0 12))))
+    (ra/animate border-value (if (= opacity 1) 0 12))))
 
 (defn handle-orientation
   [result index window animations {:keys [flat-list-ref insets-atom]}]
@@ -103,18 +102,19 @@
            scroll-index             (reagent/atom index)
            transparent?             (reagent/atom false)
            window                   (rf/sub [:dimensions/window])
-           animations               {:border         (common/use-val (if platform/ios? 0 12))
-                                     :opacity        (common/use-val 0)
-                                     :rotate         (common/use-val "0deg")
-                                     :top-layout     (common/use-val -10)
-                                     :bottom-layout  (common/use-val 10)
-                                     :top-view-y     (common/use-val 0)
-                                     :top-view-x     (common/use-val 0)
-                                     :top-view-width (common/use-val (:width window))
-                                     :top-view-bg    (common/use-val colors/neutral-100-opa-0)}
+           animations               {:border         (ra/use-val (if platform/ios? 0 12))
+                                     :opacity        (ra/use-val 0)
+                                     :rotate         (ra/use-val "0deg")
+                                     :top-layout     (ra/use-val -10)
+                                     :bottom-layout  (ra/use-val 10)
+                                     :top-view-y     (ra/use-val 0)
+                                     :top-view-x     (ra/use-val 0)
+                                     :top-view-width (ra/use-val (:width window))
+                                     :top-view-bg    (ra/use-val colors/neutral-100-opa-0)}
 
            callback                 (fn [e]
                                       (on-viewable-items-changed e scroll-index atoms))]
+       (println "aims" (ra/get-val (:opacity animations)))
        (reset! data messages)
        (orientation/use-device-orientation-change
         (fn [result]
@@ -131,10 +131,10 @@
                           (.scrollToIndex ^js @(:flat-list-ref atoms)
                                           #js {:animated false :index index}))
                         (js/setTimeout (fn []
-                                         (common/set-val-timing (:opacity animations) 1)
-                                         (common/set-val-timing (:top-layout animations) 0)
-                                         (common/set-val-timing (:bottom-layout animations) 0)
-                                         (common/set-val-timing (:border animations) 12))
+                                         (ra/animate (:opacity animations) 1)
+                                         (ra/animate (:top-layout animations) 0)
+                                         (ra/animate (:bottom-layout animations) 0)
+                                         (ra/animate (:border animations) 12))
                                        (if platform/ios? 250 100))
                         (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
                         (fn []

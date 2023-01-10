@@ -2,7 +2,7 @@
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
             [react-native.blur :as blur]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [status-im2.contexts.shell.style :as style]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
@@ -36,12 +36,12 @@
            pass-through?      (rf/sub [:shell/shell-pass-through?])
            shared-values      @animation/shared-values-atom
            original-style     (style/bottom-tabs-container pass-through?)
-           animated-style     (reanimated/apply-animations-to-style
+           animated-style     (ra/apply-animations-to-style
                                {:height (:bottom-tabs-height shared-values)}
                                original-style)]
        (animation/load-stack @animation/selected-stack-id)
-       (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
-       [reanimated/view {:style animated-style}
+       (ra/set-val (:pass-through? shared-values) pass-through?)
+       [ra/view {:style animated-style}
         (when pass-through?
           [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
         [rn/view {:style (style/bottom-tabs)}

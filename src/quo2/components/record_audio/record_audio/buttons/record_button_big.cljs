@@ -3,7 +3,7 @@
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn :refer [use-effect]]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.audio-toolkit :as audio]
             [taoensso.timbre :as log]
             [cljs-bean.core :as bean]
@@ -37,7 +37,7 @@
     (fn [props]
       (let [{:keys [scale opacity color]} (bean/bean props)]
         (reagent/as-element
-         [reanimated/view {:style (style/animated-circle scale opacity color)}]))))))
+         [ra/view {:style (style/animated-circle scale opacity color)}]))))))
 
 (defn record-button-big
   [recording? ready-to-send? ready-to-lock? ready-to-delete? record-button-is-animating?
@@ -45,29 +45,29 @@
    clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel]
   [:f>
    (fn []
-     (let [scale                (reanimated/use-shared-value 1)
-           opacity              (reanimated/use-shared-value 0)
+     (let [scale                (ra/use-val 1)
+           opacity              (ra/use-val 0)
            opacity-from         (if @ready-to-lock? opacity-from-lock opacity-from-default)
            animations           (map
                                  (fn [index]
                                    (let [ring-scale (ring-scale scale (* scale-padding index))]
                                      {:scale   ring-scale
-                                      :opacity (reanimated/interpolate ring-scale
-                                                                       [1 scale-to-each]
-                                                                       [opacity-from 0])}))
+                                      :opacity (ra/interpolate ring-scale
+                                                               [1 scale-to-each]
+                                                               [opacity-from 0])}))
                                  (range 0 5))
            rings-color          (cond
                                   @ready-to-lock?   (colors/theme-colors colors/neutral-80-opa-5-opaque
                                                                          colors/neutral-80)
                                   @ready-to-delete? colors/danger-50
                                   :else             colors/primary-50)
-           translate-y          (reanimated/use-shared-value 0)
-           translate-x          (reanimated/use-shared-value 0)
+           translate-y          (ra/use-val 0)
+           translate-x          (ra/use-val 0)
            button-color         colors/primary-50
            icon-color           (if (and (not (colors/dark?)) @ready-to-lock?) colors/black colors/white)
-           icon-opacity         (reanimated/use-shared-value 1)
-           red-overlay-opacity  (reanimated/use-shared-value 0)
-           gray-overlay-opacity (reanimated/use-shared-value 0)
+           icon-opacity         (ra/use-val 1)
+           red-overlay-opacity  (ra/use-val 0)
+           gray-overlay-opacity (ra/use-val 0)
            complete-animation   (fn []
                                   (cond
                                     (and @ready-to-lock? (not @record-button-is-animating?))
@@ -114,7 +114,7 @@
                                      signal-anim-duration)))
            stop-animation       (fn []
                                   (set-value opacity 0)
-                                  (reanimated/cancel-animation scale)
+                                  (ra/cancel-animation scale)
                                   (set-value scale 1)
                                   (when @clear-timeout (js/clearTimeout @clear-timeout)))
            start-y-animation    (fn []
@@ -190,7 +190,7 @@
                        (start-x-animation)
                        (reset-x-animation)))
                    [@ready-to-delete?])
-       [reanimated/view
+       [ra/view
         {:style          (style/record-button-big-container translate-x translate-y opacity)
          :pointer-events :none}
         [:<>
@@ -203,9 +203,9 @@
               :color   rings-color}])
           animations)]
         [rn/view {:style (style/record-button-big-body button-color)}
-         [reanimated/view {:style (style/record-button-big-red-overlay red-overlay-opacity)}]
-         [reanimated/view {:style (style/record-button-big-gray-overlay gray-overlay-opacity)}]
-         [reanimated/view {:style (style/record-button-big-icon-container icon-opacity)}
+         [ra/view {:style (style/record-button-big-red-overlay red-overlay-opacity)}]
+         [ra/view {:style (style/record-button-big-gray-overlay gray-overlay-opacity)}]
+         [ra/view {:style (style/record-button-big-icon-container icon-opacity)}
           (if @locked?
             [rn/view {:style style/stop-icon}]
             [icons/icon :i/audio {:color icon-color}])]]]))])

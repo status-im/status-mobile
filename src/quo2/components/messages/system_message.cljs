@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [utils.string :as utils]))
 
 (def themes-landed
@@ -176,20 +176,20 @@
   [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
   [:f>
    (fn []
-     (let [sv-color (reanimated/use-shared-value
+     (let [sv-color (ra/use-val
                      (get-color :bg (if animate-landing? :landed :default) type))]
        (when animate-landing?
-         (reanimated/animate-shared-value-with-delay
+         (ra/animate-delay
           sv-color
           (get-color :bg :default type)
+          1000
           0
-          :linear
-          1000))
-       [reanimated/touchable-opacity
+          :linear))
+       [ra/touchable-opacity
         {:on-press      #(when-not non-pressable?
-                           (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
+                           (ra/set-val sv-color (get-color :bg :pressed type)))
          :on-long-press on-long-press
-         :style         (reanimated/apply-animations-to-style
+         :style         (ra/apply-animations-to-style
                          {:background-color sv-color}
                          (merge
                           {:flex-direction     :row

@@ -1,8 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.lightbox.common :as common]))
+            [react-native.reanimated :as ra]))
 
 ;;;; MAIN-VIEW
 (def container-view
@@ -13,7 +12,7 @@
   [top-inset {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg top-layout]}
    window-width
    bg-color]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    (if platform/ios?
      {:transform        [{:translateY top-layout}
                          {:rotate rotate}
@@ -27,7 +26,8 @@
    {:position           :absolute
     :padding-horizontal 20
     :top                (if platform/ios? top-inset 0)
-    :height             common/top-view-height
+    ;; height defined in top_view.cljs, but can't import due to circular dependency
+    :height             56
     :z-index            4
     :flex-direction     :row
     :justify-content    :space-between
@@ -49,7 +49,7 @@
 ;;;; BOTTOM-VIEW
 (defn gradient-container
   [insets {:keys [opacity bottom-layout]}]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateY bottom-layout}]
     :opacity   opacity}
    {:position       :absolute

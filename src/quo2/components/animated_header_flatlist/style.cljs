@@ -1,6 +1,6 @@
 (ns quo2.components.animated-header-flatlist.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn container-view
   [view-height]
@@ -27,7 +27,7 @@
 
 (defn blur-view
   [animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity animation}
    {:position :absolute
     :top      0
@@ -39,7 +39,7 @@
 
 (defn entity-picture
   [animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:width  animation
     :height animation}
    {:transform        [{:scale 1}]
@@ -54,7 +54,7 @@
 
 (defn header-bottom-part
   [animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:border-top-right-radius animation
     :border-top-left-radius  animation}
    {:position         :absolute
@@ -66,9 +66,9 @@
 
 (defn header-comp
   [y-animation opacity-animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    ;; here using `left` won't work on Android, so we are using `translateX`
-   {:transform [{:translateX (reanimated/use-shared-value 64)} {:translateY y-animation}]
+   {:transform [{:translateX (ra/use-val 64)} {:translateY y-animation}]
     :opacity   opacity-animation}
    {:position :absolute
     :z-index  3}))

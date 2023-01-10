@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.animation
   (:require [quo2.foundations.colors :as colors]
             [utils.re-frame :as rf]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]
             [status-im.async-storage.core :as async-storage] ;;TODO remove when not used anymore
             [status-im2.contexts.shell.constants :as shell.constants]))
@@ -71,12 +71,12 @@
 ;; Shared Values
 (defn calculate-shared-values
   []
-  (let [selected-stack-id-sv    (reanimated/use-shared-value
+  (let [selected-stack-id-sv    (ra/use-val
                                  ;; passing keywords or nil is not working with reanimated
                                  (name (or @selected-stack-id :communities-stack)))
-        pass-through-sv         (reanimated/use-shared-value false)
-        home-stack-state-sv     (reanimated/use-shared-value @home-stack-state)
-        animate-home-stack-left (reanimated/use-shared-value (not (home-stack-open?)))
+        pass-through-sv         (ra/use-val false)
+        home-stack-state-sv     (ra/use-val @home-stack-state)
+        animate-home-stack-left (ra/use-val (not (home-stack-open?)))
         home-stack-position     (calculate-home-stack-position)]
     (reset! shared-values-atom
       (reduce
@@ -153,10 +153,10 @@
   (let [home-stack-state-value (if animate?
                                  shell.constants/open-with-animation
                                  shell.constants/open-without-animation)]
-    (reanimated/set-shared-value
+    (ra/set-val
      (:selected-stack-id @shared-values-atom)
      (name stack-id))
-    (reanimated/set-shared-value
+    (ra/set-val
      (:home-stack-state @shared-values-atom)
      home-stack-state-value)
     (reset! home-stack-state home-stack-state-value)
@@ -168,8 +168,8 @@
 
 (defn change-tab
   [stack-id]
-  (reanimated/set-shared-value (:animate-home-stack-left @shared-values-atom) false)
-  (reanimated/set-shared-value (:selected-stack-id @shared-values-atom) (name stack-id))
+  (ra/set-val (:animate-home-stack-left @shared-values-atom) false)
+  (ra/set-val (:selected-stack-id @shared-values-atom) (name stack-id))
   (reset! selected-stack-id stack-id)
   (async-storage/set-item! :selected-stack-id stack-id))
 
@@ -189,10 +189,10 @@
   (let [home-stack-state-value (if animate?
                                  shell.constants/close-with-animation
                                  shell.constants/close-without-animation)]
-    (reanimated/set-shared-value
+    (ra/set-val
      (:animate-home-stack-left @shared-values-atom)
      true)
-    (reanimated/set-shared-value
+    (ra/set-val
      (:home-stack-state @shared-values-atom)
      home-stack-state-value)
     (reset! home-stack-state home-stack-state-value)

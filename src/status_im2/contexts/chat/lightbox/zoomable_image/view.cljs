@@ -3,7 +3,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
+    [react-native.reanimated :as ra]
     [reagent.core :as reagent]
     [utils.re-frame :as rf]
     [oops.core :refer [oget]]
@@ -12,98 +12,6 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
     [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]))
 
-;;;; Some aliases for reanimated methods, as they are used 10s of times in this file
-;; TODO: Abstract Reanimated methods in a better way, issue:
-;; https://github.com/status-im/status-mobile/issues/15176
-(defn get-val
-  [animation]
-  (reanimated/get-shared-value animation))
-
-(defn set-val
-  [animation value]
-  (reanimated/set-shared-value animation value))
-
-(defn use-val
-  [value]
-  (reanimated/use-shared-value value))
-
-(defn timing
-  ([value]
-   (timing value c/default-duration))
-  ([value duration]
-   (if (= duration nil)
-     value
-     (reanimated/with-timing-duration value duration))))
-
-(defn set-val-decay
-  [animation velocity bounds]
-  (reanimated/animate-shared-value-with-decay animation (* velocity c/velocity-factor) bounds))
-
-;;;; Helpers
-(defn center-x
-  [{:keys [pinch-x pinch-x-start pan-x pan-x-start]} exit?]
-  (let [duration (if exit? 100 c/default-duration)]
-    (set-val pinch-x (timing c/init-offset duration))
-    (set-val pinch-x-start c/init-offset)
-    (set-val pan-x (timing c/init-offset duration))
-    (set-val pan-x-start c/init-offset)))
-
-(defn center-y
-  [{:keys [pinch-y pinch-y-start pan-y pan-y-start]} exit?]
-  (let [duration (if exit? 100 c/default-duration)]
-    (set-val pinch-y (timing c/init-offset duration))
-    (set-val pinch-y-start c/init-offset)
-    (set-val pan-y (timing c/init-offset duration))
-    (set-val pan-y-start c/init-offset)))
-
-(defn reset-values
-  [exit? animations {:keys [focal-x focal-y]}]
-  (center-x animations exit?)
-  (center-y animations exit?)
-  (reset! focal-x nil)
-  (reset! focal-y nil))
-
-(defn rescale-image
-  [value
-   exit?
-   {:keys [x-threshold-scale y-threshold-scale]}
-   {:keys [scale saved-scale] :as animations}
-   {:keys [pan-x-enabled? pan-y-enabled?] :as props}]
-  (set-val scale (timing value (if exit? 100 c/default-duration)))
-  (set-val saved-scale value)
-  (when (= value c/min-scale)
-    (reset-values exit? animations props))
-  (reset! pan-x-enabled? (> value x-threshold-scale))
-  (reset! pan-y-enabled? (> value y-threshold-scale))
-  (when platform/android?
-    (rf/dispatch [:chat.ui/lightbox-scale value])))
-
-(defn handle-orientation-change
-  [curr-orientation
-   focused?
-   {:keys [landscape-scale-val x-threshold-scale y-threshold-scale]}
-   {:keys [rotate rotate-scale scale] :as animations}
-   {:keys [pan-x-enabled? pan-y-enabled?]}]
-  (let [duration (when focused? c/default-duration)]
-    (cond
-      (= curr-orientation orientation/landscape-left)
-      (do
-        (set-val rotate (timing "90deg" duration))
-        (set-val rotate-scale (timing landscape-scale-val duration)))
-      (= curr-orientation orientation/landscape-right)
-      (do
-        (set-val rotate (timing "-90deg" duration))
-        (set-val rotate-scale (timing landscape-scale-val duration)))
-      (= curr-orientation orientation/portrait)
-      (do
-        (set-val rotate (timing c/init-rotation duration))
-        (set-val rotate-scale (timing c/min-scale duration))))
-    (center-x animations false)
-    (center-y animations false)
-    (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
-    (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))))
-
-;;;; Gestures
 (defn tap-gesture
   [on-tap]
   (->
@@ -119,15 +27,15 @@
     (gesture/number-of-taps 2)
     (gesture/on-start
      (fn [e]
-       (if (= (get-val scale) c/min-scale)
+       (if (= (ra/get-val scale) c/min-scale)
          (let [translate-x (utils/get-double-tap-offset width screen-width (oget e "x"))
                translate-y (utils/get-double-tap-offset height screen-height (oget e "y"))]
            (when (> c/double-tap-scale x-threshold-scale)
-             (set-val pan-x (timing translate-x))
-             (set-val pan-x-start translate-x))
+             (ra/animate pan-x translate-x)
+             (ra/set-val pan-x-start translate-x))
            (when (> c/double-tap-scale y-threshold-scale)
-             (set-val pan-y (timing translate-y))
-             (set-val pan-y-start translate-y))
+             (ra/animate pan-y translate-y)
+             (ra/set-val pan-y-start translate-y))
            (rescale c/double-tap-scale))
          (rescale c/min-scale))))))
 
@@ -137,30 +45,30 @@
    {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pan-y pan-y-start pan-x
            pan-x-start]}
    {:keys [pan-x-enabled? pan-y-enabled?]}]
-  (let [curr-offset-y (+ (get-val pan-y) (get-val pinch-y))
-        max-offset-y  (utils/get-max-offset height screen-height (get-val scale))
+  (let [curr-offset-y (+ (ra/get-val pan-y) (ra/get-val pinch-y))
+        max-offset-y  (utils/get-max-offset height screen-height (ra/get-val scale))
         max-offset-y  (if (neg? curr-offset-y) (- max-offset-y) max-offset-y)
-        curr-offset-x (+ (get-val pan-x) (get-val pinch-x))
-        max-offset-x  (utils/get-max-offset width screen-width (get-val scale))
+        curr-offset-x (+ (ra/get-val pan-x) (ra/get-val pinch-x))
+        max-offset-x  (utils/get-max-offset width screen-width (ra/get-val scale))
         max-offset-x  (if (neg? curr-offset-x) (- max-offset-x) max-offset-x)]
-    (when (and (> (get-val scale) y-threshold-scale)
-               (< (get-val scale) c/max-scale)
+    (when (and (> (ra/get-val scale) y-threshold-scale)
+               (< (ra/get-val scale) c/max-scale)
                (> (Math/abs curr-offset-y) (Math/abs max-offset-y)))
-      (set-val pinch-y (timing c/init-offset))
-      (set-val pinch-y-start c/init-offset)
-      (set-val pan-y (timing max-offset-y))
-      (set-val pan-y-start max-offset-y))
-    (when (and (> (get-val scale) x-threshold-scale)
-               (< (get-val scale) c/max-scale)
+      (ra/animate pinch-y c/init-offset)
+      (ra/set-val pinch-y-start c/init-offset)
+      (ra/animate pan-y max-offset-y)
+      (ra/set-val pan-y-start max-offset-y))
+    (when (and (> (ra/get-val scale) x-threshold-scale)
+               (< (ra/get-val scale) c/max-scale)
                (> (Math/abs curr-offset-x) (Math/abs max-offset-x)))
-      (set-val pinch-x (timing c/init-offset))
-      (set-val pinch-x-start c/init-offset)
-      (set-val pan-x (timing max-offset-x))
-      (set-val pan-x-start max-offset-x))
-    (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
-    (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))
+      (ra/animate pinch-x c/init-offset)
+      (ra/set-val pinch-x-start c/init-offset)
+      (ra/animate pan-x max-offset-x)
+      (ra/set-val pan-x-start max-offset-x))
+    (reset! pan-x-enabled? (> (ra/get-val scale) x-threshold-scale))
+    (reset! pan-y-enabled? (> (ra/get-val scale) y-threshold-scale))
     (when platform/android?
-      (rf/dispatch [:chat.ui/lightbox-scale (get-val saved-scale)]))))
+      (rf/dispatch [:chat.ui/lightbox-scale (ra/get-val saved-scale)]))))
 
 (defn pinch-gesture
   [{:keys [width height screen-height screen-width x-threshold-scale y-threshold-scale] :as dimensions}
@@ -179,40 +87,41 @@
                           (reset! focal-x (utils/get-focal (oget e "focalX") width screen-width))
                           (reset! focal-y (utils/get-focal (oget e "focalY") height screen-height)))))
     (gesture/on-update (fn [e]
-                         (let [new-scale   (* (oget e "scale") (get-val saved-scale))
-                               scale-diff  (utils/get-scale-diff new-scale (get-val saved-scale))
+                         (let [new-scale   (* (oget e "scale") (ra/get-val saved-scale))
+                               scale-diff  (utils/get-scale-diff new-scale (ra/get-val saved-scale))
                                new-pinch-x (utils/get-pinch-position scale-diff screen-width @focal-x)
                                new-pinch-y (utils/get-pinch-position scale-diff screen-height @focal-y)]
-                           (when (and (>= new-scale c/max-scale) (= (get-val pinch-x-max) js/Infinity))
-                             (set-val pinch-x-max (get-val pinch-x))
-                             (set-val pinch-y-max (get-val pinch-y)))
-                           (set-val pinch-x (+ new-pinch-x (get-val pinch-x-start)))
-                           (set-val pinch-y (+ new-pinch-y (get-val pinch-y-start)))
-                           (set-val scale new-scale))))
+                           (when (and (>= new-scale c/max-scale)
+                                      (= (ra/get-val pinch-x-max) js/Infinity))
+                             (ra/set-val pinch-x-max (ra/get-val pinch-x))
+                             (ra/set-val pinch-y-max (ra/get-val pinch-y)))
+                           (ra/set-val pinch-x (+ new-pinch-x (ra/get-val pinch-x-start)))
+                           (ra/set-val pinch-y (+ new-pinch-y (ra/get-val pinch-y-start)))
+                           (ra/set-val scale new-scale))))
     (gesture/on-end
      (fn []
        (cond
-         (< (get-val scale) c/min-scale)
+         (< (ra/get-val scale) c/min-scale)
          (rescale c/min-scale)
-         (> (get-val scale) c/max-scale)
+         (> (ra/get-val scale) c/max-scale)
          (do
-           (set-val pinch-x (timing (get-val pinch-x-max)))
-           (set-val pinch-x-start (get-val pinch-x-max))
-           (set-val pinch-x-max js/Infinity)
-           (set-val pinch-y (timing (get-val pinch-y-max)))
-           (set-val pinch-y-start (get-val pinch-y-max))
-           (set-val pinch-y-max js/Infinity)
-           (set-val scale (timing c/max-scale))
-           (set-val saved-scale c/max-scale))
+           (ra/animate pinch-x (ra/get-val pinch-x-max))
+           (ra/set-val pinch-x-start (ra/get-val pinch-x-max))
+           (ra/set-val pinch-x-max js/Infinity)
+           (ra/animate pinch-y (ra/get-val pinch-y-max))
+           (ra/set-val pinch-y-start (ra/get-val pinch-y-max))
+           (ra/set-val pinch-y-max js/Infinity)
+           (ra/animate scale c/max-scale)
+           (ra/set-val saved-scale c/max-scale))
          :else
          (do
-           (set-val saved-scale (get-val scale))
-           (set-val pinch-x-start (get-val pinch-x))
-           (set-val pinch-y-start (get-val pinch-y))
-           (when (< (get-val scale) x-threshold-scale)
-             (center-x animations false))
-           (when (< (get-val scale) y-threshold-scale)
-             (center-y animations false))))
+           (ra/set-val saved-scale (ra/get-val scale))
+           (ra/set-val pinch-x-start (ra/get-val pinch-x))
+           (ra/set-val pinch-y-start (ra/get-val pinch-y))
+           (when (< (ra/get-val scale) x-threshold-scale)
+             (utils/center-x animations false))
+           (when (< (ra/get-val scale) y-threshold-scale)
+             (utils/center-y animations false))))
        (finalize-pinch dimensions animations props)))))
 
 (defn pan-x-gesture
@@ -225,27 +134,28 @@
     (gesture/enabled @pan-x-enabled?)
     (gesture/average-touches false)
     (gesture/on-update (fn [e]
-                         (set-val pan-x (+ (get-val pan-x-start) (oget e "translationX")))))
+                         (ra/set-val pan-x (+ (ra/get-val pan-x-start) (oget e "translationX")))))
     (gesture/on-end
      (fn [e]
-       (let [curr-offset (+ (get-val pan-x) (get-val pinch-x-start))
-             max-offset  (utils/get-max-offset width screen-width (get-val scale))
-             max-offset  (if (neg? curr-offset) (- max-offset) max-offset)]
+       (let [curr-offset (+ (ra/get-val pan-x) (ra/get-val pinch-x-start))
+             max-offset  (utils/get-max-offset width screen-width (ra/get-val scale))
+             max-offset  (if (neg? curr-offset) (- max-offset) max-offset)
+             velocity    (* (oget e "velocityX") c/velocity-factor)]
          (cond
-           (< (get-val scale) x-threshold-scale)
+           (< (ra/get-val scale) x-threshold-scale)
            (rescale c/min-scale)
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
-             (set-val pan-x (timing max-offset))
-             (set-val pan-x-start max-offset)
-             (set-val pinch-x (timing c/init-offset))
-             (set-val pinch-x-start c/init-offset))
+             (ra/animate pan-x max-offset)
+             (ra/set-val pan-x-start max-offset)
+             (ra/animate pinch-x c/init-offset)
+             (ra/set-val pinch-x-start c/init-offset))
            :else
-           (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-x-start))
-                 upper-bound (- (Math/abs max-offset) (get-val pinch-x-start))]
-             (set-val pan-x-start (get-val pan-x))
-             (set-val-decay pan-x (oget e "velocityX") [lower-bound upper-bound])
-             (set-val-decay pan-x-start (oget e "velocityX") [lower-bound upper-bound]))))))))
+           (let [lower-bound (- (- (Math/abs max-offset)) (ra/get-val pinch-x-start))
+                 upper-bound (- (Math/abs max-offset) (ra/get-val pinch-x-start))]
+             (ra/set-val pan-x-start (ra/get-val pan-x))
+             (ra/animate-decay pan-x velocity [lower-bound upper-bound])
+             (ra/animate-decay pan-x-start velocity [lower-bound upper-bound]))))))))
 
 
 (defn pan-y-gesture
@@ -258,30 +168,29 @@
     (gesture/enabled @pan-y-enabled?)
     (gesture/average-touches false)
     (gesture/on-update (fn [e]
-                         (set-val pan-y (+ (get-val pan-y-start) (oget e "translationY")))))
+                         (ra/set-val pan-y (+ (ra/get-val pan-y-start) (oget e "translationY")))))
     (gesture/on-end
      (fn [e]
-       (let [curr-offset (+ (get-val pan-y) (get-val pinch-y-start))
-             max-offset  (utils/get-max-offset height screen-height (get-val scale))
-             max-offset  (if (neg? curr-offset) (- max-offset) max-offset)]
+       (let [curr-offset (+ (ra/get-val pan-y) (ra/get-val pinch-y-start))
+             max-offset  (utils/get-max-offset height screen-height (ra/get-val scale))
+             max-offset  (if (neg? curr-offset) (- max-offset) max-offset)
+             velocity    (* (oget e "velocityY") c/velocity-factor)]
          (cond
-           (< (get-val scale) y-threshold-scale)
+           (< (ra/get-val scale) y-threshold-scale)
            (rescale c/min-scale)
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
-             (set-val pan-y (timing max-offset))
-             (set-val pan-y-start max-offset)
-             (set-val pinch-y (timing c/init-offset))
-             (set-val pinch-y-start c/init-offset))
+             (ra/animate pan-y max-offset)
+             (ra/set-val pan-y-start max-offset)
+             (ra/animate pinch-y c/init-offset)
+             (ra/set-val pinch-y-start c/init-offset))
            :else
-           (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-y-start))
-                 upper-bound (- (Math/abs max-offset) (get-val pinch-y-start))]
-             (set-val pan-y-start (get-val pan-y))
-             (set-val-decay pan-y (oget e "velocityY") [lower-bound upper-bound])
-             (set-val-decay pan-y-start (oget e "velocityY") [lower-bound upper-bound]))))))))
+           (let [lower-bound (- (- (Math/abs max-offset)) (ra/get-val pinch-y-start))
+                 upper-bound (- (Math/abs max-offset) (ra/get-val pinch-y-start))]
+             (ra/set-val pan-y-start (ra/get-val pan-y))
+             (ra/animate-decay pan-y velocity [lower-bound upper-bound])
+             (ra/animate-decay pan-y-start velocity [lower-bound upper-bound]))))))))
 
-
-;;;; Finally, the component
 (defn zoomable-image
   [{:keys [image-width image-height content message-id]} index border-radius on-tap]
   (let [set-full-height? (reagent/atom false)]
@@ -294,37 +203,37 @@
              curr-orientation     (or (rf/sub [:lightbox/orientation]) orientation/portrait)
              focused?             (= shared-element-id message-id)
              dimensions           (utils/get-dimensions image-width image-height curr-orientation)
-             animations           {:scale         (use-val initial-scale)
-                                   :saved-scale   (use-val initial-scale)
-                                   :pan-x-start   (use-val c/init-offset)
-                                   :pan-x         (use-val c/init-offset)
-                                   :pan-y-start   (use-val c/init-offset)
-                                   :pan-y         (use-val c/init-offset)
-                                   :pinch-x-start (use-val c/init-offset)
-                                   :pinch-x       (use-val c/init-offset)
-                                   :pinch-y-start (use-val c/init-offset)
-                                   :pinch-y       (use-val c/init-offset)
-                                   :pinch-x-max   (use-val js/Infinity)
-                                   :pinch-y-max   (use-val js/Infinity)
-                                   :rotate        (use-val c/init-rotation)
-                                   :rotate-scale  (use-val c/min-scale)}
+             animations           {:scale         (ra/use-val initial-scale)
+                                   :saved-scale   (ra/use-val initial-scale)
+                                   :pan-x-start   (ra/use-val c/init-offset)
+                                   :pan-x         (ra/use-val c/init-offset)
+                                   :pan-y-start   (ra/use-val c/init-offset)
+                                   :pan-y         (ra/use-val c/init-offset)
+                                   :pinch-x-start (ra/use-val c/init-offset)
+                                   :pinch-x       (ra/use-val c/init-offset)
+                                   :pinch-y-start (ra/use-val c/init-offset)
+                                   :pinch-y       (ra/use-val c/init-offset)
+                                   :pinch-x-max   (ra/use-val js/Infinity)
+                                   :pinch-y-max   (ra/use-val js/Infinity)
+                                   :rotate        (ra/use-val c/init-rotation)
+                                   :rotate-scale  (ra/use-val c/min-scale)}
              props                {:pan-x-enabled? (reagent/atom false)
                                    :pan-y-enabled? (reagent/atom false)
                                    :focal-x        (reagent/atom nil)
                                    :focal-y        (reagent/atom nil)}
              rescale              (fn [value exit?]
-                                    (rescale-image value exit? dimensions animations props))]
+                                    (utils/rescale-image value exit? dimensions animations props))]
          (rn/use-effect-once (fn []
                                (js/setTimeout #(reset! set-full-height? true) 500)
                                js/undefined))
          (when platform/ios?
-           (handle-orientation-change curr-orientation focused? dimensions animations props)
+           (utils/handle-orientation-change curr-orientation focused? dimensions animations props)
            (utils/handle-exit-lightbox-signal exit-lightbox-signal
                                               index
-                                              (get-val (:scale animations))
+                                              (ra/get-val (:scale animations))
                                               rescale
                                               set-full-height?))
-         (utils/handle-zoom-out-signal zoom-out-signal index (get-val (:scale animations)) rescale)
+         (utils/handle-zoom-out-signal zoom-out-signal index (ra/get-val (:scale animations)) rescale)
          [:f>
           (fn []
             (let [tap               (tap-gesture on-tap)
@@ -336,10 +245,9 @@
                                      (gesture/simultaneous pinch pan-x pan-y)
                                      (gesture/exclusive double-tap tap))]
               [gesture/gesture-detector {:gesture composed-gestures}
-               [reanimated/view
+               [ra/view
                 {:style (style/container dimensions animations @set-full-height?)}
-                [reanimated/fast-image
+                [ra/fast-image
                  {:source    {:uri (:image content)}
                   :native-ID (when focused? :shared-element)
                   :style     (style/image dimensions animations border-radius)}]]]))]))]))
-

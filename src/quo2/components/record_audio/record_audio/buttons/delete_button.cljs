@@ -2,7 +2,7 @@
   (:require [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.core :refer [use-effect]]
             [quo2.components.record-audio.record-audio.helpers :refer
              [animate-linear-with-delay
@@ -14,14 +14,14 @@
   [recording? ready-to-delete? reviewing-audio?]
   [:f>
    (fn []
-     (let [opacity                   (reanimated/use-shared-value 0)
-           translate-x               (reanimated/use-shared-value 20)
-           scale                     (reanimated/use-shared-value 1)
-           connector-opacity         (reanimated/use-shared-value 0)
-           connector-width           (reanimated/use-shared-value 24)
-           connector-height          (reanimated/use-shared-value 12)
-           border-radius-first-half  (reanimated/use-shared-value 8)
-           border-radius-second-half (reanimated/use-shared-value 8)
+     (let [opacity                   (ra/use-val 0)
+           translate-x               (ra/use-val 20)
+           scale                     (ra/use-val 1)
+           connector-opacity         (ra/use-val 0)
+           connector-width           (ra/use-val 24)
+           connector-height          (ra/use-val 12)
+           border-radius-first-half  (ra/use-val 8)
+           border-radius-second-half (ra/use-val 8)
            start-x-animation         (fn []
                                        (animate-linear-with-delay translate-x 12 50 133.33)
                                        (animate-easing-with-delay connector-opacity 1 0 93.33)
@@ -73,14 +73,14 @@
                        (reset-x-animation)))
                    [@ready-to-delete?])
        [:<>
-        [reanimated/view {:style (style/delete-button-container opacity)}
-         [reanimated/view
+        [ra/view {:style (style/delete-button-container opacity)}
+         [ra/view
           {:style (style/delete-button-connector connector-opacity
                                                  connector-width
                                                  connector-height
                                                  border-radius-first-half
                                                  border-radius-second-half)}]]
-        [reanimated/view
+        [ra/view
          {:style          (style/delete-button scale translate-x opacity)
           :pointer-events :none}
          [icons/icon :i/delete

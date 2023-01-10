@@ -4,7 +4,7 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
-    [react-native.reanimated :as reanimated]
+    [react-native.reanimated :as ra]
     [quo2.components.animated-header-flatlist.view :as animated-header-list]))
 
 (def data [0 1 2 3 4 5 6 7 8 9 10])
@@ -38,8 +38,8 @@
   [animation]
   [:f>
    (fn []
-     [reanimated/fast-image
-      {:style (reanimated/apply-animations-to-style
+     [ra/fast-image
+      {:style (ra/apply-animations-to-style
                {:width  animation
                 :height animation}
                {:border-radius 72})

@@ -7,7 +7,7 @@
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
             [utils.re-frame :as rf]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn icon-color
   []
@@ -38,23 +38,23 @@
    navigate-back?]
   (let [input-range         (if platform/ios? [-47 10] [0 10])
         output-range        (if platform/ios? [-208 0] [-208 -45])
-        y                   (reanimated/use-shared-value scroll-height)
-        translate-animation (reanimated/interpolate y
-                                                    input-range
-                                                    output-range
-                                                    {:extrapolateLeft  "clamp"
-                                                     :extrapolateRight "clamp"})
-        opacity-animation   (reanimated/use-shared-value 0)
+        y                   (ra/use-val scroll-height)
+        translate-animation (ra/interpolate y
+                                            input-range
+                                            output-range
+                                            {:extrapolateLeft  "clamp"
+                                             :extrapolateRight "clamp"})
+        opacity-animation   (ra/use-val 0)
         threshold           (if platform/ios? 30 170)]
     (rn/use-effect
      #(do
-        (reanimated/set-shared-value y scroll-height)
-        (reanimated/set-shared-value opacity-animation
-                                     (reanimated/with-timing (if (>= scroll-height threshold) 1 0)
-                                                             (clj->js {:duration 300}))))
+        (ra/set-val y scroll-height)
+        (ra/set-val opacity-animation
+                    (ra/with-timing (if (>= scroll-height threshold) 1 0)
+                                    (clj->js {:duration 300}))))
      [scroll-height])
     [:<>
-     [reanimated/blur-view
+     [ra/blur-view
       {:blur-amount   20
        :blur-type     :transparent
        :overlay-color :transparent
@@ -66,7 +66,7 @@
                :left     0
                :right    0}}
       (when logo
-        [reanimated/view
+        [ra/view
          {:style (style/sticky-header-title opacity-animation)}
          [rn/image
           {:source logo
@@ -101,17 +101,17 @@
 (defn display-picture
   [scroll-height cover]
   (let [input-range (if platform/ios? [-67 10] [0 150])
-        y           (reanimated/use-shared-value scroll-height)
-        animation   (reanimated/interpolate y
-                                            input-range
-                                            [1.2 0.5]
-                                            {:extrapolateLeft  "clamp"
-                                             :extrapolateRight "clamp"})]
+        y           (ra/use-val scroll-height)
+        animation   (ra/interpolate y
+                                    input-range
+                                    [1.2 0.5]
+                                    {:extrapolateLeft  "clamp"
+                                     :extrapolateRight "clamp"})]
     (rn/use-effect #(do
-                      (reanimated/set-shared-value y scroll-height)
+                      (ra/set-val y scroll-height)
                       js/undefined)
                    [scroll-height])
-    [reanimated/view
+    [ra/view
      {:style (style/display-picture-container animation)}
      [rn/image
       {:source cover

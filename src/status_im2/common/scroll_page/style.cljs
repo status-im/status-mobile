@@ -1,7 +1,7 @@
 (ns status-im2.common.scroll-page.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as ra]))
 
 (defn image-slider
   [size]
@@ -13,7 +13,7 @@
 
 (defn blur-slider
   [animation height]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:translateY animation}]}
    {:z-index          5
     :position         :absolute
@@ -39,7 +39,7 @@
 
 (defn sticky-header-title
   [animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:opacity animation}
    {:position       :absolute
     :flex-direction :row
@@ -57,7 +57,7 @@
 
 (defn display-picture-container
   [animation]
-  (reanimated/apply-animations-to-style
+  (ra/apply-animations-to-style
    {:transform [{:scale animation}]}
    {:border-radius    50
     :border-width     1

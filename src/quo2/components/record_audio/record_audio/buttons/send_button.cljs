@@ -2,7 +2,7 @@
   (:require [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [react-native.core :refer [use-effect]]
             [quo2.components.record-audio.record-audio.helpers :refer
              [animate-linear
@@ -14,13 +14,13 @@
   [recording? ready-to-send? reviewing-audio?]
   [:f>
    (fn []
-     (let [opacity                   (reanimated/use-shared-value 0)
-           translate-y               (reanimated/use-shared-value 20)
-           connector-opacity         (reanimated/use-shared-value 0)
-           width                     (reanimated/use-shared-value 12)
-           height                    (reanimated/use-shared-value 24)
-           border-radius-first-half  (reanimated/use-shared-value 16)
-           border-radius-second-half (reanimated/use-shared-value 8)
+     (let [opacity                   (ra/use-val 0)
+           translate-y               (ra/use-val 20)
+           connector-opacity         (ra/use-val 0)
+           width                     (ra/use-val 12)
+           height                    (ra/use-val 24)
+           border-radius-first-half  (ra/use-val 16)
+           border-radius-second-half (ra/use-val 8)
            start-y-animation         (fn []
                                        (animate-linear-with-delay translate-y 12 50 133.33)
                                        (animate-easing-with-delay connector-opacity 1 0 93.33)
@@ -74,14 +74,14 @@
                        @recording? (reset-y-animation)))
                    [@ready-to-send?])
        [:<>
-        [reanimated/view {:style (style/send-button-container opacity)}
-         [reanimated/view
+        [ra/view {:style (style/send-button-container opacity)}
+         [ra/view
           {:style (style/send-button-connector connector-opacity
                                                width
                                                height
                                                border-radius-first-half
                                                border-radius-second-half)}]]
-        [reanimated/view
+        [ra/view
          {:style          (style/send-button translate-y opacity)
           :pointer-events :none}
          [icons/icon :i/arrow-up

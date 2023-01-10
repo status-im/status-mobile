@@ -2,10 +2,9 @@
   (:require
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
+    [react-native.reanimated :as ra]
     [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.common :as common]))
+    [utils.re-frame :as rf]))
 
 (def small-image-size 40)
 
@@ -25,10 +24,10 @@
   [:f>
    (fn []
      (let [size                    (if (= @scroll-index index) focused-image-size small-image-size)
-           size-value              (common/use-val size)
+           size-value              (ra/use-val size)
            {:keys [scroll-index-lock? small-list-ref
                    flat-list-ref]} atoms]
-       (common/set-val-timing size-value size)
+       (ra/animate size-value size)
        [rn/touchable-opacity
         {:active-opacity 1
          :on-press       (fn []
@@ -44,11 +43,11 @@
                                               #js {:animated true :index index}))
                             (if platform/ios? 50 150))
                            (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)]))}
-        [reanimated/fast-image
+        [ra/fast-image
          {:source {:uri (:image (:content item))}
-          :style  (reanimated/apply-animations-to-style {:width  size-value
-                                                         :height size-value}
-                                                        {:border-radius 10})}]]))])
+          :style  (ra/apply-animations-to-style {:width  size-value
+                                                 :height size-value}
+                                                {:border-radius 10})}]]))])
 
 (defn bottom-view
   [messages index scroll-index insets animations item-width atoms]
@@ -56,7 +55,7 @@
    (fn []
      (let [text               (get-in (first messages) [:content :text])
            padding-horizontal (- (/ item-width 2) (/ focused-image-size 2))]
-       [reanimated/linear-gradient
+       [ra/linear-gradient
         {:colors [:black :transparent]
          :start  {:x 0 :y 1}
          :end    {:x 0 :y 0}

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.composer.mentions.view
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [status-im2.common.contact-list-item.view :as contact-list-item]))
 
 (defn mention-item
@@ -13,13 +13,13 @@
   [{:keys [refs suggestions max-y]} insets]
   [:f>
    (fn []
-     (let [translate-y (reanimated/use-shared-value 0)]
+     (let [translate-y (ra/use-val 0)]
        (rn/use-effect
         (fn []
-          (reanimated/set-shared-value translate-y
-                                       (reanimated/with-timing (if (seq suggestions) 0 200)))))
-       [reanimated/view
-        {:style (reanimated/apply-animations-to-style
+          (ra/set-val translate-y
+                      (ra/with-timing (if (seq suggestions) 0 200)))))
+       [ra/view
+        {:style (ra/apply-animations-to-style
                  {:transform [{:translateY translate-y}]}
                  {:bottom     (or (:bottom insets) 0)
                   :position   :absolute

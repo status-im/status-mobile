@@ -3,16 +3,16 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [react-native.reanimated :as ra]
             [reagent.core :as reagent]))
 
 (defn apply-anim
   [dd-height val]
-  (reanimated/animate-shared-value-with-delay dd-height
-                                              val
-                                              300
-                                              :easing1
-                                              0))
+  (ra/animate-delay dd-height
+                    val
+                    0
+                    300
+                    :easing1))
 
 (def sizes
   {:big    {:icon-size 20
@@ -141,7 +141,7 @@
   [:f>
    (fn []
      (let [open?     (reagent/atom false)
-           dd-height (reanimated/use-shared-value 0)]
+           dd-height (ra/use-val 0)]
        [rn/view {:style {:flex-grow 1}}
         [dropdown-comp
          {:items        items
@@ -155,8 +155,8 @@
           :default-item default-item
           :open?        open?
           :dd-height    dd-height}]
-        [reanimated/view
-         {:style (reanimated/apply-animations-to-style
+        [ra/view
+         {:style (ra/apply-animations-to-style
                   {:height dd-height}
                   {:height dd-height})}
          [items-comp
