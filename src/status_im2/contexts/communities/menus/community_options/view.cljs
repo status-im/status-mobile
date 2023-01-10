@@ -161,10 +161,9 @@
       admin?        (owner-options id token-gated? muted?)
       request-sent? (join-request-sent-options id token-gated?)
       banned?       (banned-options id token-gated?)
-      :else         (not-joined-options id :token-gated?))))
+      :else         (not-joined-options id token-gated?))))
 
 (defn community-options-bottom-sheet
   [id]
   [quo/action-drawer
-   (get-context-drawers {:id           id
-                         :token-gated? false})])
+   (get-context-drawers {:id id})])

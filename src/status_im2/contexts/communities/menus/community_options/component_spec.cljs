@@ -8,7 +8,6 @@
 
 (defn init
   []
-  (js/console.log "hello")
   (i18n/set-language "en")
   (i18n-resources/load-language "en"))
 
