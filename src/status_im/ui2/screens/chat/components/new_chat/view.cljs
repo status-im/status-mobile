@@ -60,7 +60,6 @@
   (let [contacts                                     (rf/sub
                                                       [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count                      (rf/sub [:selected-contacts-count])
-        window-height                                (rf/sub [:dimensions/window-height])
         one-contact-selected?                        (= selected-contacts-count 1)
         contacts-selected?                           (pos? selected-contacts-count)
         {:keys [names public-key]}                   (-> contacts first :data first)
@@ -68,7 +67,7 @@
         {:keys [nickname ens-name three-words-name]} names
         first-username                               (or ens-name nickname three-words-name)
         no-contacts?                                 (empty? contacts)]
-    [react/view {:style {:height (* window-height 0.95)}}
+    [react/view {:style {:flex 1}}
      [quo2/button
       {:type                      :grey
        :icon                      true

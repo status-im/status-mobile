@@ -73,8 +73,14 @@
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
-                                                            :start-a-new-chat])}]
+     :on-press                   (fn [] ; Note: currently the bottom button is overlapping with safe-area
+                                        ; because it is using old bottom-sheet
+                                   (rf/dispatch [:bottom-sheet/hide])
+                                   (js/setTimeout #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content
+                                                                  new-chat-aio/contact-selection-list}])
+                                                  1000))
+    }]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
