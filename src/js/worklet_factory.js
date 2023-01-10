@@ -46,6 +46,8 @@ export function applyAnimationsToStyle(animations, style) {
         for (var transform of transforms) {
           var transformKey = Object.keys(transform)[0];
 	  var transformValue = transform[transformKey].value;
+      if (transformKey.startsWith('rotate'))
+        transformValue = `${transformValue}deg`
 	  if (transformValue !== null) {
             animatedTransforms.push(
 	      {[transformKey.replace(/-./g, x=>x[1].toUpperCase())]: transformValue}

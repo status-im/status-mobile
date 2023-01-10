@@ -28,6 +28,7 @@
 #import <SDWebImage/SDWebImageDownloaderOperation.h>
 
 #import <Security/Security.h>
+#import "Orientation.h"
 
 //TODO: properly import the framework
 extern NSString* StatusgoImageServerTLSCert();
@@ -192,6 +193,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   }
 
   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+  return [Orientation getOrientation];
 }
 
 @end

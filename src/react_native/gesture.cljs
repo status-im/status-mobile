@@ -26,6 +26,8 @@
 
 (defn on-end [gesture handler] (.onEnd ^js gesture handler))
 
+(defn on-finalize [gesture handler] (.onFinalize ^js gesture handler))
+
 (defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
 (defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))

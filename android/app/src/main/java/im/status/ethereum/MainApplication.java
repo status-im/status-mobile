@@ -27,6 +27,7 @@ import im.status.ethereum.StatusOkHttpClientFactory;
 
 import com.facebook.react.bridge.JSIModulePackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+import org.wonday.orientation.OrientationActivityLifecycle;
 
 public class MainApplication extends NavigationApplication {
 
@@ -68,7 +69,7 @@ public class MainApplication extends NavigationApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        registerActivityLifecycleCallbacks(OrientationActivityLifecycle.getInstance());
         OkHttpClientProvider.setOkHttpClientFactory(new StatusOkHttpClientFactory());
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG_WEBVIEW == "1");
