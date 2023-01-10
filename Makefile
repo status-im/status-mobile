@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm _install-hooks
+.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -118,10 +118,11 @@ _fix-node-perms: ##@prepare Fix permissions so that directory can be cleaned
 	$(shell test -d node_modules && chmod -R 744 node_modules)
 	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
 
-_tmpdir-mk: SHELL := /bin/sh
-_tmpdir-mk: ##@prepare Create a TMPDIR for temporary files
+$(TMPDIR): SHELL := /bin/sh
+$(TMPDIR): ##@prepare Create a TMPDIR for temporary files
 	@mkdir -p "$(TMPDIR)"
 # Make sure TMPDIR exists every time make is called
+_tmpdir-mk: $(TMPDIR)
 -include _tmpdir-mk
 
 _tmpdir-rm: SHELL := /bin/sh
