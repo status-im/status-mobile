@@ -17,7 +17,6 @@
            audio-duration-ms
            sticker
            content-type]}]
-  (println "kkkxxx" image-width image-height)
   {:chatId          chat-id
    :albumId         album-id
    :imageWidth      image-width
@@ -38,7 +37,6 @@
                     :params      [(mapv build-message messages)]
                     :js-response true
                     :on-success  #(do
-                                    (println "kkk" %)
                                     (re-frame/dispatch [:transport/message-sent %]))
                     :on-error    #(do
                                     (log/warn "failed to send a message" %)
