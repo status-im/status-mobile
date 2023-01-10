@@ -1945,8 +1945,15 @@
     "contact-request-chat-pending": "Your contact request is pending",
     "contact-request-chat-add": "Add {{name}} to send a message",
     "join-request": "Join request",
+<<<<<<< HEAD
     "join-one-user": "Join {{user}}",
     "join-two-users": "Join {{user1}} and {{user2}}",
     "join-more-users": "Join {{user1}}, {{user2}} and {{left-count}} more",
     "wants-to-join": "wants to join"
+=======
+    "wants-to-join": "wants to join",
+    "my-albums": "My albums",
+    "images": "images",
+    "only-6-images": "You can only add 6 images to your message"
+>>>>>>> 9b3c165c0... feat: photo & album selector screens
 }

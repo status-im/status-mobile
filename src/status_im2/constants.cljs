@@ -207,27 +207,30 @@
 (def ^:const delete-message-undo-time-limit-ms 4000)
 (def ^:const delete-message-for-me-undo-time-limit-ms 4000)
 
-(def ^:const album-image-sizes
-  {2        {0 146
-             1 146}
-   3        {0 [292 194]
-             1 [145 97]
-             2 [145 97]}
-   4        {0 146
-             1 146
-             2 146
-             3 146}
-   5        {0 146
-             1 146
-             2 97
-             3 97
-             4 97}
-   :default {0 146
-             1 146
-             2 72.5
-             3 72.5
-             4 72.5
-             5 72.5}})
+(def ^:const max-album-photos 6)
+(def ^:const image-size 146)
+
+(def album-image-sizes ; sometimes we subtract 1 or 0.5 for padding
+  {2        {0 image-size
+             1 image-size}
+   3        {0 [(* image-size 2) (* image-size 1.5)]
+             1 [(- image-size 1) (- (* image-size 0.67) 1)]
+             2 [(- image-size 1) (- (* image-size 0.67) 1)]}
+   4        {0 image-size
+             1 image-size
+             2 image-size
+             3 image-size}
+   5        {0 image-size
+             1 image-size
+             2 (- (* image-size 0.67) 1)
+             3 (- (* image-size 0.67) 1)
+             4 (- (* image-size 0.67) 1)}
+   :default {0 image-size
+             1 image-size
+             2 (- (* image-size 0.5) 0.5)
+             3 (- (* image-size 0.5) 0.5)
+             4 (- (* image-size 0.5) 0.5)
+             5 (- (* image-size 0.5) 0.5)}})
 
 (def ^:const spam-message-frequency-threshold 4)
 (def ^:const spam-interval-ms 1000)

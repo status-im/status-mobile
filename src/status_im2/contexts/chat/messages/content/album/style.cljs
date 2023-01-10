@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.album.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [status-im2.constants :as constants]))
 
 (def max-album-height 292)
 
@@ -7,15 +8,18 @@
   [portrait?]
   {:flex-direction (if portrait? :column :row)
    :flex-wrap      :wrap
-   :max-height     max-album-height})
+   :max-height     max-album-height
+   :border-radius  12
+   :width          (inc (* constants/image-size 2))
+   :overflow       :hidden})
 
 (defn image
-  [dimensions index]
+  [dimensions index portrait?]
   {:width         (:width dimensions)
    :height        (:height dimensions)
    :margin-left   (when (or (and (not= index 0) (not= index 2) (not= count 3))
                             (= count 3)
-                            (= index 2))
+                            (and portrait? (= index 2)))
                     1)
    :margin-bottom (when (< index 2) 1)
    :align-self    :flex-start})

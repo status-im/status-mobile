@@ -110,23 +110,24 @@
 
 (defn albumize-messages
   [messages]
-  (get (reduce (fn [{:keys [messages albums]} message]
-                 (let [album-id (:album-id message)
-                       albums   (cond-> albums album-id (update album-id conj message))
-                       messages (if album-id
-                                  (conj (filterv #(not= album-id (:album-id %)) messages)
-                                        {:album        (get albums album-id)
-                                         :album-id     album-id
-                                         :albumize?    (:albumize? message)
-                                         :message-id   album-id
-                                         :content-type constants/content-type-album})
-                                  (conj messages message))]
-                   {:messages messages
-                    :albums   albums}))
-               {:messages []
-                :albums   {}}
-               messages)
-       :messages))
+  (get
+   (reduce (fn [{:keys [messages albums]} message]
+             (let [album-id (:album-id message)
+                   albums   (cond-> albums album-id (update album-id conj message))
+                   messages (if album-id
+                              (conj (filterv #(not= album-id (:album-id %)) messages)
+                                    {:album        (get albums album-id)
+                                     :album-id     album-id
+                                     :albumize?    (:albumize? message)
+                                     :message-id   album-id
+                                     :content-type constants/content-type-album})
+                              (conj messages message))]
+               {:messages messages
+                :albums   albums}))
+           {:messages []
+            :albums   {}}
+           messages)
+   :messages))
 
 (re-frame/reg-sub
  :chats/chat-messages

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.image.view
   (:require [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
             [utils.re-frame :as rf]))
 
 (defn calculate-dimensions
@@ -21,6 +22,7 @@
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
+<<<<<<< HEAD
          {:style         {:margin-top (when (> index 0) 20) :width (:width dimensions)}
           :on-press      (fn []
                            (rf/dispatch [:chat.ui/update-shared-element-id message-id])
@@ -36,3 +38,19 @@
            {:source    {:uri (:image content)}
             :style     (merge dimensions {:border-radius 12})
             :native-ID (when (= shared-element-id message-id) :shared-element)}]]]))))
+=======
+         {:active-opacity 1
+          :style          {:margin-top (when (> index 0) 20)}
+          :on-press       (fn []
+                            (rf/dispatch [:chat.ui/update-shared-element-id message-id])
+                            (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
+                                                          {:messages [message] :index 0}])
+                                           100))}
+         ;; This text comp is temporary. Should later use
+         ;; `status-im2.contexts.chat.messages.content.text.view`
+         (when (and (not= text "placeholder") (= index 0)) [rn/text text])
+         [fast-image/fast-image
+          {:source    {:uri (:image content)}
+           :style     (merge dimensions {:border-radius 12})
+           :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))
+>>>>>>> 865b9d3e3... feat: photo & album selector screens

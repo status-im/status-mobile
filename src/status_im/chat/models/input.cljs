@@ -33,7 +33,7 @@
 
 (rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
-  as arguments and returns new fx. Always clear all validation messages."
+         as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
   [{db :db} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
@@ -150,11 +150,11 @@
   [{db :db} chat-id input-text]
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
-    (mapv (fn [[_ {:keys [uri width height]}]]
+    (mapv (fn [[_ {:keys [resized-uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
-             :image-path   (utils/safe-replace uri #"file://" "")
+             :image-path   (utils/safe-replace resized-uri #"file://" "")
              :image-width  width
              :image-height height
              ;; TODO: message not received if text field is
