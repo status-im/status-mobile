@@ -103,7 +103,7 @@
   [:f>
    (fn []
      (let [translate-y (reanimated/use-shared-value 0)]
-       (quo.react/effect!
+       (rn/use-effect
         (fn []
           (reanimated/set-shared-value translate-y
                                        (reanimated/with-timing (if (seq suggestions) 0 200)))))
@@ -118,9 +118,8 @@
         [mentions/autocomplete-mentions suggestions (:text-input-ref refs)]]))])
 
 (defn effect!
-  [{:keys [keyboard-shown]
-    :as   params}]
-  (quo.react/effect!
+  [{:keys [keyboard-shown] :as params}]
+  (rn/use-effect
    (fn []
      (when (or (not @keyboard-hiding?)
                (and @keyboard-hiding? (not keyboard-shown)))
@@ -170,8 +169,8 @@
 ;; screen is reopened
 (defn composer
   [_ _]
-  (let [text-input-ref (quo.react/create-ref)
-        send-ref       (quo.react/create-ref)
+  (let [text-input-ref (rn/create-ref)
+        send-ref       (rn/create-ref)
         refs           {:send-ref       send-ref
                         :text-input-ref text-input-ref}]
     (fn [chat-id insets]

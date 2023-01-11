@@ -3,7 +3,6 @@
             [quo.components.text :as text]
             [quo.react]
             [quo.react-native :as rn]
-            [react-native.reanimated :as reanimated]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.chat.photos :as photos]
             [utils.re-frame :as rf]))

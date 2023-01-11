@@ -88,13 +88,22 @@
                 props)]
         children))
 
-(defn use-effect
-  ([effect] (use-effect effect []))
-  ([effect deps]
-   (react/useEffect effect (bean/->js deps))))
+(def create-ref react/createRef)
 
 (def use-ref react/useRef)
-(defn use-effect-once [effect] (use-effect effect))
+
+(defn use-effect
+  ([effect-fn]
+   (react/useEffect
+    #(let [ret (effect-fn)]
+       (if (fn? ret) ret js/undefined))))
+  ([effect-fn deps]
+   (react/useEffect effect-fn (bean/->js deps))))
+
+(defn use-effect-once
+  [effect-fn]
+  (use-effect effect-fn))
+
 (defn use-unmount
   [f]
   (let [fn-ref (use-ref f)]
