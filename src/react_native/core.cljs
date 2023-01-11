@@ -67,7 +67,7 @@
 
 (defn set-status-bar-style
   [style]
-  (.setBarStyle (.-StatusBar ^js react-native) style))
+  (.setBarStyle (.-StatusBar ^js react-native) style true))
 
 (def style-sheet (.-StyleSheet ^js react-native))
 

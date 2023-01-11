@@ -52,7 +52,9 @@
                  }}
          [rn/touchable-opacity
           {:active-opacity 1
-           :on-press       #(rf/dispatch [:navigate-back])
+           :on-press       (fn []
+                             (rf/dispatch [:navigate-back])
+                             (rn/set-status-bar-style "dark-content"))
            :style          {:width            32
                             :height           32
                             :border-radius    12

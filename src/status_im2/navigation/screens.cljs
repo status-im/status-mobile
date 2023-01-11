@@ -12,6 +12,7 @@
             [status-im2.config :as config]))
 =======
             [status-im2.setup.config :as config]
+<<<<<<< HEAD
             [quo.design-system.colors :as colors]
 <<<<<<< HEAD
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
@@ -19,6 +20,8 @@
             [utils.re-frame :as rf]))
 >>>>>>> cc112eeb1... updates
 =======
+=======
+>>>>>>> accd5cae8... lint
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]))
 >>>>>>> 419cc70dd... feat: images album
 
@@ -43,17 +46,14 @@
 
     {:name      :images-horizontal
      :insets    {:top false :bottom false}
-     :options   {:topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black-persist}
-                 :statusBar     {:backgroundColor colors/black-persist
-                                 :style           :light}
-                 :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
-                                                                    :toId          :shared-element
-                                                                    :interpolation {:type :decelerate}}]}
-                                 :pop  {:sharedElementTransitions [{:fromId        :shared-element
-                                                                    :toId          :shared-element
-                                                                    :interpolation {:type
-                                                                                    :decelerate}}]}}}
+     :options   {:topBar     {:visible false}
+                 :animations {:push {:sharedElementTransitions [{:fromId        :shared-element
+                                                                 :toId          :shared-element
+                                                                 :interpolation {:type :decelerate}}]}
+                              :pop  {:sharedElementTransitions [{:fromId        :shared-element
+                                                                 :toId          :shared-element
+                                                                 :interpolation {:type
+                                                                                 :decelerate}}]}}}
      :component images-horizontal/images-horizontal}
 
     {:name      :discover-communities
