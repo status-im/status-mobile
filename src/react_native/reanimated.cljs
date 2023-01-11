@@ -12,12 +12,9 @@
                              cancelAnimation
                              SlideInUp
                              SlideOutUp
-                             LinearTransition
-                             enableLayoutAnimations)]
+                             LinearTransition)]
             [clojure.string :as string]
             [reagent.core :as reagent]))
-
-(enableLayoutAnimations true)
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)

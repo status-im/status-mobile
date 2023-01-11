@@ -8,23 +8,23 @@
             [status-im2.common.toasts.style :as style]
             [utils.re-frame :as rf]))
 
-(def ^:private slide-out-up-animation
-  (-> ^js reanimated/slide-out-up-animation
-      .springify
-      (.damping 20)
-      (.stiffness 300)))
+;; (def ^:private slide-out-up-animation
+;;   (-> ^js reanimated/slide-out-up-animation
+;;       .springify
+;;       (.damping 20)
+;;       (.stiffness 300)))
 
-(def ^:private slide-in-up-animation
-  (-> ^js reanimated/slide-in-up-animation
-      .springify
-      (.damping 20)
-      (.stiffness 300)))
+;; (def ^:private slide-in-up-animation
+;;   (-> ^js reanimated/slide-in-up-animation
+;;       .springify
+;;       (.damping 20)
+;;       (.stiffness 300)))
 
-(def ^:private linear-transition
-  (-> ^js reanimated/linear-transition
-      .springify
-      (.damping 20)
-      (.stiffness 300)))
+;; (def ^:private linear-transition
+;;   (-> ^js reanimated/linear-transition
+;;       .springify
+;;       (.damping 20)
+;;       (.stiffness 300)))
 
 (defn toast
   [id]
@@ -81,12 +81,15 @@
            (rn/use-unmount on-dismissed)
            [gesture/gesture-detector {:gesture pan}
             [reanimated/view
-             {:entering slide-in-up-animation
-              :exiting  slide-out-up-animation
-              :layout   reanimated/linear-transition
-              :style    (reanimated/apply-animations-to-style
-                         {:transform [{:translateY translate-y}]}
-                         style/each-toast-container)}
+             {;; TODO: this will eanble layout animation at runtime and causing flicker on android
+              ;; we need to resolve this and re-enable layout animation
+              ;; issue at https://github.com/status-im/status-mobile/issues/14752
+              ;; :entering slide-in-up-animation
+              ;; :exiting  slide-out-up-animation
+              ;; :layout   reanimated/linear-transition
+              :style (reanimated/apply-animations-to-style
+                      {:transform [{:translateY translate-y}]}
+                      style/each-toast-container)}
              [toast id]]]))])))
 
 (defn toasts
