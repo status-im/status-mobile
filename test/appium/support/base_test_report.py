@@ -84,9 +84,17 @@ class BaseTestReport:
         tests = self.get_all_tests()
         failed = list()
         for test in tests:
-            if not self.is_test_successful(test):
+            if not self.is_test_successful(test) and not self.is_test_xfailed(test):
                 failed.append(test)
         return failed
+
+    def get_xfailed_tests(self):
+        tests = self.get_all_tests()
+        xfailed = list()
+        for test in tests:
+            if self.is_test_xfailed(test) and not self.is_test_successful(test):
+                xfailed.append(test)
+        return xfailed
 
     def get_passed_tests(self):
         tests = self.get_all_tests()
@@ -125,6 +133,11 @@ class BaseTestReport:
     def is_test_successful(test):
         # Test passed if last testrun has passed
         return test.testruns[-1].error is None
+
+    @staticmethod
+    def is_test_xfailed(test):
+    # Test failed if xfail is defined
+        return test.testruns[-1].xfail != ""
 
     @staticmethod
     def separate_xfail_error(error):
