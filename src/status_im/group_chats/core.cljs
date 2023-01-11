@@ -14,7 +14,7 @@
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
   (when (get-in cofx [:db :chats chat-id])
-    (models.chat/navigate-to-chat cofx chat-id)))
+    (models.chat/navigate-to-chat-nav2 cofx chat-id nil)))
 
 (rf/defn handle-chat-removed
   {:events [:chat-removed]}
