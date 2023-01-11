@@ -424,7 +424,7 @@
    (get cursor chat-id)))
 
 (re-frame/reg-sub
-  :shared-element-id
-  :<- [:shared-element-id]
-  (fn [shared-element-id]
-    shared-element-id))
+ :shared-element-id
+ :<- [:shared-element-id]
+ (fn [shared-element-id]
+   shared-element-id))

@@ -7,13 +7,13 @@
   [width height]
   (let [max-width  (if (> width height) 320 190)
         max-height (if (> width height) 190 320)]
-  (if (> height width)
-    (let [calculated-height (* (min height max-height) (/ (max width max-width) width))
-          calculated-width  (* (max width max-width) (/ (min height max-height) height))]
-      {:width calculated-width :height calculated-height})
-    (let [calculated-height (* (max height max-height) (/ (min width max-width) width))
-          calculated-width  (* (min width max-width) (/ (max height max-height) height))]
-      {:width calculated-width :height calculated-height}))))
+    (if (> height width)
+      (let [calculated-height (* (min height max-height) (/ (max width max-width) width))
+            calculated-width  (* (max width max-width) (/ (min height max-height) height))]
+        {:width calculated-width :height calculated-height})
+      (let [calculated-height (* (max height max-height) (/ (min width max-width) width))
+            calculated-width  (* (min width max-width) (/ (max height max-height) height))]
+        {:width calculated-width :height calculated-height}))))
 
 
 (defn image-message
@@ -25,8 +25,10 @@
          {:active-opacity 1
           :on-press       (fn []
                             (rf/dispatch [:chat.ui/update-shared-element-id (:message-id message)])
-                            (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images [message] 0]) 0))}
+                            (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
+                                                          [message] 0])
+                                           100))}
          [fast-image/fast-image
-          {:source   {:uri (:image content)}
-           :style    (merge dimensions {:border-radius 12})
-           :nativeID (when (= shared-element-id (:message-id message)) :shared-element)}]]))))
+          {:source    {:uri (:image content)}
+           :style     (merge dimensions {:border-radius 12})
+           :native-ID (when (= shared-element-id (:message-id message)) :shared-element)}]]))))

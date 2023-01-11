@@ -155,7 +155,7 @@
              :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
-             :image-width width
+             :image-width  width
              :image-height height
              :text         (or input-text "placeholder")})
           images)))
@@ -183,13 +183,21 @@
 
 (rf/defn send-messages
 <<<<<<< HEAD
+<<<<<<< HEAD
   [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id)
         text-message   (build-text-message cofx input-text current-chat-id)
+=======
+  [{:keys [db] :as cofx} input-text current-chat-id]
+  (let [image-messages (build-image-messages cofx current-chat-id input-text)
+        text-message   (when-not (seq image-messages)
+                         (build-text-message cofx input-text current-chat-id))
+>>>>>>> ef248198d... feat: images album
         messages       (keep identity (conj image-messages text-message))]
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
+<<<<<<< HEAD
 =======
        [{:keys [db] :as cofx} input-text current-chat-id]
        (let [image-messages (build-image-messages cofx current-chat-id input-text)
@@ -200,6 +208,10 @@
                      (clean-input (:current-chat-id db))
                      (process-cooldown)
                      (chat.message/send-messages messages)))))
+=======
+                (process-cooldown)
+                (chat.message/send-messages messages)))))
+>>>>>>> ef248198d... feat: images album
 
 (rf/defn send-my-status-message
   "when not empty, proceed by sending text message with public key topic"

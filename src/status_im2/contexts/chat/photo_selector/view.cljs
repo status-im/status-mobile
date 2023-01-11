@@ -19,10 +19,10 @@
   (rf/dispatch [:chat.ui/clear-sending-images chat-id])
   (doseq [item @selected]
     (rf/dispatch [:chat.ui/camera-roll-pick item])
-    )
+  )
   (reset! selected [])
   (rf/dispatch [:bottom-sheet/hide])
-  )
+)
 
 (defn bottom-gradient
   [chat-id selected-images]
@@ -82,11 +82,11 @@
     [:f>
      (fn []
        (rn/use-effect-once
-         #(do
-            (if selected-images
-              (reset! selected (vec selected-images))
-              (reset! selected []))
-            js/undefined))
+        #(do
+           (if selected-images
+             (reset! selected (vec selected-images))
+             (reset! selected []))
+           js/undefined))
        (let [{window-height :height window-width :width} (rn/use-window-dimensions)
              safe-area                                   (safe-area/use-safe-area)
              camera-roll-photos                          (rf/sub [:camera-roll/photos])
