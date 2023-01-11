@@ -3,16 +3,16 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.mentions :as mentions]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
-            [status-im2.contexts.chat.messages.list.state :as view.state]
-            [utils.re-frame :as rf]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
-            [taoensso.timbre :as log]))
+            [status-im2.contexts.chat.messages.list.events :as message-list]
+            [status-im2.contexts.chat.messages.list.state :as view.state]
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (defn- message-loaded?
   [db chat-id message-id]
@@ -166,7 +166,9 @@
   {:events [::handle-removed-messages]}
   [{:keys [db] :as cofx} removed-messages]
   (let [mark-as-deleted-fx (->> removed-messages
-                                (map #(assoc % :message-id (:messageId %)))
+                                (map #(assoc %
+                                             :message-id (:messageId %)
+                                             :deleted-by (:deletedBy %)))
                                 (group-by :chatId)
                                 (mapv (fn [[chat-id messages]]
                                         (delete-message/delete-messages-localy messages chat-id))))

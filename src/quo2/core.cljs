@@ -88,6 +88,7 @@
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
+(def display-name quo2.components.messages.author.view/display-name)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
