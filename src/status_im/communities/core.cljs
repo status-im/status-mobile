@@ -187,6 +187,7 @@
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+     :dispatch                    [:shell/close-switcher-card community-id]
      :json-rpc/call               [{:method      "wakuext_leaveCommunity"
                                     :params      [community-id]
                                     :js-response true

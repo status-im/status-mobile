@@ -48,7 +48,7 @@
     :on-press      (fn []
                      (rf/dispatch [:communities/load-category-states id])
                      (rf/dispatch [:dismiss-keyboard])
-                     (rf/dispatch [:navigate-to :community {:community-id id}]))
+                     (rf/dispatch [:navigate-to-nav2 :community {:community-id id}]))
     :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                   {:content (fn []
                                               [community/community-actions community])}])}
@@ -111,7 +111,7 @@
                                      (i18n/label :t/open-membership))]]
       :on-press                  #(do
                                     (rf/dispatch [:dismiss-keyboard])
-                                    (rf/dispatch [:navigate-to :community {:community-id id}]))}]))
+                                    (rf/dispatch [:navigate-to-nav2 :community {:community-id id}]))}]))
 
 (defn communities-actions
   []

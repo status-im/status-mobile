@@ -102,7 +102,7 @@
    {:content  {:community-channel {:emoji        (:emoji channel)
                                    :channel-name (str "# " (:name channel))}}
     :on-press (fn []
-                (re-frame/dispatch [:navigate-to :community {:community-id community-id}])
+                (re-frame/dispatch [:navigate-to-nav2 :community {:community-id community-id}])
                 (js/setTimeout
                  #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 channel-id true])
                  100))}))

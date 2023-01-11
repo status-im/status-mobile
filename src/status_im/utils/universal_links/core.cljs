@@ -96,7 +96,7 @@
 (rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
-  {:dispatch [:chat.ui/navigate-to-chat chat-id]})
+  {:dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]})
 
 (rf/defn handle-public-chat
   [cofx {:keys [topic]}]

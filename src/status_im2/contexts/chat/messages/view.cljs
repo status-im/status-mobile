@@ -19,7 +19,10 @@
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
     (rn/hw-back-remove-listener navigate-back-handler)
     (rf/dispatch [:close-chat])
-    (rf/dispatch [:navigate-back])))
+    (rf/dispatch [:navigate-back])
+    ;; If true is not returned back button event will bubble up,
+    ;; and will call system back button action
+    true))
 
 (defn page-nav
   []

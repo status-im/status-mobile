@@ -54,11 +54,13 @@
 ;; Helper functions
 (defn get-shared-value
   [anim]
-  (.-value anim))
+  (when anim
+    (.-value anim)))
 
 (defn set-shared-value
   [anim val]
-  (set! (.-value anim) val))
+  (when anim
+    (set! (.-value anim) val)))
 
 (defn kebab-case->camelCase
   [k]
