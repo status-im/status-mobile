@@ -11,7 +11,8 @@
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [status-im2.common.not-implemented :as not-implemented]
+            [quo2.foundations.colors :as colors]))
 
 (defn navigate-back-handler
   []
@@ -32,41 +33,49 @@
     [quo/page-nav
      {:align-mid?            true
 
-      :mid-section
-      (if group-chat
-        {:type      :text-only
-         :main-text display-name}
-        {:type      :user-avatar
-         :avatar    {:full-name       display-name
-                     :online?         online?
-                     :profile-picture photo-path
-                     :size            :medium}
-         :main-text display-name
-         :on-press  #(debounce/dispatch-and-chill [:chat.ui/show-profile chat-id] 1000)})
+      :mid-section           (if group-chat
+                               {:type      :text-only
+                                :main-text display-name}
+                               {:type      :user-avatar
+                                :avatar    {:full-name       display-name
+                                            :online?         online?
+                                            :profile-picture photo-path
+                                            :size            :medium}
+                                :main-text display-name
+                                :on-press  #(debounce/dispatch-and-chill [:chat.ui/show-profile chat-id]
+                                                                         1000)})
 
-      :left-section
-      {:on-press            #(do
-                               (rf/dispatch [:close-chat])
-                               (rf/dispatch [:navigate-back]))
-       :icon                :i/arrow-left
-       :accessibility-label :back-button}
+      :left-section          {:on-press            #(do
+                                                      (rf/dispatch [:close-chat])
+                                                      (rf/dispatch [:navigate-back]))
+                              :icon                :i/arrow-left
+                              :accessibility-label :back-button}
 
-      :right-section-buttons
-      [{:on-press            #()
-        :style               {:border-width 1 :border-color :red}
-        :icon                :i/options
-        :accessibility-label :options-button}]}]))
+      :right-section-buttons [{:on-press            #()
+                               :style               {:border-width 1
+                                                     :border-color :red}
+                               :icon                :i/options
+                               :accessibility-label :options-button}]}]))
 
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
-    [rn/keyboard-avoiding-view {:style {:flex 1}}
+    [rn/keyboard-avoiding-view {:style {:position :relative :flex 1}}
+     [rn/view
+      {:style {:position         :absolute
+               :top              56
+               :z-index          2
+               :background-color (colors/theme-colors colors/white colors/neutral-100)
+               :width            "100%"}}
+
+      [pin.banner/banner chat-id]
+      [not-implemented/not-implemented
+       [pin-limit-popover/pin-limit-popover chat-id]]
+     ]
      [page-nav]
-     [not-implemented/not-implemented
-      [pin-limit-popover/pin-limit-popover chat-id]]
-     [not-implemented/not-implemented
-      [pin.banner/banner chat-id]]
+
+
      [messages.list/messages-list {:chat chat :show-input? show-input?}]
      (when show-input?
        [composer/composer chat-id])]))
