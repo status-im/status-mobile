@@ -390,6 +390,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - secp256k1 (0.1.6)
+  - ShowTime (2.5.3)
   - SQLCipher (3.4.2):
     - SQLCipher/standard (= 3.4.2)
   - SQLCipher/common (3.4.2)
@@ -469,6 +470,7 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
+  - ShowTime
   - SQLCipher (~> 3.0)
   - SSZipArchive (= 2.4.3)
   - TouchID (from `../node_modules/react-native-touch-id`)
@@ -482,6 +484,7 @@ SPEC REPOS:
     - libwebp
     - SDWebImage
     - SDWebImageWebPCoder
+    - ShowTime
     - SQLCipher
     - SSZipArchive
     - TOCropViewController
@@ -704,12 +707,17 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   secp256k1: f61d67e6fdcb85fd727acf1bf35ace6036db540c
+  ShowTime: 06cc9dc79886274b21041fe19b79c9eff59b9714
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 0276e9f20976c8568e107cfc1163a8629051adc0
 
+<<<<<<< HEAD
 PODFILE CHECKSUM: ca5d07911eadc1267649ecc15379e5127a0cc839
+=======
+PODFILE CHECKSUM: e06eb1be034dd55bd106d36aa868cb13224bedd1
+>>>>>>> f2124b524... refacotr
 
 COCOAPODS: 1.11.3

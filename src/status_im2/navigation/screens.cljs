@@ -47,6 +47,7 @@
     {:name      :images-horizontal
      :insets    {:top false :bottom false}
      :options   {:topBar     {:visible false}
+                 :statusBar  {:style :light}
                  :animations {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                                  :toId          :shared-element
                                                                  :interpolation {:type :decelerate}}]}

@@ -6,16 +6,18 @@
             [utils.re-frame :as rf]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [oops.core :as oops]))
+            [oops.core :as oops]
+            [status-im2.contexts.chat.images-horizontal.style :as style]))
 
 (defn image
   [message]
-  (let [shared-element-id (rf/sub [:shared-element-id])]
+  (let [shared-element-id (rf/sub [:shared-element-id])
+        window-width      (:width (rn/get-window))
+        height            (* (:image-height message) (/ window-width (:image-width message)))]
     [fast-image/fast-image
      {:source    {:uri (:image (:content message))}
-      :style     {:width         (:width (rn/get-window))
-                  :height        (* (:image-height message)
-                                    (/ (:width (rn/get-window)) (:image-width message)))
+      :style     {:width         window-width
+                  :height        height
                   :border-radius 12}
       :native-ID (when (= shared-element-id (:message-id message)) :shared-element)}]))
 
@@ -41,26 +43,15 @@
     [safe-area/consumer
      (fn [insets]
        [rn/view
-        {:style {:background-color "#000"
-                 :height           "100%"
-                 :padding-top      (:top insets)}}
+        {:style (style/container-view (:top insets))}
         [rn/view
-         {:style {:position :absolute
-                  :left     20
-                  :top      (+ 12 (:top insets))
-                  :z-index  1
-                 }}
+         {:style (style/top-view-container (:top insets))}
          [rn/touchable-opacity
           {:active-opacity 1
            :on-press       (fn []
                              (rf/dispatch [:navigate-back])
                              (rn/set-status-bar-style "dark-content"))
-           :style          {:width            32
-                            :height           32
-                            :border-radius    12
-                            :justify-content  :center
-                            :align-items      :center
-                            :background-color colors/neutral-80-opa-40}}
+           :style          style/close-container}
           [quo/icon :close {:size 20 :color colors/white}]]]
         [rn/flat-list
          {:ref                       #(reset! flat-list-ref %)
