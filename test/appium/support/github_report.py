@@ -21,6 +21,7 @@ class GithubHtmlReport(BaseTestReport):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
+        xfailed_tests = self.get_xfailed_tests()
         not_executed_tests = TestrailReport().get_not_executed_tests(run_id)
 
         if len(tests) > 0:
@@ -32,9 +33,7 @@ class GithubHtmlReport(BaseTestReport):
             if not_executed_tests:
                 summary_html += "Not executed tests: %d\n" % len(not_executed_tests)
             summary_html += "```\n"
-            not_executed_tests_html = str()
-            failed_tests_html = str()
-            passed_tests_html = str()
+            failed_tests_html, xfailed_tests_html, passed_tests_html, not_executed_tests_html = str(), str(), str(), str()
             if not_executed_tests:
                 not_executed_tests_html = self.build_tests_table_html(not_executed_tests, run_id,
                                                                       not_executed_tests=True)
@@ -44,19 +43,26 @@ class GithubHtmlReport(BaseTestReport):
             if failed_tests:
                 failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
                 summary_html += "```\n"
-                summary_html += 'IDs of failed tests: %s \n' % self.list_of_failed_testrail_ids(failed_tests)
+                summary_html += 'IDs of failed tests(should be reviewed): %s \n' % self.list_of_failed_testrail_ids(failed_tests)
+                summary_html += "```\n"
+            if xfailed_tests:
+                xfailed_tests_html = self.build_tests_table_html(xfailed_tests, run_id, failed_tests=False, xfailed_tests=True)
+                summary_html += "```\n"
+                summary_html += 'IDs of failed tests(existing issues): %s \n' % self.list_of_failed_testrail_ids(xfailed_tests)
                 summary_html += "```\n"
             if passed_tests:
                 passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
-            return title_html + summary_html + not_executed_tests_html + failed_tests_html + passed_tests_html
+            return title_html + summary_html + not_executed_tests_html + failed_tests_html + passed_tests_html + xfailed_tests_html
         else:
             return None
 
-    def build_tests_table_html(self, tests, run_id, failed_tests=False, not_executed_tests=False):
+    def build_tests_table_html(self, tests, run_id, failed_tests=False, not_executed_tests=False, xfailed_tests=False):
         if failed_tests:
-            tests_type = "Failed tests"
+            tests_type = "Failed tests (for review)"
         elif not_executed_tests:
             tests_type = "Not executed tests"
+        elif xfailed_tests:
+            tests_type = "Failed tests (known)"
         else:
             tests_type = "Passed tests"
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
