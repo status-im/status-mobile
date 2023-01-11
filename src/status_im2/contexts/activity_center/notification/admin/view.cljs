@@ -2,15 +2,15 @@
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.style :as style]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [author communityId id membershipStatus read timestamp]}]
-  (let [community       (rf/sub [:communities/community communityId])
+  [{:keys [author community-id id membership-status read timestamp]}]
+  (let [community       (rf/sub [:communities/community community-id])
         community-name  (:name community)
         community-image (get-in community [:images :thumbnail :uri])]
     [quo/activity-log
@@ -28,20 +28,20 @@
                      :style          style/user-avatar-tag
                      :text-style     style/user-avatar-tag-text}
                     {:uri community-image} community-name]]
-       :status    (case membershipStatus
-                    constants/membership-status-accepted
+       :status    (case membership-status
+                    constants/community-membership-status-accepted
                     {:type :positive :label (i18n/label :t/accepted)}
-                    constants/membership-status-declined
+                    constants/community-membership-status-declined
                     {:type :negative :label (i18n/label :t/declined)}
                     nil)}
-      (case membershipStatus
-        constants/membership-status-pending
+      (case membership-status
+        constants/community-membership-status-pending
         {:button-1 {:label               (i18n/label :t/decline)
                     :accessibility-label :decline-contact-request
                     :type                :danger
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/decline-request-to-join-pressed
-                                                         communityId id])
+                                                         community-id id])
                                            (rf/dispatch [:activity-center.notifications/mark-as-read
                                                          id]))}
          :button-2 {:label               (i18n/label :t/accept)
@@ -49,7 +49,7 @@
                     :type                :positive
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/accept-request-to-join-pressed
-                                                         communityId id])
+                                                         community-id id])
                                            (rf/dispatch [:activity-center.notifications/mark-as-read
                                                          id]))}}
         nil))]))

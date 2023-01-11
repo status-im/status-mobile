@@ -31,6 +31,10 @@
 (def ^:const contact-verification-status-trusted 5)
 (def ^:const contact-verification-status-untrustworthy 6)
 
+(def ^:const community-membership-status-pending 1)
+(def ^:const community-membership-status-accepted 2)
+(def ^:const community-membership-status-declined 3)
+
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up 2)
 (def ^:const emoji-reaction-thumbs-down 3)
