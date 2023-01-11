@@ -1,6 +1,5 @@
 (ns status-im2.navigation.view
-  (:require [oops.core :refer [oget]]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -38,19 +37,14 @@
    (concat screens/components)))
 
 (defn wrapped-screen-style
-  [{:keys [insets style]} insets-obj]
+  [screen-insets safe-insets]
   (merge
    {:flex             1
     :background-color (colors/theme-colors colors/white colors/neutral-100)}
-   style
-   (when (get insets :bottom)
-     {:padding-bottom (+ (oget insets-obj "bottom")
-                         (get style :padding-bottom)
-                         (get style :padding-vertical))})
-   (when (get insets :top true)
-     {:padding-top (+ (oget insets-obj "top")
-                      (get style :padding-top)
-                      (get style :padding-vertical))})))
+   (when (get screen-insets :bottom)
+     {:padding-bottom (:bottom safe-insets)})
+   (when (get screen-insets :top true)
+     {:padding-top (:top safe-insets)})))
 
 (defn inactive
   []
@@ -76,7 +70,7 @@
                                        (keyword key))]
        ^{:key (str "root" key @reloader/cnt)}
        [safe-area/safe-area-provider
-        [safe-area/safe-area-consumer
+        [safe-area/consumer
          (fn [safe-insets]
            (reagent/as-element
             [rn/view

@@ -134,7 +134,7 @@
       :style               {:width         outer-dimensions
                             :height        outer-dimensions
                             :border-radius outer-dimensions}}
-     (when (and ring? identicon?)
+     (when (and false (and ring? identicon?)) ;;TODO not implemented yet
        [icons/icon :i/identicon-ring
         {:size     outer-dimensions
          :no-color true}])

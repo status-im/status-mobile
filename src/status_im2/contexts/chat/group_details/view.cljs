@@ -6,7 +6,7 @@
             [react-native.core :as rn]
             [status-im.chat.models :as chat.models]
             [status-im2.contexts.chat.group-details.style :as style]
-            [status-im.ui2.screens.common.contact-list.view :as contact-list]
+            [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
             [utils.re-frame :as rf]))

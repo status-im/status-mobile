@@ -3,6 +3,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
@@ -68,7 +69,7 @@
          {:source   cover
           :position :absolute
           :style    (style/image-slider (get-header-size @scroll-height))}]
-        [rn/blur-view (style/blur-slider (get-header-size @scroll-height))]]
+        [blur/view (style/blur-slider (get-header-size @scroll-height))]]
        [rn/view {:style {:z-index 6 :margin-top (if platform/ios? 44 0)}}
         [quo/page-nav
          {:horizontal-description? true

@@ -132,7 +132,7 @@
    (get chats current-chat-id)))
 
 (re-frame/reg-sub
- :chats/current-chat-inputs
+ :chats/current-chat-input
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
@@ -285,19 +285,19 @@
 
 (re-frame/reg-sub
  :chats/reply-message
- :<- [:chats/current-chat-inputs]
+ :<- [:chats/current-chat-input]
  (fn [{:keys [metadata]}]
    (:responding-to-message metadata)))
 
 (re-frame/reg-sub
  :chats/edit-message
- :<- [:chats/current-chat-inputs]
+ :<- [:chats/current-chat-input]
  (fn [{:keys [metadata]}]
    (:editing-message metadata)))
 
 (re-frame/reg-sub
  :chats/sending-contact-request
- :<- [:chats/current-chat-inputs]
+ :<- [:chats/current-chat-input]
  (fn [{:keys [metadata]}]
    (:sending-contact-request metadata)))
 

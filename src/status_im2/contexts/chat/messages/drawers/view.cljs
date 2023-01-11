@@ -6,7 +6,7 @@
             [i18n.i18n :as i18n]
             [status-im2.setup.config :as config]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.components.reply :as components.reply]
+            [status-im.ui2.screens.chat.components.reply.view :as components.reply]
             [status-im2.common.not-implemented :as not-implemented]))
 
 (defn pin-message

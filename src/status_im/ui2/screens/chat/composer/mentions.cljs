@@ -42,20 +42,11 @@
 
 (defn autocomplete-mentions
   [suggestions text-input-ref]
-  [:f>
-   (fn []
-     (let [animation (reanimated/use-shared-value 0)]
-       (quo.react/effect!
-        #(reanimated/set-shared-value animation (reanimated/with-timing (if (seq suggestions) 0 200))))
-       [reanimated/view
-        {:style (reanimated/apply-animations-to-style
-                 {:transform [{:translateY animation}]}
-                 {:bottom 0 :position :absolute :z-index 5 :elevation 5 :max-height 180})}
-        [list/flat-list
-         {:keyboardShouldPersistTaps :always
-          :data                      suggestions
-          :key-fn                    first
-          :render-fn                 mention-item
-          :render-data               text-input-ref
-          :content-container-style   {:padding-bottom 12}
-          :accessibility-label       :mentions-list}]]))])
+  [list/flat-list
+   {:keyboardShouldPersistTaps :always
+    :data                      suggestions
+    :key-fn                    first
+    :render-fn                 mention-item
+    :render-data               text-input-ref
+    :content-container-style   {:padding-bottom 12}
+    :accessibility-label       :mentions-list}])

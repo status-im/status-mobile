@@ -4,6 +4,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.constants :as constants]
@@ -307,7 +308,7 @@
   [channel-heights first-channel-height]
   (fn [scroll-height]
     (when (> scroll-height @first-channel-height)
-      [rn/blur-view
+      [blur/view
        {:blur-amount   32
         :blur-type     :xlight
         :overlay-color (if platform/ios? colors/white-opa-70 :transparent)

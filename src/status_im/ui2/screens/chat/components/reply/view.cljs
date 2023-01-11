@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.components.reply
+(ns status-im.ui2.screens.chat.components.reply.view
   (:require [clojure.string :as string]
             [i18n.i18n :as i18n]
             [quo.react-native :as rn]
@@ -10,8 +10,8 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui2.screens.chat.composer.style :as styles]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.ui2.screens.chat.components.reply.style :as style]))
 
 (defn get-quoted-text-with-mentions
   [parsed-text]
@@ -73,16 +73,16 @@
      {:style {:flex-direction      :row
               :height              (when-not pin? 24)
               :accessibility-label :reply-message}}
-     [rn/view {:style (styles/reply-content pin?)}
+     [rn/view {:style (style/reply-content pin?)}
       (when-not pin?
         ;;TODO quo2 icon should be used
         [icons/icon :main-icons/connector
          {:color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
           :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}])
       (if (or deleted? deleted-for-me?)
-        [rn/view {:style (styles/quoted-message pin?)}
+        [rn/view {:style (style/quoted-message pin?)}
          [reply-deleted-message]]
-        [rn/view {:style (styles/quoted-message pin?)}
+        [rn/view {:style (style/quoted-message pin?)}
          [photos/member-photo from identicon 16]
          [quo2.text/text
           {:weight          :semi-bold

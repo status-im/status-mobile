@@ -12,13 +12,14 @@
             [status-im.chat.models.mentions :as mentions]
             [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.composer.style :as style]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils.utils]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [quo2.foundations.typography :as typography]))
 
 (defonce input-texts (atom {}))
+(defonce input-text-content-heights (atom {}))
 (defonce mentions-enabled? (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
 (defonce text-input-ref (reagent/atom nil))
@@ -29,6 +30,7 @@
  :chat.ui/clear-inputs
  (fn []
    (reset! input-texts {})
+   (reset! input-text-content-heights {})
    (reset! mentions-enabled? {})
    (reset! chat-input-key 1)))
 
@@ -58,7 +60,8 @@
   (some-> ^js (quo.react/current-ref (:text-input-ref refs))
           .clear)
   (swap! mentions-enabled? update :render not)
-  (swap! input-texts dissoc chat-id))
+  (swap! input-texts dissoc chat-id)
+  (swap! input-text-content-heights dissoc chat-id))
 
 (defn clear-input
   [chat-id refs]
@@ -157,16 +160,31 @@
     (when platform/android?
       (rf/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
+(defn text-input-style
+  []
+  (merge typography/font-regular
+         typography/paragraph-1
+         {:flex              1
+          :min-height        34
+          :margin            0
+          :flex-shrink       1
+          :color             (:text-01 @quo.colors/theme)
+          :margin-horizontal 20}
+         (if platform/android?
+           {:padding-vertical    8
+            :text-align-vertical :top}
+           {:margin-top    8
+            :margin-bottom 8})))
+
 (defn text-input
-  [{:keys [set-active-panel refs chat-id sending-image on-content-size-change initial-value]}]
-  (let [_ (reset! text-input-ref (:text-input-ref refs))
-        cooldown-enabled?   (rf/sub [:chats/current-chat-cooldown-enabled?])
+  [{:keys [refs chat-id sending-image on-content-size-change]}]
+  (let [cooldown-enabled?   (rf/sub [:chats/current-chat-cooldown-enabled?])
         mentionable-users   (rf/sub [:chats/mentionable-users])
         timeout-id          (reagent/atom nil)
         last-text-change    (reagent/atom nil)
         mentions-enabled?   (get @mentions-enabled? chat-id)
         props
-        {:style                    (style/text-input)
+        {:style                    (text-input-style)
          :ref                      (:text-input-ref refs)
          :max-font-size-multiplier 1
          :accessibility-label      :chat-message-input
@@ -175,13 +193,12 @@
          :editable                 (not cooldown-enabled?)
          :blur-on-submit           false
          :auto-focus               false
-         :default-value            initial-value
-         :on-focus                 #(set-active-panel nil)
          :max-length               chat.constants/max-text-size
          :placeholder-text-color   (:text-02 @quo.colors/theme)
          :placeholder              (if cooldown-enabled?
                                      (i18n/label :cooldown/text-input-disabled)
                                      (i18n/label :t/type-a-message))
+         :default-value            (get @input-texts chat-id)
          :underline-color-android  :transparent
          :auto-capitalize          :sentences
          :auto-correct             false
@@ -318,7 +335,7 @@
     (action params)))
 
 (defn selectable-text-input
-  [chat-id {:keys [style ref on-selection-change] :as props} children]
+  [_ _ _]
   (let [text-input-ref  (reagent/atom nil)
         menu-items      (reagent/atom first-level-menu-items)
         first-level     (reagent/atom true)
@@ -338,7 +355,7 @@
                                   (oops/ocall manager :startActionMode text-input-handle))))
 
       :reagent-render
-      (fn [_]
+      (fn [chat-id {:keys [style ref on-selection-change] :as props} children]
         (let [ref                 #(do (reset! text-input-ref %)
                                        (when ref
                                          (quo.react/set-ref-val! ref %)))
@@ -361,7 +378,7 @@
                 (let [native-event (.-nativeEvent event)
                       native-event (transforms/js->clj native-event)
                       {:keys [eventType content selectionStart selectionEnd]} native-event
-                      full-text (:input-text (rf/sub [:chats/current-chat-inputs]))]
+                      full-text (:input-text (rf/sub [:chats/current-chat-input]))]
                   (on-menu-item-touched {:first-level       first-level
                                          :event-type        eventType
                                          :content           content

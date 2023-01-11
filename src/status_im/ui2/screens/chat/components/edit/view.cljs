@@ -8,7 +8,7 @@
             [status-im.ui2.screens.chat.components.edit.style :as style]))
 
 (defn edit-message
-  [reset-composer-callback]
+  [on-cancel]
   [rn/view
    {:style               style/container
     :accessibility-label :edit-message}
@@ -24,7 +24,7 @@
       (i18n/label :t/editing-message)]]]
    [gesture-handler/touchable-without-feedback
     {:accessibility-label :reply-cancel-button
-     :on-press            #(do (reset-composer-callback true)
+     :on-press            #(do (on-cancel)
                                (rf/dispatch [:chat.ui/cancel-message-edit]))}
     [quo/button
      {:width 24

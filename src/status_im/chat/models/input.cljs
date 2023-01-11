@@ -117,21 +117,20 @@
 (rf/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/reply-to-message]}
-  [{:keys [db] :as cofx} message]
+  [{:keys [db]} message]
   (let [current-chat-id (:current-chat-id db)]
-    (rf/merge cofx
-              {:db (-> db
-                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
-                                 message)
-                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
-                       (update-in [:chat/inputs current-chat-id :metadata]
-                                  dissoc
-                                  :sending-image))})))
+    {:db (-> db
+             (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
+                       message)
+             (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
+             (update-in [:chat/inputs current-chat-id :metadata]
+                        dissoc
+                        :sending-image))}))
 
 (rf/defn edit-message
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/edit-message]}
-  [{:keys [db] :as cofx} message]
+  [{:keys [db]} message]
   (let [current-chat-id (:current-chat-id db)
 
         text            (get-in message [:content :text])]
@@ -147,7 +146,7 @@
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/send-contact-request]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)]
     {:db (-> db
              (assoc-in [:chat/inputs current-chat-id :metadata :sending-contact-request]

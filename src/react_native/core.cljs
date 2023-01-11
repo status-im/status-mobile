@@ -1,6 +1,5 @@
 (ns react-native.core
-  (:require ["@react-native-community/blur" :as blur]
-            ["react" :as react]
+  (:require ["react" :as react]
             ["react-native" :as react-native]
             [cljs-bean.core :as bean]
             [oops.core :as oops]
@@ -10,7 +9,6 @@
             [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
-(def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))

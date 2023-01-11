@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.common.contact-list.view
+(ns status-im2.common.contact-list.view
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.common.contact-list-item.view :as contact-list-item]
