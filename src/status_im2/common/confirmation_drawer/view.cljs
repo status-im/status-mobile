@@ -5,6 +5,7 @@
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.style :as style]
             [utils.re-frame :as rf]
+            [re-frame.core :as re-frame]
             status-im2.common.bottom-sheet.view))
 
 (defn avatar
@@ -57,7 +58,7 @@
           [quo/button
            {:type     :grey
             :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(rf/dispatch [:dismiss-bottom-sheet])}
+            :on-press #(re-frame/dispatch-sync [:dismiss-bottom-sheet])}
            (i18n/label :t/close)]
           [quo/button
            {:type     :danger

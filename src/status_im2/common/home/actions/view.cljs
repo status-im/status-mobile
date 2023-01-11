@@ -4,11 +4,11 @@
    [i18n.i18n :as i18n]
    [quo2.components.drawers.action-drawers :as drawer]
    [status-im.chat.models :as chat.models]
-   [status-im2.common.bottom-sheet.view :as bottom-sheet]
    [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
    [status-im2.common.constants :as constants]
    [utils.re-frame :as rf]
-   [react-native.background-timer :as timer]))
+   [react-native.background-timer :as timer]
+   [re-frame.core :as re-frame]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -28,10 +28,11 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:dismiss-bottom-sheet])
-  (timer/set-timeout (fn []
-                       (rf/dispatch event))
-                     bottom-sheet/animation-delay))
+  (let [{:keys [animation-delay]} (rf/sub [:bottom-sheet/config])]
+    (re-frame/dispatch-sync [:dismiss-bottom-sheet])
+    (timer/set-timeout (fn []
+                         (rf/dispatch event))
+                       (or animation-delay 450))))
 
 (defn show-profile-action
   [chat-id]

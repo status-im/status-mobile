@@ -15,7 +15,8 @@
 
 (defn bottom-sheet
   []
-  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch [:dismiss-bottom-sheet])
+  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch-sync [:dismiss-bottom-sheet])
+        {:keys [show-bottom-sheet?]} @(re-frame/subscribe [:bottom-sheet/config])
         {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
@@ -68,5 +69,5 @@
                                 (react/hw-back-add-listener dismiss-bottom-sheet-callback))
       :component-will-unmount (fn []
                                 (react/hw-back-remove-listener dismiss-bottom-sheet-callback)
-                                (when @bottom-sheet/show-bottom-sheet?
-                                  (bottom-sheet/reset-atoms)))})))
+                                (when show-bottom-sheet?
+                                  (re-frame/dispatch [:bottom-sheet/reset])))})))

@@ -3,19 +3,19 @@
             [quo.core :as quo]
             [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
-            [re-frame.core :as rf]
+            [re-frame.core :as re-frame]
+            [react-native.background-timer :as timer]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
             [status-im.ui.screens.home.sheet.styles :as style]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im.utils.config :as config]
-            [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [react-native.background-timer :as timer]))
+            [utils.re-frame :as rf]))
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:dismiss-bottom-sheet])
+  (re-frame/dispatch-sync [:dismiss-bottom-sheet])
   (rf/dispatch event))
 
 (defn add-new-view
@@ -53,7 +53,7 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
-   (when @(rf/subscribe [:communities/enabled?])
+   (when (rf/sub [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)
@@ -65,46 +65,47 @@
 
 (defn new-chat-bottom-sheet
   []
-  [rn/view
-   [quo2/menu-item
-    {:theme                      :main
-     :title                      (i18n/label :t/new-chat)
-     :icon-bg-color              :transparent
-     :type                       :transparent
-     :container-padding-vertical 12
-     :style-props                {:border-bottom-width 1
-                                  :border-color        (colors/theme-colors colors/neutral-10
-                                                                            colors/neutral-90)}
-     :title-column-style         {:margin-left 2}
-     :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label        :start-a-new-chat
-     :icon                       :i/new-message
-     :on-press                   (fn []
-                                   (rf/dispatch [:dismiss-bottom-sheet])
-                                   (timer/set-timeout
-                                    #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])
-                                    bottom-sheet/animation-delay))}]
-   [quo2/menu-item
-    {:theme                        :main
-     :title                        (i18n/label :t/connect-with-users)
-     :icon-bg-color                :transparent
-     :type                         :transparent
-     :icon-container-style         {:padding-horizontal 0}
-     :container-padding-horizontal {:padding-horizontal 4}
-     :style-props                  {:margin-top    18
-                                    :margin-bottom 9}
-     :container-padding-vertical   12
-     :title-column-style           {:margin-left 2}
-     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label          :connect-with-users
-     :subtitle                     (i18n/label :t/enter-a-chat-key)
-     :subtitle-color               colors/neutral-50
-     :icon                         :i/add-user
-     :on-press                     (fn []
-                                     (rf/dispatch [:dismiss-bottom-sheet])
+  (let [{:keys [animation-delay]} (rf/sub [:bottom-sheet/config])]
+    [rn/view
+     [quo2/menu-item
+      {:theme                      :main
+       :title                      (i18n/label :t/new-chat)
+       :icon-bg-color              :transparent
+       :type                       :transparent
+       :container-padding-vertical 12
+       :style-props                {:border-bottom-width 1
+                                    :border-color        (colors/theme-colors colors/neutral-10
+                                                                              colors/neutral-90)}
+       :title-column-style         {:margin-left 2}
+       :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
+       :accessibility-label        :start-a-new-chat
+       :icon                       :i/new-message
+       :on-press                   (fn []
+                                     (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                                      (timer/set-timeout
-                                      #(rf/dispatch [:open-modal :new-contact])
-                                      bottom-sheet/animation-delay))}]])
+                                      #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat])
+                                      (or animation-delay 450)))}]
+     [quo2/menu-item
+      {:theme                        :main
+       :title                        (i18n/label :t/connect-with-users)
+       :icon-bg-color                :transparent
+       :type                         :transparent
+       :icon-container-style         {:padding-horizontal 0}
+       :container-padding-horizontal {:padding-horizontal 4}
+       :style-props                  {:margin-top    18
+                                      :margin-bottom 9}
+       :container-padding-vertical   12
+       :title-column-style           {:margin-left 2}
+       :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
+       :accessibility-label          :connect-with-users
+       :subtitle                     (i18n/label :t/enter-a-chat-key)
+       :subtitle-color               colors/neutral-50
+       :icon                         :i/add-user
+       :on-press                     (fn []
+                                       (re-frame/dispatch-sync [:dismiss-bottom-sheet])
+                                       (timer/set-timeout
+                                        #(rf/dispatch [:open-modal :new-contact])
+                                        (or animation-delay 450)))}]]))
 
 
 (def new-chat-bottom-sheet-comp

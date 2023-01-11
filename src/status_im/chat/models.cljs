@@ -454,7 +454,7 @@
     :content             (i18n/label :t/clear-history-confirmation-content)
     :confirm-button-text (i18n/label :t/clear-history-action)
     :on-accept           #(do
-                            (rf/dispatch [:dismiss-bottom-sheet])
+                            (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                             (re-frame/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn gaps-failed
@@ -523,7 +523,7 @@
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
-                            (rf/dispatch [:dismiss-bottom-sheet])
+                            (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                             (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}})
 
 (rf/defn decrease-unviewed-count

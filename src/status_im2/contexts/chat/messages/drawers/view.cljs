@@ -8,6 +8,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im2.common.not-implemented :as not-implemented]
+            [re-frame.core :as re-frame]
             status-im2.common.bottom-sheet.view))
 
 (defn pin-message
@@ -53,7 +54,7 @@
    (when-not pinned
      [{:type     :danger
        :on-press #(do
-                    (rf/dispatch [:dismiss-bottom-sheet])
+                    (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                     (rf/dispatch [:chat.ui/delete-message-for-me message-data
                                   constants/delete-message-for-me-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-me)
@@ -62,7 +63,7 @@
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
        :on-press #(do
-                    (rf/dispatch [:dismiss-bottom-sheet])
+                    (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                     (rf/dispatch [:chat.ui/delete-message message-data
                                   constants/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
@@ -112,7 +113,7 @@
                                        (rf/dispatch [:models.reactions/send-emoji-reaction
                                                      {:message-id message-id
                                                       :emoji-id   id}]))
-                                     (rf/dispatch [:dismiss-bottom-sheet]))})
+                                     (re-frame/dispatch-sync [:dismiss-bottom-sheet]))})
             icon]])))]))
 
 (defn reactions-and-actions
@@ -138,7 +139,7 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))
+                                      (re-frame/dispatch-sync [:dismiss-bottom-sheet]))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
 
@@ -153,7 +154,7 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))
+                                      (re-frame/dispatch-sync [:dismiss-bottom-sheet]))}]))
         (when-not (empty? admin-actions)
           [quo/separator])
 
@@ -168,4 +169,4 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))]])))
+                                      (re-frame/dispatch-sync [:dismiss-bottom-sheet]))}]))]])))

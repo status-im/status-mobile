@@ -8,6 +8,7 @@
             [status-im2.contexts.communities.requests.actions.style :as style]
             [utils.re-frame :as rf]
             [utils.requests :as requests]
+            [re-frame.core :as re-frame]
             status-im2.common.bottom-sheet.view))
 
 ;; TODO: update with real data
@@ -117,7 +118,7 @@
         {:style style/request-button}
         [quo/button
          {:accessibility-label :cancel
-          :on-press            #(rf/dispatch [:dismiss-bottom-sheet])
+          :on-press            #(re-frame/dispatch-sync [:dismiss-bottom-sheet])
           :type                :grey
           :style               style/cancel-button} (i18n/label :t/cancel)]
         [quo/button
@@ -126,12 +127,12 @@
                                  (when-not joined
                                    (when can-join?
                                      (rf/dispatch [::communities/join id]))
-                                   (rf/dispatch [:dismiss-bottom-sheet])
+                                   (re-frame/dispatch-sync [:dismiss-bottom-sheet])
                                    (when
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))
                                           (requests/can-request-access-again? requested-to-join-at))
                                      (rf/dispatch [::communities/request-to-join id])
-                                     (rf/dispatch [:dismiss-bottom-sheet]))))
+                                     (re-frame/dispatch-sync [:dismiss-bottom-sheet]))))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))
