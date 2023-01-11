@@ -71,7 +71,7 @@
 (rf/defn create-from-link
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
-    {:dispatch [:chat.ui/navigate-to-chat chat-id]}
+    {:dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]}
     {:json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
                       :params      [chat-name chat-id invitation-admin]
                       :js-response true

@@ -220,11 +220,17 @@
 
 (rf/defn close-chat
   {:events [:close-chat]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} navigate-to-shell?]
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (rf/merge cofx
-              {:db (dissoc db :current-chat-id)}
+              (merge
+               {:db (dissoc db :current-chat-id)}
+               (let [community-id (get-in db [:chats chat-id :community-id])]
+                 ;; When navigating back from community chat to community, update switcher card
+                 (when (and community-id (not navigate-to-shell?))
+                   {:dispatch [:shell/add-switcher-card
+                               :community {:community-id community-id}]})))
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))
@@ -243,7 +249,8 @@
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
             {:clear-message-notifications
-             [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
+             [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+             :dispatch                    [:shell/close-switcher-card chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 
@@ -268,7 +275,7 @@
             (navigation/change-tab :chat)
             (when-not (= (:view-id db) :community)
               (navigation/pop-to-root-tab :chat-stack))
-            (close-chat)
+            (close-chat false)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})
@@ -284,7 +291,7 @@
             {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
             (when-not (= (:view-id db) :community)
               (navigation/pop-to-root-tab :shell-stack))
-            (close-chat)
+            (close-chat false)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})
@@ -311,7 +318,7 @@
                  (assoc-in [:chats chat-id] chat)
                  :always
                  (update :chats-home-list conj chat-id))
-     :dispatch [:chat.ui/navigate-to-chat chat-id]}))
+     :dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]}))
 
 (rf/defn navigate-to-user-pinned-messages
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

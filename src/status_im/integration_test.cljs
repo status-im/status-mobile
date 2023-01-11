@@ -251,7 +251,7 @@
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
            [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (logout!)
            (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
@@ -276,7 +276,7 @@
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
            [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
            (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
@@ -307,7 +307,7 @@
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
            [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
            (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
