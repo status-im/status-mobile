@@ -4,7 +4,7 @@ library 'status-jenkins-lib@v1.6.3'
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'macos && x86_64 && nix-2.11 && xcode-13.4' }
+  agent { label 'macos && x86_64 && nix-2.11 && xcode-14.2' }
 
   parameters {
     string(
