@@ -29,13 +29,13 @@
                      :text-style     style/user-avatar-tag-text}
                     {:uri community-image} community-name]]
        :status    (case membership-status
-                    constants/community-membership-status-accepted
+                    constants/activity-center-membership-status-accepted
                     {:type :positive :label (i18n/label :t/accepted)}
-                    constants/community-membership-status-declined
+                    constants/activity-center-membership-status-declined
                     {:type :negative :label (i18n/label :t/declined)}
                     nil)}
       (case membership-status
-        constants/community-membership-status-pending
+        constants/activity-center-membership-status-pending
         {:button-1 {:label               (i18n/label :t/decline)
                     :accessibility-label :decline-contact-request
                     :type                :danger
