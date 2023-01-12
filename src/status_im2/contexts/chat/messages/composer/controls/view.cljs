@@ -17,7 +17,7 @@
   [send-ref {:keys [chat-id images]} on-send]
   [rn/view
    {:ref   send-ref
-    :style (when (or (seq (get @input/input-texts chat-id)) (not (seq images)))
+    :style (when-not (or (seq (get @input/input-texts chat-id)) (seq images))
              {:width 0
               :right -100})}
    [quo/button
