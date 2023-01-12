@@ -7,7 +7,8 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [oops.core :as oops]
-            [status-im2.contexts.chat.images-horizontal.style :as style]))
+            [status-im2.contexts.chat.images-horizontal.style :as style]
+            [utils.datetime :as datetime]))
 
 (defn image
   [message]
@@ -23,13 +24,42 @@
 
 (defn get-item-layout
   [_ index]
-  #js {:length (:width (rn/get-window)) :offset (* (:width (rn/get-window)) index) :index index})
+  (let [window-width (:width (rn/get-window))]
+    #js {:length window-width :offset (* window-width index) :index index}))
 
 (defn on-viewable-items-changed
   [e]
   (rf/dispatch [:chat.ui/update-shared-element-id
                 (:message-id (oops/oget (first (oops/oget e "changed")) "item"))]))
 
+(defn top-view
+  [{:keys [from timestamp]} insets]
+  (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))]
+    [rn/view
+     {:style (style/top-view-container (:top insets))}
+     [rn/touchable-opacity
+      {:active-opacity 1
+       :on-press       #(rf/dispatch [:navigate-back])
+       :style          style/close-container}
+      [quo/icon :close {:size 20 :color colors/white}]]
+     [rn/view {:style {:margin-left 12}}
+      [quo/text {:weight :semi-bold
+                 :size   :paragraph-1
+                 :style  {:color colors/white}} display-name]
+      [quo/text {:weight :medium
+                 :size   :paragraph-2
+                 :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]
+     [rn/view {:style style/top-right-buttons}
+      [rn/touchable-opacity
+       {:active-opacity 1
+        :on-press       #(js/alert "to be implemented")
+        :style          (merge style/close-container {:margin-right 12})}
+       [quo/icon :share {:size 20 :color colors/white}]]
+      [rn/touchable-opacity
+       {:active-opacity 1
+        :on-press       #(js/alert "to be implemented")
+        :style          style/close-container}
+       [quo/icon :options {:size 20 :color colors/white}]]]]))
 
 (defn images-horizontal
   []
@@ -37,8 +67,8 @@
         ;; The initial value of data is the image that was pressed (and not the whole album) in order for
         ;; the transition animation to execute properly, otherwise it would animate towards outside the
         ;; screen (even if we have `initialScrollIndex` set).
-        data                     (reagent/atom [(nth messages index)])
-        flat-list-ref            (atom nil)]
+        data          (reagent/atom [(nth messages index)])
+        flat-list-ref (atom nil)]
     (reset! data messages)
     ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
     (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
@@ -46,13 +76,7 @@
      (fn [insets]
        [rn/view
         {:style (style/container-view (:top insets))}
-        [rn/view
-         {:style (style/top-view-container (:top insets))}
-         [rn/touchable-opacity
-          {:active-opacity 1
-           :on-press       #(rf/dispatch [:navigate-back])
-           :style          style/close-container}
-          [quo/icon :close {:size 20 :color colors/white}]]]
+        [top-view (first messages) insets]
         [rn/flat-list
          {:ref                       #(reset! flat-list-ref %)
           :key-fn                    :message-id

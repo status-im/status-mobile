@@ -32,6 +32,8 @@
 ;;view
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :screen-params :navigation/screen-params)
+(reg-root-key-sub :shared-element-id :shared-element-id)
+
 
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
@@ -111,7 +113,6 @@
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
-(reg-root-key-sub :shared-element-id :shared-element-id)
 
 ;;messages
 (reg-root-key-sub :messages/messages :messages)

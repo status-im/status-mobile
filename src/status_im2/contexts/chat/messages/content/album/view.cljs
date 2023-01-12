@@ -18,28 +18,30 @@
 
 (def max-display-count 6)
 
+(def rectangular-style-count 3)
+
 (defn border-tlr
   [index]
   (when (= index 0) 12))
 
 (defn border-trr
   [index count album-style]
-  (when (or (and (= index 1) (not= count 3))
-            (and (= index 0) (= count 3) (= album-style :landscape))
-            (and (= index 1) (= count 3) (= album-style :portrait)))
+  (when (or (and (= index 1) (not= count rectangular-style-count))
+            (and (= index 0) (= count rectangular-style-count) (= album-style :landscape))
+            (and (= index 1) (= count rectangular-style-count) (= album-style :portrait)))
     12))
 
 (defn border-blr
   [index count album-style]
-  (when (or (and (= index 0) (< count 3))
-            (and (= index 2) (> count 3))
-            (and (= index 1) (= count 3) (= album-style :landscape))
-            (and (= index 0) (= count 3) (= album-style :portrait)))
+  (when (or (and (= index 0) (< count rectangular-style-count))
+            (and (= index 2) (> count rectangular-style-count))
+            (and (= index 1) (= count rectangular-style-count) (= album-style :landscape))
+            (and (= index 0) (= count rectangular-style-count) (= album-style :portrait)))
     12))
 
 (defn border-brr
   [index count]
-  (when (or (and (= index 1) (< count 3))
+  (when (or (and (= index 1) (< count rectangular-style-count))
             (and (= index (- (min count max-display-count) 1)) (> count 2)))
     12))
 
@@ -59,7 +61,7 @@
         images-count      (count (:album message))
         ;; album images are always square, except when we have 3 images, then they must be rectangular
         ;; (portrait or landscape)
-        portrait?         (and (= images-count 3) (= album-style :portrait))]
+        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
     (if (= images-count 1)
       [image/image-message 0 (first (:album message))]
       (if albumize?
@@ -69,7 +71,7 @@
           (fn [index item]
             (let [images-size-key (if (< images-count max-display-count) images-count :default)
                   size            (get-in constants/album-image-sizes [images-size-key index])
-                  dimensions      (if (not= images-count 3)
+                  dimensions      (if (not= images-count rectangular-style-count)
                                     {:width size :height size}
                                     (find-size size album-style))]
               [rn/touchable-opacity
