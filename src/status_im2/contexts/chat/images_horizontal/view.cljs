@@ -35,8 +35,7 @@
   []
   (let [{:keys [messages index]} (rf/sub [:get-screen-params])
         ;; The initial value of data is the image that was pressed (and not the whole album) in order for
-        ;; the transition
-        ;; animation to execute properly, otherwise it would animate towards outside the screen (even if
+        ;; the transition animation to execute properly, otherwise it would animate towards outside the screen (even if
         ;; we have `initialScrollIndex` set).
         data                     (reagent/atom [(nth messages index)])
         flat-list-ref            (atom nil)]
