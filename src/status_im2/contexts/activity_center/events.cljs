@@ -86,10 +86,11 @@
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
   (when (seq new-notifications)
-    {:db (update-in db
-                    [:activity-center :notifications]
-                    update-notifications
-                    new-notifications)}))
+    {:db       (update-in db
+                          [:activity-center :notifications]
+                          update-notifications
+                          new-notifications)
+     :dispatch [:activity-center.notifications/fetch-unread-count]}))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
