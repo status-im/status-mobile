@@ -4,7 +4,6 @@
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [utils.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
             [status-im2.contexts.communities.menus.request-to-join.style :as style]
             [utils.re-frame :as rf]
             [utils.requests :as requests]))
@@ -75,7 +74,7 @@
     :render-fn                         community-rule-item}])
 
 (defn request-to-join
-  [{:keys [permissions name id
+  [{:keys [permissions name id images
            can-join? can-request-access?
            requested-to-join-at]}]
   (let [agreed-to-rules? (reagent/atom false)
@@ -93,12 +92,11 @@
         [rn/view
          {:style style/request-icon}
          [quo/icon :i/info]]]
-       ;; TODO get tag image from community data
        [quo/context-tag
         {:style
          {:margin-right :auto
           :margin-top   8}}
-        (resources/get-image :status-logo) name]
+        (:thumbnail images) name]
        [quo/text
         {:style               {:margin-top 24}
          :accessibility-label :communities-rules-title
