@@ -58,7 +58,8 @@
    status-im.wallet.custom-tokens.core
    status-im2.contexts.activity-center.events
    status-im2.contexts.shell.events
-   [status-im2.navigation.events :as navigation]))
+   [status-im2.navigation.events :as navigation]
+   [react-native.background-timer :as timer]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -324,3 +325,57 @@
     {::async-storage/get {:keys keys
                           :cb   #(re-frame/dispatch
                                   [:information-box-states-loaded hashes %])}}))
+
+(rf/defn reset-bottom-sheet
+  {:events [:bottom-sheet/reset]}
+  [{:keys [db]}]
+  {:db (assoc db
+              :bottom-sheet/config
+              {:content-height      nil
+               :show-bottom-sheet?  nil
+               :keyboard-was-shown? false
+               :expanded?           false
+               :gesture-running?    false
+               :animation-delay     450})})
+
+(re-frame/reg-fx
+ :dismiss-bottom-sheet-fx
+ (fn [[on-cancel animation-delay]]
+   (re-frame/dispatch [:bottom-sheet/show-quo2-bottom-sheet false])
+   (when (fn? on-cancel) (on-cancel))
+   (timer/set-timeout
+    (fn []
+      (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
+      (re-frame/dispatch [:bottom-sheet/reset]))
+    (or animation-delay 450))))
+
+(rf/defn dismiss-bottom-sheet
+  {:events [:dismiss-bottom-sheet]}
+  [{:keys [db]} on-cancel]
+  (let [animation-delay (get-in db [:bottom-sheet/config :animation-delay])]
+    {:dismiss-bottom-sheet-fx [on-cancel animation-delay]}))
+
+(rf/defn update-bottom-sheet-height
+  {:events [:bottom-sheet/update-height]}
+  [{:keys [db]} height]
+  {:db (assoc-in db [:bottom-sheet/config :content-height] height)})
+
+(rf/defn show-bottom-sheet
+  {:events [:bottom-sheet/show-quo2-bottom-sheet]}
+  [{:keys [db]} value]
+  {:db (assoc-in db [:bottom-sheet/config :show-bottom-sheet?] value)})
+
+(rf/defn keyboard-was-shown?
+  {:events [:bottom-sheet/keyboard-was-shown?]}
+  [{:keys [db]} value]
+  {:db (assoc-in db [:bottom-sheet/config :keyboard-was-shown?] value)})
+
+(rf/defn bottom-sheet-did-expand
+  {:events [:bottom-sheet/did-expand]}
+  [{:keys [db]} value]
+  {:db (assoc-in db [:bottom-sheet/config :expanded?] value)})
+
+(rf/defn bottom-sheet-gesture-running?
+  {:events [:bottom-sheet/gesture-running?]}
+  [{:keys [db]} value]
+  {:db (assoc-in db [:bottom-sheet/config :gesture-running?] value)})

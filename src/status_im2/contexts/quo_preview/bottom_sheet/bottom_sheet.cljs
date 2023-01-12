@@ -26,7 +26,7 @@
   [rn/view
    {:style {:justify-content :center
             :align-items     :center}}
-   [button/button {:on-press #(do (re-frame/dispatch [:bottom-sheet/hide]))} "Close bottom sheet"]
+   [button/button {:on-press #(do (re-frame/dispatch-sync [:dismiss-bottom-sheet]))} "Close bottom sheet"]
 
    [text/text {:style {:padding-top 20}} "Hello world!"]])
 

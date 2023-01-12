@@ -37,6 +37,7 @@
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
 (reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
 (reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
+(reg-root-key-sub :bottom-sheet/config :bottom-sheet/config)
 
 ;;general
 (reg-root-key-sub :sync-state :sync-state)
