@@ -92,10 +92,8 @@
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
                 {:keys [content-height show-bottom-sheet? keyboard-was-shown? expanded? gesture-running?
-                        animation-delay]
-                 :as   data}
+                        animation-delay]}
                 (rf/sub [:bottom-sheet/config])
-                _ (prn data)
                 bg-height (max (min content-height bg-height-expanded) 150)
                 bottom-sheet-dy (reanimated/use-shared-value 0)
                 pan-y (reanimated/use-shared-value 0)
