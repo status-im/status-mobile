@@ -9,12 +9,12 @@
 
 (defn top-view-container
   [top-inset]
-  {:position :absolute
-   :left     20
-   :top      (+ 12 top-inset)
-   :z-index  1
+  {:position       :absolute
+   :left           20
+   :top            (+ 12 top-inset)
+   :z-index        1
    :flex-direction :row
-   :width "100%"})
+   :width          "100%"})
 
 (def close-container
   {:width            32
@@ -25,6 +25,6 @@
    :background-color colors/neutral-80-opa-40})
 
 (def top-right-buttons
-  {:position :absolute
-   :right 20
+  {:position       :absolute
+   :right          20
    :flex-direction :row})

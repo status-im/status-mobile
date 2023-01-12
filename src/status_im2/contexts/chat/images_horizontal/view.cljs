@@ -43,12 +43,14 @@
        :style          style/close-container}
       [quo/icon :close {:size 20 :color colors/white}]]
      [rn/view {:style {:margin-left 12}}
-      [quo/text {:weight :semi-bold
-                 :size   :paragraph-1
-                 :style  {:color colors/white}} display-name]
-      [quo/text {:weight :medium
-                 :size   :paragraph-2
-                 :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]
+      [quo/text
+       {:weight :semi-bold
+        :size   :paragraph-1
+        :style  {:color colors/white}} display-name]
+      [quo/text
+       {:weight :medium
+        :size   :paragraph-2
+        :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
@@ -67,8 +69,8 @@
         ;; The initial value of data is the image that was pressed (and not the whole album) in order for
         ;; the transition animation to execute properly, otherwise it would animate towards outside the
         ;; screen (even if we have `initialScrollIndex` set).
-        data          (reagent/atom [(nth messages index)])
-        flat-list-ref (atom nil)]
+        data                     (reagent/atom [(nth messages index)])
+        flat-list-ref            (atom nil)]
     (reset! data messages)
     ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
     (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
