@@ -214,12 +214,13 @@
 (defn albumize-messages
   [messages]
   (get (reduce (fn [{:keys [messages albums]} message]
-                 (let [album-id (when (:albumize? message) (:album-id message))
+                 (let [album-id (:album-id message)
                        albums   (cond-> albums album-id (update album-id conj message))
-                       messages (if (and album-id (> (count (get albums album-id)) 1))
+                       messages (if album-id
                                   (conj (filterv #(not= album-id (:album-id %)) messages)
                                         {:album        (get albums album-id)
                                          :album-id     album-id
+                                         :albumize?    (:albumize? message)
                                          :message-id   album-id
                                          :content-type constants/content-type-album})
                                   (conj messages message))]

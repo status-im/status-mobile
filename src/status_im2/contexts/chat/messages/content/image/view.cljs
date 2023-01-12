@@ -16,18 +16,22 @@
         {:width calculated-width :height calculated-height}))))
 
 (defn image-message
-  [{:keys [content image-width image-height message-id] :as message}]
-  (let [dimensions (calculate-dimensions image-width image-height)]
+  [index {:keys [content image-width image-height message-id] :as message}]
+  (let [dimensions (calculate-dimensions image-width image-height)
+        text       (:text content)]
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
          {:active-opacity 1
+          :style          {:margin-top (when (> index 0) 20)}
           :on-press       (fn []
                             (rf/dispatch [:chat.ui/update-shared-element-id message-id])
                             (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
                                                           [message] 0])
                                            100))}
-         [rn/text (:text content)]
+         ;; This text comp is temporary. Should later use
+         ;; `status-im2.contexts.chat.messages.content.text.view`
+         (when (and (not= text "placeholder") (= index 0)) [rn/text text])
          [fast-image/fast-image
           {:source    {:uri (:image content)}
            :style     (merge dimensions {:border-radius 12})
