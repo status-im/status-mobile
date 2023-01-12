@@ -1,11 +1,7 @@
 (ns status-im2.contexts.activity-center.notification.membership.view
   (:require [i18n.i18n :as i18n]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.common.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
-            [status-im2.contexts.activity-center.notification.reply.style :as style]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
@@ -30,4 +26,4 @@
        :button-1 {:label               (i18n/label :t/decline)
                   :accessibility-label :decline-group-chat-invitation
                   :type                :danger
-                  :on-press            #(js/alert "Work in progress")}}))])
+                  :on-press            #(rf/dispatch [:activity-center.notifications/dismiss id])}}))])

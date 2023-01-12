@@ -153,27 +153,45 @@
   [cofx notification]
   (notifications-reconcile cofx [(assoc notification :read true)]))
 
-;;;; Membership
+;;;; Acceptance/dismissal
 
 (rf/defn accept-notification
   {:events [:activity-center.notifications/accept]}
   [{:keys [db]} notification-id]
-  (when-let [notification (get-notification db notification-id)]
-    {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
-                      :params     [[notification-id]]
-                      :on-success #(rf/dispatch [:activity-center.notifications/accept-success
-                                                 notification %])
-                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                                 notification-id
-                                                 :accept-notification
-                                                 %])}]}))
+  {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
+                    :params     [[notification-id]]
+                    :on-success #(rf/dispatch [:activity-center.notifications/accept-success
+                                               notification-id %])
+                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                               notification-id
+                                               :notification/accept
+                                               %])}]})
 
 (rf/defn accept-notification-success
   {:events [:activity-center.notifications/accept-success]}
-  [cofx notification {:keys [chats]}]
-  (rf/merge cofx
-            (models.chat/ensure-chats (map data-store.chats/<-rpc chats))
-            (notifications-reconcile [(assoc notification :read true :accepted true)])))
+  [{:keys [db] :as cofx} notification-id {:keys [chats]}]
+  (let [notification (get-notification db notification-id)]
+    (rf/merge cofx
+              (models.chat/ensure-chats (map data-store.chats/<-rpc chats))
+              (notifications-reconcile [(assoc notification :read true :accepted true)]))))
+
+(rf/defn dismiss-notification
+  {:events [:activity-center.notifications/dismiss]}
+  [{:keys [db]} notification-id]
+  {:json-rpc/call [{:method     "wakuext_dismissActivityCenterNotifications"
+                    :params     [[notification-id]]
+                    :on-success #(rf/dispatch [:activity-center.notifications/dismiss-success
+                                               notification-id])
+                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                               notification-id
+                                               :notification/dismiss
+                                               %])}]})
+
+(rf/defn dismiss-notification-success
+  {:events [:activity-center.notifications/dismiss-success]}
+  [{:keys [db] :as cofx} notification-id]
+  (let [notification (get-notification db notification-id)]
+    (notifications-reconcile cofx [(assoc notification :dismissed true)])))
 
 ;;;; Contact verification
 
