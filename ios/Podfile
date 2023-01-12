@@ -23,6 +23,7 @@ abstract_target 'Status' do
   pod "react-native-status", path: "../modules/react-native-status"
   pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git"
   pod 'secp256k1', git: "https://github.com/status-im/secp256k1.swift.git", submodules: true
+
   target 'StatusIm' do
 
     target 'StatusImTests' do
@@ -56,4 +57,3 @@ abstract_target 'Status' do
 
   use_native_modules!
 end
-
