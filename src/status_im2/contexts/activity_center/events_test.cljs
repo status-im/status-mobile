@@ -614,7 +614,7 @@
              (:db actual)))
 
       (is (= {:method "wakuext_activityCenterNotificationsBy"
-              :params ["" per-page [types/contact-request] activity-center/status-unread]}
+              :params ["" per-page [types/contact-request] activity-center/status-unread true]}
              (-> actual
                  :json-rpc/call
                  first
@@ -630,6 +630,6 @@
 
        (rf/dispatch [:activity-center.notifications/fetch-unread-count])
 
-       (is (= "wakuext_unreadActivityCenterNotificationsCount"
+       (is (= "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
               (get-in @spy-queue [0 :args 0 :method])))
        (is (= 9 (get-in (h/db) [:activity-center :unread-count])))))))

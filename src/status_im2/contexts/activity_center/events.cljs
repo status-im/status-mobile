@@ -268,7 +268,8 @@
                         :params     [cursor
                                      per-page
                                      (filter-type->rpc-param filter-type)
-                                     (status filter-status)]
+                                     (status filter-status)
+                                     true]
                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
                                                    filter-type filter-status reset-data? %])
                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
@@ -342,7 +343,7 @@
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
   [_]
-  {:json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
+  {:json-rpc/call [{:method     "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
                     :params     []
                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success
                                                %])
