@@ -286,18 +286,24 @@ endif
 # Tests
 #--------------
 
+# Get all clojure files, including untracked, excluding removed
+define find_all_clojure_files
+$$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
+endef
+
 lint: export TARGET := default
 lint: ##@test Run code style checks
-	sh scripts/lint-re-frame-in-quo-components.sh && \
+	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
-	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
-	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILE
+	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES
 
+# NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := default
 lint-fix: ##@test Run code style checks and fix issues
-	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE
+	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES
 
 
 shadow-server: export TARGET := clojure
