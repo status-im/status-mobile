@@ -7,18 +7,18 @@
 
 (defn image
   [item]
-  [rn/view
+  [:<>
    [rn/image
     {:source {:uri (first item)}
      :style  style/small-image}]
-   [rn/touchable-opacity
-    {:on-press #(rf/dispatch [:chat.ui/image-unselected (first item)])
-     :style    style/remove-photo-container
-     :hit-slop {:right  5
-                :left   5
-                :top    10
-                :bottom 10}}
-    [quo/icon :i/close {:color colors/white :size 12}]]])
+   [rn/view {:style style/remove-photo-container}
+    [rn/touchable-opacity
+     {:on-press #(rf/dispatch [:chat.ui/image-unselected (first item)])
+      :hit-slop {:right  5
+                 :left   5
+                 :top    10
+                 :bottom 10}}
+     [quo/icon :i/close {:color colors/white :size 12}]]]])
 
 (defn images-list
   [images]
