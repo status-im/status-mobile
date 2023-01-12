@@ -3,7 +3,7 @@
 
 (defn container-view
   [padding-top]
-  {:background-color "#000"
+  {:background-color :black
    :height           "100%"
    :padding-top      padding-top})
 

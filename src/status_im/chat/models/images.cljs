@@ -228,10 +228,7 @@
        ::image-selected [image current-chat-id]}
       (when (and (< (count images) config/max-images-batch)
                  (not (some #(= (:uri image) (:uri %)) images)))
-        {::image-selected [image current-chat-id]}
-      )
-    )
-  ))
+        {::image-selected [image current-chat-id]}))))
 
 <<<<<<< HEAD
 =======

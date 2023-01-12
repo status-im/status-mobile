@@ -157,9 +157,10 @@
              :image-path   (utils/safe-replace uri #"file://" "")
              :image-width  width
              :image-height height
-             :text         (or input-text "placeholder")}) ;; TODO: message not received if text field is
-                                                           ;; nil or empty, issue:
-                                                           ;; https://github.com/status-im/status-mobile/issues/14754
+             ;; TODO: message not received if text field is
+             ;; nil or empty, issue:
+             ;; https://github.com/status-im/status-mobile/issues/14754
+             :text         (or input-text "placeholder")})
           images)))
 
 (rf/defn clean-input

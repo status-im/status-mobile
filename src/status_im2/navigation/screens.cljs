@@ -13,6 +13,7 @@
 =======
             [status-im2.setup.config :as config]
 <<<<<<< HEAD
+<<<<<<< HEAD
             [quo.design-system.colors :as colors]
 <<<<<<< HEAD
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
@@ -24,6 +25,10 @@
 >>>>>>> accd5cae8... lint
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]))
 >>>>>>> 419cc70dd... feat: images album
+=======
+            [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
+            [quo.design-system.colors :as colors]))
+>>>>>>> b2e2c1979... updates
 
 (def components
   [])
@@ -47,7 +52,8 @@
     {:name      :images-horizontal
      :insets    {:top false :bottom false}
      :options   {:topBar     {:visible false}
-                 :statusBar  {:style :light}
+                 :statusBar  {:backgroundColor colors/black-persist
+                              :style           :light}
                  :animations {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                                  :toId          :shared-element
                                                                  :interpolation {:type :decelerate}}]}

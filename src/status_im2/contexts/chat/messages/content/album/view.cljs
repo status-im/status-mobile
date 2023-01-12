@@ -18,27 +18,52 @@
   (when (= index 0) 12))
 
 (defn border-trr
-  [index]
-  (when (= index 1) 12))
+  [index count album-style]
+  (when (or (and (= index 1) (not= count 3))
+            (and (= index 0) (= count 3) (= album-style :landscape))
+            (and (= index 1) (= count 3) (= album-style :portrait)))
+    12))
 
 (defn border-blr
-  [index count]
-  (when (and (= index 2) (> count 2)) 12))
+  [index count album-style]
+  (when (or (and (= index 0) (< count 3))
+            (and (= index 2) (> count 3))
+            (and (= index 1) (= count 3) (= album-style :landscape))
+            (and (= index 0) (= count 3) (= album-style :portrait)))
+    12))
 
 (defn border-brr
   [index count]
-  (when (and (= index (- (min count max-display-count) 1)) (> count 2)) 12))
+  (when (or (and (= index 1) (< count 3))
+            (and (= index (- (min count max-display-count) 1)) (> count 2)))
+    12))
+
+(defn find-size
+  [size-arr album-style]
+  (if (= album-style :landscape)
+    {:width (first size-arr) :height (second size-arr) :album-style album-style}
+    {:width (second size-arr) :height (first size-arr) :album-style album-style}))
 
 (defn album-message
   [message]
-  (let [shared-element-id (rf/sub [:shared-element-id])]
+  (let [shared-element-id (rf/sub [:shared-element-id])
+        first-image       (first (:album message))
+        album-style       (if (> (:image-width first-image) (:image-height first-image))
+                            :landscape
+                            :portrait)
+        images-count      (count (:album message))
+        ;; album images are always square, except when we have 3 images, then they must be rectangular
+        ;; (portrait or landscape)
+        portrait?         (and (= images-count 3) (= album-style :portrait))]
     [rn/view
-     {:style style/album-container}
+     {:style (style/album-container portrait?)}
      (map-indexed
       (fn [index item]
-        (let [images-count    (count (:album message))
-              images-size-key (if (< images-count 6) images-count :default)
-              size            (get-in constants/album-image-sizes [images-size-key index])]
+        (let [images-size-key (if (< images-count max-display-count) images-count :default)
+              size            (get-in constants/album-image-sizes [images-size-key index])
+              dimensions      (if (not= images-count 3)
+                                {:width size :height size}
+                                (find-size size album-style))]
           [rn/touchable-opacity
            {:key            (:message-id item)
             :active-opacity 1
@@ -48,13 +73,13 @@
                                                             (:album message) index])
                                              100))}
            [fast-image/fast-image
-            {:style     (merge (style/image size index)
+            {:style     (merge (style/image dimensions index)
                                {:border-top-left-radius     (border-tlr index)
-                                :border-top-right-radius    (border-trr index)
-                                :border-bottom-left-radius  (border-blr index images-count)
+                                :border-top-right-radius    (border-trr index images-count album-style)
+                                :border-bottom-left-radius  (border-blr index images-count album-style)
                                 :border-bottom-right-radius (border-brr index images-count)})
              :source    {:uri (:image (:content item))}
-             :native-ID (when (and (= shared-element-id (:message-id item)) (< index 6))
+             :native-ID (when (and (= shared-element-id (:message-id item)) (< index max-display-count))
                           :shared-element)}]
            (when (and (> images-count max-display-count) (= index (- max-display-count 1)))
              [rn/view
@@ -63,5 +88,5 @@
               [quo/text
                {:weight :bold
                 :size   :heading-2
-                :style  {:color colors/white}} (str "+" (- images-count 5))]])]))
+                :style  {:color colors/white}} (str "+" (- images-count (dec max-display-count)))]])]))
       (:album message))]))

@@ -15,20 +15,20 @@
             calculated-width  (* (min width max-width) (/ (max height max-height) height))]
         {:width calculated-width :height calculated-height}))))
 
-
 (defn image-message
-  [{:keys [content image-width image-height] :as message}]
+  [{:keys [content image-width image-height message-id] :as message}]
   (let [dimensions (calculate-dimensions image-width image-height)]
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
          {:active-opacity 1
           :on-press       (fn []
-                            (rf/dispatch [:chat.ui/update-shared-element-id (:message-id message)])
+                            (rf/dispatch [:chat.ui/update-shared-element-id message-id])
                             (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
                                                           [message] 0])
                                            100))}
+         [rn/text (:text content)]
          [fast-image/fast-image
           {:source    {:uri (:image content)}
            :style     (merge dimensions {:border-radius 12})
-           :native-ID (when (= shared-element-id (:message-id message)) :shared-element)}]]))))
+           :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))
