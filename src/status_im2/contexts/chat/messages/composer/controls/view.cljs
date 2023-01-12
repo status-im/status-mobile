@@ -10,13 +10,14 @@
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui2.screens.chat.composer.images.view :as composer-images]
-            [status-im.utils.utils :as utils-old]))
+            [status-im.utils.utils :as utils-old]
+            [status-im.ui2.screens.chat.composer.input :as input]))
 
 (defn send-button
-  [send-ref {:keys [images]} on-send]
+  [send-ref {:keys [chat-id images]} on-send]
   [rn/view
    {:ref   send-ref
-    :style (when (seq images)
+    :style (when (or (seq (get @input/input-texts chat-id)) (not (seq images)))
              {:width 0
               :right -100})}
    [quo/button

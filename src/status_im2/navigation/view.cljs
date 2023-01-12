@@ -73,9 +73,7 @@
         [safe-area/consumer
          (fn [safe-insets]
            [rn/view
-            {:style (wrapped-screen-style
-                     {:insets insets}
-                     safe-insets)}
+            {:style (wrapped-screen-style insets safe-insets)}
             [inactive]
             [component]])]
         (when js/goog.DEBUG
