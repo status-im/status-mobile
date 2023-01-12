@@ -13,8 +13,9 @@
                              SlideInUp
                              SlideOutUp
                              LinearTransition)]
-            [clojure.string :as string]
-            [reagent.core :as reagent]))
+            [camel-snake-kebab.core :as csk]
+            [reagent.core :as reagent]
+            [utils.collection]))
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
@@ -62,18 +63,6 @@
   (when anim
     (set! (.-value anim) val)))
 
-(defn kebab-case->camelCase
-  [k]
-  (let [words (string/split (name k) #"-")]
-    (->> (map string/capitalize (rest words))
-         (apply str (first words))
-         keyword)))
-
-(defn map-keys
-  [f m]
-  (->> (map (fn [[k v]] [(f k) v]) m)
-       (into {})))
-
 ;; Worklets
 (def worklet-factory (js/require "../src/js/worklet_factory.js"))
 
@@ -90,8 +79,10 @@
 ;; so first convert kebab case styles into camel case styles
 (defn apply-animations-to-style
   [animations style]
-  (let [animations (map-keys kebab-case->camelCase animations)
-        style      (apply dissoc (map-keys kebab-case->camelCase style) (keys animations))]
+  (let [animations (utils.collection/map-keys csk/->camelCaseString animations)
+        style      (apply dissoc
+                          (utils.collection/map-keys csk/->camelCaseString style)
+                          (keys animations))]
     (use-animated-style
      (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style)))))
 

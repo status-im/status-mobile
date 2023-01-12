@@ -20,3 +20,8 @@
   [key coll]
   (let [groups (group-by key coll)]
     (map #(first (groups %)) (distinct (map key coll)))))
+
+(defn map-keys
+  [f m]
+  (->> (map (fn [[k v]] [(f k) v]) m)
+       (into {})))

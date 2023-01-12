@@ -7,7 +7,6 @@
                                                 ;; designs
    [quo2.components.navigation.floating-shell-button :as floating-shell-button]
    [react-native.core :as rn]
-   [status-im.chat.models.link-preview :as link-preview]
    [status-im.communities.core :as communities]
    [status-im2.constants :as constants]
    [status-im.react-native.resources :as resources]
@@ -262,7 +261,7 @@
       {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
 
       [quo/button
-       {:on-press (when-not fetching #(rf/dispatch [::link-preview/resolve-community-info community-id]))
+       {:on-press (when-not fetching #(rf/dispatch [:chat.ui/resolve-community-info community-id]))
         :disabled fetching
         :color    :secondary}
        (if fetching

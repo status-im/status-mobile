@@ -1,14 +1,14 @@
 (ns status-im.signals.core
-  (:require [status-im.chat.models.link-preview :as link.preview]
-            [status-im.chat.models.message :as models.message]
+  (:require [status-im.chat.models.message :as models.message]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [utils.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.login.core :as login]
             [status-im.notifications.local :as local-notifications]
             [status-im.transport.message.core :as transport.message]
-            [utils.re-frame :as rf]
             [status-im.visibility-status-updates.core :as visibility-status-updates]
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]))
 
 (rf/defn status-node-started
@@ -104,7 +104,7 @@
                                                                                   true))
       "local-notifications"     (local-notifications/process cofx
                                                              (js->clj event-js :keywordize-keys true))
-      "community.found"         (link.preview/cache-community-preview-data (js->clj event-js
+      "community.found"         (link-preview/cache-community-preview-data (js->clj event-js
                                                                                     :keywordize-keys
                                                                                     true))
       "status.updates.timedout" (visibility-status-updates/handle-visibility-status-updates

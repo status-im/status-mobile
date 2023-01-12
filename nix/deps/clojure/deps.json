@@ -52,41 +52,15 @@
   },
 
   {
-    "path": "borkdude/edamame/0.0.11-alpha.28/edamame-0.0.11-alpha.28",
+    "path": "camel-snake-kebab/camel-snake-kebab/0.4.3/camel-snake-kebab-0.4.3",
     "host": "https://repo.clojars.org",
     "pom": {
-      "sha1": "488f403591739aab5a68ce6e7f82c0e855c23fd6",
-      "sha256": "1cw712kzza733g55s02ql35q630zd8j8nmnpivcczjkg240jans4"
+      "sha1": "d8a86256bfd06736b84b6ee4c154a1b2518ab461",
+      "sha256": "1fxz1fdhppby21l4qkrci9kp38s508yn01z3cjspda56mj1plnid"
     },
     "jar": {
-      "sha1": "371f3e232e7fdb04b7b2044825eb9822280e8f93",
-      "sha256": "1iyxq6jypjd875cgdyllknh27mx5fnkyjz80mr927d5i94r0ywj4"
-    }
-  },
-
-  {
-    "path": "borkdude/sci.impl.reflector/0.0.1/sci.impl.reflector-0.0.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "eb3aff6c7db85d91f7e05b98e06d1354a4fce36c",
-      "sha256": "1bvr7cvpbvqi7swypzpbfrig16zipwvmg4m47y2x5chs5czwxv15"
-    },
-    "jar": {
-      "sha1": "33dfc86102e0ea400498cbca47572459c1c43b00",
-      "sha256": "0a5gxmj8kzc01y9bn7l4x7c1v5q9wcbvw5hdr525d3ylsyl6xfkw"
-    }
-  },
-
-  {
-    "path": "borkdude/sci/0.2.1-alpha.1/sci-0.2.1-alpha.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "516cb8e3a8e430d59d9c3e7a51f9f859e3b249e0",
-      "sha256": "1nrww29m90q1avaahw7i5418c18crc3cidhbg3ml7h7vjjplsl9y"
-    },
-    "jar": {
-      "sha1": "96e39dcbc3fb3a41c6bf2e628303cf0f534b28a3",
-      "sha256": "1cjvz85ls982rmx90igv4mcfaa53fj5z29df9mf4jplyig3l9dxb"
+      "sha1": "5ae08f83ceb8959971e6334596bff0214bf6fdf2",
+      "sha256": "1j627a99ccc4v0v83c8670vdnsp69cjk7ba0ga2xf433fwsz74c1"
     }
   },
 
@@ -113,19 +87,6 @@
     "jar": {
       "sha1": "0a02a3e2ecd7a126ab60d8a44793342f20ced79b",
       "sha256": "142vl5np33akcrnn6pksi0rjfsmmi528villxsj6cwcndvybiw4m"
-    }
-  },
-
-  {
-    "path": "clj-stacktrace/clj-stacktrace/0.2.8/clj-stacktrace-0.2.8",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "c5a47e6858344c9fd42eecafc7920a7a18d6126d",
-      "sha256": "1az0fs9k5xvzl8bz564apd77kqc83nl8sxsrvmswmbmkamvy4hd3"
-    },
-    "jar": {
-      "sha1": "b0654b98763199ee57182526465d823492d1cc3f",
-      "sha256": "1029wd82qyxv6ji9pd38m32nqia56h6845lqv4ym4dsz5i201g9a"
     }
   },
 
@@ -676,19 +637,6 @@
   },
 
   {
-    "path": "hashp/hashp/0.2.1/hashp-0.2.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "32530b9106a64fd5442d2aa27c6da4175d1f1440",
-      "sha256": "1z94k8c52r87rq3nhc0mqazcxff6d4phi8gy1bgndhiz4nq1mia7"
-    },
-    "jar": {
-      "sha1": "fb501db2eb4a028c1875382d58c17c381aec47b8",
-      "sha256": "1lwirzb60zvksvkb3arpwi4fk1xnp0x5ljmrca5vf7dq25lmwmsd"
-    }
-  },
-
-  {
     "path": "hiccup/hiccup/1.0.5/hiccup-1.0.5",
     "host": "https://repo.clojars.org",
     "pom": {
@@ -819,32 +767,6 @@
   },
 
   {
-    "path": "mvxcvi/arrangement/1.2.0/arrangement-1.2.0",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "4f19bd291595870162eadd35456a0b2e76444a64",
-      "sha256": "1qqnl05nwcjnzhlgplcsbckrp8pqvf8n6bf8kr8rz7lz2q4px3vb"
-    },
-    "jar": {
-      "sha1": "036e640bb9e14c2aa95589a45a018eb8358ce3f6",
-      "sha256": "1m3v1rkpdmv7aym5vq2swh0mf9mg7xppdr3vrl4g6qm3s42c24b7"
-    }
-  },
-
-  {
-    "path": "mvxcvi/puget/1.3.1/puget-1.3.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "07104dc20a13c7e255fffee4f16de9a6873c187f",
-      "sha256": "1129rb3qksg7n85j03k6d3sr6868g724097vxids1r4wqj2phxkf"
-    },
-    "jar": {
-      "sha1": "a4f7dcf71ccd8d69d4ecd2b19f3d671dfc169308",
-      "sha256": "029znh7p8f1h91gri4jhzwqsa0rnn3i34yr3kav55npym2sw5sfp"
-    }
-  },
-
-  {
     "path": "net/cgrand/macrovich/0.2.1/macrovich-0.2.1",
     "host": "https://repo.clojars.org",
     "pom": {
@@ -949,15 +871,15 @@
   },
 
   {
-    "path": "org/clojure/core.rrb-vector/0.1.2/core.rrb-vector-0.1.2",
+    "path": "org/clojure/core.rrb-vector/0.1.1/core.rrb-vector-0.1.1",
     "host": "https://repo1.maven.org/maven2",
     "pom": {
-      "sha1": "e9336ac820c5a7e07fe0aa431df981cbab6db3e3",
-      "sha256": "07q9qmxc7ggaxh27imgs34svn4j269rhslbnrs63ahrqzk5bmqlf"
+      "sha1": "3231642aa1dcf628c864a5f208cd293fbd6a385a",
+      "sha256": "18kk5sds5lg8r2kidhz9qpgyrvggkj8j4sgfdsmyyl93w3f16lnp"
     },
     "jar": {
-      "sha1": "0404feea925608b921b56acd11d3b187a0d33fe4",
-      "sha256": "13hkx1285f2imqlj6wbgyxki2yg8rmfr49iq1zijxm1cgfx8xyai"
+      "sha1": "aafb7677ec1e9f344fc834bbbdb91e8ba02af474",
+      "sha256": "0cqyy1vqrhilgwrdxsibd7360ch3hhwjnbbnzsak38v6i6mg66xl"
     }
   },
 
@@ -1495,32 +1417,6 @@
   },
 
   {
-    "path": "rewrite-clj/rewrite-clj/0.6.1/rewrite-clj-0.6.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "05778b423e14e8f1b054cc78df4e5d048cc0fc68",
-      "sha256": "0wp9xvmfp37x88msm2yhhzi8sjwd4hxz0vv4bslhal3zi97c1bj6"
-    },
-    "jar": {
-      "sha1": "55b399417a088ca163ef835e56db76ea962ce0a9",
-      "sha256": "0qq3an9nrhhw5mba753zs1m9rnk86w9l1f04n8v0hz0i2kbf1cki"
-    }
-  },
-
-  {
-    "path": "rewrite-cljs/rewrite-cljs/0.4.5/rewrite-cljs-0.4.5",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "378cd53218027b9a93640dcf64c040665f6c9c6b",
-      "sha256": "1qrhrgzhqdyqizh0ngnr4zgj9xkfzq0qhsws4pxxra3qc9ikl9cq"
-    },
-    "jar": {
-      "sha1": "c35be115c39dadc71a4de3f584aa8ca295e11257",
-      "sha256": "1dnw0jhr1hhqz80w3z5d8qdbaqdvgzg4fyhv6lffa51c9ca1dsr1"
-    }
-  },
-
-  {
     "path": "ring-cors/ring-cors/0.1.8/ring-cors-0.1.8",
     "host": "https://repo.clojars.org",
     "pom": {
@@ -1647,19 +1543,6 @@
     "jar": {
       "sha1": "09af0b348e6253dcf9fd567d0d22ffebdea46176",
       "sha256": "1qg2iyblykfkzmplc2c46916b9m0h5ad6lxmvrk5qn3pdxqr8vw0"
-    }
-  },
-
-  {
-    "path": "zprint/zprint/1.1.1/zprint-1.1.1",
-    "host": "https://repo.clojars.org",
-    "pom": {
-      "sha1": "d7225bdc4978d3a8eac8613187cddd2efb9e39d2",
-      "sha256": "0yyy31h88zww238c2v4zi9va3pjp7ii76zjggglakd3wm1fdbnck"
-    },
-    "jar": {
-      "sha1": "3bd9bbedb188a66ccf72c1e22819e8e423a6757a",
-      "sha256": "1bvrarxw0dqvxlhj6gdwrv6mklzh4p79537g293fqlm07f2knfph"
     }
   }
 ]

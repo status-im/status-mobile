@@ -2,12 +2,12 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.chat.models.link-preview :as link-preview]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.link-previews-settings.styles :as styles]))
+            [status-im.ui.screens.link-previews-settings.styles :as styles]
+            [status-im2.contexts.chat.messages.link-preview.events]))
 
 (defn prepare-urls-items-data
   [link-previews-enabled-sites]
@@ -19,7 +19,7 @@
        :accessory :switch
        :active    (contains? link-previews-enabled-sites title)
        :on-press  #(re-frame/dispatch
-                    [::link-preview/enable title ((complement boolean) enabled?)])})))
+                    [:chat.ui/enable-link-previews title ((complement boolean) enabled?)])})))
 
 (views/defview link-previews-settings
   []
@@ -39,7 +39,7 @@
 
         (when (> (count link-previews-whitelist) 1)
           [quo/button
-           {:on-press #(re-frame/dispatch [::link-preview/enable-all
+           {:on-press #(re-frame/dispatch [:chat.ui/enable-all-link-previews
                                            link-previews-whitelist
                                            (not all-enabled)])
             :type     :secondary

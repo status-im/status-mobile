@@ -1,9 +1,8 @@
 (ns status-im2.contexts.chat.messages.content.text.view
   (:require
-    [react-native.core :as rn]
-    [status-im.ui2.screens.chat.messages.message :as old-message]
-    [status-im2.contexts.chat.messages.link-preview.view :as link-preview]
-    [status-im.ui.screens.chat.message.link-preview :as old-link-preview]))
+   [react-native.core :as rn]
+   [status-im.ui2.screens.chat.messages.message :as old-message]
+   [status-im2.contexts.chat.messages.link-preview.view :as link-preview]))
 
 (defn text-content
   [message-data]

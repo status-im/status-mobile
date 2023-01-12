@@ -76,11 +76,10 @@
         [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
       [rn/view {:padding-horizontal 12 :flex-direction :row}
        [avatar message-data]
-       [rn/view {:margin-left 8}
+       [rn/view {:margin-left 8 :flex 1}
         [author message-data]
         (case content-type
 
-          ;; TODO(alwx):
           constants/content-type-text    [not-implemented/not-implemented
                                           [content.text/text-content message-data]]
 
