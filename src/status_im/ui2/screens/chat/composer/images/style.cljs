@@ -7,8 +7,8 @@
    :border-radius    7
    :background-color colors/neutral-50
    :position         :absolute
-   :top              -7
-   :right            -7
+   :top              5
+   :right            5
    :justify-content  :center
    :align-items      :center})
 
