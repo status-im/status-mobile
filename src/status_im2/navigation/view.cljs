@@ -69,16 +69,15 @@
                                          screens)
                                        (keyword key))]
        ^{:key (str "root" key @reloader/cnt)}
-       [safe-area/safe-area-provider
+       [safe-area/provider
         [safe-area/consumer
          (fn [safe-insets]
-           (reagent/as-element
-            [rn/view
-             {:style (wrapped-screen-style
-                      {:insets insets}
-                      safe-insets)}
-             [inactive]
-             [component]]))]
+           [rn/view
+            {:style (wrapped-screen-style
+                     {:insets insets}
+                     safe-insets)}
+            [inactive]
+            [component]])]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
@@ -93,7 +92,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "popover" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [popover/popover]
       (when js/goog.DEBUG
@@ -110,7 +109,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "visibility-status-popover" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [visibility-status-views/visibility-status-popover]
       (when js/goog.DEBUG
@@ -120,7 +119,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [bottom-sheets/bottom-sheet]
       (when js/goog.DEBUG
@@ -132,7 +131,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "signing-sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [signing/signing]
       (when js/goog.DEBUG
@@ -142,7 +141,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "select-acc-sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [wallet.send.views/select-account]
       (when js/goog.DEBUG
@@ -152,7 +151,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [wallet-connect/wallet-connect-proposal-sheet]
       (when js/goog.DEBUG
@@ -162,7 +161,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [wallet-connect/wallet-connect-success-sheet-view]
       (when js/goog.DEBUG
@@ -172,7 +171,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
-     [safe-area/safe-area-provider
+     [safe-area/provider
       [inactive]
       [wallet-connect/wallet-connect-app-management-sheet-view]
       (when js/goog.DEBUG

@@ -5,12 +5,11 @@
 
 (def ^:private consumer-raw (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
 
+(def provider (reagent/adapt-react-class SafeAreaProvider))
+
 (defn consumer
   [component]
   [consumer-raw
    (fn [^js insets]
      (reagent/as-element
       [component (js->clj insets :keywordize-keys true)]))])
-
-(def safe-area-provider (reagent/adapt-react-class SafeAreaProvider))
-(def safe-area-consumer consumer-raw)
