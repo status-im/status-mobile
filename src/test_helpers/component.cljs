@@ -21,6 +21,12 @@
   [test-id]
   (rtl/screen.getByTestId (name test-id)))
 
+(defn get-by-text
+  [text]
+  (rtl/screen.getByText text))
+
 (defn get-by-label-text
   [label]
   (rtl/screen.getByLabelText (name label)))
+
+(defn expect [match] (js/expect match))

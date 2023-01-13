@@ -1,11 +1,11 @@
-(ns status-im2.contexts.communities.requests.actions.view
+(ns status-im2.contexts.communities.menus.request-to-join.view
   (:require [quo.react-native :as rn]
             [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im2.contexts.communities.requests.actions.style :as style]
+            [status-im2.contexts.communities.menus.request-to-join.style :as style]
             [utils.re-frame :as rf]
             [utils.requests :as requests]))
 
@@ -75,7 +75,7 @@
     :render-fn                         community-rule-item}])
 
 (defn request-to-join
-  [{:keys [permissions name id joined
+  [{:keys [permissions name id
            can-join? can-request-access?
            requested-to-join-at]}]
   (let [agreed-to-rules? (reagent/atom false)
@@ -122,11 +122,10 @@
         [quo/button
          {:accessibility-label :join-community-button
           :on-press            (fn []
-                                 (when-not joined
-                                   (when can-join?
-                                     (rf/dispatch [::communities/join id]))
-                                   (rf/dispatch [:bottom-sheet/hide])
-                                   (when
+                                 (if can-join?
+                                   (do (rf/dispatch [::communities/join id])
+                                       (rf/dispatch [:bottom-sheet/hide]))
+                                   (do
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))
                                           (requests/can-request-access-again? requested-to-join-at))
