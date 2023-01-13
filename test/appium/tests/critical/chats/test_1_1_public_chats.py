@@ -1245,14 +1245,14 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
         self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.contacts_button)
         self.profile_1.add_contact_via_contacts_list(self.public_key_2)
-        self.chat_1 = self.profile_1.open_contact_from_profile(self.default_username_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Profile > Contacts > Send message")
-        self.chat_1.profile_send_message.click()
+        self.home_1.chats_tab.click()
+        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
         self.chat_1.send_message('hey')
         self.home_2.click_system_back_button_until_element_is_shown()
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
