@@ -69,6 +69,8 @@
    :EnableDiscV5   true
    :Host           "0.0.0.0"
    :AutoUpdate     true
+   ;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
+   :Nameserver     "1.1.1.1"
    :PeerExchange   true
    :Port           0
    :UDPPort        0})
