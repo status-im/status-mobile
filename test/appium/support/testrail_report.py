@@ -28,8 +28,7 @@ class TestrailReport(BaseTestReport):
 
         self.outcomes = {
             'passed': 1,
-            'undefined_fail': 10,
-            'fail': 5}
+            'undefined_fail': 10}
 
         self.headers = dict()
         self.headers['Authorization'] = 'Basic %s' % str(
@@ -182,7 +181,6 @@ class TestrailReport(BaseTestReport):
             test_steps = "# Steps: \n"
             devices = str()
             last_testrun = test.testruns[-1]
-            status = self.outcomes['passed']
             for step in last_testrun.steps:
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
@@ -194,12 +192,7 @@ class TestrailReport(BaseTestReport):
             comment = str()
             if test.group_name:
                 comment += "# Class: %s \n" % test.group_name
-            if last_testrun.error and not last_testrun.xfail:
-                status = self.outcomes['fail']
-                error = last_testrun.error
-                comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(error)) + devices + test_steps
-            elif last_testrun.error and last_testrun.xfail:
-                status = self.outcomes['undefined_fail']
+            if last_testrun.error:
                 full_error = last_testrun.error
                 (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
                 if issue_id:
@@ -213,7 +206,7 @@ class TestrailReport(BaseTestReport):
                 comment += devices + test_steps
             data.append(
                 {'case_id': test.testrail_case_id,
-                 'status_id': status,
+                 'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
                  'comment': comment})
 
         results = self.post('add_results_for_cases/%s' % self.run_id, data={"results": data})
@@ -246,77 +239,58 @@ class TestrailReport(BaseTestReport):
 
         self.change_test_run_description()
 
-    def make_single_group_report(self, tests, xfailed=False):
-        single_devices_block, group_blocks, case_info, test_ids = str(), dict(), str(), []
-        for test in tests:
-            if test.group_name:
-                group_blocks[test.group_name] = "\n-------\n## Class: %s:\n" % test.group_name
-        for test in tests:
-            last_testrun = test.testruns[-1]
-            test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
-            test_ids.append(test.testrail_case_id)
-            case_title = '\n'
-            case_title += '-------\n'
-            case_title += "### ID %s: [%s](%s) \n" % (test.testrail_case_id, test.name, test_rail_link)
-            if xfailed:
-                full_error = last_testrun.error[-255:]
-                (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
-                if issue_id:
-                    test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
-                    error = "```%s```\n **%s**  \n" % (code_error, test_rail_xfail)
-                else:
-                    error = "```%s```\n **%s**  \n" % (code_error, no_code_error_str)
-            else:
-                error = last_testrun.error[-255:]
-            for job_id, f in last_testrun.jobs.items():
-                if last_testrun.first_commands:
-                    job_url = self.get_sauce_job_url(job_id=job_id,
-                                                     first_command=last_testrun.first_commands[job_id])
-                else:
-                    job_url = self.get_sauce_job_url(job_id=job_id)
-                case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
-                            % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
-
-            if test.group_name:
-                group_blocks[test.group_name] += case_title + error + case_info
-            else:
-                single_devices_block += case_title + error + case_info
-        description = single_devices_block + ''.join([i for i in group_blocks.values()])
-        return description, test_ids
-
     def change_test_run_description(self):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
-        xfailed_tests = self.get_xfailed_tests()
         not_executed_tests = self.get_not_executed_tests(self.run_id)
         final_description = "Nothing to report this time..."
         if len(tests) > 0:
-            description = ""
             description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
             description_title += "\n"
             description_title += "Total executed tests: %d\n" % len(tests)
-            description_title += "Undefined failed tests: %d\n" % len(failed_tests)
-            description_title += "Failed tests: %d\n" % len(xfailed_tests)
+            description_title += "Failed tests: %d\n" % len(failed_tests)
             description_title += "Passed tests: %d\n" % len(passed_tests)
             if not_executed_tests:
                 description_title += "Not executed tests: %d\n" % len(not_executed_tests)
             description_title += "\n"
+            ids_failed_test = []
+            single_devices_block, group_blocks, case_info = str(), dict(), str()
             if failed_tests:
-                description += "\n"
-                description += "## Undefined failed tests:"
-                failed_description, ids_failed_test = self.make_single_group_report(failed_tests)
-                description += failed_description
-                description_title += "## Undefined failed tests: %s\n" % ','.join([str(i) for i in ids_failed_test])
-            if xfailed_tests:
-                description += "\n"
-                description += "## Failed tests (due to known issues):"
-                xfailed_description, id_xfailed_tests = self.make_single_group_report(xfailed_tests, xfailed=True)
-                description += xfailed_description
-                description_title += "## Failed tests: %s\n" % ','.join([str(i) for i in id_xfailed_tests])
+                for test in failed_tests:
+                    if test.group_name:
+                        group_blocks[test.group_name] = "\n-------\n## Class: %s:\n" % test.group_name
+                for test in failed_tests:
+                    last_testrun = test.testruns[-1]
+                    test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
+                    ids_failed_test.append(test.testrail_case_id)
+                    case_title = '\n'
+                    case_title += '-------\n'
+                    case_title += "### ID %s: [%s](%s) \n" % (test.testrail_case_id, test.name, test_rail_link)
+                    full_error = last_testrun.error[-255:]
+                    (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
+                    if issue_id:
+                        test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
+                        error = "```%s```\n **%s**  \n" % (code_error, test_rail_xfail)
+                    else:
+                        error = "```%s```\n **%s**  \n" % (code_error, no_code_error_str)
+                    for job_id, f in last_testrun.jobs.items():
+                        if last_testrun.first_commands:
+                            job_url = self.get_sauce_job_url(job_id=job_id,
+                                                             first_command=last_testrun.first_commands[job_id])
+                        else:
+                            job_url = self.get_sauce_job_url(job_id=job_id)
+                        case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
+                                    % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
+
+                    if test.group_name:
+                        group_blocks[test.group_name] += case_title + error + case_info
+                    else:
+                        single_devices_block += case_title + error + case_info
+                description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
             if not_executed_tests:
                 description_title += "## Not executed tests: %s\n" % ','.join([str(i) for i in not_executed_tests])
-            final_description = description_title + description
+            final_description = description_title + single_devices_block + ''.join([i for i in group_blocks.values()])
 
         request_body = {'description': final_description}
         return self.post('update_run/%s' % self.run_id, request_body)

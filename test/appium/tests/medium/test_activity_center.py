@@ -238,6 +238,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.element_by_translation_id("remove-from-contacts").click()
         if not self.home_2.element_by_translation_id("no-contacts").is_element_displayed(30):
             self.errors.append("Contact was not removed from contact list")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
@@ -316,4 +317,5 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         #     self.home_1.driver.fail("No PN for mention in community!")
         # if not self.channel_1.chat_element_by_text(group_chat_message).is_element_displayed(20):
         #     self.errors.append("No redirect to channel after tap on PN with mention!")
+
         self.errors.verify_no_errors()
