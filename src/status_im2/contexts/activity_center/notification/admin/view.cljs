@@ -37,7 +37,7 @@
       (case membership-status
         constants/activity-center-membership-status-pending
         {:button-1 {:label               (i18n/label :t/decline)
-                    :accessibility-label :decline-contact-request
+                    :accessibility-label :decline-join-request
                     :type                :danger
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/decline-request-to-join-pressed
@@ -45,7 +45,7 @@
                                            (rf/dispatch [:activity-center.notifications/mark-as-read
                                                          id]))}
          :button-2 {:label               (i18n/label :t/accept)
-                    :accessibility-label :accept-contact-request
+                    :accessibility-label :accept-join-request
                     :type                :positive
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/accept-request-to-join-pressed
