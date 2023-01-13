@@ -93,10 +93,7 @@
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets)}
      [rn/text
-      {:style {:color             colors/white
-               :align-self        :center
-               :margin-horizontal 20
-               :margin-vertical   12}} text]
+      {:style style/text-style} text]
      [rn/flat-list
       {:ref                     #(reset! small-list-ref %)
        :key-fn                  :message-id

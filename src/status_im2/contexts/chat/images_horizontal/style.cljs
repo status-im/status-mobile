@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.images-horizontal.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn container-view
   [padding-top]
@@ -36,3 +35,9 @@
    ;:height   (+ (:bottom insets) 65)
    :position :absolute
    :bottom   (:bottom insets)})
+
+(def text-style
+  {:color             colors/white
+   :align-self        :center
+   :margin-horizontal 20
+   :margin-vertical   12})
