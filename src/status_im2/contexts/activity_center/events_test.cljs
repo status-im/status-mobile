@@ -144,7 +144,7 @@
 ;;;; Acceptance/dismissal
 
 (deftest notification-acceptance-test
-  (testing "mark notification as accepted and read, then reconcile"
+  (testing "marks notification as accepted and read, then reconciles"
     (h/run-test-sync
      (setup)
      (let [notif-1     {:id "0x1" :type types/private-group-chat}
@@ -177,7 +177,7 @@
       :action          :notification/accept})))
 
 (deftest notification-dismissal-test
-  (testing "dismiss notification and remove from app db"
+  (testing "dismisses notification and removes from app db"
     (h/run-test-sync
      (setup)
      (let [notif-1 {:id "0x1" :type types/private-group-chat}
