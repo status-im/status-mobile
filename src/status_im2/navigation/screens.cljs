@@ -51,16 +51,18 @@
 
     {:name      :images-horizontal
      :insets    {:top false :bottom false}
-     :options   {:topBar     {:visible false}
-                 :statusBar  {:backgroundColor colors/black-persist
-                              :style           :light}
-                 :animations {:push {:sharedElementTransitions [{:fromId        :shared-element
-                                                                 :toId          :shared-element
-                                                                 :interpolation {:type :decelerate}}]}
-                              :pop  {:sharedElementTransitions [{:fromId        :shared-element
-                                                                 :toId          :shared-element
-                                                                 :interpolation {:type
-                                                                                 :decelerate}}]}}}
+     :options   {:topBar        {:visible false}
+                 :statusBar     {:backgroundColor colors/black-persist
+                                 :style           :light
+                                 :animate         true}
+                 :navigationBar {:backgroundColor colors/black-persist}
+                 :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
+                                                                    :toId          :shared-element
+                                                                    :interpolation {:type :decelerate}}]}
+                                 :pop  {:sharedElementTransitions [{:fromId        :shared-element
+                                                                    :toId          :shared-element
+                                                                    :interpolation {:type
+                                                                                    :decelerate}}]}}}
      :component images-horizontal/images-horizontal}
 
     {:name      :discover-communities

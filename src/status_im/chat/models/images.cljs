@@ -111,9 +111,18 @@
                     (-> (if end-cursor
                             (.getPhotos
                              CameraRoll
-                             #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
+                             #js
+                              {:first      num
+                               :after      end-cursor
+                               :assetType  "Photos"
+                               :groupTypes "All"
+                               :include    (clj->js ["imageSize"])})
                             (.getPhotos CameraRoll
-                                        #js {:first num :assetType "Photos" :groupTypes "All"}))
+                                        #js
+                                         {:first      num
+                                          :assetType  "Photos"
+                                          :groupTypes "All"
+                                          :include    (clj->js ["imageSize"])}))
                         (.then #(let [response (types/js->clj %)]
                                   (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
                                                       (:page_info response) end-cursor])))
