@@ -78,6 +78,7 @@
 
 (defn on-text-change
   [val chat-id]
+  (println "on=text-change" val)
   (swap! input-texts assoc chat-id val)
   ;;we still store it in app-db for mentions, we don't have reactions in views
   (rf/dispatch [:chat.ui/set-chat-input-text val]))
@@ -249,13 +250,12 @@
  (fn [[chat-id text local-text-input-ref]]
    (when local-text-input-ref
      (reset! text-input-ref local-text-input-ref))
+   (on-text-change text chat-id)
    (if platform/ios?
      (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))
-     (do
-       (on-text-change text chat-id)
-       (if (string/blank? text)
-         (.clear ^js (quo.react/current-ref @text-input-ref))
-         (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text})))))))
+     (if (string/blank? text)
+       (.clear ^js (quo.react/current-ref @text-input-ref))
+       (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))))))
 
 (defn calculate-input-text
   [{:keys [full-text selection-start selection-end]} content]
