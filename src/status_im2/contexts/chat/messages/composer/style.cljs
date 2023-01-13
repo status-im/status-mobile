@@ -19,7 +19,7 @@
             :shadow-opacity 1
             :shadow-color   "rgba(9, 16, 28, 0.04)"
             :shadow-offset  {:width 0 :height -2}}
-           {:elevation 2})))
+           {:elevation 4})))
 
 (defn bottom-sheet-handle
   []
