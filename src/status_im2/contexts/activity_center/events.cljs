@@ -278,7 +278,8 @@
 (rf/defn notifications-fetch
   [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
-    (let [per-page (or per-page (defaults :notifications-per-page))]
+    (let [per-page  (or per-page (defaults :notifications-per-page))
+          accepted? true]
       {:db            (assoc-in db
                        [:activity-center :notifications filter-type filter-status :loading?]
                        true)
@@ -287,7 +288,7 @@
                                      per-page
                                      (filter-type->rpc-param filter-type)
                                      (status filter-status)
-                                     true]
+                                     accepted?]
                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
                                                    filter-type filter-status reset-data? %])
                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
