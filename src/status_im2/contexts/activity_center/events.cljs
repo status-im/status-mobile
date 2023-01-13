@@ -269,6 +269,9 @@
     (coll? filter-type)
     filter-type
 
+    ;; A "no-type" notification shouldn't be sent to the backend. If, for
+    ;; instance, the mobile client needs notifications of any type (as in the
+    ;; `All` tab), then just don't filter by type at all.
     (= types/no-type filter-type)
     nil
 
