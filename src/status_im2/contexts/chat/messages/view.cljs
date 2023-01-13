@@ -12,7 +12,6 @@
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
             [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.contexts.chat.messages.style :as style]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]))
@@ -73,11 +72,10 @@
        [rn/keyboard-avoiding-view
         {:style                  {:position :relative :flex 1}
          :keyboardVerticalOffset (- (:bottom insets))}
-        [rn/view {:style (style/banners)}
-         [pin.banner/banner chat-id]
-         [not-implemented/not-implemented
-          [pin-limit-popover/pin-limit-popover chat-id]]]
         [page-nav]
+        [pin.banner/banner chat-id]
+        [not-implemented/not-implemented
+         [pin-limit-popover/pin-limit-popover chat-id]]
         [messages.list/messages-list {:chat chat :show-input? show-input?}]
         (cond (and (not show-input?)
                    contact-request-state)
