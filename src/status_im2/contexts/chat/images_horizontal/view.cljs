@@ -8,7 +8,12 @@
             [reagent.core :as reagent]
             [oops.core :as oops]
             [status-im2.contexts.chat.images-horizontal.style :as style]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [react-native.linear-gradient :as linear-gradient]))
+
+(def flat-list-ref (atom nil))
+(def small-list-ref (atom nil))
+(def small-image-size 40)
 
 (defn image
   [message]
@@ -27,10 +32,15 @@
   (let [window-width (:width (rn/get-window))]
     #js {:length window-width :offset (* window-width index) :index index}))
 
+(defn get-small-item-layout
+  [_ index]
+  #js {:length small-image-size :offset (* (+ small-image-size 8) index) :index index})
+
 (defn on-viewable-items-changed
   [e]
-  (rf/dispatch [:chat.ui/update-shared-element-id
-                (:message-id (oops/oget (first (oops/oget e "changed")) "item"))]))
+  (let [changed (-> e (oops/oget :changed) first)]
+    (.scrollToIndex ^js @small-list-ref #js {:animated true :index (oops/oget changed :index)})
+    (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oops/oget changed :item))])))
 
 (defn top-view
   [{:keys [from timestamp]} insets]
@@ -63,17 +73,54 @@
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
 
+
+
+(defn small-image
+  [item]
+  [fast-image/fast-image
+   {:source {:uri (:image (:content item))}
+    :style  {:width         small-image-size
+             :height        small-image-size
+             :border-radius 10}}])
+
+(defn bottom-view
+  [messages insets]
+  (let [text               (get-in (first messages) [:content :text])
+        padding-horizontal (- (/ (:width (rn/get-window)) 2) (/ small-image-size 2))]
+    [linear-gradient/linear-gradient
+     {:colors [:black :transparent]
+      :start  {:x 0 :y 1}
+      :end    {:x 0 :y 0}
+      :style  (style/gradient-container insets)}
+     [rn/text
+      {:style {:color             colors/white
+               :align-self        :center
+               :margin-horizontal 20
+               :margin-vertical   12}} text]
+     [rn/flat-list
+      {:ref                     #(reset! small-list-ref %)
+       :key-fn                  :message-id
+       :data                    messages
+       :render-fn               small-image
+       :horizontal              true
+       :get-item-layout         get-small-item-layout
+       :separator               [rn/view {:style {:width 8}}]
+       :content-container-style {:padding-vertical   12
+                                 :padding-horizontal padding-horizontal}}]]))
+
 (defn images-horizontal
   []
   (let [{:keys [messages index]} (rf/sub [:get-screen-params])
         ;; The initial value of data is the image that was pressed (and not the whole album) in order for
         ;; the transition animation to execute properly, otherwise it would animate towards outside the
         ;; screen (even if we have `initialScrollIndex` set).
-        data                     (reagent/atom [(nth messages index)])
-        flat-list-ref            (atom nil)]
+        data                     (reagent/atom [(nth messages index)])]
     (reset! data messages)
     ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
-    (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
+    (js/setTimeout #(do
+                      (.scrollToIndex ^js @flat-list-ref #js {:animated false :index index})
+                      (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
+                   0)
     [safe-area/consumer
      (fn [insets]
        [rn/view
@@ -87,7 +134,8 @@
           :horizontal                true
           :paging-enabled            true
           :get-item-layout           get-item-layout
-          :viewability-config        {:view-area-coverage-percent-threshold 95}
+          :viewability-config        {:view-area-coverage-percent-threshold 50}
           :on-viewable-items-changed on-viewable-items-changed
           :content-container-style   {:justify-content :center
-                                      :align-items     :center}}]])]))
+                                      :align-items     :center}}]
+        [bottom-view messages insets]])]))

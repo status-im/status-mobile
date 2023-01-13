@@ -62,49 +62,47 @@
         ;; album images are always square, except when we have 3 images, then they must be rectangular
         ;; (portrait or landscape)
         portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
-    (if (= images-count 1)
-      [image/image-message 0 (first (:album message))]
-      (if albumize?
-        [rn/view
-         {:style (style/album-container portrait?)}
-         (map-indexed
-          (fn [index item]
-            (let [images-size-key (if (< images-count max-display-count) images-count :default)
-                  size            (get-in constants/album-image-sizes [images-size-key index])
-                  dimensions      (if (not= images-count rectangular-style-count)
-                                    {:width size :height size}
-                                    (find-size size album-style))]
-              [rn/touchable-opacity
-               {:key            (:message-id item)
-                :active-opacity 1
-                :on-press       (fn []
-                                  (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
-                                  (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
-                                                                (:album message) index])
-                                                 100))}
-               [fast-image/fast-image
-                {:style     (merge
-                             (style/image dimensions index)
-                             {:border-top-left-radius     (border-tlr index)
-                              :border-top-right-radius    (border-trr index images-count album-style)
-                              :border-bottom-left-radius  (border-blr index images-count album-style)
-                              :border-bottom-right-radius (border-brr index images-count)})
-                 :source    {:uri (:image (:content item))}
-                 :native-ID (when (and (= shared-element-id (:message-id item))
-                                       (< index max-display-count))
-                              :shared-element)}]
-               (when (and (> images-count max-display-count) (= index (- max-display-count 1)))
-                 [rn/view
-                  {:style (merge style/overlay
-                                 {:border-bottom-right-radius (border-brr index images-count)})}
-                  [quo/text
-                   {:weight :bold
-                    :size   :heading-2
-                    :style  {:color colors/white}}
-                   (str "+" (- images-count (dec max-display-count)))]])]))
-          (:album message))]
-        [rn/view
-         (map-indexed
-          (fn [index item]
-            [image/image-message index item])
-          (:album message))]))))
+    (if (and albumize? (> images-count 1))
+      [rn/view
+       {:style (style/album-container portrait?)}
+       (map-indexed
+        (fn [index item]
+          (let [images-size-key (if (< images-count max-display-count) images-count :default)
+                size            (get-in constants/album-image-sizes [images-size-key index])
+                dimensions      (if (not= images-count rectangular-style-count)
+                                  {:width size :height size}
+                                  (find-size size album-style))]
+            [rn/touchable-opacity
+             {:key            (:message-id item)
+              :active-opacity 1
+              :on-press       (fn []
+                                (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
+                                (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
+                                                              (:album message) index])
+                                               100))}
+             [fast-image/fast-image
+              {:style     (merge
+                           (style/image dimensions index)
+                           {:border-top-left-radius     (border-tlr index)
+                            :border-top-right-radius    (border-trr index images-count album-style)
+                            :border-bottom-left-radius  (border-blr index images-count album-style)
+                            :border-bottom-right-radius (border-brr index images-count)})
+               :source    {:uri (:image (:content item))}
+               :native-ID (when (and (= shared-element-id (:message-id item))
+                                     (< index max-display-count))
+                            :shared-element)}]
+             (when (and (> images-count max-display-count) (= index (- max-display-count 1)))
+               [rn/view
+                {:style (merge style/overlay
+                               {:border-bottom-right-radius (border-brr index images-count)})}
+                [quo/text
+                 {:weight :bold
+                  :size   :heading-2
+                  :style  {:color colors/white}}
+                 (str "+" (- images-count (dec max-display-count)))]])]))
+        (:album message))]
+      [:<>
+       (map-indexed
+        (fn [index item]
+          [image/image-message index item])
+        (:album message))])))

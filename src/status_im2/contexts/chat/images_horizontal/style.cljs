@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.images-horizontal.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn container-view
   [padding-top]
@@ -28,3 +29,10 @@
   {:position       :absolute
    :right          20
    :flex-direction :row})
+
+(defn gradient-container
+  [insets]
+  {:width    "100%"
+   ;:height   (+ (:bottom insets) 65)
+   :position :absolute
+   :bottom   (:bottom insets)})
