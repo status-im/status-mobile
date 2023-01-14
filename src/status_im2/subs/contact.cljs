@@ -24,12 +24,6 @@
    (get multiaccount :profile-pictures-show-to)))
 
 (re-frame/reg-sub
- :mutual-contact-requests/enabled?
- :<- [:multiaccount]
- (fn [settings]
-   (boolean (:mutual-contact-enabled? settings))))
-
-(re-frame/reg-sub
  ::profile-pictures-visibility
  :<- [:multiaccount]
  (fn [multiaccount]
@@ -93,7 +87,7 @@
        vals)))
 
 (re-frame/reg-sub
- :contacts/add-members-sections
+ :contacts/grouped-by-first-letter
  :<- [:contacts/current-chat-contacts]
  :<- [:contacts/active]
  (fn [[members contacts]]

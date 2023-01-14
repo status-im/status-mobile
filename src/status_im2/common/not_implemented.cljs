@@ -3,5 +3,6 @@
 
 (defn not-implemented
   [content]
-  [rn/view {:border-color :red :border-width 1}
-   content])
+  (when content
+    [rn/view {:border-color :red :border-width 1}
+     content]))

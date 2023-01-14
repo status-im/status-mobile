@@ -27,7 +27,6 @@
    [status-im.ui.screens.home.styles :as styles]
    [status-im.ui.screens.home.views.inner-item :as inner-item]
    [status-im.utils.utils :as utils]
-   [status-im2.setup.config :as config]
    [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -152,9 +151,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if config/new-ui-enabled?
-                         (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-                         (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
@@ -169,9 +166,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if config/new-ui-enabled?
-                         (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-                         (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []

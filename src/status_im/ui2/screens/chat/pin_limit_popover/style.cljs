@@ -3,9 +3,8 @@
 
 (defn pin-popover
   [width]
-  {:position         :absolute
-   :width            (- width 16)
-   :left             8
+  {:width            (- width 16)
+   :margin-left      8
    :background-color (colors/theme-colors colors/neutral-80-opa-90 colors/white-opa-90)
    :flex-direction   :row
    :border-radius    16

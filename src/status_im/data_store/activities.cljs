@@ -40,7 +40,9 @@
       (set/rename-keys {:lastMessage               :last-message
                         :replyMessage              :reply-message
                         :chatId                    :chat-id
-                        :contactVerificationStatus :contact-verification-status})
+                        :contactVerificationStatus :contact-verification-status
+                        :communityId               :community-id
+                        :membershipStatus          :membership-status})
       (update :last-message #(when % (messages/<-rpc %)))
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))

@@ -12,12 +12,9 @@
                              cancelAnimation
                              SlideInUp
                              SlideOutUp
-                             LinearTransition
-                             enableLayoutAnimations)]
+                             LinearTransition)]
             [clojure.string :as string]
             [reagent.core :as reagent]))
-
-(enableLayoutAnimations true)
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
@@ -57,11 +54,13 @@
 ;; Helper functions
 (defn get-shared-value
   [anim]
-  (.-value anim))
+  (when anim
+    (.-value anim)))
 
 (defn set-shared-value
   [anim val]
-  (set! (.-value anim) val))
+  (when anim
+    (set! (.-value anim) val)))
 
 (defn kebab-case->camelCase
   [k]

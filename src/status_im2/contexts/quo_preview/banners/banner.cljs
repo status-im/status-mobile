@@ -12,16 +12,17 @@
    {:label "number of messages"
     :key   :pins-count
     :type  :text}
-   {:label "show pin icon?"
-    :key   :show-pin?
+   {:label "hide pin icon?"
+    :key   :hide-pin?
     :type  :boolean}
   ])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:show-pin?       true
-                             :pins-count      2
-                             :latest-pin-text "Be respectful of fellow community member..."})]
+  (let [state (reagent/atom
+               {:hide-pin?       false
+                :pins-count      2
+                :latest-pin-text "Be respectful of fellow community members, even if they"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

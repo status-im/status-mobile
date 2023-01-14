@@ -450,7 +450,7 @@
    [quo/text
     {:style  {:margin-top 6}
      :weight :bold
-     :size   :large}
+     :size   :heading-2}
     (i18n/label :t/contact-request)]
    [rn/view {:style {:padding-horizontal 16}}
     [quo/text

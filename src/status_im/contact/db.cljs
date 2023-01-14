@@ -86,8 +86,9 @@
   (get-in db [:contacts/contacts public-key]))
 
 (defn added?
-  ([contact]
-   (:added contact))
+  ([{:keys [contact-request-state]}]
+   (or (= constants/contact-request-state-mutual contact-request-state)
+       (= constants/contact-request-state-sent contact-request-state)))
   ([db public-key]
    (added? (get-in db [:contacts/contacts public-key]))))
 
@@ -98,27 +99,28 @@
    (blocked? (get-in db [:contacts/contacts public-key]))))
 
 (defn active?
-  "Checks that the user is added to the contact and not blocked"
+  "Checks that we are mutual contacts"
   ([contact]
-   (and (:added contact)
+   (and (= constants/contact-request-state-mutual
+           (:contact-request-state contact))
         (not (:blocked contact))))
   ([db public-key]
    (active? (get-in db [:contacts/contacts public-key]))))
 
 (defn enrich-contact
   ([contact] (enrich-contact contact nil nil))
-  ([{:keys [added public-key] :as contact} setting own-public-key]
+  ([{:keys [public-key] :as contact} setting own-public-key]
    (cond-> (-> contact
                (dissoc :ens-verified-at :ens-verification-retries)
                (assoc :blocked? (:blocked contact)
                       :active?  (active? contact)
-                      :added?   added)
+                      :added?   (added? contact))
                (multiaccounts/contact-with-names))
      (and setting
           (not= public-key own-public-key)
           (or (= setting constants/profile-pictures-visibility-none)
               (and (= setting constants/profile-pictures-visibility-contacts-only)
-                   (not added))))
+                   (not (added? contact)))))
      (dissoc :images))))
 
 (defn enrich-contacts

@@ -3,17 +3,26 @@
 
 
 (def container
-  {:width              "100%"
-   :height             50
-   :background-color   colors/primary-50-opa-20
-   :flex-direction     :row
-   :align-items        :center
-   :padding-horizontal 20
-   :padding-vertical   10})
+  {:height           40
+   :flex             1
+   :background-color colors/primary-50-opa-20
+   :flex-direction   :row
+   :align-items      :center
+   :padding-right    22
+   :padding-left     20
+   :padding-vertical 10})
 
 (def counter
-  {:padding-right   22
-   :height          20
-   :width           20
+  {:flex            1
    :justify-content :center
    :align-items     :center})
+
+(def icon
+  {:flex         1
+   :margin-right 10})
+
+(defn text
+  [hide-pin?]
+  {:flex         (if hide-pin? 16 15)
+   :margin-right 10})
+

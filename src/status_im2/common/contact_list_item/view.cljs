@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.address :as utils.address]
@@ -14,9 +13,7 @@
   (let [view-id (rf/sub [:view-id])]
     (when (= view-id :shell-stack)
       (rf/dispatch [:dismiss-keyboard])
-      (if platform/android?
-        (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-        (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+      (rf/dispatch [:chat.ui/show-profile chat-id])
       (rf/dispatch [:search/home-filter-changed nil]))))
 
 (defn action-icon
@@ -52,7 +49,7 @@
                                       (rf/dispatch [:deselect-member public-key true])))))}])]))
 
 (defn contact-list-item
-  [item _ _ {:keys [group start-a-new-chat? on-toggle] :as extra-data}]
+  [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name                                    (first (rf/sub
                                                                 [:contacts/contact-two-names-by-identity
@@ -71,9 +68,8 @@
        :on-press            #(if start-a-new-chat?
                                (on-toggle true user-selected? public-key)
                                (open-chat public-key))
-       :on-long-press       #(when (some? group)
-                               (rf/dispatch [:bottom-sheet/show-sheet
-                                             {:content (fn [] [actions/actions item extra-data])}]))})
+       :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                           {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar
       {:full-name         display-name
        :profile-picture   photo-path

@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm _install-hooks
+.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -118,10 +118,11 @@ _fix-node-perms: ##@prepare Fix permissions so that directory can be cleaned
 	$(shell test -d node_modules && chmod -R 744 node_modules)
 	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
 
-_tmpdir-mk: SHELL := /bin/sh
-_tmpdir-mk: ##@prepare Create a TMPDIR for temporary files
+$(TMPDIR): SHELL := /bin/sh
+$(TMPDIR): ##@prepare Create a TMPDIR for temporary files
 	@mkdir -p "$(TMPDIR)"
 # Make sure TMPDIR exists every time make is called
+_tmpdir-mk: $(TMPDIR)
 -include _tmpdir-mk
 
 _tmpdir-rm: SHELL := /bin/sh
@@ -154,7 +155,7 @@ pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile
 
 update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
 	curl -s https://fleets.status.im/ \
-		| jq --indent 4 --sort-keys . \
+		| sed 's/"warning": "/"warning": "DO NOT EDIT! /' \
 		> resources/config/fleets.json
 
 $(KEYSTORE_PATH): export TARGET := keytool
@@ -285,18 +286,24 @@ endif
 # Tests
 #--------------
 
+# Get all clojure files, including untracked, excluding removed
+define find_all_clojure_files
+$$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
+endef
+
 lint: export TARGET := default
 lint: ##@test Run code style checks
-	sh scripts/lint-re-frame-in-quo-components.sh && \
+	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
-	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
-	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILE
+	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES
 
+# NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := default
 lint-fix: ##@test Run code style checks and fix issues
-	ALL_CLOJURE_FILE=$$(git ls-files | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$) && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILE
+	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES
 
 
 shadow-server: export TARGET := clojure

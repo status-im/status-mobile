@@ -4,7 +4,8 @@
             [status-im.utils.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [clojure.string :as string]))
 
 (defn- add-custom-bootnodes
   [config network all-bootnodes]
@@ -107,14 +108,19 @@
   (get (fleets db)
        (current-fleet-key db)))
 
+(defn- wakuv2-enabled?
+  [fleet]
+  (let [ks (keys fleet)]
+    (some #(string/includes? (str %) "waku") ks)))
+
 (defn- get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
     :as   db}]
   (let [wakuv2-config (get multiaccount :wakuv2-config {})
         current-fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
-        wakuv2-enabled (boolean (:waku current-fleet))
-        waku-nodes (:waku-nodes current-fleet)
+        wakuv2-enabled (wakuv2-enabled? current-fleet)
+        waku-nodes (get config/waku-nodes-config current-fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
                 waku-bloom-filter-mode

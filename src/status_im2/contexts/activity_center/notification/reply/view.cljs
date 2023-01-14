@@ -38,7 +38,7 @@
     [rn/touchable-opacity
      {:on-press (fn []
                   (rf/dispatch [:hide-popover])
-                  (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
+                  (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]))}
      [quo/activity-log
       {:title     (i18n/label :t/message-reply)
        :icon      :i/reply

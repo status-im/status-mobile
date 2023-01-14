@@ -131,17 +131,10 @@
   [{:keys [chat
            pan-responder
            show-input?]}]
-  (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
-        mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])
-        messages (rf/sub [:chats/raw-chat-messages-stream chat-id])
-        one-to-one? (= chat-type constants/one-to-one-chat-type)
-        contact-added? (when one-to-one? (rf/sub [:contacts/contact-added? chat-id]))
-        should-send-contact-request?
-        (and
-         mutual-contact-requests-enabled?
-         one-to-one?
-         (not contact-added?))
-        bottom-space 15]
+  (let [{:keys [group-chat chat-id public? community-id admins]} chat
+        messages                                                 (rf/sub [:chats/raw-chat-messages-stream
+                                                                          chat-id])
+        bottom-space                                             15]
     [rn/view
      {:style {:flex 1}}
      ;;DO NOT use anonymous functions for handlers
@@ -152,7 +145,7 @@
         :ref                          list-ref
         :header                       [list-header chat]
         :footer                       [list-footer chat]
-        :data                         (when-not should-send-contact-request? messages)
+        :data                         messages
         :render-data                  (get-render-data {:group-chat      group-chat
                                                         :chat-id         chat-id
                                                         :public?         public?
@@ -181,7 +174,7 @@
      [quo/floating-shell-button
       (merge {:jump-to
               {:on-press #(do
-                            (rf/dispatch [:close-chat])
+                            (rf/dispatch [:close-chat true])
                             (rf/dispatch [:shell/navigate-to-jump-to]))
                :label    (i18n/label :t/jump-to)}}
              (when @show-floating-scroll-down-button
