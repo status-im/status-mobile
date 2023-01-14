@@ -98,7 +98,7 @@
            [rn/view {:style (style/chevron-container)}
             [quo/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
           [clear-button]
-          [rn/flat-list
+          [rn/flat-list-inside-gesture-handler
            {:key-fn                  identity
             :render-fn               image
             :render-data             {:window-width window-width}
