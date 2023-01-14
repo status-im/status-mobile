@@ -159,7 +159,9 @@
 (rf/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}
   [{:keys [db]} current-chat-id]
-  {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})})
+  {:db (-> db
+           (update-in [:chat/inputs current-chat-id :metadata] assoc :sending-image {})
+           (update-in [:chat/inputs current-chat-id :metadata] assoc :selected-photos))})
 
 (rf/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
@@ -175,13 +177,20 @@
 (rf/defn image-selected
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} current-chat-id original uri]
-  {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})})
+  {:db (-> db
+           (update-in [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})
+           (update-in [:chat/inputs current-chat-id :metadata :selected-photos] conj original))})
 
 (rf/defn image-unselected
   {:events [:chat.ui/image-unselected]}
   [{:keys [db]} original]
-  (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image] dissoc original)}))
+  (let [current-chat-id                (:current-chat-id db)
+        selected-photos-after-deletion (->> (rf/sub [:chats/selected-photos])
+                                            (remove #(= % original)))]
+    {:db (-> db
+             (update-in [:chat/inputs current-chat-id :metadata :sending-image] dissoc original)
+             (assoc-in [:chat/inputs current-chat-id :metadata :selected-photos]
+                       selected-photos-after-deletion))}))
 
 (rf/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}
