@@ -230,7 +230,6 @@ def pytest_runtest_makereport(item, call):
 
     is_sauce_env = item.config.getoption('env') == 'sauce'
     case_ids_set = item.config.getoption("run_testrail_ids")
-    in_run = str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set)
 
     def catch_error():
         error = report.longreprtext
@@ -244,7 +243,7 @@ def pytest_runtest_makereport(item, call):
         is_group = "xdist_group" in item.keywords._markers or "xdist_group" in item.parent.keywords._markers
         error_intro, error = 'Test setup failed:', ''
         final_error = '%s %s' % (error_intro, error)
-        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and in_run):
+        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
             if '[NOTRUN]' in report.wasxfail:
                 test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
                 test_suite_data.current_test.create_new_testrun()
@@ -276,7 +275,7 @@ def pytest_runtest_makereport(item, call):
         error = catch_error()
         if report.failed:
             current_test.testruns[-1].error = error
-        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and in_run):
+        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
             current_test.testruns[-1].xfail = report.wasxfail
             if error:
                 current_test.testruns[-1].error = '%s [[%s]]' % (error, report.wasxfail)

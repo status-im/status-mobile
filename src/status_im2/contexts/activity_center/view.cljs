@@ -5,6 +5,7 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
+            [status-im2.contexts.activity-center.notification.admin.view :as admin]
             [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
             [status-im2.contexts.activity-center.notification.contact-verification.view :as
              contact-verification]
@@ -111,6 +112,9 @@
 
      types/reply
      [reply/view notification]
+
+     types/admin
+     [admin/view notification]
 
      nil)])
 

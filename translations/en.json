@@ -124,6 +124,7 @@
     "can-not-add-yourself": "That's you, to start a chat choose someone else",
     "cancel": "Cancel",
     "cancel-keycard-setup": "Cancel Keycard setup",
+    "cancel-request-to-join": "Cancel request to join",
     "cannot-read-card": "Can't read card.\nPlease hold it to the back of your phone",
     "cannot-use-default-pin": "Passcode 000000 is not allowed.\nPlease use another number",
     "card-is-blank": "This card is blank",
@@ -1372,6 +1373,7 @@
     "view-details": "View Details",
     "view-signing": "View signing phrase",
     "view-superrare": "View in SuperRare",
+    "view-token-gating": "View token gating",
     "vote-to-feature": "Vote to feature this community",
     "waiting-for-wifi": "No Wi-fi, message syncing disabled.",
     "waiting-for-wifi-change": "Settings",
@@ -1937,5 +1939,7 @@
     "selected-count-from-max": "{{selected}}/{{max}}",
     "online": "Online",
     "contact-request-chat-pending": "Your contact request is pending",
-    "contact-request-chat-add": "Add {{name}} to send a message"
+    "contact-request-chat-add": "Add {{name}} to send a message",
+    "join-request": "Join request",
+    "wants-to-join": "wants to join"
 }

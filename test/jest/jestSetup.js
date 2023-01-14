@@ -29,7 +29,10 @@ jest.mock('react-native-languages', () => ({
         language: 'en',
         languages: ['en'],
     },
-    default: {},
+    default: {
+        language: 'en',
+        locale: 'en'
+    },
 }));
 
 NativeModules.ReactLocalization = {
