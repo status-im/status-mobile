@@ -10,13 +10,11 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]))
+            [utils.re-frame :as rf]))
 
 (def bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
 
-(def animation-delay 450)
-
-(defn with-animation
+(defn- with-animation
   [value & [options callback]]
   (reanimated/with-spring
    value
@@ -26,20 +24,6 @@
             options)
    callback))
 
-(def content-height (reagent/atom nil))
-(def show-bottom-sheet? (reagent/atom nil))
-(def keyboard-was-shown? (reagent/atom false))
-(def expanded? (reagent/atom false))
-(def gesture-running? (reagent/atom false))
-
-(defn reset-atoms
-  []
-  (reset! show-bottom-sheet? nil)
-  (reset! content-height nil)
-  (reset! expanded? false)
-  (reset! keyboard-was-shown? false)
-  (reset! gesture-running? false))
-
 (defn get-bottom-sheet-gesture
   [pan-y translate-y bg-height bg-height-expanded
    window-height keyboard-shown disable-drag? expandable?
@@ -47,16 +31,16 @@
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
-         (reset! gesture-running? true)
+         (rf/dispatch [:bottom-sheet/gesture-running? true])
          (when (and keyboard-shown (not disable-drag?) show-bottom-sheet?)
            (re-frame/dispatch [:dismiss-keyboard]))))
       (gesture/on-update
        (fn [evt]
          (when (and (not disable-drag?) show-bottom-sheet?)
-           (let [max-pan-up   (if (or @expanded? (not expandable?))
+           (let [max-pan-up   (if (or expanded? (not expandable?))
                                 0
                                 (- (- bg-height-expanded bg-height)))
-                 max-pan-down (if @expanded?
+                 max-pan-down (if expanded?
                                 bg-height-expanded
                                 bg-height)]
              (reanimated/set-shared-value pan-y
@@ -67,21 +51,21 @@
                                            max-pan-up))))))
       (gesture/on-end
        (fn [_]
-         (reset! gesture-running? false)
+         (rf/dispatch [:bottom-sheet/gesture-running? false])
          (when (and (not disable-drag?) show-bottom-sheet?)
            (let [end-pan-y                  (- window-height (.-value translate-y))
-                 expand-threshold           (min (* bg-height * 1.1) (+ bg-height 50))
-                 collapse-threshold         (max (* bg-height-expanded * 0.9) (- bg-height-expanded 50))
+                 expand-threshold           (min (* bg-height 1.1) (+ bg-height 50))
+                 collapse-threshold         (max (* bg-height-expanded 0.9) (- bg-height-expanded 50))
                  should-close-bottom-sheet? (< end-pan-y (max (* bg-height 0.7) 50))]
              (cond
                should-close-bottom-sheet?
                (close-bottom-sheet)
 
-               (and (not @expanded?) (> end-pan-y expand-threshold))
-               (reset! expanded? true)
+               (and (not expanded?) (> end-pan-y expand-threshold))
+               (rf/dispatch [:bottom-sheet/did-expand true])
 
-               (and @expanded? (< end-pan-y collapse-threshold))
-               (reset! expanded? false))))))))
+               (and expanded? (< end-pan-y collapse-threshold))
+               (rf/dispatch [:bottom-sheet/did-expand false]))))))))
 
 (defn handle-comp
   [window-width]
@@ -106,14 +90,7 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
-        close-bottom-sheet (fn []
-                             (reset! show-bottom-sheet? false)
-                             (when (fn? on-cancel) (on-cancel))
-                             (timer/set-timeout
-                              #(do
-                                 (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
-                                 (reset-atoms))
-                              animation-delay))]
+        close-bottom-sheet #(re-frame/dispatch-sync [:dismiss-bottom-sheet on-cancel])]
     [safe-area/consumer
      (fn [insets]
        [:f>
@@ -124,7 +101,10 @@
                 window-height (if selected-item (- height 72) height)
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
-                bg-height (max (min @content-height bg-height-expanded) 200)
+                {:keys [content-height show-bottom-sheet? keyboard-was-shown? expanded? gesture-running?
+                        animation-delay]}
+                (rf/sub [:bottom-sheet/config])
+                bg-height (max (min content-height bg-height-expanded) 150)
                 bottom-sheet-dy (reanimated/use-shared-value 0)
                 pan-y (reanimated/use-shared-value 0)
                 translate-y (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y)
@@ -132,7 +112,7 @@
                 (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height)
                 on-content-layout (fn [evt]
                                     (let [height (oget evt "nativeEvent" "layout" "height")]
-                                      (reset! content-height height)))
+                                      (rf/dispatch [:bottom-sheet/update-height height])))
                 on-expanded (fn []
                               (reanimated/set-shared-value bottom-sheet-dy bg-height-expanded)
                               (reanimated/set-shared-value pan-y 0))
@@ -157,30 +137,30 @@
             (react/effect! #(do
                               (cond
                                 (and
-                                 (nil? @show-bottom-sheet?)
+                                 (nil? show-bottom-sheet?)
                                  visible?
-                                 (some? @content-height)
-                                 (> @content-height 0))
-                                (reset! show-bottom-sheet? true)
+                                 (some? content-height)
+                                 (> content-height 0))
+                                (rf/dispatch [:bottom-sheet/show-quo2-bottom-sheet true])
 
-                                (and @show-bottom-sheet? (not visible?))
+                                (and show-bottom-sheet? (not visible?))
                                 (close-bottom-sheet)))
-                           [@show-bottom-sheet? @content-height visible?])
+                           [show-bottom-sheet? content-height visible?])
             (react/effect! #(do
-                              (when @show-bottom-sheet?
+                              (when show-bottom-sheet?
                                 (cond
                                   keyboard-shown
                                   (do
-                                    (reset! keyboard-was-shown? true)
-                                    (reset! expanded? true))
-                                  (and @keyboard-was-shown? (not keyboard-shown))
-                                  (reset! expanded? false))))
-                           [@show-bottom-sheet? @keyboard-was-shown?])
+                                    (rf/dispatch [:bottom-sheet/show-quo2-bottom-sheet true])
+                                    (rf/dispatch [:bottom-sheet/did-expand true]))
+                                  (and keyboard-was-shown? (not keyboard-shown))
+                                  (rf/dispatch [:bottom-sheet/did-expand false]))))
+                           [show-bottom-sheet? keyboard-was-shown?])
             (react/effect! #(do
-                              (when-not @gesture-running?
+                              (when-not gesture-running?
                                 (cond
-                                  @show-bottom-sheet?
-                                  (if @expanded?
+                                  show-bottom-sheet?
+                                  (if expanded?
                                     (do
                                       (reanimated/set-shared-value
                                        bottom-sheet-dy
@@ -190,7 +170,7 @@
                                       ;; withTiming/withSpring callback not working
                                       ;; on-expanded should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-expanded animation-delay))
+                                      (timer/set-timeout on-expanded (or animation-delay 450)))
                                     (do
                                       (reanimated/set-shared-value
                                        bottom-sheet-dy
@@ -200,11 +180,11 @@
                                       ;; withTiming/withSpring callback not working
                                       ;; on-collapsed should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-collapsed animation-delay)))
+                                      (timer/set-timeout on-collapsed (or animation-delay 450))))
 
-                                  (= @show-bottom-sheet? false)
+                                  (= show-bottom-sheet? false)
                                   (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
-                           [@show-bottom-sheet? @expanded? @gesture-running?])
+                           [show-bottom-sheet? expanded? gesture-running?])
 
             [:<>
              [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}

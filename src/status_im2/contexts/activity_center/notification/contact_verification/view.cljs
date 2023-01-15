@@ -9,8 +9,8 @@
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch [:dismiss-keyboard])
+  (rf/dispatch [:dismiss-bottom-sheet])
+  (re-frame/dispatch-sync [:dismiss-keyboard])
   (rf/dispatch event))
 
 (defn- context-tags

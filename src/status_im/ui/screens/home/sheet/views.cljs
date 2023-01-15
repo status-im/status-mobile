@@ -9,11 +9,12 @@
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im2.config :as config]
             [quo2.core :as quo2]
-            [status-im.ui.screens.home.sheet.styles :as style]))
+            [status-im.ui.screens.home.sheet.styles :as style]
+            [react-native.background-timer :as timer]))
 
-(defn hide-sheet-and-dispatch
+(defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch-sync [:dismiss-bottom-sheet])
   (rf/dispatch event))
 
 (defn add-new-view
@@ -28,7 +29,7 @@
      {:type                :icon
       :theme               :icon
       :accessibility-label :universal-qr-scanner
-      :on-press            #(hide-sheet-and-dispatch
+      :on-press            #(rf/dispatch
                              [::qr-scanner/scan-code
                               {:handler ::qr-scanner/on-scan-success}])}
      :main-icons/qr]]
@@ -51,13 +52,13 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
-   (when @(rf/subscribe [:communities/enabled?])
+   (when (rf/sub [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)
        :accessibility-label :communities-button
        :icon                :main-icons/communities
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
+       :on-press            #(rf/dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 

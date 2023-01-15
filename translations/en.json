@@ -1499,7 +1499,7 @@
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
     "add-a-contact": "Add a contact",
-    "enter-a-chat-key": "Enter a chat key or scan a QR",
+    "enter-a-chat-key": "Add a chatkey or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",
@@ -1952,5 +1952,8 @@
     "join-one-user": "Join {{user}}",
     "join-two-users": "Join {{user1}} and {{user2}}",
     "join-more-users": "Join {{user1}}, {{user2}} and {{left-count}} more",
-    "wants-to-join": "wants to join"
+    "wants-to-join": "wants to join",
+    "connect-with-users": "Connect with users",
+    "invite-friends-and-family": "Invite your friends and family to Status",
+    "you-have-no-contacts": "You have no contacts"
 }

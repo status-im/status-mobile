@@ -51,15 +51,19 @@
        :id       (if pinned :unpin :pin)}])
    (when-not pinned
      [{:type     :danger
-       :on-press #(rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                constants/delete-message-for-me-undo-time-limit-ms])
+       :on-press #(do
+                    (rf/dispatch-sync [:dismiss-bottom-sheet])
+                    (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                                  constants/delete-message-for-me-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
-       :on-press #(rf/dispatch [:chat.ui/delete-message message-data
-                                constants/delete-message-undo-time-limit-ms])
+       :on-press #(do
+                    (rf/dispatch-sync [:dismiss-bottom-sheet])
+                    (rf/dispatch [:chat.ui/delete-message message-data
+                                  constants/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))
@@ -72,7 +76,7 @@
        :emoji-reaction-id))
 
 (defn reactions
-  [chat-id message-id]
+  [{:keys [chat-id message-id]}]
   (let [reactions     (rf/sub [:chats/message-reactions message-id chat-id])
         own-reactions (reduce (fn [acc {:keys [emoji-id own emoji-reaction-id]}]
                                 (if own
@@ -107,7 +111,7 @@
                                        (rf/dispatch [:models.reactions/send-emoji-reaction
                                                      {:message-id message-id
                                                       :emoji-id   id}]))
-                                     (rf/dispatch [:bottom-sheet/hide]))})
+                                     (rf/dispatch-sync [:dismiss-bottom-sheet]))})
             icon]])))]))
 
 (defn reactions-and-actions
@@ -119,7 +123,7 @@
           admin-actions  (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
-       [reactions chat-id message-id]
+       [reactions {:chat-id chat-id :message-id message-id}]
 
        ;; MAIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}
@@ -133,7 +137,7 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:bottom-sheet/hide]))}]))
+                                      (rf/dispatch-sync [:dismiss-bottom-sheet]))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
 
@@ -148,7 +152,7 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:bottom-sheet/hide]))}]))
+                                      (rf/dispatch-sync [:dismiss-bottom-sheet]))}]))
         (when-not (empty? admin-actions)
           [quo/separator])
 
@@ -163,4 +167,4 @@
               :icon                (:icon action)
               :on-press            #(do
                                       (when on-press (on-press))
-                                      (rf/dispatch [:bottom-sheet/hide]))}]))]])))
+                                      (rf/dispatch-sync [:dismiss-bottom-sheet]))}]))]])))

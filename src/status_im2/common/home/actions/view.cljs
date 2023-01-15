@@ -23,8 +23,11 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch event))
+  (let [{:keys [animation-delay]} (rf/sub [:bottom-sheet/config])]
+    (rf/dispatch-sync [:dismiss-bottom-sheet])
+    (timer/set-timeout (fn []
+                         (rf/dispatch event))
+                       (or animation-delay 450))))
 
 (defn show-profile-action
   [chat-id]
