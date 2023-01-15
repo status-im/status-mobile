@@ -10,7 +10,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.multiaccounts.sheets :as sheets]
             [status-im.ui.screens.multiaccounts.styles :as styles]
             [utils.security.core :as security]))
 

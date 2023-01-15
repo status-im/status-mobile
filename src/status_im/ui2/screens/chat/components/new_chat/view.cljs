@@ -38,7 +38,7 @@
    {:style {:justify-content :center
             :align-items     :center
             :margin-top      120}}
-   [quo2/icon :i/no-contacts
+   [quo2/icon (if quo2.colors/dark? :i/no-contacts-dark :i/no-contacts)
     {:size     120
      :no-color true}]
    [text/text
