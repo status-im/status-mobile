@@ -1494,7 +1494,7 @@
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
     "add-a-contact": "Add a contact",
-    "enter-a-chat-key": "Enter a chat key or scan a QR",
+    "enter-a-chat-key": "Add a chatkey or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",
@@ -1941,5 +1941,8 @@
     "contact-request-chat-pending": "Your contact request is pending",
     "contact-request-chat-add": "Add {{name}} to send a message",
     "join-request": "Join request",
-    "wants-to-join": "wants to join"
+    "wants-to-join": "wants to join",
+    "connect-with-users": "Connect with users",
+    "invite-friends-and-family": "Invite your friends and family to Status",
+    "you-have-no-contacts": "You have no contacts"
 }
