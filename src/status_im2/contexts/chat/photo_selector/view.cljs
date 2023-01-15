@@ -6,7 +6,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
-            [reagent.core :as reagent]
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
             [quo.react]
