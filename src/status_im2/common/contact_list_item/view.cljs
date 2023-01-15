@@ -6,7 +6,8 @@
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.address :as utils.address]
             [utils.re-frame :as rf]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo.react :as react]))
 
 (defn open-chat
   [chat-id]
@@ -25,28 +26,36 @@
         admin?                    (get admins current-pk)
         checked?                  (reagent/atom (if start-a-new-chat?
                                                   user-selected?
-                                                  member?))]
-    [rn/touchable-opacity
-     {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                               {:content (fn [] [actions/actions item extra-data])}])
-      :style    {:position :absolute
-                 :right    20}}
-     (if (= icon :options)
-       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-       [quo/checkbox
-        {:default-checked?    @checked?
-         :accessibility-label :contact-toggle-check
-         :disabled?           (and member? (not admin?))
-         :on-change           (fn [selected]
-                                (if start-a-new-chat?
-                                  (on-toggle true @checked? public-key)
-                                  (if-not member?
-                                    (if selected
-                                      (rf/dispatch [:select-participant public-key true])
-                                      (rf/dispatch [:deselect-participant public-key true]))
-                                    (if selected
-                                      (rf/dispatch [:undo-deselect-member public-key true])
-                                      (rf/dispatch [:deselect-member public-key true])))))}])]))
+                                                  member?))
+        on-check                  (fn [selected]
+                                    (if start-a-new-chat?
+                                      (on-toggle true @checked? public-key)
+                                      (if-not member?
+                                        (if selected
+                                          (rf/dispatch [:select-participant public-key true])
+                                          (rf/dispatch [:deselect-participant public-key true]))
+                                        (if selected
+                                          (rf/dispatch [:undo-deselect-member public-key true])
+                                          (rf/dispatch [:deselect-member public-key true])))))]
+    [:f>
+     (fn []
+       [rn/touchable-opacity
+        {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                  {:content (fn [] [actions/actions item extra-data])}])
+         :style    {:position :absolute
+                    :right    20}}
+        (if (= icon :options)
+          [quo/icon :i/options
+           {:size  20
+            :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+          (react/use-memo
+           (fn []
+             [quo/checkbox
+              {:default-checked?    @checked?
+               :accessibility-label :contact-toggle-check
+               :disabled?           (and member? (not admin?))
+               :on-change           on-check}])
+           [checked?]))])]))
 
 (defn contact-list-item
   [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
