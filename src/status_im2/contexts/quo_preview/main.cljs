@@ -45,6 +45,7 @@
    [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
    [status-im2.contexts.quo-preview.notifications.toast :as toast]
    [status-im2.contexts.quo-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
+   [status-im2.contexts.quo-preview.profile.collectible :as collectible]
    [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
    [status-im2.contexts.quo-preview.reactions.react :as react]
    [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
@@ -178,7 +179,10 @@
                             :component messages-skeleton/preview-messages-skeleton}]
    :profile               [{:name      :profile-card
                             :insets    {:top false}
-                            :component profile-card/preview-profile-card}]
+                            :component profile-card/preview-profile-card}
+                           {:name      :collectible
+                            :insets    {:top false}
+                            :component collectible/preview-collectible}]
    :reactions             [{:name      :react
                             :insets    {:top false}
                             :component react/preview-react}]
