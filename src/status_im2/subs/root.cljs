@@ -107,7 +107,6 @@
 (reg-root-key-sub :camera-roll/end-cursor :camera-roll/end-cursor)
 (reg-root-key-sub :camera-roll/has-next-page :camera-roll/has-next-page)
 (reg-root-key-sub :camera-roll/loading-more :camera-roll/loading-more)
-(reg-root-key-sub :camera-roll/selected-photos :camera-roll/selected-photos)
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
