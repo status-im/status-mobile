@@ -14,7 +14,7 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch-sync [:dismiss-bottom-sheet])
+  (rf/dispatch [:dismiss-bottom-sheet])
   (rf/dispatch event))
 
 (defn add-new-view

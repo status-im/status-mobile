@@ -90,7 +90,7 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
-        close-bottom-sheet #(re-frame/dispatch-sync [:dismiss-bottom-sheet on-cancel])]
+        close-bottom-sheet #(re-frame/dispatch [:dismiss-bottom-sheet on-cancel])]
     [safe-area/consumer
      (fn [insets]
        [:f>

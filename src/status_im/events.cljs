@@ -333,17 +333,17 @@
                :keyboard-was-shown? false
                :expanded?           false
                :gesture-running?    false
-               :animation-delay     450})})
+               :animation-delay     500})})
 
 (re-frame/reg-fx
  :dismiss-bottom-sheet-fx
  (fn [[on-cancel animation-delay]]
    (re-frame/dispatch [:bottom-sheet/show-quo2-bottom-sheet false])
-   (when (fn? on-cancel) (on-cancel))
    (timer/set-timeout
     (fn []
       (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
-      (re-frame/dispatch [:bottom-sheet/reset]))
+      (re-frame/dispatch [:bottom-sheet/reset])
+      (when (fn? on-cancel) (on-cancel)))
     (or animation-delay 450))))
 
 (rf/defn dismiss-bottom-sheet

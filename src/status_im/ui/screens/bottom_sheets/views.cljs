@@ -15,7 +15,7 @@
 
 (defn bottom-sheet
   []
-  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch-sync [:dismiss-bottom-sheet])
+  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch [:dismiss-bottom-sheet])
         {:keys [show-bottom-sheet?]} @(re-frame/subscribe [:bottom-sheet/config])
         {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
