@@ -80,22 +80,16 @@
               (popover/show-popover {:view             :password-reset-popover
                                      :prevent-closing? true}))))
 
-(defn handle-verification
-  [form-vals result]
-  (let [{:keys [error]} (types/json->clj result)]
-    (if (not (string/blank? error))
-      (re-frame/dispatch [::handle-verification-error :t/wrong-password])
-      (re-frame/dispatch [::handle-verification-success form-vals]))))
-
 (re-frame/reg-fx
  ::validate-current-password-and-reset
  (fn [{:keys [address current-password] :as form-vals}]
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data current-password))]
      (status/verify address
                     hashed-pass
-                    (partial handle-verification form-vals)
-                    (fn [error-message]
-                      (log/debug "error while status/verify" error-message))))))
+                    (fn [_]
+                      (re-frame/dispatch [::handle-verification-success form-vals]))
+                    (fn [_]
+                      (re-frame/dispatch [::handle-verification-error :t/wrong-password]))))))
 
 (rf/defn reset
   {:events [::reset]}

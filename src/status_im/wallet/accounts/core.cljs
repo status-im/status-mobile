@@ -130,7 +130,7 @@
     hashed-password
     #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password])
     (fn [error-message]
-      (log/debug "error while status/verify" error-message)))))
+      (re-frame/dispatch [::new-account-error :password-error error-message])))))
 
 (re-frame/reg-fx
  ::generate-account
@@ -250,16 +250,13 @@
 (rf/defn add-new-account-password-verifyied
   {:events [:wallet.accounts/add-new-account-password-verifyied]}
   [{:keys [db] :as cofx} result hashed-password]
-  (let [{:keys [error]} (types/json->clj result)]
-    (if (not (string/blank? error))
-      (new-account-error cofx :password-error error)
-      (let [{:keys [type seed private-key]} (:add-account db)]
-        (case type
-          :seed
-          (import-new-account-seed cofx seed hashed-password)
-          :key
-          (import-new-account-private-key cofx private-key hashed-password)
-          nil)))))
+  (let [{:keys [type seed private-key]} (:add-account db)]
+    (case type
+      :seed
+      (import-new-account-seed cofx seed hashed-password)
+      :key
+      (import-new-account-private-key cofx private-key hashed-password)
+      nil)))
 
 (rf/defn add-new-account-verify-password
   [{:keys [db]} hashed-password]

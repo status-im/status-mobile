@@ -5,7 +5,6 @@
             [i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
 
@@ -24,20 +23,15 @@
      (status/verify
       address
       hashed-password
-      (fn [result]
-        (let [{:keys [error]} (types/json->clj result)]
-          (log/info "[delete-profile] verify-password" result error)
-          (if-not (safe-blank? error)
-            (callback :wrong-password nil)
-            (status/delete-multiaccount
-             key-uid
-             (fn [result]
-               (let [{:keys [error]} (types/json->clj result)]
-                 (callback error nil)))
-             (fn [error-message]
-               (log/debug "error while status/delete-multiaccount" error-message))))))
-      (fn [error-message]
-        (log/debug "error while status/verify" error-message))))))
+      (fn [_]
+        (status/delete-multiaccount
+         key-uid
+         (fn [_]
+           (log/debug "status/delete-multiaccount succeeded"))
+         (fn [error-message]
+           (callback error-message nil))))
+      (fn [_]
+        (callback :wrong-password nil))))))
 
 (rf/defn delete-profile
   {:events [::delete-profile]}
