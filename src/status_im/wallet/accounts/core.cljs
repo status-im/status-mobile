@@ -94,7 +94,8 @@
                       {:address    address
                        :public-key publicKey
                        :type       type
-                       :path       (normalize-path path)}])))
+                       :path       (normalize-path path)}])
+                    ))
                 (fn [error-message]
                   (re-frame/dispatch [::new-account-error :account-error error-message]))))))
          (fn [error-message]

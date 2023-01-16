@@ -1,6 +1,7 @@
 (ns status-im.keycard.real-keycard
   (:require ["react-native" :as rn]
             ["react-native-status-keycard" :default status-keycard]
+            [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
             [status-im.native-module.core :as status]
@@ -313,10 +314,10 @@
   (status/send-transaction-with-signature transaction signature on-completed on-error))
 
 (defn delete-multiaccount-before-migration
-  [{:keys [key-uid on-success]}]
+  [{:keys [key-uid on-success on-error]}]
   (status/delete-multiaccount
    key-uid
-   (fn [_]
+   (fn [result]
      (on-success))
    (fn [error-message]
      (log/debug "error while status/delete-multiaccount" error-message))))
