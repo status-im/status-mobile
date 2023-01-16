@@ -23,7 +23,7 @@
    [status-im.ui.screens.chat.styles.message.message :as style]
    [status-im.ui.screens.chat.utils :as chat.utils]
    [status-im.ui.screens.communities.icon :as communities.icon]
-   [status-im.ui2.screens.chat.components.reply :as components.reply]
+   [status-im.ui2.screens.chat.components.reply.view :as components.reply]
    [status-im.utils.config :as config]
    [utils.datetime :as datetime]
    [status-im.utils.utils :as utils]

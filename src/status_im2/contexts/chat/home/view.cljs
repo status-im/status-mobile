@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.ui2.screens.common.contact-list.view :as contact-list]
+            [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]

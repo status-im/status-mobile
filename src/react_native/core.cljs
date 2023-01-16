@@ -1,6 +1,5 @@
 (ns react-native.core
-  (:require ["@react-native-community/blur" :as blur]
-            ["react" :as react]
+  (:require ["react" :as react]
             ["react-native" :as react-native]
             [cljs-bean.core :as bean]
             [oops.core :as oops]
@@ -10,7 +9,6 @@
             [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
-(def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
@@ -90,13 +88,22 @@
                 props)]
         children))
 
-(defn use-effect
-  ([effect] (use-effect effect []))
-  ([effect deps]
-   (react/useEffect effect (bean/->js deps))))
+(def create-ref react/createRef)
 
 (def use-ref react/useRef)
-(defn use-effect-once [effect] (use-effect effect))
+
+(defn use-effect
+  ([effect-fn]
+   (react/useEffect
+    #(let [ret (effect-fn)]
+       (if (fn? ret) ret js/undefined))))
+  ([effect-fn deps]
+   (react/useEffect effect-fn (bean/->js deps))))
+
+(defn use-effect-once
+  [effect-fn]
+  (use-effect effect-fn))
+
 (defn use-unmount
   [f]
   (let [fn-ref (use-ref f)]

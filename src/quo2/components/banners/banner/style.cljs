@@ -4,7 +4,6 @@
 
 (def container
   {:height           40
-   :flex             1
    :background-color colors/primary-50-opa-20
    :flex-direction   :row
    :align-items      :center

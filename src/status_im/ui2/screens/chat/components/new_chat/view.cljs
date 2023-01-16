@@ -10,7 +10,7 @@
             [utils.re-frame :as rf]
             [status-im.ui.screens.chat.sheets :refer [hide-sheet-and-dispatch]]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui2.screens.common.contact-list.view :as contact-list]
+            [status-im2.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]))

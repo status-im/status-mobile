@@ -4,8 +4,8 @@
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.constants :as shell.constants] ;;TODO remove when not used anymore
-  ))
+            [status-im2.contexts.shell.constants :as shell.constants])) ;;TODO remove when not used anymore
+
 
 ;; Atoms
 (def selected-stack-id (atom nil))

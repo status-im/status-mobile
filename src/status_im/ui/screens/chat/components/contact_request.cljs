@@ -53,7 +53,7 @@
 
 (defn contact-request-message
   [their-public-key]
-  (let [{:keys [input-text]} @(re-frame/subscribe [:chats/current-chat-inputs])]
+  (let [{:keys [input-text]} @(re-frame/subscribe [:chats/current-chat-input])]
     [rn/view {:style {:flex-direction :row}}
      [rn/view {:style (styles/contact-request-content)}
       [quo/button

@@ -2,19 +2,19 @@
   (:require [quo2.core :as quo]
             [re-frame.db]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im.ui2.screens.chat.composer.view :as composer]
-            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
+            [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.common.constants :as constants]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
-            [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner] ;;TODO move to status-im2
+            [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
+            [status-im2.common.not-implemented :as not-implemented]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]
-            [status-im2.common.not-implemented :as not-implemented]
-            [quo2.foundations.colors :as colors]))
+            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]))
 
 (defn navigate-back-handler
   []
@@ -64,30 +64,25 @@
 
 (defn chat-render
   []
-  (let [{:keys [chat-id
-                contact-request-state
-                show-input?]
-         :as   chat}
+  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
+        {:keys [chat-id contact-request-state show-input?] :as chat}
         (rf/sub [:chats/current-chat-chat-view])]
-    [rn/keyboard-avoiding-view {:style {:position :relative :flex 1}}
-     [rn/view
-      {:style {:position         :absolute
-               :top              56
-               :z-index          2
-               :background-color (colors/theme-colors colors/white colors/neutral-100)
-               :width            "100%"}}
+    [safe-area/consumer
+     (fn [insets]
+       [rn/keyboard-avoiding-view
+        {:style                  {:position :relative :flex 1}
+         :keyboardVerticalOffset (- (:bottom insets))}
+        [page-nav]
+        [pin.banner/banner chat-id]
+        [not-implemented/not-implemented
+         [pin-limit-popover/pin-limit-popover chat-id]]
+        [messages.list/messages-list {:chat chat :show-input? show-input?}]
+        (cond (and (not show-input?)
+                   contact-request-state)
+              [contact-requests.bottom-drawer/view chat-id contact-request-state]
 
-      [pin.banner/banner chat-id]
-      [not-implemented/not-implemented
-       [pin-limit-popover/pin-limit-popover chat-id]]]
-     [page-nav]
-     [messages.list/messages-list {:chat chat :show-input? show-input?}]
-     (cond (and (not show-input?)
-                contact-request-state)
-           [contact-requests.bottom-drawer/view chat-id contact-request-state]
-
-           show-input?
-           [composer/composer chat-id])]))
+              show-input?
+              [composer/composer chat-id insets])])]))
 
 (defn chat
   []

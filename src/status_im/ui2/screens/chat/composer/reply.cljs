@@ -1,6 +1,6 @@
 (ns status-im.ui2.screens.chat.composer.reply
   (:require [quo.react-native :as rn]
-            [status-im.ui2.screens.chat.components.reply :as reply]
+            [status-im.ui2.screens.chat.components.reply.view :as reply]
             [status-im.ui2.screens.chat.composer.input :as input]))
 
 (defn focus-input-on-reply

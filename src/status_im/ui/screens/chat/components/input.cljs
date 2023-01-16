@@ -212,7 +212,7 @@
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui.input/set-chat-input-text]}
-  [{:keys [db] :as cofx} text chat-id]
+  [{:keys [db]} text chat-id]
   (let [text-with-mentions   (mentions/->input-field text)
         all-contacts         (:contacts/contacts db)
         chat                 (get-in db [:chats chat-id])
