@@ -301,7 +301,10 @@
                 (status/delete-multiaccount
                  key-uid
                  (fn [result]
-                   (on-deletion-success))
+                   (let [{:keys [error]} (types/json->clj result)]
+                     (if-not (string/blank? error)
+                       (log/error error)
+                       (on-deletion-success))))
                  (fn [error-message]
                    (log/debug "error while status/delete-multiaccount" error-message))))
               (fn [cb] (cb)))]
@@ -407,7 +410,9 @@
        wallet-root-address
        hashed-password
        (fn [value]
-         (let [{:keys [id]} (types/json->clj value)]
+         (let [{:keys [id error]} (types/json->clj value)]
+           (if error
+             (re-frame/dispatch [::new-account-error :password-error error])
              (status/multiaccount-derive-addresses
               id
               [path]
@@ -422,16 +427,17 @@
                      [path]
                      hashed-password
                      (fn [result]
-                       (let [{:keys [publicKey]}        (get result (keyword path))]
-                         (on-success publicKey)
-                         ))
+                       (let [{:keys [error] :as result} (types/json->clj result)
+                             {:keys [publicKey]}        (get result (keyword path))]
+                         (if error
+                           (on-failure error)
+                           (on-success publicKey))))
                      (fn [error-message]
-                       (on-failure error-message))))))
+                       (log/debug "error while status/multiaccount-store-derived" error-message))))))
               (fn [error-message]
-                (log/debug "error while status/multiaccount-derive-addresses" error-message)))
-             ))
+                (log/debug "error while status/multiaccount-derive-addresses" error-message))))))
        (fn [error-message]
-         (re-frame/dispatch [::new-account-error :password-error error-message]))))))
+         (log/debug "error while status/multiaccount-load-account" error-message))))))
 
 (defn unpair-and-delete [_])
 

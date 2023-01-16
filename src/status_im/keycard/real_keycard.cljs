@@ -318,7 +318,10 @@
   (status/delete-multiaccount
    key-uid
    (fn [result]
-     (on-success))
+     (let [{:keys [error]} (types/json->clj result)]
+       (if-not (string/blank? error)
+         (on-error error)
+         (on-success))))
    (fn [error-message]
      (log/debug "error while status/delete-multiaccount" error-message))))
 
