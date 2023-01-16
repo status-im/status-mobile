@@ -81,7 +81,7 @@
             :accessibility-label :share
             :icon                :main-icons/share
             :on-press            (fn []
-                                   (re-frame/dispatch [:bottom-sheet/hide])
+                                   (re-frame/dispatch [:dismiss-bottom-sheet])
                                    (js/setTimeout
                                     #(browser/share-link url)
                                     200))}]
