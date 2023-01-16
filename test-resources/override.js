@@ -1,6 +1,6 @@
 var Mocks = require('../target/mocks/mocks.js');
 var Module = require('module');
-process.env.TZ = 'Europe/Amsterdam'
+process.env.TZ = 'Etc/Universal'
 
 const originalLoader = Module._load;
 
