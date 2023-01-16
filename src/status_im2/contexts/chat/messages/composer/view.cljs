@@ -209,7 +209,7 @@
                                                                 (when (seq images) 80))))
 
                parent-height                            (reanimated/use-shared-value min-y)
-               max-parent-height                        (Math/abs (- max-y 56 (:bottom insets)))
+               max-parent-height                        (Math/abs (- max-y 110 (:bottom insets)))
 
                params
                (prepare-params
