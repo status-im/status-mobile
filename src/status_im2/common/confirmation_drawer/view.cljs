@@ -4,8 +4,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.style :as style]
-            [utils.re-frame :as rf]
-            status-im2.common.bottom-sheet.view))
+            [utils.re-frame :as rf]))
 
 (defn avatar
   [group-chat color display-name photo-path]

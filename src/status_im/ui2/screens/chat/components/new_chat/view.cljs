@@ -13,7 +13,6 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
-            status-im2.common.bottom-sheet.view
             [quo.react :as quo.react]
             [quo.components.safe-area :as safe-area]))
 

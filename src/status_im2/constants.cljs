@@ -269,3 +269,4 @@
 (def ^:const theme-type-system 0)
 (def ^:const theme-type-light 1)
 (def ^:const theme-type-dark 2)
+(def ^:const bottom-sheet-animation-delay 450)

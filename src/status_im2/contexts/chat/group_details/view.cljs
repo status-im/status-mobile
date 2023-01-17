@@ -8,8 +8,7 @@
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
-            [utils.re-frame :as rf]
-            status-im2.common.bottom-sheet.view))
+            [utils.re-frame :as rf]))
 
 (defn back-button
   []

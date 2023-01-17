@@ -9,7 +9,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.image-server :as image-server]
             [utils.collection]
-            [status-im.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts

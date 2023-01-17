@@ -9,8 +9,7 @@
             [reagent.core :as reagent]
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
-            [utils.re-frame :as rf]
-            status-im2.common.bottom-sheet.view))
+            [utils.re-frame :as rf]))
 
 (def selected (reagent/atom []))
 

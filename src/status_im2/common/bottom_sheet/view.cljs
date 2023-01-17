@@ -10,7 +10,8 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.constants :as constants]))
 
 (def bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
 
@@ -31,7 +32,7 @@
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
-         (rf/dispatch [:bottom-sheet/gesture-running? true])
+         (rf/dispatch [:bottom-sheet/update-config {:config :gesture-running? :value true}])
          (when (and keyboard-shown (not disable-drag?) show-bottom-sheet?)
            (re-frame/dispatch [:dismiss-keyboard]))))
       (gesture/on-update
@@ -51,7 +52,7 @@
                                            max-pan-up))))))
       (gesture/on-end
        (fn [_]
-         (rf/dispatch [:bottom-sheet/gesture-running? false])
+         (rf/dispatch [:bottom-sheet/update-config {:config :gesture-running? :value false}])
          (when (and (not disable-drag?) show-bottom-sheet?)
            (let [end-pan-y                  (- window-height (.-value translate-y))
                  expand-threshold           (min (* bg-height 1.1) (+ bg-height 50))
@@ -62,10 +63,10 @@
                (close-bottom-sheet)
 
                (and (not expanded?) (> end-pan-y expand-threshold))
-               (rf/dispatch [:bottom-sheet/did-expand true])
+               (rf/dispatch [:bottom-sheet/update-config {:config :expanded? :value true}])
 
                (and expanded? (< end-pan-y collapse-threshold))
-               (rf/dispatch [:bottom-sheet/did-expand false]))))))))
+               (rf/dispatch [:bottom-sheet/update-config {:config :expanded? :value false}]))))))))
 
 (defn handle-comp
   [window-width]
@@ -112,7 +113,7 @@
                 (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height)
                 on-content-layout (fn [evt]
                                     (let [height (oget evt "nativeEvent" "layout" "height")]
-                                      (rf/dispatch [:bottom-sheet/update-height height])))
+                                      (rf/dispatch [:bottom-sheet/update-config {:config :content-height :value height}])))
                 on-expanded (fn []
                               (reanimated/set-shared-value bottom-sheet-dy bg-height-expanded)
                               (reanimated/set-shared-value pan-y 0))
@@ -141,7 +142,7 @@
                                  visible?
                                  (some? content-height)
                                  (> content-height 0))
-                                (rf/dispatch [:bottom-sheet/show-quo2-bottom-sheet true])
+                                (rf/dispatch [:bottom-sheet/update-config {:config :show-bottom-sheet? :value true}])
 
                                 (and show-bottom-sheet? (not visible?))
                                 (close-bottom-sheet)))
@@ -151,10 +152,10 @@
                                 (cond
                                   keyboard-shown
                                   (do
-                                    (rf/dispatch [:bottom-sheet/show-quo2-bottom-sheet true])
-                                    (rf/dispatch [:bottom-sheet/did-expand true]))
+                                    (rf/dispatch [:bottom-sheet/update-config {:config :keyboard-was-shown? :value true}])
+                                    (rf/dispatch [:bottom-sheet/update-config {:config :expanded? :value true}]))
                                   (and keyboard-was-shown? (not keyboard-shown))
-                                  (rf/dispatch [:bottom-sheet/did-expand false]))))
+                                  (rf/dispatch [:bottom-sheet/update-config {:config :expanded? :value false}]))))
                            [show-bottom-sheet? keyboard-was-shown?])
             (react/effect! #(do
                               (when-not gesture-running?
@@ -170,7 +171,7 @@
                                       ;; withTiming/withSpring callback not working
                                       ;; on-expanded should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-expanded (or animation-delay 450)))
+                                      (timer/set-timeout on-expanded (or animation-delay constants/bottom-sheet-animation-delay)))
                                     (do
                                       (reanimated/set-shared-value
                                        bottom-sheet-dy
@@ -180,7 +181,7 @@
                                       ;; withTiming/withSpring callback not working
                                       ;; on-collapsed should be called as a callback of
                                       ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-collapsed (or animation-delay 450))))
+                                      (timer/set-timeout on-collapsed (or animation-delay constants/bottom-sheet-animation-delay))))
 
                                   (= show-bottom-sheet? false)
                                   (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))

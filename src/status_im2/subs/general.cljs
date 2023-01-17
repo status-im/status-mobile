@@ -199,22 +199,6 @@
    (or seed {:step :intro})))
 
 (re-frame/reg-sub
- :bottom-sheet/config
- (fn [db]
-   (let [content-height      (get-in db [:bottom-sheet/config :content-height])
-         show-bottom-sheet?  (get-in db [:bottom-sheet/config :show-bottom-sheet?])
-         keyboard-was-shown? (get-in db [:bottom-sheet/config :keyboard-was-shown?])
-         expanded?           (get-in db [:bottom-sheet/config :expanded?])
-         gesture-running?    (get-in db [:bottom-sheet/config :gesture-running?])
-         animation-delay     (get-in db [:bottom-sheet/config :animation-delay])]
-     {:content-height      (or content-height nil)
-      :show-bottom-sheet?  (or show-bottom-sheet? nil)
-      :keyboard-was-shown? (or keyboard-was-shown? false)
-      :expanded?           (or expanded? false)
-      :gesture-running?    (or gesture-running? false)
-      :animation-delay     (or animation-delay 450)})))
-
-(re-frame/reg-sub
  :bottom-sheet
  :<- [:bottom-sheet/show?]
  :<- [:bottom-sheet/view]

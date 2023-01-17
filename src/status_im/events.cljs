@@ -58,8 +58,7 @@
    status-im2.contexts.activity-center.events
    status-im2.contexts.shell.events
    status-im.chat.models.gaps
-   [status-im2.navigation.events :as navigation]
-   [react-native.background-timer :as timer]))
+   [status-im2.navigation.events :as navigation]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -325,7 +324,8 @@
 
 (rf/defn reset-bottom-sheet
   {:events [:bottom-sheet/reset]}
-  [{:keys [db]}]
+  [{:keys [db]} on-cancel]
+  (when (fn? on-cancel) (on-cancel))
   {:db (assoc db
               :bottom-sheet/config
               {:content-height      nil
@@ -333,46 +333,21 @@
                :keyboard-was-shown? false
                :expanded?           false
                :gesture-running?    false
-               :animation-delay     500})})
-
-(re-frame/reg-fx
- :dismiss-bottom-sheet-fx
- (fn [[on-cancel animation-delay]]
-   (re-frame/dispatch [:bottom-sheet/show-quo2-bottom-sheet false])
-   (timer/set-timeout
-    (fn []
-      (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
-      (re-frame/dispatch [:bottom-sheet/reset])
-      (when (fn? on-cancel) (on-cancel)))
-    (or animation-delay 450))))
+               :animation-delay     constants/bottom-sheet-animation-delay})})
 
 (rf/defn dismiss-bottom-sheet
   {:events [:dismiss-bottom-sheet]}
   [{:keys [db]} on-cancel]
-  (let [animation-delay (get-in db [:bottom-sheet/config :animation-delay])]
-    {:dismiss-bottom-sheet-fx [on-cancel animation-delay]}))
+  (let [animation-delay (get-in db [:bottom-sheet/config :animation-delay] constants/bottom-sheet-animation-delay)]
+    {:dispatch [:bottom-sheet/update-config {:config :show-bottom-sheet?
+                                             :value  false}]
+     :dispatch-later [{:dispatch [:bottom-sheet/hide-navigation-overlay]
+                       :ms       constants/bottom-sheet-animation-delay}
+                      {:dispatch [:bottom-sheet/reset on-cancel]
+                       :ms       constants/bottom-sheet-animation-delay}]}))
 
-(rf/defn update-bottom-sheet-height
-  {:events [:bottom-sheet/update-height]}
-  [{:keys [db]} height]
-  {:db (assoc-in db [:bottom-sheet/config :content-height] height)})
+(rf/defn update-bottom-sheet-config
+  {:events [:bottom-sheet/update-config]}
+  [{:keys [db]} {:keys [config value]}]
+  {:db (assoc-in db [:bottom-sheet/config config] value)})
 
-(rf/defn show-bottom-sheet
-  {:events [:bottom-sheet/show-quo2-bottom-sheet]}
-  [{:keys [db]} value]
-  {:db (assoc-in db [:bottom-sheet/config :show-bottom-sheet?] value)})
-
-(rf/defn keyboard-was-shown?
-  {:events [:bottom-sheet/keyboard-was-shown?]}
-  [{:keys [db]} value]
-  {:db (assoc-in db [:bottom-sheet/config :keyboard-was-shown?] value)})
-
-(rf/defn bottom-sheet-did-expand
-  {:events [:bottom-sheet/did-expand]}
-  [{:keys [db]} value]
-  {:db (assoc-in db [:bottom-sheet/config :expanded?] value)})
-
-(rf/defn bottom-sheet-gesture-running?
-  {:events [:bottom-sheet/gesture-running?]}
-  [{:keys [db]} value]
-  {:db (assoc-in db [:bottom-sheet/config :gesture-running?] value)})

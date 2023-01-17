@@ -6,8 +6,7 @@
             [utils.i18n :as i18n]
             [status-im2.contexts.communities.menus.request-to-join.style :as style]
             [utils.re-frame :as rf]
-            [utils.requests :as requests]
-            status-im2.common.bottom-sheet.view))
+            [utils.requests :as requests]))
 
 ;; TODO: update with real data
 (def community-rules
