@@ -17,6 +17,7 @@
            audio-duration-ms
            sticker
            content-type]}]
+  (println "II" image-width image-height)
   {:chatId          chat-id
    :albumId         album-id
    :imageWidth      image-width
@@ -36,7 +37,9 @@
   {:json-rpc/call [{:method      "wakuext_sendChatMessages"
                     :params      [(mapv build-message messages)]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [:transport/message-sent %])
+                    :on-success  #(do
+                                    (re-frame/dispatch [:transport/message-sent %])
+                                    (println "SENDDDD" %))
                     :on-error    #(do
                                     (log/warn "failed to send a message" %)
                                     (js/alert (str "failed to send a message: " %)))}]})

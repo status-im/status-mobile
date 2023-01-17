@@ -17,7 +17,8 @@
 
 (defn image-message
   [index {:keys [content image-width image-height message-id] :as message}]
-  (let [dimensions (calculate-dimensions image-width image-height)
+  (println "mMM" message)
+  (let [dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))
         text       (:text content)]
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
