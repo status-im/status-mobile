@@ -31,6 +31,7 @@
    [status-im2.contexts.quo-preview.drawers.action-drawers :as drawers]
    [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
    [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
+   [status-im2.contexts.quo-preview.foundations.elevation :as elevation]
    [status-im2.contexts.quo-preview.info.info-message :as info-message]
    [status-im2.contexts.quo-preview.info.information-box :as information-box]
    [status-im2.contexts.quo-preview.list-items.channel :as channel]
@@ -70,7 +71,10 @@
    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
 
 (def screens-categories
-  {:avatar                [{:name      :group-avatar
+  {:foundations           [{:name :elevation
+                            :insets    {:top false}
+                            :component elevation/preview-elevation}]
+   :avatar                [{:name      :group-avatar
                             :insets    {:top false}
                             :component group-avatar/preview-group-avatar}
                            {:name      :icon-avatar
