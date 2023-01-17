@@ -338,9 +338,12 @@
 (rf/defn dismiss-bottom-sheet
   {:events [:dismiss-bottom-sheet]}
   [{:keys [db]} on-cancel]
-  (let [animation-delay (get-in db [:bottom-sheet/config :animation-delay] constants/bottom-sheet-animation-delay)]
-    {:dispatch [:bottom-sheet/update-config {:config :show-bottom-sheet?
-                                             :value  false}]
+  (let [animation-delay (get-in db
+                                [:bottom-sheet/config :animation-delay]
+                                constants/bottom-sheet-animation-delay)]
+    {:dispatch       [:bottom-sheet/update-config
+                      {:config :show-bottom-sheet?
+                       :value  false}]
      :dispatch-later [{:dispatch [:bottom-sheet/hide-navigation-overlay]
                        :ms       constants/bottom-sheet-animation-delay}
                       {:dispatch [:bottom-sheet/reset on-cancel]

@@ -80,8 +80,8 @@
   (if (contains? @loaded-images k)
     (get @loaded-images k)
     (get (swap! loaded-images assoc
-                k
-                (get ui k))
+           k
+           (get ui k))
          k)))
 
 (defn get-mock-image
@@ -89,8 +89,8 @@
   (if (contains? @loaded-images k)
     (get @loaded-images k)
     (get (swap! loaded-images assoc
-                k
-                (get mock-images k))
+           k
+           (get mock-images k))
          k)))
 
 (def reactions-old
