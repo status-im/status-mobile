@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.chat.constants :as chat.constants]
+            [status-im2.common.constants :as chat.constants]
             [status-im.chat.models :as chat]
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]

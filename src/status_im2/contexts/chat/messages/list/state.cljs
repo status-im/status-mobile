@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chat.state)
+(ns status-im2.contexts.chat.messages.list.state)
 
 (defonce first-not-visible-item (atom nil))
 

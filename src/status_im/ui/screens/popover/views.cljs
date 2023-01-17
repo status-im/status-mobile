@@ -7,7 +7,6 @@
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.biometric.views :as biometric]
-            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
@@ -180,9 +179,6 @@
 
                   (= :password-reset-popover view)
                   [reset-password.views/reset-password-popover]
-
-                  (= :pin-limit view)
-                  [pinned-message/pin-limit-popover]
 
                   (= :fees-warning view)
                   [signing-sheets/fees-warning]

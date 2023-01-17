@@ -1,6 +1,6 @@
-(ns status-im.chat.models.message-list-test
+(ns status-im2.contexts.chat.messages.list.events_test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.models.message-list :as s]
+            [status-im2.contexts.chat.messages.list.events :as s]
             [taoensso.tufte :as tufte :refer-macros [defnp profile]]))
 
 (deftest message-stream-tests

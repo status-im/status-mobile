@@ -11,14 +11,11 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.profile.components.sheets :as sheets]
             [status-im.ui.screens.profile.contact.styles :as styles]
-            [status-im.ui.screens.status.views :as status.views]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -210,18 +207,6 @@
   []
   (let [{:keys [public-key name ens-verified] :as contact} @(re-frame/subscribe
                                                              [:contacts/current-contact])
-        current-chat-id                                    @(re-frame/subscribe
-                                                             [:chats/current-profile-chat])
-        messages                                           @(re-frame/subscribe
-                                                             [:chats/profile-messages-stream
-                                                              current-chat-id])
-        no-messages?                                       @(re-frame/subscribe [:chats/chat-no-messages?
-                                                                                 current-chat-id])
-        muted?                                             @(re-frame/subscribe [:chats/muted
-                                                                                 public-key])
-        pinned-messages                                    @(re-frame/subscribe [:chats/pinned
-                                                                                 public-key])
-        [first-name second-name]                           (multiaccounts/contact-two-names contact true)
         on-share                                           #(re-frame/dispatch
                                                              [:show-popover
                                                               (merge
@@ -237,43 +222,4 @@
                               :on-press            on-share}]
          :left-accessories  [{:icon                :main-icons/close
                               :accessibility-label :back-button
-                              :on-press            #(re-frame/dispatch [:navigate-back])}]}]
-       [list/flat-list
-        {:key-fn                    #(or (:message-id %) (:value %))
-         :header                    [:<>
-                                     [(profile-header/extended-header
-                                       {:on-press         on-share
-                                        :bottom-separator false
-                                        :title            first-name
-                                        :photo            (multiaccounts/displayed-photo contact)
-                                        :monospace        (not ens-verified)
-                                        :subtitle         second-name
-                                        :public-key       public-key})]
-                                     [react/view
-                                      {:height 1 :background-color colors/gray-lighter :margin-top 8}]
-                                     [nickname-settings contact]
-                                     [pin-settings public-key (count pinned-messages)]
-                                     [react/view {:height 1 :background-color colors/gray-lighter}]
-                                     [react/view
-                                      {:padding-top    17
-                                       :flex-direction :row
-                                       :align-items    :stretch
-                                       :flex           1}
-                                      (for [{:keys [label] :as action} (actions contact muted?)
-                                            :when                      label]
-                                        ^{:key label}
-                                        [button-item action])]
-                                     [react/view
-                                      {:height 1 :background-color colors/gray-lighter :margin-top 16}]
-                                     (when no-messages?
-                                       [react/view {:padding-horizontal 32 :margin-top 32}
-                                        [react/view (styles/updates-descr-cont)
-                                         [react/text {:style {:color colors/gray :line-height 22}}
-                                          (i18n/label :t/status-updates-descr)]]])]
-         :ref                       #(reset! status.views/messages-list-ref %)
-         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages current-chat-id])
-         :on-scroll-to-index-failed #()                        ;;don't remove this
-         :render-data               {:chat-id current-chat-id
-                                     :profile true}
-         :render-fn                 status.views/render-message
-         :data                      messages}]])))
+                              :on-press            #(re-frame/dispatch [:navigate-back])}]}]])))

@@ -4,7 +4,6 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.profile.db :as profile.db]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.photos :as photos]
@@ -55,7 +54,7 @@
                                   styles/container-chat-list
                                   photo-container)
         size                    (:width photo-container)
-        identicon?              (when photo-path (profile.db/base64-png? photo-path))
+        identicon?              (and photo-path (string/starts-with? photo-path "data:image/png;base64,"))
         dot-styles              (visibility-status-utils/icon-visibility-status-dot
                                  public-key
                                  size

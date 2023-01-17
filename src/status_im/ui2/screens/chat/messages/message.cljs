@@ -2,7 +2,6 @@
   (:require
    [quo.design-system.colors :as quo.colors]
    [quo.react-native :as rn]
-   [quo2.components.avatars.user-avatar :as user-avatar]
    [quo2.components.icon :as icons]
    [quo2.components.markdown.text :as text]
    [quo2.foundations.colors :as colors]
@@ -16,9 +15,7 @@
    [status-im.ui.components.react :as react]
    [status-im.ui.screens.chat.image.preview.views :as preview]
    [status-im.ui.screens.chat.message.audio :as message.audio]
-   [status-im.ui.screens.chat.message.command :as message.command]
    [status-im.ui.screens.chat.message.gap :as message.gap]
-   [status-im.ui.screens.chat.message.link-preview :as link-preview]
    [status-im.ui.screens.chat.sheets :as sheets]
    [status-im.ui.screens.chat.styles.message.message :as style]
    [status-im.ui.screens.chat.utils :as chat.utils]
@@ -33,8 +30,6 @@
    [utils.re-frame :as rf]
    [quo2.core :as quo])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
 (defn system-text?
   [content-type]
@@ -208,46 +203,6 @@
          (assoc props :accessibility-label :message-timestamp)
          (datetime/to-short-str timestamp)]]))])
 
-(defn message-content-wrapper
-  "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group? timestamp pinned from chat-id]
-    :as   message} content]
-  (let [response-to  (:response-to (:content message))
-        display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-        contact      (rf/sub [:contacts/contact-by-address from])
-        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
-        online?      (rf/sub [:visibility-status-updates/online? from])]
-    [rn/view
-     {:style               (style/message-wrapper message)
-      :pointer-events      :box-none
-      :accessibility-label :chat-item}
-     (when (and (seq response-to) (:quoted-message message))
-       [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message)])
-     [rn/view
-      {:style          (style/message-body)
-       :pointer-events :box-none}
-      ;; AVATAR
-      [rn/view {:style {:width 40}}
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-          [user-avatar/user-avatar
-           {:full-name         display-name
-            :profile-picture   photo-path
-            :status-indicator? true
-            :online?           online?
-            :size              :small
-            :ring?             false}]])]
-      [rn/view {:style (style/message-author-wrapper)}
-       ;; AUTHOR NAME
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-         [display-name-view display-name contact timestamp true])
-       ;; MESSAGE CONTENT
-       content
-       [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
-     ;; delivery status
-     [rn/view (style/delivery-status)
-      [message-delivery-status message]]]))
-
 (def image-max-width 260)
 (def image-max-height 192)
 
@@ -264,10 +219,6 @@
         (swap! dimensions assoc :loaded true)))))
 
 (defmulti ->message :content-type)
-
-(defmethod ->message constants/content-type-command
-  [message]
-  [message.command/command-content message-content-wrapper message])
 
 (defmethod ->message constants/content-type-gap
   [message]

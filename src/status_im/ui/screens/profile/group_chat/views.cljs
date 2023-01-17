@@ -11,7 +11,6 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as chat.sheets]
             [status-im.ui.screens.chat.utils :as chat.utils]
@@ -111,21 +110,16 @@
   (debounce/dispatch-and-chill event 2000))
 
 (defn invitation-sheet
-  [{:keys [introduction-message id]} contact]
+  [{:keys [id]} contact]
   (let [members               @(re-frame/subscribe [:contacts/current-chat-contacts])
         allow-adding-members? (< (count members) constants/max-group-chat-participants)]
     [react/view
-     (let [message {:content      {:parsed-text
-                                   [{:type     "paragraph"
-                                     :children [{:literal introduction-message}]}]}
-                    :content-type constants/content-type-text}]
-       [react/view {:margin-bottom 8 :margin-right 16}
-        [react/view {:padding-left 72}
-         (chat.utils/format-author-old contact)]
-        [react/view {:flex-direction :row :align-items :flex-end}
-         [react/view {:padding-left 16 :padding-top 4}
-          [photos/photo (multiaccounts/displayed-photo contact) {:size 36}]]
-         [message/->message message {:on-long-press identity}]]])
+     [react/view {:margin-bottom 8 :margin-right 16}
+      [react/view {:padding-left 72}
+       (chat.utils/format-author-old contact)]
+      [react/view {:flex-direction :row :align-items :flex-end}
+       [react/view {:padding-left 16 :padding-top 4}
+        [photos/photo (multiaccounts/displayed-photo contact) {:size 36}]]]]
      [quo/list-item
       {:theme               :accent
        :disabled            (not allow-adding-members?)

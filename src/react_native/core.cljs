@@ -109,3 +109,11 @@
   (let [fn-ref (use-ref f)]
     (oops/oset! fn-ref "current" f)
     (use-effect-once (fn [] (fn [] (oops/ocall! fn-ref "current"))))))
+
+(def layout-animation (.-LayoutAnimation ^js react-native))
+(def configure-next (.-configureNext ^js layout-animation))
+
+(def layout-animation-presets
+  {:ease-in-ease-out (-> ^js layout-animation .-Presets .-easeInEaseOut)
+   :linear           (-> ^js layout-animation .-Presets .-linear)
+   :spring           (-> ^js layout-animation .-Presets .-spring)})

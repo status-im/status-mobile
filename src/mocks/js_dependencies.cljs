@@ -1,8 +1,7 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.fleet.default-fleet :refer (default-fleets)])
-  (:require [status-im.utils.test :as utils.test])
-  (:require [status-im.chat.default-chats :refer (default-chats)]))
+  (:require [status-im.utils.test :as utils.test]))
 
 ;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and
 ;; return itself
@@ -398,7 +397,6 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "../src/js/bottom_sheet.js"                     bottom-sheet
     "../src/js/record_audio_worklets.js"            record-audio-worklets
     "./fleets.js"                                   default-fleets
-    "./chats.js"                                    default-chats
     "@walletconnect/client"                         wallet-connect-client
     "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json"                       (js/JSON.parse (slurp "./translations/de.json"))

@@ -4,26 +4,21 @@
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-public-chat.db]
             [status-im.chat.models.loading :as loading]
-            [status-im.chat.models.message-list :as message-list]
+            [status-im2.contexts.chat.messages.list.events :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
             [i18n.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.ui.screens.chat.state :as chat.state]
+            [status-im2.contexts.chat.messages.list.state :as chat.state]
             [status-im.utils.clocks :as utils.clocks]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
-
-(defn chats
-  []
-  (:chats (types/json->clj (js/require "./chats.js"))))
 
 (defn- get-chat
   [cofx chat-id]

@@ -5,10 +5,6 @@
   [{:keys [public? name]}]
   (str (when public? "#") name))
 
-(defn datemark?
-  [{:keys [type]}]
-  (= type :datemark))
-
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
   It makes best effort to group them by day.

@@ -1,7 +1,7 @@
 status-im.utils.build/warning-handler
 status-im.utils.build/get-current-sha
-status-im.chat.constants/spacing-char
-status-im.chat.constants/arg-wrapping-char
+status-im2.common.constants/spacing-char
+status-im2.common.constants/arg-wrapping-char
 status-im.ios.core/init
 status-im.ui.components.camera/aspects
 status-im.ui.components.camera/capture-targets
