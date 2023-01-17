@@ -14,7 +14,8 @@
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
             [quo.react :as quo.react]
-            [quo.components.safe-area :as safe-area]))
+            [quo.components.safe-area :as safe-area]
+            [status-im.react-native.resources :as resources]))
 
 (defn- hide-sheet-and-dispatch
   [event]
@@ -36,9 +37,8 @@
    {:style {:justify-content :center
             :align-items     :center
             :margin-top      120}}
-   [quo2/icon (if quo2.colors/dark? :i/no-contacts-dark :i/no-contacts)
-    {:size     120
-     :no-color true}]
+   [react/image
+    {:source (resources/get-image (if (quo2.colors/dark?) :no-contacts-dark :no-contacts))}]
    [text/text
     {:weight :semi-bold
      :size   :paragraph-1
