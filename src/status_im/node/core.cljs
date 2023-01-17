@@ -73,7 +73,8 @@
    :Nameserver     "1.1.1.1"
    :PeerExchange   true
    :Port           0
-   :UDPPort        0})
+   :UDPPort        0
+   :Nameserver     "1.1.1.1"})
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}
