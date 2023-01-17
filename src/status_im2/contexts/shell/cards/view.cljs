@@ -120,10 +120,13 @@
 
     (shell.constants/community-card
      shell.constants/community-channel-card)
-    (if (:source avatar-params)
+    (cond
+      (:source avatar-params)
       [fast-image/fast-image
        {:source (:source avatar-params)
         :style  (style/community-avatar customization-color)}]
+
+      (:name avatar-params)
       ;; TODO - Update to fall back community avatar once designs are available
       [rn/view {:style (style/community-avatar customization-color)}
        [quo/text
