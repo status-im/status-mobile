@@ -25,7 +25,7 @@
     :component        tag/tab
     :size             32/24
     :on-press         fn
-    :blurred?         true/false 
+    :blurred?         true/false
     :labelled?        true/false
     :disabled?        true/false
     :scroll-on-press? true
@@ -36,7 +36,7 @@
     :data             [{:id :label \"\" :resource \"url\"}
                        {:id :label \"\" :resource \"url\"}]}
   Opts:
-   - `component` this is to determine which component is to be rendered since the 
+   - `component` this is to determine which component is to be rendered since the
                  logic in this view is shared between tab and tag component
    - `blurred`   boolean: use to determine border color if the background is blurred
    - `type`      can be icon or emoji with or without a tag label
@@ -142,7 +142,7 @@
                                     :on-press   (fn [id]
                                                   (reset! active-tab-id id)
                                                   (when scroll-on-press?
-                                                    (.scrollToIndex @flat-list-ref
+                                                    (.scrollToIndex ^js @flat-list-ref
                                                                     #js
                                                                      {:animated     true
                                                                       :index        index

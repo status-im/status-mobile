@@ -63,7 +63,7 @@
   {:show-wallet-connect-sheet nil})
 
 (defn subscribe-to-events
-  [wallet-connect-client]
+  [^js wallet-connect-client]
   (.on wallet-connect-client
        (wallet-connect/session-request-event)
        #(re-frame/dispatch [:wallet-connect/request %]))
@@ -209,7 +209,7 @@
 
 (rf/defn wallet-connect-client-initate
   {:events [:wallet-connect/client-init]}
-  [{:keys [db] :as cofx} client]
+  [{:keys [db] :as cofx} ^js client]
   {:db                       (assoc db
                                     :wallet-connect/client   client
                                     :wallet-connect/sessions (types/js->clj (.-values (.-session

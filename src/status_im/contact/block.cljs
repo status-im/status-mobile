@@ -70,9 +70,10 @@
                        (assoc-in [:contacts/contacts public-key] contact))}
               (contacts-store/block
                public-key
-               #(do (re-frame/dispatch [::contact-blocked contact (.-chats %)])
-                    (re-frame/dispatch [:sanitize-messages-and-process-response %])
-                    (re-frame/dispatch [:hide-popover])))
+               (fn [^js block-contact]
+                 (re-frame/dispatch [::contact-blocked contact (.-chats block-contact)])
+                 (re-frame/dispatch [:sanitize-messages-and-process-response block-contact])
+                 (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 (navigation/pop-to-root-tab :chat-stack)
