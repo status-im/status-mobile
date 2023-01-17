@@ -54,7 +54,8 @@
                                   styles/container-chat-list
                                   photo-container)
         size                    (:width photo-container)
-        identicon?              (and photo-path (string/starts-with? photo-path "data:image/png;base64,"))
+        identicon?              (and photo-path
+                                     (string/starts-with? photo-path "data:image/png;base64,"))
         dot-styles              (visibility-status-utils/icon-visibility-status-dot
                                  public-key
                                  size
