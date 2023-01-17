@@ -36,8 +36,8 @@
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
             :on-press            (fn []
-                                   (rf/dispatch [:dismiss-bottom-sheet])
-                                   (on-press-confirm-selection chat-id))
+                                   (rf/dispatch [:dismiss-bottom-sheet
+                                                 #(on-press-confirm-selection chat-id)]))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 

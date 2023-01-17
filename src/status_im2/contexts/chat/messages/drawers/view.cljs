@@ -51,19 +51,20 @@
        :id       (if pinned :unpin :pin)}])
    (when-not pinned
      [{:type     :danger
-       :on-press #(do
-                    (rf/dispatch [:dismiss-bottom-sheet])
-                    (rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                  constants/delete-message-for-me-undo-time-limit-ms]))
+       :on-press (fn []
+                   (rf/dispatch [:dismiss-bottom-sheet 
+                                 #(do (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                                        constants/delete-message-for-me-undo-time-limit-ms]))]))
+
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
-       :on-press #(do
-                    (rf/dispatch [:dismiss-bottom-sheet])
-                    (rf/dispatch [:chat.ui/delete-message message-data
-                                  constants/delete-message-undo-time-limit-ms]))
+       :on-press (fn []
+                   (rf/dispatch [:dismiss-bottom-sheet
+                                 #(rf/dispatch [:chat.ui/delete-message message-data
+                                                constants/delete-message-undo-time-limit-ms])]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))
@@ -135,9 +136,9 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(do
-                                      (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))
+              :on-press            (fn []
+                                     (rf/dispatch [:dismiss-bottom-sheet
+                                                   #(when on-press (on-press))]))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
 
@@ -150,9 +151,9 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(do
-                                      (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))
+              :on-press            #(rf/dispatch [:dismiss-bottom-sheet
+                                                  (fn []
+                                                    (when on-press (on-press)))])}]))
         (when-not (empty? admin-actions)
           [quo/separator])
 
@@ -165,6 +166,6 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(do
-                                      (when on-press (on-press))
-                                      (rf/dispatch [:dismiss-bottom-sheet]))}]))]])))
+              :on-press            (fn []
+                                     (rf/dispatch [:dismiss-bottom-sheet
+                                                   #(when on-press (on-press))]))}]))]])))

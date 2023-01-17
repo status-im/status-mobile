@@ -10,7 +10,7 @@
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [status-im.ui.components.react :as react]
+            [react-native.core :as react]
             [status-im.ui.screens.multiaccounts.sheets :as multiaccounts-sheet]))
 
 (defn bottom-sheet

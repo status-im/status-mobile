@@ -93,10 +93,11 @@
           {:style               {:flex 1}
            :accessibility-label :save
            :on-press            (fn []
-                                  (rf/dispatch [:group-chats.ui/add-members-pressed])
-                                  (js/setTimeout #(rf/dispatch [:group-chats.ui/remove-members-pressed])
-                                                 500)
-                                  (rf/dispatch [:dismiss-bottom-sheet]))
+                                  (rf/dispatch [:dismiss-bottom-sheet #(do
+                                                                         (js/setTimeout (fn []
+                                                                                          (rf/dispatch [:group-chats.ui/remove-members-pressed]))
+                                                                                        500)
+                                                                         (rf/dispatch [:group-chats.ui/add-members-pressed]))]))
            :disabled            (and (zero? (count selected-participants))
                                      (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])

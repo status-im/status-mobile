@@ -20,7 +20,9 @@
 (rf/defn hide-bottom-sheet
   {:events [:bottom-sheet/hide]}
   [{:keys [db]}]
-  {:db (assoc db :bottom-sheet/show? false)})
+  {:db (-> db
+           (assoc :bottom-sheet/show? false)
+           (assoc-in [:bottom-sheet/config :show-bottom-sheet?] nil))})
 
 (rf/defn hide-bottom-sheet-navigation-overlay
   {:events [:bottom-sheet/hide-navigation-overlay]}

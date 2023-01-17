@@ -5,8 +5,7 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:dismiss-bottom-sheet])
-  (re-frame/dispatch event))
+  (re-frame/dispatch [:dismiss-bottom-sheet #(re-frame/dispatch event)]))
 
 (defn actions-sheet
   []

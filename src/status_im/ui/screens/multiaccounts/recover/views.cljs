@@ -16,7 +16,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:dismiss-bottom-sheet])
   (re-frame/dispatch event))
 
 (defview custom-seed-phrase
