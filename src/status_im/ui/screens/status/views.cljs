@@ -26,7 +26,7 @@
 
 (defn image-set-size
   [width]
-  (fn [evt]
+  (fn [^js evt]
     (reset! width (/ (.-width (.-nativeEvent evt))
                      (/ (.-height (.-nativeEvent evt)) image-max-dimension)))))
 

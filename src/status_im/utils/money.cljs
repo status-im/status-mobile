@@ -36,7 +36,7 @@
       (catch :default _ nil))))
 
 (defn greater-than-or-equals
-  [bn1 bn2]
+  [^js bn1 ^js bn2]
   (.greaterThanOrEqualTo bn1 bn2))
 
 (defn greater-than

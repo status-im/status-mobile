@@ -404,7 +404,7 @@
 
 (defn image-set-size
   [dimensions]
-  (fn [evt]
+  (fn [^js evt]
     (let [width  (.-width (.-nativeEvent evt))
           height (.-height (.-nativeEvent evt))]
       (if (< width height)

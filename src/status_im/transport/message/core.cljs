@@ -235,11 +235,11 @@
 
 (defn sort-js-messages!
   "sort messages, so we can start process latest first,in that case we only need to process frist 20 and drop others"
-  [response-js messages]
+  [^js response-js messages]
   (if (seq messages)
     (set! (.-messages response-js)
       (.sort (to-array messages)
-             (fn [a b]
+             (fn [^js a ^js b]
                (- (.-clock b) (.-clock a)))))
     (js-delete response-js "messages")))
 
@@ -334,7 +334,7 @@
 
 (rf/defn transport-message-sent
   {:events [:transport/message-sent]}
-  [cofx response-js]
+  [cofx ^js response-js]
   (let [set-hash-fxs (map (fn [{:keys [localChatId id messageType]}]
                             (set-message-envelope-hash localChatId id messageType))
                           (types/js->clj (.-messages response-js)))]

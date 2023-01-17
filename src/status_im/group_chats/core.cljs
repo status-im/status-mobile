@@ -2,13 +2,14 @@
   (:refer-clojure :exclude [remove])
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [oops.core :as oops]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.constants :as constants]
-            [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]
             [status-im2.contexts.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.re-frame :as rf]))
 
 (rf/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -30,7 +31,11 @@
   [_ response do-not-navigate?]
   {:dispatch-n [[:sanitize-messages-and-process-response response]
                 (when-not do-not-navigate?
-                  [:navigate-chat-updated (.-id (aget (.-chats response) 0))])]})
+                  [:navigate-chat-updated
+                   (-> response
+                       (oops/oget :chats)
+                       first
+                       (oops/oget :id))])]})
 
 (rf/defn remove-member
   "Format group update message and sign membership"

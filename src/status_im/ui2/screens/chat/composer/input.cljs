@@ -374,7 +374,7 @@
                                         (update-selection text-input-handle start end)
                                         (reset! selection-event nil))))
               on-selection
-              (fn [event]
+              (fn [^js event]
                 (let [native-event (.-nativeEvent event)
                       native-event (transforms/js->clj native-event)
                       {:keys [eventType content selectionStart selectionEnd]} native-event

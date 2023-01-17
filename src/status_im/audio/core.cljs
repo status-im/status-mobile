@@ -46,15 +46,16 @@
   [player on-prepared on-error]
   (when (and player (.-canPrepare ^js player))
     (.prepare ^js player
-              #(if %
-                 (on-error {:error (.-err %) :message (.-message %)})
-                 (on-prepared)))))
+              (fn [^js err]
+                (if err
+                  (on-error {:error (.-err err) :message (.-message err)})
+                  (on-prepared))))))
 
 (defn prepare-recorder
   [recorder on-prepared on-error]
   (when (and recorder (.-canPrepare ^js recorder))
     (.prepare ^js recorder
-              (fn [err _]
+              (fn [^js err]
                 (if err
                   (on-error {:error (.-err err) :message (.-message err)})
                   (on-prepared))))))
@@ -66,42 +67,47 @@
               (.-canRecord ^js recorder)
               (.-canPrepare ^js recorder)))
     (.record ^js recorder
-             #(if %
-                (on-error {:error (.-err %) :message (.-message %)})
-                (on-start)))))
+             (fn [^js err]
+               (if err
+                 (on-error {:error (.-err err) :message (.-message err)})
+                 (on-start))))))
 
 (defn stop-recording
   [recorder on-stop on-error]
   (if (and recorder (#{RECORDING PAUSED} (get-state recorder)))
     (.stop ^js recorder
-           #(if %
-              (on-error {:error (.-err %) :message (.-message %)})
-              (on-stop)))
+           (fn [^js err]
+             (if err
+               (on-error {:error (.-err err) :message (.-message err)})
+               (on-stop))))
     (on-stop)))
 
 (defn pause-recording
   [recorder on-pause on-error]
   (when (and recorder (.-isRecording ^js recorder))
     (.pause ^js recorder
-            #(if %
-               (on-error {:error (.-err %) :message (.-message %)})
-               (on-pause)))))
+            (fn [^js err]
+              (if err
+                (on-error {:error (.-err err) :message (.-message err)})
+                (on-pause))))))
 
 (defn start-playing
   [player on-start on-error]
   (when (and player (.-canPlay ^js player))
     (.play ^js player
-           #(if %
-              (on-error {:error (.-err %) :message (.-message %)})
-              (on-start)))))
+           (fn [^js err]
+             (if err
+               (on-error {:error (.-err err) :message (.-message err)})
+               (on-start))))))
 
 (defn stop-playing
   [player on-stop on-error]
   (if (and player (.-isPlaying ^js player))
     (.stop ^js player
-           #(if %
-              (on-error {:error (.-err %) :message (.-message %)})
-              (on-stop)))
+           (fn [^js err]
+             (if err
+               (on-error {:error (.-err err) :message (.-message err)})
+               (on-stop))))
     (on-stop)))
 
 (defn get-recorder-file-path
@@ -123,7 +129,7 @@
   [player on-play on-pause on-error]
   (when (and player (.-canPlay ^js player))
     (.playPause ^js player
-                (fn [error pause?]
+                (fn [^js error pause?]
                   (if error
                     (on-error {:error (.-err error) :message (.-message error)})
                     (if pause?
@@ -135,9 +141,10 @@
   (when (and player (.-canPlay ^js player))
     (.seek ^js player
            value
-           #(if %
-              (on-error {:error (.-err %) :message (.-message %)})
-              (on-seek)))))
+           (fn [^js err]
+             (if err
+               (on-error {:error (.-err err) :message (.-message err)})
+               (on-seek))))))
 
 (defn can-play?
   [player]

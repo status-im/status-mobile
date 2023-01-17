@@ -57,7 +57,7 @@
         update?           (atom nil)
         current-obj       (reagent/atom nil)]
     (reagent/create-class
-     {:UNSAFE_componentWillMount  (fn [args]
+     {:UNSAFE_componentWillMount  (fn [^js args]
                                     (let [[_ obj _ _] (.-argv (.-props args))]
                                       (when @clear-timeout (js/clearTimeout @clear-timeout))
                                       (when (or (not= obj @current-obj) @update?)

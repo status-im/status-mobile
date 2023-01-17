@@ -127,7 +127,7 @@
  (fn [^js connectors]
    (log/debug "Kill wc sessions")
    (doseq [connector connectors]
-     (.killSession connector))))
+     (.killSession ^js connector))))
 
 (re-frame/reg-fx
  :wc-1-approve-request
