@@ -36,24 +36,25 @@
                                         (if selected
                                           (rf/dispatch [:undo-deselect-member public-key true])
                                           (rf/dispatch [:deselect-member public-key true])))))]
-    (fn []
-      [rn/touchable-opacity
-       {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                 {:content (fn [] [actions/actions item extra-data])}])
-        :style    {:position :absolute
-                   :right    20}}
-       (if (= icon :options)
-         [quo/icon :i/options
-          {:size  20
-           :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-         (rn/use-memo
-          (fn []
-            [quo/checkbox
-             {:default-checked?    @checked?
-              :accessibility-label :contact-toggle-check
-              :disabled?           (and member? (not admin?))
-              :on-change           on-check}])
-          [checked?]))])))
+    [:f>
+     (fn []
+       [rn/touchable-opacity
+        {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                  {:content (fn [] [actions/actions item extra-data])}])
+         :style    {:position :absolute
+                    :right    20}}
+        (if (= icon :options)
+          [quo/icon :i/options
+           {:size  20
+            :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+          (rn/use-memo
+           (fn []
+             [quo/checkbox
+              {:default-checked?    @checked?
+               :accessibility-label :contact-toggle-check
+               :disabled?           (and member? (not admin?))
+               :on-change           on-check}])
+           [checked?]))])]))
 
 (defn contact-list-item
   [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
