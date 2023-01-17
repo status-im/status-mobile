@@ -85,7 +85,7 @@
       ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
       ;; gallery, we just clean previous state and set all newly picked images
       (when (and platform/ios? (pos? (count images)))
-        (re-frame/dispatch [:chat.ui/clear-sending-images chat-id]))
+        (re-frame/dispatch [:chat.ui/clear-sending-images]))
       (doseq [^js result (if platform/ios?
                            (take config/max-images-batch images)
                            [images])]
@@ -158,16 +158,19 @@
 
 (rf/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}
-  [{:keys [db]} current-chat-id]
-  {:db (-> db
-           (update-in [:chat/inputs current-chat-id :metadata] assoc :sending-image {})
-           (update-in [:chat/inputs current-chat-id :metadata] assoc :selected-photos))})
+  [{:keys [db]}]
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (-> db
+             (update-in [:chat/inputs current-chat-id :metadata]
+                        assoc
+                        :sending-image   {}
+                        :selected-photos []))}))
 
 (rf/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
   [{:keys [db] :as cofx} chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
-    (clear-sending-images cofx current-chat-id)))
+    (clear-sending-images cofx)))
 
 (rf/defn cancel-sending-image-timeline
   {:events [:chat.ui/cancel-sending-image-timeline]}
@@ -179,18 +182,22 @@
   [{:keys [db]} current-chat-id original uri]
   {:db (-> db
            (update-in [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})
-           (update-in [:chat/inputs current-chat-id :metadata :selected-photos] conj original))})
+           (update-in [:chat/inputs current-chat-id :metadata :selected-photos]
+                      (fn [selected-photos]
+                        (->> (conj selected-photos original)
+                             (into [])))))})
 
 (rf/defn image-unselected
   {:events [:chat.ui/image-unselected]}
   [{:keys [db]} original]
-  (let [current-chat-id                (:current-chat-id db)
-        selected-photos-after-deletion (->> (rf/sub [:chats/selected-photos])
-                                            (remove #(= % original)))]
+  (let [current-chat-id       (:current-chat-id db)
+        selected-photos       (-> (:chat/inputs db)
+                                  (get-in [current-chat-id :metadata :selected-photos]))
+        photos-after-deletion (vec (remove #(= % original) selected-photos))]
     {:db (-> db
              (update-in [:chat/inputs current-chat-id :metadata :sending-image] dissoc original)
              (assoc-in [:chat/inputs current-chat-id :metadata :selected-photos]
-                       selected-photos-after-deletion))}))
+                       photos-after-deletion))}))
 
 (rf/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}

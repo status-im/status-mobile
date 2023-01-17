@@ -333,7 +333,7 @@
                      :accessibility-label :send-message-button
                      :on-press            #(do (clean-and-minimize-composer-fn (some? edit))
                                                (scroll-to-bottom)
-                                               (rf/dispatch [:chat.ui/clear-sending-images chat-id])
+                                               (rf/dispatch [:chat.ui/clear-sending-images])
                                                (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
