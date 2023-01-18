@@ -2,8 +2,8 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
-            [status-im.constants :as constants]
-            [utils.i18n :as i18n]
+            [status-im2.setup.constants :as constants]
+            [i18n.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]))

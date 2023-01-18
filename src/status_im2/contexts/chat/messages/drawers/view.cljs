@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.drawers.view
   (:require [react-native.core :as rn]
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [utils.i18n :as i18n]

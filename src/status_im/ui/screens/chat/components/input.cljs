@@ -9,7 +9,7 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im2.common.constants :as chat.constants]
+            [status-im2.setup.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]

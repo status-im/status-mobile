@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [re-frame.db :as re-frame.db]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.keycard.keycard :as keycard]

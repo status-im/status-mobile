@@ -5,7 +5,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.build :as build]
             [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.common.constants :as constants]))
+            [status-im2.setup.constants :as constants]))
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update

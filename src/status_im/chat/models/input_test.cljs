@@ -1,6 +1,6 @@
 (ns status-im.chat.models.input-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.chat.models.input :as input]
             [utils.datetime :as datetime]))
 

@@ -152,7 +152,7 @@
 
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
-;; NOTE moved to status-im2.common.constants
+;; NOTE moved to status-im2.setup.constants
 (def delete-message-undo-time-limit-ms 4000)
 (def delete-message-for-me-undo-time-limit-ms 4000)
 

@@ -2,8 +2,8 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [utils.i18n :as i18n]
+            [status-im2.setup.constants :as constants]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [utils.debounce :as debounce])

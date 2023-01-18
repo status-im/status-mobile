@@ -12,7 +12,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.config :as config]
             [status-im.utils.image-server :as image-server]
-            [status-im2.common.constants :as constants]))
+            [status-im2.setup.constants :as constants]))
 
 (re-frame/reg-sub
  :chats/chat

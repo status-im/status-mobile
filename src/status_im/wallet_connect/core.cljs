@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.signing.core :as signing]
             [status-im.utils.config :as config]

@@ -4,7 +4,7 @@
             [status-im.chat.models :as chat.models]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
                                                                                  ;;status-im2
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [utils.re-frame :as rf]))
 
 (defn- entry

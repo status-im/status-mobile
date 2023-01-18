@@ -5,7 +5,7 @@
             [status-im.add-new.db :as new-public-chat.db]
             [status-im.chat.models.loading :as loading]
             [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
             [utils.i18n :as i18n]

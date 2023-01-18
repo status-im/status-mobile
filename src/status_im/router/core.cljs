@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as public-chat.db]
             [status-im.chat.models :as chat.models]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]

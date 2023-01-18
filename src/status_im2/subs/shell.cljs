@@ -1,7 +1,7 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
             [utils.datetime :as datetime]
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.react-native.resources :as resources]))
 
 (defn community-avatar

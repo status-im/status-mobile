@@ -8,7 +8,7 @@
             [reagent.core :as reagent]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.view :as message]
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im.ui.screens.chat.group :as chat.group]

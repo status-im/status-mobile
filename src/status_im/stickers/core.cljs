@@ -1,7 +1,7 @@
 (ns status-im.stickers.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.config :as config]
             [utils.re-frame :as rf]

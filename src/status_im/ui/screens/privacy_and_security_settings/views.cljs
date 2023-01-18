@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.privacy-and-security-settings.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [utils.i18n :as i18n]
+            [status-im2.setup.constants :as constants]
+            [i18n.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.reset-password.core :as reset-password]

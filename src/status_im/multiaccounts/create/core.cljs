@@ -1,7 +1,7 @@
 (ns status-im.multiaccounts.create.core
   (:require [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]

@@ -1,5 +1,5 @@
 (ns status-im.visibility-status-updates.core
-  (:require [status-im.constants :as constants]
+  (:require [status-im2.setup.constants :as constants]
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]

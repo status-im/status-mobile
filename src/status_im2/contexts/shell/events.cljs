@@ -2,7 +2,7 @@
   (:require [utils.re-frame :as rf]
             [re-frame.core :as re-frame]
             [status-im.utils.core :as utils]
-            [status-im2.common.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im2.navigation.events :as navigation]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]

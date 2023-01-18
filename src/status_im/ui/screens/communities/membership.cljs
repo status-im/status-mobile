@@ -2,8 +2,8 @@
   (:require [quo.core :as quo]
             [quo.react-native :as rn]
             [status-im.communities.core :as communities]
-            [status-im.constants :as constants]
-            [utils.i18n :as i18n]
+            [status-im2.setup.constants :as constants]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [utils.re-frame :as rf]))
 

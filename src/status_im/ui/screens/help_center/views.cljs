@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.help-center.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [utils.i18n :as i18n]
+            [status-im2.setup.constants :as constants]
+            [i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]))
 

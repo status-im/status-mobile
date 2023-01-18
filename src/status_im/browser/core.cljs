@@ -8,7 +8,7 @@
    [status-im.browser.eip3326 :as eip3326]
    [status-im.browser.permissions :as browser.permissions]
    [status-im.browser.webview-ref :as webview-ref]
-   [status-im.constants :as constants]
+   [status-im2.setup.constants :as constants]
    [status-im.ethereum.core :as ethereum]
    [status-im.ethereum.ens :as ens]
    [utils.i18n :as i18n]

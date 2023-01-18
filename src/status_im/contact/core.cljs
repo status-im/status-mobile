@@ -1,6 +1,6 @@
 (ns status-im.contact.core
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.contact.block :as contact.block]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]

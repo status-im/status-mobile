@@ -13,7 +13,7 @@
    status-im.chat.models.input
    status-im.chat.models.loading
    status-im.chat.models.transport
-   [status-im.constants :as constants]
+   [status-im2.setup.constants :as constants]
    status-im.contact.block
    status-im.contact.chat
    status-im.contact.core

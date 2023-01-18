@@ -4,7 +4,7 @@
             [status-im2.contexts.chat.messages.list.events :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
             [utils.datetime :as datetime]
-            [status-im2.common.constants :as constants]))
+            [status-im2.setup.constants :as constants]))
 
 (re-frame/reg-sub
  :chats/chat-messages

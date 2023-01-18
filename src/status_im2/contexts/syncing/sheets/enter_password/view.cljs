@@ -5,7 +5,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.constants :as constants]
+            [status-im2.setup.constants :as constants]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [utils.re-frame :as rf]))
 
