@@ -29,6 +29,7 @@
    [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
    [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
    [status-im2.contexts.quo-preview.drawers.action-drawers :as drawers]
+   [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
    [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
    [status-im2.contexts.quo-preview.info.info-message :as info-message]
    [status-im2.contexts.quo-preview.info.information-box :as information-box]
@@ -128,7 +129,10 @@
                             :component divider-date/preview-divider-date}]
    :drawers               [{:name      :action-drawers
                             :insets    {:top false}
-                            :component drawers/preview-action-drawers}]
+                            :component drawers/preview-action-drawers}
+                           {:name      :permission-drawers
+                            :insets    {:top false}
+                            :component permission-drawers/preview-permission-drawers}]
    :dropdowns             [{:name      :dropdown
                             :insets    {:top false}
                             :component dropdown/preview-dropdown}]
