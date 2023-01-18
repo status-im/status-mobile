@@ -1,7 +1,6 @@
 (ns status-im.utils.universal-links.core
   (:require [clojure.string :as string]
             [goog.string :as gstring]
-            [i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
             [status-im.chat.models :as chat]
@@ -15,6 +14,7 @@
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
