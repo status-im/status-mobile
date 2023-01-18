@@ -1,6 +1,6 @@
 (ns status-im.data-store.activities
   (:require [clojure.set :as set]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.messages :as messages]
             [status-im2.contexts.activity-center.notification-types :as notification-types]))
 

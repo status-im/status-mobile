@@ -9,7 +9,7 @@
    [react-native.core :as rn]
    [status-im.chat.models.link-preview :as link-preview]
    [status-im.communities.core :as communities]
-   [status-im.constants :as constants]
+   [status-im2.constants :as constants]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.accordion :as accordion]
    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]

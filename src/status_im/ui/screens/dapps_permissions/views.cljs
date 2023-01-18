@@ -3,7 +3,7 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]

@@ -3,7 +3,7 @@
             [quo.react :as react]
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]

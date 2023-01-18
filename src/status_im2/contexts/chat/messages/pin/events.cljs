@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.pin.events
   (:require [re-frame.core :as re-frame]
             [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.pin-messages :as data-store.pin-messages]
             [status-im.transport.message.protocol :as protocol]
             [utils.re-frame :as rf]

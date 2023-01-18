@@ -8,7 +8,7 @@
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
-            [status-im2.setup.config :as config]))
+            [status-im2.config :as config]))
 
 (def components
   [])

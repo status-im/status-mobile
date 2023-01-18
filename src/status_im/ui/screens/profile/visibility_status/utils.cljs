@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [utils.datetime :as datetime]

@@ -1,7 +1,7 @@
 (ns status-im2.setup.log
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.setup.config :as config]
+            [status-im2.config :as config]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 

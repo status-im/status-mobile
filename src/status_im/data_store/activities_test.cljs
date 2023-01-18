@@ -1,6 +1,6 @@
 (ns status-im.data-store.activities-test
   (:require [cljs.test :refer [deftest is testing]]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.activities :as store]
             [status-im2.contexts.activity-center.notification-types :as notification-types]))
 

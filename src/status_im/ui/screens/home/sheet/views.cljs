@@ -7,7 +7,7 @@
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
             [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [quo2.core :as quo2]
             [status-im.ui.screens.home.sheet.styles :as style]))
 

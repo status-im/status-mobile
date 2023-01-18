@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            [status-im2.common.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.shell.cards.style :as style]
             [status-im2.contexts.shell.constants :as shell.constants]))
 

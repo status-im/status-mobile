@@ -1,4 +1,4 @@
-(ns status-im2.setup.config
+(ns status-im2.config
   (:require [clojure.string :as string]
             [react-native.config :as react-native-config]
             [status-im.ethereum.core :as ethereum]
@@ -145,6 +145,13 @@
 ;;TODO for development only should be removed in status 2.0
 (def new-ui-enabled? true)
 
-;; TODO: Remove this (highly) temporary flag once the new Activity Center is
-;; usable enough to replace the old one **in the new UI**.
-(def new-activity-center-enabled? true)
+(def delete-message-undo-time-limit-ms 4000)
+(def delete-message-for-me-undo-time-limit-ms 4000)
+
+(def waku-nodes-config
+  {:status.prod ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.nodes.status.im"]
+   :status.test ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.nodes.status.im"]
+   :wakuv2.prod
+   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im"]
+   :wakuv2.test
+   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.waku.nodes.status.im"]})

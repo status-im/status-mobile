@@ -11,7 +11,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im2.setup.config :as config]
+            [status-im2.config :as config]
             [utils.security.core]))
 
 (defn hide-sheet-and-dispatch

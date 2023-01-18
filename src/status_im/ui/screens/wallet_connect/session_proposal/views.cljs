@@ -6,7 +6,7 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.ui.components.icons.icons :as icons]

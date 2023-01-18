@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
             [test-helpers.unit :as h]
-            [status-im2.common.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]))
 
 (def public-key "0xpk")

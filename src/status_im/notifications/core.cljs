@@ -5,7 +5,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.notifications.android :as pn-android]
             [status-im.notifications.local :as local]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 

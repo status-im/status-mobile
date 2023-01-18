@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]

@@ -6,7 +6,7 @@
             [oops.core :as oops]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [utils.re-frame :as rf]))

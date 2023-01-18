@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.sheets
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-selection :as list-selection]

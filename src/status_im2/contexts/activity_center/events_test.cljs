@@ -1,6 +1,6 @@
 (ns status-im2.contexts.activity-center.events-test
   (:require [cljs.test :refer [deftest is testing]]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             status-im.events
             [test-helpers.unit :as h]
             [status-im2.contexts.activity-center.events :as activity-center]

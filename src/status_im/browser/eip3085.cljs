@@ -3,7 +3,7 @@
 (ns status-im.browser.eip3085
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.network.core :as network]
             [status-im.ui.screens.browser.eip3085.sheet :as sheet]
             [utils.re-frame :as rf]

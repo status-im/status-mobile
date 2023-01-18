@@ -1,6 +1,6 @@
 (ns status-im.utils.wallet-connect-legacy
   (:require ["@walletconnect/client-legacy" :default WalletConnect]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (defn create-connector
   [uri]

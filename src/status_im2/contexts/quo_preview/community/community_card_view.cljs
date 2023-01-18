@@ -6,7 +6,7 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im2.common.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def community-data

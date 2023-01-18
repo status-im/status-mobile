@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im2.setup.config :as config])
+            [status-im2.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data

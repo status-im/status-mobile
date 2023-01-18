@@ -17,7 +17,7 @@
    [status-im2.contexts.shell.animation :as animation]
    status-im2.contexts.syncing.events
    status-im2.navigation.core
-   [status-im2.setup.config :as config]
+   [status-im2.config :as config]
    [status-im2.setup.dev :as dev]
    status-im2.setup.events
    [status-im2.setup.global-error :as global-error]

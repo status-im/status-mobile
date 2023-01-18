@@ -1,6 +1,6 @@
 (ns status-im.chat.models.reactions
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.reactions :as data-store.reactions]
             [status-im.transport.message.protocol :as message.protocol]
             [utils.re-frame :as rf]

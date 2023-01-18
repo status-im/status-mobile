@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im2.common.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
  :communities

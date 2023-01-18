@@ -2,7 +2,7 @@
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im2.common.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.style :as style]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]

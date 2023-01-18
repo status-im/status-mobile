@@ -28,7 +28,7 @@
    [status-im.signing.eip1559 :as eip1559]
    [status-im.transport.core :as transport]
    [status-im.ui.components.react :as react]
-   [status-im.utils.config :as config]
+   [status-im2.config :as config]
    [utils.re-frame :as rf]
    [status-im.utils.keychain.core :as keychain]
    [status-im.utils.mobile-sync :as utils.mobile-sync]

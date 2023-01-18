@@ -1,7 +1,7 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]

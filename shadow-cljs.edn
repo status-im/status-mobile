@@ -47,8 +47,8 @@
                                    :build-notify status-im2.setup.hot-reload/build-notify
                                    :preloads     [re-frisk-remote.preload]}
                 :closure-defines
-                {status-im.utils.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
-                 status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+                {status-im2.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
+                 status-im2.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                 :compiler-options {:output-feature-set :es5
                                    :closure-defines
                                    {re-frame.trace/trace-enabled? true}
@@ -61,8 +61,8 @@
    :chunks     {:fleets status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
-    {status-im.utils.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
-     status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+    {status-im2.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
+     status-im2.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
@@ -89,8 +89,8 @@
    :ui-driven
    true
    :closure-defines
-   {status-im.utils.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
-    status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+   {status-im2.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
+    status-im2.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
    :compiler-options
    {;; needed because we override require and it
     ;; messes with source-map which reports callstack

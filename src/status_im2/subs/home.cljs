@@ -1,6 +1,6 @@
 (ns status-im2.subs.home
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (def memo-home-items (atom nil))
 

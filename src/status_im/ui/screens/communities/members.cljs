@@ -3,7 +3,7 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]

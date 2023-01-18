@@ -8,7 +8,7 @@
             [quo2.components.community.style :as styles]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

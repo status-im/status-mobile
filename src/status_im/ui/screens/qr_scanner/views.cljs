@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (def camera (reagent/adapt-react-class CameraKitCamera))
 

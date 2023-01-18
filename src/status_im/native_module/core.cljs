@@ -6,7 +6,7 @@
             [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (defn status
   []

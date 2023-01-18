@@ -1,6 +1,6 @@
 (ns status-im.data-store.chats
   (:require [clojure.set :as set]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.messages :as messages]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]

@@ -2,7 +2,7 @@
   (:require ["@react-native-async-storage/async-storage" :default AsyncStorage]
             ["@walletconnect/client" :refer [CLIENT_EVENTS] :default WalletConnectClient]
             [clojure.string :as string]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (defn init
   [on-success on-error]

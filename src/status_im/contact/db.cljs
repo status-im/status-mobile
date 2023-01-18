@@ -1,7 +1,7 @@
 (ns status-im.contact.db
   (:require [clojure.set :as set]
             [clojure.string :as string]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]

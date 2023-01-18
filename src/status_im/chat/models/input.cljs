@@ -3,12 +3,11 @@
             [clojure.string :as string]
             [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im2.common.constants :as chat.constants]
             [status-im.chat.models :as chat]
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [utils.datetime :as datetime]
@@ -78,14 +77,14 @@
 (defn- start-cooldown
   [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
-                            :ms       (chat.constants/cooldown-periods-ms
+                            :ms       (constants/cooldown-periods-ms
                                        cooldowns
-                                       chat.constants/default-cooldown-period-ms)}]
+                                       constants/default-cooldown-period-ms)}]
    :show-cooldown-warning nil
    :db                    (assoc db
                                  :chat/cooldowns               (if
                                                                  (=
-                                                                  chat.constants/cooldown-reset-threshold
+                                                                  constants/cooldown-reset-threshold
                                                                   cooldowns)
                                                                  0
                                                                  cooldowns)
@@ -103,8 +102,8 @@
     :as cofx}]
   (when (chat/public-chat? cofx current-chat-id)
     (let [spamming-fast?       (< (- (datetime/timestamp) last-outgoing-message-sent-at)
-                                  (+ chat.constants/spam-interval-ms (* 1000 cooldowns)))
-          spamming-frequently? (= chat.constants/spam-message-frequency-threshold
+                                  (+ constants/spam-interval-ms (* 1000 cooldowns)))
+          spamming-frequently? (= constants/spam-message-frequency-threshold
                                   spam-messages-frequency)]
       (cond-> {:db (assoc db
                           :chat/last-outgoing-message-sent-at (datetime/timestamp)

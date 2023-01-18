@@ -1,5 +1,5 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.constants :as constants]
+  (:require [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))

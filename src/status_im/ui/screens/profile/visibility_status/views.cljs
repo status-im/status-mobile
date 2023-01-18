@@ -6,7 +6,7 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]

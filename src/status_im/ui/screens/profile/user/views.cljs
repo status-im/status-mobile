@@ -19,7 +19,7 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im2.setup.config :as config])
+            [status-im2.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key

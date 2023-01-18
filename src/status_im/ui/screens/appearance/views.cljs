@@ -6,7 +6,7 @@
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (defn button
   [label icon theme selected?]
