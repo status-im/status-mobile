@@ -589,21 +589,21 @@
   [{:keys [db] :as cofx} symbol]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction :symbol] symbol)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet nil)))
 
 (rf/defn wallet-send-set-field
   {:events [:wallet.send/set-field]}
   [{:keys [db] :as cofx} field value]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet nil)))
 
 (rf/defn wallet-request-set-field
   {:events [:wallet.request/set-field]}
   [{:keys [db] :as cofx} field value]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet nil)))
 
 (rf/defn navigate-to-recipient-code
   {:events [:wallet.send/navigate-to-recipient-code]}
@@ -611,7 +611,7 @@
   (rf/merge cofx
             {:db (-> db
                      (assoc :wallet/recipient {}))}
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (navigation/open-modal :recipient nil)))
 
 (rf/defn show-delete-account-confirmation

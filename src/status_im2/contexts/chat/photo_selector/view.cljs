@@ -19,7 +19,7 @@
   (doseq [item @selected]
     (rf/dispatch [:chat.ui/camera-roll-pick item]))
   (reset! selected [])
-  (rf/dispatch [:dismiss-bottom-sheet]))
+  (rf/dispatch [:bottom-sheet/hide]))
 
 (defn bottom-gradient
   [chat-id selected-images]
@@ -36,7 +36,7 @@
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
             :on-press            (fn []
-                                   (rf/dispatch [:dismiss-bottom-sheet
+                                   (rf/dispatch [:bottom-sheet/hide
                                                  #(on-press-confirm-selection chat-id)]))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])

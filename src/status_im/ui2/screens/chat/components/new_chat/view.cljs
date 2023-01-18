@@ -19,7 +19,7 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:dismiss-bottom-sheet #(rf/dispatch event)]))
+  (rf/dispatch [:bottom-sheet/hide #(rf/dispatch event)]))
 
 (defn- on-toggle
   [allow-new-users? checked? public-key]
@@ -81,7 +81,7 @@
         [quo2/button
          {:type                      :grey
           :icon                      true
-          :on-press                  #(rf/dispatch [:dismiss-bottom-sheet])
+          :on-press                  #(rf/dispatch [:bottom-sheet/hide])
           :style                     style/contact-selection-close
           :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                                quo2.colors/neutral-90)}

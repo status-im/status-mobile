@@ -75,7 +75,7 @@
            deselected-members      (rf/sub [:group-chat/deselected-members])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
-         {:on-press            #(rf/dispatch [:dismiss-bottom-sheet])
+         {:on-press            #(rf/dispatch [:bottom-sheet/hide])
           :accessibility-label :close-manage-members
           :style               (style/close-icon)}
          [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
@@ -93,11 +93,14 @@
           {:style               {:flex 1}
            :accessibility-label :save
            :on-press            (fn []
-                                  (rf/dispatch [:dismiss-bottom-sheet #(do
-                                                                         (js/setTimeout (fn []
-                                                                                          (rf/dispatch [:group-chats.ui/remove-members-pressed]))
-                                                                                        500)
-                                                                         (rf/dispatch [:group-chats.ui/add-members-pressed]))]))
+                                  (rf/dispatch
+                                   [:bottom-sheet/hide
+                                    #(do
+                                       (js/setTimeout (fn []
+                                                        (rf/dispatch
+                                                         [:group-chats.ui/remove-members-pressed]))
+                                                      500)
+                                       (rf/dispatch [:group-chats.ui/add-members-pressed]))]))
            :disabled            (and (zero? (count selected-participants))
                                      (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])

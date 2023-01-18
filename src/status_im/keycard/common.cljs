@@ -231,7 +231,7 @@
             {:db (assoc-in db [:keycard :card-read-in-progress?] false)}
             (restore-on-card-connected)
             (restore-on-card-read)
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet nil)))
 
 (rf/defn hide-connection-sheet
   [cofx]

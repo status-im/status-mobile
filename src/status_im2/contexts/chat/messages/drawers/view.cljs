@@ -52,8 +52,9 @@
    (when-not pinned
      [{:type     :danger
        :on-press (fn []
-                   (rf/dispatch [:dismiss-bottom-sheet 
-                                 #(do (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                   (rf/dispatch
+                    [:bottom-sheet/hide
+                     #(do (rf/dispatch [:chat.ui/delete-message-for-me message-data
                                         constants/delete-message-for-me-undo-time-limit-ms]))]))
 
        :label    (i18n/label :t/delete-for-me)
@@ -62,7 +63,7 @@
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
        :on-press (fn []
-                   (rf/dispatch [:dismiss-bottom-sheet
+                   (rf/dispatch [:bottom-sheet/hide
                                  #(rf/dispatch [:chat.ui/delete-message message-data
                                                 constants/delete-message-undo-time-limit-ms])]))
        :label    (i18n/label :t/delete-for-everyone)
@@ -112,7 +113,7 @@
                                        (rf/dispatch [:models.reactions/send-emoji-reaction
                                                      {:message-id message-id
                                                       :emoji-id   id}]))
-                                     (rf/dispatch [:dismiss-bottom-sheet]))})
+                                     (rf/dispatch [:bottom-sheet/hide]))})
             icon]])))]))
 
 (defn reactions-and-actions
@@ -137,7 +138,7 @@
               :accessibility-label (:label action)
               :icon                (:icon action)
               :on-press            (fn []
-                                     (rf/dispatch [:dismiss-bottom-sheet
+                                     (rf/dispatch [:bottom-sheet/hide
                                                    #(when on-press (on-press))]))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
@@ -151,7 +152,7 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(rf/dispatch [:dismiss-bottom-sheet
+              :on-press            #(rf/dispatch [:bottom-sheet/hide
                                                   (fn []
                                                     (when on-press (on-press)))])}]))
         (when-not (empty? admin-actions)
@@ -167,5 +168,5 @@
               :accessibility-label (:label action)
               :icon                (:icon action)
               :on-press            (fn []
-                                     (rf/dispatch [:dismiss-bottom-sheet
+                                     (rf/dispatch [:bottom-sheet/hide
                                                    #(when on-press (on-press))]))}]))]])))

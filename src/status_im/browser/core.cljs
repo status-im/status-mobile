@@ -562,7 +562,7 @@
   [{:keys [db] :as cofx} address]
   (rf/merge cofx
             {:browser/clear-web-data nil}
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (browser.permissions/clear-dapps-permissions)
             (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)

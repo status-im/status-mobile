@@ -215,7 +215,7 @@
 
 (rf/defn clear-contacts
   {:events [:clear-contacts]}
-  [{:keys [db]} id]
+  [{:keys [db]}]
   {:db (assoc db :group/selected-contacts #{})})
 
 (rf/defn deselect-participant

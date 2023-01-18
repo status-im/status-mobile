@@ -28,7 +28,7 @@
   {:events [:keycard.login.ui/create-new-key-pressed]}
   [cofx]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (onboarding/start-onboarding-flow)))
 
 (rf/defn login-add-key-pressed

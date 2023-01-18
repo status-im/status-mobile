@@ -234,7 +234,7 @@
                                 :params     [key-uid (clean-path path) ax ay bx by]
                                 ;; NOTE: In case of an error we can show a toast error
                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet nil))))
 
 (rf/defn save-profile-picture-from-url
   {:events [::save-profile-picture-from-url]}
@@ -245,7 +245,7 @@
                                 :params     [key-uid url]
                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet nil))))
 
 (comment
   (re-frame/dispatch
@@ -263,7 +263,7 @@
                                 ;; with a toast error
                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
               (multiaccounts.update/optimistic :images nil)
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet nil))))
 
 (rf/defn get-profile-picture
   [cofx]

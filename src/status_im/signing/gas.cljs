@@ -300,14 +300,14 @@
                              :maxFeePerGas         (money/->wei :gwei (:value-number maxFeePerGas))
                              :maxPriorityFeePerGas (money/->wei :gwei
                                                                 (:value-number maxPriorityFeePerGas)))}
-                (bottom-sheet/hide-bottom-sheet)))))
+                (bottom-sheet/hide-bottom-sheet nil)))))
 
 (rf/defn submit-nonce
   {:events [:signing.nonce/submit]}
   [{db :db :as cofx} nonce]
   (rf/merge cofx
             {:db (assoc-in db [:signing/tx :nonce] (if (string/blank? nonce) nil nonce))}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet nil)))
 
 (re-frame/reg-fx
  :signing/update-gas-price

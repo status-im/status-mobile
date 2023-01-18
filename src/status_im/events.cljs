@@ -322,33 +322,6 @@
                           :cb   #(re-frame/dispatch
                                   [:information-box-states-loaded hashes %])}}))
 
-(rf/defn reset-bottom-sheet
-  {:events [:bottom-sheet/reset]}
-  [{:keys [db]} on-cancel]
-  (when (fn? on-cancel) (on-cancel))
-  {:db (assoc db
-              :bottom-sheet/config
-              {:content-height      nil
-               :show-bottom-sheet?  nil
-               :keyboard-was-shown? false
-               :expanded?           false
-               :gesture-running?    false
-               :animation-delay     constants/bottom-sheet-animation-delay})})
-
-(rf/defn dismiss-bottom-sheet
-  {:events [:dismiss-bottom-sheet]}
-  [{:keys [db]} on-cancel]
-  (let [animation-delay (get-in db
-                                [:bottom-sheet/config :animation-delay]
-                                constants/bottom-sheet-animation-delay)]
-    {:dispatch       [:bottom-sheet/update-config
-                      {:config :show-bottom-sheet?
-                       :value  false}]
-     :dispatch-later [{:dispatch [:bottom-sheet/hide-navigation-overlay]
-                       :ms       constants/bottom-sheet-animation-delay}
-                      {:dispatch [:bottom-sheet/reset on-cancel]
-                       :ms       constants/bottom-sheet-animation-delay}]}))
-
 (rf/defn update-bottom-sheet-config
   {:events [:bottom-sheet/update-config]}
   [{:keys [db]} {:keys [config value]}]

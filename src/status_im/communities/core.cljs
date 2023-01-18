@@ -365,7 +365,7 @@
   [cofx id]
   (rf/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (navigation/open-modal :invite-people-community {:invite? true})))
 
 (rf/defn share-community-pressed
@@ -373,7 +373,7 @@
   [cofx id]
   (rf/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (navigation/open-modal :invite-people-community {})))
 
 (rf/defn create-channel-pressed
@@ -495,7 +495,7 @@
   {:events [::member-banned]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (handle-response response-js)
             (activity-center/notifications-fetch-unread-count)))
 
@@ -516,7 +516,7 @@
   {:events [::member-kicked]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (handle-response response-js)))
 
 (rf/defn member-kick
@@ -749,7 +749,7 @@
   {:events [:community.member/role-updated]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet nil)
             (handle-response response-js)))
 
 (rf/defn add-role-to-member

@@ -41,12 +41,12 @@
        ;; no reason to restart wallet.
        (and logged-in? initialized?)
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)
+        (bottom-sheet/hide-bottom-sheet nil)
         (wallet/restart-wallet-service nil)]
 
        logged-in?
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)]))))
+        (bottom-sheet/hide-bottom-sheet nil)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))
@@ -113,7 +113,7 @@
   [cofx]
   (rf/merge
    cofx
-   (bottom-sheet/hide-bottom-sheet)
+   (bottom-sheet/hide-bottom-sheet nil)
    (navigation/navigate-to-cofx :mobile-network-settings nil)))
 
 (rf/defn mobile-network-show-offline-sheet

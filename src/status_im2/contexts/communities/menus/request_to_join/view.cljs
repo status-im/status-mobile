@@ -114,20 +114,20 @@
         {:style style/request-button}
         [quo/button
          {:accessibility-label :cancel
-          :on-press            #(rf/dispatch [:dismiss-bottom-sheet])
+          :on-press            #(rf/dispatch [:bottom-sheet/hide])
           :type                :grey
           :style               style/cancel-button} (i18n/label :t/cancel)]
         [quo/button
          {:accessibility-label :join-community-button
           :on-press            (fn []
                                  (if can-join?
-                                   (rf/dispatch [:dismiss-bottom-sheet
+                                   (rf/dispatch [:bottom-sheet/hide
                                                  #(rf/dispatch [::communities/join id])])
                                    (do
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))
                                           (requests/can-request-access-again? requested-to-join-at))
                                      (rf/dispatch [::communities/request-to-join id])
-                                     (rf/dispatch [:dismiss-bottom-sheet]))))
+                                     (rf/dispatch [:bottom-sheet/hide]))))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))

@@ -1,5 +1,6 @@
 (ns status-im.bottom-sheet.core
-  (:require [utils.re-frame :as rf]))
+  (:require [utils.re-frame :as rf]
+            [status-im.constants :as constants]))
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
@@ -17,12 +18,32 @@
    {:view    view
     :options options}))
 
+(rf/defn reset-bottom-sheet
+  {:events [:bottom-sheet/reset]}
+  [{:keys [db]} on-cancel]
+  (when (fn? on-cancel) (on-cancel))
+  {:db (assoc db
+              :bottom-sheet/config
+              {:content-height      nil
+               :show-bottom-sheet?  nil
+               :keyboard-was-shown? false
+               :expanded?           false
+               :gesture-running?    false
+               :animation-delay     constants/bottom-sheet-animation-delay})})
+
 (rf/defn hide-bottom-sheet
   {:events [:bottom-sheet/hide]}
-  [{:keys [db]}]
-  {:db (-> db
-           (assoc :bottom-sheet/show? false)
-           (assoc-in [:bottom-sheet/config :show-bottom-sheet?] nil))})
+  [{:keys [db]} on-cancel]
+  (let [animation-delay (get-in db
+                                [:bottom-sheet/config :animation-delay]
+                                constants/bottom-sheet-animation-delay)]
+    {:dispatch       [:bottom-sheet/update-config
+                      {:config :show-bottom-sheet?
+                       :value  false}]
+     :dispatch-later [{:dispatch [:bottom-sheet/hide-navigation-overlay]
+                       :ms       constants/bottom-sheet-animation-delay}
+                      {:dispatch [:bottom-sheet/reset on-cancel]
+                       :ms       constants/bottom-sheet-animation-delay}]}))
 
 (rf/defn hide-bottom-sheet-navigation-overlay
   {:events [:bottom-sheet/hide-navigation-overlay]}

@@ -9,7 +9,7 @@
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]
-  (rf/dispatch [:dismiss-bottom-sheet #(rf/dispatch :dismiss-keyboard event)]))
+  (rf/dispatch [:bottom-sheet/hide #(rf/dispatch :dismiss-keyboard event)]))
 
 (defn- context-tags
   [challenger? {:keys [author contact-verification-status]}]

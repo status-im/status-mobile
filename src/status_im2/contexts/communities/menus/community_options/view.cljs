@@ -6,7 +6,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:dismiss-bottom-sheet #(rf/dispatch event)]))
+  (rf/dispatch [:bottom-sheet/hide #(rf/dispatch event)]))
 
 (defn view-members
   [id]

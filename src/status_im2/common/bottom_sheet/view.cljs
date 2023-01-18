@@ -91,7 +91,7 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
-        close-bottom-sheet #(re-frame/dispatch [:dismiss-bottom-sheet on-cancel])]
+        close-bottom-sheet #(re-frame/dispatch [:bottom-sheet/hide on-cancel])]
     [safe-area/consumer
      (fn [insets]
        [:f>
@@ -103,11 +103,12 @@
                 {:keys [keyboard-shown]} (hooks/use-keyboard)
                 bg-height-expanded (- window-height (:top insets))
                 {:keys [content-height show-bottom-sheet? keyboard-was-shown? expanded? gesture-running?
-                        animation-delay] :or {content-height      nil
-                                              show-bottom-sheet?  nil
-                                              keyboard-was-shown? false
-                                              expanded?           false
-                                              gesture-running?    false}}
+                        animation-delay]
+                 :or   {content-height      nil
+                        show-bottom-sheet?  nil
+                        keyboard-was-shown? false
+                        expanded?           false
+                        gesture-running?    false}}
                 (rf/sub [:bottom-sheet/config])
                 bg-height (max (min content-height bg-height-expanded) 150)
                 bottom-sheet-dy (reanimated/use-shared-value 0)
