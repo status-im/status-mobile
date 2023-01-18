@@ -33,16 +33,23 @@
 
 (rf/defn hide-bottom-sheet
   {:events [:bottom-sheet/hide]}
-  [{:keys [db]} on-cancel]
+  [{:keys [db]}]
   {:dispatch       [:bottom-sheet/update-config
                     {:config :show-bottom-sheet?
                      :value  false}]
    :dispatch-later [{:dispatch [:bottom-sheet/hide-navigation-overlay]
                      :ms       constants/bottom-sheet-animation-delay}
-                    {:dispatch [:bottom-sheet/reset on-cancel]
+                    {:dispatch [:bottom-sheet/reset]
+                     :ms       constants/bottom-sheet-animation-delay}]})
+
+(rf/defn hide-bottom-sheet-and-dispatch
+  {:events [:bottom-sheet/hide-and-dispatch]}
+  [{:keys [db]} on-cancel]
+  {:bottom-sheet/hide nil
+   :dispatch-later [{:dispatch [:bottom-sheet/reset on-cancel]
                      :ms       constants/bottom-sheet-animation-delay}]})
 
 (rf/defn hide-bottom-sheet-navigation-overlay
   {:events [:bottom-sheet/hide-navigation-overlay]}
   [{}]
-  {:hide-bottom-sheet nil})
+  {:hide-bottom-sheet-and-dispatch nil})

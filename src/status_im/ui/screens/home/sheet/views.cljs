@@ -13,7 +13,7 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide #(rf/dispatch event)]))
+  (rf/dispatch [:bottom-sheet/hide-and-dispatch #(rf/dispatch event)]))
 
 (defn add-new-view
   []

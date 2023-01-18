@@ -91,7 +91,7 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
-        close-bottom-sheet #(re-frame/dispatch [:bottom-sheet/hide on-cancel])]
+        close-bottom-sheet #(re-frame/dispatch [:bottom-sheet/hide-and-dispatch on-cancel])]
     [safe-area/consumer
      (fn [insets]
        [:f>

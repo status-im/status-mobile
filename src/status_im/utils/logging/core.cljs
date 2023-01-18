@@ -206,7 +206,7 @@
     {:db (assoc db :bug-report/description-error error)}
     (rf/merge
      cofx
-     (bottom-sheet/hide-bottom-sheet nil)
+     (bottom-sheet/hide-bottom-sheet)
      (send-logs :email))))
 
 (re-frame/reg-fx
@@ -234,5 +234,5 @@
   (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
-   (bottom-sheet/hide-bottom-sheet nil)
+   (bottom-sheet/hide-bottom-sheet)
    (submit-issue)))

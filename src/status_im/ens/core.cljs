@@ -261,7 +261,7 @@
   [{:keys [db] :as cofx} _ {:keys [address]}]
   (rf/merge cofx
             {:db (assoc-in db [:ens/registration :address] address)}
-            (bottom-sheet/hide-bottom-sheet nil)))
+            (bottom-sheet/hide-bottom-sheet)))
 
 (rf/defn save-preferred-name
   {:events [::save-preferred-name]}

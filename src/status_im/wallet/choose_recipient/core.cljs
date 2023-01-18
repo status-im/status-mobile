@@ -111,7 +111,7 @@
   {:events [:wallet.send/qr-scanner]}
   [{:keys [db] :as cofx} options]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet nil)
+            (bottom-sheet/hide-bottom-sheet)
             (qr-scaner/scan-qr-code options)))
 
 (rf/defn parse-eip681-uri-and-resolve-ens

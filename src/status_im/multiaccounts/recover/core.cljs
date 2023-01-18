@@ -159,7 +159,7 @@
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed}
                    :recovered-account? true)
             (update :keycard dissoc :flow))}
-   (bottom-sheet/hide-bottom-sheet nil)
+   (bottom-sheet/hide-bottom-sheet)
    (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
 (rf/defn proceed-to-import-mnemonic

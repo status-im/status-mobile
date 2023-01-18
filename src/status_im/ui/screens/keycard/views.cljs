@@ -447,7 +447,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             (multiaccounts.create/prepare-intro-wizard)
-            (bottom-sheet/hide-bottom-sheet nil)
+            (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :get-your-keys nil)))
 
 (defn- more-sheet-content

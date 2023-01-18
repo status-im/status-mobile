@@ -74,7 +74,7 @@
                  (assoc-in [:keycard :flow] :import)
                  (assoc :recovered-account? true))
              :keycard/check-nfc-enabled nil}
-            (bottom-sheet/hide-bottom-sheet nil)
+            (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :keycard-recovery-intro nil)))
 
 (rf/defn access-key-pressed
