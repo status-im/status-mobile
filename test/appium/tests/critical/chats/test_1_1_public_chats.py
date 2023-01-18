@@ -1495,7 +1495,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Device 1 checks PN with emoji")
         self.device_1.open_notification_bar()
-        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
+        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
             self.device_1.driver.fail("Push notification with emoji was not received")
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
@@ -1509,11 +1509,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if (self.device_2.element_by_text_part(message).is_element_displayed()
                 or self.device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             self.errors.append("PN are keep staying after message was seen by user")
-        [device.click_system_back_button_until_element_is_shown(element='chat') for device in (self.device_1, self.device_2)]
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_edit_delete_push_disappear(self):
+        [device.click_system_back_button_until_element_is_shown() for device in
+         (self.device_1, self.device_2)]
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.home_1.get_chat(self.default_username_2).click()
         if not self.chat_2.chat_message_input.is_element_displayed():

@@ -99,7 +99,7 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 9 \
+                --numprocesses 4 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -k \"${params.KEYWORD_EXPRESSION}\" \

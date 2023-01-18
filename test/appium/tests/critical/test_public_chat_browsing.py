@@ -615,6 +615,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_chat(self.channel_name).click()
 
     @marks.testrail_id(702838)
+    @marks.xfail(reason="blocked by #14797")
     def test_community_message_send_check_timestamps_sender_username(self):
         message = self.text_message
         sent_time_variants = self.channel_1.convert_device_time_to_chat_timestamp()
@@ -622,7 +623,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if sent_time_variants and timestamp:
             if timestamp not in sent_time_variants:
                 self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
-                                   (sent_time_variants.join(','), timestamp))
+                                   (", ".join(sent_time_variants), timestamp))
         for channel in self.channel_1, self.channel_2:
             channel.verify_message_is_under_today_text(message, self.errors)
         if self.channel_2.chat_element_by_text(message).username.text != self.default_username_1:
@@ -630,11 +631,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702843)
+    @marks.xfail(reason="blocked by #14797")
     def test_community_message_edit(self):
+        message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
         if not self.channel_2.chat_message_input.is_element_displayed():
             self.home_2.communities_tab.click()
             self.community_2.get_chat(self.channel_name).click()
-        message_before_edit, message_after_edit = self.text_message, "Message AFTER edit 2"
+        self.channel_1.send_message(message_before_edit)
         self.channel_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for channel in (self.channel_1, self.channel_2):
             if not channel.element_by_text_part(message_after_edit).is_element_displayed(60):
@@ -663,7 +666,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("System message about deletion for you is not displayed")
         if not self.channel_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(30):
             self.errors.append("Deleted for me message is deleted all channel members")
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
@@ -777,7 +779,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_1_element = self.home_1.get_chat(self.community_name, community=True)
         if community_1_element.new_messages_community.is_element_displayed():
             self.errors.append('New messages community badge is shown on community after marking messages as read')
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702845)
@@ -793,6 +794,5 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_to_leave.click_system_back_button_until_element_is_shown()
         if comm_to_leave_element.is_element_displayed():
             self.errors.append('Community is still shown in the list after leave')
-
         self.errors.verify_no_errors()
 

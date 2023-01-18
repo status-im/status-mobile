@@ -233,7 +233,7 @@ class TestrailReport(BaseTestReport):
                             for geth in test.geth_paths.keys():
                                 self.add_attachment(method='add_attachment_to_result/%s' % str(res_id),
                                                     path=test.geth_paths[geth])
-                        except AttributeError:
+                        except (AttributeError, FileNotFoundError):
                             pass
                         break
 
