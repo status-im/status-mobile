@@ -1,5 +1,5 @@
 (ns status-im2.contexts.chat.messages.list.events
-  (:require [react-native.red-black-tree :as rb-tree]
+  (:require [utils.red-black-tree :as red-black-tree]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]
             [status-im2.common.constants :as constants]))
@@ -126,28 +126,28 @@
 (defn update-message
   "Update the message and siblings with positional info"
   [tree message]
-  (let [iter                  (rb-tree/find tree message)
-        previous-message      (rb-tree/get-prev iter)
-        next-message          (rb-tree/get-next iter)
+  (let [iter                  (red-black-tree/find tree message)
+        previous-message      (red-black-tree/get-prev iter)
+        next-message          (red-black-tree/get-next iter)
         message-with-pos-data (add-group-info message previous-message next-message)]
-    (cond-> (rb-tree/update iter message-with-pos-data)
+    (cond-> (red-black-tree/update iter message-with-pos-data)
       next-message
-      (-> (rb-tree/find next-message)
-          (rb-tree/update (update-next-message message-with-pos-data next-message)))
+      (-> (red-black-tree/find next-message)
+          (red-black-tree/update (update-next-message message-with-pos-data next-message)))
 
       (and previous-message
            (not= :datemark (:type previous-message)))
-      (-> (rb-tree/find previous-message)
-          (rb-tree/update (update-previous-message message-with-pos-data previous-message))))))
+      (-> (red-black-tree/find previous-message)
+          (red-black-tree/update (update-previous-message message-with-pos-data previous-message))))))
 
 (defn remove-message
   "Remove a message in the list"
   [tree prepared-message]
-  (let [iter (rb-tree/find tree prepared-message)]
+  (let [iter (red-black-tree/find tree prepared-message)]
     (if (not iter)
       tree
-      (let [new-tree     (rb-tree/remove iter)
-            next-message (rb-tree/get-next iter)]
+      (let [new-tree     (red-black-tree/remove iter)
+            next-message (red-black-tree/get-next iter)]
         (if (not next-message)
           new-tree
           (update-message new-tree next-message))))))
@@ -158,12 +158,12 @@
   this operation is O(logN) for insertion, and O(logN) for the updates, as
   we need to re-find (there's probably a better way)"
   [old-message-list prepared-message]
-  (let [tree (rb-tree/insert old-message-list prepared-message)]
+  (let [tree (red-black-tree/insert old-message-list prepared-message)]
     (update-message tree prepared-message)))
 
 (defn add
   [message-list message]
-  (insert-message (or message-list (rb-tree/tree compare-fn)) (prepare-message message)))
+  (insert-message (or message-list (red-black-tree/tree compare-fn)) (prepare-message message)))
 
 (defn add-many
   [message-list messages]
@@ -174,7 +174,7 @@
 (defn ->seq
   [message-list]
   (if message-list
-    (array-seq (rb-tree/get-values message-list))
+    (array-seq (red-black-tree/get-values message-list))
     []))
 
 ;; NOTE(performance): this is too expensive, probably we could mark message somehow and just hide it in

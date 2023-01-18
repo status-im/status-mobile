@@ -1,8 +1,8 @@
-(ns react-native.red-black-tree
+(ns utils.red-black-tree
   (:refer-clojure :exclude [remove update find])
-  (:require ["functional-red-black-tree" :as rb-tree]))
+  (:require ["functional-red-black-tree" :as red-black-tree]))
 
-(def tree ^js rb-tree)
+(def tree ^js red-black-tree)
 
 (defn find
   [^js tree item]
