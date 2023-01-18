@@ -49,3 +49,9 @@
                         (on-closing-animation-finished))
                      (+ 50 constants/bottom-sheet-animation-delay))
   {:dispatch [:bottom-sheet/hide]})
+
+(rf/defn update-bottom-sheet-config
+  {:events [:bottom-sheet/update-config]}
+  [{:keys [db]} {:keys [config value]}]
+  {:db (assoc-in db [:bottom-sheet/config config] value)})
+ 

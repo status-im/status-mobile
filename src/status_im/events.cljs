@@ -321,9 +321,3 @@
     {::async-storage/get {:keys keys
                           :cb   #(re-frame/dispatch
                                   [:information-box-states-loaded hashes %])}}))
-
-(rf/defn update-bottom-sheet-config
-  {:events [:bottom-sheet/update-config]}
-  [{:keys [db]} {:keys [config value]}]
-  {:db (assoc-in db [:bottom-sheet/config config] value)})
-
