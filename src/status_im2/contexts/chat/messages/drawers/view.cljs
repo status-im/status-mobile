@@ -53,7 +53,7 @@
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch
-                    [:bottom-sheet/hide
+                    [:bottom-sheet/hide-and-dispatch
                      #(do (rf/dispatch [:chat.ui/delete-message-for-me message-data
                                         constants/delete-message-for-me-undo-time-limit-ms]))]))
 
@@ -63,7 +63,7 @@
    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
      [{:type     :danger
        :on-press (fn []
-                   (rf/dispatch [:bottom-sheet/hide
+                   (rf/dispatch [:bottom-sheet/hide-and-dispatch
                                  #(rf/dispatch [:chat.ui/delete-message message-data
                                                 constants/delete-message-undo-time-limit-ms])]))
        :label    (i18n/label :t/delete-for-everyone)
@@ -138,7 +138,7 @@
               :accessibility-label (:label action)
               :icon                (:icon action)
               :on-press            (fn []
-                                     (rf/dispatch [:bottom-sheet/hide
+                                     (rf/dispatch [:bottom-sheet/hide-and-dispatch
                                                    #(when on-press (on-press))]))}]))
         (when-not (empty? danger-actions)
           [quo/separator])
@@ -152,7 +152,7 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(rf/dispatch [:bottom-sheet/hide
+              :on-press            #(rf/dispatch [:bottom-sheet/hide-and-dispatch
                                                   (fn []
                                                     (when on-press (on-press)))])}]))
         (when-not (empty? admin-actions)
@@ -168,5 +168,5 @@
               :accessibility-label (:label action)
               :icon                (:icon action)
               :on-press            (fn []
-                                     (rf/dispatch [:bottom-sheet/hide
+                                     (rf/dispatch [:bottom-sheet/hide-and-dispatch
                                                    #(when on-press (on-press))]))}]))]])))

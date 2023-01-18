@@ -1,6 +1,7 @@
 (ns status-im.bottom-sheet.core
   (:require [utils.re-frame :as rf]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [react-native.background-timer :as timer]))
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
@@ -20,15 +21,17 @@
 
 (rf/defn reset-bottom-sheet
   {:events [:bottom-sheet/reset]}
-  [{:keys [db]} on-cancel]
-  {:db (assoc db
-              :bottom-sheet/config
-              {:content-height      nil
-               :show-bottom-sheet?  nil
-               :keyboard-was-shown? false
-               :expanded?           false
-               :gesture-running?    false
-               :animation-delay     constants/bottom-sheet-animation-delay})})
+  [{:keys [db]}]
+  {:db                        (assoc db
+                                     :bottom-sheet/config
+                                     {:content-height      nil
+                                      :show-bottom-sheet?  nil
+                                      :keyboard-was-shown? false
+                                      :expanded?           false
+                                      :gesture-running?    false
+                                      :animation-delay     constants/bottom-sheet-animation-delay}
+                                     :bottom-sheet/show? false)
+   :hide-bottom-sheet-overlay nil})
 
 (rf/defn hide-bottom-sheet
   {:events [:bottom-sheet/hide]}
@@ -36,11 +39,13 @@
   {:dispatch       [:bottom-sheet/update-config
                     {:config :show-bottom-sheet?
                      :value  false}]
-   :dispatch-later [{:dispatch [:bottom-sheet/reset nil]
+   :dispatch-later [{:dispatch [:bottom-sheet/reset]
                      :ms       constants/bottom-sheet-animation-delay}]})
 
 (rf/defn hide-bottom-sheet-and-dispatch
   {:events [:bottom-sheet/hide-and-dispatch]}
-  [{:keys [db]} on-cancel]
-  (when (fn? on-cancel) (on-cancel))
-  {:bottom-sheet/hide nil})
+  [{:keys [db]} on-closing-animation-finished]
+  (timer/set-timeout #(when (fn? on-closing-animation-finished)
+                        (on-closing-animation-finished))
+                     (+ 50 constants/bottom-sheet-animation-delay))
+  {:dispatch [:bottom-sheet/hide]})

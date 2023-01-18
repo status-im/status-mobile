@@ -94,7 +94,7 @@
            :accessibility-label :save
            :on-press            (fn []
                                   (rf/dispatch
-                                   [:bottom-sheet/hide
+                                   [:bottom-sheet/hide-and-dispatch
                                     #(do
                                        (js/setTimeout (fn []
                                                         (rf/dispatch
