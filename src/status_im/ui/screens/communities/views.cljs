@@ -3,7 +3,7 @@
             [quo.design-system.colors :as quo.colors]
             [status-im.communities.core :as communities]
             [status-im2.setup.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.badge :as badge]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list.views :as list]

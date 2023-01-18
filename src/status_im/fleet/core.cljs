@@ -1,7 +1,7 @@
 (ns status-im.fleet.core
   (:require [re-frame.core :as re-frame]
             [status-im2.setup.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]

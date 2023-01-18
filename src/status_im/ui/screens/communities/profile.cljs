@@ -6,7 +6,7 @@
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [status-im2.setup.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.profile-header.view :as profile-header]

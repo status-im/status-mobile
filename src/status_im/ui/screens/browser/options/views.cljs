@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
             [status-im2.setup.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.icons :as icons]
