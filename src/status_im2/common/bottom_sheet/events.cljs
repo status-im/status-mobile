@@ -5,7 +5,7 @@
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
-  {:show-bottom-sheet nil
+  {:display-bottom-sheet nil
    :db                (assoc db
                              :bottom-sheet/show?   true
                              :bottom-sheet/view    view

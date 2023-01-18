@@ -1,5 +1,5 @@
 (ns status-im.mobile-sync-settings.core
-  (:require [status-im.bottom-sheet.core :as bottom-sheet]
+  (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]

@@ -3,7 +3,7 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [react-native.mail :as react-native-mail]
-            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [utils.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]

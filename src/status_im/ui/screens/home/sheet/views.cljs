@@ -27,7 +27,7 @@
      {:type                :icon
       :theme               :icon
       :accessibility-label :universal-qr-scanner
-      :on-press            #(rf/dispatch
+      :on-press            #(hide-sheet-and-dispatch
                              [::qr-scanner/scan-code
                               {:handler ::qr-scanner/on-scan-success}])}
      :main-icons/qr]]
@@ -56,7 +56,7 @@
        :title               (i18n/label :t/communities-alpha)
        :accessibility-label :communities-button
        :icon                :main-icons/communities
-       :on-press            #(rf/dispatch [:navigate-to :communities])}])
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
@@ -72,18 +72,7 @@
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   (fn [] ;; Note: currently the bottom button is overlapping with
-                                        ;; safe-area
-                                        ;; because it is using old bottom-sheet
-                                   (rf/dispatch [:bottom-sheet/hide])
-                                   ;; A one second delay is needed because there are 2 bottom-sheets here
-                                   ;; It would better to migrate contact-selection-list component to use
-                                   ;; a screen
-                                   (js/setTimeout #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content
-                                                                  new-chat-aio/contact-selection-list}])
-                                                  1000))}]
-
+     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
@@ -100,7 +89,6 @@
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
-
 
 (def new-chat-bottom-sheet-comp
   {:content new-chat-bottom-sheet})

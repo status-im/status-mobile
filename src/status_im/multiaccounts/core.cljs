@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
