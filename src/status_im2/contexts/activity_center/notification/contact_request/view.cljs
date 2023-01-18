@@ -7,6 +7,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+;; TODO(alwx):
 (defn view
   [{:keys [id author message last-message] :as notification}]
   (let [message   (or message last-message)

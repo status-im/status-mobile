@@ -6,6 +6,7 @@
             [status-im.data-store.contacts :as contacts-store]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]
+            [status-im2.contexts.activity-center.notification-types :as notification-types]
             [taoensso.timbre :as log]))
 
 (rf/defn load-contacts
@@ -75,6 +76,8 @@
      nickname
      ens-name
      #(do
+        ;; TODO(alwx):
+        (re-frame/dispatch [:activity-center.notifications/reconcile [{:id public-key :author "x" :message "x" :last-message "x" :read false :type notification-types/contact-request}]])
         (re-frame/dispatch [:sanitize-messages-and-process-response %])
         (re-frame/dispatch [:chat/offload-messages constants/timeline-chat-id])))))
 
