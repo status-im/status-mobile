@@ -30,7 +30,7 @@
                                       :expanded?           false
                                       :gesture-running?    false
                                       :animation-delay     constants/bottom-sheet-animation-delay}
-                                     :bottom-sheet/show? false)
+                                     :bottom-sheet/show?  false)
    :hide-bottom-sheet-overlay nil})
 
 (rf/defn hide-bottom-sheet
