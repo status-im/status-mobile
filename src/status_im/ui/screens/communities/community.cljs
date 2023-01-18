@@ -256,7 +256,7 @@
 (defn unknown-community
   [community-id]
   (let [fetching (rf/sub [:communities/fetching-community community-id])]
-    [:<> {:style {:flex 1}}
+    [:<>
      [topbar/topbar {:title (if fetching (i18n/label :t/fetching-community) (i18n/label :t/not-found))}]
      [rn/view
       {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}

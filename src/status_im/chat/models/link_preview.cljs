@@ -60,7 +60,7 @@
             (models.communities/handle-community community)))
 
 (rf/defn resolve-community-info
-  {:events [::resolve-community-info]}
+  {:events [:communities.ui/:resolve-community-info]}
   [{:keys [db]} community-id]
   {:db            (community-resolving db community-id)
    :json-rpc/call [{:method     "wakuext_requestCommunityInfoFromMailserver"

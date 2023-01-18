@@ -1,21 +1,21 @@
 (ns status-im.utils.universal-links.core
   (:require [clojure.string :as string]
             [goog.string :as gstring]
+            [i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
             [status-im.chat.models :as chat]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.native-module.core :as status]
             [status-im.router.core :as router]
             [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]))
+            [utils.re-frame :as rf]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -75,10 +75,12 @@
   (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
 
 (rf/defn handle-community
-  [cofx {:keys [community-id]}]
+  [{:keys [db] :as cofx} {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
-  (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
-
+  (rf/merge cofx
+            (when-not (get (:communities db) community-id)
+              {:dispatch [:communities.ui/:resolve-community-info community-id]})
+            (navigation/navigate-to-cofx :community {:community-id community-id})))
 
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
