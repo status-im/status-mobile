@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
@@ -191,52 +190,3 @@
        :accessibility-label :delete-transaccent-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message-not-used-any-more chat-id
                                                        message-id])}]]))
-
-(defn image-long-press
-  [{:keys [content identicon from outgoing cant-be-replied] :as message} hide]
-  (let [contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
-    [react/view
-     (when-not outgoing
-       [quo/list-item
-        {:theme               :accent
-         :icon                [chat-icon/contact-icon-contacts-tab
-                               (multiaccounts/displayed-photo {:identicon  identicon
-                                                               :public-key from})]
-         :title               contact-name
-         :subtitle            (i18n/label :t/view-profile)
-         :accessibility-label :view-chat-details-button
-         :chevron             true
-         :on-press            #(do
-                                 (hide)
-                                 (re-frame/dispatch [:chat.ui/show-profile from]))}])
-     (when-not cant-be-replied
-       [quo/list-item
-        {:theme    :accent
-         :title    (i18n/label :t/message-reply)
-         :icon     :main-icons/reply
-         :on-press #(do
-                      (hide)
-                      (re-frame/dispatch [:chat.ui/reply-to-message message]))}])
-     ;; we have only base64 string for image, so we need to find a way how to copy it
-     #_[quo/list-item
-        {:theme    :accent
-         :title    :t/sharing-copy-to-clipboard
-         :icon     :main-icons/copy
-         :on-press (fn []
-                     (re-frame/dispatch [:bottom-sheet/hide])
-                     (react/copy-to-clipboard (:image content)))}]
-     [quo/list-item
-      {:theme    :accent
-       :title    (i18n/label :t/save)
-       :icon     :main-icons/download
-       :on-press (fn []
-                   (hide)
-                   (re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)]))}]
-     ;; we have only base64 string for image, so we need to find a way how to share it
-     #_[quo/list-item
-        {:theme    :accent
-         :title    :t/sharing-share
-         :icon     :main-icons/share
-         :on-press (fn []
-                     (re-frame/dispatch [:bottom-sheet/hide])
-                     (list-selection/open-share {:message (:image content)}))}]]))

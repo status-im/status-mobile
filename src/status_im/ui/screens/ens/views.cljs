@@ -5,7 +5,6 @@
    [quo.design-system.colors :as colors]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [status-im.constants :as constants]
    [status-im.ens.core :as ens]
    [status-im.ethereum.core :as ethereum]
    [status-im.ethereum.ens :as ethereum.ens]
@@ -21,7 +20,6 @@
    [status-im.ui.components.react :as react]
    [status-im.ui.components.toolbar :as toolbar]
    [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.chat.message.message :as message]
    [status-im.ui.screens.chat.photos :as photos]
    [status-im.ui.screens.chat.utils :as chat.utils]
    [status-im.ui.screens.profile.components.views :as profile.components]
@@ -762,18 +760,12 @@
           :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content
                                            (fn [] (name-list names preferred-name))}])}]])]
-    (let [message {:content       {:parsed-text
-                                   [{:type     "paragraph"
-                                     :children [{:literal (i18n/label :t/ens-test-message)}]}]}
-                   :content-type  constants/content-type-text
-                   :timestamp-str "9:41 AM"}]
-      [react/view
-       [react/view {:padding-left 72}
-        [my-name]]
-       [react/view {:flex-direction :row}
-        [react/view {:padding-left 16 :padding-top 4}
-         [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]
-        [message/->message message {:on-long-press identity}]]])]])
+    [react/view
+     [react/view {:padding-left 72}
+      [my-name]]
+     [react/view {:flex-direction :row}
+      [react/view {:padding-left 16 :padding-top 4}
+       [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]]]]])
 
 (views/defview main
   []

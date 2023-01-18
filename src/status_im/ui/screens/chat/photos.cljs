@@ -40,13 +40,3 @@
     [photo path
      {:size                style/default-size
       :accessibility-label :own-account-photo}]))
-
-(defn member-identicon
-  [identicon]
-  (let [size style/default-size]
-    [react/view {:style (style/photo-container size)}
-     [fast-image/fast-image
-      {:source              {:uri identicon}
-       :style               (style/photo size)
-       :accessibility-label :member-photo}]
-     [react/view {:style (style/photo-border size)}]]))

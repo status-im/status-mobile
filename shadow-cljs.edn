@@ -58,8 +58,7 @@
                 ;; in the SHADOW_HOST env variable to make sure that
                 ;; it will use the right interface
                 :local-ip         #shadow/env "SHADOW_HOST"}
-   :chunks     {:fleets status-im.fleet.default-fleet/default-fleets
-                :chats  status-im.chat.default-chats/default-chats}
+   :chunks     {:fleets status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
     {status-im.utils.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"

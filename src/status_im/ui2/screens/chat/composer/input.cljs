@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.chat.constants :as chat.constants]
+            [status-im2.common.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
             [i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]

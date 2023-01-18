@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.chat.models.loading :as loading]
             [status-im.chat.models.message :as message]
-            [status-im.ui.screens.chat.state :as view.state]))
+            [status-im2.contexts.chat.messages.list.state :as list.state]))
 
 (deftest add-received-message-test
   (with-redefs [message/add-message #(identity %1)]
@@ -26,7 +26,7 @@
       ;; <- message
       ;; <- top of the chat
       (testing "there's no hidden item"
-        (with-redefs [view.state/first-not-visible-item (atom nil)]
+        (with-redefs [list.state/first-not-visible-item (atom nil)]
           (is
            (=
             {:db
@@ -46,7 +46,7 @@
       ;; <- message
       ;; <- top of the chat
       (testing "the hidden item has a clock value less than the current"
-        (with-redefs [view.state/first-not-visible-item (atom {:clock-value (dec clock-value)})]
+        (with-redefs [list.state/first-not-visible-item (atom {:clock-value (dec clock-value)})]
           (is
            (=
             {:db
@@ -66,7 +66,7 @@
       ;; <- first-hidden-item
       ;; <- top of the chat
       (testing "the message falls between the first-hidden-item and cursor"
-        (with-redefs [view.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
+        (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [result (dissoc (message/receive-many
                                 cofx
                                 #js {:messages (to-array [message])})
@@ -81,7 +81,7 @@
       ;; <- first-hidden-item
       ;; <- top of the chat
       (testing "the message falls between the first-hidden-item and cursor is nil"
-        (with-redefs [view.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
+        (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [result (dissoc (message/receive-many
                                 (update-in cofx
                                            [:db :pagination-info chat-id]
@@ -101,7 +101,7 @@
       ;; <- first-hidden-item
       ;; <- top of the chat
       (testing "the message falls before both the first-hidden-item and cursor"
-        (with-redefs [view.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
+        (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [message #js
                          {:localChatId chat-id
                           :clock       (- clock-value 2)

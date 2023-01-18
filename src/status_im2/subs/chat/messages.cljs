@@ -1,7 +1,7 @@
 (ns status-im2.subs.chat.messages
   (:require [re-frame.core :as re-frame]
             [status-im.chat.db :as chat.db]
-            [status-im.chat.models.message-list :as models.message-list]
+            [status-im2.contexts.chat.messages.list.events :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
             [utils.datetime :as datetime]
             [status-im2.common.constants :as constants]))

@@ -1,16 +1,10 @@
 (ns status-im.ui.screens.chat.styles.main
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def toolbar-container
   {:flex           1
    :align-items    :center
    :flex-direction :row})
-
-(def pins-name-view
-  {:flex            1
-   :justify-content :center
-   :align-items     :center})
 
 (def chat-name-view
   {:flex            1
@@ -48,57 +42,6 @@
    :padding-vertical 50
    :margin-right     6})
 
-(defn intro-header-container
-  [loading-messages? no-messages?]
-  (if (or loading-messages? no-messages?)
-    {:flex            1
-     :flex-direction  :column
-     :justify-content :center
-     :align-items     :center}
-    {:flex            1
-     :flex-direction  :column
-     :justify-content :center
-     :align-items     :center}))
-
-(defn intro-header-icon
-  [diameter color]
-  {:width            diameter
-   :height           diameter
-   :align-items      :center
-   :justify-content  :center
-   :border-radius    (/ diameter 2)
-   :background-color color
-   :border-width     0.5
-   :border-color     "rgba(0,0,0,0.1)"})
-
-(def intro-header-icon-text
-  {:color       colors/white
-   :font-size   52
-   :font-weight "700"
-   :opacity     0.8
-   :line-height 72})
-
-(defn emoji-intro-header-icon-text
-  [size]
-  {:font-size  (emoji-utils/emoji-font-size size)
-   :margin-top (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
-
-(defn intro-header-chat-name
-  []
-  {:font-size         22
-   :font-weight       "700"
-   :line-height       28
-   :text-align        :center
-   :margin-bottom     8
-   :margin-horizontal 32
-   :color             colors/black})
-
-(def intro-header-description-container
-  {:flex-wrap         :wrap
-   :align-items       :flex-start
-   :flex-direction    :row
-   :margin-horizontal 32})
-
 (def loading-text
   {:color          colors/gray
    :font-size      15
@@ -106,51 +49,6 @@
    :letter-spacing -0.2
    :margin-right   4
    :text-align     :center})
-
-(def intro-header-description
-  {:color             colors/gray
-   :line-height       22
-   :text-align        :center
-   :margin-horizontal 32})
-
-(def group-chat-join-footer
-  {:flex            1
-   :justify-content :center})
-
-(def group-chat-join-container
-  {:flex            1
-   :padding-bottom  40
-   :align-items     :center
-   :justify-content :center})
-
-(def are-you-friends-bubble
-  {:border-radius      8
-   :border-width       1
-   :margin-top         4
-   :border-color       colors/gray-lighter
-   :align-self         :flex-start
-   :padding-vertical   12
-   :margin-horizontal  8
-   :padding-horizontal 16
-   :margin-bottom      50})
-
-(def are-you-friends-text
-  {:line-height 22
-   :text-align  :center
-   :font-size   15
-   :color       colors/gray})
-
-(def share-my-profile
-  {:color       colors/blue
-   :text-align  :center
-   :margin-top  11
-   :line-height 22
-   :font-size   15})
-
-(def tribute-received-note
-  {:font-size   13
-   :line-height 18
-   :text-align  :center})
 
 (def contact-request
   {:width            "100%"

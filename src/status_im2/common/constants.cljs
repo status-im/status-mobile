@@ -223,3 +223,16 @@
              3 72.5
              4 72.5
              5 72.5}})
+
+(def ^:const spam-message-frequency-threshold 4)
+(def ^:const spam-interval-ms 1000)
+(def ^:const default-cooldown-period-ms 10000)
+(def ^:const cooldown-reset-threshold 3)
+(def ^:const cooldown-periods-ms
+  {1 2000
+   2 5000
+   3 10000})
+
+(def ^:const max-text-size 4096)
+;; any message that comes after this amount of ms will be grouped separately
+(def ^:const group-ms 300000)

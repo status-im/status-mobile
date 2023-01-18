@@ -1,6 +1,6 @@
 (ns status-im.contact.block
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.message-list :as message-list]
+            [status-im2.contexts.chat.messages.list.events :as message-list]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]

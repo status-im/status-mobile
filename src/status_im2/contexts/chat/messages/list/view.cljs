@@ -1,20 +1,19 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require [i18n.i18n :as i18n]
             [oops.core :as oops]
-            [quo.react-native :as quo.react]
             [quo2.core :as quo]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.state :as state]
+            [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.common.constants :as constants]
-            [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-            [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im2.common.not-implemented :as not-implemented]))
+            [status-im2.common.not-implemented :as not-implemented]
+            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im2.contexts.chat.messages.list.state :as state]
+            [status-im.ui.screens.chat.message.gap :as message.gap]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -37,7 +36,7 @@
                               threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
     (when (not= reached-threshold? @show-floating-scroll-down-button)
-      (quo.react/configure-next (:ease-in-ease-out quo.react/layout-animation-presets))
+      (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
       (reset! show-floating-scroll-down-button reached-threshold?))))
 
 (defn on-viewable-items-changed

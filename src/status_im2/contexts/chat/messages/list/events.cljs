@@ -1,12 +1,12 @@
-(ns status-im.chat.models.message-list
-  (:require ["functional-red-black-tree" :as rb-tree]
-            [status-im.constants :as constants]
+(ns status-im2.contexts.chat.messages.list.events
+  (:require [utils.red-black-tree :as red-black-tree]
             [utils.datetime :as datetime]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.constants :as constants]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
-  ;;TODO this is slow
+  ;;NOTE(performance) this is slow
   (assoc msg :datemark (datetime/day-relative whisper-timestamp)))
 
 (defn- add-timestamp
@@ -40,9 +40,6 @@
       add-datemark
       add-timestamp))
 
-;; any message that comes after this amount of ms will be grouped separately
-(def ^:private group-ms 300000)
-
 (defn same-group?
   "Whether a message is in the same group as the one after it.
   We check the time, and the author"
@@ -51,7 +48,7 @@
    (not (:system-message? a))
    (not (:system-message? b))
    (= (:from a) (:from b))
-   (<= (js/Math.abs (- (:whisper-timestamp a) (:whisper-timestamp b))) group-ms)))
+   (<= (js/Math.abs (- (:whisper-timestamp a) (:whisper-timestamp b))) constants/group-ms)))
 
 (defn display-photo?
   "We display photos for other users, and not in 1-to-1 chats"
@@ -126,50 +123,31 @@
                                    (not one-to-one?))
            :last-in-group?    last-in-group?)))
 
-(defn get-prev-element
-  "Get previous item in the iterator, and wind it back to the initial state"
-  [^js iter]
-  (.prev iter)
-  (let [e (.-value iter)]
-    (.next iter)
-    e))
-
-(defn get-next-element
-  "Get next item in the iterator, and wind it back to the initial state"
-  [^js iter]
-  (.next iter)
-  (let [e (.-value iter)]
-    (.prev iter)
-    e))
-
 (defn update-message
   "Update the message and siblings with positional info"
-  [^js tree message]
-  (let [^js iter                  (.find tree message)
-        ^js previous-message      (when (.-hasPrev iter)
-                                    (get-prev-element iter))
-        ^js next-message          (when (.-hasNext iter)
-                                    (get-next-element iter))
-        ^js message-with-pos-data (add-group-info message previous-message next-message)]
-    (cond-> (.update iter message-with-pos-data)
+  [tree message]
+  (let [iter                  (red-black-tree/find tree message)
+        previous-message      (red-black-tree/get-prev iter)
+        next-message          (red-black-tree/get-next iter)
+        message-with-pos-data (add-group-info message previous-message next-message)]
+    (cond-> (red-black-tree/update iter message-with-pos-data)
       next-message
-      (-> ^js (.find next-message)
-          (.update (update-next-message message-with-pos-data next-message)))
+      (-> (red-black-tree/find next-message)
+          (red-black-tree/update (update-next-message message-with-pos-data next-message)))
 
       (and previous-message
            (not= :datemark (:type previous-message)))
-      (-> ^js (.find previous-message)
-          (.update (update-previous-message message-with-pos-data previous-message))))))
+      (-> (red-black-tree/find previous-message)
+          (red-black-tree/update (update-previous-message message-with-pos-data previous-message))))))
 
 (defn remove-message
   "Remove a message in the list"
-  [^js tree prepared-message]
-  (let [iter (.find tree prepared-message)]
+  [tree prepared-message]
+  (let [iter (red-black-tree/find tree prepared-message)]
     (if (not iter)
       tree
-      (let [^js new-tree     (.remove iter)
-            ^js next-message (when (.-hasNext iter)
-                               (get-next-element iter))]
+      (let [new-tree     (red-black-tree/remove iter)
+            next-message (red-black-tree/get-next iter)]
         (if (not next-message)
           new-tree
           (update-message new-tree next-message))))))
@@ -179,13 +157,13 @@
   its positional metadata, and update the left & right messages if necessary,
   this operation is O(logN) for insertion, and O(logN) for the updates, as
   we need to re-find (there's probably a better way)"
-  [^js old-message-list prepared-message]
-  (let [^js tree (.insert old-message-list prepared-message prepared-message)]
+  [old-message-list prepared-message]
+  (let [tree (red-black-tree/insert old-message-list prepared-message)]
     (update-message tree prepared-message)))
 
 (defn add
   [message-list message]
-  (insert-message (or message-list (rb-tree compare-fn)) (prepare-message message)))
+  (insert-message (or message-list (red-black-tree/tree compare-fn)) (prepare-message message)))
 
 (defn add-many
   [message-list messages]
@@ -194,9 +172,9 @@
           messages))
 
 (defn ->seq
-  [^js message-list]
+  [message-list]
   (if message-list
-    (array-seq (.-values message-list))
+    (array-seq (red-black-tree/get-values message-list))
     []))
 
 ;; NOTE(performance): this is too expensive, probably we could mark message somehow and just hide it in

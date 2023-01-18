@@ -17,7 +17,6 @@
    [status-im.ui.screens.browser.tabs.views :as browser.tabs]
    [status-im.ui.screens.browser.views :as browser]
    [status-im.ui.screens.bug-report :as bug-report]
-   [status-im.ui.screens.chat.pinned-messages :as pin-messages]
    [status-im.ui.screens.communities.channel-details :as communities.channel-details]
    [status-im.ui.screens.communities.community :as community]
    [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as
@@ -86,8 +85,6 @@
    [status-im.ui.screens.qr-scanner.views :as qr-scanner]
    [status-im.ui.screens.reset-password.views :as reset-password]
    [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
-   [status-im.ui.screens.status.new.views :as status.new]
-   [status-im.ui.screens.status.views :as status.views]
    [status-im.ui.screens.stickers.views :as stickers]
    [status-im.ui.screens.sync-settings.views :as sync-settings]
    [status-im.ui.screens.terms-of-service.views :as terms-of-service]
@@ -200,11 +197,6 @@
     :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
-   ;Pinned messages
-   {:name      :chat-pinned-messages
-    ;TODO custom subtitle
-    :options   {:topBar {:visible false}}
-    :component pin-messages/pinned-messages}
 
    {:name      :group-chat-profile
     ;;TODO animated-header
@@ -387,13 +379,6 @@
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component wallet.swap/asset-selector}
-
-   ;;MY STATUS
-
-   {:name      :status
-    :on-focus  [:init-timeline-chat]
-    :insets    {:top true}
-    :component status.views/timeline}
 
    ;;PROFILE
 
@@ -695,12 +680,6 @@
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component wallet.collectibles/nft-details-modal}
-
-   ;My Status
-   {:name      :my-status
-    :insets    {:bottom true}
-    :options   {:topBar {:title {:text (i18n/label :t/my-status)}}}
-    :component status.new/my-status}
 
    ;[Browser] New bookmark
    {:name      :new-bookmark

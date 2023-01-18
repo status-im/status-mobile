@@ -3,11 +3,9 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
-            [status-im.chat.models :as chat.models]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im2.setup.i18n-resources :as i18n-resources]
             [i18n.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -36,59 +34,6 @@
     :return-key-type     :go
     :auto-correct        false
     :error               error}])
-
-(defn render-topic
-  [topic]
-  [react/touchable-highlight
-   {:on-press            #(start-chat topic)
-    :accessibility-label :chat-item}
-   [react/view
-    {:border-color       colors/gray-lighter
-     :border-radius      36
-     :border-width       1
-     :padding-horizontal 8
-     :padding-vertical   5
-     :margin-right       8
-     :margin-vertical    8}
-    [react/text {:style {:color colors/blue :typography :main-medium}}
-     (str "#" topic)]]])
-
-(def lang-names
-  {"es"  "status-espanol"
-   "pt"  "statusbrasil"
-   "de"  "status-german"
-   "fr"  "status-french"
-   "it"  "status-italiano"
-   "ru"  "status-russian"
-   "zh"  "status-chinese"
-   "ko"  "status-korean"
-   "ja"  "status-japanese"
-   "fa"  "status-farsi"
-   "tr"  "status-turkish"
-   "id"  "indonesian"
-   "in"  "indonesian"
-   "hi"  "status-indian"
-   "ar"  "status-arabic"
-   "fil" "status-filipino"
-   "nl"  "status-dutch"})
-
-(defn get-language-topic
-  []
-  (let [lang      (subs (name i18n-resources/default-device-language) 0 2)
-        lang3     (subs (name i18n-resources/default-device-language) 0 3)
-        lang-name (or (get lang-names lang3) (get lang-names lang))]
-    (when-not (= lang "en")
-      (or lang-name (str "status-" lang)))))
-
-(def section-featured "Featured")
-
-(defn featured-public-chats
-  []
-  (let [lang-topic (get-language-topic)
-        chats      (some #(when (= section-featured (first %)) (second %)) (chat.models/chats))]
-    (if lang-topic
-      (conj chats lang-topic)
-      chats)))
 
 (views/defview new-public-chat
   []
