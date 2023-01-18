@@ -242,8 +242,8 @@
 (re-frame/reg-sub
  :link-preview/cache
  :<- [:multiaccount]
- (fn [multiaccount]
-   (get multiaccount :link-previews-cache)))
+ (fn [multiaccount [_ link]]
+   (get-in multiaccount [:link-previews-cache link])))
 
 (re-frame/reg-sub
  :link-preview/enabled-sites
