@@ -751,7 +751,7 @@ class ChatView(BaseView):
 
         # New UI
         self.pinned_messages_count = Button(self.driver,
-                                            xpath="//*[@content-desc='pins-count']/android.widget.TextView")
+                                            xpath="//*[@content-desc='pins-count']//android.widget.TextView")
         self.pinned_messages_list = PinnedMessagesList(self.driver)
         self.pin_limit_popover = BaseElement(self.driver, accessibility_id="pin-limit-popover")
         self.view_pinned_messages_button = Button(self.driver, accessibility_id="view-pinned-messages")

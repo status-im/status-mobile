@@ -74,7 +74,7 @@ pipeline {
               python3 -m pytest \
                 -m "upgrade" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --numprocesses 15 \
+                --numprocesses 4 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 --apk=${params.APK_NAME} \

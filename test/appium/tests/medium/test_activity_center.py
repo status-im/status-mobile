@@ -235,6 +235,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
+    @marks.xfail(reason='blocked by #14798')
     def test_activity_center_mentions_in_community_jump_to(self):
         self.device_2.just_fyi('Device2 sends a contact request to Device1')
         self.home_2.browser_tab.click()

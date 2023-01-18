@@ -153,10 +153,10 @@ class AbstractTestCase:
 
     def pull_geth(self, driver):
         result = ""
-        try:
-            result = driver.pull_file(self.geth_path)
-        except WebDriverException:
-            pass
+        # try:
+        result = driver.pull_file(self.geth_path)
+        # except WebDriverException:
+        #     pass
         return base64.b64decode(result)
 
 

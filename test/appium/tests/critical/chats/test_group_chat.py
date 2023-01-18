@@ -241,10 +241,11 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)
-    @marks.xfail(reason="mysterious issue when PNs are not fetched from offline,can not reproduce on real devices; needs investigation")
     def test_group_chat_offline_pn(self):
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
         chat_name = 'for_offline_pn'
+        #TODO: workaround for bottom sheet issues
+        self.homes[0].communities_tab.click()
         self.homes[0].create_group_chat(user_names_to_add=[self.usernames[1], self.usernames[2]],
                                         group_chat_name=chat_name,
                                         new_ui=True)
