@@ -3,7 +3,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.screen :as chat-icon]

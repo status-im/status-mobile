@@ -5,7 +5,7 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.copyable-text :as copyable-text]

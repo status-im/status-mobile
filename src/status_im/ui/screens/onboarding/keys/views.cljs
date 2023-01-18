@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]

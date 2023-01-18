@@ -22,7 +22,7 @@
    [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
    [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
    [status-im.ui.screens.wallet.transactions.views :as history]
-   [status-im.utils.config :as config]
+   [status-im2.config :as config]
    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :as views]))
 

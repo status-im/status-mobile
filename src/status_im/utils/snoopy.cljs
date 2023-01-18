@@ -5,7 +5,7 @@
             ["rn-snoopy/stream/buffer" :default buffer]
             ["rn-snoopy/stream/filter" :default sn-filter]
             [clojure.string :as string]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (defn create-filter
   [f]

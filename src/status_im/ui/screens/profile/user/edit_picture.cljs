@@ -4,7 +4,7 @@
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (def crop-size 1000)
 (def crop-opts

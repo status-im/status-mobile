@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
             [status-im2.contexts.chat.messages.content.text.view :as content.text]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]

@@ -1,7 +1,7 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
             [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
             [status-im2.contexts.activity-center.events :as activity-center]

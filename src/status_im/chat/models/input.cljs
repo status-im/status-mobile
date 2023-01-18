@@ -7,7 +7,7 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [utils.datetime :as datetime]

@@ -10,9 +10,9 @@
             [status-im.group-chats.db :as group-chats.db]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [status-im.utils.image-server :as image-server]
-            [status-im2.setup.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
  :chats/chat

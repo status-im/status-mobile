@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im2.setup.constants :refer
+            [status-im2.constants :refer
              [principles-link privacy-policy-link terms-of-service-link]]
             [utils.i18n :as i18n]
             [status-im.ui.components.copyable-text :as copyable-text]

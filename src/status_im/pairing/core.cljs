@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
             [status-im2.common.json-rpc.events :as json-rpc]

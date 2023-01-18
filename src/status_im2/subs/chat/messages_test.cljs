@@ -1,7 +1,7 @@
 (ns status-im2.subs.chat.messages-test
   (:require [cljs.test :refer [deftest is testing]]
             [status-im2.subs.chat.messages :as messages]
-            [status-im2.setup.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (def messages-state
   [{:message-id "0x111" :album-id "abc" :albumize? true}

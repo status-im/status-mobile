@@ -6,7 +6,7 @@
    [status-im.chat.models.message :as models.message]
    [status-im.chat.models.reactions :as models.reactions]
    [status-im.communities.core :as models.communities]
-   [status-im2.setup.constants :as constants]
+   [status-im2.constants :as constants]
    [status-im.contact.core :as models.contact]
    [status-im.data-store.activities :as data-store.activities]
    [status-im.data-store.chats :as data-store.chats]

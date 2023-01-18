@@ -4,7 +4,7 @@
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.contexts.chat.messages.content.album.style :as style]
-            [status-im2.setup.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (def max-display-count 6)
 

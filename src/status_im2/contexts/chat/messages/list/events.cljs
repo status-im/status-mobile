@@ -2,7 +2,7 @@
   (:require [utils.red-black-tree :as red-black-tree]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]
-            [status-im2.setup.constants :as constants]))
+            [status-im2.constants :as constants]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]

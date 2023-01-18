@@ -1,5 +1,5 @@
 (ns status-im.chat.models.message-content
-  (:require [status-im2.setup.constants :as constants]))
+  (:require [status-im2.constants :as constants]))
 
 (defn emoji-only-content?
   "Determines if text is just an emoji"

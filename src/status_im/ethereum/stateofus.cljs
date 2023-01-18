@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (def domain "stateofus.eth")
 

@@ -6,7 +6,7 @@
             [quo2.components.icon :as quo2.icon]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.photos :as photos]

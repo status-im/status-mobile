@@ -4,7 +4,7 @@
    [utils.re-frame :as rf]
    [quo2.core :as quo]
    [quo2.components.drawers.permission-context.view :as permission-context]
-   [status-im2.setup.constants :as constants]))
+   [status-im2.constants :as constants]))
 
 (defn view
   [contact-id contact-request-state]

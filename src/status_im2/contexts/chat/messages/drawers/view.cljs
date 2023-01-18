@@ -1,10 +1,10 @@
 (ns status-im2.contexts.chat.messages.drawers.view
   (:require [react-native.core :as rn]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [utils.i18n :as i18n]
-            [status-im2.setup.config :as config]
+            [status-im2.config :as config]
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply.view :as components.reply]
             [status-im2.common.not-implemented :as not-implemented]))

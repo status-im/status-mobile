@@ -1,7 +1,7 @@
 ;reference https://eips.ethereum.org/EIPS/eip-3326 EIP-3326: Wallet Switch Ethereum Chain RPC Method
 ;(`wallet_switchEthereumChain`)
 (ns status-im.browser.eip3326
-  (:require [status-im2.setup.constants :as constants]
+  (:require [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.screens.browser.eip3326.sheet :as sheet]
             [utils.re-frame :as rf]))

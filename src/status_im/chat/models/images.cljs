@@ -7,7 +7,7 @@
             [utils.i18n :as i18n]
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [status-im.utils.fs :as fs]
             [utils.re-frame :as rf]
             [status-im.utils.image-processing :as image-processing]

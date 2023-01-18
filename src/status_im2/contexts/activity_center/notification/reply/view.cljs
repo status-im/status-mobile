@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
             [utils.datetime :as datetime]

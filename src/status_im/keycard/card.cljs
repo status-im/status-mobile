@@ -3,7 +3,7 @@
             [status-im.keycard.keycard :as keycard]
             [status-im.keycard.real-keycard :as real-keycard]
             [status-im.keycard.simulated-keycard :as simulated-keycard]
-            [status-im.utils.config :as config]
+            [status-im2.config :as config]
             [taoensso.timbre :as log]))
 
 (defonce card

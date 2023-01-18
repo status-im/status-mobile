@@ -5,7 +5,7 @@
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.badge :as badge]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]

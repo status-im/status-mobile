@@ -2,10 +2,10 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+            [status-im2.config :as config]))
 
 (def titles
   {constants/two-mins   (i18n/label :t/two-minutes)

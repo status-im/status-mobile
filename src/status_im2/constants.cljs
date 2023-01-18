@@ -1,4 +1,4 @@
-(ns status-im2.setup.constants)
+(ns status-im2.constants)
 
 (def ^:const ms-in-bg-for-require-bioauth 5000)
 

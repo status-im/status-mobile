@@ -1,5 +1,5 @@
 (ns status-im.browser.permissions
-  (:require [status-im2.setup.constants :as constants]
+  (:require [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [utils.re-frame :as rf]

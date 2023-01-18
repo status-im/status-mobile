@@ -3,7 +3,7 @@
    [clojure.string :as string]
    [quo.design-system.colors :as colors]
    [re-frame.core :as re-frame]
-   [status-im2.setup.constants :as constants]
+   [status-im2.constants :as constants]
    [status-im.ens.core :as ens.core]
    [status-im.ethereum.core :as ethereum]
    [status-im.ethereum.eip55 :as eip55]

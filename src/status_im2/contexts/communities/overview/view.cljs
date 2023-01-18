@@ -7,7 +7,7 @@
             [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im2.setup.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.menus.community-options.view :as options]

@@ -1,5 +1,5 @@
 (ns status-im2.contexts.chat.messages.content.reactions.view
-  (:require [status-im2.setup.constants :as constants]
+  (:require [status-im2.constants :as constants]
             [quo2.core :as quo]
             [react-native.core :as rn]
             [utils.re-frame :as rf]

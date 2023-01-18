@@ -4,7 +4,7 @@
             [quo.design-system.spacing :as spacing]
             [quo.design-system.typography :as typography]
             [re-frame.core :as re-frame]
-            [status-im2.setup.constants :refer [docs-link]]
+            [status-im2.constants :refer [docs-link]]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]

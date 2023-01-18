@@ -17,7 +17,7 @@
    [status-im.qr-scanner.core :as qr-scaner]
    [status-im.signing.eip1559 :as eip1559]
    [status-im.signing.gas :as signing.gas]
-   [status-im.utils.config :as config]
+   [status-im2.config :as config]
    [status-im.utils.core :as utils.core]
    [utils.re-frame :as rf]
    [utils.datetime :as datetime]
