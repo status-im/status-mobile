@@ -72,7 +72,8 @@
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
+     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                                                            :start-a-new-chat])}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)

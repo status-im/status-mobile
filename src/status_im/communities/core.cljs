@@ -7,7 +7,7 @@
             [utils.i18n :as i18n]
             [status-im.async-storage.core :as async-storage]
             [status-im2.common.bottom-sheet.events :as bottom-sheet]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [utils.re-frame :as rf]
             [status-im.utils.universal-links.core :as universal-links]

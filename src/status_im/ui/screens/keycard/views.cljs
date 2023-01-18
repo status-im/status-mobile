@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.common.bottom-sheet.events :as bottom-sheet]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
             [status-im.multiaccounts.core :as multiaccounts]

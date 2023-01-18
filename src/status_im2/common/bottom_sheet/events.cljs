@@ -1,15 +1,15 @@
 (ns status-im2.common.bottom-sheet.events
   (:require [utils.re-frame :as rf]
-            [status-im.constants :as constants]
+            [status-im2.constants :as constants]
             [react-native.background-timer :as timer]))
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
   {:display-bottom-sheet nil
-   :db                (assoc db
-                             :bottom-sheet/show?   true
-                             :bottom-sheet/view    view
-                             :bottom-sheet/options options)})
+   :db                   (assoc db
+                                :bottom-sheet/show?   true
+                                :bottom-sheet/view    view
+                                :bottom-sheet/options options)})
 
 (rf/defn show-bottom-sheet-event
   {:events [:bottom-sheet/show-sheet]}
