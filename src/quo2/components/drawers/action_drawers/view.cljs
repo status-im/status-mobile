@@ -1,8 +1,10 @@
-(ns quo2.components.drawers.action-drawers
+(ns quo2.components.drawers.action-drawers.view
   (:require [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.components.drawers.action-drawers.style :as style]
+  ))
 
 (defn- get-icon-color
   [danger?]
@@ -12,14 +14,7 @@
 
 (def divider
   [rn/view
-   {:style               {:border-top-width 1
-                          :border-top-color (colors/theme-colors
-                                             colors/neutral-10
-                                             colors/neutral-90)
-                          :margin-top       8
-                          :margin-bottom    7
-                          :align-items      :center
-                          :flex-direction   :row}
+   {:style               style/divider
     :accessible          true
     :accessibility-label :divider}])
 
@@ -38,32 +33,20 @@
      (when add-divider? divider)
      [rn/touchable-highlight
       {:accessibility-label accessibility-label
-       :style               {:border-radius     12
-                             :height            (if sub-label 58 50)
-                             :margin-horizontal 8}
+       :style               style/container
        :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
        :on-press            on-press}
       [rn/view
-       {:style
-        {:height            (if sub-label 58 50)
-         :margin-horizontal 12
-         :flex-direction    :row}}
+       {:style style/row-container}
        [rn/view
         {:accessibility-label :left-icon-for-action
          :accessible          true
-         :style
-         {:height        20
-          :margin-top    :auto
-          :margin-bottom :auto
-          :margin-right  12
-          :width         20}}
+         :style               style/left-icon}
         [icon/icon icon
          {:color (get-icon-color danger?)
           :size  20}]]
        [rn/view
-        {:style
-         {:flex            1
-          :justify-content :center}}
+        {:style style/text-container}
         [text/text
          {:size   :paragraph-1
           :weight :medium
@@ -79,11 +62,7 @@
            sub-label])]
        (when right-icon
          [rn/view
-          {:style
-           {:height        20
-            :margin-top    :auto
-            :margin-bottom :auto
-            :width         20}
+          {:style               style/right-icon
            :accessible          true
            :accessibility-label :right-icon-for-action}
           [icon/icon right-icon

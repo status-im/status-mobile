@@ -20,7 +20,8 @@
    quo2.components.dividers.date
    quo2.components.dividers.divider-label
    quo2.components.dividers.new-messages
-   quo2.components.drawers.action-drawers
+   quo2.components.drawers.action-drawers.view
+   quo2.components.drawers.permission-context.view
    quo2.components.dropdowns.dropdown
    quo2.components.header
    quo2.components.icon
@@ -63,7 +64,6 @@
 (def separator quo2.components.separator/separator)
 (def counter quo2.components.counter.counter/counter)
 (def header quo2.components.header/header)
-(def action-drawer quo2.components.drawers.action-drawers/action-drawer)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
 (def information-box quo2.components.info.information-box/information-box)
@@ -117,6 +117,10 @@
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
+
+;;;; DRAWERS
+(def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
+(def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
