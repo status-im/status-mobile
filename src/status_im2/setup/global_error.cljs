@@ -1,6 +1,6 @@
 (ns status-im2.setup.global-error
   (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im2.common.alert.events :as alert]))
 

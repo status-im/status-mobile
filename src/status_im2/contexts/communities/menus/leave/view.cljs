@@ -1,5 +1,5 @@
 (ns status-im2.contexts.communities.menus.leave.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [status-im2.contexts.communities.menus.leave.style :as style]
             [react-native.core :as rn]

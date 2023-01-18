@@ -1,5 +1,5 @@
 (ns status-im.utils.currency
-  (:require [i18n.i18n :as i18n]))
+  (:require [utils.i18n :as i18n]))
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

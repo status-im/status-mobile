@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer
   (:require
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [utils.re-frame :as rf]
    [quo2.core :as quo]
    [quo2.components.drawers.permission-context.view :as permission-context]

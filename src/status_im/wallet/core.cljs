@@ -11,7 +11,7 @@
    [status-im.ethereum.ens :as ens]
    [status-im.ethereum.stateofus :as stateofus]
    [status-im.ethereum.tokens :as tokens]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.multiaccounts.update.core :as multiaccounts.update]
    [status-im.popover.core :as popover.core]
    [status-im.qr-scanner.core :as qr-scaner]

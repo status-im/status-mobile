@@ -1,6 +1,6 @@
 (ns status-im2.contexts.activity-center.notification.contact-verification.view
   (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [status-im.constants :as constants]
             [utils.datetime :as datetime]

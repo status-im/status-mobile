@@ -1,4 +1,4 @@
-(ns status-im.goog.i18n
+(ns utils.i18n-goog
   (:require
    [clojure.string :as string]
    goog.i18n.CompactNumberFormatSymbols

@@ -8,7 +8,7 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im2.contexts.chat.messages.list.state :as chat.state]

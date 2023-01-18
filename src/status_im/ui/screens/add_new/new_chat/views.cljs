@@ -8,7 +8,7 @@
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
    [status-im.ethereum.ens :as ens]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.multiaccounts.core :as multiaccounts]
    [status-im.qr-scanner.core :as qr-scanner]
    [status-im.ui.components.animation :as animation]

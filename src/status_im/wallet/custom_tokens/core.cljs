@@ -3,7 +3,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet]

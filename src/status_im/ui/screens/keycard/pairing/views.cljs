@@ -3,7 +3,7 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [utils.security.core :as security]))
 

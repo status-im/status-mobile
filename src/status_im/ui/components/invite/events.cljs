@@ -1,6 +1,6 @@
 (ns status-im.ui.components.invite.events
   (:require [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
             [status-im.utils.universal-links.utils :as universal-links]))

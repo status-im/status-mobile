@@ -1,6 +1,6 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.native-module.core :as status]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]

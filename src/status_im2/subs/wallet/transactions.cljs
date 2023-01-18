@@ -1,7 +1,7 @@
 (ns status-im2.subs.wallet.transactions
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.transactions.core :as transactions]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.notifications.core :as notifications]
             [utils.datetime :as datetime]
             [status-im.utils.money :as money]

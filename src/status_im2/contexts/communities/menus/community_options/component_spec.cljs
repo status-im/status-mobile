@@ -2,7 +2,7 @@
 (ns status-im2.contexts.communities.menus.community-options.component-spec
   (:require [re-frame.core :as re-frame]
             [test-helpers.component :as h]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im2.setup.i18n-resources :as i18n-resources]
             [status-im2.contexts.communities.menus.community-options.view :as options]))
 

@@ -2,7 +2,7 @@
   (:require
    [quo.design-system.colors :as colors]
    [status-im.add-new.core :as new-chat.events]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.screens.about-app.views :as about-app]
    [status-im.ui.screens.add-new.new-chat.views :as new-chat]

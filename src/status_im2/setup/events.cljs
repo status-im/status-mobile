@@ -11,7 +11,13 @@
             [status-im2.common.toasts.events]
             [status-im2.navigation.events :as navigation]
             [status-im2.setup.db :as db]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.datetime :as datetime]))
+
+(re-frame/reg-cofx
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (datetime/timestamp))))
 
 (re-frame/reg-fx
  :setup/open-multiaccounts

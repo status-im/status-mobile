@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.permissions :as browser.permissions]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.icons.icons :as icons]

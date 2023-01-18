@@ -1,6 +1,6 @@
 (ns status-im2.subs.contact
   (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]

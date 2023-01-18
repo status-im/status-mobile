@@ -7,7 +7,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.router.core :as router]
             [status-im.ui.components.react :as react]
@@ -77,14 +77,14 @@
 (rf/defn handle-community
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
-  (navigation/navigate-to-cofx cofx :community {:community-id community-id})
-)
+  (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
+
 
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
   [{:keys [db]} cofx deserialized-key]
-  (navigation/navigate-to-cofx cofx :community {:community-id deserialized-key})
-)
+  (navigation/navigate-to-cofx cofx :community {:community-id deserialized-key}))
+
 
 (rf/defn handle-desktop-community
   [cofx {:keys [community-id]}]

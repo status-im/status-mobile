@@ -7,7 +7,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.token-tag :as token-tag]
             [quo2.foundations.colors :as colors]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [react-native.fast-image :as fast-image]))
 
 (def ^:private token-tag-horizontal-spacing 7)

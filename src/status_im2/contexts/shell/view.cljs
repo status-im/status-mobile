@@ -1,5 +1,5 @@
 (ns status-im2.contexts.shell.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [oops.core :refer [oget]]
             [quo2.foundations.colors :as colors]

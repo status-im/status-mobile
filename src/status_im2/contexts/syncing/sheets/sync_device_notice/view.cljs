@@ -1,5 +1,5 @@
 (ns status-im2.contexts.syncing.sheets.sync-device-notice.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]

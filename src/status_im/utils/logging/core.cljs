@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [react-native.mail :as react-native-mail]
             [status-im.bottom-sheet.core :as bottom-sheet]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]

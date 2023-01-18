@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views :refer [defview letsubs]]))

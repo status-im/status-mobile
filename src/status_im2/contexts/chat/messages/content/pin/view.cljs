@@ -4,7 +4,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im.ui.screens.chat.styles.message.message :as old-style]))
 

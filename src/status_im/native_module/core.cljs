@@ -415,13 +415,6 @@
   (log/debug "[native-module] set-blank-preview-flag")
   (.setBlankPreviewFlag ^js (status) flag))
 
-(defn is24Hour
-  []
-  (log/debug "[native-module] is24Hour")
-  ;;NOTE: we have to check for status module because of tests
-  (when (status)
-    (.-is24Hour ^js (status))))
-
 (defn get-device-model-info
   []
   (log/debug "[native-module] get-device-model-info")

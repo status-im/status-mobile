@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [quo.react-native :as rn]
             [status-im.communities.core :as communities]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.emoji-thumbnail.preview :as emoji-thumbnail-preview]
             [status-im.ui.components.emoji-thumbnail.styles :as styles]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]

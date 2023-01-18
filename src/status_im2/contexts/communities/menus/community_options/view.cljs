@@ -1,5 +1,5 @@
 (ns status-im2.contexts.communities.menus.community-options.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [status-im2.contexts.communities.menus.leave.view :as leave-menu]))

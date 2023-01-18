@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
@@ -83,8 +83,8 @@
                                    (js/setTimeout #(rf/dispatch [:bottom-sheet/show-sheet
                                                                  {:content
                                                                   new-chat-aio/contact-selection-list}])
-                                                  1000))
-    }]
+                                                  1000))}]
+
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)

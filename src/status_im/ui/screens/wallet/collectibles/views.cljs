@@ -5,7 +5,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.react-native.resources :as resources]

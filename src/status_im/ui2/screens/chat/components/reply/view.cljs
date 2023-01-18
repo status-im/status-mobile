@@ -1,6 +1,6 @@
 (ns status-im.ui2.screens.chat.components.reply.view
   (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.icon :as quo2.icon]

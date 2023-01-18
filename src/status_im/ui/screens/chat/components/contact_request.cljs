@@ -6,7 +6,7 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [status-im.ethereum.stateofus :as stateofus]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.screens.chat.components.style :as styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

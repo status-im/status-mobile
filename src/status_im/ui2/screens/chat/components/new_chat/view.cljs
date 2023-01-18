@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
             [status-im.ui.screens.chat.sheets :refer [hide-sheet-and-dispatch]]

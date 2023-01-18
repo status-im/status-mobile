@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.network.network-details.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.network.core :as network]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.network.styles :as st]

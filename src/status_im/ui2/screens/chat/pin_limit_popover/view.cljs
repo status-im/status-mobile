@@ -1,5 +1,5 @@
 (ns status-im.ui2.screens.chat.pin-limit-popover.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo.react :as react]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]

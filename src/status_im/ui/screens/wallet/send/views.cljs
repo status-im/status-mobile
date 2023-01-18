@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
             [status-im.ethereum.core :as ethereum]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.ui.components.chat-icon.screen :as chat-icon]

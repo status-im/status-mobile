@@ -1,5 +1,5 @@
 (ns status-im2.contexts.chat.group-details.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
             [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]

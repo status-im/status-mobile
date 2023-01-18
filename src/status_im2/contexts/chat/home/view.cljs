@@ -1,5 +1,5 @@
 (ns status-im2.contexts.chat.home.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]

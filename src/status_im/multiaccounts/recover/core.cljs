@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.keycard.nfc :as nfc]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.create.core :as multiaccounts.create]

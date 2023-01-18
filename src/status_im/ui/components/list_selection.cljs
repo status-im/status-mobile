@@ -1,6 +1,6 @@
 (ns status-im.ui.components.list-selection
   (:require [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
