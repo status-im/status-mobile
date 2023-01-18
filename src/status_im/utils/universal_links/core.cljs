@@ -79,7 +79,7 @@
   (log/info "universal-links: handling community" community-id)
   (rf/merge cofx
             (when-not (get (:communities db) community-id)
-              {:dispatch [:communities.ui/:resolve-community-info community-id]})
+              {:dispatch [:communities.ui/resolve-community-info community-id]})
             (navigation/navigate-to-cofx :community {:community-id community-id})))
 
 (rf/defn handle-navigation-to-desktop-community-from-mobile
