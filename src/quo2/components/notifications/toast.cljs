@@ -1,5 +1,5 @@
 (ns quo2.components.notifications.toast
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.count-down-circle :as count-down-circle]

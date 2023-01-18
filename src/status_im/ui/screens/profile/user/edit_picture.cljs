@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.user.edit-picture
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
             [status-im.utils.config :as config]))

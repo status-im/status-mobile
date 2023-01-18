@@ -1,5 +1,5 @@
 (ns status-im2.contexts.activity-center.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo.react :as react]
             [quo2.core :as quo]
             [react-native.core :as rn]

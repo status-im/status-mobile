@@ -1,6 +1,6 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]))

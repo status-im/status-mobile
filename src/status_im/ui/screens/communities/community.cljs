@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.community
   (:require
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [quo.core :as quo]
    [quo.design-system.colors :as colors]
    [quo2.components.community.style :as styles] ;; TODO reimplement with quo2 library and new

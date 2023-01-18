@@ -1,6 +1,6 @@
 (ns status-im2.setup.core
   (:require
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im2.setup.i18n-resources :as i18n-resources]
    [re-frame.core :as re-frame]
    [re-frame.interop :as interop]
@@ -20,7 +20,6 @@
    [status-im2.setup.config :as config]
    [status-im2.setup.dev :as dev]
    status-im2.setup.events
-   status-im2.setup.datetime
    [status-im2.setup.global-error :as global-error]
    [status-im2.setup.log :as log]
    status-im2.subs.root))

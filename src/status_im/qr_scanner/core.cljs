@@ -5,7 +5,7 @@
             [status-im.chat.models :as chat]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.router.core :as router]
             [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]

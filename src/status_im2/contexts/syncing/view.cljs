@@ -1,5 +1,5 @@
 (ns status-im2.contexts.syncing.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]

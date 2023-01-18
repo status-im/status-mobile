@@ -7,7 +7,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.router.core :as router]
             [status-im.utils.db :as utils.db]
             [utils.re-frame :as rf]

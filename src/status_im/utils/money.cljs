@@ -1,7 +1,7 @@
 (ns status-im.utils.money
   (:require ["bignumber.js" :as BigNumber]
             [clojure.string :as string]
-            [i18n.i18n :as i18n]))
+            [utils.i18n :as i18n]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which

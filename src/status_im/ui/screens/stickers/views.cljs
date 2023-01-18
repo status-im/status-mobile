@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.stickers.views
   (:require [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

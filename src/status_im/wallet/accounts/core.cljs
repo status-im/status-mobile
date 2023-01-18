@@ -10,7 +10,7 @@
    [status-im.ethereum.eip681 :as eip681]
    [status-im.ethereum.mnemonic :as mnemonic]
    [status-im.ethereum.stateofus :as stateofus]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.multiaccounts.core :as multiaccounts]
    [status-im.multiaccounts.key-storage.core :as key-storage]
    [status-im.multiaccounts.update.core :as multiaccounts.update]

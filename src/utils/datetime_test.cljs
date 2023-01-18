@@ -2,13 +2,12 @@
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as t]
             [cljs.test :refer-macros [deftest testing is]]
-            [status-im.goog.i18n :as i18n]
-            status-im2.setup.datetime
+            [utils.i18n-goog :as i18n-goog]
             [utils.datetime :as datetime]))
 
 (defn match
   [name symbols]
-  (is (identical? (.-dateTimeSymbols_ (i18n/mk-fmt name #'utils.datetime/medium-date-format))
+  (is (identical? (.-dateTimeSymbols_ (i18n-goog/mk-fmt name #'utils.datetime/medium-date-format))
                   symbols)))
 
 (deftest date-time-formatter-test
@@ -26,18 +25,18 @@
 (def epoch-plus-3d 172800000)
 
 (deftest is-24-hour-locale-en-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n/locale-symbols "en")) false)))
+  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "en")) false)))
 
 (deftest is-24-hour-locale-it-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n/locale-symbols "it")) true)))
+  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "it")) true)))
 
 (deftest is-24-hour-locale-nb-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n/locale-symbols "nb-NO")) true)))
+  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "nb-NO")) true)))
 
 (deftest to-short-str-today-test
   (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                 datetime/time-fmt         (fn []
-                                            (i18n/mk-fmt "us" #'utils.datetime/short-time-format))
+                                            (i18n-goog/mk-fmt "us" #'utils.datetime/short-time-format))
                 datetime/time-zone-offset (t/period :hours 0)]
     (is (= (datetime/to-short-str epoch-plus-3d) "12:00 AM"))))
 
@@ -59,13 +58,14 @@
   (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                 datetime/time-zone-offset (t/period :hours 0)
                 datetime/date-fmt         (fn []
-                                            (i18n/mk-fmt "us" #'utils.datetime/medium-date-format))]
+                                            (i18n-goog/mk-fmt "us" #'utils.datetime/medium-date-format))]
     (is (= (datetime/to-short-str epoch) "Jan 1, 1970"))))
 
 (deftest to-short-str-before-yesterday-nb-test
   (with-redefs [datetime/time-zone-offset (t/period :hours 0)
                 datetime/date-fmt         (fn []
-                                            (i18n/mk-fmt "nb-NO" #'utils.datetime/medium-date-format))
+                                            (i18n-goog/mk-fmt "nb-NO"
+                                                              #'utils.datetime/medium-date-format))
                 t/*ms-fn*                 (constantly epoch-plus-3d)]
     (is (= (datetime/to-short-str epoch) "1. jan. 1970"))))
 
@@ -73,16 +73,16 @@
   (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                 datetime/time-zone-offset (t/period :hours 0)
                 datetime/date-fmt         (fn []
-                                            (i18n/mk-fmt "us"
-                                                         #'utils.datetime/medium-date-time-format))]
+                                            (i18n-goog/mk-fmt "us"
+                                                              #'utils.datetime/medium-date-time-format))]
     (is (= (datetime/day-relative epoch) "Jan 1, 1970, 12:00:00 AM"))))
 
 (deftest day-relative-before-yesterday-nb-test
   (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                 datetime/time-zone-offset (t/period :hours 0)
                 datetime/date-fmt         (fn []
-                                            (i18n/mk-fmt "nb-NO"
-                                                         #'utils.datetime/medium-date-time-format))]
+                                            (i18n-goog/mk-fmt "nb-NO"
+                                                              #'utils.datetime/medium-date-time-format))]
     (is (= (datetime/day-relative epoch) "1. jan. 1970, 00:00:00"))))
 
 (deftest current-year?-test

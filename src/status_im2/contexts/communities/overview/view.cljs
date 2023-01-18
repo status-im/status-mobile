@@ -1,5 +1,5 @@
 (ns status-im2.contexts.communities.overview.view
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]

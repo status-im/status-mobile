@@ -3,7 +3,7 @@
             [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im2.setup.config :as config]
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply.view :as components.reply]

@@ -1,5 +1,5 @@
 (ns status-im2.common.alert.events
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]))
 

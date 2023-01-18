@@ -9,7 +9,7 @@
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
    [status-im.constants :as constants]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.fast-image :as fast-image]
    [status-im.ui.components.react :as react]

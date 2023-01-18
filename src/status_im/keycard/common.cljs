@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.keycard.nfc :as nfc]
             [status-im.popover.core :as popover]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.advanced-settings.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im2.setup.config :as config])
   (:require-macros [status-im.utils.views :as views]))

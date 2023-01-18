@@ -5,7 +5,7 @@
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]

@@ -2,7 +2,7 @@
   (:require [status-im.chat.models.link-preview :as link.preview]
             [status-im.chat.models.message :as models.message]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.login.core :as login]
             [status-im.notifications.local :as local-notifications]

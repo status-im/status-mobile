@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo.react-native :as react-native]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn bug-report

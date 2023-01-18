@@ -1,6 +1,6 @@
 (ns status-im.keycard.unpair
   (:require [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.update.core :as multiaccounts.update]

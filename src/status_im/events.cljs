@@ -21,7 +21,7 @@
    status-im.ethereum.subscriptions
    status-im.fleet.core
    status-im.http.core
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [status-im.keycard.core :as keycard]
    status-im.log-level.core
    status-im.mailserver.constants

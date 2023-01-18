@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [i18n.i18n :as i18n])
+            [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat

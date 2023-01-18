@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [remove])
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [oops.core :as oops]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]

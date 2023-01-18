@@ -4,11 +4,9 @@
             [goog.string :as gstring]
             [cljs-time.format :as t.format]
             [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [status-im.goog.i18n :as goog.18n]
-            [status-im.native-module.core :as status]))
+            [utils.i18n :as i18n]
+            [utils.i18n-goog :as i18n-goog]))
 
-;;;; Datetime constants
 (defn now [] (t/now))
 
 (def one-second 1000)
@@ -38,9 +36,7 @@
   "Returns is24Hour from device or from given locale symbols. Whenever we get
   non-nil value use it, else calculate it from the given locale symbol."
   [^js locsym]
-  (if-some [fromdev (status/is24Hour)]
-    fromdev
-    (is-24-hour-locsym locsym)))
+  (is-24-hour-locsym locsym))
 
 ;;;; Time formats
 (defn- short-time-format
@@ -81,7 +77,7 @@
     (fn []
       (or @formatter
           (reset! formatter
-            (goog.18n/mk-fmt i18n/locale format))))))
+            (i18n-goog/mk-fmt i18n/locale format))))))
 
 (def date-time-fmt (get-formatter-fn medium-date-time-format))
 (def date-fmt (get-formatter-fn medium-date-format))

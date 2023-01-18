@@ -8,7 +8,7 @@
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.config :as config]
             [status-im.utils.image-server :as image-server]

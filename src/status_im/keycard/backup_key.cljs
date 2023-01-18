@@ -1,7 +1,7 @@
 (ns status-im.keycard.backup-key
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.signing.core :as signing.core]

@@ -3,7 +3,7 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.keycard.recovery :as keycard]
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]

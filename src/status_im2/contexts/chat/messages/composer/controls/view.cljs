@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [react-native.background-timer :as background-timer]
             [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.contexts.chat.photo-selector.view :as photo-selector]

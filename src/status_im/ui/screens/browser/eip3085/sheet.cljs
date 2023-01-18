@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]

@@ -2,7 +2,7 @@
   (:require [quo2.components.messages.gap :as gap]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor

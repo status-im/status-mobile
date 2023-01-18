@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [status-im.communities.core :as communities]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.communities.create-channel :as create-channel]
             [utils.re-frame :as rf]

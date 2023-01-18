@@ -1,5 +1,5 @@
 (ns status-im.wallet.db
-  (:require [i18n.i18n :as i18n]
+  (:require [utils.i18n :as i18n]
             [status-im.utils.money :as money]
             [status-im.utils.priority-map :refer [empty-transaction-map]]))
 

@@ -1,7 +1,7 @@
 (ns status-im.bootnodes.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]))

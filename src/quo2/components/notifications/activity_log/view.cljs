@@ -9,7 +9,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [i18n.i18n :as i18n]))
+            [utils.i18n :as i18n]))
 
 (def ^:private max-reply-length
   280)

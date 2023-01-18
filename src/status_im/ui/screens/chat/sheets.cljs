@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [i18n.i18n :as i18n]
+            [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
