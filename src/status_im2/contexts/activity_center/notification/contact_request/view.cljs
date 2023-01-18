@@ -1,10 +1,10 @@
 (ns status-im2.contexts.activity-center.notification.contact-request.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.constants :as constants]
-            [utils.datetime :as datetime]
             [status-im2.contexts.activity-center.notification.common.view :as common]
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view
