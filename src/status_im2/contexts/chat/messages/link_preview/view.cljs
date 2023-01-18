@@ -1,10 +1,10 @@
 (ns status-im2.contexts.chat.messages.link-preview.view
   (:require
    [clojure.string :as string]
-   [i18n.i18n :as i18n]
+   [utils.i18n :as i18n]
    [reagent.core :as reagent]
    [react-native.core :as rn]
-   [status-im.constants :as constants]
+   [status-im2.constants :as constants]
    [status-im2.contexts.chat.messages.link-preview.events]
    [status-im2.contexts.chat.messages.link-preview.style :as style]
    [quo2.core :as quo]
