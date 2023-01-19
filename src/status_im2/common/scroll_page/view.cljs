@@ -12,8 +12,8 @@
 (defn icon-color
   []
   (colors/theme-colors
-    colors/white-opa-40
-    colors/neutral-80-opa-40))
+   colors/white-opa-40
+   colors/neutral-80-opa-40))
 
 (def negative-scroll-position-0 (if platform/ios? -44 0))
 (def scroll-position-0 (if platform/ios? 44 0))
@@ -21,10 +21,10 @@
 (defn diff-with-max-min
   [value maximum minimum]
   (->>
-    (+ value scroll-position-0)
-    (- maximum)
-    (max minimum)
-    (min maximum)))
+   (+ value scroll-position-0)
+   (- maximum)
+   (max minimum)
+   (min maximum)))
 
 (defn scroll-page-header
   [scroll-height name page-nav cover sticky-header]
@@ -41,12 +41,12 @@
            opacity-animation   (reanimated/use-shared-value 0)
            threshold           (if platform/ios? 30 170)]
        (rn/use-effect
-         #(do
-            (reanimated/set-shared-value y @scroll-height)
-            (reanimated/set-shared-value opacity-animation
-                                         (reanimated/with-timing (if (>= @scroll-height threshold) 1 0)
-                                                                 (clj->js {:duration 100}))))
-         [@scroll-height])
+        #(do
+           (reanimated/set-shared-value y @scroll-height)
+           (reanimated/set-shared-value opacity-animation
+                                        (reanimated/with-timing (if (>= @scroll-height threshold) 1 0)
+                                                                (clj->js {:duration 100}))))
+        [@scroll-height])
        [:<>
         [reanimated/blur-view
          {:blur-amount   32
@@ -109,14 +109,14 @@
        [scroll-page-header scroll-height name page-nav cover sticky-header]
        [rn/scroll-view
         {:style                           (style/scroll-view-container
-                                            (diff-with-max-min @scroll-height 16 0))
+                                           (diff-with-max-min @scroll-height 16 0))
          :shows-vertical-scroll-indicator false
          :scroll-event-throttle           8
          :on-scroll                       (fn [event]
                                             (reset! scroll-height (int
-                                                                    (oops/oget
-                                                                      event
-                                                                      "nativeEvent.contentOffset.y"))))}
+                                                                   (oops/oget
+                                                                    event
+                                                                    "nativeEvent.contentOffset.y"))))}
         [rn/view {:style {:height 151}}
          [rn/image
           {:source cover
@@ -127,7 +127,7 @@
            {:flex             1
             :border-radius    (diff-with-max-min @scroll-height 16 0)
             :background-color (colors/theme-colors
-                                colors/white
-                                colors/neutral-90)}
+                               colors/white
+                               colors/neutral-90)}
            [display-picture scroll-height cover]
            [children]])]])))
