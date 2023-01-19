@@ -351,7 +351,6 @@ component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
 component-test: ##@test Run tests once in NodeJS
 	# Here we create the gyp bindings for nodejs
-	yarn install
 	yarn shadow-cljs compile component-test && \
 	jest --config=test/jest/jest.config.js
 

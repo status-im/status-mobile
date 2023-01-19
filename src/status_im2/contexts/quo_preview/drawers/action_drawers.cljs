@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.drawers.action-drawers
-  (:require [quo2.components.buttons.button :as button]
-            [quo2.components.drawers.action-drawers :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -27,7 +26,7 @@
   [rn/view
    {:height           300
     :background-color (colors/theme-colors colors/white colors/neutral-95)}
-   [quo2/action-drawer
+   [quo/action-drawer
     (cond->
       [[{:icon     :i/friend
          :label    "View channel members and details"
@@ -59,7 +58,7 @@
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 400}
         [preview/customizer state descriptor]
-        [button/button
+        [quo/button
          {:style    {:margin-horizontal 40}
           :on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                    {:content        (constantly (render-action-sheet state))

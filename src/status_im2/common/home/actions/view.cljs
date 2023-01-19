@@ -1,6 +1,6 @@
 (ns status-im2.common.home.actions.view
   (:require [utils.i18n :as i18n]
-            [quo2.components.drawers.action-drawers :as drawer]
+            [quo2.core :as quo]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]))
@@ -407,7 +407,7 @@
 
 (defn one-to-one-actions
   [{:keys [chat-id] :as item} inside-chat?]
-  [drawer/action-drawer
+  [quo/action-drawer
    [[(view-profile-entry chat-id)
      (edit-nickname-entry chat-id)]
     (notification-actions item inside-chat?)
@@ -415,7 +415,7 @@
 
 (defn public-chat-actions
   [{:keys [chat-id] :as item} inside-chat?]
-  [drawer/action-drawer
+  [quo/action-drawer
    [[(group-details-entry chat-id)
      (when inside-chat?
        (add-members-entry))]
@@ -424,7 +424,7 @@
 
 (defn private-group-chat-actions
   [item inside-chat?]
-  [drawer/action-drawer
+  [quo/action-drawer
    [(group-actions item inside-chat?)
     (notification-actions item inside-chat?)
     (destructive-actions item)]])
@@ -432,7 +432,7 @@
 (defn contact-actions
   [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
-    [drawer/action-drawer
+    [quo/action-drawer
      [[(view-profile-entry public-key)
        (remove-from-contacts-entry contact)
        (rename-entry)
@@ -460,7 +460,7 @@
   [{:keys [admins] :as group}]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])
         admin?          (get admins current-pub-key)]
-    [drawer/action-drawer
+    [quo/action-drawer
      [(when admin? [(edit-name-image-entry)])
       [(notifications-entry admin?)]
       (destructive-actions group)]]))

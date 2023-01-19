@@ -3,9 +3,13 @@
 
 (def radius 20)
 (def container
-  {:padding-top             16
+  {:flex-direction          :row
+   :background-color        (colors/theme-colors colors/white colors/neutral-90)
+   :height                  82
+   :padding-top             16
    :padding-bottom          48
-   :padding-horizontal      20
+   :justify-content         :center
+   :padding-right           :auto
    :shadow-offset           {:width  0
                              :height 2}
    :shadow-radius           radius

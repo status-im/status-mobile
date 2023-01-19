@@ -20,7 +20,8 @@
    quo2.components.dividers.date
    quo2.components.dividers.divider-label
    quo2.components.dividers.new-messages
-   quo2.components.drawers.action-drawers
+   quo2.components.drawers.action-drawers.view
+   quo2.components.drawers.permission-context.view
    quo2.components.dropdowns.dropdown
    quo2.components.header
    quo2.components.icon
@@ -41,6 +42,7 @@
    quo2.components.notifications.info-count
    quo2.components.notifications.notification-dot
    quo2.components.notifications.toast
+   quo2.components.profile.profile-card.view
    quo2.components.reactions.reaction
    quo2.components.selectors.disclaimer.view
    quo2.components.selectors.filter.view
@@ -52,8 +54,10 @@
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
    quo2.components.tags.status-tags
-   quo2.components.profile.profile-card.view
-   quo2.components.tags.tags))
+   quo2.components.tags.permission-tag
+   quo2.components.tags.tag
+   quo2.components.tags.tags
+   quo2.components.tags.token-tag))
 
 (def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
@@ -63,7 +67,6 @@
 (def separator quo2.components.separator/separator)
 (def counter quo2.components.counter.counter/counter)
 (def header quo2.components.header/header)
-(def action-drawer quo2.components.drawers.action-drawers/action-drawer)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
 (def information-box quo2.components.info.information-box/information-box)
@@ -71,7 +74,6 @@
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
 (def add-reaction quo2.components.reactions.reaction/add-reaction)
-(def tags quo2.components.tags.tags/tags)
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def context-tag quo2.components.tags.context-tags/context-tag)
 (def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
@@ -80,7 +82,6 @@
 (def tabs quo2.components.tabs.tabs/tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
-(def status-tag quo2.components.tags.status-tags/status-tag)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
 (def checkbox quo2.components.selectors.selectors/checkbox)
@@ -118,6 +119,10 @@
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
 
+;;;; DRAWERS
+(def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
+(def permission-context quo2.components.drawers.permission-context.view/view)
+
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
@@ -135,3 +140,10 @@
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
+
+;;;; TAGS
+(def tag quo2.components.tags.tag/tag)
+(def tags quo2.components.tags.tags/tags)
+(def permission-tag quo2.components.tags.permission-tag/tag)
+(def status-tag quo2.components.tags.status-tags/status-tag)
+(def token-tag quo2.components.tags.token-tag/tag)
