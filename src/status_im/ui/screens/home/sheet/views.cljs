@@ -13,7 +13,8 @@
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide-and-dispatch #(rf/dispatch event)]))
+  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch event))
 
 (defn add-new-view
   []
@@ -73,7 +74,7 @@
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
      :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
-                                                            :start-a-new-chat])}]
+                                                            :start-a-new-chat {}])}]
    [quo2/menu-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)

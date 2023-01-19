@@ -9,7 +9,8 @@
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide-and-dispatch #(rf/dispatch event)]))
+  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch event))
 
 (defn- context-tags
   [challenger? {:keys [author contact-verification-status]}]

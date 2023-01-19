@@ -1,7 +1,6 @@
 (ns status-im2.common.bottom-sheet.events
   (:require [utils.re-frame :as rf]
-            [status-im2.constants :as constants]
-            [react-native.background-timer :as timer]))
+            [status-im2.constants :as constants]))
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
@@ -42,13 +41,13 @@
    :dispatch-later [{:dispatch [:bottom-sheet/reset]
                      :ms       constants/bottom-sheet-animation-delay}]})
 
-(rf/defn hide-bottom-sheet-and-dispatch
-  {:events [:bottom-sheet/hide-and-dispatch]}
-  [{:keys [db]} on-closing-animation-finished]
-  (timer/set-timeout #(when (fn? on-closing-animation-finished)
-                        (on-closing-animation-finished))
-                     (+ 50 constants/bottom-sheet-animation-delay))
-  {:dispatch [:bottom-sheet/hide]})
+; (rf/defn hide-bottom-sheet-and-dispatch
+;   {:events [:bottom-sheet/hide-and-dispatch]}
+;   [{:keys [db]} on-closing-animation-finished]
+;   (timer/set-timeout #(when (fn? on-closing-animation-finished)
+;                         (on-closing-animation-finished))
+;                      (+ 50 constants/bottom-sheet-animation-delay))
+;   {:dispatch [:bottom-sheet/hide]})
 
 (rf/defn update-bottom-sheet-config
   {:events [:bottom-sheet/update-config]}
