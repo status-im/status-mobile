@@ -283,9 +283,9 @@
            (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
            (logout!)
            (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
-                            ; in an
-                            ; inconsistent state between tests
-                            (assert-logout))))))))
+             ; in an
+             ; inconsistent state between tests
+             (assert-logout))))))))
 
 (deftest mute-chat-test
   (log/info "========= mute-chat-test ==================")
