@@ -1,6 +1,6 @@
-(ns status-im.chat.models-test
+(ns status-im2.contexts.chat.events-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.models :as chat]
+            [status-im2.contexts.chat.events :as chat]
             [status-im.chat.models.images :as images]
             [status-im.utils.clocks :as utils.clocks]))
 

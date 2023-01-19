@@ -229,38 +229,9 @@
            (add-datemarks)
            (hydrate-messages messages pin-messages)
            (collapse-gaps chat-id
-                                  synced-from
-                                  (datetime/timestamp)
-                                  chat-type
-                                  joined
-                                  loading-messages?)
+                          synced-from
+                          (datetime/timestamp)
+                          chat-type
+                          joined
+                          loading-messages?)
            (albumize-messages))))))
-
-;;we want to keep data unchanged so react doesn't change component when we leave screen
-(def memo-profile-messages-stream (atom nil))
-
-(re-frame/reg-sub
- :chats/profile-messages-stream
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
-    (re-frame/subscribe [:chats/chat-no-messages? chat-id])
-    (re-frame/subscribe [:view-id])])
- (fn [[messages empty view-id]]
-   (when (or (= view-id :profile) empty)
-     (reset! memo-profile-messages-stream messages))
-   @memo-profile-messages-stream))
-
-(def memo-timeline-messages-stream (atom nil))
-
-(re-frame/reg-sub
- :chats/timeline-messages-stream
- :<- [:chats/message-list constants/timeline-chat-id]
- :<- [:chats/chat-messages constants/timeline-chat-id]
- :<- [:view-id]
- (fn [[message-list messages view-id]]
-   (if (= view-id :status)
-     (let [res (-> (models.message-list/->seq message-list)
-                   (hydrate-messages messages))]
-       (reset! memo-timeline-messages-stream res)
-       res)
-     @memo-timeline-messages-stream)))

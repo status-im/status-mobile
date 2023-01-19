@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.events
   (:require [clojure.set :as set]
             [utils.i18n :as i18n]
-            [re-frame.core :as re-frame]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]
             [status-im2.contexts.chat.messages.list.state :as chat.state]
@@ -253,7 +252,7 @@
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     {:json-rpc/call [{:method     "wakuext_createOneToOneChat"
                       :params     [{:id chat-id :ensName ens-name}]
-                      :on-success #(re-frame/dispatch [:chat/one-to-one-chat-created chat-id %])
+                      :on-success #(rf/dispatch [:chat/one-to-one-chat-created chat-id %])
                       :on-error   #(log/error "failed to create one-to-on chat" chat-id %)}]}))
 
 (rf/defn clear-history-handler
@@ -264,7 +263,7 @@
             {:db            db
              :json-rpc/call [{:method     "wakuext_clearHistory"
                               :params     [{:id chat-id}]
-                              :on-success #(re-frame/dispatch [:chat/history-cleared chat-id %])
+                              :on-success #(rf/dispatch [:chat/history-cleared chat-id %])
                               :on-error   #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
@@ -292,7 +291,7 @@
     {:db            (assoc-in db [:chats chat-id :muted] muted?)
      :json-rpc/call [{:method     method
                       :params     [chat-id]
-                      :on-error   #(re-frame/dispatch [:chat/mute-failed chat-id muted? %])
+                      :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
                       :on-success #()}]}))
 
 (rf/defn show-clear-history-confirmation
@@ -303,8 +302,8 @@
     :content             (i18n/label :t/clear-history-confirmation-content)
     :confirm-button-text (i18n/label :t/clear-history-action)
     :on-accept           #(do
-                            (re-frame/dispatch [:bottom-sheet/hide])
-                            (re-frame/dispatch [:chat.ui/clear-history chat-id false]))}})
+                            (rf/dispatch [:bottom-sheet/hide])
+                            (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn show-remove-chat-confirmation
   {:events [:chat.ui/show-remove-confirmation]}
@@ -314,8 +313,8 @@
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
-                            (re-frame/dispatch [:bottom-sheet/hide])
-                            (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}})
+                            (rf/dispatch [:bottom-sheet/hide])
+                            (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
 
 (rf/defn navigate-to-user-pinned-messages
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

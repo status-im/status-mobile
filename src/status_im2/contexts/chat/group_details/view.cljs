@@ -4,7 +4,6 @@
             [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.chat.models :as chat.models]
             [status-im2.contexts.chat.group-details.style :as style]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]

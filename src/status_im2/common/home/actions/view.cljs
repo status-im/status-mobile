@@ -1,9 +1,7 @@
 (ns status-im2.common.home.actions.view
   (:require [utils.i18n :as i18n]
             [quo2.components.drawers.action-drawers :as drawer]
-            [status-im.chat.models :as chat.models]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer] ;;TODO move to
-                                                                                 ;;status-im2
+            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]))
 

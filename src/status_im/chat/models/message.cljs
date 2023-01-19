@@ -1,11 +1,9 @@
 (ns status-im.chat.models.message
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.mentions :as mentions]
             [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
             [status-im2.contexts.chat.messages.list.state :as view.state]

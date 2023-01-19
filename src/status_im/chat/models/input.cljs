@@ -3,14 +3,12 @@
             [clojure.string :as string]
             [goog.object :as object]
             [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
-            [utils.datetime :as datetime]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
             [status-im.ui.screens.chat.components.input :as input]))
@@ -80,23 +78,6 @@
   {:events [:chat/disable-cooldown]}
   [{:keys [db]}]
   {:db (assoc db :chat/cooldown-enabled? false)})
-
-(defn- start-cooldown
-  [{:keys [db]} cooldowns]
-  {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
-                            :ms       (constants/cooldown-periods-ms
-                                       cooldowns
-                                       constants/default-cooldown-period-ms)}]
-   :show-cooldown-warning nil
-   :db                    (assoc db
-                                 :chat/cooldowns               (if
-                                                                 (=
-                                                                  constants/cooldown-reset-threshold
-                                                                  cooldowns)
-                                                                 0
-                                                                 cooldowns)
-                                 :chat/spam-messages-frequency 0
-                                 :chat/cooldown-enabled?       true)})
 
 (rf/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"

@@ -5,7 +5,6 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.async-storage.core :as async-storage]
-            [status-im.chat.models :as chat.models]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]

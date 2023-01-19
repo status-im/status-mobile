@@ -5,7 +5,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.chat.models :as chat.models]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
