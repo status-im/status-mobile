@@ -576,7 +576,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     #     self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_2")
+@pytest.mark.xdist_group(name="two_2")
 @marks.new_ui_critical
 class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 

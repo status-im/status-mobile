@@ -191,17 +191,8 @@ class ChatElementByText(Text):
 
     @property
     def status(self) -> str:
-        sending = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':sending')]")
-        sent = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':sent')]")
-        delivered = Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, ':delivered')]")
-        status = ''
-        if sending.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
-            status = 'sending'
-        if sent.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
-            status = 'sent'
-        if delivered.is_element_displayed(30, ignored_exceptions=NoSuchElementException):
-            status = 'delivered'
-        return status
+        result = re.search('\[(.*) DEBUG\]', Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, 'DEBUG')]").text)
+        return result.group(1) if result else ''
 
     @property
     def sent_status_checkmark(self) -> object:
