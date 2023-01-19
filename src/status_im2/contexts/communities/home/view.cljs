@@ -56,7 +56,8 @@
   (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
         tab                     @selected-tab]
     [rn/view
-     {:style {:padding-horizontal 20
+     {:style {:flex               1
+              :padding-horizontal 20
               :padding-vertical   12}}
      (case tab
        :joined

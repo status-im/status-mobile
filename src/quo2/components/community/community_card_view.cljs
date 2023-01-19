@@ -7,7 +7,7 @@
 (defn community-card-view-item
   [{:keys [name description locked images
            status tokens cover tags width]} on-press]
-  [rn/touchable-opacity
+  [rn/touchable-without-feedback
    {:accessibility-label :community-card-item
     :on-press            on-press}
    [rn/view {:style (style/community-card 20)}
