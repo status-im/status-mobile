@@ -555,28 +555,23 @@
   [community-id]
   (re-frame/dispatch [::fetch-requests-to-join community-id]))
 
-(defn update-activity-center-notification
-  [id]
-  [{:dispatch [:activity-center.notifications/mark-as-read id]
-    :ms       100}])
-
 (rf/defn request-to-join-accepted
   {:events [::request-to-join-accepted]}
   [{:keys [db] :as cofx} community-id request-id response-js]
   (rf/merge
    cofx
-   {:db             (update-in db [:communities/requests-to-join community-id] dissoc request-id)
-    :dispatch-later (update-activity-center-notification request-id)}
-   (handle-response response-js)))
+   {:db         (update-in db [:communities/requests-to-join community-id] dissoc request-id)
+    :dispatch-n [[:sanitize-messages-and-process-response response-js]
+                 [:activity-center.notifications/mark-as-read request-id]]}))
 
 (rf/defn request-to-join-declined
   {:events [::request-to-join-declined]}
   [{:keys [db] :as cofx} community-id request-id response-js]
   (rf/merge
    cofx
-   {:db             (update-in db [:communities/requests-to-join community-id] dissoc request-id)
-    :dispatch-later (update-activity-center-notification request-id)}
-   (handle-response response-js)))
+   {:db         (update-in db [:communities/requests-to-join community-id] dissoc request-id)
+    :dispatch-n [[:sanitize-messages-and-process-response response-js]
+                 [:activity-center.notifications/mark-as-read request-id]]}))
 
 (rf/defn accept-request-to-join-pressed
   {:events [:communities.ui/accept-request-to-join-pressed]}
