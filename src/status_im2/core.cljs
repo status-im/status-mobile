@@ -1,4 +1,4 @@
-(ns status-im2.setup.core
+(ns status-im2.core
   (:require
    [utils.i18n :as i18n]
    [status-im2.setup.i18n-resources :as i18n-resources]
@@ -9,19 +9,18 @@
    [react-native.platform :as platform]
    [react-native.shake :as react-native-shake]
    [reagent.impl.batching :as batching]
+   [status-im2.contexts.shell.animation :as animation]
+   [status-im2.config :as config]
+   [status-im2.setup.dev :as dev]
+   [status-im2.setup.global-error :as global-error]
+   [status-im2.common.log :as log]
    [status-im.async-storage.core :as async-storage]
-   status-im.events
    [status-im.native-module.core :as status]
    [status-im.notifications.local :as notifications]
    [status-im.utils.universal-links.core :as utils.universal-links]
-   [status-im2.contexts.shell.animation :as animation]
-   status-im2.contexts.syncing.events
+   status-im.events
+   status-im2.events
    status-im2.navigation.core
-   [status-im2.config :as config]
-   [status-im2.setup.dev :as dev]
-   status-im2.setup.events
-   [status-im2.setup.global-error :as global-error]
-   [status-im2.setup.log :as log]
    status-im2.subs.root))
 
 ;;;; re-frame RN setup

@@ -1,4 +1,4 @@
-(ns status-im2.setup.db
+(ns status-im2.db
   (:require [react-native.core :as rn]
             [status-im.fleet.core :as fleet]
             [status-im.wallet.db :as wallet.db]
