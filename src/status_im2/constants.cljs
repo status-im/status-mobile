@@ -208,7 +208,12 @@
 (def ^:const delete-message-for-me-undo-time-limit-ms 4000)
 
 (def ^:const album-image-sizes
-  {4        {0 146
+  {2        {0 146
+             1 146}
+   3        {0 [292 194]
+             1 [145.5 97]
+             2 [145.5 97]}
+   4        {0 146
              1 146
              2 146
              3 146}
