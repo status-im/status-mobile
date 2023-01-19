@@ -2,7 +2,6 @@
   (:require
    clojure.set
    [re-frame.core :as re-frame]
-   status-im.add-new.core
    [status-im.async-storage.core :as async-storage]
    status-im.backup.core
    status-im.bootnodes.core

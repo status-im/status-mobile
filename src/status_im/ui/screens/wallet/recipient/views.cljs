@@ -53,7 +53,7 @@
        :on-change      (fn [text]
                          (re-frame/dispatch [:search/recipient-filter-changed text])
                          (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                         (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]]))
+                         (debounce/debounce-and-dispatch [:contacts/set-new-identity text] 300))}]]))
 
 (defn section
   [_ _ _]

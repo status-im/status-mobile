@@ -9,7 +9,7 @@
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.utils.db :as utils.db]
+            [status-im2.utils.validators :as validators]
             [status-im.utils.http :as http]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
@@ -71,7 +71,7 @@
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
-  (let [valid-key (and (utils.db/valid-public-key? user-id)
+  (let [valid-key (and (validators/valid-public-key? user-id)
                        (not= user-id ens/default-key))]
     (cond
       valid-key
@@ -113,8 +113,8 @@
            (not (string/blank? chat-name))
            (> (count chat-id-parts) 1)
            (not (string/blank? (first chat-id-parts)))
-           (utils.db/valid-public-key? admin-pk)
-           (utils.db/valid-public-key? (last chat-id-parts)))
+           (validators/valid-public-key? admin-pk)
+           (validators/valid-public-key? (last chat-id-parts)))
       {:type             :group-chat
        :chat-id          chat-id
        :invitation-admin admin-pk
@@ -228,7 +228,7 @@
       (= handler :group-chat)
       (cb (match-group-chat chats query-params))
 
-      (utils.db/valid-public-key? uri)
+      (validators/valid-public-key? uri)
       (match-contact-async chain {:user-id uri} cb)
 
       (= handler :community-requests)

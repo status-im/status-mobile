@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.screens
   (:require
    [quo.design-system.colors :as colors]
-   [status-im.add-new.core :as new-chat.events]
    [utils.i18n :as i18n]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.screens.about-app.views :as about-app]
@@ -545,7 +544,7 @@
 
    ;[Chat] New Chat
    {:name      :new-chat
-    :on-focus  [::new-chat.events/new-chat-focus]
+    :on-focus  [:contacts/new-chat-focus]
     ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component new-chat/new-chat}
@@ -569,7 +568,7 @@
     :component contact/nickname}
 
    {:name      :new-chat-aio
-    :on-focus  [::new-chat.events/new-chat-focus]
+    :on-focus  [:contacts/new-chat-focus]
     ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component new-chat-aio/contact-selection-list}
@@ -594,13 +593,6 @@
     :options   {:topBar {:visible false}}
     :component communities.invite/invite
     :insets    {:bottom true}}
-
-   ;New Contact
-   {:name      :new-contact
-    :on-focus  [::new-chat.events/new-chat-focus]
-    ;;TODO accessories
-    :options   {:topBar {:visible false}}
-    :component new-chat/new-contact}
 
    ;[Wallet] Recipient
    {:name      :recipient

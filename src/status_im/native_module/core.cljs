@@ -1,7 +1,7 @@
 (ns status-im.native-module.core
   (:require ["react-native" :as react-native]
             [re-frame.core :as re-frame]
-            [status-im.utils.db :as utils.db]
+            [status-im2.utils.validators :as validators]
             [status-im.utils.platform :as platform]
             [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.types :as types]
@@ -472,13 +472,13 @@
   "Generate a 3 words random name based on the user public-key, synchronously"
   [public-key]
   (log/debug "[native-module] generate-gfycat")
-  (when (utils.db/valid-public-key? public-key)
+  (when (validators/valid-public-key? public-key)
     (.generateAlias ^js (status) public-key)))
 
 (defn generate-gfycat-async
   "Generate a 3 words random name based on the user public-key, asynchronously"
   [public-key callback]
-  (when (utils.db/valid-public-key? public-key)
+  (when (validators/valid-public-key? public-key)
     (.generateAliasAsync ^js (status) public-key callback)))
 
 (defn identicon
