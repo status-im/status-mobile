@@ -3,7 +3,7 @@
             [react-native.config :as react-native-config]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]))
-
+;; Test
 (def get-config react-native-config/get-config)
 
 (defn enabled? [v] (= "1" v))
