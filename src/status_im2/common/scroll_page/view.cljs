@@ -3,11 +3,11 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [react-native.reanimated :as reanimated]))
 
 (defn icon-color
   []
@@ -15,24 +15,8 @@
    colors/white-opa-40
    colors/neutral-80-opa-40))
 
-(defn get-platform-value [value] (if platform/ios? (+ value 44) value))
 (def negative-scroll-position-0 (if platform/ios? -44 0))
 (def scroll-position-0 (if platform/ios? 44 0))
-(def scroll-position-1 (if platform/ios? 86 134))
-(def scroll-position-2 (if platform/ios? -26 18))
-
-(defn get-header-size
-  [scroll-height]
-  (if (<= scroll-height scroll-position-2)
-    0
-    (->>
-     (+ (get-platform-value -17) scroll-height)
-     (* (if platform/ios? 3 1))
-     (max 0)
-     (min (if platform/ios? 100 124)))))
-
-(def max-image-size 80)
-(def min-image-size 32)
 
 (defn diff-with-max-min
   [value maximum minimum]
@@ -42,54 +26,97 @@
    (max minimum)
    (min maximum)))
 
-(defn icon-top-fn
-  [scroll-height]
-  (if (<= scroll-height negative-scroll-position-0)
-    -40
-    (->> (+ scroll-position-0 scroll-height)
-         (* (if platform/ios? 3 1))
-         (+ -40)
-         (min 8))))
+(defn scroll-page-header
+  [scroll-height name page-nav cover sticky-header]
+  [:f>
+   (fn []
+     (let [input-range         (if platform/ios? [-47 10] [0 150])
+           output-range        (if platform/ios? [-100 0] [-169 -45])
+           y                   (reanimated/use-shared-value @scroll-height)
+           translate-animation (reanimated/interpolate y
+                                                       input-range
+                                                       output-range
+                                                       {:extrapolateLeft  "clamp"
+                                                        :extrapolateRight "clamp"})
+           opacity-animation   (reanimated/use-shared-value 0)
+           threshold           (if platform/ios? 30 170)]
+       (rn/use-effect
+        #(do
+           (reanimated/set-shared-value y @scroll-height)
+           (reanimated/set-shared-value opacity-animation
+                                        (reanimated/with-timing (if (>= @scroll-height threshold) 1 0)
+                                                                (clj->js {:duration 300}))))
+        [@scroll-height])
+       [:<>
+        [reanimated/blur-view
+         {:blur-amount   32
+          :blur-type     :xlight
+          :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
+          :style         (style/blur-slider translate-animation)}]
+        [rn/view
+         {:style {:z-index    6
+                  :margin-top (if platform/ios? 44 0)}}
+         [reanimated/view
+          {:style (style/sticky-header-title opacity-animation)}
+          [rn/image
+           {:source cover
+            :style  style/sticky-header-image}]
+          [quo/text
+           {:size   :paragraph-1
+            :weight :semi-bold
+            :style  {:line-height 21}}
+           name]]
+         [quo/page-nav
+          {:horizontal-description? true
+           :one-icon-align-left?    true
+           :align-mid?              false
+           :page-nav-color          :transparent
+           :mid-section             {:type            :text-with-description
+                                     :main-text       nil
+                                     :description-img nil}
+           :right-section-buttons   (:right-section-buttons page-nav)
+           :left-section            {:icon                  :i/close
+                                     :icon-background-color (icon-color)
+                                     :on-press              #(rf/dispatch [:navigate-back])}}]
+         (when sticky-header [sticky-header @scroll-height])]]))])
 
-(defn icon-size-fn
-  [scroll-height]
-  (->> (+ scroll-position-0 scroll-height)
-       (* (if platform/ios? 3 1))
-       (- max-image-size)
-       (max min-image-size)
-       (min max-image-size)))
+(defn display-picture
+  [scroll-height cover]
+  [:f>
+   (fn []
+     (let [input-range (if platform/ios? [-67 10] [0 150])
+           y           (reanimated/use-shared-value @scroll-height)
+           animation   (reanimated/interpolate y
+                                               input-range
+                                               [1.2 0.5]
+                                               {:extrapolateLeft  "clamp"
+                                                :extrapolateRight "clamp"})]
+       (rn/use-effect #(do
+                         (reanimated/set-shared-value y @scroll-height)
+                         js/undefined)
+                      [@scroll-height])
+       [reanimated/view
+        {:style (style/display-picture-container animation)}
+        [rn/image
+         {:source cover
+          :style  style/display-picture}]]))])
 
 (defn scroll-page
-  [icon cover page-nav name]
+  [cover page-nav name]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn [sticky-header children]
       [:<>
-       [:<>
-        [rn/image
-         {:source   cover
-          :position :absolute
-          :style    (style/image-slider (get-header-size @scroll-height))}]
-        [blur/view (style/blur-slider (get-header-size @scroll-height))]]
-       [rn/view {:style {:z-index 6 :margin-top (if platform/ios? 44 0)}}
-        [quo/page-nav
-         {:horizontal-description? true
-          :one-icon-align-left?    true
-          :align-mid?              false
-          :page-nav-color          :transparent
-          :page-nav-background-uri ""
-          :mid-section             {:type            :text-with-description
-                                    :main-text       (when (>= @scroll-height scroll-position-1) name)
-                                    :description-img (when (>= @scroll-height scroll-position-1) icon)}
-          :right-section-buttons   (:right-section-buttons page-nav)
-          :left-section            {:icon                  :i/close
-                                    :icon-background-color (icon-color)
-                                    :on-press              #(rf/dispatch [:navigate-back])}}]
-        (when sticky-header [sticky-header @scroll-height])]
+       [scroll-page-header scroll-height name page-nav cover sticky-header]
        [rn/scroll-view
-        {:style (style/scroll-view-container (diff-with-max-min @scroll-height 16 0))
+        {:style                           (style/scroll-view-container
+                                           (diff-with-max-min @scroll-height 16 0))
          :shows-vertical-scroll-indicator false
-         :scroll-event-throttle 4
-         :on-scroll #(swap! scroll-height (fn [] (int (oops/oget % "nativeEvent.contentOffset.y"))))}
+         :scroll-event-throttle           16
+         :on-scroll                       (fn [event]
+                                            (reset! scroll-height (int
+                                                                   (oops/oget
+                                                                    event
+                                                                    "nativeEvent.contentOffset.y"))))}
         [rn/view {:style {:height 151}}
          [rn/image
           {:source cover
@@ -102,5 +129,5 @@
             :background-color (colors/theme-colors
                                colors/white
                                colors/neutral-90)}
-           [children @scroll-height icon-top-fn icon-size-fn]])]])))
-
+           [display-picture scroll-height cover]
+           [children]])]])))

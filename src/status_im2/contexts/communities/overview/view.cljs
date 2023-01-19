@@ -226,22 +226,9 @@
    channel-heights first-channel-height]
   (let [pending?        (pos? requested-to-join-at)
         thumbnail-image (get-in images [:thumbnail])]
-    (fn [scroll-height icon-top icon-size]
+    (fn []
       [rn/view
        [rn/view {:padding-horizontal 20}
-        [rn/view
-         {:border-radius    40
-          :border-width     1
-          :border-color     colors/white
-          :position         :absolute
-          :top              (icon-top scroll-height)
-          :left             17
-          :padding          2
-          :background-color (colors/theme-colors
-                             colors/white
-                             colors/neutral-90)}
-         [quo/community-icon community
-          (icon-size scroll-height)]]
         (when (and (not joined)
                    (not pending?)
                    (= status :gated))
@@ -324,7 +311,6 @@
   (let [channel-heights      (reagent/atom [])
         first-channel-height (reagent/atom 0)
         scroll-component     (scroll-page/scroll-page
-                              (fn [] [quo/community-icon community 24])
                               {:uri (get-in images [:large :uri])}
                               {:right-section-buttons [{:icon             :i/search
                                                         :background-color (scroll-page/icon-color)}
