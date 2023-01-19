@@ -21,7 +21,7 @@
         window-width      (:width (rn/get-window))
         height            (* (or (:image-height message) 1000)
                              (/ window-width (or (:image-width message) 1000)))]
-    [fast-image/fast-image
+    [rn/image
      {:source    {:uri (:image (:content message))}
       :style     {:width         window-width
                   :height        height

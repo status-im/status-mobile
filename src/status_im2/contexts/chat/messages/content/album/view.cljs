@@ -71,7 +71,7 @@
                                 (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
                                                               (:album message) index])
                                                100))}
-             [fast-image/fast-image
+             [rn/image
               {:style     (merge
                            (style/image dimensions index)
                            {:border-top-left-radius     (border-tlr index)
@@ -91,7 +91,8 @@
                   :size   :heading-2
                   :style  {:color colors/white}}
                  (str "+" (- images-count (dec max-display-count)))]])]))
-        (:album message))]
+        (:album message))
+       ]
       [:<>
        (map-indexed
         (fn [index item]
