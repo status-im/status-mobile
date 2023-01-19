@@ -84,3 +84,12 @@
   {:events [:profile/share-profile-link]}
   [_ value]
   {:profile/share-profile-link value})
+
+(rf/defn show-profile
+  {:events [:chat.ui/show-profile]}
+  [{:keys [db]} identity ens-name]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (when (not= my-public-key identity)
+      {:db (-> db
+               (assoc :contacts/identity identity)
+               (assoc :contacts/ens-name ens-name))})))

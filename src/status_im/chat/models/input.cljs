@@ -25,6 +25,14 @@
                           (.-char ^js emoji-map)
                           original))))
 
+;; effects
+(re-frame/reg-fx
+ :show-cooldown-warning
+ (fn [_]
+   (utils/show-popup nil
+                     (i18n/label :cooldown/warning-message)
+                     #())))
+
 (rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
@@ -32,13 +40,6 @@
   [{db :db} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
-
-(rf/defn set-timeline-input-text
-  {:events [:chat.ui/set-timeline-input-text]}
-  [{db :db} new-input]
-  {:db (assoc-in db
-        [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
-        (text->emoji new-input))})
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
@@ -74,6 +75,12 @@
          :end           end}))
      (mentions/recheck-at-idxs {alias user}))))
 
+(rf/defn disable-chat-cooldown
+  "Turns off chat cooldown (protection against message spamming)"
+  {:events [:chat/disable-cooldown]}
+  [{:keys [db]}]
+  {:db (assoc db :chat/cooldown-enabled? false)})
+
 (defn- start-cooldown
   [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
@@ -90,29 +97,6 @@
                                                                  cooldowns)
                                  :chat/spam-messages-frequency 0
                                  :chat/cooldown-enabled?       true)})
-
-(rf/defn process-cooldown
-  "Process cooldown to protect against message spammers"
-  [{{:keys [chat/last-outgoing-message-sent-at
-            chat/cooldowns
-            chat/spam-messages-frequency
-            current-chat-id]
-     :as   db}
-    :db
-    :as cofx}]
-  (when (chat/public-chat? cofx current-chat-id)
-    (let [spamming-fast?       (< (- (datetime/timestamp) last-outgoing-message-sent-at)
-                                  (+ constants/spam-interval-ms (* 1000 cooldowns)))
-          spamming-frequently? (= constants/spam-message-frequency-threshold
-                                  spam-messages-frequency)]
-      (cond-> {:db (assoc db
-                          :chat/last-outgoing-message-sent-at (datetime/timestamp)
-                          :chat/spam-messages-frequency       (if spamming-fast?
-                                                                (inc spam-messages-frequency)
-                                                                0))}
-
-        (and spamming-fast? spamming-frequently?)
-        (start-cooldown (inc cooldowns))))))
 
 (rf/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
@@ -222,21 +206,6 @@
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
-                (process-cooldown)
-                (chat.message/send-messages messages)))))
-
-(rf/defn send-my-status-message
-  "when not empty, proceed by sending text message with public key topic"
-  {:events [:profile.ui/send-my-status-message]}
-  [{db :db :as cofx}]
-  (let [current-chat-id      (chat/my-profile-chat-topic db)
-        {:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
-        image-messages       (build-image-messages cofx current-chat-id)
-        text-message         (build-text-message cofx input-text current-chat-id)
-        messages             (keep identity (conj image-messages text-message))]
-    (when (seq messages)
-      (rf/merge cofx
-                (clean-input current-chat-id)
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message
@@ -274,8 +243,7 @@
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
-   (cancel-message-edit)
-   (process-cooldown)))
+   (cancel-message-edit)))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
@@ -304,8 +272,7 @@
                                          :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (mentions/clear-cursor)
-            (clean-input (:current-chat-id db))
-            (process-cooldown)))
+            (clean-input (:current-chat-id db))))
 
 (rf/defn cancel-contact-request
   "Cancels contact request"
@@ -316,8 +283,7 @@
               {:db (assoc-in db [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)}
               (mentions/clear-mentions)
               (mentions/clear-cursor)
-              (clean-input (:current-chat-id db))
-              (process-cooldown))))
+              (clean-input (:current-chat-id db)))))
 
 (rf/defn chat-send-sticker
   {:events [:chat/send-sticker]}

@@ -3,7 +3,6 @@
             ["react-native-blob-util" :default ReactNativeBlobUtil]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
             [utils.i18n :as i18n]
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
@@ -167,11 +166,6 @@
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     (clear-sending-images cofx current-chat-id)))
 
-(rf/defn cancel-sending-image-timeline
-  {:events [:chat.ui/cancel-sending-image-timeline]}
-  [{:keys [db] :as cofx}]
-  (cancel-sending-image cofx (chat/my-profile-chat-topic db)))
-
 (rf/defn image-selected
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} current-chat-id original uri]
@@ -191,11 +185,6 @@
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker current-chat-id})))
 
-(rf/defn chat-open-image-picker-timeline
-  {:events [:chat.ui/open-image-picker-timeline]}
-  [{:keys [db] :as cofx}]
-  (chat-open-image-picker cofx (chat/my-profile-chat-topic db)))
-
 (rf/defn chat-show-image-picker-camera
   {:events [:chat.ui/show-image-picker-camera]}
   [{:keys [db]} chat-id]
@@ -203,11 +192,6 @@
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker-camera current-chat-id})))
-
-(rf/defn chat-show-image-picker-camera-timeline
-  {:events [:chat.ui/show-image-picker-camera-timeline]}
-  [{:keys [db] :as cofx}]
-  (chat-show-image-picker-camera cofx (chat/my-profile-chat-topic db)))
 
 (rf/defn camera-roll-pick
   {:events [:chat.ui/camera-roll-pick]}
@@ -220,11 +204,6 @@
       (when (and (< (count images) config/max-images-batch)
                  (not (get images uri)))
         {::image-selected [uri current-chat-id]}))))
-
-(rf/defn camera-roll-pick-timeline
-  {:events [:chat.ui/camera-roll-pick-timeline]}
-  [{:keys [db] :as cofx} uri]
-  (camera-roll-pick cofx uri (chat/my-profile-chat-topic db)))
 
 (rf/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}

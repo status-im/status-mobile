@@ -47,7 +47,7 @@
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
   (if-not (new-chat.db/own-public-key? db chat-id)
-    (chat/start-chat cofx chat-id nil)
+    {:dispatch [:chat.ui/start-chat chat-id]}
     {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                         :content (i18n/label :t/can-not-add-yourself)}}))
 

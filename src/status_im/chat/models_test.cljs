@@ -49,10 +49,7 @@
                       :chats    {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/remove-chat cofx chat-id)]
-        (is (= nil (get-in actual [:db :messages chat-id])))))
-    #_(testing "it sets a deleted-at-clock-value equal to the last message clock-value"
-        (let [actual (chat/remove-chat cofx chat-id)]
-          (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))))
+        (is (= nil (get-in actual [:db :messages chat-id])))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]
@@ -87,11 +84,11 @@
                   "opened" {}
                   "1-1"    {}}})
 
-(deftest navigate-to-chat-nav2
+(deftest navigate-to-chat
   (let [chat-id "test_chat"
         db      {:pagination-info {chat-id {:all-loaded? true}}}]
     (testing "Pagination info should be reset on navigation"
-      (let [res (chat/navigate-to-chat-nav2 {:db db} chat-id false)]
+      (let [res (chat/navigate-to-chat {:db db} chat-id false)]
         (is (nil? (get-in res [:db :pagination-info chat-id :all-loaded?])))))))
 
 (deftest camera-roll-loading-more-test

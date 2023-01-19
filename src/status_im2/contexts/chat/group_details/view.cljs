@@ -147,7 +147,7 @@
       [rn/touchable-opacity
        {:style               (style/action-container color)
         :accessibility-label :toggle-mute
-        :on-press            #(rf/dispatch [::chat.models/mute-chat-toggled chat-id (not muted)])}
+        :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)])}
        [quo2/icon (if muted :i/muted :i/activity-center)
         {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}

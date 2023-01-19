@@ -5,7 +5,7 @@
             [utils.i18n :as i18n]
             [oops.core :as oops]
             [re-frame.core :as re-frame]
-            [status-im.chat.models :as models.chat]
+            [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
@@ -15,7 +15,7 @@
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
   (when (get-in cofx [:db :chats chat-id])
-    (models.chat/navigate-to-chat-nav2 cofx chat-id nil)))
+    (chat.events/navigate-to-chat cofx chat-id nil)))
 
 (rf/defn handle-chat-removed
   {:events [:chat-removed]}
@@ -76,7 +76,7 @@
 (rf/defn create-from-link
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
-    {:dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]}
+    {:dispatch [:chat/navigate-to-chat chat-id]}
     {:json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
                       :params      [chat-name chat-id invitation-admin]
                       :js-response true
@@ -123,7 +123,7 @@
   {:events [:group-chats.ui/remove-chat-confirmed]}
   [cofx chat-id]
   (rf/merge cofx
-            (models.chat/deactivate-chat chat-id)
+            (chat.events/deactivate-chat chat-id)
             (navigation/pop-to-root-tab :chat-stack)))
 
 (def not-blank?

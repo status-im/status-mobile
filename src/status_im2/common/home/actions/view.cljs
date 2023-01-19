@@ -43,11 +43,11 @@
 
 (defn mute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id true]))
+  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true]))
 
 (defn unmute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id false]))
+  (hide-sheet-and-dispatch [:chat.ui/mute chat-id false]))
 
 (defn clear-history-action
   [{:keys [chat-id] :as item}]

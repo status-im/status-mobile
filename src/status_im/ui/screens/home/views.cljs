@@ -151,7 +151,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                       (re-frame/dispatch [:chat/navigate-to-chat chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
@@ -166,7 +166,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                       (re-frame/dispatch [:chat/navigate-to-chat chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
@@ -193,7 +193,7 @@
       [list/flat-list
        {:key-fn                       chat-list-key-fn
         :getItemLayout                get-item-layout
-        :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
+        :on-end-reached               #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    render-fn
@@ -219,7 +219,7 @@
       [list/flat-list
        {:key-fn                       chat-list-key-fn
         :getItemLayout                get-item-layout
-        :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
+        :on-end-reached               #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    render-fn-old

@@ -13,14 +13,14 @@
         pressable (case (:contact-request-state message)
                     constants/contact-request-message-state-accepted
                     ;; NOTE(2022-09-21): We need to dispatch to
-                    ;; `:contact.ui/send-message-pressed` instead of
-                    ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen
+                    ;; `:chat.ui/start-chat` instead of
+                    ;; `:chat/navigate-to-chat`, otherwise the chat screen
                     ;; looks completely broken if it has never been opened
                     ;; before for the accepted contact.
                     [rn/touchable-opacity
                      {:on-press (fn []
                                   (rf/dispatch [:hide-popover])
-                                  (rf/dispatch [:contact.ui/send-message-pressed
+                                  (rf/dispatch [:chat.ui/start-chat
                                                 {:public-key author}]))}]
                     [:<>])]
     (conj

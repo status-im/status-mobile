@@ -250,8 +250,8 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (logout!)
            (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
@@ -275,20 +275,12 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
-           (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
-           (rf-test/wait-for
-             [::chat.models/chat-deactivated]
-             (is (not @(rf/subscribe [:chats/chat chat-id])))
-             (logout!)
-             (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
-                                                        ; in an
-                                                        ; inconsistent state between tests
-               (assert-logout)))))))))
+           (rf/dispatch-sync [:chat.ui/show-remove-confirmation chat-id])
+           (rf/dispatch-sync [:chat.ui/remove-chat chat-id])))))))
 
 (deftest mute-chat-test
   (log/info "========= mute-chat-test ==================")
@@ -306,15 +298,15 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
+           (rf/dispatch-sync [:chat.ui/mute chat-id true])
            (rf-test/wait-for
              [::chat.models/mute-chat-toggled-successfully]
              (is @(rf/subscribe [:chats/muted chat-id]))
-             (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id false])
+             (rf/dispatch-sync [:chat.ui/mute chat-id false])
              (rf-test/wait-for
                [::chat.models/mute-chat-toggled-successfully]
 

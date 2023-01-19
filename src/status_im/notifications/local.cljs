@@ -105,6 +105,11 @@
      :user-info notification
      :message   description}))
 
+(defn foreground-chat?
+  [{{:keys [current-chat-id view-id]} :db} chat-id]
+  (and (= current-chat-id chat-id)
+       (= view-id :chat)))
+
 (defn show-message-pn?
   [{{:keys [app-state multiaccount]} :db :as cofx}
    notification]
@@ -113,7 +118,7 @@
     (and
      (not= notification-author (:public-key multiaccount))
      (or (= app-state "background")
-         (not (chat.models/foreground-chat? cofx chat-id))))))
+         (not (foreground-chat? cofx chat-id))))))
 
 (defn create-notification
   ([notification]

@@ -2,7 +2,7 @@
   (:require
    [clojure.string :as string]
    [status-im.browser.core :as browser]
-   [status-im.chat.models :as models.chat]
+   [status-im2.contexts.chat.events :as chat.events]
    [status-im.chat.models.message :as models.message]
    [status-im.chat.models.reactions :as models.reactions]
    [status-im.communities.core :as models.communities]
@@ -61,7 +61,7 @@
         (js-delete response-js "chats")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
+                  (chat.events/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
 
       (seq messages)
       (models.message/receive-many cofx response-js)
@@ -200,12 +200,10 @@
         message-type            (.-messageType message-js)
         from                    (.-from message-js)
         mentioned               (.-mentioned message-js)
-        profile                 (models.chat/profile-chat? {:db db} chat-id)
         new                     (.-new message-js)
         current                 (= current-chat-id chat-id)
         should-update-unviewed? (and (not current)
                                      new
-                                     (not profile)
                                      (not (= message-type
                                              constants/message-type-private-group-system-message))
                                      (not (= from (multiaccounts.model/current-public-key {:db db}))))
@@ -214,9 +212,6 @@
     (cond-> acc
       current
       (update :messages conj message-js)
-
-      profile
-      (update :statuses conj message-js)
 
       ;;update counter
       should-update-unviewed?
