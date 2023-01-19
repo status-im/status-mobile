@@ -1,5 +1,5 @@
 (ns status-im2.navigation.screens
-  (:require [i18n.i18n :as i18n] ;; TODO remove when not used anymore
+  (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]
             [status-im2.contexts.activity-center.view :as activity-center]
             [status-im2.contexts.chat.messages.view :as chat]
@@ -8,8 +8,8 @@
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
-            [status-im2.setup.config :as config]
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
+            [status-im2.config :as config]
             [quo.design-system.colors :as colors]))
 
 (def components
