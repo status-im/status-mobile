@@ -284,6 +284,11 @@
   (log/error "mute chat failed" chat-id error)
   {:db (assoc-in db [:chats chat-id :muted] (not muted?))})
 
+(rf/defn mute-chat-toggled-successfully
+  {:events [:chat/mute-successfully]}
+  [_ chat-id]
+  (log/debug "muted chat successfully" chat-id))
+
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
   [{:keys [db]} chat-id muted?]
@@ -292,7 +297,7 @@
      :json-rpc/call [{:method     method
                       :params     [chat-id]
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
-                      :on-success #()}]}))
+                      :on-success #(rf/dispatch [:chat/mute-successfully chat-id])}]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}
