@@ -1,7 +1,7 @@
 (ns status-im.add-new.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.ethereum.ens :as ens]
-            [status-im.utils.db :as utils.db]))
+            [status-im2.utils.validators :as validators]))
 
 (defn own-public-key?
   [{:keys [multiaccount]} public-key]
@@ -10,7 +10,7 @@
 (defn validate-pub-key
   [db public-key]
   (cond
-    (or (not (utils.db/valid-public-key? public-key))
+    (or (not (validators/valid-public-key? public-key))
         (= public-key ens/default-key))
     :invalid
     (own-public-key? db public-key)
@@ -27,4 +27,4 @@
   [topic]
   (and topic
        (spec/valid? ::topic topic)
-       (not (utils.db/valid-public-key? topic))))
+       (not (validators/valid-public-key? topic))))

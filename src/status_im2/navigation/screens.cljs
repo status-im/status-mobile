@@ -3,6 +3,7 @@
             [status-im.ui.screens.screens :as old-screens]
             [status-im2.contexts.activity-center.view :as activity-center]
             [status-im2.contexts.chat.messages.view :as chat]
+            [status-im2.contexts.add-new-contact.views :as add-new-contact]
             [status-im2.contexts.communities.discover.view :as communities.discover]
             [status-im2.contexts.communities.overview.view :as communities.overview]
             [status-im2.contexts.quo-preview.main :as quo.preview]
@@ -46,6 +47,10 @@
                                                                     :interpolation {:type
                                                                                     :decelerate}}]}}}
      :component images-horizontal/images-horizontal}
+
+    {:name      :new-contact
+     :options   {:topBar {:visible false}}
+     :component add-new-contact/new-contact}
 
     {:name      :discover-communities
      :options   {:topBar {:visible false}}

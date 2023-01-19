@@ -35,15 +35,16 @@
                   :on-error   #(cb "0x")}))
 
 (defn pubkey
-  [chain-id ens-name cb]
-  {:pre [(is-valid-eth-name? ens-name)]}
-  (json-rpc/call {:method     "ens_publicKeyOf"
-                  :params     [chain-id ens-name]
-                  :on-success cb
-                  ;;at some point infura started to return execution reverted error instead of "0x"
-                  ;;result
-                  ;;our code expects "0x" result
-                  :on-error   #(cb "0x")}))
+  ([chain-id ens-name on-success on-error]
+   {:pre [(is-valid-eth-name? ens-name)]}
+   (json-rpc/call {:method     "ens_publicKeyOf"
+                   :params     [chain-id ens-name]
+                   :on-success on-success
+                   :on-error   on-error}))
+  ;; At some point, infura started to return "execution reverted" error
+  ;; instead of "0x" result. Our code expects "0x" result.
+  ([chain-id ens-name cb]
+   (pubkey chain-id ens-name cb #(cb "0x"))))
 
 (defn owner
   [chain-id ens-name cb]

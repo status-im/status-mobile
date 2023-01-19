@@ -7,7 +7,6 @@
    [quo2.foundations.colors :as quo2.colors]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [status-im.add-new.core :as new-chat]
    [status-im.add-new.db :as db]
    [utils.i18n :as i18n]
    [status-im.qr-scanner.core :as qr-scanner]
@@ -82,15 +81,15 @@
      :on-blur        (fn []
                        (when chats-empty
                          (re-frame/dispatch [:search/home-filter-changed nil]))
-                       (re-frame/dispatch [::new-chat/clear-new-identity]))
+                       (re-frame/dispatch [:contacts/clear-new-identity]))
      :on-focus       (fn [search-filter]
                        (when-not search-filter
                          (re-frame/dispatch [:search/home-filter-changed ""])
-                         (re-frame/dispatch [::new-chat/clear-new-identity])))
+                         (re-frame/dispatch [:contacts/clear-new-identity])))
      :on-change      (fn [text]
                        (re-frame/dispatch [:search/home-filter-changed text])
                        (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                       (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
+                       (debounce/debounce-and-dispatch [:contacts/set-new-identity text] 300))}]])
 
 (defn search-input-wrapper-old
   [search-filter chats-empty]
@@ -104,11 +103,11 @@
      :on-blur        (fn []
                        (when chats-empty
                          (re-frame/dispatch [:search/home-filter-changed nil]))
-                       (re-frame/dispatch [::new-chat/clear-new-identity]))
+                       (re-frame/dispatch [:contacts/clear-new-identity]))
      :on-focus       (fn [search-filter]
                        (when-not search-filter
                          (re-frame/dispatch [:search/home-filter-changed ""])
-                         (re-frame/dispatch [::new-chat/clear-new-identity])))
+                         (re-frame/dispatch [:contacts/clear-new-identity])))
      :on-change      (fn [text]
                        (re-frame/dispatch [:search/home-filter-changed text])
                        (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])

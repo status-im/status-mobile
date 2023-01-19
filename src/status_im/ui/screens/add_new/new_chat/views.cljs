@@ -20,7 +20,7 @@
    [status-im.ui.components.react :as react]
    [status-im.ui.components.topbar :as topbar]
    [status-im.ui.screens.chat.photos :as photos]
-   [status-im.utils.db :as utils.db]
+   [status-im2.utils.validators :as validators]
    [status-im.utils.gfycat.core :as gfycat]
    [status-im.utils.identicon :as identicon]
    [status-im.utils.utils :as utils]
@@ -172,7 +172,7 @@
           #(do
              (reset! search-value %)
              (re-frame/dispatch [:set-in [:contacts/new-identity :state] :empty])
-             (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
+             (debounce/debounce-and-dispatch [:contacts/set-new-identity %] 600))
           :on-submit-editing
           #(when (= state :valid)
              (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false nil] 3000))
@@ -301,7 +301,7 @@
     (fn []
       (let [{:keys [state ens-name public-key error]} @(re-frame/subscribe [:contacts/new-identity])
             blocked?                                  (and
-                                                       (utils.db/valid-public-key? (or public-key ""))
+                                                       (validators/valid-public-key? (or public-key ""))
                                                        @(re-frame/subscribe [:contacts/contact-blocked?
                                                                              public-key]))]
         [react/view {:style {:flex 1}}
@@ -326,7 +326,7 @@
             {:on-change-text
              #(do
                 (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
+                (debounce/debounce-and-dispatch [:contacts/set-new-identity %] 600))
              :on-submit-editing
              #(when (= state :valid)
                 (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true @entered-nickname]
