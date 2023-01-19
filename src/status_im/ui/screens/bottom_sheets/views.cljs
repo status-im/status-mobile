@@ -7,17 +7,11 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
-            [reagent.core :as reagent]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [react-native.core :as react]
-            [status-im.ui.screens.multiaccounts.sheets :as multiaccounts-sheet]))
+            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
 
 (defn bottom-sheet
   []
-  (let [dismiss-bottom-sheet-callback #(re-frame/dispatch [:bottom-sheet/hide])
-        {:keys [show-bottom-sheet?]} @(re-frame/subscribe [:bottom-sheet/config])
-        {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
+  (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible? show?}
@@ -52,22 +46,7 @@
           (merge key-storage/migrate-account-password)
 
           (= view :pinned-messages-list)
-          (merge {:content pin.list/pinned-messages-list})
-
-          (= view :drawer/reactions)
-          (merge {:content drawers/reactions})
-
-          (= view :generate-a-new-key)
-          (merge {:content multiaccounts-sheet/actions-sheet}))]
-    (reagent/create-class
-     {:reagent-render         (fn []
-                                [bottom-sheet/bottom-sheet
-                                 opts
-                                 (when content
-                                   [content (when options options)])])
-      :component-did-mount    (fn []
-                                (react/hw-back-add-listener dismiss-bottom-sheet-callback))
-      :component-will-unmount (fn []
-                                (react/hw-back-remove-listener dismiss-bottom-sheet-callback)
-                                (when show-bottom-sheet?
-                                  (re-frame/dispatch [:bottom-sheet/reset])))})))
+          (merge {:content pin.list/pinned-messages-list}))]
+    [bottom-sheet/bottom-sheet opts
+     (when content
+       [content (when options options)])]))
