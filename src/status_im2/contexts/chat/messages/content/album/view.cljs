@@ -4,18 +4,9 @@
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.contexts.chat.messages.content.album.style :as style]
-<<<<<<< HEAD
-            [status-im2.constants :as constants]))
-=======
             [status-im2.common.constants :as constants]
-<<<<<<< HEAD
-            [utils.re-frame :as rf]))
->>>>>>> cc112eeb1... updates
-=======
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.image.view :as image]))
->>>>>>> 741c9b449... updates
-
 (def max-display-count 6)
 
 (def rectangular-style-count 3)
