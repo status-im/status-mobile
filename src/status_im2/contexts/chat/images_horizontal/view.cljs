@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
             [utils.re-frame :as rf]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
@@ -78,7 +77,7 @@
 
 (defn small-image
   [item]
-  [fast-image/fast-image
+  [rn/image
    {:source {:uri (:image (:content item))}
     :style  {:width         small-image-size
              :height        small-image-size

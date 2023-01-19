@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.content.image.view
   (:require [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
             [utils.re-frame :as rf]))
 
 (defn calculate-dimensions

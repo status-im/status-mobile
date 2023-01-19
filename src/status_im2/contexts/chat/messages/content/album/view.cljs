@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
             [status-im2.contexts.chat.messages.content.album.style :as style]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
@@ -92,7 +91,7 @@
                   :style  {:color colors/white}}
                  (str "+" (- images-count (dec max-display-count)))]])]))
         (:album message))
-       ]
+      ]
       [:<>
        (map-indexed
         (fn [index item]
