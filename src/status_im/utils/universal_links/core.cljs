@@ -65,7 +65,7 @@
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
     (if-not (new-chat.db/own-public-key? db chat-id)
-      (chat/start-chat cofx chat-id nil)
+      {:dispatch [:chat.ui/start-chat chat-id]}
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
 
@@ -96,7 +96,7 @@
 (rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
-  {:dispatch [:chat.ui/navigate-to-chat-nav2 chat-id]})
+  {:dispatch [:chat/navigate-to-chat chat-id]})
 
 (rf/defn handle-public-chat
   [cofx {:keys [topic]}]

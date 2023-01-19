@@ -3,9 +3,9 @@
             [clojure.string :as string]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
-            [status-im.chat.models :as chat.models]
             [status-im.ethereum.core :as ethereum]
             status-im.events
+            status-im2.events
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
             [status-im.utils.test :as utils.test]
@@ -250,8 +250,8 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (logout!)
            (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
@@ -275,20 +275,17 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
+           (rf/dispatch-sync [:chat.ui/show-remove-confirmation chat-id])
            (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
-           (rf-test/wait-for
-             [::chat.models/chat-deactivated]
-             (is (not @(rf/subscribe [:chats/chat chat-id])))
-             (logout!)
-             (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
-                                                        ; in an
-                                                        ; inconsistent state between tests
-               (assert-logout)))))))))
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
+             ; in an
+             ; inconsistent state between tests
+             (assert-logout))))))))
 
 (deftest mute-chat-test
   (log/info "========= mute-chat-test ==================")
@@ -306,18 +303,17 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
          (rf-test/wait-for
-           [:status-im.chat.models/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat.ui/navigate-to-chat-nav2 chat-id])
+           [:chat/one-to-one-chat-created]
+           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
+           (rf/dispatch-sync [:chat.ui/mute chat-id true])
            (rf-test/wait-for
-             [::chat.models/mute-chat-toggled-successfully]
+             [:chat/mute-successfully]
              (is @(rf/subscribe [:chats/muted chat-id]))
-             (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id false])
+             (rf/dispatch-sync [:chat.ui/mute chat-id false])
              (rf-test/wait-for
-               [::chat.models/mute-chat-toggled-successfully]
-
+               [:chat/mute-successfully]
                (is (not @(rf/subscribe [:chats/muted chat-id])))
                (logout!)
                (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is

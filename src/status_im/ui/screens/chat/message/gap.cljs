@@ -7,11 +7,6 @@
             [status-im.ui.screens.chat.styles.input.gap :as style]
             [utils.datetime :as datetime]))
 
-(defn on-press
-  [chat-id gap-ids]
-  (fn []
-    (re-frame/dispatch [:chat.ui/fill-gaps chat-id gap-ids])))
-
 (views/defview gap
   [{:keys [gap-ids chat-id gap-parameters public? community?]}]
   (views/letsubs [in-progress?      [:chats/fetching-gap-in-progress?
@@ -25,7 +20,7 @@
       [react/view {:style (when-not in-progress? style/gap-container)}
        [react/touchable-highlight
         {:on-press (when (and (not in-progress?) use-status-nodes? connected?)
-                     (on-press chat-id gap-ids))
+                     (re-frame/dispatch [:chat.ui/fill-gaps chat-id gap-ids]))
          :style    {:height (if in-progress? window-height 48)}}
         [react/view {:style style/label-container}
          (if in-progress?

@@ -70,7 +70,7 @@
                                               (str profile-picture "&addRing=0"))}
      :customization-color (or (:customization-color contact) :primary)
      :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 id true])
+     :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id true])
      :content             (get-card-content chat communities)}))
 
 (defn private-group-chat-card
@@ -79,7 +79,7 @@
    :avatar-params       {}
    :customization-color (or (:customization-color chat) :primary)
    :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-   :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 id true])
+   :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id true])
    :content             (get-card-content chat communities)})
 
 (defn community-card
@@ -104,7 +104,7 @@
     :on-press (fn []
                 (re-frame/dispatch [:navigate-to-nav2 :community {:community-id community-id}])
                 (js/setTimeout
-                 #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 channel-id true])
+                 #(re-frame/dispatch [:chat/navigate-to-chat channel-id true])
                  100))}))
 
 (re-frame/reg-sub

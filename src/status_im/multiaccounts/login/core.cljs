@@ -424,7 +424,7 @@
          :key-uid
          (fn [stored-key-uid]
            (when (= stored-key-uid key-uid)
-             (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])))))))))
+             (re-frame/dispatch [:chat/navigate-to-chat chat-id])))))))))
 
 (rf/defn check-last-chat
   {:events [::check-last-chat]}

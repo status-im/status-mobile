@@ -4,7 +4,6 @@
             [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.chat.models :as chat.models]
             [status-im2.contexts.chat.group-details.style :as style]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
@@ -147,7 +146,7 @@
       [rn/touchable-opacity
        {:style               (style/action-container color)
         :accessibility-label :toggle-mute
-        :on-press            #(rf/dispatch [::chat.models/mute-chat-toggled chat-id (not muted)])}
+        :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)])}
        [quo2/icon (if muted :i/muted :i/activity-center)
         {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}

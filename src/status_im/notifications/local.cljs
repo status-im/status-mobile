@@ -5,7 +5,6 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.async-storage.core :as async-storage]
-            [status-im.chat.models :as chat.models]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]
@@ -105,6 +104,11 @@
      :user-info notification
      :message   description}))
 
+(defn foreground-chat?
+  [{{:keys [current-chat-id view-id]} :db} chat-id]
+  (and (= current-chat-id chat-id)
+       (= view-id :chat)))
+
 (defn show-message-pn?
   [{{:keys [app-state multiaccount]} :db :as cofx}
    notification]
@@ -113,7 +117,7 @@
     (and
      (not= notification-author (:public-key multiaccount))
      (or (= app-state "background")
-         (not (chat.models/foreground-chat? cofx chat-id))))))
+         (not (foreground-chat? cofx chat-id))))))
 
 (defn create-notification
   ([notification]

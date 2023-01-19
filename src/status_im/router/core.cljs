@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as public-chat.db]
-            [status-im.chat.models :as chat.models]
+            [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
@@ -121,7 +121,7 @@
        :chat-name        chat-name}
 
       (and (not (string/blank? chat-id))
-           (chat.models/group-chat? (get chats chat-id)))
+           (chat.events/group-chat? (get chats chat-id)))
       (let [{:keys [chat-name invitation-admin]} (get chats chat-id)]
         {:type             :group-chat
          :chat-id          chat-id

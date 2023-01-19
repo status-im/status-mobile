@@ -173,7 +173,7 @@
      [quo/floating-shell-button
       (merge {:jump-to
               {:on-press #(do
-                            (rf/dispatch [:close-chat true])
+                            (rf/dispatch [:chat/close true])
                             (rf/dispatch [:shell/navigate-to-jump-to]))
                :label    (i18n/label :t/jump-to)}}
              (when @show-floating-scroll-down-button

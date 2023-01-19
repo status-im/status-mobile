@@ -37,7 +37,7 @@
       [rn/flat-list
        {:key-fn                       #(or (:chat-id %) (:public-key %) (:id %))
         :get-item-layout              get-item-layout
-        :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
+        :on-end-reached               #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    chat-list-item/chat-list-item}])))

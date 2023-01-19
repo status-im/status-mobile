@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
-            [status-im.chat.models :as chat]
+            [status-im2.contexts.chat.events :as chat]
             [status-im.contact.core :as contact]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]

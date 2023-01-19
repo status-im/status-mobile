@@ -303,7 +303,7 @@
               (re-frame/dispatch [:set :current-tab tab-key])
               (when (= @state/root-comp-id comp)
                 (when (= :chat tab-key)
-                  (re-frame/dispatch [:close-chat]))
+                  (re-frame/dispatch [:chat/close]))
                 (when platform/android?
                   (.popToRoot Navigation (name comp))))
               (reset! state/root-comp-id comp)))))

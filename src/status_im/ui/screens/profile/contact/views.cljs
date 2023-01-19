@@ -5,7 +5,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.chat.models :as chat.models]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -25,7 +24,7 @@
   (concat [{:label               (i18n/label :t/chat)
             :icon                :main-icons/message
             :disabled            (not mutual?)
-            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed
+            :action              #(re-frame/dispatch [:chat.ui/start-chat
                                                       {:public-key public-key
                                                        :ens-name   ens-name}])
             :accessibility-label :start-conversation-button}]
@@ -48,8 +47,7 @@
             :selected            muted?
             :disabled            blocked?
             :action              (when-not blocked?
-                                   #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key
-                                                        (not muted?)]))}]
+                                   #(re-frame/dispatch [:chat.ui/mute public-key (not muted?)]))}]
           [{:label               (i18n/label (if blocked? :t/unblock :t/block))
             :negative            true
             :selected            blocked?
@@ -102,7 +100,7 @@
     :accessory           :text
     :accessory-text      pin-count
     :disabled            (zero? pin-count)
-    :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed public-key])
+    :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-pinned-messages public-key])
     :chevron             true}])
 
 (defn nickname-settings

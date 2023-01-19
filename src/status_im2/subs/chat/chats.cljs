@@ -3,7 +3,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
-            [status-im.chat.models :as chat.models]
+            [status-im2.contexts.chat.events :as chat.events]
             [status-im.chat.models.mentions :as mentions]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
@@ -139,13 +139,6 @@
    (get inputs chat-id)))
 
 (re-frame/reg-sub
- :chats/timeline-chat-input
- :<- [:chat/inputs]
- :<- [:multiaccount/public-key]
- (fn [[inputs public-key]]
-   (get inputs (chat.models/profile-chat-topic public-key))))
-
-(re-frame/reg-sub
  :chats/sending-image
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
@@ -177,15 +170,15 @@
        inputs]]
    (when current-chat
      (cond-> current-chat
-       (chat.models/public-chat? current-chat)
+       (chat.events/public-chat? current-chat)
        (assoc :show-input? true)
 
-       (and (chat.models/group-chat? current-chat)
+       (and (chat.events/group-chat? current-chat)
             (group-chats.db/member? my-public-key current-chat))
        (assoc :show-input? true
               :member?     true)
 
-       (and (chat.models/community-chat? current-chat)
+       (and (chat.events/community-chat? current-chat)
             (communities/can-post? community my-public-key (:chat-id current-chat)))
        (assoc :show-input? true)
 
@@ -239,14 +232,8 @@
  :current-chat/one-to-one-chat?
  :<- [:chats/current-raw-chat]
  (fn [current-chat]
-   (not (or (chat.models/group-chat? current-chat)
-            (chat.models/public-chat? current-chat)))))
-
-(re-frame/reg-sub
- :chats/current-profile-chat
- :<- [:contacts/current-contact-identity]
- (fn [identity]
-   (chat.models/profile-chat-topic identity)))
+   (not (or (chat.events/group-chat? current-chat)
+            (chat.events/public-chat? current-chat)))))
 
 (re-frame/reg-sub
  :chats/photo-path
@@ -266,7 +253,7 @@
  :<- [:chats/home-list-chats]
  (fn [chats _]
    (reduce (fn [{:keys [public other]} {:keys [unviewed-messages-count public?] :as chat}]
-             (if (or public? (chat.models/community-chat? chat))
+             (if (or public? (chat.events/community-chat? chat))
                {:public (+ public unviewed-messages-count)
                 :other  other}
                {:other  (+ other unviewed-messages-count)

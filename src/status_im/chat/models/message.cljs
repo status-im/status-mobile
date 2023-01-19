@@ -1,11 +1,9 @@
 (ns status-im.chat.models.message
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.mentions :as mentions]
             [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
             [status-im2.contexts.chat.messages.list.state :as view.state]
@@ -55,20 +53,6 @@
                            :nickname   (get-in db [:contacts/contacts from :nickname])}))))
           {:db db}
           messages))
-
-(defn timeline-message?
-  [db chat-id]
-  (and
-   (get-in db [:pagination-info constants/timeline-chat-id :messages-initialized?])
-   (or
-    (= chat-id (chat-model/my-profile-chat-topic db))
-    (when-let [pub-key (get-in db [:chats chat-id :profile-public-key])]
-      (get-in db [:contacts/contacts pub-key :added])))))
-
-(defn get-timeline-message
-  [db chat-id message-js]
-  (when (timeline-message? db chat-id)
-    (data-store.messages/<-rpc (types/js->clj message-js))))
 
 (defn add-message
   [{:keys [db] :as acc} message-js chat-id message-id cursor-clock-value]
@@ -147,30 +131,6 @@
                [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}])
              (when (seq senders)
                [{:ms 100 :dispatch [:chat/add-senders-to-chat-users (vals senders)]}]))}))
-
-(defn reduce-js-statuses
-  [db ^js message-js]
-  (let [chat-id             (.-localChatId message-js)
-        profile-initialized (get-in db [:pagination-info chat-id :messages-initialized?])
-        timeline-message    (timeline-message? db chat-id)
-        old-message         (get-in db [:messages chat-id (.-id message-js)])]
-    (if (and (or profile-initialized timeline-message) (nil? old-message))
-      (let [{:keys [message-id] :as message} (data-store.messages/<-rpc (types/js->clj message-js))]
-        (cond-> db
-          profile-initialized
-          (update-in [:messages chat-id] assoc message-id message)
-          profile-initialized
-          (update-in [:message-lists chat-id] message-list/add message)
-          timeline-message
-          (update-in [:messages constants/timeline-chat-id] assoc message-id message)
-          timeline-message
-          (update-in [:message-lists constants/timeline-chat-id] message-list/add message)))
-      db)))
-
-(rf/defn process-statuses
-  {:events [:process-statuses]}
-  [{:keys [db]} statuses]
-  {:db (reduce reduce-js-statuses db statuses)})
 
 (rf/defn update-db-message-status
   [{:keys [db] :as cofx} chat-id message-id status]

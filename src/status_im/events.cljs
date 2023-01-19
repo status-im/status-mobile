@@ -8,7 +8,7 @@
    status-im.bootnodes.core
    status-im.browser.core
    status-im.browser.permissions
-   [status-im.chat.models :as chat]
+   status-im.chat.models
    status-im.chat.models.images
    status-im.chat.models.input
    status-im.chat.models.loading
@@ -183,12 +183,6 @@
   {:events [:update-window-dimensions]}
   [{:keys [db]} dimensions]
   {:db (assoc db :dimensions/window (dimensions/window dimensions))})
-
-(rf/defn init-timeline-chat
-  {:events [:init-timeline-chat]}
-  [{:keys [db] :as cofx}]
-  (when-not (get-in db [:pagination-info constants/timeline-chat-id :messages-initialized?])
-    (chat/preload-chat-data cofx constants/timeline-chat-id)))
 
 (rf/defn on-will-focus
   {:events [:screens/on-will-focus]}

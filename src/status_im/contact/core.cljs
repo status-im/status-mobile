@@ -39,8 +39,6 @@
                  blocked     (:blocked contact)
                  was-blocked (contact.db/blocked? db public-key)]
              (cond-> acc
-               (and added (not was-added))
-               (conj [:start-profile-chat public-key])
 
                (and (not (:has-added-us contact))
                     (= constants/contact-request-state-none (:contact-request-state contact)))
@@ -51,7 +49,7 @@
 
                (and blocked (not was-blocked))
                (conj [::contact.block/contact-blocked contact chats]))))
-         [[:offload-messages constants/timeline-chat-id]
+         [[:chat/offload-messages constants/timeline-chat-id]
           [:activity-center.notifications/fetch-unread-count]]
          contacts)]
     (merge
@@ -93,7 +91,7 @@
      ens-name
      #(do
         (re-frame/dispatch [:sanitize-messages-and-process-response %])
-        (re-frame/dispatch [:offload-messages constants/timeline-chat-id])))))
+        (re-frame/dispatch [:chat/offload-messages constants/timeline-chat-id])))))
 
 (rf/defn remove-contact
   "Remove a contact from current account's contact list"
@@ -109,7 +107,7 @@
                    {:method     "wakuext_retractContactRequest"
                     :params     [{:contactId public-key}]
                     :on-success #(log/debug "contact removed successfully")}]
-   :dispatch      [:offload-messages constants/timeline-chat-id]})
+   :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
 
 (rf/defn accept-contact-request
   {:events [:contact-requests.ui/accept-request]}

@@ -40,7 +40,7 @@
        :title               (i18n/label :t/delete-chat)
        :accessibility-label :delete-chat-button
        :icon                :main-icons/delete
-       :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
+       :on-press            #(re-frame/dispatch [:chat.ui/show-remove-confirmation chat-id])}]]))
 
 (defn public-chat-accents
   [chat-id]
@@ -69,13 +69,13 @@
        :title               (i18n/label :t/clear-history)
        :accessibility-label :clear-history-button
        :icon                :main-icons/close
-       :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
+       :on-press            #(re-frame/dispatch [:chat.ui/show-clear-history-confirmation chat-id])}]
      [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/delete-chat)
        :accessibility-label :delete-chat-button
        :icon                :main-icons/delete
-       :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
+       :on-press            #(re-frame/dispatch [:chat.ui/show-remove-confirmation chat-id])}]]))
 
 (defn community-chat-accents
   []
