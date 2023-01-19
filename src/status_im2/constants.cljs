@@ -1,5 +1,5 @@
 (ns status-im2.constants)
-
+;; Test
 (def ^:const ms-in-bg-for-require-bioauth 5000)
 
 (def ^:const content-type-text 1)
