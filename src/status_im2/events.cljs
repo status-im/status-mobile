@@ -1,4 +1,4 @@
-(ns status-im2.setup.events
+(ns status-im2.events
   (:require [clojure.string :as string]
             [quo.theme :as quo.theme]
             [quo2.theme :as quo2.theme]
@@ -10,9 +10,10 @@
             [status-im2.common.theme.core :as theme]
             [status-im2.common.toasts.events]
             [status-im2.navigation.events :as navigation]
-            [status-im2.setup.db :as db]
+            [status-im2.db :as db]
             [utils.re-frame :as rf]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            status-im2.contexts.syncing.events))
 
 (re-frame/reg-cofx
  :now

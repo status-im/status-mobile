@@ -1,4 +1,4 @@
-(ns status-im2.setup.log
+(ns status-im2.common.log
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im2.config :as config]

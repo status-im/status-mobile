@@ -42,7 +42,7 @@
    [status-im2.contexts.activity-center.events :as activity-center]
    [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
    [status-im2.navigation.events :as navigation]
-   [status-im2.setup.log :as logging]
+   [status-im2.common.log :as logging]
    [taoensso.timbre :as log]
    [utils.security.core :as security]))
 

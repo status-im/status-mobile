@@ -38,7 +38,7 @@
  {:mobile
   {:target     :react-native
    :output-dir "app"
-   :init-fn    status-im2.setup.core/init
+   :init-fn    status-im2.core/init
    ;; When false, the Shadow-CLJS watcher won't automatically refresh
    ;; the target files (a.k.a hot reload). When false, you can manually
    ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.

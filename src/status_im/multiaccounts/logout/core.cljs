@@ -7,7 +7,7 @@
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.wallet.core :as wallet]
-            [status-im2.setup.events :as init]))
+            [status-im2.events :as init]))
 
 (rf/defn logout-method
   {:events [::logout-method]}

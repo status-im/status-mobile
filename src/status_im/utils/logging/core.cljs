@@ -13,7 +13,7 @@
             [utils.datetime :as datetime]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [status-im2.setup.log :as log]))
+            [status-im2.common.log :as log]))
 
 (def report-email "error-reports@status.im")
 
