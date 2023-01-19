@@ -19,7 +19,8 @@
   [message]
   (let [shared-element-id (rf/sub [:shared-element-id])
         window-width      (:width (rn/get-window))
-        height            (* (or (:image-height message) 1000) (/ window-width (or (:image-width message) 1000)))]
+        height            (* (or (:image-height message) 1000)
+                             (/ window-width (or (:image-width message) 1000)))]
     [fast-image/fast-image
      {:source    {:uri (:image (:content message))}
       :style     {:width         window-width
