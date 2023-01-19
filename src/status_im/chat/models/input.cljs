@@ -151,7 +151,6 @@
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
     (mapv (fn [[_ {:keys [uri width height]}]]
-            (println "WWW" width height)
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
