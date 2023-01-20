@@ -26,24 +26,10 @@
             options)
    callback))
 
-(def content-height (reagent/atom nil))
-(def show-bottom-sheet? (reagent/atom nil))
-(def keyboard-was-shown? (reagent/atom false))
-(def expanded? (reagent/atom false))
-(def gesture-running? (reagent/atom false))
-
-(defn reset-atoms
-  []
-  (reset! show-bottom-sheet? nil)
-  (reset! content-height nil)
-  (reset! expanded? false)
-  (reset! keyboard-was-shown? false)
-  (reset! gesture-running? false))
-
 (defn get-bottom-sheet-gesture
   [pan-y translate-y bg-height bg-height-expanded
    window-height keyboard-shown disable-drag? expandable?
-   show-bottom-sheet? expanded? close-bottom-sheet]
+   show-bottom-sheet? expanded? close-bottom-sheet gesture-running?]
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
@@ -106,6 +92,17 @@
                             backdrop-dismiss? true
                             expandable?       false}}
         props
+        content-height (reagent/atom nil)
+        show-bottom-sheet? (reagent/atom nil)
+        keyboard-was-shown? (reagent/atom false)
+        expanded? (reagent/atom false)
+        gesture-running? (reagent/atom false)
+        reset-atoms (fn []
+                      (reset! show-bottom-sheet? nil)
+                      (reset! content-height nil)
+                      (reset! expanded? false)
+                      (reset! keyboard-was-shown? false)
+                      (reset! gesture-running? false))
         close-bottom-sheet (fn []
                              (reset! show-bottom-sheet? false)
                              (when (fn? on-cancel) (on-cancel))
