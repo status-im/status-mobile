@@ -179,7 +179,7 @@ in stdenv.mkDerivation rec {
   name = "libverifproxy";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
-  buildInputs = with pkgs; [ wget git which tcl cmake libtool];
+  buildInputs = with pkgs; [ wget git which tcl cmake libtool binutils];
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
@@ -196,12 +196,15 @@ in stdenv.mkDerivation rec {
 
     ${compilerVars}
     export PATH=${nimCompiler}/bin:$PATH
+    #export PATH=${pkgs.binutils}/bin:$PATH
     which clang
     echo $PATH
   '';
 
 
   buildPhase = ''
+    which ar
+    set -x
     make V=3 OS=${nimHostOs} \
       CC=clang CXX=clang USE_SYSTEM_NIM=1 \
       NIMFLAGS="\
@@ -209,14 +212,18 @@ in stdenv.mkDerivation rec {
       --passL:\"${linkerFlags}\" \
       --debuginfo:off \
       --cc:clang \
+      --listcmd \
       --cpu:${nimCpu} \
       --os:${nimPlatform} \
       -d:disableMarchNative" \
     libverifproxy
 
+    echo "### ls build/libverifproxy"
+    ls -l build/libverifproxy/*
    '';
 
   installPhase = ''
+    set -x
     mkdir -p $out
     cp build/libverifproxy/libverifproxy* $out/
     cp build/libverifproxy/verifproxy.h $out/

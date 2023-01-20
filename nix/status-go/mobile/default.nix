@@ -8,7 +8,7 @@ let
             if platform == "ios" then
               (if target == "iossimulator" && stdenv.hostPlatform.isx86
               then "x86" else "arm64")
-            else builtins.elemAt (builtins.splitString "/" target) 1 ;
+            else builtins.elemAt (builtins.split "\/" target) 2 ;
         in
         callPackage ./buildNimbus.nix {
           inherit nimCompiler platform arch;
@@ -24,7 +24,8 @@ in {
   android = callPackage ./build.nix {
     platform = "android";
     platformVersion = "23";
-    targets = [ "android/arm" "android/arm64" "android/386" ];
+    #targets = [ "android/arm" "android/arm64" "android/386" ];
+    targets = [ "android/arm64" ];
     outputFileName = "status-go-${source.shortRev}.aar";
     inherit meta source buildNimbusLc goBuildLdFlags;
   };

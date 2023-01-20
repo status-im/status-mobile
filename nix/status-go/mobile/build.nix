@@ -15,11 +15,12 @@ let
   isIOS = platform == "ios";
   isAndroid = platform == "android";
   lc = buildNimbusLc {inherit platform targets;};
+  cgoCflags = "-I" + (builtins.elemAt lc 0);
 
   lcDirs = (builtins.concatStringsSep " " (builtins.map (s: "-L" + s) lc));
 
   goBuildLdFlagsModified = 
-    goBuildLdFlags ++ [("\"-extldflags=-llcproxy " + lcDirs + "\"")];
+    goBuildLdFlags ++ [("-extldflags \"-lverifproxy " + lcDirs + "\"")];
   ldflags = concatStringsSep " " goBuildLdFlagsModified;
 in buildGoPackage {
   pname = source.repo;
@@ -48,13 +49,13 @@ in buildGoPackage {
     echo -e "\n LC dirs: ${lcDirs}"
     echo -e "\n ldflags: ${ldflags}"
     set -x
-    gomobile bind \
+    GOOS=ios GOARCH=x86_64 CGO_ENABLED=1 CGO_CFLAGS=\"${cgoCflags}\" gomobile bind \
       ${concatStringsSep " " goBuildFlags} \
-      -ldflags="${ldflags}" \
+      -ldflags ''\'${ldflags}''\' \
       -target=${concatStringsSep "," targets} \
       ${optionalString isAndroid "-androidapi=${platformVersion}" } \
       ${optionalString isIOS "-iosversion=${platformVersion}" } \
-     -tags='${optionalString isIOS "nowatchdog"} gowaku_skip_migrations' \
+     -tags='${optionalString isIOS "nowatchdog"} nimbus_light_client gowaku_skip_migrations' \
       -o ${outputFileName} \
       ${source.goPackagePath}/mobile
 
