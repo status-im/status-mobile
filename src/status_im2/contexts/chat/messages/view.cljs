@@ -11,10 +11,8 @@
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
-            [status-im2.common.not-implemented :as not-implemented]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]))
+            [utils.re-frame :as rf]))
 
 (defn navigate-back-handler
   []
@@ -74,8 +72,6 @@
          :keyboardVerticalOffset (- (:bottom insets))}
         [page-nav]
         [pin.banner/banner chat-id]
-        [not-implemented/not-implemented
-         [pin-limit-popover/pin-limit-popover chat-id]]
         [messages.list/messages-list {:chat chat :show-input? show-input?}]
         (cond (and (not show-input?)
                    contact-request-state)

@@ -1,6 +1,9 @@
 (ns status-im2.contexts.chat.messages.pin.events
   (:require [re-frame.core :as re-frame]
+            [utils.i18n :as i18n]
+            [quo2.foundations.colors :as colors]
             [status-im2.contexts.chat.messages.list.events :as message-list]
+            [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
             [status-im.data-store.pin-messages :as data-store.pin-messages]
             [status-im.transport.message.protocol :as protocol]
@@ -99,10 +102,8 @@
 
 (rf/defn show-pin-limit-modal
   {:events [:pin-message/show-pin-limit-modal]}
-  [{:keys [db]} chat-id]
-  {:db (assoc-in db [:pin-modal chat-id] true)})
-
-(rf/defn hide-pin-limit-modal
-  {:events [:pin-message/hide-pin-limit-modal]}
-  [{:keys [db]} chat-id]
-  {:db (assoc-in db [:pin-modal chat-id] false)})
+  [cofx]
+  (toasts/upsert cofx
+                 {:icon       :alert
+                  :icon-color colors/danger-50
+                  :text       (i18n/label :t/pin-limit-reached)}))
