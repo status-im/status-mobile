@@ -640,7 +640,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 352a8ca9bbc8e2f097d680747a8c97ecef12d469
   FBReactNativeSpec: 7dfb84f624136a45727c813ed21d130cd3e61beb
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 36ce0530c6d2c3a5a4326885ef4069564887a1db
+  glog: 6934faae5afbec23475648c8aeb6047ce973af65
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
