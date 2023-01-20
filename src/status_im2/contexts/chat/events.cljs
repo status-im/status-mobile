@@ -326,3 +326,13 @@
   {:events [:chat.ui/navigate-to-pinned-messages]}
   [cofx chat-id]
   (navigation/navigate-to cofx :chat-pinned-messages {:chat-id chat-id}))
+
+(rf/defn navigate-to-horizontal-images
+         {:events [:chat.ui/navigate-to-horizontal-images]}
+         [cofx messages index]
+         (navigation/navigate-to cofx :images-horizontal {:messages messages :index index}))
+
+(rf/defn update-shared-element-id
+         {:events [:chat.ui/update-shared-element-id]}
+         [{:keys [db]} shared-element-id]
+         {:db (assoc db :shared-element-id shared-element-id)})
