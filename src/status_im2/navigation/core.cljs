@@ -52,8 +52,8 @@
      (name @state/root-comp-id)
      {:component {:id      comp
                   :name    comp
-                  :options (merge options
-                                  (status-bar-options)
+                  :options (merge (status-bar-options)
+                                  options
                                   (roots/merge-top-bar (roots/topbar-options) options))}})
     ;;if we push the screen from modal, we want to dismiss all modals
     (dismiss-all-modals)))
@@ -209,8 +209,8 @@
   (let [{:keys [options]} (get views/screens comp)]
     {:component {:id      comp
                  :name    comp
-                 :options (merge options
-                                 (roots/status-bar-options)
+                 :options (merge (roots/status-bar-options)
+                                 options
                                  (roots/merge-top-bar (roots/topbar-options) options))}}))
 
 ;; SET STACK ROOT

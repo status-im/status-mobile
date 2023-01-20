@@ -147,15 +147,20 @@
        :ens-name     preferred-name})))
 
 (defn build-image-messages
-  [{db :db} chat-id]
+  [{db :db} chat-id input-text]
   (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
         album-id (str (random-uuid))]
-    (mapv (fn [[_ {:keys [uri]}]]
+    (mapv (fn [[_ {:keys [uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
-             :text         (i18n/label :t/update-to-see-image {"locale" "en"})})
+             :image-width  width
+             :image-height height
+             ;; TODO: message not received if text field is
+             ;; nil or empty, issue:
+             ;; https://github.com/status-im/status-mobile/issues/14754
+             :text         (or input-text "placeholder")})
           images)))
 
 (rf/defn clean-input
@@ -181,8 +186,9 @@
 
 (rf/defn send-messages
   [{:keys [db] :as cofx} input-text current-chat-id]
-  (let [image-messages (build-image-messages cofx current-chat-id)
-        text-message   (build-text-message cofx input-text current-chat-id)
+  (let [image-messages (build-image-messages cofx current-chat-id input-text)
+        text-message   (when-not (seq image-messages)
+                         (build-text-message cofx input-text current-chat-id))
         messages       (keep identity (conj image-messages text-message))]
     (when (seq messages)
       (rf/merge cofx

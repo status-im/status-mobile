@@ -1,17 +1,24 @@
 (ns status-im2.contexts.chat.messages.content.album.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def album-container
-  {:flex-direction :row
+(def max-album-height 292)
+
+(defn album-container
+  [portrait?]
+  {:flex-direction (if portrait? :column :row)
    :flex-wrap      :wrap
-   :overflow       :hidden})
+   :max-height     max-album-height})
 
 (defn image
-  [size index]
-  {:width         size
-   :height        size
-   :margin-left   (when (and (not= index 0) (not= index 2)) 1)
-   :margin-bottom (when (< index 2) 1)})
+  [dimensions index]
+  {:width         (:width dimensions)
+   :height        (:height dimensions)
+   :margin-left   (when (or (and (not= index 0) (not= index 2) (not= count 3))
+                            (= count 3)
+                            (= index 2))
+                    1)
+   :margin-bottom (when (< index 2) 1)
+   :align-self    :flex-start})
 
 (def overlay
   {:position         :absolute

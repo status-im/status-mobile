@@ -7,8 +7,7 @@
   [{:message-id "0x111" :album-id "abc" :albumize? true}
    {:message-id "0x222" :album-id "abc" :albumize? true}
    {:message-id "0x333" :album-id "abc" :albumize? true}
-   {:message-id "0x444" :album-id "abc" :albumize? true}
-   {:message-id "0x555" :album-id "efg" :albumize? true}])
+   {:message-id "0x444" :album-id "abc" :albumize? true}])
 
 (def messages-albumized-state
   [{:album        [{:message-id "0x444" :album-id "abc" :albumize? true}
@@ -16,9 +15,9 @@
                    {:message-id "0x222" :album-id "abc" :albumize? true}
                    {:message-id "0x111" :album-id "abc" :albumize? true}]
     :album-id     "abc"
+    :albumize?    true
     :message-id   "abc"
-    :content-type constants/content-type-album}
-   {:message-id "0x555" :album-id "efg" :albumize? true}])
+    :content-type constants/content-type-album}])
 
 (deftest albumize-messages
   (testing "Finding albums in the messages list"

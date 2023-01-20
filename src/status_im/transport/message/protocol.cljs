@@ -6,6 +6,8 @@
 (defn build-message
   [{:keys [chat-id
            album-id
+           image-width
+           image-height
            text
            response-to
            ens-name
@@ -17,6 +19,8 @@
            content-type]}]
   {:chatId          chat-id
    :albumId         album-id
+   :imageWidth      image-width
+   :imageHeight     image-height
    :text            text
    :responseTo      response-to
    :ensName         ens-name
