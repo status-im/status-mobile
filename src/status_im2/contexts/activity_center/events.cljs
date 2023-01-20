@@ -1,8 +1,8 @@
 (ns status-im2.contexts.activity-center.events
-  (:require [status-im.chat.models :as models.chat]
-            [status-im.data-store.activities :as data-store.activities]
+  (:require [status-im.data-store.activities :as data-store.activities]
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.contexts.activity-center.notification-types :as types]
+            [status-im2.contexts.chat.events :as chat.events]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -172,7 +172,7 @@
   [{:keys [db] :as cofx} notification-id {:keys [chats]}]
   (let [notification (get-notification db notification-id)]
     (rf/merge cofx
-              (models.chat/ensure-chats (map data-store.chats/<-rpc chats))
+              (chat.events/ensure-chats (map data-store.chats/<-rpc chats))
               (notifications-reconcile [(assoc notification :read true :accepted true)]))))
 
 (rf/defn dismiss-notification
