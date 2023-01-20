@@ -185,50 +185,14 @@
               (mentions/clear-cursor))))
 
 (rf/defn send-messages
-<<<<<<< HEAD
-<<<<<<< HEAD
-  [{:keys [db] :as cofx} input-text current-chat-id]
-  (let [image-messages (build-image-messages cofx current-chat-id)
-        text-message   (build-text-message cofx input-text current-chat-id)
-=======
   [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id input-text)
         text-message   (when-not (seq image-messages)
                          (build-text-message cofx input-text current-chat-id))
->>>>>>> ef248198d... feat: images album
         messages       (keep identity (conj image-messages text-message))]
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
-<<<<<<< HEAD
-=======
-       [{:keys [db] :as cofx} input-text current-chat-id]
-       (let [image-messages (build-image-messages cofx current-chat-id input-text)
-             text-message   (when-not (seq image-messages) (build-text-message cofx input-text current-chat-id))
-             messages       (keep identity (conj image-messages text-message))]
-         (when (seq messages)
-           (rf/merge cofx
-                     (clean-input (:current-chat-id db))
-                     (process-cooldown)
-                     (chat.message/send-messages messages)))))
-=======
-                (process-cooldown)
-                (chat.message/send-messages messages)))))
->>>>>>> ef248198d... feat: images album
-
-(rf/defn send-my-status-message
-  "when not empty, proceed by sending text message with public key topic"
-  {:events [:profile.ui/send-my-status-message]}
-  [{db :db :as cofx}]
-  (let [current-chat-id      (chat/my-profile-chat-topic db)
-        {:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
-        image-messages       (build-image-messages cofx current-chat-id input-text)
-        text-message         (build-text-message cofx input-text current-chat-id)
-        messages             (keep identity (conj image-messages text-message))]
-    (when (seq messages)
-      (rf/merge cofx
-                (clean-input current-chat-id)
->>>>>>> 2ee75ae1c... updates
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message

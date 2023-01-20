@@ -175,14 +175,6 @@
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     (clear-sending-images cofx current-chat-id)))
 
-<<<<<<< HEAD
-=======
-(rf/defn cancel-sending-image-timeline
-  {:events [:chat.ui/cancel-sending-image-timeline]}
-  [{:keys [db] :as cofx}]
-  (cancel-sending-image cofx (chat/my-profile-chat-topic db)))
-
->>>>>>> 2ee75ae1c... updates
 (rf/defn image-selected
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} current-chat-id original uri]
@@ -203,14 +195,6 @@
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker current-chat-id})))
 
-<<<<<<< HEAD
-=======
-(rf/defn chat-open-image-picker-timeline
-  {:events [:chat.ui/open-image-picker-timeline]}
-  [{:keys [db] :as cofx}]
-  (chat-open-image-picker cofx (chat/my-profile-chat-topic db)))
-
->>>>>>> 2ee75ae1c... updates
 (rf/defn chat-show-image-picker-camera
   {:events [:chat.ui/show-image-picker-camera]}
   [{:keys [db]} chat-id]
@@ -219,14 +203,6 @@
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker-camera current-chat-id})))
 
-<<<<<<< HEAD
-=======
-(rf/defn chat-show-image-picker-camera-timeline
-  {:events [:chat.ui/show-image-picker-camera-timeline]}
-  [{:keys [db] :as cofx}]
-  (chat-show-image-picker-camera cofx (chat/my-profile-chat-topic db)))
-
->>>>>>> 2ee75ae1c... updates
 (rf/defn camera-roll-pick
   {:events [:chat.ui/camera-roll-pick]}
   [{:keys [db]} image chat-id]
@@ -239,14 +215,6 @@
                  (not (some #(= (:uri image) (:uri %)) images)))
         {::image-selected [image current-chat-id]}))))
 
-<<<<<<< HEAD
-=======
-(rf/defn camera-roll-pick-timeline
-  {:events [:chat.ui/camera-roll-pick-timeline]}
-  [{:keys [db] :as cofx} uri]
-  (camera-roll-pick cofx uri (chat/my-profile-chat-topic db)))
-
->>>>>>> 2ee75ae1c... updates
 (rf/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}
   [_ base64-uri]
