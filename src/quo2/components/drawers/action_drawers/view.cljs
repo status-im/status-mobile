@@ -32,11 +32,11 @@
      (when add-divider? divider)
      [rn/touchable-highlight
       {:accessibility-label accessibility-label
-       :style               style/container
+       :style               (style/container sub-label)
        :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
        :on-press            on-press}
       [rn/view
-       {:style style/row-container}
+       {:style (style/row-container sub-label)}
        [rn/view
         {:accessibility-label :left-icon-for-action
          :accessible          true
