@@ -211,8 +211,9 @@
                {:style (reanimated/apply-animations-to-style
                         {:opacity bg-opacity}
                         styles/backdrop)}]]
-            ;; VVVVVVV 
-             ;; This is repeated because gesture-handler doesn't play nicely when it's conditionally rendered with reanimated
+             ;; VVVVVVV
+             ;; This is repeated because gesture-handler doesn't play nicely when it's conditionally
+             ;; rendered with reanimated
              (if show-handle?
                [reanimated/view
                 {:style (reanimated/apply-animations-to-style
