@@ -40,13 +40,20 @@
           :ring?             false}]))]])
 
 (defn author
-  [{:keys [response-to last-in-group? pinned quoted-message from timestamp]}]
+  [{:keys [response-to
+           compressed-key
+           last-in-group?
+           pinned
+           quoted-message
+           from
+           timestamp]}]
   (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
     (let [display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity from]))
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
        {:profile-name   display-name
-        :short-chat-key (utils/get-shortened-address from)
+        :short-chat-key (utils/get-shortened-address (or compressed-key
+                                                         from))
         :time-str       (datetime/timestamp->time timestamp)
         :contact?       added?
         :verified?      ens-verified}])))

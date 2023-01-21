@@ -23,7 +23,7 @@
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
 
 (defn multiaccount-login-badge
-  [{:keys [public-key name] :as multiaccount}]
+  [{:keys [compressed-key public-key name] :as multiaccount}]
   [react/view styles/login-badge
    [photos/photo
     (multiaccounts/displayed-photo multiaccount)
@@ -39,7 +39,7 @@
       :align     :center
       :color     :secondary
       :style     styles/login-badge-pubkey}
-     (utils/get-shortened-address public-key)]]])
+     (utils/get-shortened-address (or compressed-key public-key))]]])
 
 (defn topbar-button
   []

@@ -14,8 +14,13 @@
 
 (defview wizard-recovery-success
   []
-  (letsubs [{:keys [pubkey processing? name identicon]} [:intro-wizard/recovery-success]
-            existing-account?                           [:intro-wizard/recover-existing-account?]]
+  (letsubs [{:keys [pubkey
+                    processing?
+                    compressed-key
+                    name
+                    identicon]}
+            [:intro-wizard/recovery-success]
+            existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view
      {:style {:flex            1
               :justify-content :space-between}}
@@ -61,7 +66,7 @@
            :align           :center
            :number-of-lines 1
            :ellipsize-mode  :middle}
-          (utils/get-shortened-address pubkey)]]]]]
+          (utils/get-shortened-address (or compressed-key pubkey))]]]]]
      [ui/next-button
       #(dispatch-and-chill [:multiaccounts.recover/re-encrypt-pressed] 300)
       (or processing? existing-account?)]]))

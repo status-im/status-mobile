@@ -115,10 +115,10 @@
 
 (defn start-suggestion
   [search-value]
-  (let [{:keys [state ens-name public-key]}
+  (let [{:keys [state ens-name public-key compressed-key]}
         @(re-frame/subscribe [:contacts/new-identity])
-        valid-private?                      (= state :valid)
-        valid-public?                       (db/valid-topic? search-value)]
+        valid-private?                                     (= state :valid)
+        valid-public?                                      (db/valid-topic? search-value)]
     (when (or valid-public? valid-private?)
       [react/view
        [quo/list-header (i18n/label :t/search-no-chat-found)]
@@ -126,7 +126,9 @@
          [quo/list-item
           {:theme    :accent
            :icon     :main-icons/private-chat
-           :title    (or ens-name (utils/get-shortened-address public-key))
+           :title    (or ens-name
+                         (utils/get-shortened-address
+                          (or compressed-key public-key)))
            :subtitle (i18n/label :t/join-new-private-chat)
            :on-press (fn []
                        (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)

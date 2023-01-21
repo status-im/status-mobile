@@ -33,6 +33,7 @@
                     :quoted-message             {:from "from"
                                                  :text "reply"}
                     :content-type               1
+                    :compressed-key             "c"
                     :timestamp                  3}
           message  {:id                       message-id
                     :whisperTimestamp         1
@@ -51,6 +52,7 @@
                     :messageType              0
                     :clock                    2
                     :responseTo               "a"
+                    :compressedKey            "c"
                     :quotedMessage            {:from "from"
                                                :text "reply"}
                     :timestamp                3

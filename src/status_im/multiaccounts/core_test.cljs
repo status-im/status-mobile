@@ -2,6 +2,8 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.multiaccounts.core :as ma]))
 
+(def compressed-key "zQsomething")
+(def short-compressed-key "zQsome…ing")
 (def public-key
   "0x0461f576da67dc0bca9888cdb4cb28c80285b756b324109da94a081585ed6f007cf00afede6b3ee5638593674fee100b590318fc7bdb0054b8dd9445acea216ad2")
 (def short-public-key "0x0461…ad2")
@@ -16,11 +18,12 @@
 (def override-ens-name (str "override" ens-name))
 
 (def contact
-  {:nickname     nickname
-   :name         ens-name
-   :ens-verified true
-   :public-key   public-key
-   :display-name display-name})
+  {:nickname       nickname
+   :name           ens-name
+   :ens-verified   true
+   :compressed-key compressed-key
+   :public-key     public-key
+   :display-name   display-name})
 
 (deftest contact-two-names-test
   (testing "names is nil"
@@ -48,13 +51,23 @@
            public-key))))
     (testing "3 random words is fallback"
       (is
-       (= [random-name short-public-key]
+       (= [random-name short-compressed-key]
           (ma/contact-two-names
            (dissoc contact
                    :nickname
                    :name
                    :display-name)
            public-key)))))
+  (testing "public-key is the least favorite"
+    (is
+     (= [random-name short-public-key]
+        (ma/contact-two-names
+         (dissoc contact
+                 :nickname
+                 :name
+                 :compressed-key
+                 :display-name)
+         public-key))))
   (testing "names is provided"
     (let [names              {:nickname         override-nickname
                               :display-name     override-display-name
@@ -80,7 +93,7 @@
              public-key))))
       (testing "3 random words is fallback"
         (is
-         (= [override-random-name short-public-key]
+         (= [override-random-name short-compressed-key]
             (ma/contact-two-names
              (update contact-with-names :names dissoc :nickname :ens-name :display-name)
              public-key)))))))

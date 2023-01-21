@@ -64,21 +64,6 @@
      (when (> (count events) 1)
        {:dispatch-n events}))))
 
-(defn- own-info
-  [db]
-  (let [{:keys [name preferred-name identicon address]} (:multiaccount db)]
-    {:name          (or preferred-name name)
-     :profile-image identicon
-     :address       address}))
-
-(rf/defn send-contact-request
-  {:events [::send-contact-request]}
-  [{:keys [db] :as cofx} public-key]
-  (let [{:keys [name profile-image]} (own-info db)]
-    {:json-rpc/call [{:method     "wakuext_sendContactUpdate"
-                      :params     [public-key name profile-image]
-                      :on-success #(log/debug "contact request sent" public-key)}]}))
-
 (rf/defn add-contact
   "Add a contact and set pending to false"
   {:events [:contact.ui/add-to-contact-pressed]}
@@ -101,10 +86,7 @@
                       (assoc-in [:contacts/contacts public-key :added] false)
                       (assoc-in [:contacts/contacts public-key :contact-request-state]
                                 constants/contact-request-state-none))
-   :json-rpc/call [{:method     "wakuext_removeContact"
-                    :params     [public-key]
-                    :on-success #(log/debug "contact removed successfully")}
-                   {:method     "wakuext_retractContactRequest"
+   :json-rpc/call [{:method     "wakuext_retractContactRequest"
                     :params     [{:contactId public-key}]
                     :on-success #(log/debug "contact removed successfully")}]
    :dispatch      [:chat/offload-messages constants/timeline-chat-id]})

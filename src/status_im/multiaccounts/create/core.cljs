@@ -17,19 +17,22 @@
 (defn normalize-derived-data-keys
   [derived-data]
   (->> derived-data
-       (map (fn [[path {:keys [publicKey] :as data}]]
+       (map (fn [[path {:keys [publicKey compressedKey] :as data}]]
               [path
                (cond-> (-> data
-                           (dissoc :publicKey)
-                           (assoc :public-key publicKey)))]))
+                           (dissoc :publicKey :compressedKey)
+                           (assoc
+                            :public-key     publicKey
+                            :compressed-key compressedKey)))]))
        (into {})))
 
 (defn normalize-multiaccount-data-keys
-  [{:keys [publicKey keyUid derived] :as data}]
+  [{:keys [publicKey keyUid derived compressedKey] :as data}]
   (cond-> (-> data
               (dissoc :keyUid :publicKey)
-              (assoc :key-uid    keyUid
-                     :public-key publicKey))
+              (assoc :key-uid        keyUid
+                     :compressed-key compressedKey
+                     :public-key     publicKey))
     derived
     (update :derived normalize-derived-data-keys)))
 
@@ -151,14 +154,15 @@
       :wallet     true
       :path       constants/path-default-wallet
       :name       (i18n/label :t/main-account)})
-   (let [{:keys [public-key address name identicon]}
+   (let [{:keys [compressed-key public-key address name identicon]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
-     {:public-key public-key
-      :address    (eip55/address->checksum address)
-      :name       name
-      :identicon  identicon
-      :path       constants/path-whisper
-      :chat       true})])
+     {:public-key     public-key
+      :compressed-key compressed-key
+      :address        (eip55/address->checksum address)
+      :name           name
+      :identicon      identicon
+      :path           constants/path-whisper
+      :chat           true})])
 
 (rf/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
@@ -167,8 +171,13 @@
     :as   multiaccount}
    password
    {:keys [save-mnemonic? login?] :or {login? true save-mnemonic? false}}]
-  (let [[wallet-account {:keys [public-key identicon name]} :as accounts-data] (prepare-accounts-data
-                                                                                multiaccount)
+  (let [[wallet-account
+         {:keys [public-key
+                 compressed-key
+                 identicon
+                 name]} :as accounts-data]
+        (prepare-accounts-data
+         multiaccount)
         multiaccount-data {:name            name
                            :address         address
                            :identicon       identicon
@@ -196,6 +205,8 @@
             :identicon                identicon
             ;; public key of the chat account
             :public-key               public-key
+            ;; compressed key of the chat account
+            :compressed-key           compressed-key
             ;; default address for Dapps
             :dapps-address            (:address wallet-account)
             :latest-derived-path      0

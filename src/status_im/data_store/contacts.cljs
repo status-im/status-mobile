@@ -9,6 +9,7 @@
       (set/rename-keys
        {:id                     :public-key
         :ensVerifiedAt          :ens-verified-at
+        :compressedKey          :compressed-key
         :displayName            :display-name
         :ensVerified            :ens-verified
         :ensVerificationRetries :ens-verification-retries

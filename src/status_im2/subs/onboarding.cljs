@@ -36,10 +36,11 @@
  :intro-wizard/recovery-success
  :<- [:intro-wizard]
  (fn [wizard-state]
-   {:pubkey      (get-in wizard-state [:derived constants/path-whisper-keyword :public-key])
-    :name        (get-in wizard-state [:derived constants/path-whisper-keyword :name])
-    :identicon   (get-in wizard-state [:derived constants/path-whisper-keyword :identicon])
-    :processing? (:processing? wizard-state)}))
+   {:pubkey         (get-in wizard-state [:derived constants/path-whisper-keyword :public-key])
+    :compressed-key (get-in wizard-state [:derived constants/path-whisper-keyword :compressed-key])
+    :name           (get-in wizard-state [:derived constants/path-whisper-keyword :name])
+    :identicon      (get-in wizard-state [:derived constants/path-whisper-keyword :identicon])
+    :processing?    (:processing? wizard-state)}))
 
 (re-frame/reg-sub
  :intro-wizard/recover-existing-account?

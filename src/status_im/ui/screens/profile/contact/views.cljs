@@ -7,16 +7,12 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.profile.components.sheets :as sheets]
-            [status-im.ui.screens.profile.contact.styles :as styles]
-            [status-im.utils.utils :as utils])
+            [status-im.ui.screens.profile.components.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
@@ -61,35 +57,6 @@
             :accessibility-label (if blocked?
                                    :unblock-contact
                                    :block-contact)}]))
-
-(defn render-detail
-  [{:keys [public-key names name] :as detail}]
-  [quo/list-item
-   {:title               (:three-words-name names)
-    :subtitle            [quo/text
-                          {:monospace true
-                           :color     :secondary}
-                          (utils/get-shortened-address public-key)]
-    :icon                [chat-icon/contact-icon-contacts-tab
-                          (multiaccounts/displayed-photo detail)]
-    :accessibility-label :profile-public-key
-    :on-press            #(re-frame/dispatch [:show-popover
-                                              (merge {:view    :share-chat-key
-                                                      :address public-key}
-                                                     (when (and (:ens-name names) name)
-                                                       {:ens-name name}))])
-    :accessory           [icons/icon :main-icons/share styles/contact-profile-detail-share-icon]}])
-
-(defn profile-details
-  [contact]
-  (when contact
-    [react/view
-     [quo/list-header
-      [quo/text
-       {:accessibility-label :profile-details
-        :color               :inherit}
-       (i18n/label :t/profile-details)]]
-     [render-detail contact]]))
 
 (defn pin-settings
   [public-key pin-count]
@@ -204,20 +171,24 @@
 
 (defn profile
   []
-  (let [{:keys [public-key name ens-verified] :as contact} @(re-frame/subscribe
-                                                             [:contacts/current-contact])
-        muted?                                             @(re-frame/subscribe [:chats/muted
-                                                                                 public-key])
-        pinned-messages                                    @(re-frame/subscribe [:chats/pinned
-                                                                                 public-key])
-        [first-name second-name]                           (multiaccounts/contact-two-names contact true)
-        on-share                                           #(re-frame/dispatch
-                                                             [:show-popover
-                                                              (merge
-                                                               {:view    :share-chat-key
-                                                                :address public-key}
-                                                               (when (and ens-verified name)
-                                                                 {:ens-name name}))])]
+  (let [{:keys [public-key
+                name
+                ens-verified
+                compressed-key]
+         :as   contact}
+        @(re-frame/subscribe
+          [:contacts/current-contact])
+        muted? @(re-frame/subscribe [:chats/muted
+                                     public-key])
+        [first-name second-name] (multiaccounts/contact-two-names contact true)
+        on-share #(re-frame/dispatch
+                   [:show-popover
+                    (merge
+                     {:view    :share-chat-key
+                      :address (or compressed-key
+                                   public-key)}
+                     (when (and ens-verified name)
+                       {:ens-name name}))])]
     (when contact
       [:<>
        [quo/header
@@ -235,11 +206,11 @@
            :photo            (multiaccounts/displayed-photo contact)
            :monospace        (not ens-verified)
            :subtitle         second-name
+           :compressed-key   compressed-key
            :public-key       public-key})]
         [react/view
          {:height 1 :background-color colors/gray-lighter :margin-top 8}]
         [nickname-settings contact]
-        [pin-settings public-key (count pinned-messages)]
         [react/view {:height 1 :background-color colors/gray-lighter}]
         [react/view
          {:padding-top    17

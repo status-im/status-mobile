@@ -20,6 +20,7 @@
   (-> message
       (set/rename-keys {:id                       :message-id
                         :whisperTimestamp         :whisper-timestamp
+                        :compressedKey            :compressed-key
                         :editedAt                 :edited-at
                         :contactVerificationState :contact-verification-state
                         :contactRequestState      :contact-request-state

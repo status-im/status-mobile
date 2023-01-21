@@ -187,12 +187,16 @@
 (defn my-profile
   []
   (fn []
-    (let [{:keys [public-key ens-verified preferred-name]
+    (let [{:keys [public-key
+                  compressed-key
+                  ens-verified
+                  preferred-name]
            :as   account}
           @(re-frame/subscribe [:profile/multiaccount])
           on-share #(re-frame/dispatch [:show-popover
                                         {:view     :share-chat-key
-                                         :address  public-key
+                                         :address  (or compressed-key
+                                                       public-key)
                                          :ens-name preferred-name}])
           has-picture @(re-frame/subscribe [:profile/has-picture])]
       [react/view {:flex 1}
@@ -211,5 +215,7 @@
                               :monospace (not ens-verified)
                               :subtitle  (if (and ens-verified public-key)
                                            (gfy/generate-gfy public-key)
-                                           (utils/get-shortened-address public-key))})}
+                                           (utils/get-shortened-address (or
+                                                                         compressed-key
+                                                                         public-key)))})}
         [content]]])))

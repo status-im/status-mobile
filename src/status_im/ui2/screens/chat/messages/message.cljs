@@ -197,7 +197,9 @@
                  :flex-direction :row}}
         [text/text
          (assoc props :accessibility-label :message-chat-key)
-         (utils/get-shortened-address (:public-key contact))]
+         (utils/get-shortened-address
+          (or (:compressed-key contact)
+              (:public-key contact)))]
         [text/text props " • "]
         [text/text
          (assoc props :accessibility-label :message-timestamp)

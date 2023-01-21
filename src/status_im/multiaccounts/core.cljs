@@ -47,13 +47,18 @@
 ;; available
 (defn contact-two-names
   "Returns vector of two names in next order nickname, ens name, display-name, three word name, public key"
-  [{:keys [names public-key] :as contact} public-key?]
+  [{:keys [names
+           compressed-key
+           public-key]
+    :as   contact} public-key?]
   (let [{:keys [nickname
                 ens-name
                 display-name
                 three-words-name]}
         (or names (contact-names contact))
-        short-public-key (when public-key? (utils/get-shortened-address public-key))]
+        short-public-key (when public-key?
+                           (utils/get-shortened-address (or compressed-key
+                                                            public-key)))]
     (->> [nickname ens-name display-name three-words-name short-public-key]
          (remove string/blank?)
          (take 2))))

@@ -36,8 +36,9 @@
        {:style                   {:max-height 410}
         :content-container-style {:justify-content :flex-start}}
        (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
-         (let [selected?  (= (:id acc) selected-id)
-               public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
+         (let [selected?      (= (:id acc) selected-id)
+               public-key     (get-in acc [:derived constants/path-whisper-keyword :public-key])
+               compressed-key (get-in acc [:derived constants/path-whisper-keyword :compressed-key])]
            ^{:key public-key}
            [quo/list-item
             {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
@@ -51,7 +52,8 @@
              :subtitle            [quo/text
                                    {:weight :monospace
                                     :color  :secondary}
-                                   (utils/get-shortened-address public-key)]
+                                   (utils/get-shortened-address (or compressed-key
+                                                                    public-key))]
              :accessory           :radio
              :on-press            #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])
              :icon                [react/image
