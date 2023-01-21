@@ -55,13 +55,15 @@
                                 32 10
                                 28 8
                                 24 8
-                                20 6)
+                                20 6
+                                nil)
           :background-color   background-color
           :padding-horizontal (case size
                                 32 12
                                 28 12
                                 24 8
-                                20 8)}
+                                20 8
+                                nil)}
          (when disabled
            {:opacity 0.3})))
 
