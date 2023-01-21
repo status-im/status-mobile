@@ -8,7 +8,7 @@
             [utils.re-frame :as rf]))
 
 (defn outgoing-contact-request-view
-  [{:keys [id author message last-message] :as notification}]
+  [{:keys [id chat-id message last-message] :as notification}]
   (let [message (or message last-message)]
     [rn/view
      [quo/activity-log
@@ -17,7 +17,7 @@
        :timestamp (datetime/timestamp->relative (:timestamp notification))
        :unread?   (not (:read notification))
        :context   [(i18n/label :t/contact-request-outgoing)
-                   [common/user-avatar-tag author]]
+                   [common/user-avatar-tag chat-id]]
        :message   {:body (get-in message [:content :text])}
        :button-1  {:label               (i18n/label :t/cancel)
                    :accessibility-label :cancel-contact-request
