@@ -6,7 +6,6 @@
             [status-im.data-store.contacts :as contacts-store]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]
-            [status-im2.contexts.activity-center.notification-types :as notification-types]
             [taoensso.timbre :as log]))
 
 (rf/defn load-contacts
@@ -65,9 +64,16 @@
      (when (> (count events) 1)
        {:dispatch-n events}))))
 
+(defn- own-info
+  [db]
+  (let [{:keys [name preferred-name identicon address]} (:multiaccount db)]
+    {:name          (or preferred-name name)
+     :profile-image identicon
+     :address       address}))
+
 (rf/defn add-contact
   "Add a contact and set pending to false"
-  {:events [:contact.ui/add-to-contact-pressed]}
+  {:events [:contact.ui/add-contact-pressed]}
   [{:keys [db] :as cofx} public-key nickname ens-name]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (contacts-store/add
@@ -76,8 +82,6 @@
      nickname
      ens-name
      #(do
-        ;; TODO(alwx):
-        (re-frame/dispatch [:activity-center.notifications/reconcile [{:id public-key :author "x" :message "x" :last-message "x" :read false :type notification-types/contact-request}]])
         (re-frame/dispatch [:sanitize-messages-and-process-response %])
         (re-frame/dispatch [:chat/offload-messages constants/timeline-chat-id])))))
 
@@ -109,6 +113,19 @@
                     :params      [{:id id}]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+
+;; TODO(alwx): move it all to `status-im2`
+(rf/defn cancel-outgoing-contact-request
+  {:events [:contact-requests.ui/cancel-outgoing-request]}
+  [{:keys [db]} {:keys [public-key]}]
+  {:db            (-> db
+                      (assoc-in [:contacts/contacts public-key :added] false)
+                      (assoc-in [:contacts/contacts public-key :contact-request-state]
+                                constants/contact-request-state-none))
+   :json-rpc/call [{:method     "wakuext_retractContactRequest"
+                    :params     [{:contactId public-key}]
+                    :on-success #(log/debug "contact request cancelled successfully")}]
+   :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
 
 (rf/defn initialize-contacts
   [cofx]

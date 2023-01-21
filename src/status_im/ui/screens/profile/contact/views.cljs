@@ -35,7 +35,7 @@
               :disabled            blocked?
               :accessibility-label :add-to-contacts-button
               :action              (when-not blocked?
-                                     #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key
+                                     #(re-frame/dispatch [:contact.ui/add-contact-pressed public-key
                                                           nil ens-name]))}])
           [{:label               (i18n/label (if (or muted? blocked?) :t/unmute :t/mute))
             :icon                :main-icons/notification

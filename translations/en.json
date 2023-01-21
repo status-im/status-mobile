@@ -1830,6 +1830,7 @@
     "accepted": "Accepted",
     "declined": "Declined",
     "contact-request-sent": "sent contact request",
+    "contact-request-outgoing": "You’re trying to connect with",
     "contact-request-header": "👋  Contact requests",
     "contact-request-declined": "Declined ⓧ",
     "contact-request-accepted": "Accepted ✓",

@@ -7,27 +7,32 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-;; TODO(alwx):
-(defn view
+(defn outgoing-contact-request-view
   [{:keys [id author message last-message] :as notification}]
-  (let [message   (or message last-message)
-        pressable (case (:contact-request-state message)
-                    constants/contact-request-message-state-accepted
-                    ;; NOTE(2022-09-21): We need to dispatch to
-                    ;; `:chat.ui/start-chat` instead of
-                    ;; `:chat/navigate-to-chat`, otherwise the chat screen
-                    ;; looks completely broken if it has never been opened
-                    ;; before for the accepted contact.
-                    [rn/touchable-opacity
-                     {:on-press (fn []
-                                  (rf/dispatch [:hide-popover])
-                                  (rf/dispatch [:chat.ui/start-chat author]))}]
-                    [:<>])]
-    (conj
-     pressable
-     [rn/view
-      [quo/activity-log
-       (merge
+  (let [message (or message last-message)]
+    [rn/view
+     [quo/activity-log
+      {:title     (i18n/label :t/contact-request)
+       :icon      :main-icons2/add-user
+       :timestamp (datetime/timestamp->relative (:timestamp notification))
+       :unread?   (not (:read notification))
+       :context   [(i18n/label :t/contact-request-outgoing)
+                   [common/user-avatar-tag author]]
+       :message   {:body (get-in message [:content :text])}
+       :button-1  {:label               (i18n/label :t/cancel)
+                   :accessibility-label :cancel-contact-request
+                   :type                :danger
+                   :on-press            (fn []
+                                          (rf/dispatch [:contact-requests.ui/cancel-outgoing-request id])
+                                          (rf/dispatch [:activity-center.notifications/mark-as-read
+                                                        id]))}}]]))
+
+(defn incoming-contact-request-view
+  [{:keys [id author message last-message] :as notification}]
+  (let [message (or message last-message)]
+    [rn/view
+     [quo/activity-log
+      (merge
         {:title     (i18n/label :t/contact-request)
          :icon      :main-icons2/add-user
          :timestamp (datetime/timestamp->relative (:timestamp notification))
@@ -57,4 +62,21 @@
                                              (rf/dispatch [:contact-requests.ui/accept-request id])
                                              (rf/dispatch [:activity-center.notifications/mark-as-read
                                                            id]))}}
-          nil))]])))
+          nil))]]))
+
+(defn view [{:keys [author message last-message] :as notification}]
+  (let [{:keys [public-key]} (rf/sub [:multiaccount/contact])
+        {:keys [contact-request-state]} (or message last-message)]
+    (cond
+      (= public-key author)
+      [outgoing-contact-request-view notification]
+
+      (= contact-request-state constants/contact-request-message-state-accepted)
+      [rn/touchable-opacity
+       {:on-press (fn []
+                    (rf/dispatch [:hide-popover])
+                    (rf/dispatch [:chat.ui/start-chat {:public-key author}]))}
+       [incoming-contact-request-view notification]]
+
+      :default
+      [incoming-contact-request-view notification])))
