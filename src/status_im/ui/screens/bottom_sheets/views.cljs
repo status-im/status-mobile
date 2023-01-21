@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.bottom-sheets.views
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.react :as quo.react]
+            [re-frame.core :as re-frame]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.keycard.views :as keycard]
@@ -7,11 +8,15 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
+            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
+            [react-native.core :as react]))
 
 (defn bottom-sheet
   []
-  (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
+  (let [dismiss-bottom-sheet-callback (fn []
+                                        (re-frame/dispatch [:bottom-sheet/hide])
+                                        true)
+        {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible? show?}
@@ -47,6 +52,12 @@
 
           (= view :pinned-messages-list)
           (merge {:content pin.list/pinned-messages-list}))]
-    [bottom-sheet/bottom-sheet opts
-     (when content
-       [content (when options options)])]))
+    [:f>
+     (fn []
+       (quo.react/effect! (fn []
+                            (react/hw-back-add-listener dismiss-bottom-sheet-callback)
+                            (fn []
+                              (react/hw-back-remove-listener dismiss-bottom-sheet-callback))))
+       [bottom-sheet/bottom-sheet opts
+        (when content
+          [content (when options options)])])]))
