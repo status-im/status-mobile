@@ -44,7 +44,7 @@
     :component        tag/tab
     :size             32/24
     :on-press         fn
-    :blurred?         true/false 
+    :blurred?         true/false
     :labelled?        true/false
     :disabled?        true/false
     :scrollable?      false
@@ -55,7 +55,7 @@
     :data             [{:id :label \"\" :resource \"url\"}
                        {:id :label \"\" :resource \"url\"}]}
   Opts:
-   - `component` this is to determine which component is to be rendered since the 
+   - `component` this is to determine which component is to be rendered since the
                  logic in this view is shared between tab and tag component
    - `blurred`   boolean: use to determine border color if the background is blurred
    - `type`      can be icon or emoji with or without a tag label
@@ -153,7 +153,7 @@
                                                            new-percentage))))
                                                    (when on-scroll
                                                      (on-scroll e)))
-              :render-fn                         (fn [{:keys [id label]} index]
+              :render-fn                         (fn [{:keys [id label notification-dot?]} index]
                                                    [rn/view
                                                     {:style {:margin-right  (if (= size default-tab-size)
                                                                               12
@@ -163,6 +163,8 @@
                                                                               (get-in props
                                                                                       [:style
                                                                                        :padding-left]))}}
+                                                    (when notification-dot?
+                                                      [indicator])
                                                     [tab/tab
                                                      {:id             id
                                                       :size           size

@@ -50,7 +50,8 @@
 
 (defn tabs
   []
-  (let [filter-type (rf/sub [:activity-center/filter-type])]
+  (let [filter-type       (rf/sub [:activity-center/filter-type])
+        types-with-unread (rf/sub [:activity-center/notification-types-with-unread])]
     [quo/tabs
      {:size                32
       :scrollable?         true
@@ -65,22 +66,30 @@
       :default-active      filter-type
       :data                [{:id    types/no-type
                              :label (i18n/label :t/all)}
-                            {:id    types/admin
-                             :label (i18n/label :t/admin)}
-                            {:id    types/mention
-                             :label (i18n/label :t/mentions)}
-                            {:id    types/reply
-                             :label (i18n/label :t/replies)}
-                            {:id    types/contact-request
-                             :label (i18n/label :t/contact-requests)}
-                            {:id    types/contact-verification
-                             :label (i18n/label :t/identity-verification)}
-                            {:id    types/tx
-                             :label (i18n/label :t/transactions)}
-                            {:id    types/membership
-                             :label (i18n/label :t/membership)}
-                            {:id    types/system
-                             :label (i18n/label :t/system)}]}]))
+                            {:id                types/admin
+                             :label             (i18n/label :t/admin)
+                             :notification-dot? (contains? types-with-unread types/admin)}
+                            {:id                types/mention
+                             :label             (i18n/label :t/mentions)
+                             :notification-dot? (contains? types-with-unread types/mention)}
+                            {:id                types/reply
+                             :label             (i18n/label :t/replies)
+                             :notification-dot? (contains? types-with-unread types/reply)}
+                            {:id                types/contact-request
+                             :label             (i18n/label :t/contact-requests)
+                             :notification-dot? (contains? types-with-unread types/contact-request)}
+                            {:id                types/contact-verification
+                             :label             (i18n/label :t/identity-verification)
+                             :notification-dot? (contains? types-with-unread types/contact-verification)}
+                            {:id                types/tx
+                             :label             (i18n/label :t/transactions)
+                             :notification-dot? (contains? types-with-unread types/tx)}
+                            {:id                types/membership
+                             :label             (i18n/label :t/membership)
+                             :notification-dot? (contains? types-with-unread types/membership)}
+                            {:id                types/system
+                             :label             (i18n/label :t/system)
+                             :notification-dot? (contains? types-with-unread types/system)}]}]))
 
 (defn header
   []

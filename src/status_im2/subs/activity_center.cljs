@@ -35,6 +35,19 @@
    (get-in notifications [filter-type filter-status :data])))
 
 (re-frame/reg-sub
+ :activity-center/notification-types-with-unread
+ :<- [:activity-center/notifications]
+ (fn [notifications]
+   (reduce-kv
+    (fn [acc notification-type {:keys [unread]}]
+      (if (and (not= notification-type types/no-type)
+               (seq (:data unread)))
+        (conj acc notification-type)
+        acc))
+    #{}
+    notifications)))
+
+(re-frame/reg-sub
  :activity-center/filter-status-unread-enabled?
  :<- [:activity-center/filter-status]
  (fn [filter-status]
