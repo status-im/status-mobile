@@ -93,34 +93,6 @@
             :height           20}}
    [rn/view {:style (styles/handle)}]])
 
-(defn bottom-sheet-content-view
-  [{:keys [handle-comp translate-y selected-item insets on-content-layout children]}]
-  [:f>
-   (fn []
-     (let [{window-height :height
-            window-width  :width}
-           (rn/use-window-dimensions)]
-       [reanimated/view
-        {:style (reanimated/apply-animations-to-style
-                 {:transform [{:translateY translate-y}]}
-                 {:width  window-width
-                  :height window-height})}
-        [rn/view {:style styles/container}
-         (when selected-item
-           [rn/view {:style (styles/selected-background)}
-            [selected-item]])
-         [rn/view {:style (styles/background)}
-          [rn/keyboard-avoiding-view
-           {:behaviour (if platform/ios? :padding :height)
-            :style     {:flex 1}}
-           [rn/view
-            {:style     (styles/content-style insets)
-             :on-layout (when-not (and
-                                   (some? @content-height)
-                                   (> @content-height 0))
-                          on-content-layout)}
-            children]]
-          handle-comp]]]))])
 
 (defn bottom-sheet
   [props children]
@@ -179,15 +151,7 @@
                                       expandable?
                                       show-bottom-sheet?
                                       expanded?
-                                      close-bottom-sheet)
-                bottom-sheet-comp (fn [handle-comp]
-                                    [bottom-sheet-content-view
-                                     {:translate-y       translate-y
-                                      :selected-item     selected-item
-                                      :insets            insets
-                                      :on-content-layout on-content-layout
-                                      :children          children
-                                      :handle-comp       handle-comp}])]
+                                      close-bottom-sheet)]
 
             (react/effect! #(do
                               (cond
@@ -247,9 +211,53 @@
                {:style (reanimated/apply-animations-to-style
                         {:opacity bg-opacity}
                         styles/backdrop)}]]
+            ;; VVVVVVV 
+             ;; This is repeated because gesture-handler doesn't play nicely when it's conditionally rendered with reanimated
              (if show-handle?
-               [bottom-sheet-comp
-                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                 [handle-comp window-width]]]
+               [reanimated/view
+                {:style (reanimated/apply-animations-to-style
+                         {:transform [{:translateY translate-y}]}
+                         {:width  window-width
+                          :height window-height})}
+                [rn/view {:style styles/container}
+                 (when selected-item
+                   [rn/view {:style (styles/selected-background)}
+                    [selected-item]])
+                 [rn/view {:style (styles/background)}
+                  [rn/keyboard-avoiding-view
+                   {:behaviour (if platform/ios? :padding :height)
+                    :style     {:flex 1}}
+                   [rn/view
+                    {:style     (styles/content-style insets)
+                     :on-layout (when-not (and
+                                           (some? @content-height)
+                                           (> @content-height 0))
+                                  on-content-layout)}
+                    children]]
+                  [gesture/gesture-detector {:gesture bottom-sheet-gesture}
+                   [handle-comp window-width]]]]]
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                [bottom-sheet-comp [handle-comp window-width]]])]))])]))
+                [reanimated/view
+                 {:style (reanimated/apply-animations-to-style
+                          {:transform [{:translateY translate-y}]}
+                          {:width  window-width
+                           :height window-height})}
+                 [rn/view {:style styles/container}
+                  (when selected-item
+                    [rn/view {:style (styles/selected-background)}
+                     [selected-item]])
+                  [rn/view {:style (styles/background)}
+                   [rn/keyboard-avoiding-view
+                    {:behaviour (if platform/ios? :padding :height)
+                     :style     {:flex 1}}
+                    [rn/view
+                     {:style     (styles/content-style insets)
+                      :on-layout (when-not (and
+                                            (some? @content-height)
+                                            (> @content-height 0))
+                                   on-content-layout)}
+                     children]]
+
+                   [handle-comp window-width]]]]]
+               #_[gesture/gesture-detector {:gesture bottom-sheet-gesture}
+                  [bottom-sheet-comp [handle-comp window-width]]])]))])]))
