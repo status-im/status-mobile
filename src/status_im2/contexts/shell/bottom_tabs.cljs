@@ -10,15 +10,14 @@
 (defn bottom-tab
   [icon stack-id shared-values notifications-data]
   [bottom-nav-tab/bottom-nav-tab
-   (merge
-    (get notifications-data stack-id)
-    {:test-ID             stack-id
-     :icon                icon
-     :icon-color-anim     (get
-                           shared-values
-                           (get shell.constants/tabs-icon-color-keywords stack-id))
-     :on-press            #(animation/bottom-tab-on-press stack-id)
-     :accessibility-label (str (name stack-id) "-tab")})])
+   (assoc (get notifications-data stack-id)
+          :test-ID             stack-id
+          :icon                icon
+          :icon-color-anim     (get
+                                shared-values
+                                (get shell.constants/tabs-icon-color-keywords stack-id))
+          :on-press            #(animation/bottom-tab-on-press stack-id)
+          :accessibility-label (str (name stack-id) "-tab"))])
 
 (defn bottom-tabs
   []

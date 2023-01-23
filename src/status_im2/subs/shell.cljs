@@ -152,30 +152,31 @@
  :shell/bottom-tabs-notifications-data
  :<- [:chats/chats]
  (fn [chats]
-   (let [chats-seq                      (map second chats)
-         unviewed-messages-count-seq    (map #(hash-map (:chat-type %)
-                                                        (or (:unviewed-messages-count %) 0))
-                                             chats-seq)
-         unviewed-mentions-count-seq    (map #(hash-map (:chat-type %)
-                                                        (or (:unviewed-mentions-count %) 0))
-                                             chats-seq)
-         unviewed-messages-count-total  (apply merge-with + unviewed-messages-count-seq)
-         unviewed-mentions-count-total  (apply merge-with + unviewed-mentions-count-seq)
-         community-stack-messages-count (get unviewed-messages-count-total constants/community-chat-type)
-         community-stack-mentions-count (get unviewed-mentions-count-total constants/community-chat-type)
-         chat-stack-messages-count      (+ (get unviewed-messages-count-total
-                                                constants/one-to-one-chat-type)
-                                           (get unviewed-messages-count-total
-                                                constants/private-group-chat-type))
-         chat-stack-mentions-count      (+ (get unviewed-mentions-count-total
-                                                constants/one-to-one-chat-type)
-                                           (get unviewed-mentions-count-total
-                                                constants/private-group-chat-type))]
+   (let [{:keys [chats-stack community-stack]}
+         (reduce
+          (fn [acc [_ {:keys [unviewed-messages-count unviewed-mentions-count chat-type]}]]
+            (case chat-type
+              constants/community-chat-type
+              (-> acc
+                  (update-in [:community-stack :unviewed-messages-count] + unviewed-messages-count)
+                  (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
+
+              (constants/private-group-chat-type constants/one-to-one-chat-type)
+              (-> acc
+                  (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
+                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count))
+
+              acc))
+          {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}
+           :community-stack {:unviewed-messages-count 0 :unviewed-mentions-count 0}}
+          chats)]
      {:communities-stack
-      {:new-notifications?     (pos? community-stack-messages-count)
-       :notification-indicator (if (pos? community-stack-mentions-count) :counter :unread-dot)
-       :counter-label          community-stack-mentions-count}
+      {:new-notifications?     (pos? (:unviewed-messages-count community-stack))
+       :notification-indicator (if (pos? (:unviewed-mentions-count community-stack))
+                                 :counter
+                                 :unread-dot)
+       :counter-label          (:unviewed-mentions-count community-stack)}
       :chats-stack
-      {:new-notifications?     (pos? chat-stack-messages-count)
-       :notification-indicator (if (pos? chat-stack-mentions-count) :counter :unread-dot)
-       :counter-label          chat-stack-mentions-count}})))
+      {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
+       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack)) :counter :unread-dot)
+       :counter-label          (:unviewed-mentions-count chats-stack)}})))
