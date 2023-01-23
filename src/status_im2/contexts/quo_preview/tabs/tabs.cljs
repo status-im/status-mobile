@@ -21,7 +21,9 @@
   [length]
   (for [index (range length)]
     ^{:key index}
-    {:id index :label (str "Tab " (inc index))}))
+    {:id                index
+     :label             (str "Tab " (inc index))
+     :notification-dot? (zero? (rem index 2))}))
 
 (defn cool-preview
   []
