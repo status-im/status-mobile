@@ -159,8 +159,8 @@
                scroll-on-press?      false
                size                  default-tab-size}
         :as   props}]
-      [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
-       (if scrollable?
+      (if scrollable?
+        [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
          [masked-view-wrapper {:fading fading :fade-end? fade-end?}
           [rn/flat-list
            (merge
@@ -202,17 +202,16 @@
                                                           :override-theme   override-theme
                                                           :scroll-on-press? scroll-on-press?
                                                           :size             size
-                                                          :style            style})})]]
-         [rn/view (merge style {:flex-direction :row})
-          (doall
-           (map-indexed (fn [index item]
-                          ^{:key (:id item)}
-                          [render-tab
-                           {:active-tab-id  active-tab-id
-                            :data           data
-                            :override-theme override-theme
-                            :size           size
-                            :style          style}
-                           item
-                           index])
-                        data))])])))
+                                                          :style            style})})]]]
+        [rn/view (merge style {:flex-direction :row})
+         (map-indexed (fn [index item]
+                        ^{:key (:id item)}
+                        [render-tab
+                         {:active-tab-id  active-tab-id
+                          :data           data
+                          :override-theme override-theme
+                          :size           size
+                          :style          style}
+                         item
+                         index])
+                      data)]))))
