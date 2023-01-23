@@ -78,7 +78,7 @@
 
 (defn- render-tab
   [{:keys [size data style override-theme blur? active-tab-id scroll-on-press? flat-list-ref on-change]}
-   {:keys [id label notification-dot?]}
+   {:keys [id label notification-dot? accessibility-label]}
    index]
   [rn/view
    {:style {:margin-right  (if (= size default-tab-size) 12 8)
@@ -87,21 +87,22 @@
    (when notification-dot?
      [indicator])
    [tab/tab
-    {:id             id
-     :size           size
-     :override-theme override-theme
-     :blur?          blur?
-     :active         (= id @active-tab-id)
-     :on-press       (fn [id]
-                       (reset! active-tab-id id)
-                       (when scroll-on-press?
-                         (.scrollToIndex ^js @flat-list-ref
-                                         #js
-                                          {:animated     true
-                                           :index        index
-                                           :viewPosition 0.5}))
-                       (when on-change
-                         (on-change id)))}
+    {:id                  id
+     :accessibility-label accessibility-label
+     :size                size
+     :override-theme      override-theme
+     :blur?               blur?
+     :active              (= id @active-tab-id)
+     :on-press            (fn [id]
+                            (reset! active-tab-id id)
+                            (when scroll-on-press?
+                              (.scrollToIndex ^js @flat-list-ref
+                                              #js
+                                               {:animated     true
+                                                :index        index
+                                                :viewPosition 0.5}))
+                            (when on-change
+                              (on-change id)))}
     label]])
 
 (defn tabs
