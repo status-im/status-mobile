@@ -205,18 +205,14 @@
                                                           :style            style})})]]
          [rn/view (merge style {:flex-direction :row})
           (doall
-           (for [{:keys [label id notification-dot? accessibility-label]} data]
-             ^{:key id}
-             [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
-              (when notification-dot?
-                [indicator])
-              [tab/tab
-               {:id                  id
-                :size                size
-                :accessibility-label accessibility-label
-                :active              (= id @active-tab-id)
-                :on-press            (fn []
-                                       (reset! active-tab-id id)
-                                       (when on-change
-                                         (on-change id)))}
-               label]]))])])))
+           (map-indexed (fn [index item]
+                          ^{:key (:id item)}
+                          [render-tab
+                           {:active-tab-id  active-tab-id
+                            :data           data
+                            :override-theme override-theme
+                            :size           size
+                            :style          style}
+                           item
+                           index])
+                        data))])])))
