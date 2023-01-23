@@ -147,3 +147,35 @@
    (let [community-id (:community-id channel)
          community    (get communities (:community-id channel))]
      (community-channel-card community community-id channel channel-id))))
+
+(re-frame/reg-sub
+ :shell/bottom-tabs-notifications-data
+ :<- [:chats/chats]
+ (fn [chats]
+   (let [chats-seq                      (map second chats)
+         unviewed-messages-count-seq    (map #(hash-map (:chat-type %)
+                                                        (or (:unviewed-messages-count %) 0))
+                                             chats-seq)
+         unviewed-mentions-count-seq    (map #(hash-map (:chat-type %)
+                                                        (or (:unviewed-mentions-count %) 0))
+                                             chats-seq)
+         unviewed-messages-count-total  (apply merge-with + unviewed-messages-count-seq)
+         unviewed-mentions-count-total  (apply merge-with + unviewed-mentions-count-seq)
+         community-stack-messages-count (get unviewed-messages-count-total constants/community-chat-type)
+         community-stack-mentions-count (get unviewed-mentions-count-total constants/community-chat-type)
+         chat-stack-messages-count      (+ (get unviewed-messages-count-total
+                                                constants/one-to-one-chat-type)
+                                           (get unviewed-messages-count-total
+                                                constants/private-group-chat-type))
+         chat-stack-mentions-count      (+ (get unviewed-mentions-count-total
+                                                constants/one-to-one-chat-type)
+                                           (get unviewed-mentions-count-total
+                                                constants/private-group-chat-type))]
+     {:communities-stack
+      {:new-notifications?     (pos? community-stack-messages-count)
+       :notification-indicator (if (pos? community-stack-mentions-count) :counter :unread-dot)
+       :counter-label          community-stack-mentions-count}
+      :chats-stack
+      {:new-notifications?     (pos? chat-stack-messages-count)
+       :notification-indicator (if (pos? chat-stack-mentions-count) :counter :unread-dot)
+       :counter-label          chat-stack-mentions-count}})))
