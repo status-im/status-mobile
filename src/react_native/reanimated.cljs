@@ -61,7 +61,7 @@
 
 (defn set-shared-value
   [anim val]
-  (when (and anim val)
+  (when (and anim (some? val))
     (set! (.-value anim) val)))
 
 ;; Worklets
