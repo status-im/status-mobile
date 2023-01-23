@@ -1,8 +1,7 @@
 (ns status-im2.contexts.communities.menus.leave.style)
 
 (def button-container
-  {:margin-top      16
-   :margin-bottom   16
+  {:margin-top      20
    :flex            1
    :flex-direction  :row
    :align-items     :center
@@ -17,13 +16,13 @@
 (def text {:margin-top 16})
 
 (def container
-  {:height        160
+  {:height        180
    :margin-left   20
    :margin-right  20
    :margin-bottom 20})
 
 (def inner-container
-  {:flex            1
+  {:display         :flex
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-between})

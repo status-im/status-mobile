@@ -12,32 +12,32 @@
 
 (defn leave-sheet
   [id]
-  [rn/view {:style style/container}
-   [rn/view {:style style/inner-container}
-    [quo/text
-     {:accessibility-label :communities-join-community
-      :weight              :semi-bold
-      :size                :heading-1}
-     (i18n/label :t/leave-community?)]]
-   ;; TODO get tag image from community data - https://github.com/status-im/status-mobile/issues/14740
-   #_[quo/context-tag
+  (let [{:keys [name images]} (rf/sub [:communities/community id])]
+    [rn/view {:style style/container}
+     [rn/view {:style style/inner-container}
+      [quo/text
+       {:accessibility-label :communities-join-community
+        :weight              :semi-bold
+        :size                :heading-1}
+       (i18n/label :t/leave-community?)]]
+     [quo/context-tag
       {:style
        {:margin-right :auto
         :margin-top   8}}
-      (resources/get-image :status-logo) (:name community)]
-   [quo/text
-    {:accessibility-label :communities-join-community
-     :size                :paragraph-1
-     :style               style/text}
-    (i18n/label :t/leave-community-message)]
-   [rn/view
-    {:style style/button-container}
-    [quo/button
-     {:on-press #(rf/dispatch [:bottom-sheet/hide])
-      :type     :grey
-      :style    style/cancel-button}
-     (i18n/label :t/cancel)]
-    [quo/button
-     {:on-press #(hide-sheet-and-dispatch [:communities/leave id])
-      :style    style/action-button}
-     (i18n/label :t/leave-community)]]])
+      (:thumbnail images) name]
+     [quo/text
+      {:accessibility-label :communities-join-community
+       :size                :paragraph-1
+       :style               style/text}
+      (i18n/label :t/leave-community-message)]
+     [rn/view
+      {:style style/button-container}
+      [quo/button
+       {:on-press #(rf/dispatch [:bottom-sheet/hide])
+        :type     :grey
+        :style    style/cancel-button}
+       (i18n/label :t/cancel)]
+      [quo/button
+       {:on-press #(hide-sheet-and-dispatch [:communities/leave id])
+        :style    style/action-button}
+       (i18n/label :t/leave-community)]]]))

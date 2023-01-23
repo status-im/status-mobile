@@ -312,9 +312,7 @@
         first-channel-height (reagent/atom 0)
         scroll-component     (scroll-page/scroll-page
                               {:uri (get-in images [:large :uri])}
-                              {:right-section-buttons [{:icon             :i/search
-                                                        :background-color (scroll-page/icon-color)}
-                                                       {:icon             :i/options
+                              {:right-section-buttons [{:icon             :i/options
                                                         :background-color (scroll-page/icon-color)
                                                         :on-press
                                                         #(rf/dispatch
