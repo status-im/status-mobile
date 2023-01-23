@@ -4,7 +4,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im.utils.utils :as utils]))
 
 (def descriptor
   [{:label "Profile name"
@@ -39,7 +40,8 @@
   []
   (let [state (reagent/atom {:profile-name   "Alisher Yakupov"
                              :nickname       ""
-                             :chat-key       "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N"
+                             :short-chat-key (utils/get-shortened-address
+                                              "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
                              :time-str       "09:30"
                              :ens-name       ""
                              :contact?       false
