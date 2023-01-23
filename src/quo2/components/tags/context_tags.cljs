@@ -64,7 +64,7 @@
        [rn/image
         {:style  {:width            20
                   :border-radius    10
-                  :background-color :red
+                  :background-color :white
                   :height           20}
          :source photo}]
        [rn/view
