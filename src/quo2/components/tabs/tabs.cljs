@@ -13,7 +13,7 @@
 (def default-tab-size 32)
 (def unread-count-offset 3)
 
-(defn indicator
+(defn- indicator
   []
   [rn/view
    {:accessibility-label :notification-dot
@@ -40,14 +40,14 @@
       (utils.number/naive-round fade-percentage 2))))
 
 (defn- masked-view-wrapper
-  [{:keys [fade-end-percentage fade-end?]} & children]
+  [{:keys [fading fade-end?]} & children]
   (if fade-end?
     (into [masked-view/masked-view
            {:mask-element
             (reagent/as-element
              [linear-gradient/linear-gradient
               {:colors         [:black :transparent]
-               :locations      [fade-end-percentage 1]
+               :locations      [(get @fading :fade-end-percentage) 1]
                :start          {:x 0 :y 0}
                :end            {:x 1 :y 0}
                :pointer-events :none
@@ -161,62 +161,48 @@
         :as   props}]
       [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
        (if scrollable?
-         (let [maybe-mask-wrapper (if fade-end?
-                                    [masked-view/masked-view
-                                     {:mask-element
-                                      (reagent/as-element
-                                       [linear-gradient/linear-gradient
-                                        {:colors         [:black :transparent]
-                                         :locations      [(get @fading :fade-end-percentage) 1]
-                                         :start          {:x 0 :y 0}
-                                         :end            {:x 1 :y 0}
-                                         :pointer-events :none
-                                         :style          {:width  "100%"
-                                                          :height "100%"}}])}]
-                                    [:<>])]
-           (conj
-            maybe-mask-wrapper
-            [rn/flat-list
-             (merge
-              (dissoc props
-                      :default-active
-                      :fade-end-percentage
-                      :fade-end?
-                      :on-change
-                      :scroll-on-press?
-                      :size)
-              (when scroll-on-press?
-                {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
-              {:ref                               #(reset! flat-list-ref %)
-               :style                             style
-               ;; The padding-top workaround is needed because on Android
-               ;; {:overflow :visible} doesn't work on components inheriting
-               ;; from ScrollView (e.g. FlatList). There are open issues, here's
-               ;; just one about this topic:
-               ;; https://github.com/facebook/react-native/issues/3121
-               :content-container-style           {:padding-top (dec unread-count-offset)}
-               :extra-data                        (str @active-tab-id)
-               :horizontal                        true
-               :scroll-event-throttle             scroll-event-throttle
-               :shows-horizontal-scroll-indicator false
-               :data                              data
-               :key-fn                            (comp str :id)
-               :on-scroll-to-index-failed         identity
-               :on-scroll                         (partial on-scroll-handler
-                                                           {:fade-end-percentage fade-end-percentage
-                                                            :fade-end?           fade-end?
-                                                            :fading              fading
-                                                            :on-scroll           on-scroll})
-               :render-fn                         (partial render-tab
-                                                           {:active-tab-id    active-tab-id
-                                                            :blur?            blur?
-                                                            :data             data
-                                                            :flat-list-ref    flat-list-ref
-                                                            :on-change        on-change
-                                                            :override-theme   override-theme
-                                                            :scroll-on-press? scroll-on-press?
-                                                            :size             size
-                                                            :style            style})})]))
+         [masked-view-wrapper {:fading fading :fade-end? fade-end?}
+          [rn/flat-list
+           (merge
+            (dissoc props
+                    :default-active
+                    :fade-end-percentage
+                    :fade-end?
+                    :on-change
+                    :scroll-on-press?
+                    :size)
+            (when scroll-on-press?
+              {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
+            {:ref                               #(reset! flat-list-ref %)
+             :style                             style
+             ;; The padding-top workaround is needed because on Android
+             ;; {:overflow :visible} doesn't work on components inheriting
+             ;; from ScrollView (e.g. FlatList). There are open issues, here's
+             ;; just one about this topic:
+             ;; https://github.com/facebook/react-native/issues/3121
+             :content-container-style           {:padding-top (dec unread-count-offset)}
+             :extra-data                        (str @active-tab-id)
+             :horizontal                        true
+             :scroll-event-throttle             scroll-event-throttle
+             :shows-horizontal-scroll-indicator false
+             :data                              data
+             :key-fn                            (comp str :id)
+             :on-scroll-to-index-failed         identity
+             :on-scroll                         (partial on-scroll-handler
+                                                         {:fade-end-percentage fade-end-percentage
+                                                          :fade-end?           fade-end?
+                                                          :fading              fading
+                                                          :on-scroll           on-scroll})
+             :render-fn                         (partial render-tab
+                                                         {:active-tab-id    active-tab-id
+                                                          :blur?            blur?
+                                                          :data             data
+                                                          :flat-list-ref    flat-list-ref
+                                                          :on-change        on-change
+                                                          :override-theme   override-theme
+                                                          :scroll-on-press? scroll-on-press?
+                                                          :size             size
+                                                          :style            style})})]]
          [rn/view (merge style {:flex-direction :row})
           (doall
            (for [{:keys [label id notification-dot? accessibility-label]} data]
