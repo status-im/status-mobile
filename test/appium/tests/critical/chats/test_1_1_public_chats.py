@@ -1105,47 +1105,49 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             # workaround for 14672
             chat.tap_by_coordinates(500, 100)
         # Part of the test is blocked by #14637
-        #     chat.click_system_back_button()
-        #
-        # self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
-        # self.chat_1.send_message(self.message_3)
-        # self.chat_1.send_message(self.message_4)
-        # self.chat_1.pin_message(self.message_3, 'pin-to-chat')
-        # self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-        # if self.chat_1.pin_limit_popover.is_element_displayed(30):
-        #     self.chat_1.view_pinned_messages_button.click()
-        #     self.chat_1.pinned_messages_list.message_element_by_text(
-        #         self.message_2).click_inside_element_by_coordinate()
-        #     self.home_1.just_fyi("Unpin one message so that another could be pinned")
-        #     self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
-        #     self.chat_1.chat_element_by_text(self.message_4).click()
-        #     self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-        #     if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-        #             self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-        #         self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
-        # else:
-        #     self.errors.append("Can pin more than 3 messages in chat")
-        #
-        # self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
-        # for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-        #     count = chat.pinned_messages_count.text
-        #     if count != '3':
-        #         self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
-        #
-        # self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
-        # self.chat_2.chat_element_by_text(self.message_4).long_press_element()
-        # self.chat_2.element_by_translation_id("unpin-from-chat").click()
-        # self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        # if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
-        #     self.errors.append("Message_4 is not unpinned!")
-        #
-        # for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-        #     count = chat.pinned_messages_count.text
-        #     if count != '2':
-        #         self.errors.append(
-        #             "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
-        #                     chat_number + 1)
-        #         )
+            #chat.click_system_back_button()
+
+        self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
+        self.chat_1.send_message(self.message_3)
+        self.chat_1.send_message(self.message_4)
+        self.chat_1.pin_message(self.message_3, 'pin-to-chat')
+        self.chat_1.pin_message(self.message_4, 'pin-to-chat')
+        if self.chat_1.pin_limit_popover.is_element_displayed(30):
+            self.chat_1.view_pinned_messages_button.click()
+            self.chat_1.pinned_messages_list.message_element_by_text(
+                self.message_2).click_inside_element_by_coordinate()
+            self.home_1.just_fyi("Unpin one message so that another could be pinned")
+            self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
+            self.chat_1.chat_element_by_text(self.message_4).click()
+            self.chat_1.pin_message(self.message_4, 'pin-to-chat')
+            if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
+                    self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
+                self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
+        else:
+            self.errors.append("Can pin more than 3 messages in chat")
+
+        self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
+        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
+            count = chat.pinned_messages_count.text
+            if count != '3':
+                self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
+
+        self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
+
+        self.chat_2.chat_element_by_text(self.message_4).long_press_element()
+        self.chat_2.tap_by_coordinates(500, 100)
+        self.chat_2.element_by_translation_id("unpin-from-chat").click()
+        self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
+        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
+            self.errors.append("Message_4 is not unpinned!")
+
+        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
+            count = chat.pinned_messages_count.text
+            if count != '2':
+                self.errors.append(
+                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
+                            chat_number + 1)
+                )
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
