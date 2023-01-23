@@ -76,6 +76,34 @@
   (when on-scroll
     (on-scroll e)))
 
+(defn- render-tab
+  [{:keys [size data style override-theme blur? active-tab-id scroll-on-press? flat-list-ref on-change]}
+   {:keys [id label notification-dot?]}
+   index]
+  [rn/view
+   {:style {:margin-right  (if (= size default-tab-size) 12 8)
+            :padding-right (when (= index (dec (count data)))
+                             (:padding-left style))}}
+   (when notification-dot?
+     [indicator])
+   [tab/tab
+    {:id             id
+     :size           size
+     :override-theme override-theme
+     :blur?          blur?
+     :active         (= id @active-tab-id)
+     :on-press       (fn [id]
+                       (reset! active-tab-id id)
+                       (when scroll-on-press?
+                         (.scrollToIndex ^js @flat-list-ref
+                                         #js
+                                          {:animated     true
+                                           :index        index
+                                           :viewPosition 0.5}))
+                       (when on-change
+                         (on-change id)))}
+    label]])
+
 (defn tabs
   "Usage:
    {:type             :icon/:emoji/:label
@@ -174,46 +202,21 @@
                :key-fn                            (comp str :id)
                :on-scroll-to-index-failed         identity
                :on-scroll                         (partial on-scroll-handler
-                                                           {:on-scroll           on-scroll
+                                                           {:fade-end-percentage fade-end-percentage
+                                                            :fade-end?           fade-end?
                                                             :fading              fading
-                                                            :fade-end-percentage fade-end-percentage
-                                                            :fade-end?           fade-end?})
-               :render-fn
-               (fn [{:keys [id label notification-dot?]} index]
-                 [rn/view
-                  {:style {:margin-right  (if (= size default-tab-size)
-                                            12
-                                            8)
-                           :padding-right (when (= index
-                                                   (dec (count data)))
-                                            (get-in props
-                                                    [:style
-                                                     :padding-left]))}}
-                  (when notification-dot?
-                    [indicator])
-                  [tab/tab
-                   {:id             id
-                    :size           size
-                    :override-theme override-theme
-                    :blur?          blur?
-                    :active         (= id @active-tab-id)
-                    :on-press       (fn [id]
-                                      (reset! active-tab-id id)
-                                      (when scroll-on-press?
-                                        (.scrollToIndex
-                                         ^js
-                                         @flat-list-ref
-                                         #js
-                                          {:animated     true
-                                           :index        index
-                                           :viewPosition
-                                           0.5}))
-                                      (when on-change
-                                        (on-change id)))}
-                   label]])})]))
-         [rn/view
-          (merge style
-                 {:flex-direction :row})
+                                                            :on-scroll           on-scroll})
+               :render-fn                         (partial render-tab
+                                                           {:active-tab-id    active-tab-id
+                                                            :blur?            blur?
+                                                            :data             data
+                                                            :flat-list-ref    flat-list-ref
+                                                            :on-change        on-change
+                                                            :override-theme   override-theme
+                                                            :scroll-on-press? scroll-on-press?
+                                                            :size             size
+                                                            :style            style})})]))
+         [rn/view (merge style {:flex-direction :row})
           (doall
            (for [{:keys [label id notification-dot? accessibility-label]} data]
              ^{:key id}
