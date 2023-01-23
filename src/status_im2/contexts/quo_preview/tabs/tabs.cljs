@@ -17,7 +17,7 @@
     :key   :scrollable?
     :type  :boolean}])
 
-(defn generate-tabs-data
+(defn generate-tab-items
   [length]
   (for [index (range length)]
     ^{:key index}
@@ -43,8 +43,8 @@
           (merge @state
                  {:default-active 1
                   :data           (if (:scrollable? @state)
-                                    (generate-tabs-data 15)
-                                    (generate-tabs-data 4))
+                                    (generate-tab-items 15)
+                                    (generate-tab-items 4))
                   :on-change      #(println "Active tab" %)}
                  (when (:scrollable? @state)
                    {:scroll-on-press?    true
