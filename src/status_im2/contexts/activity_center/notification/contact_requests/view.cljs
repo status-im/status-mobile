@@ -24,7 +24,7 @@
                    :label               (i18n/label :t/cancel)
                    :accessibility-label :cancel-contact-request
                    :on-press            (fn []
-                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
+                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request (:from message)])
                                           (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
                   {:type    :status
                    :subtype :pending

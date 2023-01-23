@@ -23,6 +23,4 @@
   {:json-rpc/call [{:method      "wakuext_cancelOutgoingContactRequest"
                     :params      [{:id id}]
                     :js-response true
-                    :on-success  #(do
-                                    (js/console.log "ALWX wakuext_cancelOutgoingContactRequest" %)
-                                    (rf/dispatch [:sanitize-messages-and-process-response %]))}]})
+                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]})
