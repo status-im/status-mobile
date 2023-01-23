@@ -1,6 +1,8 @@
 (ns status-im2.contexts.activity-center.events
   (:require [status-im.data-store.activities :as data-store.activities]
+            [status-im.data-store.chats :as data-store.chats]
             [status-im2.contexts.activity-center.notification-types :as types]
+            [status-im2.contexts.chat.events :as chat.events]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -41,6 +43,12 @@
 
 ;;;; Notification reconciliation
 
+(defn- notification-type->filter-type
+  [type]
+  (if (some types/membership [type])
+    types/membership
+    type))
+
 (defn- update-notifications
   "Insert `new-notifications` in `db-notifications`.
 
@@ -50,8 +58,9 @@
   If the number of existing notifications cached in the app db becomes
   ~excessively~ big, this implementation will probably need to be revisited."
   [db-notifications new-notifications]
-  (reduce (fn [acc {:keys [id type read] :as notification}]
-            (let [remove-notification (fn [data]
+  (reduce (fn [acc {:keys [id read] :as notification}]
+            (let [filter-type         (notification-type->filter-type (:type notification))
+                  remove-notification (fn [data]
                                         (remove #(= id (:id %)) data))
                   insert-and-sort     (fn [data]
                                         (->> notification
@@ -59,16 +68,16 @@
                                              (sort-by (juxt :timestamp :id))
                                              reverse))]
               (as-> acc $
-                (update-in $ [type :all :data] remove-notification)
+                (update-in $ [filter-type :all :data] remove-notification)
                 (update-in $ [types/no-type :all :data] remove-notification)
-                (update-in $ [type :unread :data] remove-notification)
+                (update-in $ [filter-type :unread :data] remove-notification)
                 (update-in $ [types/no-type :unread :data] remove-notification)
-                (if (or (:dismissed notification) (:accepted notification))
+                (if (:dismissed notification)
                   $
                   (cond-> (-> $
-                              (update-in [type :all :data] insert-and-sort)
+                              (update-in [filter-type :all :data] insert-and-sort)
                               (update-in [types/no-type :all :data] insert-and-sort))
-                    (not read) (update-in [type :unread :data] insert-and-sort)
+                    (not read) (update-in [filter-type :unread :data] insert-and-sort)
                     (not read) (update-in [types/no-type :unread :data] insert-and-sort))))))
           db-notifications
           new-notifications))
@@ -77,10 +86,11 @@
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
   (when (seq new-notifications)
-    {:db (update-in db
-                    [:activity-center :notifications]
-                    update-notifications
-                    new-notifications)}))
+    {:db       (update-in db
+                          [:activity-center :notifications]
+                          update-notifications
+                          new-notifications)
+     :dispatch [:activity-center.notifications/fetch-unread-count]}))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
@@ -142,6 +152,46 @@
   {:events [:activity-center.notifications/mark-as-read-success]}
   [cofx notification]
   (notifications-reconcile cofx [(assoc notification :read true)]))
+
+;;;; Acceptance/dismissal
+
+(rf/defn accept-notification
+  {:events [:activity-center.notifications/accept]}
+  [{:keys [db]} notification-id]
+  {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
+                    :params     [[notification-id]]
+                    :on-success #(rf/dispatch [:activity-center.notifications/accept-success
+                                               notification-id %])
+                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                               notification-id
+                                               :notification/accept
+                                               %])}]})
+
+(rf/defn accept-notification-success
+  {:events [:activity-center.notifications/accept-success]}
+  [{:keys [db] :as cofx} notification-id {:keys [chats]}]
+  (let [notification (get-notification db notification-id)]
+    (rf/merge cofx
+              (chat.events/ensure-chats (map data-store.chats/<-rpc chats))
+              (notifications-reconcile [(assoc notification :read true :accepted true)]))))
+
+(rf/defn dismiss-notification
+  {:events [:activity-center.notifications/dismiss]}
+  [{:keys [db]} notification-id]
+  {:json-rpc/call [{:method     "wakuext_dismissActivityCenterNotifications"
+                    :params     [[notification-id]]
+                    :on-success #(rf/dispatch [:activity-center.notifications/dismiss-success
+                                               notification-id])
+                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                               notification-id
+                                               :notification/dismiss
+                                               %])}]})
+
+(rf/defn dismiss-notification-success
+  {:events [:activity-center.notifications/dismiss-success]}
+  [{:keys [db] :as cofx} notification-id]
+  (let [notification (get-notification db notification-id)]
+    (notifications-reconcile cofx [(assoc notification :dismissed true)])))
 
 ;;;; Contact verification
 
@@ -213,15 +263,35 @@
     :all    status-all
     99))
 
+(defn filter-type->rpc-param
+  [filter-type]
+  (cond
+    (coll? filter-type)
+    filter-type
+
+    ;; A "no-type" notification shouldn't be sent to the backend. If, for
+    ;; instance, the mobile client needs notifications of any type (as in the
+    ;; `All` tab), then just don't filter by type at all.
+    (= types/no-type filter-type)
+    nil
+
+    :else
+    [filter-type]))
+
 (rf/defn notifications-fetch
   [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
-    (let [per-page (or per-page (defaults :notifications-per-page))]
+    (let [per-page  (or per-page (defaults :notifications-per-page))
+          accepted? true]
       {:db            (assoc-in db
                        [:activity-center :notifications filter-type filter-status :loading?]
                        true)
        :json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
-                        :params     [cursor per-page filter-type (status filter-status)]
+                        :params     [cursor
+                                     per-page
+                                     (filter-type->rpc-param filter-type)
+                                     (status filter-status)
+                                     accepted?]
                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
                                                    filter-type filter-status reset-data? %])
                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
@@ -295,7 +365,7 @@
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
   [_]
-  {:json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
+  {:json-rpc/call [{:method     "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
                     :params     []
                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success
                                                %])

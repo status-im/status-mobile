@@ -1,11 +1,11 @@
 (ns status-im2.contexts.activity-center.notification.admin.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.style :as style]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view

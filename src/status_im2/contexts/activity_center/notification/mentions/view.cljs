@@ -1,12 +1,12 @@
 (ns status-im2.contexts.activity-center.notification.mentions.view
   (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [utils.datetime :as datetime]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.mentions.style :as style]
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (def tag-params
