@@ -11,15 +11,8 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
-(def ^:private max-reply-length
-  280)
-
-(defn- valid-reply?
-  [reply]
-  (<= (count reply) max-reply-length))
-
 (defn- activity-reply-text-input
-  [reply-input on-update-reply]
+  [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input]
   [rn/view
    [rn/view
     {:style {:margin-top     16
@@ -99,38 +92,6 @@
       body]
      body)])
 
-(defn- activity-buttons
-  [button-1 button-2 replying? reply-input]
-  (let [size (if replying? 40 24)
-        common-style (when replying?
-                       {:padding-vertical 9
-                        :flex-grow        1
-                        :flex-basis       0})]
-    [rn/view style/buttons-container
-     (when button-1
-       [button/button
-        (-> button-1
-            (assoc :size size)
-            (update :style merge common-style {:margin-right 8}))
-        (:label button-1)])
-     (when button-2
-       [button/button
-        (-> button-2
-            (assoc :size size)
-            (assoc :disabled (and replying? (not (valid-reply? @reply-input))))
-            (update :style merge common-style))
-        (:label button-2)])]))
-
-(defn- activity-status
-  [status]
-  [rn/view
-   {:style               style/status
-    :accessibility-label :activity-status}
-   [status-tags/status-tag
-    {:size   :small
-     :label  (:label status)
-     :status status}]])
-
 (defn- activity-title
   [title replying?]
   [text/text
@@ -155,17 +116,23 @@
     :style               style/unread-dot-container}
    [rn/view {:style style/unread-dot}]])
 
-(defmulti footer-item-view :type)
+(defmulti footer-item-view (fn [item _ _] (:type item)))
 
-(defmethod footer-item-view :button [{:keys [label subtype] :as button}]
-  [button/button
-   (-> button
-       (assoc :size 24)
-       (assoc :type subtype)
-       (update :style merge {:margin-right 8}))
-   label])
+(defmethod footer-item-view :button [{:keys [label subtype disable-when] :as button} replying? reply-input]
+  (let [size (if replying? 40 24)
+        common-style (when replying?
+                       {:padding-vertical 9
+                        :flex-grow        1
+                        :flex-basis       0})]
+    [button/button
+     (-> button
+         (assoc :size size)
+         (assoc :type subtype)
+         (assoc :disabled (and replying? (disable-when @reply-input)))
+         (update :style merge common-style {:margin-right 8}))
+     label]))
 
-(defmethod footer-item-view :status [{:keys [label subtype]}]
+(defmethod footer-item-view :status [{:keys [label subtype]} _ _]
   [status-tags/status-tag
    {:size   :small
     :label  label
@@ -174,20 +141,15 @@
 (defn- footer
   [_ _]
   (let [reply-input (reagent/atom "")]
-    (fn [timestamp {:keys [replying? on-update-reply status button-1 button-2 items]}]
+    (fn [timestamp {:keys [replying? items] :as props}]
       [:<>
        (when replying?
-         [activity-reply-text-input reply-input on-update-reply])
+         [activity-reply-text-input props reply-input])
        (when items
          [rn/view style/footer-container
           (for [[i item] (map-indexed vector items)]
             ^{:key (str "footer-item-" timestamp "-" i)}
-            [footer-item-view item])])
-       (cond (some? status)
-             [activity-status status]
-
-             (or button-1 button-2)
-             [activity-buttons button-1 button-2 replying? reply-input])])))
+            [footer-item-view item replying? reply-input])])])))
 
 (defn view
   [{:keys [icon

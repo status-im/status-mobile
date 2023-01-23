@@ -50,6 +50,13 @@
           (= contact-verification-status constants/contact-verification-status-declined)
           {:type :negative :label (i18n/label :t/declined)})))
 
+(def ^:private max-reply-length
+  280)
+
+(defn- valid-reply?
+  [reply]
+  (<= (count reply) max-reply-length))
+
 (defn view
   [_ _]
   (let [reply (atom "")]
@@ -62,57 +69,65 @@
                        (= contact-verification-status constants/contact-verification-status-declined))
           [quo/activity-log
            (merge
-            {:title           (i18n/label :t/identity-verification-request)
-             :icon            :i/friend
-             :timestamp       (datetime/timestamp->relative (:timestamp notification))
-             :unread?         (not (:read notification))
-             :on-update-reply #(reset! reply %)
-             :replying?       replying?
-             :context         (context-tags challenger? notification)
-             :message         (activity-message challenger? notification)
-             :status          (activity-status challenger? contact-verification-status)}
-            (if challenger?
-              (when (= contact-verification-status constants/contact-verification-status-accepted)
-                {:button-1 {:label (i18n/label :t/untrustworthy)
-                            :accessibility-label :mark-contact-verification-as-untrustworthy
-                            :type :danger
-                            :on-press (fn []
-                                        (rf/dispatch
-                                         [:activity-center.contact-verification/mark-as-untrustworthy
-                                          id])
-                                        (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
-                 :button-2 {:label (i18n/label :t/accept)
-                            :accessibility-label :mark-contact-verification-as-trusted
-                            :type :positive
-                            :on-press (fn []
-                                        (rf/dispatch
-                                         [:activity-center.contact-verification/mark-as-trusted id])
-                                        (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                      id]))}})
-              (when (= contact-verification-status constants/contact-verification-status-pending)
-                {:button-1 {:label               (i18n/label :t/decline)
-                            :accessibility-label :decline-contact-verification
-                            :type                :danger
-                            :on-press            (fn []
-                                                   (hide-bottom-sheet-and-dispatch
-                                                    [:activity-center.contact-verification/decline id])
-                                                   (rf/dispatch
-                                                    [:activity-center.notifications/mark-as-read id]))}
-                 :button-2 (if replying?
-                             {:label               (i18n/label :t/send-reply)
-                              :accessibility-label :reply-to-contact-verification
-                              :type                :primary
-                              :on-press            (fn []
-                                                     (hide-bottom-sheet-and-dispatch
-                                                      [:activity-center.contact-verification/reply id
-                                                       @reply])
-                                                     (rf/dispatch
-                                                      [:activity-center.notifications/mark-as-read id]))}
-                             {:label               (i18n/label :t/message-reply)
-                              :accessibility-label :send-reply-to-contact-verification
-                              :type                :primary
-                              :on-press            (fn []
-                                                     (rf/dispatch [:bottom-sheet/show-sheet
-                                                                   {:content view}
-                                                                   {:notification notification
-                                                                    :replying?    true}]))})})))])))))
+             {:title            (i18n/label :t/identity-verification-request)
+              :icon             :i/friend
+              :timestamp        (datetime/timestamp->relative (:timestamp notification))
+              :unread?          (not (:read notification))
+              :on-update-reply  #(reset! reply %)
+              :replying?        replying?
+              :max-reply-length max-reply-length
+              :valid-reply?     valid-reply?
+              :context          (context-tags challenger? notification)
+              :message          (activity-message challenger? notification)
+              :status           (activity-status challenger? contact-verification-status)
+              :items            (if challenger?
+                                  (when (= contact-verification-status constants/contact-verification-status-accepted)
+                                    [{:type                :button
+                                      :subtype             :danger
+                                      :label               (i18n/label :t/untrustworthy)
+                                      :accessibility-label :mark-contact-verification-as-untrustworthy
+                                      :on-press            (fn []
+                                                             (rf/dispatch
+                                                               [:activity-center.contact-verification/mark-as-untrustworthy
+                                                                id])
+                                                             (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
+                                     {:type                :button
+                                      :subtype             :positive
+                                      :label               (i18n/label :t/accept)
+                                      :accessibility-label :mark-contact-verification-as-trusted
+                                      :on-press            (fn []
+                                                             (rf/dispatch
+                                                               [:activity-center.contact-verification/mark-as-trusted id])
+                                                             (rf/dispatch [:activity-center.notifications/mark-as-read
+                                                                           id]))}])
+                                  (when (= contact-verification-status constants/contact-verification-status-pending)
+                                    [{:type                :button
+                                      :subtype             :danger
+                                      :label               (i18n/label :t/decline)
+                                      :accessibility-label :decline-contact-verification
+                                      :on-press            (fn []
+                                                             (hide-bottom-sheet-and-dispatch
+                                                               [:activity-center.contact-verification/decline id])
+                                                             (rf/dispatch
+                                                               [:activity-center.notifications/mark-as-read id]))}
+                                     (if replying?
+                                       {:type                :button
+                                        :subtype             :primary
+                                        :label               (i18n/label :t/send-reply)
+                                        :accessibility-label :reply-to-contact-verification
+                                        :disable-when        #(not (valid-reply? %))
+                                        :on-press            (fn []
+                                                               (hide-bottom-sheet-and-dispatch
+                                                                 [:activity-center.contact-verification/reply id
+                                                                  @reply])
+                                                               (rf/dispatch
+                                                                 [:activity-center.notifications/mark-as-read id]))}
+                                       {:type                :button
+                                        :subtype             :primary
+                                        :label               (i18n/label :t/message-reply)
+                                        :accessibility-label :send-reply-to-contact-verification
+                                        :on-press            (fn []
+                                                               (rf/dispatch [:bottom-sheet/show-sheet
+                                                                             {:content view}
+                                                                             {:notification notification
+                                                                              :replying?    true}]))})]))})])))))

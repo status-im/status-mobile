@@ -37,16 +37,6 @@
   {:margin-top     12
    :flex-direction :row})
 
-(def buttons-container
-  {:margin-top     12
-   :flex-direction :row
-   :align-items    :flex-start})
-
-(def status
-  {:margin-top  12
-   :align-items :flex-start
-   :flex        1})
-
 (defn title
   [replying?]
   {:color       colors/white

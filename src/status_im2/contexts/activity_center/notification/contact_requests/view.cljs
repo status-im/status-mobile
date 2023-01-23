@@ -11,63 +11,65 @@
 (defn outgoing-contact-request-view
   [{:keys [id chat-id message last-message] :as notification}]
   (let [message (or message last-message)]
-    [rn/view
-     [quo/activity-log
-      {:title     (i18n/label :t/contact-request)
-       :icon      :main-icons2/add-user
-       :timestamp (datetime/timestamp->relative (:timestamp notification))
-       :unread?   (not (:read notification))
-       :context   [(i18n/label :t/contact-request-outgoing)
-                   [common/user-avatar-tag chat-id]]
-       :message   {:body (get-in message [:content :text])}
-       :items     [{:type                :button
-                    :subtype             :danger
-                    :label               (i18n/label :t/cancel)
-                    :accessibility-label :cancel-contact-request
-                    :on-press            (fn []
-                                           (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
-                                           (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                         id]))}
-                   {:type    :status
-                    :subtype :pending
-                    :label   (i18n/label :t/pending)}]}]]))
+    [quo/activity-log
+     {:title     (i18n/label :t/contact-request)
+      :icon      :main-icons2/add-user
+      :timestamp (datetime/timestamp->relative (:timestamp notification))
+      :unread?   (not (:read notification))
+      :context   [(i18n/label :t/contact-request-outgoing)
+                  [common/user-avatar-tag chat-id]]
+      :message   {:body (get-in message [:content :text])}
+      :items     [{:type                :button
+                   :subtype             :danger
+                   :label               (i18n/label :t/cancel)
+                   :accessibility-label :cancel-contact-request
+                   :on-press            (fn []
+                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
+                                          (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
+                  {:type    :status
+                   :subtype :pending
+                   :label   (i18n/label :t/pending)}]}]))
 
 (defn incoming-contact-request-view
   [{:keys [id author message last-message] :as notification}]
   (let [message (or message last-message)]
-    [rn/view
-     [quo/activity-log
-      (merge
-        {:title     (i18n/label :t/contact-request)
-         :icon      :main-icons2/add-user
-         :timestamp (datetime/timestamp->relative (:timestamp notification))
-         :unread?   (not (:read notification))
-         :context   [[common/user-avatar-tag author]
-                     (i18n/label :t/contact-request-sent)]
-         :message   {:body (get-in message [:content :text])}
-         :status    (case (:contact-request-state message)
-                      constants/contact-request-message-state-accepted
-                      {:type :positive :label (i18n/label :t/accepted)}
-                      constants/contact-request-message-state-declined
-                      {:type :negative :label (i18n/label :t/declined)}
-                      nil)}
-        (case (:contact-request-state message)
-          constants/contact-request-message-state-pending
-          {:button-1 {:label               (i18n/label :t/decline)
-                      :accessibility-label :decline-contact-request
-                      :type                :danger
-                      :on-press            (fn []
-                                             (rf/dispatch [:activity-center.contact-requests/decline-request id])
-                                             (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                           id]))}
-           :button-2 {:label               (i18n/label :t/accept)
-                      :accessibility-label :accept-contact-request
-                      :type                :positive
-                      :on-press            (fn []
-                                             (rf/dispatch [:activity-center.contact-requests/accept-request id])
-                                             (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                           id]))}}
-          nil))]]))
+    [quo/activity-log
+     {:title     (i18n/label :t/contact-request)
+      :icon      :main-icons2/add-user
+      :timestamp (datetime/timestamp->relative (:timestamp notification))
+      :unread?   (not (:read notification))
+      :context   [[common/user-avatar-tag author]
+                  (i18n/label :t/contact-request-sent)]
+      :message   {:body (get-in message [:content :text])}
+      :items     (case (:contact-request-state message)
+                   constants/contact-request-message-state-accepted
+                   [{:type    :status
+                     :subtype :positive
+                     :label   (i18n/label :t/accepted)}]
+
+                   constants/contact-request-message-state-declined
+                   [{:type    :status
+                     :subtype :negative
+                     :label   (i18n/label :t/declined)}]
+
+                   constants/contact-request-state-mutual
+                   [{:type                :button
+                     :subtype             :danger
+                     :label               (i18n/label :t/decline)
+                     :accessibility-label :decline-contact-request
+                     :on-press            (fn []
+                                            (rf/dispatch [:activity-center.contact-requests/decline-request id])
+                                            (rf/dispatch [:activity-center.notifications/mark-as-read
+                                                          id]))}
+                    {:type                :button
+                     :subtype             :positive
+                     :label               (i18n/label :t/accept)
+                     :accessibility-label :accept-contact-request
+                     :on-press            (fn []
+                                            (rf/dispatch [:activity-center.contact-requests/accept-request id])
+                                            (rf/dispatch [:activity-center.notifications/mark-as-read
+                                                          id]))}]
+                   nil)}]))
 
 (defn view [{:keys [author message last-message] :as notification}]
   (let [{:keys [public-key]} (rf/sub [:multiaccount/contact])
