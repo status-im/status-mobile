@@ -1,8 +1,9 @@
-(ns status-im2.contexts.activity-center.notification.contact-request.view
+(ns status-im2.contexts.activity-center.notification.contact-requests.view
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
+            [status-im2.contexts.activity-center.notification.contact-requests.events]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -23,7 +24,7 @@
                    :accessibility-label :cancel-contact-request
                    :type                :danger
                    :on-press            (fn []
-                                          (rf/dispatch [:contact-requests.ui/cancel-outgoing-request id])
+                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
                                           (rf/dispatch [:activity-center.notifications/mark-as-read
                                                         id]))}}]]))
 
@@ -45,6 +46,8 @@
                       {:type :positive :label (i18n/label :t/accepted)}
                       constants/contact-request-message-state-declined
                       {:type :negative :label (i18n/label :t/declined)}
+                      constants/contact-request-message-state-none
+                      {:type :negative :label "Pending"}
                       nil)}
         (case (:contact-request-state message)
           constants/contact-request-message-state-pending
@@ -52,14 +55,14 @@
                       :accessibility-label :decline-contact-request
                       :type                :danger
                       :on-press            (fn []
-                                             (rf/dispatch [:contact-requests.ui/decline-request id])
+                                             (rf/dispatch [:activity-center.contact-requests/decline-request id])
                                              (rf/dispatch [:activity-center.notifications/mark-as-read
                                                            id]))}
            :button-2 {:label               (i18n/label :t/accept)
                       :accessibility-label :accept-contact-request
                       :type                :positive
                       :on-press            (fn []
-                                             (rf/dispatch [:contact-requests.ui/accept-request id])
+                                             (rf/dispatch [:activity-center.contact-requests/accept-request id])
                                              (rf/dispatch [:activity-center.notifications/mark-as-read
                                                            id]))}}
           nil))]]))

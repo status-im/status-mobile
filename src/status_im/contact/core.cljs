@@ -8,19 +8,6 @@
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
-(rf/defn load-contacts
-  {:events [::contacts-loaded]}
-  [{:keys [db] :as cofx} all-contacts]
-  (let [contacts-list (map #(vector (:public-key %)
-                                    (if (empty? (:address %))
-                                      (dissoc % :address)
-                                      %))
-                           all-contacts)
-        contacts      (into {} contacts-list)]
-    {:db (cond-> (-> db
-                     (update :contacts/contacts #(merge contacts %))
-                     (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts))))}))
-
 (defn build-contact
   [{{:keys          [multiaccount]
      :contacts/keys [contacts]}
@@ -96,35 +83,6 @@
    :json-rpc/call [{:method     "wakuext_retractContactRequest"
                     :params     [{:contactId public-key}]
                     :on-success #(log/debug "contact removed successfully")}]
-   :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
-
-(rf/defn accept-contact-request
-  {:events [:contact-requests.ui/accept-request]}
-  [{:keys [db]} id]
-  {:json-rpc/call [{:method      "wakuext_acceptContactRequest"
-                    :params      [{:id id}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
-
-(rf/defn decline-contact-request
-  {:events [:contact-requests.ui/decline-request]}
-  [{:keys [db]} id]
-  {:json-rpc/call [{:method      "wakuext_dismissContactRequest"
-                    :params      [{:id id}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
-
-;; TODO(alwx): move it all to `status-im2`
-(rf/defn cancel-outgoing-contact-request
-  {:events [:contact-requests.ui/cancel-outgoing-request]}
-  [{:keys [db]} {:keys [public-key]}]
-  {:db            (-> db
-                      (assoc-in [:contacts/contacts public-key :added] false)
-                      (assoc-in [:contacts/contacts public-key :contact-request-state]
-                                constants/contact-request-state-none))
-   :json-rpc/call [{:method     "wakuext_retractContactRequest"
-                    :params     [{:contactId public-key}]
-                    :on-success #(log/debug "contact request cancelled successfully")}]
    :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
 
 (rf/defn initialize-contacts

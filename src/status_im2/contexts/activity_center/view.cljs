@@ -6,7 +6,7 @@
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
-            [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
+            [status-im2.contexts.activity-center.notification.contact-requests.view :as contact-requests]
             [status-im2.contexts.activity-center.notification.contact-verification.view :as
              contact-verification]
             [status-im2.contexts.activity-center.notification.membership.view :as membership]
@@ -173,14 +173,14 @@
      (= type types/contact-verification)
      [contact-verification/view notification {}]
 
-     (= type types/contact-request)
-     [contact-request/view notification]
-
      (= type types/mention)
      [mentions/view notification]
 
      (= type types/reply)
      [reply/view notification]
+
+     (= type types/contact-request)
+     [contact-requests/view notification]
 
      (= type types/admin)
      [admin/view notification]
