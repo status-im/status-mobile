@@ -18,11 +18,11 @@
                     :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (rf/defn cancel-outgoing-contact-request
-  {:events [:activity-center.contact-requests/cancel-outgoing-requestt]}
+  {:events [:activity-center.contact-requests/cancel-outgoing-request]}
   [{:keys [db]} id]
-  {:json-rpc/call [{:method      "wakuext_retractContactRequest"
+  {:json-rpc/call [{:method      "wakuext_cancelOutgoingContactRequest"
                     :params      [{:id id}]
                     :js-response true
-                    :on-success  (fn [x]
-                                   (js/console.log "ALWX wakuext_retractContactRequest" x)
-                                   (rf/dispatch [:sanitize-messages-and-process-response x]))}]})
+                    :on-success  #(do
+                                    (js/console.log "ALWX wakuext_cancelOutgoingContactRequest" %)
+                                    (rf/dispatch [:sanitize-messages-and-process-response %]))}]})

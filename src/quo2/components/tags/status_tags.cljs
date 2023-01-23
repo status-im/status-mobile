@@ -12,7 +12,7 @@
 (def small-container-style
   (merge default-container-style
          {:padding-horizontal 8
-          :padding-vertical   3}))
+          :padding-vertical   1}))
 
 (def large-container-style
   (merge default-container-style
@@ -56,8 +56,8 @@
   [size theme label]
   [base-tag
    {:size             size
-    :background-color colors/success-50-opa-10
     :icon             :verified
+    :background-color colors/success-50-opa-10
     :border-color     colors/success-50-opa-20
     :label            label
     :text-color       (if (= theme :light)
@@ -82,13 +82,9 @@
    {:size             size
     :icon             :pending
     :label            label
-    :background-color (if (= theme :light)
-                        colors/neutral-10
-                        colors/neutral-80)
-    :border-color     (if (= theme :light)
-                        colors/neutral-20
-                        colors/neutral-70)
-    :text-color       colors/neutral-50}])
+    :background-color colors/white-opa-5
+    :border-color     colors/white-opa-5
+    :text-color       colors/white-opa-70}])
 
 (defn status-tag
   [{:keys [status size override-theme label]}]

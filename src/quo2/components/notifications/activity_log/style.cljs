@@ -33,6 +33,10 @@
    :padding-vertical   8
    :background-color   colors/white-opa-5})
 
+(def footer-container
+  {:margin-top     12
+   :flex-direction :row})
+
 (def buttons-container
   {:margin-top     12
    :flex-direction :row

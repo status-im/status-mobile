@@ -62,23 +62,23 @@
         gap-between-lines 4]
     (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
           (mapcat
-           (fn [detail]
-             ^{:key (hash detail)}
-             (if (string? detail)
-               (map (fn [s]
-                      [rn/view
-                       {:style {:margin-right 4
-                                :margin-top   0}}
-                       [text/text
-                        {:size  :paragraph-2
-                         :style {:color colors/white}}
-                        s]])
-                    (string/split detail #"\s+"))
-               [[rn/view
-                 {:margin-right 4
-                  :margin-top   gap-between-lines}
-                 detail]]))
-           context))))
+            (fn [detail]
+              ^{:key (hash detail)}
+              (if (string? detail)
+                (map (fn [s]
+                       [rn/view
+                        {:style {:margin-right 4
+                                 :margin-top   0}}
+                        [text/text
+                         {:size  :paragraph-2
+                          :style {:color colors/white}}
+                         s]])
+                     (string/split detail #"\s+"))
+                [[rn/view
+                  {:margin-right 4
+                   :margin-top   gap-between-lines}
+                  detail]]))
+            context))))
 
 (defn- activity-message
   [{:keys [title body title-number-of-lines body-number-of-lines]}]
@@ -101,7 +101,7 @@
 
 (defn- activity-buttons
   [button-1 button-2 replying? reply-input]
-  (let [size         (if replying? 40 24)
+  (let [size (if replying? 40 24)
         common-style (when replying?
                        {:padding-vertical 9
                         :flex-grow        1
@@ -155,13 +155,34 @@
     :style               style/unread-dot-container}
    [rn/view {:style style/unread-dot}]])
 
+(defmulti footer-item-view :type)
+
+(defmethod footer-item-view :button [{:keys [label subtype] :as button}]
+  [button/button
+   (-> button
+       (assoc :size 24)
+       (assoc :type subtype)
+       (update :style merge {:margin-right 8}))
+   label])
+
+(defmethod footer-item-view :status [{:keys [label subtype]}]
+  [status-tags/status-tag
+   {:size   :small
+    :label  label
+    :status {:type subtype}}])
+
 (defn- footer
-  [_]
+  [_ _]
   (let [reply-input (reagent/atom "")]
-    (fn [{:keys [replying? on-update-reply status button-1 button-2]}]
+    (fn [timestamp {:keys [replying? on-update-reply status button-1 button-2 items]}]
       [:<>
        (when replying?
          [activity-reply-text-input reply-input on-update-reply])
+       (when items
+         [rn/view style/footer-container
+          (for [[i item] (map-indexed vector items)]
+            ^{:key (str "footer-item-" timestamp "-" i)}
+            [footer-item-view item])])
        (cond (some? status)
              [activity-status status]
 
@@ -196,4 +217,4 @@
        [activity-context context replying?])]
     (when message
       [activity-message message])
-    [footer props]]])
+    [footer timestamp props]]])

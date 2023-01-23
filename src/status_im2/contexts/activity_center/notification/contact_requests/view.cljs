@@ -20,13 +20,17 @@
        :context   [(i18n/label :t/contact-request-outgoing)
                    [common/user-avatar-tag chat-id]]
        :message   {:body (get-in message [:content :text])}
-       :button-1  {:label               (i18n/label :t/cancel)
-                   :accessibility-label :cancel-contact-request
-                   :type                :danger
-                   :on-press            (fn []
-                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
-                                          (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                        id]))}}]]))
+       :items     [{:type                :button
+                    :subtype             :danger
+                    :label               (i18n/label :t/cancel)
+                    :accessibility-label :cancel-contact-request
+                    :on-press            (fn []
+                                           (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request id])
+                                           (rf/dispatch [:activity-center.notifications/mark-as-read
+                                                         id]))}
+                   {:type    :status
+                    :subtype :pending
+                    :label   (i18n/label :t/pending)}]}]]))
 
 (defn incoming-contact-request-view
   [{:keys [id author message last-message] :as notification}]
@@ -46,8 +50,6 @@
                       {:type :positive :label (i18n/label :t/accepted)}
                       constants/contact-request-message-state-declined
                       {:type :negative :label (i18n/label :t/declined)}
-                      constants/contact-request-message-state-none
-                      {:type :negative :label "Pending"}
                       nil)}
         (case (:contact-request-state message)
           constants/contact-request-message-state-pending
