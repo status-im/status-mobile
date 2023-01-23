@@ -1,6 +1,5 @@
 (ns quo2.components.code.snippet
-  (:require ["react-native" :as react-native]
-            [cljs-bean.core :as bean]
+  (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
             [oops.core :as oops]
             [quo2.components.buttons.button :as button]
@@ -168,8 +167,8 @@
                          :on-copy-press #(when on-copy-press
                                            (on-copy-press children))})
     ;; Default props to adapt Highlighter for react-native.
-    :CodeTag           react-native/View
-    :PreTag            react-native/View
+    ;;:CodeTag           react-native/View
+    ;;:PreTag            react-native/View
     :show-line-numbers false
     :style             #js {}
     :custom-style      #js {:backgroundColor nil}}

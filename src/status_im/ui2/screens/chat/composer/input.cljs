@@ -1,22 +1,18 @@
 (ns status-im.ui2.screens.chat.composer.input
-  (:require ["react-native" :as react-native]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [oops.core :as oops]
-            [quo.design-system.colors :as quo.colors]
-            [quo.react]
-            [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
             [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils.utils]
             [utils.transforms :as transforms]
-            [quo2.foundations.typography :as typography]))
+            [quo2.foundations.typography :as typography]
+            [react-native.background-timer :as background-timer]
+            [react-native.platform :as platform]
+            [react-native.core :as rn]))
 
 (defonce input-texts (atom {}))
 (defonce input-text-content-heights (atom {}))
@@ -94,7 +90,7 @@
     (when platform/ios?
       (reset!
         timeout-id
-        (utils.utils/set-timeout
+        (background-timer/set-timeout
          #(rf/dispatch [::mentions/on-selection-change
                         {:start start
                          :end   end}
@@ -128,7 +124,7 @@
     ;; happens during typing because it is not needed for mention
     ;; suggestions calculation
     (when (and platform/ios? @timeout-id)
-      (utils.utils/clear-timeout @timeout-id))
+      (background-timer/clear-timeout @timeout-id))
     (when platform/android?
       (reset! last-text-change (js/Date.now)))
 
@@ -169,7 +165,7 @@
           :min-height        34
           :margin            0
           :flex-shrink       1
-          :color             (:text-01 @quo.colors/theme)
+          :color             (colors/theme-colors colors/neutral-100 colors/white)
           :margin-horizontal 20}
          (if platform/android?
            {:padding-vertical    8
@@ -195,7 +191,7 @@
          :blur-on-submit           false
          :auto-focus               false
          :max-length               chat.constants/max-text-size
-         :placeholder-text-color   (:text-02 @quo.colors/theme)
+         :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/white-opa-30)
          :placeholder              (if cooldown-enabled?
                                      (i18n/label :cooldown/text-input-disabled)
                                      (i18n/label :t/type-a-message))

@@ -3,8 +3,7 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.messages.author.style :as style]
-            [react-native.core :as rn]
-            [status-im.utils.utils :as utils]))
+            [react-native.core :as rn]))
 
 (def middle-dot "·")
 
@@ -35,7 +34,7 @@
           profile-name])])))
 
 (defn author
-  [{:keys [profile-name nickname chat-key ens-name time-str contact? verified? untrustworthy?]}]
+  [{:keys [profile-name nickname short-chat-key ens-name time-str contact? verified? untrustworthy?]}]
   [:f>
    (fn []
      (let [ens?      (-> ens-name string/blank? not)
@@ -85,7 +84,7 @@
            {:monospace true
             :size      :paragraph-2
             :style     style/chat-key-text}
-           (utils/get-shortened-address chat-key)])
+           short-chat-key])
         (when-not ens?
           [text/text
            {:monospace true

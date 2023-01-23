@@ -1,11 +1,12 @@
 (ns quo2.components.tags.tags
   (:require [reagent.core :as reagent]
-            [quo.react-native :as rn]
             [oops.core :refer [oget]]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.core :as utils]
             [quo2.components.tags.tag :as tag]
-            [utils.number :as number-utils]))
+            [utils.number :as number-utils]
+            [react-native.core :as rn]
+            [react-native.masked-view :as masked-view]
+            [react-native.linear-gradient :as linear-gradient]
+            [utils.collection :as utils.collection]))
 
 (def default-tab-size 32)
 
@@ -76,9 +77,9 @@
                size                  default-tab-size}
         :as   props}]
       (let [maybe-mask-wrapper (if fade-end?
-                                 [react/masked-view
+                                 [masked-view/masked-view
                                   {:mask-element (reagent/as-element
-                                                  [react/linear-gradient
+                                                  [linear-gradient/linear-gradient
                                                    {:colors         [:black :transparent]
                                                     :locations      [(get @fading :fade-end-percentage)
                                                                      1]
@@ -100,7 +101,7 @@
                            :scroll-on-press?
                            :size)
                    (when scroll-on-press?
-                     {:initial-scroll-index (utils/first-index #(= @active-tab-id (:id %)) data)})
+                     {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
                    {:ref #(reset! flat-list-ref %)
                     :extra-data (str @active-tab-id)
                     :horizontal true
