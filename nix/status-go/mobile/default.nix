@@ -18,7 +18,11 @@ let
       targets;
 in {
 
-  ios-x86 = buildNimbusLc {platform = "ios"; targets = ["ios" "iossimulator"];};
+  #ios-x86 = buildNimbusLc {platform = "ios"; targets = ["ios" "iossimulator"];};
+  ios-x86 = buildNimbusLc {platform = "ios"; targets = ["iossimulator"];};
+  ios-arm = buildNimbusLc {platform = "ios"; targets = ["ios"];};
+  android-arm64 = buildNimbusLc {platform = "android"; targets = ["android/arm64"];};
+  android-arm = buildNimbusLc {platform = "android"; targets = ["android/arm"];};
 
 
   android = callPackage ./build.nix {

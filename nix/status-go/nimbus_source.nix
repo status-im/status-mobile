@@ -38,11 +38,11 @@ let
     owner = "status-im";
     repo = "nimbus-eth1";
     # Static lib
-    # rev = "211a0ed1e89bc836a79759e35db4a45f23a79b14";
-    # sha256 = "sha256-Z+PoQMoYJK9ort2ZiXE1oLeoNu2H44HHNnL4pbp+uI8=";
+    rev = "211a0ed1e89bc836a79759e35db4a45f23a79b14";
+    sha256 = "sha256-Z+PoQMoYJK9ort2ZiXE1oLeoNu2H44HHNnL4pbp+uI8=";
     # Dynamic lib
-    rev = "1199e476397e271b889e54680dc632e47bc01dd6";
-    sha256 = "sha256-egx+I4h/V/56QRBtlaZffc3hrq7IaZCqL2Lm5XNqH1c=";
+    # rev = "1199e476397e271b889e54680dc632e47bc01dd6";
+    # sha256 = "sha256-egx+I4h/V/56QRBtlaZffc3hrq7IaZCqL2Lm5XNqH1c=";
     version = "0.1";
   in rec {
     inherit owner repo rev sha256 version;

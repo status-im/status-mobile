@@ -197,14 +197,12 @@ in stdenv.mkDerivation rec {
     ${compilerVars}
     export PATH=${nimCompiler}/bin:$PATH
     #export PATH=${pkgs.binutils}/bin:$PATH
-    which clang
-    echo $PATH
+    ln -sf ${pkgs.binutils}/bin/ar bin/ar
   '';
 
 
   buildPhase = ''
     which ar
-    set -x
     make V=3 OS=${nimHostOs} \
       CC=clang CXX=clang USE_SYSTEM_NIM=1 \
       NIMFLAGS="\
@@ -225,7 +223,7 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     set -x
     mkdir -p $out
-    cp build/libverifproxy/libverifproxy* $out/
+    cp libverifproxy* $out/
     cp build/libverifproxy/verifproxy.h $out/
     cp build/libverifproxy/nimbase.h $out/
   '';
