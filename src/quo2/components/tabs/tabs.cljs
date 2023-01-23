@@ -77,12 +77,20 @@
     (on-scroll e)))
 
 (defn- render-tab
-  [{:keys [size data style override-theme blur? active-tab-id scroll-on-press? flat-list-ref on-change]}
+  [{:keys [active-tab-id
+           blur?
+           flat-list-ref
+           number-of-items
+           on-change
+           override-theme
+           scroll-on-press?
+           size
+           style]}
    {:keys [id label notification-dot? accessibility-label]}
    index]
   [rn/view
    {:style {:margin-right  (if (= size default-tab-size) 12 8)
-            :padding-right (when (= index (dec (count data)))
+            :padding-right (when (= index (dec number-of-items))
                              (:padding-left style))}}
    (when notification-dot?
      [indicator])
@@ -95,7 +103,7 @@
      :active              (= id @active-tab-id)
      :on-press            (fn [id]
                             (reset! active-tab-id id)
-                            (when scroll-on-press?
+                            (when (and scroll-on-press? @flat-list-ref)
                               (.scrollToIndex ^js @flat-list-ref
                                               #js
                                                {:animated     true
@@ -196,8 +204,8 @@
              :render-fn                         (partial render-tab
                                                          {:active-tab-id    active-tab-id
                                                           :blur?            blur?
-                                                          :data             data
                                                           :flat-list-ref    flat-list-ref
+                                                          :number-of-items  (count data)
                                                           :on-change        on-change
                                                           :override-theme   override-theme
                                                           :scroll-on-press? scroll-on-press?
@@ -207,11 +215,11 @@
          (map-indexed (fn [index item]
                         ^{:key (:id item)}
                         [render-tab
-                         {:active-tab-id  active-tab-id
-                          :data           data
-                          :override-theme override-theme
-                          :size           size
-                          :style          style}
+                         {:active-tab-id   active-tab-id
+                          :number-of-items (count data)
+                          :override-theme  override-theme
+                          :size            size
+                          :style           style}
                          item
                          index])
                       data)]))))
