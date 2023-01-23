@@ -122,7 +122,7 @@
 
 (defn selectable-text-input-manager
   []
-  (when (exists? (.-NativeModules react-native))
+  (when (exists? (.-NativeModules ^js react-native))
     (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
 
 (defonce selectable-text-input
