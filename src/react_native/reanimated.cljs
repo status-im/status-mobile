@@ -14,7 +14,6 @@
                              SlideInUp
                              SlideOutUp
                              LinearTransition)]
-            [camel-snake-kebab.core :as csk]
             [reagent.core :as reagent]
             [utils.collection]))
 
@@ -62,7 +61,7 @@
 
 (defn set-shared-value
   [anim val]
-  (when anim
+  (when (and anim val)
     (set! (.-value anim) val)))
 
 ;; Worklets
@@ -79,17 +78,10 @@
                       (clj->js extrapolation))))
 
 ;;;; Component Animations
-
-;; kebab-case styles are not working for worklets
-;; so first convert kebab case styles into camel case styles
 (defn apply-animations-to-style
   [animations style]
-  (let [animations (utils.collection/map-keys csk/->camelCaseString animations)
-        style      (apply dissoc
-                          (utils.collection/map-keys csk/->camelCaseString style)
-                          (keys animations))]
-    (use-animated-style
-     (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style)))))
+  (use-animated-style
+   (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style))))
 
 ;; Animators
 (defn animate-shared-value-with-timing
