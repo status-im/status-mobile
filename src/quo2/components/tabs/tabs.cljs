@@ -114,34 +114,26 @@
     label]])
 
 (defn tabs
-  "Usage:
-   {:type             :icon/:emoji/:label
-    :component        tag/tab
-    :size             32/24
-    :on-press         fn
-    :blurred?         true/false
-    :labelled?        true/false
-    :disabled?        true/false
-    :scrollable?      false
-    :scroll-on-press? true
-    :fade-end?        true
-    :on-change        fn
-    :default-active   tag-id
-    :data             [{:id :label \"\" :resource \"url\"}
-                       {:id :label \"\" :resource \"url\"}]}
-  Opts:
-   - `component` this is to determine which component is to be rendered since the
-                 logic in this view is shared between tab and tag component
-   - `blurred`   boolean: use to determine border color if the background is blurred
-   - `type`      can be icon or emoji with or without a tag label
-   - `labelled`  boolean: is true if tag has label else false
-   - `size` number
-   - `scroll-on-press?` When non-nil, clicking on a tag centers it the middle
-  (with animation enabled).
-   - `fade-end?` When non-nil, causes the end of the scrollable view to fade out.
-   - `fade-end-percentage` Percentage where fading starts relative to the total
-  layout width of the `flat-list` data."
+  " Common options (both for scrollable and non-scrollable tabs):
 
+  - `blur?` Boolean passed down to `quo2.components.tabs.tab/tab`.
+  - `data` Vector of tab items.
+  - `on-change` Callback called after a tab is selected.
+  - `override-theme` Passed down to `quo2.components.tabs.tab/tab`.
+  - `size` 32/24
+  - `style` Style map passed to View wrapping tabs or to the FlatList when tabs
+    are scrollable.
+
+  Options for scrollable tabs:
+  - `fade-end-percentage` Percentage where fading starts relative to the total
+    layout width of the `flat-list` data.
+  - `fade-end?` When non-nil, causes the end of the scrollable view to fade out.
+  - `on-scroll` Callback called on the on-scroll event of the FlatList. Only
+    used when `scrollable?` is non-nil.
+  - `scrollable?` When non-nil, use a scrollable flat-list to render tabs.
+  - `scroll-on-press?` When non-nil, clicking on a tag centers it the middle
+    (with animation enabled).
+  "
   [{:keys [default-active fade-end-percentage]
     :or   {fade-end-percentage 0.8}}]
   (let [active-tab-id (reagent/atom default-active)
@@ -153,19 +145,17 @@
                fade-end?
                on-change
                on-scroll
-               scroll-event-throttle
                scroll-on-press?
                scrollable?
                style
                size
                blur?
                override-theme]
-        :or   {fade-end-percentage   fade-end-percentage
-               fade-end?             false
-               scroll-event-throttle 64
-               scrollable?           false
-               scroll-on-press?      false
-               size                  default-tab-size}
+        :or   {fade-end-percentage fade-end-percentage
+               fade-end?           false
+               scrollable?         false
+               scroll-on-press?    false
+               size                default-tab-size}
         :as   props}]
       (if scrollable?
         [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
@@ -191,7 +181,7 @@
              :content-container-style           {:padding-top (dec unread-count-offset)}
              :extra-data                        (str @active-tab-id)
              :horizontal                        true
-             :scroll-event-throttle             scroll-event-throttle
+             :scroll-event-throttle             64
              :shows-horizontal-scroll-indicator false
              :data                              data
              :key-fn                            (comp str :id)
@@ -216,7 +206,9 @@
                         ^{:key (:id item)}
                         [render-tab
                          {:active-tab-id   active-tab-id
+                          :blur?           blur?
                           :number-of-items (count data)
+                          :on-change       on-change
                           :override-theme  override-theme
                           :size            size
                           :style           style}
