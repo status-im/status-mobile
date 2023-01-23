@@ -12,7 +12,9 @@
             [quo2.foundations.typography :as typography]
             [react-native.background-timer :as background-timer]
             [react-native.platform :as platform]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [react-native.clipboard :as clipboard]
+            [quo.react :as quo.react]))
 
 (defonce input-texts (atom {}))
 (defonce input-text-content-heights (atom {}))
@@ -226,14 +228,6 @@
       [rn/text-input props
        children])))
 
-(defn selectable-text-input-manager
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-RNSelectableTextInputManager ^js (.-NativeModules react-native))))
-
-(defonce rn-selectable-text-input
-         (reagent/adapt-react-class (.requireNativeComponent react-native "RNSelectableTextInput")))
-
 (declare first-level-menu-items second-level-menu-items)
 
 (defn update-input-text
@@ -265,24 +259,24 @@
   ;https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
   ;use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
   ;{:selection {:start selection-start :end selection-end}}))
-  (let [manager (selectable-text-input-manager)]
+  (let [manager (rn/selectable-text-input-manager)]
     (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
 
 (def first-level-menus
   {:cut               (fn [{:keys [content] :as params}]
                         (let [new-text (calculate-input-text params "")]
-                          (react/copy-to-clipboard content)
+                          (clipboard/set-string content)
                           (update-input-text params new-text)))
 
    :copy-to-clipboard (fn [{:keys [content]}]
-                        (react/copy-to-clipboard content))
+                        (clipboard/set-string content))
 
    :paste             (fn [params]
                         (let [callback (fn [paste-content]
                                          (let [content  (string/trim paste-content)
                                                new-text (calculate-input-text params content)]
                                            (update-input-text params new-text)))]
-                          (react/get-from-clipboard callback)))
+                          (clipboard/get-string callback)))
 
    :biu               (fn [{:keys [first-level text-input-handle menu-items selection-start
                                    selection-end]}]
@@ -336,7 +330,7 @@
         menu-items      (reagent/atom first-level-menu-items)
         first-level     (reagent/atom true)
         selection-event (atom nil)
-        manager         (selectable-text-input-manager)]
+        manager         (rn/selectable-text-input-manager)]
     (reagent/create-class
      {:component-did-mount
       (fn [this]
@@ -391,6 +385,6 @@
                                           :style               (dissoc style :margin-horizontal)
                                           :on-selection-change on-selection-change
                                           :on-selection        on-selection})]
-          [rn-selectable-text-input {:menuItems @menu-items :style style}
+          [rn/selectable-text-input {:menuItems @menu-items :style style}
            [rn/text-input props
             children]]))})))
