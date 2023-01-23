@@ -558,16 +558,20 @@
 (rf/defn request-to-join-accepted
   {:events [::request-to-join-accepted]}
   [{:keys [db] :as cofx} community-id request-id response-js]
-  (rf/merge cofx
-            {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)}
-            (handle-response response-js)))
+  (rf/merge
+   cofx
+   {:db         (update-in db [:communities/requests-to-join community-id] dissoc request-id)
+    :dispatch-n [[:sanitize-messages-and-process-response response-js]
+                 [:activity-center.notifications/mark-as-read request-id]]}))
 
 (rf/defn request-to-join-declined
   {:events [::request-to-join-declined]}
   [{:keys [db] :as cofx} community-id request-id response-js]
-  (rf/merge cofx
-            {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)}
-            (handle-response response-js)))
+  (rf/merge
+   cofx
+   {:db         (update-in db [:communities/requests-to-join community-id] dissoc request-id)
+    :dispatch-n [[:sanitize-messages-and-process-response response-js]
+                 [:activity-center.notifications/mark-as-read request-id]]}))
 
 (rf/defn accept-request-to-join-pressed
   {:events [:communities.ui/accept-request-to-join-pressed]}

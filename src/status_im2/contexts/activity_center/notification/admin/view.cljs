@@ -41,15 +41,11 @@
                     :type                :danger
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/decline-request-to-join-pressed
-                                                         community-id id])
-                                           (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                         id]))}
+                                                         community-id id]))}
          :button-2 {:label               (i18n/label :t/accept)
                     :accessibility-label :accept-join-request
                     :type                :positive
                     :on-press            (fn []
                                            (rf/dispatch [:communities.ui/accept-request-to-join-pressed
-                                                         community-id id])
-                                           (rf/dispatch [:activity-center.notifications/mark-as-read
-                                                         id]))}}
+                                                         community-id id]))}}
         nil))]))
