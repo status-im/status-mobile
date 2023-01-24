@@ -1,8 +1,6 @@
 (ns quo2.components.tabs.tabs
   (:require [oops.core :refer [oget]]
-            [quo2.components.notifications.notification-dot :refer [notification-dot]]
             [quo2.components.tabs.tab :as tab]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.masked-view :as masked-view]
@@ -12,22 +10,6 @@
 
 (def default-tab-size 32)
 (def unread-count-offset 3)
-
-(defn- indicator
-  []
-  [rn/view
-   {:accessibility-label :notification-dot
-    :style               {:position         :absolute
-                          :z-index          1
-                          :right            (- unread-count-offset)
-                          :top              (- unread-count-offset)
-                          :width            10
-                          :height           10
-                          :border-radius    5
-                          :justify-content  :center
-                          :align-items      :center
-                          :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}}
-   [notification-dot]])
 
 (defn- calculate-fade-end-percentage
   [{:keys [offset-x content-width layout-width max-fade-percentage]}]
