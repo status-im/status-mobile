@@ -60,5 +60,3 @@
            [quo/icon :i/close
             {:color (colors/theme-colors colors/white colors/neutral-100)
              :size  12}]]])))])
-
-
