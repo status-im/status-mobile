@@ -311,7 +311,6 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
             "Message 1", "Message 2", "Message 3", "Message 4"
 
     @marks.testrail_id(702732)
-    @marks.xfail(reason="blocked by #14637")
     def test_group_chat_pin_messages(self):
         self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
 
@@ -325,7 +324,7 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
         self.group_chat_2.chat_element_by_text(self.message_1).long_press_element()
         if self.group_chat_2.element_by_translation_id("unpin-from-chat").is_element_displayed():
             self.errors.append("Unpin option is available for non-admin user")
-        self.group_chat_2.click_system_back_button()
+        self.group_chat_2.tap_by_coordinates(500, 100)
 
         # not implemented yet :
 
@@ -353,10 +352,8 @@ class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
         self.group_chat_1.send_message(self.message_4)
         self.group_chat_1.pin_message(self.message_4, 'pin-to-chat')
         if self.group_chat_1.pin_limit_popover.is_element_displayed(30):
-            self.group_chat_1.view_pinned_messages_button.click_until_presence_of_element(
-                self.group_chat_1.pinned_messages_list)
-            self.group_chat_1.pinned_messages_list.message_element_by_text(
-                self.message_2).click_inside_element_by_coordinate()
+            self.group_chat_1.view_pinned_messages_button.click_until_presence_of_element(self.group_chat_1.pinned_messages_list)
+            self.group_chat_1.pinned_messages_list.message_element_by_text(self.message_2).click_inside_element_by_coordinate()
             self.group_chat_1.element_by_translation_id('unpin-from-chat').double_click()
             self.group_chat_1.chat_element_by_text(self.message_4).click()
             self.group_chat_1.pin_message(self.message_4, 'pin-to-chat')

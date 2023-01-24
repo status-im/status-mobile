@@ -615,7 +615,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_chat(self.channel_name).click()
 
     @marks.testrail_id(702838)
-    @marks.xfail(reason="blocked by #14797")
+    @marks.xfail(reason="blocked by 14797")
     def test_community_message_send_check_timestamps_sender_username(self):
         message = self.text_message
         sent_time_variants = self.channel_1.convert_device_time_to_chat_timestamp()
@@ -631,7 +631,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702843)
-    @marks.xfail(reason="blocked by #14797")
+    @marks.xfail(reason="blocked by 14797")
     def test_community_message_edit(self):
         message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
         if not self.channel_2.chat_message_input.is_element_displayed():
@@ -715,54 +715,64 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         channel_1_element.click()
         self.errors.verify_no_errors()
 
-    # @marks.testrail_id(702844)
-    # @marks.skip("Until preview component will be developed")
-    # def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-    #     giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-    #     preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
-    #                                   'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
-    #                                   'subtitle': 'GitHub'},
-    #                     'yotube': {
-    #                         'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-    #                         'txt': 'Status & Keycard – Hardware-Enforced Security',
-    #                         'subtitle': 'YouTube'}
-    #                     # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
-    #                     # 'twitter': {
-    #                     #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
-    #                     #     'txt': "We've rethought how we translate content, allowing us to translate",
-    #                     #     'subtitle': 'Twitter'
-    #                     # }
-    #                     }
-    #
-    #     self.home_1.just_fyi("Check enabling and sending first gif")
-    #     self.channel_2.send_message(giphy_url)
-    #     # workaround to get chat view focused
-    #     self.channel_2.send_message(giphy_url)
-    #     self.channel_2.element_by_translation_id("dont-ask").click()
-    #     # workaround to get chat view focused
-    #     self.channel_1.send_message(giphy_url)
-    #     self.channel_1.element_by_text("Enable").wait_and_click()
-    #
-    #     self.channel_1.element_by_translation_id("enable-all").wait_and_click()
-    #     self.channel_1.click_system_back_button()
-    #     if not self.channel_1.get_preview_message_by_text(giphy_url).preview_image:
-    #         self.errors.append("No preview is shown for %s" % giphy_url)
-    #     for key in preview_urls:
-    #         self.home_2.just_fyi("Checking %s preview case" % key)
-    #         data = preview_urls[key]
-    #         self.channel_2.send_message(data['url'])
-    #         message = self.channel_1.get_preview_message_by_text(data['url'])
-    #         if data['txt'] not in message.preview_title.text:
-    #             self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
-    #         if message.preview_subtitle.text != data['subtitle']:
-    #             self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
-    #
-    #     self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
-    #     if self.channel_2.element_by_translation_id("enable").is_element_displayed():
-    #         self.errors.append("Enable button is still shown after clicking on 'Don't ask again'")
-    #     if self.channel_2.get_preview_message_by_text(giphy_url).preview_image:
-    #         self.errors.append("Preview is shown for sender without permission")
-    #     self.errors.verify_no_errors()
+    @marks.testrail_id(702844)
+    def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
+        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
+        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
+                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
+                                      'subtitle': 'GitHub'},
+                        'yotube_short': {
+                            'url': 'https://youtu.be/Je7yErjEVt4',
+                            'txt': 'Status, your gateway to Ethereum',
+                            'subtitle': 'YouTube'}
+                        # blocked by 14865
+                        # 'yotube_full': {
+                        #     'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                        #     'txt': 'Status & Keycard – Hardware-Enforced Security',
+                        #     'subtitle': 'YouTube'}
+                        # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
+                        # 'twitter': {
+                        #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
+                        #     'txt': "We've rethought how we translate content, allowing us to translate",
+                        #     'subtitle': 'Twitter'
+                        # }
+                        }
+
+        self.home_1.just_fyi("Check enabling and sending first gif")
+        self.channel_2.send_message(giphy_url)
+        # workaround to get chat view focused
+        self.channel_2.send_message(giphy_url)
+        self.channel_2.element_by_translation_id("dont-ask").click()
+        # workaround to get chat view focused
+        self.channel_1.send_message(giphy_url)
+        self.channel_1.element_by_text("Enable").wait_and_click()
+
+        self.channel_1.element_by_translation_id("enable-all").wait_and_click()
+        self.channel_1.click_system_back_button()
+        if not self.channel_1.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("No preview is shown for %s" % giphy_url)
+        for key in preview_urls:
+            self.home_2.just_fyi("Checking %s preview case" % key)
+            data = preview_urls[key]
+            self.channel_2.send_message(data['url'])
+            message = self.channel_1.get_preview_message_by_text(data['url'])
+            if message.preview_title:
+                if data['txt'] not in message.preview_title.text:
+                    self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+            else:
+                self.drivers[0].fail("No preview is shown!")
+            if message.preview_subtitle:
+                if message.preview_subtitle.text != data['subtitle']:
+                    self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+            else:
+                self.drivers[0].fail("No preview title is shown!")
+
+        self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
+        if self.channel_2.element_by_translation_id("enable").is_element_displayed():
+            self.errors.append("Enable button is still shown after clicking on 'Don't ask again'")
+        if self.channel_2.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("Preview is shown for sender without permission")
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702842)
     def test_community_mark_all_messages_as_read(self):
