@@ -93,8 +93,7 @@
           {:style               {:flex 1}
            :accessibility-label :save
            :on-press            (fn []
-                                  (rf/dispatch
-                                   [:bottom-sheet/hide])
+                                  (rf/dispatch [:bottom-sheet/hide])
                                   (js/setTimeout (fn []
                                                    (rf/dispatch
                                                     [:group-chats.ui/remove-members-pressed]))

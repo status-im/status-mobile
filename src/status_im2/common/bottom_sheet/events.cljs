@@ -3,12 +3,12 @@
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
-  {:dispatch                     [:dismiss-keyboard]
+  {:dispatch                  [:dismiss-keyboard]
    :show-bottom-sheet-overlay nil
-   :db                           (assoc db
-                                        :bottom-sheet/show?   true
-                                        :bottom-sheet/view    view
-                                        :bottom-sheet/options options)})
+   :db                        (assoc db
+                                     :bottom-sheet/show?   true
+                                     :bottom-sheet/view    view
+                                     :bottom-sheet/options options)})
 
 (rf/defn show-bottom-sheet-event
   {:events [:bottom-sheet/show-sheet]}
@@ -21,7 +21,7 @@
 (rf/defn hide-bottom-sheet
   {:events [:bottom-sheet/hide]}
   [{:keys [db]}]
-  {:db                        (assoc db :bottom-sheet/show? false)
+  {:db                           (assoc db :bottom-sheet/show? false)
    :dismiss-bottom-sheet-overlay nil})
 
 (rf/defn hide-bottom-sheet-navigation-overlay
