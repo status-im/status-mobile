@@ -18,4 +18,4 @@
 
 (defn chat-button
   [{:keys [bottom]}]
-  {:bottom   (- bottom 50)})
+  {:bottom (- bottom 50)})
