@@ -95,7 +95,7 @@
     label]])
 
 (defn tabs
-  " Common options (both for scrollable and non-scrollable tabs):
+  " Common options (for scrollable and non-scrollable tabs):
 
   - `blur?` Boolean passed down to `quo2.components.tabs.tab/tab`.
   - `data` Vector of tab items.
