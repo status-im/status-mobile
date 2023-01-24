@@ -95,12 +95,11 @@
            :on-press            (fn []
                                   (rf/dispatch
                                    [:bottom-sheet/hide])
-                                  #(do
-                                     (js/setTimeout (fn []
-                                                      (rf/dispatch
-                                                       [:group-chats.ui/remove-members-pressed]))
-                                                    500)
-                                     (rf/dispatch [:group-chats.ui/add-members-pressed])))
+                                  (js/setTimeout (fn []
+                                                   (rf/dispatch
+                                                    [:group-chats.ui/remove-members-pressed]))
+                                                 500)
+                                  (rf/dispatch [:group-chats.ui/add-members-pressed]))
            :disabled            (and (zero? (count selected-participants))
                                      (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])
