@@ -176,8 +176,8 @@
                                                   (update contact-group
                                                           :data
                                                           #(mapv (fn [contact]
-                                                                  (dissoc contact :identicon))
-                                                                %)))
+                                                                   (dissoc contact :identicon))
+                                                                 %)))
                                                 (rf/sub [sub-name]))]
 
       (is (= expected-sorted-contacts contact-list-without-identicons)))))
