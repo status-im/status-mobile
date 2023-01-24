@@ -22,14 +22,14 @@
       (utils.number/naive-round fade-percentage 2))))
 
 (defn- masked-view-wrapper
-  [{:keys [fading fade-end?]} & children]
+  [{:keys [fade-end-percentage fade-end?]} & children]
   (if fade-end?
     (into [masked-view/masked-view
            {:mask-element
             (reagent/as-element
              [linear-gradient/linear-gradient
               {:colors         [:black :transparent]
-               :locations      [(get @fading :fade-end-percentage) 1]
+               :locations      [fade-end-percentage 1]
                :start          {:x 0 :y 0}
                :end            {:x 1 :y 0}
                :pointer-events :none
@@ -140,7 +140,8 @@
         :as   props}]
       (if scrollable?
         [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
-         [masked-view-wrapper {:fading fading :fade-end? fade-end?}
+         [masked-view-wrapper
+          {:fade-end-percentage (get @fading :fade-end-percentage) :fade-end? fade-end?}
           [rn/flat-list
            (merge
             (dissoc props
