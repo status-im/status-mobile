@@ -373,6 +373,11 @@
    (navigation/merge-options "shell-stack" {:statusBar {:style style}})))
 
 (re-frame/reg-fx
+ :change-root-nav-bar-color-fx
+ (fn [color]
+   (navigation/merge-options "shell-stack" {:navigationBar {:backgroundColor color}})))
+
+(re-frame/reg-fx
  :pop-to-root-tab-fx
  (fn [tab]
    (navigation/pop-to-root tab)))

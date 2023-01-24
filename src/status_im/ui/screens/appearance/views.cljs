@@ -5,17 +5,12 @@
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.react :as react]
-            [status-im2.config :as config]))
+            [status-im.ui.components.react :as react]))
 
 (defn button
   [label icon theme selected?]
   [react/touchable-highlight
-   {:on-press (fn []
-                (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
-                (re-frame/dispatch (if config/new-ui-enabled? [:reload-new-ui] [:init-root :chat-stack]))
-                (re-frame/dispatch [:navigate-change-tab :profile])
-                (js/setTimeout #(re-frame/dispatch [:navigate-to :appearance]) 1000))}
+   {:on-press #(re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])}
    [react/view
     (merge {:align-items :center :padding 8 :border-radius 20}
            (when selected?

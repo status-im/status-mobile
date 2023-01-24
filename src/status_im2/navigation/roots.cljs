@@ -1,16 +1,19 @@
 (ns status-im2.navigation.roots
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [status-im2.navigation.view :as views]))
+            [status-im2.navigation.view :as views]
+            [status-im2.navigation.state :as state]
+            [status-im2.common.theme.core :as utils.theme]))
 
 (defn status-bar-options
   []
-  (if platform/android?
-    {:navigationBar {:backgroundColor colors/neutral-100}
-     :statusBar     {:backgroundColor :transparent
-                     :style           :light
-                     :drawBehind      true}}
-    {:statusBar {:style :light}}))
+  (let [dark-mode? (if (= @state/root-id :shell-stack) (colors/dark?) (utils.theme/dark-mode?))]
+    (if platform/android?
+      {:navigationBar {:backgroundColor colors/neutral-100}
+       :statusBar     {:backgroundColor :transparent
+                       :style           (if dark-mode? :light :dark)
+                       :drawBehind      true}}
+      {:statusBar {:style (if dark-mode? :light :dark)}})))
 
 (defn topbar-options
   []

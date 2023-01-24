@@ -4,6 +4,7 @@
             [status-im.utils.core :as utils]
             [status-im2.constants :as constants]
             [status-im2.navigation.events :as navigation]
+            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
             [status-im.data-store.switcher-cards :as switcher-cards-store]))
@@ -24,6 +25,7 @@
  :shell/reset-bottom-tabs
  (fn []
    (let [selected-stack-id @animation/selected-stack-id]
+     (async-storage/set-item! :selected-stack-id nil)
      (reset! animation/load-communities-stack? (= selected-stack-id :communities-stack))
      (reset! animation/load-chats-stack? (= selected-stack-id :chats-stack))
      (reset! animation/load-wallet-stack? (= selected-stack-id :wallet-stack))

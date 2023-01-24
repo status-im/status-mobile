@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.animation
   (:require [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
+            [utils.re-frame :as rf]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.async-storage.core :as async-storage]
@@ -142,6 +142,14 @@
 
 ;; Animations
 
+(defn change-root-status-bar-style
+  []
+  (rf/dispatch [:change-root-status-bar-style
+                (if (or (colors/dark?)
+                        (not (home-stack-open?)))
+                  :light
+                  :dark)]))
+
 (defn open-home-stack
   [stack-id animate?]
   (let [home-stack-state-value (if animate?
@@ -153,11 +161,10 @@
     (reanimated/set-shared-value
      (:home-stack-state @shared-values-atom)
      home-stack-state-value)
-    (when-not (colors/dark?)
-      (js/setTimeout
-       #(re-frame/dispatch [:change-root-status-bar-style :dark])
-       shell.constants/shell-animation-time))
     (reset! home-stack-state home-stack-state-value)
+    (js/setTimeout
+     change-root-status-bar-style
+     shell.constants/shell-animation-time)
     (reset! selected-stack-id stack-id)
     (async-storage/set-item! :selected-stack-id stack-id)))
 
@@ -190,8 +197,7 @@
     (reanimated/set-shared-value
      (:home-stack-state @shared-values-atom)
      home-stack-state-value)
-    (when-not (colors/dark?)
-      (re-frame/dispatch [:change-root-status-bar-style :light]))
     (reset! home-stack-state home-stack-state-value)
+    (change-root-status-bar-style)
     (reset! selected-stack-id nil)
     (async-storage/set-item! :selected-stack-id nil)))
