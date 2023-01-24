@@ -9,6 +9,7 @@
             [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
             [status-im2.contexts.activity-center.notification.contact-verification.view :as
              contact-verification]
+            [status-im2.contexts.activity-center.notification.membership.view :as membership]
             [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
@@ -98,24 +99,28 @@
      [filter-selector-read-toggle]]]])
 
 (defn render-notification
-  [notification index]
+  [{:keys [type] :as notification} index]
   [rn/view {:style (style/notification-container index)}
-   (case (:type notification)
-     types/contact-verification
+   (cond
+     (= type types/contact-verification)
      [contact-verification/view notification {}]
 
-     types/contact-request
+     (= type types/contact-request)
      [contact-request/view notification]
 
-     types/mention
+     (= type types/mention)
      [mentions/view notification]
 
-     types/reply
+     (= type types/reply)
      [reply/view notification]
 
-     types/admin
+     (= type types/admin)
      [admin/view notification]
 
+     (some types/membership [type])
+     [membership/view notification]
+
+     :else
      nil)])
 
 (defn view

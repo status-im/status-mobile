@@ -1,22 +1,20 @@
 (ns status-im.ui2.screens.chat.composer.input
-  (:require ["react-native" :as react-native]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [oops.core :as oops]
-            [quo.design-system.colors :as quo.colors]
-            [quo.react]
-            [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.constants :as chat.constants]
             [status-im.chat.models.mentions :as mentions]
             [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils.utils]
             [utils.transforms :as transforms]
-            [quo2.foundations.typography :as typography]))
+            [quo2.foundations.typography :as typography]
+            [react-native.background-timer :as background-timer]
+            [react-native.platform :as platform]
+            [react-native.core :as rn]
+            [react-native.clipboard :as clipboard]
+            [quo.react :as quo.react]))
 
 (defonce input-texts (atom {}))
 (defonce input-text-content-heights (atom {}))
@@ -94,7 +92,7 @@
     (when platform/ios?
       (reset!
         timeout-id
-        (utils.utils/set-timeout
+        (background-timer/set-timeout
          #(rf/dispatch [::mentions/on-selection-change
                         {:start start
                          :end   end}
@@ -128,7 +126,7 @@
     ;; happens during typing because it is not needed for mention
     ;; suggestions calculation
     (when (and platform/ios? @timeout-id)
-      (utils.utils/clear-timeout @timeout-id))
+      (background-timer/clear-timeout @timeout-id))
     (when platform/android?
       (reset! last-text-change (js/Date.now)))
 
@@ -169,7 +167,7 @@
           :min-height        34
           :margin            0
           :flex-shrink       1
-          :color             (:text-01 @quo.colors/theme)
+          :color             (colors/theme-colors colors/neutral-100 colors/white)
           :margin-horizontal 20}
          (if platform/android?
            {:padding-vertical    8
@@ -195,7 +193,7 @@
          :blur-on-submit           false
          :auto-focus               false
          :max-length               chat.constants/max-text-size
-         :placeholder-text-color   (:text-02 @quo.colors/theme)
+         :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/white-opa-30)
          :placeholder              (if cooldown-enabled?
                                      (i18n/label :cooldown/text-input-disabled)
                                      (i18n/label :t/type-a-message))
@@ -230,14 +228,6 @@
       [rn/text-input props
        children])))
 
-(defn selectable-text-input-manager
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-RNSelectableTextInputManager ^js (.-NativeModules react-native))))
-
-(defonce rn-selectable-text-input
-         (reagent/adapt-react-class (.requireNativeComponent react-native "RNSelectableTextInput")))
-
 (declare first-level-menu-items second-level-menu-items)
 
 (defn update-input-text
@@ -269,24 +259,24 @@
   ;https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
   ;use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
   ;{:selection {:start selection-start :end selection-end}}))
-  (let [manager (selectable-text-input-manager)]
+  (let [manager (rn/selectable-text-input-manager)]
     (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
 
 (def first-level-menus
   {:cut               (fn [{:keys [content] :as params}]
                         (let [new-text (calculate-input-text params "")]
-                          (react/copy-to-clipboard content)
+                          (clipboard/set-string content)
                           (update-input-text params new-text)))
 
    :copy-to-clipboard (fn [{:keys [content]}]
-                        (react/copy-to-clipboard content))
+                        (clipboard/set-string content))
 
    :paste             (fn [params]
                         (let [callback (fn [paste-content]
                                          (let [content  (string/trim paste-content)
                                                new-text (calculate-input-text params content)]
                                            (update-input-text params new-text)))]
-                          (react/get-from-clipboard callback)))
+                          (clipboard/get-string callback)))
 
    :biu               (fn [{:keys [first-level text-input-handle menu-items selection-start
                                    selection-end]}]
@@ -340,7 +330,7 @@
         menu-items      (reagent/atom first-level-menu-items)
         first-level     (reagent/atom true)
         selection-event (atom nil)
-        manager         (selectable-text-input-manager)]
+        manager         (rn/selectable-text-input-manager)]
     (reagent/create-class
      {:component-did-mount
       (fn [this]
@@ -395,6 +385,6 @@
                                           :style               (dissoc style :margin-horizontal)
                                           :on-selection-change on-selection-change
                                           :on-selection        on-selection})]
-          [rn-selectable-text-input {:menuItems @menu-items :style style}
+          [rn/selectable-text-input {:menuItems @menu-items :style style}
            [rn/text-input props
             children]]))})))

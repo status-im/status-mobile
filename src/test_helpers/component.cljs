@@ -10,8 +10,13 @@
   (rtl/render (reagent/as-element component)))
 
 (defn fire-event
-  [event-name element]
-  (rtl/fireEvent element (camel-snake-kebab/->camelCaseString event-name)))
+  ([event-name element]
+   (fire-event event-name element nil))
+  ([event-name element data]
+   (rtl/fireEvent
+    element
+    (camel-snake-kebab/->camelCaseString event-name)
+    (clj->js data))))
 
 (defn debug
   [element]
@@ -30,3 +35,13 @@
   (rtl/screen.getByLabelText (name label)))
 
 (defn expect [match] (js/expect match))
+
+(defn use-fake-timers [] (js/jest.useFakeTimers))
+
+(defn clear-all-timers [] (js/jest.clearAllTimers))
+
+(defn use-real-timers [] (js/jest.useRealTimers))
+
+(defn advance-timers-by-time
+  [time-ms]
+  (js/jest.advanceTimersByTime time-ms))

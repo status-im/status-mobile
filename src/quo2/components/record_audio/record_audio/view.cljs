@@ -1,31 +1,38 @@
 (ns quo2.components.record-audio.record-audio.view
   (:require [cljs-bean.core :as bean]
             [oops.core :as oops]
-            [quo.react :refer [effect! memo]]
-            [quo2.components.buttons.button :as button]
+            [quo.react :refer [memo]]
             [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
+            [quo2.components.record-audio.soundtrack.view :as soundtrack]
+            [react-native.core :as rn :refer [use-effect]]
             [reagent.core :as reagent]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [quo2.components.markdown.text :as text]
+            [goog.string :as gstring]
+            [status-im.audio.core :as audio]
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]
+            [react-native.permissions :as permissions]
+            [taoensso.timbre :as log]
+            [quo2.components.record-audio.record-audio.buttons.record-button-big :as record-button-big]
+            [quo2.components.record-audio.record-audio.buttons.send-button :as send-button]
+            [quo2.components.record-audio.record-audio.buttons.lock-button :as lock-button]
+            [quo2.components.record-audio.record-audio.buttons.delete-button :as delete-button]
+            [quo2.components.record-audio.record-audio.buttons.record-button :as record-button]))
 
-(def ^:private scale-to-each 1.8)
-(def ^:private scale-to-total 2.6)
-(def ^:private scale-padding 0.16)
-(def ^:private opacity-from-lock 1)
-(def ^:private opacity-from-default 0.5)
-(def ^:private signal-anim-duration 3900)
-(def ^:private signal-anim-duration-2 1950)
+(def ^:private min-audio-duration-ms 500)
+(def ^:private max-audio-duration-ms 120000)
+(def ^:private metering-interval 100)
+(def ^:private base-filename "am.")
+(def ^:private default-format "aac")
 
-(def ^:private animated-ring
-  (reagent/adapt-react-class
-   (memo
-    (fn [props]
-      (let [{:keys [scale opacity color]} (bean/bean props)]
-        (reagent/as-element
-         [reanimated/view {:style (style/animated-circle scale opacity color)}]))))))
+(def ^:private rec-options
+  (merge
+   audio/default-recorder-options
+   {:filename         (str base-filename default-format)
+    :meteringInterval metering-interval}))
 
 (def ^:private record-button-area-big
   {:width  56
@@ -40,27 +47,42 @@
    :y      68})
 
 (defn- delete-button-area
-  [active?]
-  {:width  (if active? 72 82)
-   :height 56
-   :x      (if active? -16 -32)
-   :y      (if active? 64 70)})
+  [{:keys [active? reviewing-audio?]}]
+  {:width  (cond
+             active?          72
+             reviewing-audio? 32
+             :else            82)
+   :height (if reviewing-audio? 32 56)
+   :x      (cond
+             active?          -16
+             reviewing-audio? 36
+             :else            -32)
+   :y      (cond
+             active?          64
+             reviewing-audio? 76
+             :else            70)})
 
 (defn- lock-button-area
-  [active?]
+  [{:keys [active?]}]
   {:width  (if active? 72 100)
    :height (if active? 72 102)
    :x      -32
    :y      -32})
 
 (defn- send-button-area
-  [active?]
-  {:width  56
-   :height (if active? 72 92)
-   :x      68
-   :y      (if active? -16 -32)})
+  [{:keys [active? reviewing-audio?]}]
+  {:width  (if reviewing-audio? 32 56)
+   :height (cond
+             active?          72
+             reviewing-audio? 47
+             :else            92)
+   :x      (if reviewing-audio? 76 32)
+   :y      (cond
+             active?          -16
+             reviewing-audio? 76
+             :else            -32)})
 
-(defn- touch-inside-area?
+(defn touch-inside-area?
   [{:keys [location-x location-y ignore-min-y? ignore-max-y? ignore-min-x? ignore-max-x?]}
    {:keys [width height x y]}]
   (let [max-x (+ x width)
@@ -73,537 +95,67 @@
       (or ignore-min-y? (>= location-y y))
       (or ignore-max-y? (<= location-y max-y))))))
 
-(def record-audio-worklets (js/require "../src/js/record_audio_worklets.js"))
-
-(defn- ring-scale
-  [scale substract]
-  (.ringScale ^js record-audio-worklets
-              scale
-              substract))
-
-(defn- record-button-big
-  [recording? ready-to-send? ready-to-lock? ready-to-delete? record-button-is-animating?
-   record-button-at-initial-position? locked? reviewing-audio? recording-timer recording-length-ms
-   clear-timeout touch-active?]
+(defn- recording-bar
+  [recording-length-ms ready-to-delete?]
   [:f>
    (fn []
-     (let [scale                (reanimated/use-shared-value 1)
-           opacity              (reanimated/use-shared-value 0)
-           opacity-from         (if @ready-to-lock? opacity-from-lock opacity-from-default)
-           animations           (map
-                                 (fn [index]
-                                   (let [ring-scale (ring-scale scale (* scale-padding index))]
-                                     {:scale   ring-scale
-                                      :opacity (reanimated/interpolate ring-scale
-                                                                       [1 scale-to-each]
-                                                                       [opacity-from 0])}))
-                                 (range 0 5))
-           rings-color          (cond
-                                  @ready-to-lock?   (colors/theme-colors colors/neutral-80-opa-5-opaque
-                                                                         colors/neutral-80)
-                                  @ready-to-delete? colors/danger-50
-                                  :else             colors/primary-50)
-           translate-y          (reanimated/use-shared-value 0)
-           translate-x          (reanimated/use-shared-value 0)
-           button-color         colors/primary-50
-           icon-color           (if (and (not (colors/dark?)) @ready-to-lock?) colors/black colors/white)
-           icon-opacity         (reanimated/use-shared-value 1)
-           red-overlay-opacity  (reanimated/use-shared-value 0)
-           gray-overlay-opacity (reanimated/use-shared-value 0)
-           complete-animation   (fn []
-                                  (cond
-                                    (and @ready-to-lock? (not @record-button-is-animating?))
-                                    (do
-                                      (reset! locked? true)
-                                      (reset! ready-to-lock? false))
-                                    (and (not @locked?) (not @reviewing-audio?))
-                                    (do
-                                      (reset! recording? false)
-                                      (reset! ready-to-send? false)
-                                      (reset! ready-to-delete? false)
-                                      (reset! ready-to-lock? false)
-                                      (utils/clear-interval @recording-timer)
-                                      (reset! recording-length-ms 0))))
-           start-animation      (fn []
-                                  (reanimated/set-shared-value opacity 1)
-                                  (reanimated/animate-shared-value-with-timing scale
-                                                                               2.6
-                                                                               signal-anim-duration
-                                                                               :linear)
-                                  ;; TODO: Research if we can implement this with withSequence method
-                                  ;; from Reanimated 2
-                                  ;; GitHub issue [#14561]:
-                                  ;; https://github.com/status-im/status-mobile/issues/14561
-                                  (reset! clear-timeout
-                                    (utils/set-timeout
-                                     #(do (reanimated/set-shared-value scale scale-to-each)
-                                          (reanimated/animate-shared-value-with-delay-repeat
-                                           scale
-                                           scale-to-total
-                                           signal-anim-duration-2
-                                           :linear
-                                           0
-                                           -1))
-                                     signal-anim-duration)))
-           stop-animation       (fn []
-                                  (reanimated/set-shared-value opacity 0)
-                                  (reanimated/cancel-animation scale)
-                                  (reanimated/set-shared-value scale 1)
-                                  (when @clear-timeout (utils/clear-timeout @clear-timeout)))
-           start-y-animation    (fn []
-                                  (reset! record-button-at-initial-position? false)
-                                  (reset! record-button-is-animating? true)
-                                  (reanimated/animate-shared-value-with-timing translate-y
-                                                                               -64
-                                                                               250
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-delay icon-opacity
-                                                                              0       33.33
-                                                                              :linear 76.66)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-is-animating? false)
-                                                       (when-not @touch-active? (complete-animation)))
-                                                     250))
-           reset-y-animation    (fn []
-                                  (reanimated/animate-shared-value-with-timing translate-y
-                                                                               0
-                                                                               300
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-timing icon-opacity
-                                                                               1
-                                                                               500
-                                                                               :linear)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-at-initial-position? true))
-                                                     500))
-           start-x-animation    (fn []
-                                  (reset! record-button-at-initial-position? false)
-                                  (reset! record-button-is-animating? true)
-                                  (reanimated/animate-shared-value-with-timing translate-x
-                                                                               -64
-                                                                               250
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-delay icon-opacity
-                                                                              0       33.33
-                                                                              :linear 76.66)
-                                  (reanimated/animate-shared-value-with-timing red-overlay-opacity
-                                                                               1
-                                                                               33.33
-                                                                               :linear)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-is-animating? false)
-                                                       (when-not @touch-active? (complete-animation)))
-                                                     250))
-           reset-x-animation    (fn []
-                                  (reanimated/animate-shared-value-with-timing translate-x
-                                                                               0
-                                                                               300
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-timing icon-opacity
-                                                                               1
-                                                                               500
-                                                                               :linear)
-                                  (reanimated/animate-shared-value-with-timing red-overlay-opacity
-                                                                               0
-                                                                               100
-                                                                               :linear)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-at-initial-position? true))
-                                                     500))
-           start-x-y-animation  (fn []
-                                  (reset! record-button-at-initial-position? false)
-                                  (reset! record-button-is-animating? true)
-                                  (reanimated/animate-shared-value-with-timing translate-y
-                                                                               -44
-                                                                               200
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-timing translate-x
-                                                                               -44
-                                                                               200
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-delay icon-opacity
-                                                                              0       33.33
-                                                                              :linear 33.33)
-                                  (reanimated/animate-shared-value-with-timing gray-overlay-opacity
-                                                                               1
-                                                                               33.33
-                                                                               :linear)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-is-animating? false)
-                                                       (when-not @touch-active? (complete-animation)))
-                                                     200))
-           reset-x-y-animation  (fn []
-                                  (reanimated/animate-shared-value-with-timing translate-y
-                                                                               0
-                                                                               300
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-timing translate-x
-                                                                               0
-                                                                               300
-                                                                               :easing1)
-                                  (reanimated/animate-shared-value-with-timing icon-opacity
-                                                                               1
-                                                                               500
-                                                                               :linear)
-                                  (reanimated/animate-shared-value-with-timing gray-overlay-opacity
-                                                                               0
-                                                                               800
-                                                                               :linear)
-                                  (utils/set-timeout (fn []
-                                                       (reset! record-button-at-initial-position? true))
-                                                     800))]
-       (effect! #(cond
-                   @recording?
-                   (start-animation)
-                   (not @ready-to-lock?)
-                   (stop-animation))
-                [@recording?])
-       (effect! #(if @ready-to-lock?
-                   (start-x-y-animation)
-                   (reset-x-y-animation))
-                [@ready-to-lock?])
-       (effect! #(if @ready-to-send?
-                   (start-y-animation)
-                   (reset-y-animation))
-                [@ready-to-send?])
-       (effect! #(if @ready-to-delete?
-                   (start-x-animation)
-                   (reset-x-animation))
-                [@ready-to-delete?])
-       [reanimated/view
-        {:style          (style/record-button-big-container translate-x translate-y opacity)
-         :pointer-events :none}
-        [:<>
-         (map-indexed
-          (fn [id animation]
-            ^{:key id}
-            [animated-ring
-             {:scale   (:scale animation)
-              :opacity (:opacity animation)
-              :color   rings-color}])
-          animations)]
-        [rn/view {:style (style/record-button-big-body button-color)}
-         [reanimated/view {:style (style/record-button-big-red-overlay red-overlay-opacity)}]
-         [reanimated/view {:style (style/record-button-big-gray-overlay gray-overlay-opacity)}]
-         [reanimated/view {:style (style/record-button-big-icon-container icon-opacity)}
-          (if @locked?
-            [rn/view {:style style/stop-icon}]
-            [icons/icon :i/audio {:color icon-color}])]]]))])
+     (let [fill-percentage (/ (* recording-length-ms 100) max-audio-duration-ms)]
+       [rn/view {:style (style/recording-bar-container)}
+        [rn/view {:style (style/recording-bar fill-percentage ready-to-delete?)}]]))])
 
-(defn- send-button
-  [recording? ready-to-send? reviewing-audio?]
+(defn- time-counter
+  [recording? recording-length-ms ready-to-delete? reviewing-audio? audio-current-time-ms]
   [:f>
    (fn []
-     (let [opacity                   (reanimated/use-shared-value 0)
-           translate-y               (reanimated/use-shared-value 20)
-           connector-opacity         (reanimated/use-shared-value 0)
-           width                     (reanimated/use-shared-value 12)
-           height                    (reanimated/use-shared-value 24)
-           border-radius-first-half  (reanimated/use-shared-value 16)
-           border-radius-second-half (reanimated/use-shared-value 8)
-           start-y-animation         (fn []
-                                       (reanimated/animate-shared-value-with-delay translate-y
-                                                                                   12      50
-                                                                                   :linear 133.33)
-                                       (reanimated/animate-shared-value-with-delay connector-opacity
-                                                                                   1        0
-                                                                                   :easing1 93.33)
-                                       (reanimated/animate-shared-value-with-delay width
-                                                                                   56       83.33
-                                                                                   :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay height
-                                                                                   56       83.33
-                                                                                   :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-first-half
-                                        28       83.33
-                                        :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-second-half
-                                        28       83.33
-                                        :easing1 80))
-           reset-y-animation         (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-y
-                                                                                    0
-                                                                                    100
-                                                                                    :linear)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 12)
-                                       (reanimated/set-shared-value height 24)
-                                       (reanimated/set-shared-value border-radius-first-half 16)
-                                       (reanimated/set-shared-value border-radius-second-half 8))
-           fade-in-animation         (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-y
-                                                                                    0
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    1
-                                                                                    200
-                                                                                    :linear))
-           fade-out-animation        (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-y
-                                                                                    (if @reviewing-audio?
-                                                                                      76
-                                                                                      20)
-                                                                                    200
-                                                                                    :linear)
-                                       (when-not @reviewing-audio?
-                                         (reanimated/animate-shared-value-with-timing opacity
-                                                                                      0
-                                                                                      200
-                                                                                      :linear))
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))
-           fade-out-reset-animation  (fn []
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    0
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-delay translate-y
-                                                                                   20      0
-                                                                                   :linear 200)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))]
-       (effect! #(if @recording?
-                   (fade-in-animation)
-                   (fade-out-animation))
-                [@recording?])
-       (effect! #(when-not @reviewing-audio?
-                   (fade-out-reset-animation))
-                [@reviewing-audio?])
-       (effect! #(cond
-                   @ready-to-send?
-                   (start-y-animation)
-                   @recording?     (reset-y-animation))
-                [@ready-to-send?])
-       [:<>
-        [reanimated/view {:style (style/send-button-container opacity)}
-         [reanimated/view
-          {:style (style/send-button-connector connector-opacity
-                                               width
-                                               height
-                                               border-radius-first-half
-                                               border-radius-second-half)}]]
-        [reanimated/view
-         {:style          (style/send-button translate-y opacity)
-          :pointer-events :none}
-         [icons/icon :i/arrow-up
-          {:color           colors/white
-           :size            20
-           :container-style style/send-icon-container}]]]))])
+     (let [s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
+           time-str (gstring/format "%02d:%02d" (quot s 60) (mod s 60))]
+       [rn/view {:style (style/timer-container reviewing-audio?)}
+        (when-not reviewing-audio?
+          [rn/view {:style (style/timer-circle)}])
+        [text/text
+         (merge
+          {:size   :label
+           :weight :semi-bold}
+          (when ready-to-delete?
+            {:style (style/timer-text)}))
+         time-str]]))])
 
-(defn- lock-button
-  [recording? ready-to-lock? locked?]
+(defn- play-button
+  [playing-audio? player-ref playing-timer audio-current-time-ms seeking-audio?]
   [:f>
    (fn []
-     (let [translate-x-y             (reanimated/use-shared-value 20)
-           opacity                   (reanimated/use-shared-value 0)
-           connector-opacity         (reanimated/use-shared-value 0)
-           width                     (reanimated/use-shared-value 24)
-           height                    (reanimated/use-shared-value 12)
-           border-radius-first-half  (reanimated/use-shared-value 8)
-           border-radius-second-half (reanimated/use-shared-value 8)
-           start-x-y-animation       (fn []
-                                       (reanimated/animate-shared-value-with-delay translate-x-y
-                                                                                   8       50
-                                                                                   :linear 116.66)
-                                       (reanimated/animate-shared-value-with-delay connector-opacity
-                                                                                   1        0
-                                                                                   :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay width
-                                                                                   56       83.33
-                                                                                   :easing1 63.33)
-                                       (reanimated/animate-shared-value-with-delay height
-                                                                                   56       83.33
-                                                                                   :easing1 63.33)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-first-half
-                                        28       83.33
-                                        :easing1 63.33)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-second-half
-                                        28       83.33
-                                        :easing1 63.33))
-           reset-x-y-animation       (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x-y
-                                                                                    0
-                                                                                    100
-                                                                                    :linear)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))
-           fade-in-animation         (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x-y
-                                                                                    0
-                                                                                    220
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    1
-                                                                                    220
-                                                                                    :linear))
-           fade-out-animation        (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x-y
-                                                                                    20
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    0
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))]
-       (effect! #(if @recording?
-                   (fade-in-animation)
-                   (fade-out-animation))
-                [@recording?])
-       (effect! #(cond
-                   @ready-to-lock?
-                   (start-x-y-animation)
-                   (and @recording? (not @locked?))
-                   (reset-x-y-animation))
-                [@ready-to-lock?])
-       (effect! #(if @locked?
-                   (fade-out-animation)
-                   (reset-x-y-animation))
-                [@locked?])
-       [:<>
-        [reanimated/view {:style (style/lock-button-container opacity)}
-         [reanimated/view
-          {:style (style/lock-button-connector connector-opacity
-                                               width
-                                               height
-                                               border-radius-first-half
-                                               border-radius-second-half)}]]
-        [reanimated/view
-         {:style          (style/lock-button translate-x-y opacity)
-          :pointer-events :none}
-         [icons/icon (if @ready-to-lock? :i/locked :i/unlocked)
-          {:color (colors/theme-colors colors/black colors/white)
-           :size  20}]]]))])
+     (let [on-play  (fn []
+                      (reset! playing-audio? true)
+                      (reset! playing-timer
+                        (js/setInterval
+                         (fn []
+                           (let [current-time (audio/get-player-current-time @player-ref)
+                                 player-state (audio/get-state @player-ref)
+                                 playing?     (= player-state audio/PLAYING)]
+                             (when (and playing? (not @seeking-audio?) (> current-time 0))
+                               (reset! audio-current-time-ms current-time))))
+                         100)))
+           on-pause (fn []
+                      (reset! playing-audio? false)
+                      (when @playing-timer
+                        (js/clearInterval @playing-timer)
+                        (reset! playing-timer nil))
+                      (log/debug "[record-audio] toggle play / pause - success"))
+           on-press (fn []
+                      (audio/toggle-playpause-player
+                       @player-ref
+                       on-play
+                       on-pause
+                       #(log/error "[record-audio] toggle play / pause - error: " %)))]
+       [rn/touchable-opacity
+        {:style    (style/play-button)
+         :on-press on-press}
+        [icons/icon
+         (if @playing-audio? :i/pause :i/play)
+         {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))])
 
-(defn- delete-button
-  [recording? ready-to-delete?]
-  [:f>
-   (fn []
-     (let [opacity                   (reanimated/use-shared-value 0)
-           translate-x               (reanimated/use-shared-value 20)
-           connector-opacity         (reanimated/use-shared-value 0)
-           width                     (reanimated/use-shared-value 24)
-           height                    (reanimated/use-shared-value 12)
-           border-radius-first-half  (reanimated/use-shared-value 8)
-           border-radius-second-half (reanimated/use-shared-value 8)
-           start-x-animation         (fn []
-                                       (reanimated/animate-shared-value-with-delay translate-x
-                                                                                   12      50
-                                                                                   :linear 133.33)
-                                       (reanimated/animate-shared-value-with-delay connector-opacity
-                                                                                   1        0
-                                                                                   :easing1 93.33)
-                                       (reanimated/animate-shared-value-with-delay width
-                                                                                   56       83.33
-                                                                                   :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay height
-                                                                                   56       83.33
-                                                                                   :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-first-half
-                                        28       83.33
-                                        :easing1 80)
-                                       (reanimated/animate-shared-value-with-delay
-                                        border-radius-second-half
-                                        28       83.33
-                                        :easing1 80))
-           reset-x-animation         (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x
-                                                                                    0
-                                                                                    100
-                                                                                    :linear)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))
-           fade-in-animation         (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x
-                                                                                    0
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    1
-                                                                                    200
-                                                                                    :linear))
-           fade-out-animation        (fn []
-                                       (reanimated/animate-shared-value-with-timing translate-x
-                                                                                    20
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/animate-shared-value-with-timing opacity
-                                                                                    0
-                                                                                    200
-                                                                                    :linear)
-                                       (reanimated/set-shared-value connector-opacity 0)
-                                       (reanimated/set-shared-value width 24)
-                                       (reanimated/set-shared-value height 12)
-                                       (reanimated/set-shared-value border-radius-first-half 8)
-                                       (reanimated/set-shared-value border-radius-second-half 16))]
-       (effect! #(if @recording?
-                   (fade-in-animation)
-                   (fade-out-animation))
-                [@recording?])
-       (effect! #(cond
-                   @ready-to-delete?
-                   (start-x-animation)
-                   @recording?
-                   (reset-x-animation))
-                [@ready-to-delete?])
-       [:<>
-        [reanimated/view {:style (style/delete-button-container opacity)}
-         [reanimated/view
-          {:style (style/delete-button-connector connector-opacity
-                                                 width
-                                                 height
-                                                 border-radius-first-half
-                                                 border-radius-second-half)}]]
-        [reanimated/view
-         {:style          (style/delete-button translate-x opacity)
-          :pointer-events :none}
-         [icons/icon :i/delete
-          {:color colors/white
-           :size  20}]]]))])
-
-(defn- record-button
-  [recording? reviewing-audio?]
-  [:f>
-   (fn []
-     (let [opacity        (reanimated/use-shared-value 1)
-           show-animation #(reanimated/set-shared-value opacity 1)
-           hide-animation #(reanimated/set-shared-value opacity 0)]
-       (effect! #(if (or @recording? @reviewing-audio?)
-                   (hide-animation)
-                   (show-animation))
-                [@recording? @reviewing-audio?])
-       [reanimated/view {:style (style/record-button-container opacity)}
-        [button/button
-         {:type                :outline
-          :size                32
-          :width               32
-          :accessibility-label :mic-button}
-         [icons/icon :i/audio {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))])
-
-(defn input-view
-  []
+(defn view
+  [{:keys [on-start-recording on-send on-cancel on-reviewing-audio]}]
   [:f>
    (fn []
      (let [recording?                         (reagent/atom false)
@@ -612,15 +164,81 @@
            ready-to-lock?                     (reagent/atom false)
            ready-to-delete?                   (reagent/atom false)
            reviewing-audio?                   (reagent/atom false)
+           playing-audio?                     (reagent/atom false)
+           recording-length-ms                (reagent/atom 0)
+           audio-current-time-ms              (reagent/atom 0)
+           seeking-audio?                     (reagent/atom false)
            clear-timeout                      (atom nil)
            record-button-at-initial-position? (atom true)
            record-button-is-animating?        (atom false)
+           idle?                              (atom false)
            touch-active?                      (atom false)
            recording-timer                    (atom nil)
-           recording-length-ms                (atom 0)
+           playing-timer                      (atom nil)
+           recorder-ref                       (atom nil)
+           player-ref                         (atom nil)
+           record-audio-permission-granted    (atom true)
+           output-file                        (atom nil)
+           reached-max-duration?              (atom false)
+           check-audio-permission
+           (fn []
+             (permissions/permission-granted?
+              :record-audio
+              #(reset! record-audio-permission-granted %)
+              #(reset! record-audio-permission-granted false)))
+           request-record-audio-permission
+           (fn []
+             (rf/dispatch
+              [:request-permissions
+               {:permissions [:record-audio]
+                :on-allowed
+                #(reset! record-audio-permission-granted true)
+                :on-denied
+                #(js/setTimeout
+                  (fn []
+                    (utils/show-popup
+                     (i18n/label :t/audio-recorder-error)
+                     (i18n/label :t/audio-recorder-permissions-error)))
+                  50)}]))
+           destroy-player
+           (fn []
+             (audio/destroy-player @player-ref)
+             (reset! player-ref nil))
+           reload-player
+           (fn []
+             (when @player-ref
+               (destroy-player))
+             (reset! player-ref
+               (audio/new-player
+                (:filename rec-options)
+                {:autoDestroy                 false
+                 :continuesToPlayInBackground false}
+                (fn []
+                  (reset! playing-audio? false)
+                  (when @playing-timer
+                    (js/clearInterval @playing-timer)
+                    (reset! playing-timer nil)
+                    (reset! audio-current-time-ms 0)
+                    (reset! seeking-audio? false)))))
+             (audio/prepare-player
+              @player-ref
+              #(log/debug "[record-audio] prepare player - success")
+              #(log/error "[record-audio] prepare player - error: " %)))
+           destroy-recorder
+           (fn []
+             (audio/destroy-recorder @recorder-ref)
+             (reset! recorder-ref nil))
+           reload-recorder
+           (fn []
+             (when @recorder-ref
+               (destroy-recorder))
+             (reset! recorder-ref (audio/new-recorder
+                                   rec-options
+                                   #(log/debug "[record-audio] new recorder - on meter")
+                                   #(log/debug "[record-audio] new recorder - on ended"))))
            on-start-should-set-responder
            (fn [^js e]
-             (when-not @locked?
+             (when-not (or @locked? @idle? (nil? e))
                (let [pressed-record-button? (touch-inside-area?
                                              {:location-x    (oops/oget e "nativeEvent.locationX")
                                               :location-y    (oops/oget e "nativeEvent.locationY")
@@ -630,16 +248,57 @@
                                               :ignore-max-x? false}
                                              record-button-area)]
                  (when-not @reviewing-audio?
-                   (reset! recording? pressed-record-button?)
-                   (when pressed-record-button?
-                     ;; TODO: By now we just track recording length, we need to add actual audio
-                     ;; recording logic
-                     ;; GitHub issue [#14558]: https://github.com/status-im/status-mobile/issues/14558
-                     (reset! recording-timer (utils/set-interval #(reset! recording-length-ms
-                                                                    (+ @recording-length-ms 500))
-                                                                 500))))
-                 (reset! touch-active? true)))
-             true)
+                   (if @record-audio-permission-granted
+                     (do
+                       (when (not @idle?)
+                         (reset! recording? pressed-record-button?))
+                       (when pressed-record-button?
+                         (reset! playing-audio? false)
+                         (when @recording-timer
+                           (js/clearInterval @recording-timer))
+                         (reset! output-file nil)
+                         (audio/start-recording
+                          @recorder-ref
+                          (fn []
+                            (reset! audio-current-time-ms 0)
+                            (reset! recording-timer
+                              (js/setInterval
+                               (fn []
+                                 (if (< @recording-length-ms max-audio-duration-ms)
+                                   (reset! recording-length-ms
+                                     (+ @recording-length-ms metering-interval))
+                                   (do
+                                     (reset! reached-max-duration? (not @locked?))
+                                     (reset! reviewing-audio? true)
+                                     (reset! idle? false)
+                                     (reset! locked? false)
+                                     (reset! recording? false)
+                                     (reset! ready-to-lock? false)
+                                     (reset! ready-to-send? false)
+                                     (reset! ready-to-delete? false)
+                                     (audio/stop-recording
+                                      @recorder-ref
+                                      (fn []
+                                        (reset! output-file (audio/get-recorder-file-path
+                                                             @recorder-ref))
+                                        (reload-recorder)
+                                        (reload-player)
+                                        (log/debug "[record-audio] stop recording - success"))
+                                      #(log/error "[record-audio] stop recording - error: " %))
+                                     (js/setTimeout #(reset! idle? false) 1000)
+                                     (js/clearInterval @recording-timer)
+                                     (reset! recording-length-ms 0)
+                                     (when on-reviewing-audio
+                                       (on-reviewing-audio)))))
+                               metering-interval))
+                            (log/debug "[record-audio] start recording - success"))
+                          #(log/error "[record-audio] start recording - error: " %))
+                         (when on-start-recording
+                           (on-start-recording))))
+                     (request-record-audio-permission)))
+                 (when @record-audio-permission-granted
+                   (reset! touch-active? true))))
+             (not @idle?))
            on-responder-move
            (fn [^js e]
              (when-not @locked?
@@ -654,7 +313,9 @@
                                                :ignore-max-y? false
                                                :ignore-min-x? false
                                                :ignore-max-x? true}
-                                              (send-button-area @ready-to-send?))
+                                              (send-button-area
+                                               {:active?          @ready-to-send?
+                                                :reviewing-audio? false}))
                      moved-to-delete-button? (touch-inside-area?
                                               {:location-x    location-x
                                                :location-y    location-y
@@ -662,7 +323,9 @@
                                                :ignore-max-y? true
                                                :ignore-min-x? true
                                                :ignore-max-x? false}
-                                              (delete-button-area @ready-to-delete?))
+                                              (delete-button-area
+                                               {:active?          @ready-to-delete?
+                                                :reviewing-audio? false}))
                      moved-to-lock-button?   (touch-inside-area?
                                               {:location-x    location-x
                                                :location-y    location-y
@@ -670,7 +333,7 @@
                                                :ignore-max-y? false
                                                :ignore-min-x? false
                                                :ignore-max-x? false}
-                                              (lock-button-area @ready-to-lock?))
+                                              (lock-button-area {:active? @ready-to-lock?}))
                      moved-to-record-button? (and
                                               (touch-inside-area?
                                                {:location-x    location-x
@@ -709,59 +372,158 @@
                    (reset! ready-to-send? moved-to-send-button?)))))
            on-responder-release
            (fn [^js e]
-             (let [on-record-button? (touch-inside-area?
-                                      {:location-x    (oops/oget e "nativeEvent.locationX")
-                                       :location-y    (oops/oget e "nativeEvent.locationY")
-                                       :ignore-min-y? false
-                                       :ignore-max-y? false
-                                       :ignore-min-x? false
-                                       :ignore-max-x? false}
-                                      (if @reviewing-audio? record-button-area record-button-area-big))]
-               (cond
-                 (and @reviewing-audio? on-record-button?)
-                 (reset! reviewing-audio? false)
-                 (and @ready-to-lock? (not @record-button-is-animating?))
-                 (do
-                   (reset! locked? true)
-                   (reset! ready-to-lock? false))
-                 (and (not @reviewing-audio?) on-record-button?)
-                 (do
-                   (when (>= @recording-length-ms 500) (reset! reviewing-audio? true))
-                   (reset! locked? false)
-                   (reset! recording? false)
-                   (reset! ready-to-lock? false)
-                   (utils/clear-interval @recording-timer)
-                   (reset! recording-length-ms 0))
-                 (and (not @locked?) (not @reviewing-audio?) (not @record-button-is-animating?))
-                 (do
-                   (reset! recording? false)
-                   (reset! ready-to-send? false)
-                   (reset! ready-to-delete? false)
-                   (reset! ready-to-lock? false)
-                   (utils/clear-interval @recording-timer)
-                   (reset! recording-length-ms 0))))
-             (reset! touch-active? false))]
+             (when (and
+                    (not @idle?)
+                    (not @reached-max-duration?))
+               (let [touch-area        {:location-x    (oops/oget e "nativeEvent.locationX")
+                                        :location-y    (oops/oget e "nativeEvent.locationY")
+                                        :ignore-min-y? false
+                                        :ignore-max-y? false
+                                        :ignore-min-x? false
+                                        :ignore-max-x? false}
+                     on-record-button? (touch-inside-area?
+                                        touch-area
+                                        record-button-area-big)
+                     on-send-button?   (touch-inside-area?
+                                        touch-area
+                                        (send-button-area
+                                         {:active?          false
+                                          :reviewing-audio? true}))
+                     on-delete-button? (touch-inside-area?
+                                        touch-area
+                                        (delete-button-area
+                                         {:active?          false
+                                          :reviewing-audio? true}))]
+                 (cond
+                   (and @reviewing-audio? on-send-button?)
+                   (do
+                     (reset! reviewing-audio? false)
+                     (reset! audio-current-time-ms 0)
+                     (when @player-ref
+                       (audio/stop-playing
+                        @player-ref
+                        (fn []
+                          (destroy-player)
+                          (log/debug "[record-audio] stop playing - success"))
+                        #(log/error "[record-audio] stop playing - error: " %)))
+                     (when on-send
+                       (on-send @output-file)))
+                   (and @reviewing-audio? on-delete-button?)
+                   (do
+                     (reset! reviewing-audio? false)
+                     (reset! audio-current-time-ms 0)
+                     (destroy-player)
+                     (when on-cancel
+                       (on-cancel)))
+                   (and @ready-to-lock? (not @record-button-is-animating?))
+                   (do
+                     (reset! locked? true)
+                     (reset! ready-to-lock? false))
+                   (and (not @reviewing-audio?) on-record-button?)
+                   (do
+                     (if (>= @recording-length-ms min-audio-duration-ms)
+                       (do (reset! reviewing-audio? true)
+                           (reset! idle? false)
+                           (when on-reviewing-audio
+                             (on-reviewing-audio)))
+                       (do (when on-cancel
+                             (on-cancel))
+                           (reset! idle? true)))
+                     (reset! locked? false)
+                     (reset! recording? false)
+                     (reset! ready-to-lock? false)
+                     (audio/stop-recording
+                      @recorder-ref
+                      (fn []
+                        (reset! output-file (audio/get-recorder-file-path @recorder-ref))
+                        (reload-recorder)
+                        (reload-player)
+                        (log/debug "[record-audio] stop recording - success"))
+                      #(log/error "[record-audio] stop recording - error: " %))
+                     (js/setTimeout #(reset! idle? false) 1000)
+                     (js/clearInterval @recording-timer)
+                     (reset! recording-length-ms 0))
+                   (and (not @locked?) (not @reviewing-audio?) (not @record-button-is-animating?))
+                   (audio/stop-recording
+                    @recorder-ref
+                    (fn []
+                      (cond
+                        @ready-to-send?
+                        (when on-send
+                          (on-send (audio/get-recorder-file-path @recorder-ref)))
+                        @ready-to-delete?
+                        (when on-cancel
+                          (on-cancel)))
+                      (reload-recorder)
+                      (reset! recording? false)
+                      (reset! ready-to-send? false)
+                      (reset! ready-to-delete? false)
+                      (reset! ready-to-lock? false)
+                      (reset! idle? true)
+                      (js/setTimeout #(reset! idle? false) 1000)
+                      (js/clearInterval @recording-timer)
+                      (reset! recording-length-ms 0)
+                      (log/debug "[record-audio] stop recording - success"))
+                    #(log/error "[record-audio] stop recording - error: " %))))
+               (reset! touch-active? false))
+             (when @reached-max-duration?
+               (reset! reached-max-duration? false)))]
        (fn []
+         (use-effect (fn []
+                       (check-audio-permission)
+                       (reload-recorder)))
          [rn/view
-          {:style                         style/input-container
-           :pointer-events                :box-only
-           :on-start-should-set-responder on-start-should-set-responder
-           :on-responder-move             on-responder-move
-           :on-responder-release          on-responder-release}
-          [delete-button recording? ready-to-delete?]
-          [lock-button recording? ready-to-lock? locked?]
-          [send-button recording? ready-to-send? reviewing-audio?]
-          [record-button-big
-           recording?
-           ready-to-send?
-           ready-to-lock?
-           ready-to-delete?
-           record-button-is-animating?
-           record-button-at-initial-position?
-           locked?
-           reviewing-audio?
-           recording-timer
-           recording-length-ms
-           clear-timeout
-           touch-active?]
-          [record-button recording? reviewing-audio?]])))])
+          {:style style/bar-container}
+          (when @reviewing-audio?
+            [:<>
+             [play-button playing-audio? player-ref playing-timer audio-current-time-ms seeking-audio?]
+             [soundtrack/soundtrack
+              {:audio-current-time-ms audio-current-time-ms
+               :player-ref            player-ref
+               :seeking-audio?        seeking-audio?}]])
+          (when (or @recording? @reviewing-audio?)
+            [time-counter @recording? @recording-length-ms @ready-to-delete? @reviewing-audio?
+             @audio-current-time-ms])
+          (when @recording?
+            [recording-bar @recording-length-ms @ready-to-delete?])
+          [rn/view
+           {:test-ID                       "record-audio"
+            :style                         style/button-container
+            :pointer-events                :box-only
+            :on-start-should-set-responder on-start-should-set-responder
+            :on-responder-move             on-responder-move
+            :on-responder-release          on-responder-release}
+           [delete-button/delete-button recording? ready-to-delete? reviewing-audio?]
+           [lock-button/lock-button recording? ready-to-lock? locked?]
+           [send-button/send-button recording? ready-to-send? reviewing-audio?]
+           [record-button-big/record-button-big
+            recording?
+            ready-to-send?
+            ready-to-lock?
+            ready-to-delete?
+            record-button-is-animating?
+            record-button-at-initial-position?
+            locked?
+            reviewing-audio?
+            recording-timer
+            recording-length-ms
+            clear-timeout
+            touch-active?
+            recorder-ref
+            reload-recorder
+            idle?
+            on-send
+            on-cancel]
+           [record-button/record-button recording? reviewing-audio?]]])))])
+
+(def record-audio
+  (reagent/adapt-react-class
+   (memo
+    (fn [props]
+      (let [{:keys [onStartRecording onReviewingAudio onSend onCancel]} (bean/bean props)]
+        (reagent/as-element
+         [view
+          {:on-start-recording onStartRecording
+           :on-reviewing-audio onReviewingAudio
+           :on-send            onSend
+           :on-cancel          onCancel}]))))))

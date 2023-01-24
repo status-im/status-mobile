@@ -94,11 +94,12 @@
 
 (defn use-effect
   ([effect-fn]
+   (use-effect effect-fn []))
+  ([effect-fn deps]
    (react/useEffect
     #(let [ret (effect-fn)]
-       (if (fn? ret) ret js/undefined))))
-  ([effect-fn deps]
-   (react/useEffect effect-fn (bean/->js deps))))
+       (if (fn? ret) ret js/undefined))
+    (bean/->js deps))))
 
 (defn use-effect-once
   [effect-fn]
@@ -117,3 +118,14 @@
   {:ease-in-ease-out (-> ^js layout-animation .-Presets .-easeInEaseOut)
    :linear           (-> ^js layout-animation .-Presets .-linear)
    :spring           (-> ^js layout-animation .-Presets .-spring)})
+
+(def find-node-handle (.-findNodeHandle ^js react-native))
+
+(defn selectable-text-input-manager
+  []
+  (when (exists? (.-NativeModules ^js react-native))
+    (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
+
+(defonce selectable-text-input
+         (reagent/adapt-react-class
+          (.requireNativeComponent ^js react-native "RNSelectableTextInput")))

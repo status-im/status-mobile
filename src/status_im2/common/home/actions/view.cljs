@@ -217,17 +217,6 @@
           :sub-label           nil
           :chevron?            true}))
 
-;; TODO(OmarBasem): Requires design input.
-(defn pinned-messages-entry
-  []
-  (entry {:icon                :i/pin
-          :label               (i18n/label :t/pinned-messages)
-          :on-press            #(js/alert "TODO: to be implemented, requires design input")
-          :danger?             false
-          :accessibility-label :pinned-messages
-          :sub-label           nil
-          :chevron?            true}))
-
 (defn remove-from-contacts-entry
   [contact]
   (entry {:icon                :i/remove-user
@@ -383,9 +372,8 @@
   [(mark-as-read-entry chat-id)
    (mute-chat-entry chat-id)
    (notifications-entry false)
-   (if inside-chat?
-     (fetch-messages-entry)
-     (pinned-messages-entry))
+   (when inside-chat?
+     (fetch-messages-entry))
    (when (or (not group-chat) public?)
      (show-qr-entry))
    (when-not group-chat

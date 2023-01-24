@@ -4,7 +4,6 @@
             [status-im2.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im2.contexts.activity-center.events :as activity-center]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -69,15 +68,15 @@
 
 (rf/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
-  [cofx]
-  (activity-center/notifications-fetch-unread-count cofx))
+  [_]
+  {:dispatch [:activity-center.notifications/fetch-unread-count]})
 
 (rf/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
   [{:keys [db] :as cofx} chat-ids]
   (rf/merge cofx
-            {:db (reduce mark-chat-all-read db chat-ids)}
-            (activity-center/notifications-fetch-unread-count)))
+            {:db       (reduce mark-chat-all-read db chat-ids)
+             :dispatch [:activity-center.notifications/fetch-unread-count]}))
 
 (rf/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}

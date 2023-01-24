@@ -9,6 +9,7 @@
   (set/rename-keys visibility-status-update
                    {:publicKey  :public-key
                     :statusType :status-type}))
+
 (defn <-rpc-settings
   [settings]
   (-> settings
