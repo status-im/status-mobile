@@ -149,14 +149,26 @@
                 {}
                 pin-messages))))
 
+;; local messages will not have a :pinned-at key until user navigates away and to
+;; chat screen. For this reason we want to retain order of local messages with :pinned-at nil
+;; as these will be a stack on top of the messages, however we do want to sort previous messages
+;; from backend that have a :pinned-at value.
+(defn sort-pinned
+  [a b]
+  (cond
+    (and a b) (- a b)
+    (or a b)  (if b false true)
+    :else     a))
+
 (re-frame/reg-sub
  :chats/pinned-sorted-list
  (fn [[_ chat-id] _]
    (re-frame/subscribe [:chats/pinned chat-id]))
  (fn [pin-messages _]
-   (->> pin-messages
-        vals
-        (sort-by :pinned-at <))))
+   (let [pin-messages-vals (vals pin-messages)]
+
+     (sort-by :pinned-at sort-pinned pin-messages-vals))))
+
 
 (re-frame/reg-sub
  :chats/pin-modal

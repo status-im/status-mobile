@@ -4,14 +4,12 @@
 
 (defn banner
   [chat-id]
-  (let [pinned-messages (rf/sub [:chats/pinned chat-id])
-        latest-pin-id   (-> pinned-messages
-                            vals
-                            first
-                            (get :message-id))
-        latest-pin-text (get-in (rf/sub [:chats/chat-messages chat-id])
-                                [latest-pin-id :content :text])
-        pins-count      (count (seq pinned-messages))]
+  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list chat-id])
+        latest-pin-text (->> pinned-messages
+                             last
+                             :content
+                             :text)
+        pins-count      (count pinned-messages)]
     [quo/banner
      {:latest-pin-text latest-pin-text
       :pins-count      pins-count
