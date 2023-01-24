@@ -93,7 +93,6 @@
             :height           20}}
    [rn/view {:style (styles/handle)}]])
 
-
 (defn bottom-sheet
   [props children]
   (let [{on-cancel         :on-cancel
