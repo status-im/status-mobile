@@ -123,3 +123,8 @@
   {:events [:change-root-status-bar-style]}
   [_ style]
   {:change-root-status-bar-style-fx style})
+
+(rf/defn change-root-nav-bar-color
+  {:events [:change-root-nav-bar-color]}
+  [_ color]
+  {:change-root-nav-bar-color-fx color})

@@ -167,9 +167,12 @@
                {:db (dissoc db :current-chat-id)}
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
+                 ;; A close chat event is also called while opening any chat.
+                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n is
+                 ;; used here.
                  (when (and community-id (not navigate-to-shell?))
-                   {:dispatch [:shell/add-switcher-card
-                               :community {:community-id community-id}]})))
+                   {:dispatch-n [[:shell/add-switcher-card
+                                  :community {:community-id community-id}]]})))
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))

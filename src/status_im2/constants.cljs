@@ -265,3 +265,7 @@
 (def ^:const multi-code-prefix
   "We prefix our keys with 0xe701 prior to serialisation them"
   "0xe701")
+
+(def ^:const theme-type-system 0)
+(def ^:const theme-type-light 1)
+(def ^:const theme-type-dark 2)

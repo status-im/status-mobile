@@ -351,7 +351,7 @@
 
 (rf/defn initialize-appearance
   [cofx]
-  {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])})
+  {:multiaccounts.ui/switch-theme [(get-in cofx [:db :multiaccount :appearance]) nil false]})
 
 (rf/defn get-group-chat-invitations
   [_]
@@ -490,7 +490,7 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (if (get db :tos/accepted?)
-    (re-frame/dispatch [:init-root (if config/new-ui-enabled? :shell-stack :chat-stack)])
+    (re-frame/dispatch [:init-root :shell-stack])
     (re-frame/dispatch [:init-root :tos])))
 
 (rf/defn login-only-events
@@ -539,14 +539,7 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-
-              (if config/new-ui-enabled?
-                (navigation/init-root :shell-stack)
-                ;; if it's a first account, the ToS will be accepted at welcome carousel
-                ;; if not a first account, the ToS might have been accepted by other account logins
-                (if (or first-account? tos-accepted?)
-                  (navigation/init-root :onboarding-notification)
-                  (navigation/init-root :tos))))))
+              (navigation/init-root :shell-stack))))
 
 (defn- keycard-setup?
   [cofx]
@@ -564,7 +557,7 @@
               :multiaccount)
       (assoc :tos-accept-next-root
              (if login-only?
-               :chat-stack
+               :shell-stack
                :onboarding-notification))
       (assoc :logged-in-since now)
       (assoc :view-id :home)))
@@ -737,7 +730,7 @@
 (rf/defn welcome-lets-go
   {:events [:welcome-lets-go]}
   [_]
-  {:init-root-fx :chat-stack})
+  {:init-root-fx :shell-stack})
 
 (rf/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}

@@ -112,10 +112,13 @@
 
 (rf/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [cofx _]
-  (when (multiaccounts.model/logged-in? cofx)
-    {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])
-     :dispatch                      [:reload-new-ui]}))
+  [{:keys [db] :as cofx} _]
+  (let [current-theme-type (get-in cofx [:db :multiaccount :appearance])]
+    (when (and (multiaccounts.model/logged-in? cofx)
+               (= current-theme-type status-im2.constants/theme-type-system))
+      {:multiaccounts.ui/switch-theme
+       [(get-in db [:multiaccount :appearance])
+        (:view-id db) true]})))
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})
