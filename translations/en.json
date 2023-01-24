@@ -1824,6 +1824,8 @@
     "new-ui": "New UI",
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
+    "contact-request-was-accepted": "Contact request accepted",
+    "contact-request-is-now-a-contact": "is now a contact",
     "contact-requests": "Contact requests",
     "say-hi": "Say hi",
     "opened": "Opened",

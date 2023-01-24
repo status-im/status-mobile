@@ -10,25 +10,44 @@
 
 (defn outgoing-contact-request-view
   [{:keys [id chat-id message last-message] :as notification}]
-  (let [message (or message last-message)]
-    [quo/activity-log
-     {:title     (i18n/label :t/contact-request)
-      :icon      :main-icons2/add-user
-      :timestamp (datetime/timestamp->relative (:timestamp notification))
-      :unread?   (not (:read notification))
-      :context   [(i18n/label :t/contact-request-outgoing)
-                  [common/user-avatar-tag chat-id]]
-      :message   {:body (get-in message [:content :text])}
-      :items     [{:type                :button
-                   :subtype             :danger
-                   :label               (i18n/label :t/cancel)
-                   :accessibility-label :cancel-contact-request
-                   :on-press            (fn []
-                                          (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request (:from message)])
-                                          (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
-                  {:type    :status
-                   :subtype :pending
-                   :label   (i18n/label :t/pending)}]}]))
+  (let [{:keys [contact-request-state] :as message} (or message last-message)]
+    (if (= contact-request-state constants/contact-request-message-state-accepted)
+      [quo/activity-log
+       {:title     (i18n/label :t/contact-request-was-accepted)
+        :icon      :main-icons2/add-user
+        :timestamp (datetime/timestamp->relative (:timestamp notification))
+        :unread?   (not (:read notification))
+        :context   [[common/user-avatar-tag chat-id]
+                    (i18n/label :t/contact-request-is-now-a-contact)]}
+       :message   {:body (get-in message [:content :text])}
+       :items []]
+      [quo/activity-log
+       {:title     (i18n/label :t/contact-request)
+        :icon      :main-icons2/add-user
+        :timestamp (datetime/timestamp->relative (:timestamp notification))
+        :unread?   (not (:read notification))
+        :context   [(i18n/label :t/contact-request-outgoing)
+                    [common/user-avatar-tag chat-id]]
+        :message   {:body (get-in message [:content :text])}
+        :items     (case contact-request-state
+                     constants/contact-request-state-mutual
+                     [{:type                :button
+                       :subtype             :danger
+                       :label               (i18n/label :t/cancel)
+                       :accessibility-label :cancel-contact-request
+                       :on-press            (fn []
+                                              (rf/dispatch [:activity-center.contact-requests/cancel-outgoing-request (:from message)])
+                                              (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
+                      {:type    :status
+                       :subtype :pending
+                       :label   (i18n/label :t/pending)}]
+
+                     constants/contact-request-message-state-declined
+                     [{:type    :status
+                       :subtype :pending
+                       :label   (i18n/label :t/pending)}]
+
+                     nil)}])))
 
 (defn incoming-contact-request-view
   [{:keys [id author message last-message] :as notification}]
