@@ -8,7 +8,6 @@
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
-            [react-native.core :as react]
             [react-native.core :as rn]))
 
 (defn bottom-sheet
@@ -55,9 +54,9 @@
     [:f>
      (fn []
        (rn/use-effect (fn []
-                        (react/hw-back-add-listener dismiss-bottom-sheet-callback)
+                        (rn/hw-back-add-listener dismiss-bottom-sheet-callback)
                         (fn []
-                          (react/hw-back-remove-listener dismiss-bottom-sheet-callback))))
+                          (rn/hw-back-remove-listener dismiss-bottom-sheet-callback))))
        [bottom-sheet/bottom-sheet opts
         (when content
           [content (when options options)])])]))
