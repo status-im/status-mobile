@@ -83,6 +83,16 @@
                (and @expanded? (< end-pan-y collapse-threshold))
                (reset! expanded? false))))))))
 
+(defn handle-comp
+  [window-width]
+  [rn/view
+   {:style {:width            window-width
+            :position         :absolute
+            :background-color :transparent
+            :top              0
+            :height           20}}
+   [rn/view {:style (styles/handle)}]])
+
 (defn bottom-sheet
   [props children]
   (let [{on-cancel         :on-cancel
@@ -140,7 +150,9 @@
                                       expandable?
                                       show-bottom-sheet?
                                       expanded?
-                                      close-bottom-sheet)]
+                                      close-bottom-sheet)
+                handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
+                             [handle-comp window-width]]]
 
             (react/effect! #(do
                               (cond
@@ -200,28 +212,27 @@
                {:style (reanimated/apply-animations-to-style
                         {:opacity bg-opacity}
                         styles/backdrop)}]]
-
-             [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-              [reanimated/view
-               {:style (reanimated/apply-animations-to-style
-                        {:transform [{:translateY translate-y}]}
-                        {:width  window-width
-                         :height window-height})}
-               [rn/view {:style styles/container}
-                (when selected-item
-                  [rn/view {:style (styles/selected-background)}
-                   [selected-item]])
-                [rn/view {:style (styles/background)}
-                 [rn/keyboard-avoiding-view
-                  {:behaviour (if platform/ios? :padding :height)
-                   :style     {:flex 1}}
-                  [rn/view
-                   {:style     (styles/content-style insets)
-                    :on-layout (when-not (and
-                                          (some? @content-height)
-                                          (> @content-height 0))
-                                 on-content-layout)}
-                   children]]
-
-                 (when show-handle?
-                   [rn/view {:style (styles/handle)}])]]]]]))])]))
+             (cond->> [reanimated/view
+                       {:style (reanimated/apply-animations-to-style
+                                {:transform [{:translateY translate-y}]}
+                                {:width  window-width
+                                 :height window-height})}
+                       [rn/view {:style styles/container}
+                        (when selected-item
+                          [rn/view {:style (styles/selected-background)}
+                           [selected-item]])
+                        [rn/view {:style (styles/background)}
+                         [rn/keyboard-avoiding-view
+                          {:behaviour (if platform/ios? :padding :height)
+                           :style     {:flex 1}}
+                          [rn/view
+                           {:style     (styles/content-style insets)
+                            :on-layout (when-not (and
+                                                  (some? @content-height)
+                                                  (> @content-height 0))
+                                         on-content-layout)}
+                           children]]
+                         (when show-handle?
+                           handle-comp)]]]
+                      (not show-handle?)
+                      (conj [gesture/gesture-detector {:gesture bottom-sheet-gesture}]))]))])]))
