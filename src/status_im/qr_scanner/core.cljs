@@ -76,7 +76,7 @@
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (i18n/label :t/ens-name-not-found)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
 
 (rf/defn handle-eip681
   [cofx data]
@@ -116,7 +116,7 @@
                  :event ::match-scanned-value})
       {:dispatch         [:navigate-back]
        :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
 
 (rf/defn on-scan
   {:events [::on-scan-success]}
