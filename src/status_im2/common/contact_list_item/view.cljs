@@ -47,14 +47,11 @@
           [quo/icon :i/options
            {:size  20
             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-          (rn/use-memo
-           (fn []
              [quo/checkbox
               {:default-checked?    @checked?
                :accessibility-label :contact-toggle-check
                :disabled?           (and member? (not admin?))
-               :on-change           on-check}])
-           [checked?]))])]))
+               :on-change           on-check}])])]))
 
 (defn contact-list-item
   [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
