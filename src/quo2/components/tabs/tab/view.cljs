@@ -1,4 +1,4 @@
-(ns quo2.components.tabs.tab
+(ns quo2.components.tabs.tab.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.notification-dot :as notification-dot]
@@ -103,7 +103,7 @@
      :d
      "M11.4683 6.78094C11.004 6.92336 10.511 7 10 7C7.23858 7 5 4.76142 5 2C5 1.48904 5.07664 0.995988 5.21906 0.531702C4.68658 0.350857 4.13363 0.213283 3.56434 0.123117C2.78702 0 1.85801 0 0 0V32C1.85801 32 2.78702 32 3.56434 31.8769C7.84327 31.1992 11.1992 27.8433 11.8769 23.5643C12 22.787 12 21.858 12 20V12C12 10.142 12 9.21298 11.8769 8.43566C11.7867 7.86637 11.6491 7.31342 11.4683 6.78094Z"}]])
 
-(defn tab
+(defn view
   "[tab opts \"label\"]
    opts
    {:type :primary/:secondary/:grey/:outline/:ghost/:danger

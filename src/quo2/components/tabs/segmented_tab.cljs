@@ -1,5 +1,5 @@
 (ns quo2.components.tabs.segmented-tab
-  (:require [quo2.components.tabs.tab :as tab]
+  (:require [quo2.components.tabs.tab.view :as tab]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
@@ -28,7 +28,7 @@
            [rn/view
             {:margin-left (if (= 0 indx) 0 2)
              :flex        1}
-            [tab/tab
+            [tab/view
              {:id        id
               :segmented true
               :size      size

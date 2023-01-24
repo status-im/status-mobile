@@ -1,6 +1,6 @@
 (ns quo2.components.tabs.tabs
   (:require [oops.core :refer [oget]]
-            [quo2.components.tabs.tab :as tab]
+            [quo2.components.tabs.tab.view :as tab]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.masked-view :as masked-view]
@@ -74,7 +74,7 @@
    {:style {:margin-right  (if (= size default-tab-size) 12 8)
             :padding-right (when (= index (dec number-of-items))
                              (:padding-left style))}}
-   [tab/tab
+   [tab/view
     {:id                  id
      :notification-dot?   notification-dot?
      :accessibility-label accessibility-label
