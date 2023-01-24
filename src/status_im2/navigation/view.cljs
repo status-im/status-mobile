@@ -5,7 +5,7 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
+            [status-im2.common.bottom-sheet.sheets :as bottom-sheets]
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
             [status-im.ui.screens.signing.views :as signing]

@@ -152,8 +152,9 @@
               :title               (:label action)
               :accessibility-label (:label action)
               :icon                (:icon action)
-              :on-press            #(do (rf/dispatch [:bottom-sheet/hide])
-                                        (when on-press (on-press)))}]))
+              :on-press            (fn []
+                                     (rf/dispatch [:bottom-sheet/hide])
+                                     (when on-press (on-press)))}]))
         (when-not (empty? admin-actions)
           [quo/separator])
 

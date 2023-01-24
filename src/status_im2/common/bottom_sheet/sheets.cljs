@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.bottom-sheets.views
+(ns status-im2.common.bottom-sheet.sheets
   (:require [quo.react :as quo.react]
             [utils.re-frame :as rf]
             [status-im.ui.screens.about-app.views :as about-app]

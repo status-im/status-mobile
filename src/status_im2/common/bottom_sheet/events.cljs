@@ -22,9 +22,9 @@
   {:events [:bottom-sheet/hide]}
   [{:keys [db]}]
   {:db                        (assoc db :bottom-sheet/show? false)
-   :hide-bottom-sheet-overlay nil})
+   :dismiss-bottom-sheet-overlay nil})
 
 (rf/defn hide-bottom-sheet-navigation-overlay
   {:events [:bottom-sheet/hide-navigation-overlay]}
   [{}]
-  {:hide-bottom-sheet-overlay nil})
+  {:dismiss-bottom-sheet-overlay nil})
