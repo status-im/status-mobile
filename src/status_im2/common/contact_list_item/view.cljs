@@ -8,34 +8,37 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]))
 
+(defn group-chat-member-toggle [member? selected? public-key]
+  (if-not member?
+    (if selected?
+      (rf/dispatch [:select-participant public-key true])
+      (rf/dispatch [:deselect-participant public-key true]))
+    (if selected?
+      (rf/dispatch [:undo-deselect-member public-key true])
+      (rf/dispatch [:deselect-member public-key true]))))
+
 (defn open-chat
-  [chat-id]
+  [public-key member? selected?]
   (let [view-id (rf/sub [:view-id])]
-    (when (= view-id :shell-stack)
-      (rf/dispatch [:dismiss-keyboard])
-      (rf/dispatch [:chat.ui/show-profile chat-id])
-      (rf/dispatch [:search/home-filter-changed nil]))))
+    (case view-id
+      :shell-stack (do (rf/dispatch [:dismiss-keyboard])
+                       (rf/dispatch [:chat.ui/show-profile public-key])
+                       (rf/dispatch [:search/home-filter-changed nil]))
+      :group-chat-profile (group-chat-member-toggle member? selected? public-key))))
+
+(defn checkbox-comp [checked? admin? member? on-check]
+  [quo/checkbox
+   {:default-checked?    @checked?
+    :accessibility-label :contact-toggle-check
+    :disabled?           (and member? (not admin?))
+    :on-change           on-check}])
 
 (defn action-icon
-  [{:keys [public-key] :as item} {:keys [icon start-a-new-chat? group] :as extra-data}
-   user-selected? on-toggle]
-  (let [{:keys [contacts admins]} group
-        member?                   (contains? contacts public-key)
-        current-pk                (rf/sub [:multiaccount/public-key])
-        admin?                    (get admins current-pk)
-        checked?                  (reagent/atom (if start-a-new-chat?
-                                                  user-selected?
-                                                  member?))
-        on-check                  (fn [selected]
+  [{:keys [public-key] :as item} {:keys [icon start-a-new-chat?] :as extra-data} on-toggle admin? member? checked?]
+  (let [on-check                  (fn [selected?]
                                     (if start-a-new-chat?
                                       (on-toggle true @checked? public-key)
-                                      (if-not member?
-                                        (if selected
-                                          (rf/dispatch [:select-participant public-key true])
-                                          (rf/dispatch [:deselect-participant public-key true]))
-                                        (if selected
-                                          (rf/dispatch [:undo-deselect-member public-key true])
-                                          (rf/dispatch [:deselect-member public-key true])))))]
+                                      (group-chat-member-toggle member? selected? public-key)))]
     [:f>
      (fn []
        [rn/touchable-opacity
@@ -47,24 +50,26 @@
           [quo/icon :i/options
            {:size  20
             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-             [quo/checkbox
-              {:default-checked?    @checked?
-               :accessibility-label :contact-toggle-check
-               :disabled?           (and member? (not admin?))
-               :on-change           on-check}])])]))
+             [checkbox-comp checked? admin? member? on-check])])]))
 
 (defn contact-list-item
   [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
-  (let [{:keys [public-key ens-verified added? images]} item
+  (let [{:keys [public-key ens-verified added? images group]} item
         display-name                                    (first (rf/sub
                                                                 [:contacts/contact-two-names-by-identity
                                                                  public-key]))
         photo-path                                      (when (seq images)
                                                           (rf/sub [:chats/photo-path public-key]))
-        current-pk                                      (rf/sub [:multiaccount/public-key])
         online?                                         (rf/sub [:visibility-status-updates/online?
                                                                  public-key])
-        user-selected?                                  (rf/sub [:is-contact-selected? public-key])]
+        user-selected?                                  (rf/sub [:is-contact-selected? public-key])
+        {:keys [contacts admins]} group
+        member?                   (contains? contacts public-key)
+        current-pk                (rf/sub [:multiaccount/public-key])
+        admin?                    (get admins current-pk)
+        checked?                  (reagent/atom (if start-a-new-chat?
+                                                  user-selected?
+                                                  member?))]
     [rn/touchable-opacity
      (merge
       {:style               (style/container)
@@ -72,7 +77,7 @@
        :active-opacity      1
        :on-press            #(if start-a-new-chat?
                                (on-toggle true user-selected? public-key)
-                               (open-chat public-key))
+                               (open-chat public-key member? (swap! checked? not)))
        :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
                                            {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar
@@ -100,4 +105,4 @@
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils.address/get-shortened-address public-key)]]
      (when-not (= current-pk public-key)
-       [action-icon item extra-data user-selected? on-toggle])]))
+       [action-icon item extra-data on-toggle admin? member? checked?])]))
