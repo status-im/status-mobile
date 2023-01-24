@@ -10,8 +10,8 @@
 
 (defn view
   [{:keys [author community-id id membership-status read timestamp]}]
-  (let [community (rf/sub [:communities/community community-id])
-        community-name (:name community)
+  (let [community       (rf/sub [:communities/community community-id])
+        community-name  (:name community)
         community-image (get-in community [:images :thumbnail :uri])]
     [quo/activity-log
      {:title     (i18n/label :t/join-request)
