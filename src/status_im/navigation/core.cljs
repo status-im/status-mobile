@@ -358,8 +358,8 @@
                              (fn [] (gestureHandlerRootHOC views/sheet-comp))
                              (fn [] views/sheet-comp)))
 
-(re-frame/reg-fx :display-bottom-sheet-overlay (fn [] (show-overlay "bottom-sheet")))
-(re-frame/reg-fx :hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
+(re-frame/reg-fx :show-bottom-sheet-overlay (fn [] (show-overlay "bottom-sheet")))
+(re-frame/reg-fx :hide-bottom-sheet-overlay (fn [] (dissmiss-overlay "bottom-sheet")))
 
 ;; WALLET CONNECT
 

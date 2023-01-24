@@ -65,7 +65,7 @@
   []
   [:f>
    (fn []
-     (quo.react/effect! #(rf/dispatch [:clear-contacts]) [])
+     (quo.react/effect! #(rf/dispatch [:group-chat/clear-contacts]) [])
      (let [contacts                                     (rf/sub
                                                          [:contacts/sorted-and-grouped-by-first-letter])
            selected-contacts-count                      (rf/sub [:selected-contacts-count])

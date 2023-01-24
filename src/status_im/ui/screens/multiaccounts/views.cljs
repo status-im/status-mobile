@@ -11,6 +11,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.multiaccounts.styles :as styles]
+            [status-im.ui.screens.multiaccounts.sheets :as sheets]
             [utils.security.core :as security]))
 
 (defn multiaccount-view
@@ -40,8 +41,8 @@
 
 (defn topbar-button
   []
-  (re-frame/dispatch [:bottom-sheet/show-sheet :generate-a-new-key {}]))
-
+  (re-frame/dispatch [:bottom-sheet/show-sheet
+                      {:content sheets/actions-sheet}]))
 (defview multiaccounts
   []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]

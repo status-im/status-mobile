@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.bottom-sheets.views
   (:require [quo.react :as quo.react]
-            [re-frame.core :as re-frame]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.keycard.views :as keycard]
@@ -14,9 +14,9 @@
 (defn bottom-sheet
   []
   (let [dismiss-bottom-sheet-callback (fn []
-                                        (re-frame/dispatch [:bottom-sheet/hide])
+                                        (rf/dispatch [:bottom-sheet/hide])
                                         true)
-        {:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
+        {:keys [show? view options]} (rf/sub [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible? show?}
