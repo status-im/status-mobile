@@ -77,7 +77,7 @@
                         colors/danger-60)}])
 
 (defn- pending
-  [size theme label]
+  [size _ label]
   [base-tag
    {:size             size
     :icon             :pending

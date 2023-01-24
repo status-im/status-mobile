@@ -109,5 +109,5 @@
                     (rf/dispatch [:chat.ui/start-chat {:public-key author}]))}
        [incoming-contact-request-view notification]]
 
-      :default
+      :else
       [incoming-contact-request-view notification])))
