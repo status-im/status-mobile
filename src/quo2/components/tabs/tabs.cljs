@@ -92,10 +92,9 @@
    {:style {:margin-right  (if (= size default-tab-size) 12 8)
             :padding-right (when (= index (dec number-of-items))
                              (:padding-left style))}}
-   (when notification-dot?
-     [indicator])
    [tab/tab
     {:id                  id
+     :notification-dot?   notification-dot?
      :accessibility-label accessibility-label
      :size                size
      :override-theme      override-theme
