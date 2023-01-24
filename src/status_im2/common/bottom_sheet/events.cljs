@@ -3,7 +3,8 @@
 
 (rf/defn show-bottom-sheet
   [{:keys [db]} {:keys [view options]}]
-  {:display-bottom-sheet-overlay nil
+  {:dispatch                     [:dismiss-keyboard]
+   :display-bottom-sheet-overlay nil
    :db                           (assoc db
                                         :bottom-sheet/show?   true
                                         :bottom-sheet/view    view
