@@ -13,17 +13,20 @@
                :value "32"}
               {:key   24
                :value "24"}]}
+   {:label "Show unread indicators?"
+    :key   :unread-indicators?
+    :type  :boolean}
    {:label "Scrollable:"
     :key   :scrollable?
     :type  :boolean}])
 
 (defn generate-tab-items
-  [length]
+  [length unread-indicators?]
   (for [index (range length)]
     ^{:key index}
     {:id                index
      :label             (str "Tab " (inc index))
-     :notification-dot? (zero? (rem index 2))}))
+     :notification-dot? (and unread-indicators? (zero? (rem index 2)))}))
 
 (defn cool-preview
   []
@@ -42,9 +45,8 @@
          [quo/tabs
           (merge @state
                  {:default-active 1
-                  :data           (if (:scrollable? @state)
-                                    (generate-tab-items 15)
-                                    (generate-tab-items 4))
+                  :data           (generate-tab-items (if (:scrollable? @state) 15 4)
+                                                      (:unread-indicators? @state))
                   :on-change      #(println "Active tab" %)}
                  (when (:scrollable? @state)
                    {:scroll-on-press?    true
