@@ -72,7 +72,7 @@
         :mid-section             {:type            :text-with-description
                                   :main-text       nil
                                   :description-img nil}
-        :right-section-buttons   (:right-section-buttons page-nav)
+        :right-section-buttons   page-nav
         :left-section            {:icon                  :i/close
                                   :icon-background-color (icon-color)
                                   :on-press              #(rf/dispatch [:navigate-back])}}]

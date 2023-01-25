@@ -323,7 +323,7 @@
                  [toolbar/toolbar
                   {:show-border? true
                    :center       [quo/button
-                                  {:on-press #(rf/dispatch [::communities/request-to-join id])
+                                  {:on-press #(rf/dispatch [:communities/request-to-join id])
                                    :type     :secondary}
                                   (i18n/label :t/request-access)]}])
                :else

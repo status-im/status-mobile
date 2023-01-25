@@ -271,7 +271,7 @@
         {:label            (:label label)
          :chevron-position :left}]])))
 
-(defn community-overview-right-section-buttons
+(defn page-nav-right-section-buttons
   [id]
   [{:icon             :i/options
     :background-color (scroll-page/icon-color)
@@ -291,7 +291,7 @@
     (fn [community]
       [scroll-page/scroll-page
        {:cover-image                    cover
-        :page-nav-right-section-buttons (community-overview-right-section-buttons id)
+        :page-nav-right-section-buttons (page-nav-right-section-buttons id)
         :name                           name
         :on-scroll                      #(reset! scroll-height %)}
 

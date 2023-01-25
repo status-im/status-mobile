@@ -170,7 +170,7 @@
                                     (re-frame/dispatch [::failed-to-join %]))}]})
 
 (rf/defn request-to-join
-  {:events [::request-to-join]}
+  {:events [:communities/request-to-join]}
   [cofx community-id]
   {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
                     :params      [{:communityId community-id}]
