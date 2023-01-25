@@ -49,8 +49,7 @@
            {:size  20
             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
           [quo/checkbox
-           {:default-checked?    @checked?
-            :checked?            @checked?
+           {:checked?            @checked?
             :accessibility-label :contact-toggle-check
             :disabled?           (and member? (not admin?))
             :on-change           on-check}])])]))
