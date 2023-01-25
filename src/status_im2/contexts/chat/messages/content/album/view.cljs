@@ -6,8 +6,8 @@
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.content.image.view :as image]))
-(def max-display-count 6)
 
+(def max-display-count 6)
 (def rectangular-style-count 3)
 
 (defn border-tlr
@@ -90,8 +90,8 @@
                   :size   :heading-2
                   :style  {:color colors/white}}
                  (str "+" (- images-count (dec max-display-count)))]])]))
-        (:album message))
-      ]
+        (:album message))]
+      
       [:<>
        (map-indexed
         (fn [index item]
