@@ -119,11 +119,12 @@
 (defn album-title
   [photos? selected-album]
   [rn/touchable-opacity
-   {:style          style/title-container
-    :active-opacity 1
-    :on-press       #(rf/dispatch (if photos?
-                                    [:open-modal :album-selector]
-                                    [:navigate-back]))}
+   {:style               style/title-container
+    :active-opacity      1
+    :accessibility-label :album-title
+    :on-press            #(rf/dispatch (if photos?
+                                         [:open-modal :album-selector]
+                                         [:navigate-back]))}
    [quo/text {:weight :medium} selected-album]
    [rn/view {:style (style/chevron-container)}
     [quo/icon (if photos? :i/chevron-down :i/chevron-up)
@@ -185,8 +186,9 @@
              [rn/view
               {:style style/buttons-container}
               [rn/touchable-opacity
-               {:on-press #(js/alert "Camera: not implemented")
-                :style    (style/camera-button-container)}
+               {:on-press            #(js/alert "Camera: not implemented")
+                :style               (style/camera-button-container)
+                :accessibility-label :camera-button}
                [quo/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
               [album-title true selected-album]
               [clear-button selected]]

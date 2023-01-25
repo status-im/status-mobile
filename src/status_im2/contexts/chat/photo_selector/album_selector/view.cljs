@@ -9,13 +9,14 @@
    [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
 
 (defn album
-  [{:keys [title count uri]} _ _ selected-album]
+  [{:keys [title count uri]} index _ selected-album]
   (let [selected? (= selected-album title)]
     [rn/touchable-opacity
-     {:on-press (fn []
-                  (rf/dispatch [:chat.ui/camera-roll-select-album title])
-                  (rf/dispatch [:navigate-back]))
-      :style    (style/album-container selected?)}
+     {:on-press            (fn []
+                             (rf/dispatch [:chat.ui/camera-roll-select-album title])
+                             (rf/dispatch [:navigate-back]))
+      :style               (style/album-container selected?)
+      :accessibility-label (str "album-" index)}
      [rn/image
       {:source {:uri uri}
        :style  style/cover}]
