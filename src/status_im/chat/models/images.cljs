@@ -159,7 +159,12 @@
                                                    [:node :image :uri])]
                                    (swap! albums update-in [1 :data] conj (merge album {:uri uri}))
                                    (when (= (count (get-in @albums [1 :data])) (count response))
-                                     (re-frame/dispatch [:on-camera-roll-get-albums @albums])))))))
+                                     (do
+                                       (swap! albums update-in
+                                         [1 :data]
+                                         #(->> %
+                                               (sort-by :title)))
+                                       (re-frame/dispatch [:on-camera-roll-get-albums @albums]))))))))
                     nil
                     response))))
               (.catch #(log/warn "could not get camera roll albums"))))))))))
