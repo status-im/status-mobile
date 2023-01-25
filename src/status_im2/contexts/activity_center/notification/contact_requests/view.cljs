@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
-            [status-im2.contexts.activity-center.notification.contact-requests.events]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -14,7 +13,7 @@
     (if (= contact-request-state constants/contact-request-message-state-accepted)
       [quo/activity-log
        {:title     (i18n/label :t/contact-request-was-accepted)
-        :icon      :main-icons2/add-user
+        :icon      :i/add-user
         :timestamp (datetime/timestamp->relative (:timestamp notification))
         :unread?   (not (:read notification))
         :context   [[common/user-avatar-tag chat-id]
@@ -23,7 +22,7 @@
        :items []]
       [quo/activity-log
        {:title     (i18n/label :t/contact-request)
-        :icon      :main-icons2/add-user
+        :icon      :i/add-user
         :timestamp (datetime/timestamp->relative (:timestamp notification))
         :unread?   (not (:read notification))
         :context   [(i18n/label :t/contact-request-outgoing)
@@ -57,7 +56,7 @@
   (let [message (or message last-message)]
     [quo/activity-log
      {:title     (i18n/label :t/contact-request)
-      :icon      :main-icons2/add-user
+      :icon      :i/add-user
       :timestamp (datetime/timestamp->relative (:timestamp notification))
       :unread?   (not (:read notification))
       :context   [[common/user-avatar-tag author]
