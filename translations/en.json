@@ -213,7 +213,7 @@
     "membership-title": "Membership requirement",
     "create-channel-title": "New channel",
     "edit-channel-title": "Edit channel",
-    "community-admins-will-review-your-request":"Community admins will review your request",
+    "community-admins-will-review-your-request": "Community admins will review your request",
     "community-thumbnail-image": "Thumbnail image",
     "community-emoji-thumbnail-title": "Thumbnail",
     "community-thumbnail-upload": "Upload",
@@ -1943,5 +1943,8 @@
     "contact-request-chat-pending": "Your contact request is pending",
     "contact-request-chat-add": "Add {{name}} to send a message",
     "join-request": "Join request",
+    "join-one-user": "Join {{user}}",
+    "join-two-users": "Join {{user1}} and {{user2}}",
+    "join-more-users": "Join {{user1}}, {{user2}} and {{left-count}} more",
     "wants-to-join": "wants to join"
 }

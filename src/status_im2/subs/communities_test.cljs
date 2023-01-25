@@ -3,7 +3,8 @@
             [re-frame.db :as rf-db]
             [test-helpers.unit :as h]
             status-im2.subs.communities
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]))
 
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {:communities/enabled? true})})
@@ -135,3 +136,36 @@
             {:id "0x1" :name "Civilized monkeys"}
             {:id "0x2" :name "Civilized rats"}]
            (rf/sub [sub-name])))))
+
+(h/deftest-sub :communities/categorized-channels
+  [sub-name]
+  (testing "Channels with categories"
+    (swap! rf-db/app-db assoc
+      :communities/enabled? true
+      :communities
+      {"0x1" {:id         "0x1"
+              :chats      {"0x1" {:id "0x1" :name "chat1" :categoryID 1 :can-post? true}
+                           "0x2" {:id "0x1" :name "chat2" :categoryID 1 :can-post? false}
+                           "0x3" {:id "0x1" :name "chat3" :categoryID 2 :can-post? true}}
+              :categories {1 {:id 1 :name "category1"}
+                           2 {:id 2 :name "category2"}}
+              :joined     true}})
+    (is (= {:category1 [{:name "chat1" :emoji nil :locked? false :id "0x1"}
+                        {:name "chat2" :emoji nil :locked? true :id "0x1"}]
+            :category2 [{:name "chat3" :emoji nil :locked? false :id "0x1"}]}
+           (rf/sub [sub-name "0x1"]))))
+  (testing "Channels without categories"
+    (swap! rf-db/app-db assoc
+      :communities/enabled? true
+      :communities
+      {"0x1" {:id         "0x1"
+              :chats      {"0x1" {:id "0x1" :name "chat1" :categoryID 1 :can-post? true}
+                           "0x2" {:id "0x1" :name "chat2" :categoryID 1 :can-post? false}
+                           "0x3" {:id "0x1" :name "chat3" :can-post? true}}
+              :categories {1 {:id 1 :name "category1"}
+                           2 {:id 2 :name "category2"}}
+              :joined     true}})
+    (is (= {:category1                     [{:name "chat1" :emoji nil :locked? false :id "0x1"}
+                                            {:name "chat2" :emoji nil :locked? true :id "0x1"}]
+            (keyword (i18n/label :t/none)) [{:name "chat3" :emoji nil :locked? false :id "0x1"}]}
+           (rf/sub [sub-name "0x1"])))))
