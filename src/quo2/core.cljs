@@ -50,6 +50,7 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
+    quo2.components.record-audio.record-audio.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
     quo2.components.selectors.selectors
@@ -161,6 +162,9 @@
 ;;;; PROFILE
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
+
+;;;; RECORD AUDIO
+(def record-audio quo2.components.record-audio.record-audio.view/record-audio)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)

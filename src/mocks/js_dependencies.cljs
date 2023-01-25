@@ -147,7 +147,10 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     :SvgXml   #js {:render identity}
     :default  #js {:render identity}})
 (def react-native-webview #js {:default {}})
-(def react-native-audio-toolkit #js {:MediaStates {}})
+(def react-native-audio-toolkit
+  #js
+   {:MediaStates        {}
+    :PlaybackCategories {}})
 (def net-info #js {})
 (def touchid #js {})
 (def react-native-image-viewing #js {:default {}})

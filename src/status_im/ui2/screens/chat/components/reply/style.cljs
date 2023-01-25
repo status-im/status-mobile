@@ -7,11 +7,18 @@
    :flex-direction     :row})
 
 (defn quoted-message
-  [pin?]
+  [pin? in-chat-input?]
   (merge {:flex-direction :row
           :align-items    :center
-          :width          "45%"}
+          :width          (if in-chat-input? "80%" "45%")}
          (when-not pin?
            {:position :absolute
             :left     34
             :top      3})))
+
+(def gradient
+  {:position :absolute
+   :right    0
+   :top      0
+   :bottom   0
+   :width    "50%"})

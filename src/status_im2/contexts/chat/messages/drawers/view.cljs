@@ -25,7 +25,10 @@
    {:keys [edit-enabled show-input? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
-   (when (and outgoing edit-enabled (not (or deleted? deleted-for-me?)))
+   (when (and outgoing
+              edit-enabled
+              (not (or deleted? deleted-for-me?))
+              (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/edit-message message-data])
        :label    (i18n/label :t/edit-message)
@@ -37,7 +40,9 @@
        :label    (i18n/label :t/message-reply)
        :icon     :i/reply
        :id       :reply}])
-   (when (and (not (or deleted? deleted-for-me?)) (not= (get content :text) "placeholder"))
+   (when (and (not (or deleted? deleted-for-me?))
+              (not= (get content :text) "placeholder")
+              (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
                    (components.reply/get-quoted-text-with-mentions

@@ -21,6 +21,11 @@
 (defonce mentions-enabled? (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
 (defonce text-input-ref (reagent/atom nil))
+(defonce recording-audio? (reagent/atom false))
+(defonce reviewing-audio? (reagent/atom false))
+(defonce reviewing-audio-filepath (atom {}))
+(defonce record-audio-permission-granted (reagent/atom false))
+(defonce record-audio-reset-fn (atom nil))
 
 (declare selectable-text-input)
 
@@ -38,18 +43,25 @@
           .focus))
 
 (defn show-send
-  [{:keys [actions-ref send-ref sticker-ref]}]
+  [{:keys [actions-ref send-ref sticker-ref record-ref]} chat-id]
+  (when (and (or @recording-audio?
+                 (get @reviewing-audio-filepath chat-id))
+             @record-audio-reset-fn)
+    (@record-audio-reset-fn)
+    (swap! reviewing-audio-filepath dissoc chat-id))
   (when actions-ref
     (quo.react/set-native-props actions-ref #js {:width 0 :left -88}))
   (quo.react/set-native-props send-ref #js {:width nil :right nil})
+  (quo.react/set-native-props record-ref #js {:right nil :left -1000})
   (when sticker-ref
     (quo.react/set-native-props sticker-ref #js {:width 0 :right -100})))
 
 (defn hide-send
-  [{:keys [actions-ref send-ref sticker-ref]}]
+  [{:keys [actions-ref send-ref sticker-ref record-ref]}]
   (when actions-ref
     (quo.react/set-native-props actions-ref #js {:width nil :left nil}))
   (quo.react/set-native-props send-ref #js {:width 0 :right -100})
+  (quo.react/set-native-props record-ref #js {:left 0 :right 0})
   (when sticker-ref
     (quo.react/set-native-props sticker-ref #js {:width nil :right nil})))
 
@@ -116,7 +128,9 @@
     (when (and (seq prev-text) (empty? text) (not sending-image))
       (hide-send refs))
     (when (and (empty? prev-text) (or (seq text) sending-image))
-      (show-send refs))
+      (show-send refs chat-id)
+      (reset! recording-audio? false)
+      (swap! reviewing-audio-filepath dissoc chat-id))
 
     (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))
       (swap! mentions-enabled? assoc chat-id true))
@@ -159,7 +173,7 @@
       (rf/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn text-input-style
-  []
+  [chat-id]
   (merge typography/font-regular
          typography/paragraph-1
          {:flex              1
@@ -172,7 +186,9 @@
            {:padding-vertical    8
             :text-align-vertical :top}
            {:margin-top    8
-            :margin-bottom 8})))
+            :margin-bottom 8})
+         (when (or @recording-audio? (get @reviewing-audio-filepath chat-id))
+           {:display :none})))
 
 (defn text-input
   [{:keys [refs chat-id sending-image on-content-size-change]}]
@@ -182,7 +198,7 @@
         last-text-change (reagent/atom nil)
         mentions-enabled? (get @mentions-enabled? chat-id)
         props
-        {:style (text-input-style)
+        {:style (text-input-style chat-id)
          :ref (:text-input-ref refs)
          :max-font-size-multiplier 1
          :accessibility-label :chat-message-input

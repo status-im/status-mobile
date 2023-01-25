@@ -12,22 +12,26 @@
             [status-im2.contexts.chat.messages.composer.mentions.view :as mentions]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [status-im.ui2.screens.chat.composer.input :as input]
-            [status-im.ui2.screens.chat.composer.reply :as reply]))
+            [status-im.ui2.screens.chat.composer.reply :as reply]
+            [quo.react :refer [set-native-props]]))
 
 (def initial-content-height (atom nil))
 (def keyboard-hiding? (atom false))
 
 (defn minimize
-  [{:keys [min-y set-bg-opacity set-translate-y set-parent-height]}]
+  [{:keys [min-y set-bg-opacity set-translate-y set-parent-height refs chat-id]}]
   (set-bg-opacity 0)
   (set-translate-y (- min-y))
-  (set-parent-height min-y))
+  (set-parent-height min-y)
+  (when-not (seq (get @input/input-texts chat-id))
+    (set-native-props (:record-ref refs) #js {:right 0 :left 0})))
 
 (defn maximize
-  [{:keys [max-y set-bg-opacity set-translate-y set-parent-height max-parent-height]}]
+  [{:keys [max-y set-bg-opacity set-translate-y set-parent-height max-parent-height refs]}]
   (set-bg-opacity 1)
   (set-translate-y (- max-y))
-  (set-parent-height max-parent-height))
+  (set-parent-height max-parent-height)
+  (set-native-props (:record-ref refs) #js {:right nil :left -1000}))
 
 (defn clean-and-minimize
   [{:keys [chat-id refs] :as params}]
@@ -42,12 +46,12 @@
     (-> (gesture/gesture-pan)
         (gesture/on-start
          (fn [_]
-           (if keyboard-shown
+           (if (and keyboard-shown (not @input/recording-audio?))
              (swap! gesture-values assoc :pan-y (reanimated/get-shared-value translate-y))
              (input/input-focus text-input-ref))))
         (gesture/on-update
          (fn [evt]
-           (when keyboard-shown
+           (when (and keyboard-shown (not @input/recording-audio?))
              (let [tY (oget evt "translationY")]
                (swap! gesture-values assoc :dy (- tY (:pdy @gesture-values)))
                (swap! gesture-values assoc :pdy tY)
@@ -56,7 +60,7 @@
                 (max (min (+ tY (:pan-y @gesture-values)) (- min-y)) (- max-y)))))))
         (gesture/on-end
          (fn [_]
-           (when keyboard-shown
+           (when (and keyboard-shown (not @input/recording-audio?))
              (if (< (:dy @gesture-values) 0)
                (maximize params)
                (do
@@ -153,8 +157,10 @@
   [_ _]
   (let [text-input-ref (rn/create-ref)
         send-ref       (rn/create-ref)
+        record-ref     (rn/create-ref)
         refs           {:send-ref       send-ref
-                        :text-input-ref text-input-ref}]
+                        :text-input-ref text-input-ref
+                        :record-ref     record-ref}]
     (fn [chat-id insets]
       [:f>
        (fn []
@@ -187,7 +193,10 @@
                                (+ 16
                                   (* 46 (dec (count suggestions)))))
                           (+ 0
-                             (when (or edit reply) 38)
+                             (when (and
+                                    (or edit reply)
+                                    (not @input/recording-audio?))
+                               38)
                              (when (seq images) 80))))
 
                parent-height (reanimated/use-shared-value min-y)
@@ -223,7 +232,8 @@
                  :refs                   refs}]]]]
             (if suggestions?
               [mentions/mentions params insets]
-              [controls/view send-ref params insets chat-id images #(clean-and-minimize params)])
+              [controls/view send-ref record-ref params insets chat-id images
+               edit #(clean-and-minimize params)])
             ;;;;black background
             [reanimated/view
              {:style (reanimated/apply-animations-to-style

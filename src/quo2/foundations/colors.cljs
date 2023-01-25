@@ -72,6 +72,9 @@
 (def neutral-80-opa-90 (alpha neutral-80 0.9))
 (def neutral-80-opa-95 (alpha neutral-80 0.95))
 
+;;90 with transparency
+(def neutral-90-opa-0 (alpha neutral-90 0))
+
 ;;95 with transparency
 (def neutral-95-opa-60 (alpha neutral-95 0.6))
 (def neutral-95-opa-70 (alpha neutral-95 0.7))
@@ -98,6 +101,7 @@
 (def white "#ffffff")
 
 ;; with transparency
+(def white-opa-0 (alpha white 0))
 (def white-opa-5 (alpha white 0.05))
 (def white-opa-10 (alpha white 0.1))
 (def white-opa-20 (alpha white 0.2))
