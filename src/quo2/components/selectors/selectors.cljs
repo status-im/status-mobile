@@ -67,34 +67,6 @@
                {:size  20
                 :color colors/white}]])]]]))))
 
-;; TODO (Omar): issue https://github.com/status-im/status-mobile/issues/14681
-;(defn checkbox
-;  [{:keys [default-checked?]}]
-;  (let [checked? (reagent/atom (or default-checked? false))]
-;    @(reagent/track
-;      (fn [{:keys [on-change disabled? blurred-background? container-style]}]
-;        [rn/touchable-without-feedback
-;         {:on-press (handle-press disabled? on-change checked?)}
-;         [rn/view
-;          {:style (merge
-;                   container-style
-;                   {:height 20
-;                    :width  20})}
-;          [rn/view
-;           {:style               (style/checkbox-toggle checked? disabled? blurred-background?)
-;            :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
-;            :accessibility-role  :checkbox
-;            :testID              "checkbox-component"}
-;           (when @checked?
-;             [rn/view
-;              {:style
-;               {:height 20
-;                :width  20}}
-;              [icons/icon :i/check-small
-;               {:size  20
-;                :color colors/white}]])]]])
-;      checked?)))
-
 (defn radio
   [{:keys [default-checked?]}]
   (let [internal-checked? (reagent/atom (or default-checked? false))]
