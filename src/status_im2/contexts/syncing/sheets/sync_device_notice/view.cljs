@@ -61,5 +61,6 @@
                   (timer/set-timeout #(rf/dispatch [:bottom-sheet/show-sheet
                                                     {:show-handle? false
                                                      :content      (fn []
-                                                                     [enter-password/sheet])}]) constants/bottom-sheet-animation-delay))}
+                                                                     [enter-password/sheet])}])
+                                     constants/bottom-sheet-animation-delay))}
      (i18n/label :t/setup-syncing)]]])
