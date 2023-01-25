@@ -20,10 +20,13 @@
             [status-im.utils.utils :as utils]))
 
 (defn avatar
-  [{:keys [response-to last-in-group? pinned quoted-message from]}]
+  [{:keys [content last-in-group? pinned quoted-message from]}]
   [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
    [rn/view {:padding-top 2 :width 32}
-    (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
+    (when (or (and (seq (:response-to content))
+                   quoted-message)
+              last-in-group?
+              pinned)
       (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
             contact      (rf/sub [:contacts/contact-by-address from])
             photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))

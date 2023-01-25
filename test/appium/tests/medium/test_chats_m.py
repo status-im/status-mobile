@@ -226,7 +226,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702287)
-    @marks.xfail(reason="may be failed due to #13333")
+    @marks.xfail(reason="may be failed due to 13333")
     def test_profile_can_not_connect_to_custom_history_node_add_delete(self):
         self.home_1.profile_button.double_click()
         self.home_2.home_button.double_click()

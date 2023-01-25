@@ -400,7 +400,7 @@ class CommunityView(HomeView):
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text: str):
         super().__init__(driver, text=text)
-        self.locator += "/android.view.ViewGroup/android.view.ViewGroup"
+        # self.locator += "/android.view.ViewGroup/android.view.ViewGroup"
 
     @staticmethod
     def return_element_or_empty(obj):
@@ -413,7 +413,7 @@ class PreviewMessage(ChatElementByText):
     def preview_image(self):
         class PreviewImage(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.ImageView")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']")
 
         return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
 
@@ -421,7 +421,7 @@ class PreviewMessage(ChatElementByText):
     def preview_title(self):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//android.widget.ImageView[@content-desc='member-photo']/following-sibling::android.widget.TextView[1]")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[2]")
 
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
@@ -429,7 +429,7 @@ class PreviewMessage(ChatElementByText):
     def preview_subtitle(self):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[2]")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[3]")
 
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
@@ -744,8 +744,8 @@ class ChatView(BaseView):
         self.pinned_messages_count = Button(self.driver,
                                             xpath="//*[@content-desc='pins-count']//android.widget.TextView")
         self.pinned_messages_list = PinnedMessagesList(self.driver)
-        self.pin_limit_popover = BaseElement(self.driver, accessibility_id="pin-limit-popover")
-        self.view_pinned_messages_button = Button(self.driver, accessibility_id="view-pinned-messages")
+        self.pin_limit_popover = BaseElement(self.driver, translation_id="pin-limit-reached")
+        self.view_pinned_messages_button = Button(self.driver, accessibility_id="pinned-banner")
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:

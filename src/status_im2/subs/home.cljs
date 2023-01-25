@@ -1,6 +1,5 @@
 (ns status-im2.subs.home
-  (:require [re-frame.core :as re-frame]
-            [status-im2.config :as config]))
+  (:require [re-frame.core :as re-frame]))
 
 (def memo-home-items (atom nil))
 
@@ -12,8 +11,7 @@
  :<- [:view-id]
  :<- [:home-items-show-number]
  (fn [[search-filter filtered-chats communities view-id home-items-show-number]]
-   (if (or (= view-id :home)
-           (and config/new-ui-enabled? (= view-id :shell-stack)))
+   (if (= view-id :shell-stack)
      (let [communities-count          (count communities)
            chats-count                (count filtered-chats)
            ;; If we have both communities & chats we want to display

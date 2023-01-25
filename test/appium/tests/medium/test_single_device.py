@@ -1037,7 +1037,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
     @marks.testrail_id(5721)
-    @marks.xfail(reason="may be failed due to #14013")
+    @marks.xfail(reason="may be failed due to 14013")
     def test_group_chat_cant_add_more_twenty_participants(self):
         user_20_contacts = dict()
         user_20_contacts[

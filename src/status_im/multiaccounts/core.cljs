@@ -8,11 +8,15 @@
             [status-im.native-module.core :as native-module]
             [status-im.theme.core :as theme]
             [utils.re-frame :as rf]
+            [quo2.foundations.colors :as colors]
+            [status-im2.constants :as constants]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.utils :as utils]
+            [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as utils.theme]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im2.contexts.shell.animation :as shell.animation]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
@@ -173,17 +177,27 @@
 
 (re-frame/reg-fx
  :multiaccounts.ui/switch-theme
- (fn [theme-id]
-   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/dark-mode?)))
-                 :dark
-                 :light)]
-     (theme/change-theme theme))))
+ (fn [[theme-type view-id reload-ui?]]
+   (let [[theme status-bar-theme nav-bar-color]
+         ;; Status bar theme represents status bar icons colors, so opposite to app theme
+         (if (or (= theme-type constants/theme-type-dark)
+                 (and (= theme-type constants/theme-type-system)
+                      (utils.theme/dark-mode?)))
+           [:dark :light colors/neutral-100]
+           [:light :dark colors/white])]
+     (theme/change-theme theme)
+     (re-frame/dispatch [:change-root-status-bar-style
+                         (if (shell.animation/home-stack-open?) status-bar-theme :light)])
+     (when reload-ui?
+       (hot-reload/reload)
+       (when-not (= view-id :shell-stack)
+         (re-frame/dispatch [:change-root-nav-bar-color nav-bar-color]))))))
 
 (rf/defn switch-appearance
   {:events [:multiaccounts.ui/appearance-switched]}
   [cofx theme]
   (rf/merge cofx
-            {:multiaccounts.ui/switch-theme theme}
+            {:multiaccounts.ui/switch-theme [theme :appearance true]}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
 
 (rf/defn switch-profile-picture-show-to
