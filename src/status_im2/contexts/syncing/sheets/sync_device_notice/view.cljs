@@ -1,9 +1,11 @@
 (ns status-im2.contexts.syncing.sheets.sync-device-notice.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
+            [react-native.background-timer :as timer]
             [react-native.core :as rn]
+            [status-im2.constants :as constants]
             [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
             [status-im2.contexts.syncing.sheets.sync-device-notice.styles :as styles]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn sheet
@@ -56,8 +58,8 @@
       :before   :i/face-id20
       :on-press (fn []
                   (rf/dispatch [:bottom-sheet/hide])
-                  (rf/dispatch [:bottom-sheet/show-sheet
-                                {:show-handle? false
-                                 :content      (fn []
-                                                 [enter-password/sheet])}]))}
+                  (timer/set-timeout #(rf/dispatch [:bottom-sheet/show-sheet
+                                                    {:show-handle? false
+                                                     :content      (fn []
+                                                                     [enter-password/sheet])}]) constants/bottom-sheet-animation-delay))}
      (i18n/label :t/setup-syncing)]]])
