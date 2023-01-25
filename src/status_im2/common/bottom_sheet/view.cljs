@@ -147,7 +147,8 @@
                                       expandable?
                                       show-bottom-sheet?
                                       expanded?
-                                      close-bottom-sheet)
+                                      close-bottom-sheet
+                                      gesture-running?)
                 handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                              [handle-comp window-width]]]
 
