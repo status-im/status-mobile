@@ -124,7 +124,7 @@
                      (< selected-contacts-count
                         (dec constants/max-group-chat-participants))))
         (group-by (comp (fnil string/upper-case "") first :alias))
-        (sort-by (fn [[title]] title))
+        (sort-by first)
         (map (fn [[title data]]
                {:title title
                 :data  data})))))

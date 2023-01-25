@@ -110,7 +110,7 @@
                               #(do
                                  (re-frame/dispatch [:bottom-sheet/hide-navigation-overlay])
                                  (reset-atoms))
-                              1000))]
+                              animation-delay))]
     [safe-area/consumer
      (fn [insets]
        [:f>
