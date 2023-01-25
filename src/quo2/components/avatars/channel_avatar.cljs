@@ -7,7 +7,7 @@
 
 (defn channel-avatar
   [{:keys [big? locked? emoji-background-color emoji]}]
-  (let [lock-exists? (some? locked?)
+  (let [lock-exists? locked?
         dark?        (theme/dark?)]
     [rn/view
      {:style {:width            (if big? 32 24)
