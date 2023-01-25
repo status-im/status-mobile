@@ -65,18 +65,20 @@
   []
   [rn/view
    [quo2/menu-item
-    {:theme                      :main
+    {:type                       :transparent
      :title                      (i18n/label :t/new-chat)
      :icon-bg-color              :transparent
      :container-padding-vertical 12
      :title-column-style         {:margin-left 2}
+     :style-props {:border-bottom-width 1
+                   :border-bottom-color (colors/theme-colors colors/neutral-10 colors/neutral-90)}
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
      :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                                                             :start-a-new-chat {}])}]
    [quo2/menu-item
-    {:theme                        :main
+    {:type                         :transparent
      :title                        (i18n/label :t/add-a-contact)
      :icon-bg-color                :transparent
      :icon-container-style         {:padding-horizontal 0}

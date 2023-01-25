@@ -40,7 +40,6 @@
    :padding-vertical   12
    :padding-bottom     (+ 33 (:bottom safe-area))
    :width              "100%"
-   :background-color   colors/white
-   :flex-direction     :row
-   :margin-bottom      (if platform/ios? 0 70)})
+   :background-color   (colors/theme-colors colors/white colors/neutral-95-opa-70)
+   :flex-direction     :row})
 
