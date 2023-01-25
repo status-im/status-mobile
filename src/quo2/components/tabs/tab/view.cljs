@@ -67,8 +67,8 @@
                            (on-press id))}))
      [rn/view {:style style/container}
       (when show-notification-dot?
-        [rn/view {:style (style/notification-dot notification-dot/size)}
-         [notification-dot/notification-dot]])
+        [notification-dot/notification-dot
+         {:style style/notification-dot}])
       [rn/view
        {:style (style/tab {:size                   size
                            :disabled               disabled

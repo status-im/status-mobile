@@ -2,8 +2,6 @@
   (:require [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]))
 
-(def notification-dot-offset 2)
-
 (defn size->padding-left
   [size]
   (case size
@@ -22,12 +20,10 @@
     20 6
     nil))
 
-(defn notification-dot
-  [dot-size]
+(def notification-dot
   {:position :absolute
-   :z-index  1
-   :right    (- dot-size notification-dot-offset)
-   :top      (- notification-dot-offset)})
+   :top      -2
+   :right    -2})
 
 (def container
   {:flex-direction :row})

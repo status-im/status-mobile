@@ -5,7 +5,7 @@
 (def ^:const size 8)
 
 (defn notification-dot
-  [style]
+  [{:keys [style]}]
   [rn/view
    {:style (merge {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
                    :width            size
