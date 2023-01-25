@@ -51,7 +51,7 @@
         (reanimated/set-shared-value y scroll-height)
         (reanimated/set-shared-value opacity-animation
                                      (reanimated/with-timing (if (>= scroll-height threshold) 1 0)
-                                                             (clj->js {:duration 300}))))
+                                       (clj->js {:duration 300}))))
      [scroll-height])
     [:<>
      [reanimated/blur-view

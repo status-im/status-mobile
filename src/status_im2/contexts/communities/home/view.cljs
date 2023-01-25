@@ -4,18 +4,18 @@
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.platform :as platform]
-            [status-im.ui.components.react :as react]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.menus.community-options.view :as options]
             [status-im2.contexts.communities.home.style :as style]
             [utils.re-frame :as rf]))
 
-(defn home-community-segments
-  [selected-tab]
+(defn community-segments
+  [selected-tab padding-top]
   [rn/view
-   {:style style/community-segments}
+   {:style (style/community-segments padding-top)}
    [quo/tabs
     {:size           32
      :on-change      #(reset! selected-tab %)
@@ -46,7 +46,7 @@
     communities-ids)])
 
 
-(defn communities-list-component-fn
+(defn render-communities-segments
   [selected-tab]
   (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
         tab                     @selected-tab]
@@ -69,64 +69,65 @@
          :icon :i/info}
         (i18n/label :t/error)])]))
 
-(def home-communities-lists (memoize communities-list-component-fn))
+(def home-communities (memoize render-communities-segments))
 
-(defn communities-home-header
+(defn communities-header
   [{:keys [selected-tab]}]
-  [react/animated-view
-   [common.home/top-nav {:type :default :hide-search true}]
-   [common.home/title-column
-    {:label               (i18n/label :t/communities)
-     :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
-     :accessibility-label :new-chat-button}]
+  [:<>
    [quo/discover-card
     {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
      :title               (i18n/label :t/discover)
      :description         (i18n/label :t/whats-trending)
      :accessibility-label :communities-home-discover-card}]
-   [home-community-segments selected-tab]])
+   [community-segments selected-tab 16]])
 
-(defn render-page-content
+(defn home-page-comunity-lists
   [selected-tab]
   (fn []
-    [home-communities-lists selected-tab]))
+    [rn/view {:style {:flex         1}}
+     [communities-header selected-tab]
+     [home-communities selected-tab]]))
 
-(defn render-sticky-header
-  [selected-tab]
-  (fn [scroll-height]
-    (when (> scroll-height 90)
-      [react/blur-view
+(defn home-sticky-header
+  [{:keys [selected-tab scroll-height]}]
+  (fn []
+    (when (> @scroll-height 110)
+      [blur/view
        {:blur-amount   32
         :blur-type     :xlight
         :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
         :style         style/blur-tabs-header}
-       [home-community-segments selected-tab]])))
+       [community-segments selected-tab 8]])))
 
 (defn communities-screen-content
   [selected-tab]
-  (let [scroll-component (scroll-page/scroll-page
-                          {:navigate-back?    false
-                           :background-color  (colors/theme-colors
-                                               colors/white
-                                               colors/neutral-95)
-                           :content-container (fn []
-                                                [communities-home-header
-                                                 {:selected-tab selected-tab}])
-                           :name              (i18n/label :t/communities)})]
+  (let [scroll-height        (reagent/atom 0)]
     (fn []
-      (let [sticky-header  (memoize (render-sticky-header selected-tab))
-            page-component (memoize (render-page-content selected-tab))]
-        (fn []
-          (scroll-component
-           sticky-header
-           page-component))))))
+      [scroll-page/scroll-page
+       {:name               (i18n/label :t/communities)
+        :on-scroll          #(reset! scroll-height %)
+        :top-nav            (fn []
+                              [common.home/top-nav {:type :default 
+                                                    :hide-search true}])
+        :title-colum        (fn []
+                              [common.home/title-column
+                               {:label               (i18n/label :t/communities)
+                                :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+                                :accessibility-label :new-chat-button}])
+        :background-color   (colors/theme-colors
+                             colors/white
+                             colors/neutral-95)
+        :navigate-back?      :false}
+       [home-sticky-header
+        {:selected-tab selected-tab
+         :scroll-height scroll-height}]
+       [home-page-comunity-lists  selected-tab]])))
 
 (defn home
   []
-  (fn []
-    (let [selected-tab (reagent/atom :joined)]
-      [rn/view
-       {:style (style/home-communities-container (colors/theme-colors
-                                                  colors/white
-                                                  colors/neutral-95))}
-       [communities-screen-content selected-tab]])))
+  (let [selected-tab (reagent/atom :joined)]
+    [rn/view
+     {:style (style/home-communities-container (colors/theme-colors
+                                                colors/white
+                                                colors/neutral-95))}
+     [communities-screen-content selected-tab]]))

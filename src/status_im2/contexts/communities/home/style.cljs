@@ -1,13 +1,13 @@
 (ns status-im2.contexts.communities.home.style
   (:require [react-native.platform :as platform]))
 
-(def community-segments 
+(defn community-segments 
+  [padding-top]
   {:padding-bottom     12
-   :padding-top        16
-   :margin-top         8
-   :height             60
+   :padding-top        padding-top
+   :height             52
    :padding-horizontal 20
-   :background-color   :transparent})
+   :background-color   "blue"})
 
 (defn home-communities-container
   [background-color]
@@ -21,8 +21,9 @@
 
 (def blur-tabs-header
   {:position           :absolute
-   :top                (if platform/ios? 56 60)
-   :height             56
+   :top                (if platform/ios? 60 60)
+   :height             52
+   :margin-top         (if platform/ios? 56 0)
    :left               0
    :right              0
    :justify-content    :center
