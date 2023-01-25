@@ -1,11 +1,20 @@
 (ns status-im2.contexts.shell.bottom-tabs
-  (:require [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]
+  (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
-            [utils.re-frame :as rf]
+            [react-native.blur :as blur]
             [react-native.reanimated :as reanimated]
+            [status-im2.contexts.shell.style :as style]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.style :as styles]))
+            [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
+
+(defn blur-overlay-params
+  [style]
+  {:style         style
+   :blur-amount   30
+   :blur-radius   25
+   :blur-type     :transparent
+   :overlay-color :transparent})
 
 (defn bottom-tab
   [icon stack-id shared-values notifications-data]
@@ -24,14 +33,18 @@
   [:f>
    (fn []
      (let [notifications-data (rf/sub [:shell/bottom-tabs-notifications-data])
+           pass-through?      (rf/sub [:shell/shell-pass-through?])
            shared-values      @animation/shared-values-atom
-           original-style     (styles/bottom-tabs-container @animation/pass-through?)
+           original-style     (style/bottom-tabs-container pass-through?)
            animated-style     (reanimated/apply-animations-to-style
                                {:height (:bottom-tabs-height shared-values)}
                                original-style)]
        (animation/load-stack @animation/selected-stack-id)
+       (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
        [reanimated/view {:style animated-style}
-        [rn/view {:style (styles/bottom-tabs)}
+        (when pass-through?
+          [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
+        [rn/view {:style (style/bottom-tabs)}
          [bottom-tab :i/communities :communities-stack shared-values notifications-data]
          [bottom-tab :i/messages :chats-stack shared-values notifications-data]
          [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]

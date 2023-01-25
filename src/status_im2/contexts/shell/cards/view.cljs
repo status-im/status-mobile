@@ -25,7 +25,9 @@
                               :size           :small
                               :override-theme :dark
                               :label          (i18n/label :t/kicked)}]
-       (:count :permission) [:<>]) ;; Add components for these cases
+       (:count :permission) [:<>]  ;; Add components for these cases
+
+       nil)
 
      shell.constants/community-channel-card
      [rn/view
@@ -133,7 +135,9 @@
         {:weight :semi-bold
          :size   :heading-2
          :style  {:color colors/white-opa-70}}
-        (string/upper-case (first (:name avatar-params)))]])))
+        (string/upper-case (first (:name avatar-params)))]])
+
+    nil))
 
 (defn subtitle
   [type {:keys [content-type data]}]
@@ -262,4 +266,6 @@
     [wallet-graph data]
 
     shell.constants/communities-discover ;; Home Card
-    [communities-discover data]))
+    [communities-discover data]
+
+    nil))
