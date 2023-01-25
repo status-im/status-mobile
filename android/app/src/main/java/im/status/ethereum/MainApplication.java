@@ -16,7 +16,7 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.cmcewen.blurview.BlurViewPackage;
+import com.reactnativecommunity.blurview.BlurViewPackage;
 
 import java.util.List;
 
