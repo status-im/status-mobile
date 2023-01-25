@@ -172,9 +172,10 @@
              :flex         1}}
     [rn/view
      [rn/view {:style style/top-section-container}
-      [activity-title title replying?]
-      (when-not replying?
-        [activity-timestamp timestamp])
+      [rn/view {:style style/title-container}
+       [activity-title title replying?]
+       (when-not replying?
+         [activity-timestamp timestamp])]
       (when (and unread? (not replying?))
         [activity-unread-dot])]
      (when context

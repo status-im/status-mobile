@@ -39,13 +39,10 @@
 
 (defn title
   [replying?]
-  {:color       colors/white
-   :flex-shrink 1
-   :max-width   (when-not replying? "60%")})
+  {:color colors/white})
 
 (def timestamp
   {:text-transform :none
-   :flex-grow      1
    :margin-left    8
    :color          colors/neutral-40})
 
@@ -69,3 +66,8 @@
 (def top-section-container
   {:align-items    :center
    :flex-direction :row})
+
+(def title-container
+  {:flex           1
+   :flex-direction :row
+   :align-items    :center})
