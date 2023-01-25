@@ -70,8 +70,9 @@
      :icon-bg-color              :transparent
      :container-padding-vertical 12
      :title-column-style         {:margin-left 2}
-     :style-props {:border-bottom-width 1
-                   :border-bottom-color (colors/theme-colors colors/neutral-10 colors/neutral-90)}
+     :style-props                {:border-bottom-width 1
+                                  :border-bottom-color (colors/theme-colors colors/neutral-10
+                                                                            colors/neutral-90)}
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
