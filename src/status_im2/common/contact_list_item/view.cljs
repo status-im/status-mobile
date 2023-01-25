@@ -28,7 +28,10 @@
       :group-chat-profile (group-chat-member-toggle member? selected? public-key))))
 
 (defn action-icon
-  [{:keys [public-key] :as item} {:keys [icon start-a-new-chat?] :as extra-data} on-toggle admin? member?
+  [{:keys [public-key]
+    :as   item}
+   {:keys [icon start-a-new-chat?]
+    :as   extra-data} on-toggle admin? member?
    checked?]
   (let [on-check (fn []
                    (if start-a-new-chat?
@@ -47,6 +50,7 @@
             :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
           [quo/checkbox
            {:default-checked?    @checked?
+            :checked?            @checked?
             :accessibility-label :contact-toggle-check
             :disabled?           (and member? (not admin?))
             :on-change           on-check}])])]))
