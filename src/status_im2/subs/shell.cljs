@@ -52,8 +52,7 @@
             :data         {:avatar         (community-avatar community)
                            :community-name (:name community)}})
 
-         {:content-type constants/content-type-text
-          :data         "Todo: Implement"}))
+         nil))
      {:new-notifications?     (pos? (:unviewed-messages-count chat))
       :notification-indicator (if (pos? (:unviewed-mentions-count chat))
                                 :counter
@@ -112,6 +111,12 @@
  :<- [:shell/switcher-cards]
  (fn [stacks]
    (sort-by :clock > (map val stacks))))
+
+(re-frame/reg-sub
+ :shell/shell-pass-through?
+ :<- [:shell/switcher-cards]
+ (fn [stacks]
+   (> (count stacks) 6)))
 
 (re-frame/reg-sub
  :shell/one-to-one-chat-card

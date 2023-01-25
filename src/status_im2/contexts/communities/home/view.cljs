@@ -11,10 +11,7 @@
   [id]
   (let [community-item (rf/sub [:communities/home-item id])]
     [quo/communities-membership-list-item
-     {:on-press      (fn []
-                       (rf/dispatch [:communities/load-category-states id])
-                       (rf/dispatch [:dismiss-keyboard])
-                       (rf/dispatch [:navigate-to-nav2 :community {:community-id id}]))
+     {:on-press      #(rf/dispatch [:navigate-to :community-overview id])
       :on-long-press #(rf/dispatch
                        [:bottom-sheet/show-sheet
                         {:content       (fn []

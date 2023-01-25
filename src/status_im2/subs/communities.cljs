@@ -3,7 +3,8 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :communities
@@ -214,3 +215,30 @@
         (map #(assoc (get % 1) :community-id id))
         (sort-by :position)
         (into []))))
+
+(re-frame/reg-sub
+ :communities/categorized-channels
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [joined categories chats]}] [_ _]]
+   (reduce
+    (fn [acc [_ {:keys [name categoryID id emoji can-post?]}]]
+      (let [category (keyword (get-in categories [categoryID :name] (i18n/label :t/none)))]
+        (update acc
+                category
+                #(vec (conj %1 %2))
+                {:name    name
+                 :emoji   emoji
+                 :locked? (or (not joined) (not can-post?))
+                 :id      id})))
+    {}
+    chats)))
+
+(re-frame/reg-sub
+ :communities/users
+ :<- [:communities]
+ (fn [_ [_ _]]
+   [{:full-name "Alicia K"}
+    {:full-name "Marcus C"}
+    {:full-name "MNO PQR"}
+    {:full-name "STU VWX"}]))

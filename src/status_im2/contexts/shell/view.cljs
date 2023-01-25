@@ -4,6 +4,7 @@
             [oops.core :refer [oget]]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.safe-area :as safe-area]
             [status-im2.common.home.view :as common.home]
@@ -71,21 +72,25 @@
   (let [data (if (seq switcher-cards) switcher-cards empty-cards)]
     [:<>
      [rn/flat-list
-      {:data                 data
-       :render-fn            render-card
-       :key-fn               :id
-       :header               (jump-to-text)
-       :num-columns          2
-       :column-wrapper-style {:margin-horizontal shell-margin
-                              :justify-content   :space-between
-                              :margin-bottom     16}
-       :style                {:top      0
-                              :left     0
-                              :right    0
-                              :bottom   -1
-                              :position :absolute}}]
+      {:data                    data
+       :render-fn               render-card
+       :key-fn                  :id
+       :header                  (jump-to-text)
+       :num-columns             2
+       :column-wrapper-style    {:margin-horizontal shell-margin
+                                 :justify-content   :space-between
+                                 :margin-bottom     16}
+       :style                   style/jump-to-list
+       :content-container-style {:padding-bottom (shell.constants/bottom-tabs-container-height)}}]
      (when-not (seq switcher-cards)
        [placeholder])]))
+
+(defn top-nav-blur-overlay
+  [top]
+  (let [pass-through? (rf/sub [:shell/shell-pass-through?])]
+    [rn/view {:style (style/top-nav-blur-overlay-container (+ 56 top) pass-through?)}
+     (when pass-through?
+       [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
 (defn shell
   []
@@ -101,11 +106,12 @@
                  :bottom           -1
                  :position         :absolute
                  :background-color colors/neutral-100}}
+        [jump-to-list switcher-cards shell-margin]
+        [top-nav-blur-overlay (:top insets)]
         [common.home/top-nav
          {:type  :shell
           :style {:margin-top (:top insets)
-                  :z-index    2}}]
-        [jump-to-list switcher-cards shell-margin]])]))
+                  :z-index    2}}]])]))
 
 (defn shell-stack
   []

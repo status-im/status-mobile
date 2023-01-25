@@ -20,16 +20,15 @@
    :margin-left  :auto
    :margin-right :auto})
 
-(defn scroll-view-container
-  [border-radius]
-  {:position      :absolute
-   :top           -48
-   :overflow      :scroll
-   :border-radius border-radius
-   :height        "100%"})
-
 (def review-notice
   {:color        colors/neutral-50
    :margin-top   12
    :margin-left  :auto
    :margin-right :auto})
+
+(def community-overview-container
+  {:position :absolute
+   :top      (if platform/ios? 0 44)
+   :left     0
+   :right    0
+   :bottom   0})
