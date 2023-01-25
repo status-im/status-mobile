@@ -7,15 +7,15 @@
 ;; Bottom Tabs
 (defn bottom-tabs-container
   [pass-through?]
-  {:background-color    (if pass-through? colors/neutral-100-opa-70 colors/neutral-100)
+  {:background-color    (if pass-through? :transparent colors/neutral-100)
    :flex                1
    :align-items         :center
-   :flex-direction      :column
    :height              (shell.constants/bottom-tabs-container-height)
    :position            :absolute
-   :bottom              -1
+   :bottom              0
    :right               0
    :left                0
+   :overflow            :hidden
    :accessibility-label :bottom-tabs-container})
 
 (defn bottom-tabs
@@ -25,6 +25,14 @@
    :bottom              (if platform/android? 8 34)
    :flex                1
    :accessibility-label :bottom-tabs})
+
+(def bottom-tabs-blur-overlay
+  {:position         :absolute
+   :left             0
+   :right            0
+   :bottom           0
+   :height           (shell.constants/bottom-tabs-extended-container-height)
+   :background-color colors/neutral-100-opa-70})
 
 ;; Home Stack
 (defn home-stack
@@ -74,3 +82,28 @@
    :margin-top    (+ 68 status-bar-height)
    :margin-bottom 20
    :margin-left   20})
+
+(def jump-to-list
+  {:top      0
+   :left     0
+   :right    0
+   :bottom   0
+   :position :absolute})
+
+(defn top-nav-blur-overlay-container
+  [height pass-through?]
+  {:height           height
+   :position         :absolute
+   :left             0
+   :top              0
+   :right            0
+   :overflow         :hidden
+   :background-color (if pass-through? :transparent colors/neutral-100)})
+
+(def top-nav-blur-overlay
+  {:height           100
+   :position         :absolute
+   :left             0
+   :right            0
+   :top              0
+   :background-color colors/neutral-100-opa-70})

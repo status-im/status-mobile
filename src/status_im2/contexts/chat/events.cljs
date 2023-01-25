@@ -203,7 +203,7 @@
   [{db :db :as cofx} chat-id from-shell?]
   (rf/merge cofx
             {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
-            (when-not (= (:view-id db) :community)
+            (when-not (or (= (:view-id db) :community) (= (:view-id db) :community-overview))
               (navigation/pop-to-root-tab :shell-stack))
             (close-chat false)
             (force-close-chat chat-id)

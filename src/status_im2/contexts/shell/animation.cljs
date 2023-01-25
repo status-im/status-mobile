@@ -3,15 +3,13 @@
             [utils.re-frame :as rf]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
-            [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.constants :as shell.constants])) ;;TODO remove when not used anymore
-
+            [status-im.async-storage.core :as async-storage]  ;;TODO remove when not used anymore
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Atoms
 (def selected-stack-id (atom nil))
 (def screen-height (atom nil))
 (def home-stack-state (atom shell.constants/close-with-animation))
-(def pass-through? (atom false)) ;; TODO - Use dynamic pass-through for transparent bottom tabs
 (def shared-values-atom (atom nil))
 
 ;; Reagent atoms used for lazily loading home screen tabs
@@ -76,7 +74,7 @@
   (let [selected-stack-id-sv    (reanimated/use-shared-value
                                  ;; passing keywords or nil is not working with reanimated
                                  (name (or @selected-stack-id :communities-stack)))
-        pass-through-sv         (reanimated/use-shared-value @pass-through?)
+        pass-through-sv         (reanimated/use-shared-value false)
         home-stack-state-sv     (reanimated/use-shared-value @home-stack-state)
         animate-home-stack-left (reanimated/use-shared-value (not (home-stack-open?)))
         home-stack-position     (calculate-home-stack-position)]
