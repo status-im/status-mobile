@@ -4,7 +4,8 @@
 
 (defn gradient-container
   [insets]
-  {:width    "100%"
+  {:left     0
+   :right    0
    :height   (+ (:bottom insets) (if platform/ios? 65 85))
    :position :absolute
    :bottom   0})
@@ -12,7 +13,8 @@
 (def buttons-container
   {:position        :absolute
    :flex-direction  :row
-   :width           "100%"
+   :left            0
+   :right           0
    :margin-top      20
    :margin-bottom   12
    :justify-content :center

@@ -1,12 +1,12 @@
 (ns status-im2.contexts.chat.photo-selector.album-selector.view
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.foundations.colors :as colors]
-    [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
-    [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [quo2.foundations.colors :as colors]
+   [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
+   [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
 
 (defn album
   [{:keys [title count uri]} _ _ selected-album]
@@ -46,9 +46,9 @@
      (let [albums         (rf/sub [:camera-roll/albums])
            selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
        (rn/use-effect-once
-         (fn []
-           (rf/dispatch [:chat.ui/camera-roll-get-albums])
-           js/undefined))
+        (fn []
+          (rf/dispatch [:chat.ui/camera-roll-get-albums])
+          js/undefined))
        [rn/view {:style {:padding-top 20}}
         [album-title false selected-album]
         [rn/section-list
