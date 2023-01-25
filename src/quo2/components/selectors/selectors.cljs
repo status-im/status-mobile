@@ -73,6 +73,8 @@
   [{:keys [default-checked?]}]
   (let [internal-checked? (reagent/atom (or default-checked? false))]
     (fn [{:keys [on-change disabled? blurred-background? container-style checked?]}]
+      (when (and (not (nil? checked?)) (not= @internal-checked? checked?))
+        (reset! internal-checked? checked?))
       (let [checked? (or checked? @internal-checked?)]
         [rn/touchable-without-feedback
          {:on-press (handle-press disabled? on-change internal-checked?)}
