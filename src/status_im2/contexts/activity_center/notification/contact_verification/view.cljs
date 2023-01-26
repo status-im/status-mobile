@@ -85,6 +85,7 @@
                (when (= contact-verification-status constants/contact-verification-status-accepted)
                  [{:type                :button
                    :subtype             :danger
+                   :key                 :button-mark-as-untrustworthy
                    :label               (i18n/label :t/untrustworthy)
                    :accessibility-label :mark-contact-verification-as-untrustworthy
                    :on-press            (fn []
@@ -95,6 +96,7 @@
                                                         id]))}
                   {:type                :button
                    :subtype             :positive
+                   :key                 :button-accept
                    :label               (i18n/label :t/accept)
                    :accessibility-label :mark-contact-verification-as-trusted
                    :on-press            (fn []
@@ -105,6 +107,7 @@
                (when (= contact-verification-status constants/contact-verification-status-pending)
                  [{:type                :button
                    :subtype             :danger
+                   :key                 :button-decline
                    :label               (i18n/label :t/decline)
                    :accessibility-label :decline-contact-verification
                    :on-press            (fn []
@@ -115,6 +118,7 @@
                   (if replying?
                     {:type                :button
                      :subtype             :primary
+                     :key                 :button-reply
                      :label               (i18n/label :t/send-reply)
                      :accessibility-label :reply-to-contact-verification
                      :disable-when        #(not (valid-reply? %))
@@ -126,6 +130,7 @@
                                              [:activity-center.notifications/mark-as-read id]))}
                     {:type                :button
                      :subtype             :primary
+                     :key                 :button-send-reply
                      :label               (i18n/label :t/message-reply)
                      :accessibility-label :send-reply-to-contact-verification
                      :on-press            (fn []

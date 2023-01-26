@@ -31,16 +31,19 @@
                    constants/activity-center-membership-status-accepted
                    [{:type    :status
                      :subtype :positive
+                     :key     :status-accepted
                      :label   (i18n/label :t/accepted)}]
 
                    constants/activity-center-membership-status-declined
                    [{:type    :status
                      :subtype :negative
+                     :key     :status-declined
                      :label   (i18n/label :t/declined)}]
 
                    constants/activity-center-membership-status-pending
                    [{:type                :button
                      :subtype             :danger
+                     :key                 :button-decline
                      :label               (i18n/label :t/decline)
                      :accessibility-label :decline-join-request
                      :on-press            (fn []
@@ -48,6 +51,7 @@
                                                           community-id id]))}
                     {:type                :button
                      :subtype             :positive
+                     :key                 :button-accept
                      :label               (i18n/label :t/accept)
                      :accessibility-label :accept-join-request
                      :on-press            (fn []

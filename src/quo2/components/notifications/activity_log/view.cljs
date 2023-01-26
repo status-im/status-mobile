@@ -149,11 +149,9 @@
          [activity-reply-text-input props reply-input])
        (when items
          [rn/view style/footer-container
-          (map-indexed
-           (fn [i item]
-             ^{:key (str timestamp "-" i)}
-             [footer-item-view item replying? reply-input])
-           items)])])))
+          (for [{:keys [key] :as item} items]
+            ^{:key key}
+            [footer-item-view item replying? reply-input])])])))
 
 (defn view
   [{:keys [icon

@@ -32,11 +32,13 @@
      :items     (when-not accepted
                   [{:type                :button
                     :subtype             :positive
+                    :key                 :button-accept
                     :label               (i18n/label :t/accept)
                     :accessibility-label :accept-group-chat-invitation
                     :on-press            #(rf/dispatch [:activity-center.notifications/accept id])}
                    {:type                :button
                     :subtype             :danger
+                    :key                 :button-decline
                     :label               (i18n/label :t/decline)
                     :accessibility-label :decline-group-chat-invitation
                     :on-press            #(rf/dispatch [:activity-center.notifications/dismiss

@@ -32,6 +32,7 @@
                      constants/contact-request-state-mutual
                      [{:type                :button
                        :subtype             :danger
+                       :key                 :button-cancel
                        :label               (i18n/label :t/cancel)
                        :accessibility-label :cancel-contact-request
                        :on-press            (fn []
@@ -42,11 +43,13 @@
                                                             id]))}
                       {:type    :status
                        :subtype :pending
+                       :key     :status-pending
                        :label   (i18n/label :t/pending)}]
 
                      constants/contact-request-message-state-declined
                      [{:type    :status
                        :subtype :pending
+                       :key     :status-pending
                        :label   (i18n/label :t/pending)}]
 
                      nil)}])))
@@ -67,16 +70,19 @@
         constants/contact-request-message-state-accepted
         [{:type    :status
           :subtype :positive
+          :key     :status-accepted
           :label   (i18n/label :t/accepted)}]
 
         constants/contact-request-message-state-declined
         [{:type    :status
           :subtype :negative
+          :key     :status-declined
           :label   (i18n/label :t/declined)}]
 
         constants/contact-request-state-mutual
         [{:type                :button
           :subtype             :danger
+          :key                 :button-decline
           :label               (i18n/label :t/decline)
           :accessibility-label :decline-contact-request
           :on-press            (fn []
@@ -85,6 +91,7 @@
                                                id]))}
          {:type                :button
           :subtype             :positive
+          :key                 :button-accept
           :label               (i18n/label :t/accept)
           :accessibility-label :accept-contact-request
           :on-press            (fn []
