@@ -25,10 +25,12 @@
                    (when is-active-channel?
                      {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))}
     [rn/view
-     {:display         :flex
-      :flex-direction  :row
-      :justify-content :flex-start
-      :align-items     :center}
+     {:display             :flex
+      :flex-direction      :row
+      :justify-content     :flex-start
+      :align-items         :center
+      :accessible          true
+      :accessibility-label :chat-name-text}
      [channel-avatar/channel-avatar
       {:big?                   true
        :locked?                locked?
