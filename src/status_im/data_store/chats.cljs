@@ -67,6 +67,7 @@
                         :chatType               :chat-type
                         :unviewedMessagesCount  :unviewed-messages-count
                         :unviewedMentionsCount  :unviewed-mentions-count
+                        :unviewedRepliesCount   :unviewed-replies-count
                         :lastMessage            :last-message
                         :lastClockValue         :last-clock-value
                         :invitationAdmin        :invitation-admin
@@ -96,6 +97,7 @@
        :chat-type               (.-chatType chat)
        :unviewed-messages-count (.-unviewedMessagesCount chat)
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
+       :unviewed-replies-count  (.-unviewedRepliesCount chat)
        :last-message            {:content      {:text        (.-text chat)
                                                 :parsed-text (types/js->clj (.-parsedText chat))}
                                  :content-type (.-contentType chat)

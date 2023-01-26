@@ -127,39 +127,43 @@
 
 (defn unviewed-indicator
   [{:keys [unviewed-mentions-count
+           unviewed-replies-count
            unviewed-messages-count
            public?]}]
-  (when (pos? unviewed-messages-count)
-    [react/view {:position :absolute :right 16}
-     (cond
-       (and public? (not (pos? unviewed-mentions-count)))
-       [react/view
-        {:style               styles/public-unread
-         :accessibility-label :unviewed-messages-public}]
+  (let [unviewed-count (+ unviewed-mentions-count unviewed-replies-count)]
+    (when (pos? unviewed-count)
+      [react/view {:position :absolute :right 16}
+       (cond
+         (and public? (not (pos? unviewed-count)))
+         [react/view
+          {:style               styles/public-unread
+           :accessibility-label :unviewed-messages-public}]
 
-       (and public? (pos? unviewed-mentions-count))
-       [badge/message-counter unviewed-mentions-count]
+         (and public? (pos? unviewed-count))
+         [badge/message-counter unviewed-count]
 
-       :else
-       [badge/message-counter unviewed-messages-count])]))
+         :else
+         [badge/message-counter unviewed-messages-count])])))
 
 (defn unviewed-indicator-old
   [{:keys [unviewed-mentions-count
            unviewed-messages-count
+           unviewed-replies-count
            public?]}]
-  (when (pos? unviewed-messages-count)
-    [react/view {:position :absolute :right 16 :bottom 12}
-     (cond
-       (and public? (not (pos? unviewed-mentions-count)))
-       [react/view
-        {:style               styles/public-unread
-         :accessibility-label :unviewed-messages-public}]
+  (let [unviewed-count (+ unviewed-mentions-count unviewed-replies-count)]
+    (when (pos? unviewed-messages-count)
+      [react/view {:position :absolute :right 16 :bottom 12}
+       (cond
+         (and public? (not (pos? unviewed-count)))
+         [react/view
+          {:style               styles/public-unread
+           :accessibility-label :unviewed-messages-public}]
 
-       (and public? (pos? unviewed-mentions-count))
-       [badge/message-counter unviewed-mentions-count]
+         (and public? (pos? unviewed-count))
+         [badge/message-counter unviewed-count]
 
-       :else
-       [badge/message-counter unviewed-messages-count])]))
+         :else
+         [badge/message-counter unviewed-messages-count])])))
 
 (defn icon-style
   []

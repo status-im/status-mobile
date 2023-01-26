@@ -64,6 +64,7 @@
              assoc
              :unviewed-messages-count 0
              :unviewed-mentions-count 0
+             :unviewed-replies-count  0
              :highlight               false))
 
 (rf/defn handle-mark-all-read-successful

@@ -116,9 +116,17 @@
 
 (defn chat-list-item
   [item]
-  (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count
+  (let [{:keys [chat-id
+                color
+                group-chat
+                last-message
+                timestamp
+                name
+                unviewed-mentions-count
+                unviewed-replies-count
                 unviewed-messages-count]}
         item
+        unviewed-count (+ unviewed-mentions-count unviewed-replies-count)
         display-name
         (if group-chat name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
         contact (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
@@ -137,8 +145,8 @@
           :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
-     (if (> unviewed-mentions-count 0)
+     (if (> unviewed-count 0)
        [quo/info-count {:style {:top 16}}
-        unviewed-mentions-count]
+        unviewed-count]
        (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))

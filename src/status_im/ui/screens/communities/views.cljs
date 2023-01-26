@@ -22,11 +22,14 @@
 
 (defn community-unviewed-count
   [id]
-  (let [{:keys [unviewed-messages-count unviewed-mentions-count]} (rf/sub [:communities/unviewed-counts
-                                                                           id])]
+  (let [{:keys [unviewed-messages-count
+                unviewed-mentions-count
+                unviewed-replies-count]}
+        (rf/sub [:communities/unviewed-counts id])
+        unviewed-count (+ unviewed-mentions-count unviewed-replies-count)]
     (cond
-      (pos? unviewed-mentions-count)
-      [badge/message-counter unviewed-mentions-count]
+      (pos? unviewed-count)
+      [badge/message-counter unviewed-count]
 
       (pos? unviewed-messages-count)
       [react/view

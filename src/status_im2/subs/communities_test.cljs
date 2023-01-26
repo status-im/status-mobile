@@ -62,15 +62,19 @@
       :chats
       {"0x100" {:community-id            community-id
                 :unviewed-mentions-count 3
+                :unviewed-replies-count  3
                 :unviewed-messages-count 2}
        "0x101" {:community-id            "0x2"
                 :unviewed-mentions-count 7
+                :unviewed-replies-count  2
                 :unviewed-messages-count 9}
        "0x102" {:community-id            community-id
                 :unviewed-mentions-count 5
+                :unviewed-replies-count  7
                 :unviewed-messages-count 1}})
     (is (= {:unviewed-messages-count 3
-            :unviewed-mentions-count 8}
+            :unviewed-mentions-count 8
+            :unviewed-replies-count  10}
            (rf/sub [sub-name community-id]))))
 
   (testing "defaults to zero when count keys are not present"
@@ -78,7 +82,8 @@
       :chats
       {"0x100" {:community-id community-id}})
     (is (= {:unviewed-messages-count 0
-            :unviewed-mentions-count 0}
+            :unviewed-mentions-count 0
+            :unviewed-replies-count  0}
            (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/community-ids-by-user-involvement

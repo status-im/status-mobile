@@ -200,6 +200,7 @@
         message-type            (.-messageType message-js)
         from                    (.-from message-js)
         mentioned               (.-mentioned message-js)
+        replied                 (.-replied message-js)
         new                     (.-new message-js)
         current                 (= current-chat-id chat-id)
         should-update-unviewed? (and (not current)
@@ -220,6 +221,10 @@
       (and should-update-unviewed?
            mentioned)
       (update-in [:db :chats chat-id :unviewed-mentions-count] inc)
+
+      (and should-update-unviewed?
+           replied)
+      (update-in [:db :chats chat-id :unviewed-replies-count] inc)
 
       ;;conj incoming transaction for :watch-tx
       (not (string/blank? tx-hash))

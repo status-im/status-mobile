@@ -15,8 +15,12 @@
                         (first images)))}))))
 
 (defn get-card-content
-  [chat communities]
-  (let [last-message (:last-message chat)]
+  [{:keys [last-message
+           unviewed-messages-count
+           unviewed-mentions-count
+           unviewed-replies-count]
+    :as   chat} communities]
+  (let [unviewed-count (+ unviewed-mentions-count unviewed-replies-count)]
     (merge
      (when last-message
        (case (:content-type last-message)
@@ -53,11 +57,11 @@
                            :community-name (:name community)}})
 
          nil))
-     {:new-notifications?     (pos? (:unviewed-messages-count chat))
-      :notification-indicator (if (pos? (:unviewed-mentions-count chat))
+     {:new-notifications?     (pos? unviewed-messages-count)
+      :notification-indicator (if (pos? unviewed-count)
                                 :counter
                                 :unread-dot)
-      :counter-label          (:unviewed-mentions-count chat)})))
+      :counter-label          unviewed-count})))
 
 (defn one-to-one-chat-card
   [contact names chat id communities]
@@ -159,29 +163,47 @@
  (fn [chats]
    (let [{:keys [chats-stack community-stack]}
          (reduce
-          (fn [acc [_ {:keys [unviewed-messages-count unviewed-mentions-count chat-type]}]]
+          (fn
+            [acc
+             [_
+              {:keys [unviewed-messages-count
+                      unviewed-mentions-count
+                      unviewed-replies-count
+                      chat-type]}]]
             (case chat-type
               constants/community-chat-type
               (-> acc
                   (update-in [:community-stack :unviewed-messages-count] + unviewed-messages-count)
-                  (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
+                  (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count)
+                  (update-in [:community-stack :unviewed-replies-count] + unviewed-replies-count))
 
               (constants/private-group-chat-type constants/one-to-one-chat-type)
               (-> acc
                   (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
-                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count))
+                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count)
+                  (update-in [:chats-stack :unviewed-replies-count] + unviewed-replies-count))
 
               acc))
-          {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}
-           :community-stack {:unviewed-messages-count 0 :unviewed-mentions-count 0}}
-          chats)]
+          {:chats-stack     {:unviewed-messages-count 0
+                             :unviewed-mentions-count 0
+                             :unviewed-replies-count  0}
+           :community-stack {:unviewed-messages-count 0
+                             :unviewed-mentions-count 0
+                             :unviewed-replies-count  0}}
+          chats)
+         community-unviewed-count              (+ (:unviewed-mentions-count community-stack)
+                                                  (:unviewed-replies-count community-stack))
+         chats-unviewed-count                  (+ (:unviewed-mentions-count chats-stack)
+                                                  (:unviewed-replies-count chats-stack))]
      {:communities-stack
       {:new-notifications?     (pos? (:unviewed-messages-count community-stack))
-       :notification-indicator (if (pos? (:unviewed-mentions-count community-stack))
+       :notification-indicator (if (pos? community-unviewed-count)
                                  :counter
                                  :unread-dot)
-       :counter-label          (:unviewed-mentions-count community-stack)}
+       :counter-label          community-unviewed-count}
       :chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
-       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack)) :counter :unread-dot)
-       :counter-label          (:unviewed-mentions-count chats-stack)}})))
+       :notification-indicator (if (pos? chats-unviewed-count)
+                                 :counter
+                                 :unread-dot)
+       :counter-label          chats-unviewed-count}})))

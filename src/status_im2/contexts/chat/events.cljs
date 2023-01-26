@@ -130,6 +130,7 @@
                                  {:last-message            nil
                                   :unviewed-messages-count 0
                                   :unviewed-mentions-count 0
+                                  :unviewed-replies-count  0
                                   :deleted-at-clock-value  last-message-clock-value})
                          chats))))}))
 
@@ -236,7 +237,7 @@
 
 (rf/defn decrease-unviewed-count
   {:events [:chat/decrease-unviewed-count]}
-  [{:keys [db]} chat-id {:keys [count countWithMentions]}]
+  [{:keys [db]} chat-id {:keys [count countWithMentions countWithReplies]}]
   {:db (-> db
            ;; There might be some other requests being fired,
            ;; so we need to make sure the count has not been set to
@@ -244,7 +245,9 @@
            (update-in [:chats chat-id :unviewed-messages-count]
                       #(max (- % count) 0))
            (update-in [:chats chat-id :unviewed-mentions-count]
-                      #(max (- % countWithMentions) 0)))})
+                      #(max (- % countWithMentions) 0))
+           (update-in [:chats chat-id :unviewed-replies-count]
+                      #(max (- % countWithReplies) 0)))})
 
 ;;;; UI
 

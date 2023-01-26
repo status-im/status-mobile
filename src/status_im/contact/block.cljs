@@ -15,6 +15,7 @@
    {:keys [chat-id
            unviewed-messages-count
            unviewed-mentions-count
+           unviewed-replies-count
            last-message]}]
   (let [removed-messages-ids (keep
                               (fn [[message-id {:keys [from]}]]
@@ -29,6 +30,7 @@
                                             assoc
                                             :unviewed-messages-count unviewed-messages-count
                                             :unviewed-mentions-count unviewed-mentions-count
+                                            :unviewed-replies-count  unviewed-replies-count
                                             :last-message            last-message))]
     {:db (assoc-in db
           [:message-lists chat-id]

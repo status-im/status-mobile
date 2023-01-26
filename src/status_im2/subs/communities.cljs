@@ -138,6 +138,7 @@
    :muted?                (:muted community)
    :unread-messages?      (pos? (:unviewed-messages-count counts))
    :unread-mentions-count (:unviewed-mentions-count counts)
+   :unread-replies-count  (:unviewed-replies-count counts)
    :community-icon        (:images community)})
 
 (re-frame/reg-sub
@@ -176,11 +177,13 @@
 
 (defn calculate-unviewed-counts
   [chats]
-  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
+  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-replies-count unviewed-messages-count]}]
             {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
-             :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
+             :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))
+             :unviewed-replies-count  (+ (:unviewed-replies-count acc) (or unviewed-replies-count 0))})
           {:unviewed-messages-count 0
-           :unviewed-mentions-count 0}
+           :unviewed-mentions-count 0
+           :unviewed-replies-count  0}
           chats))
 
 (re-frame/reg-sub
