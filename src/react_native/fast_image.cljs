@@ -14,11 +14,14 @@
   [_]
   (let [loaded? (reagent/atom false)
         error?  (reagent/atom false)]
-    (fn [props]
+    (fn [{:keys [source] :as props}]
       [fast-image-class
        (merge
         props
-        {:on-error (fn [e]
+        {:source   (if (string? source)
+                     {:uri source}
+                     source)
+         :on-error (fn [e]
                      (when-let [on-error (:on-error props)]
                        (on-error e))
                      (reset! error? true))
