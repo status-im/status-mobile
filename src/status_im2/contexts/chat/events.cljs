@@ -342,4 +342,3 @@
   {:events [:chat.ui/update-shared-element-id]}
   [{:keys [db]} shared-element-id]
   {:db (assoc db :shared-element-id shared-element-id)})
-
