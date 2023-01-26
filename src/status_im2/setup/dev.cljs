@@ -10,12 +10,12 @@
 ;; When you add a warning to be ignored explain below why it is ignored and how it can be fixed.
 ;; When a warning is fixed make sure to remove it from here.
 #_(.ignoreLogs ^js LogBox
-             (clj->js ["undefined is not an object (evaluating 'e.message')"
-                       "Cannot read property 'message' of undefined"
-                       "InternalError Metro has encountered an error"
-                       "undefined Unable to resolve module `parse-svg-path`"
-                       "group12"
-                       "Setting a timer for a long period of time"]))
+               (clj->js ["undefined is not an object (evaluating 'e.message')"
+                         "Cannot read property 'message' of undefined"
+                         "InternalError Metro has encountered an error"
+                         "undefined Unable to resolve module `parse-svg-path`"
+                         "group12"
+                         "Setting a timer for a long period of time"]))
 
 ;; List of ignored warnings/errors:
 ;; 1. "evaluating 'e.message'": Not sure why this error is happening, but it is coming from here
