@@ -113,6 +113,26 @@
           :style {:margin-top (:top insets)
                   :z-index    2}}]])]))
 
+(defn on-layout
+  [evt]
+  (let [dimensions (rf/sub [:dimensions/window])
+        height     (or (oget evt "nativeEvent" "layout" "height") 0)
+        width      (or (oget evt "nativeEvent" "layout" "width") 0)]
+    ;; Layout height calculation
+    ;; 1. Make sure height is more than width, and on-layout is not fired while the
+    ;; screen is horizontal
+    ;; 2. Initialize values with 0 in case of nil
+    ;; 3. In the case of notch devices, the dimensions height will be smaller than
+    ;; on-layout,
+    ;; (without status bar height included)
+    ;; https://github.com/status-im/status-mobile/issues/14633
+    ;; 4. In the case of devices without a notch, both heights should be the same,
+    ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
+    (when (and (> height width)
+               (>= (+ height 5) (or (:height dimensions) 0)))
+      (reset! animation/screen-height height)
+      (async-storage/set-item! :screen-height height))))
+
 (defn shell-stack
   []
   [:f>
@@ -121,11 +141,7 @@
        (animation/change-root-status-bar-style)
        [rn/view
         {:style     {:flex 1}
-         :on-layout (when-not @animation/screen-height
-                      (fn [evt]
-                        (let [height (oget evt "nativeEvent" "layout" "height")]
-                          (reset! animation/screen-height height)
-                          (async-storage/set-item! :screen-height height))))}
+         :on-layout on-layout}
         [shell]
         [bottom-tabs/bottom-tabs]
         [home-stack/home-stack]
