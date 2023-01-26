@@ -38,7 +38,7 @@
    :flex-direction :row})
 
 (defn title
-  [replying?]
+  []
   {:color colors/white})
 
 (def timestamp

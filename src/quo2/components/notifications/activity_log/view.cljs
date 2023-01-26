@@ -55,23 +55,23 @@
         gap-between-lines 4]
     (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
           (mapcat
-            (fn [detail]
-              ^{:key (hash detail)}
-              (if (string? detail)
-                (map (fn [s]
-                       [rn/view
-                        {:style {:margin-right 4
-                                 :margin-top   0}}
-                        [text/text
-                         {:size  :paragraph-2
-                          :style {:color colors/white}}
-                         s]])
-                     (string/split detail #"\s+"))
-                [[rn/view
-                  {:margin-right 4
-                   :margin-top   gap-between-lines}
-                  detail]]))
-            context))))
+           (fn [detail]
+             ^{:key (hash detail)}
+             (if (string? detail)
+               (map (fn [s]
+                      [rn/view
+                       {:style {:margin-right 4
+                                :margin-top   0}}
+                       [text/text
+                        {:size  :paragraph-2
+                         :style {:color colors/white}}
+                        s]])
+                    (string/split detail #"\s+"))
+               [[rn/view
+                 {:margin-right 4
+                  :margin-top   gap-between-lines}
+                 detail]]))
+           context))))
 
 (defn- activity-message
   [{:keys [title body title-number-of-lines body-number-of-lines]}]
@@ -97,7 +97,7 @@
   [text/text
    {:weight              :semi-bold
     :accessibility-label :activity-title
-    :style               (style/title replying?)
+    :style               (style/title)
     :size                (if replying? :heading-2 :paragraph-1)}
    title])
 
@@ -120,7 +120,7 @@
 
 (defmethod footer-item-view :button
   [{:keys [label subtype disable-when] :as button} replying? reply-input]
-  (let [size (if replying? 40 24)
+  (let [size         (if replying? 40 24)
         common-style (when replying?
                        {:padding-vertical 9
                         :flex-grow        1
@@ -150,9 +150,10 @@
        (when items
          [rn/view style/footer-container
           (map-indexed
-            (fn [i item]
-              ^{:key (str timestamp "-" i)}
-              [footer-item-view item replying? reply-input]) items)])])))
+           (fn [i item]
+             ^{:key (str timestamp "-" i)}
+             [footer-item-view item replying? reply-input])
+           items)])])))
 
 (defn view
   [{:keys [icon
