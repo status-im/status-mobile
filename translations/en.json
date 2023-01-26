@@ -1950,10 +1950,10 @@
     "contact-request-chat-pending": "Your contact request is pending",
     "contact-request-chat-add": "Add {{name}} to send a message",
     "join-request": "Join request",
-<<<<<<< HEAD
     "join-one-user": "Join {{user}}",
     "join-two-users": "Join {{user1}} and {{user2}}",
     "join-more-users": "Join {{user1}}, {{user2}} and {{left-count}} more",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "wants-to-join": "wants to join",
     "connect-with-users": "Connect with users",
@@ -1962,10 +1962,15 @@
 =======
     "wants-to-join": "wants to join"
 =======
+=======
+>>>>>>> 89486d55e... refactor
     "wants-to-join": "wants to join",
     "my-albums": "My albums",
     "images": "images",
     "only-6-images": "You can only add 6 images to your message"
+<<<<<<< HEAD
 >>>>>>> 9b3c165c0... feat: photo & album selector screens
 >>>>>>> e9cf18df1... feat: photo & album selector screens
+=======
+>>>>>>> 89486d55e... refactor
 }

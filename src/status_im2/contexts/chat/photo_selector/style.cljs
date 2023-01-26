@@ -44,7 +44,8 @@
    :position         :absolute
    :left             20})
 
-(def title-container
+(defn title-container
+  []
   {:flex-direction     :row
    :background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :border-radius      10
