@@ -143,7 +143,7 @@
 (defn- footer
   [_ _]
   (let [reply-input (reagent/atom "")]
-    (fn [timestamp {:keys [replying? items] :as props}]
+    (fn [{:keys [replying? items] :as props}]
       [:<>
        (when replying?
          [activity-reply-text-input props reply-input])
@@ -182,4 +182,4 @@
        [activity-context context replying?])]
     (when message
       [activity-message message])
-    [footer timestamp props]]])
+    [footer props]]])
