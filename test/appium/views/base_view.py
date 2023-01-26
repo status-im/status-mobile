@@ -79,6 +79,7 @@ class HomeButton(TabButton):
             self.click_until_presence_of_element(element)
         return self.navigate()
 
+
 class CommunitiesTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="communities-stack-tab")
@@ -97,9 +98,11 @@ class WalletTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="wallet-stack-tab")
 
+
 class BrowserTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="browser-stack-tab")
+
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
@@ -256,6 +259,8 @@ class BaseView(object):
         self.chats_tab = ChatsTab(self.driver)
         self.browser_tab = BrowserTab(self.driver)
         self.wallet_tab = WalletTab(self.driver)
+
+        self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
         self.yes_button = Button(self.driver, xpath="//*[@text='YES' or @text='GOT IT']")
         self.no_button = Button(self.driver, translation_id="no")
@@ -590,6 +595,14 @@ class BaseView(object):
         profile_view.logout()
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
+
+    def jump_to_messages_home(self):
+        self.jump_to_button.click()
+        self.chats_tab.click()
+
+    def jump_to_communities_home(self):
+        self.jump_to_button.click()
+        self.communities_tab.click()
 
     def reopen_app(self, password=common_password):
         self.driver.close_app()

@@ -329,10 +329,10 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username, community=False, wait_time=30):
+    def get_chat(self, username, community=False, wait_time=10):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
-        if not chat_element.is_element_displayed(10):
+        if not chat_element.is_element_displayed(wait_time):
             if self.notifications_unread_badge.is_element_displayed(30):
                 chat_in_ac = ActivityCenterElement(self.driver, username[:25])
                 self.open_activity_center_button.click_until_presence_of_element(chat_in_ac)

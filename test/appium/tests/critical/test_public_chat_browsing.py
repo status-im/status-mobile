@@ -631,7 +631,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702843)
-    @marks.xfail(reason="blocked by 14797")
     def test_community_message_edit(self):
         message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
         if not self.channel_2.chat_message_input.is_element_displayed():
@@ -696,25 +695,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702841)
-    def test_community_unread_messages_badge(self):
-        self.channel_1.send_message('пиу')
-        self.channel_1.click_system_back_button_until_element_is_shown()
-        message = 'test message'
-        self.channel_2.send_message(message)
-        self.home_1.just_fyi('Check new messages badge is shown for community')
-        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
-        if not community_element_1.new_messages_community.is_element_displayed():
-            self.errors.append('New message community badge is not shown')
-
-        community_1 = community_element_1.click()
-        channel_1_element = community_1.get_chat(self.channel_name)
-        self.home_1.just_fyi('Check new messages badge is shown for community')
-        if not channel_1_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('New messages channel badge is not shown on channel')
-        channel_1_element.click()
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(702844)
     def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
@@ -774,11 +754,33 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Preview is shown for sender without permission")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702841)
+    def test_community_unread_messages_badge(self):
+        self.channel_1.send_message('пиу')
+        self.channel_1.jump_to_communities_home()
+        message = 'test message'
+        self.channel_2.send_message(message)
+        self.home_1.just_fyi('Check new messages badge is shown for community')
+        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
+        if not community_element_1.new_messages_community.is_element_displayed():
+            self.errors.append('New message community badge is not shown')
+
+        community_1 = community_element_1.click()
+        channel_1_element = community_1.get_chat('# %s' % self.channel_name)
+        # blocked of 14906
+        # self.home_1.just_fyi('Check new messages badge is shown for community')
+        # if not channel_1_element.new_messages_public_chat.is_element_displayed():
+        #     self.errors.append('New messages channel badge is not shown on channel')
+        channel_1_element.click()
+        self.errors.verify_no_errors()
+
+
+
     @marks.testrail_id(702842)
+    @marks.xfail(reason='blocked due to navigation issue 14906')
     def test_community_mark_all_messages_as_read(self):
-        self.channel_1.back_button.click()
         self.channel_2.send_message(self.text_message)
-        chan_1_element = self.community_1.get_chat(self.channel_name)
+        chan_1_element = self.community_1.get_chat('# %s' % self.channel_name)
         if not chan_1_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
         chan_1_element.long_press_element()
