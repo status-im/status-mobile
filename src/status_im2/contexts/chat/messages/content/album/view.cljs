@@ -42,7 +42,7 @@
     {:width (second size-arr) :height (first size-arr) :album-style album-style}))
 
 (defn album-message
-  [{:keys [albumize?] :as message}]
+  [{:keys [albumize?] :as message} {:keys [on-long-press] :as context}]
   (let [shared-element-id (rf/sub [:shared-element-id])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
@@ -69,7 +69,8 @@
                                 (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
                                 (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
                                                               (:album message) index])
-                                               100))}
+                                               100))
+              :on-long-press  on-long-press}
              [rn/image
               {:style     (merge
                            (style/image dimensions index)
@@ -90,10 +91,10 @@
                   :size   :heading-2
                   :style  {:color colors/white}}
                  (str "+" (- images-count (dec max-display-count)))]])]))
-        (:album message))
-      ]
+        (:album message))]
+
       [:<>
        (map-indexed
         (fn [index item]
-          [image/image-message index item])
+          [image/image-message index item context])
         (:album message))])))

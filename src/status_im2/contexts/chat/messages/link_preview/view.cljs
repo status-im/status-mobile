@@ -87,7 +87,7 @@
           [community-preview cached-preview-data]))})))
 
 (defn link-preview-loader
-  [link]
+  [link {:keys [on-long-press]}]
   (reagent/create-class
    {:component-did-mount
     (fn []
@@ -98,10 +98,11 @@
         (when-let [{:keys [site title thumbnail-url error] :as preview-data} cached-preview-data]
           (when (and (not error) site title)
             [rn/touchable-opacity
-             {:style    (when-not (is-gif? thumbnail-url)
-                          {:align-self :stretch})
-              :on-press #(when (security/safe-link? link)
-                           (rf/dispatch [:browser.ui/message-link-pressed link]))}
+             {:style         (when-not (is-gif? thumbnail-url)
+                               {:align-self :stretch})
+              :on-press      #(when (security/safe-link? link)
+                                (rf/dispatch [:browser.ui/message-link-pressed link]))
+              :on-long-press on-long-press}
              [rn/view (style/wrapper)
               (when-not (is-gif? thumbnail-url)
                 [:<>
@@ -140,7 +141,7 @@
     (i18n/label :t/dont-ask)]])
 
 (defn link-preview
-  [{:keys [content]}]
+  [{:keys [content]} context]
   (let [links         (:links content)
         ask-user?     (rf/sub [:link-preview/link-preview-request-enabled])
         enabled-sites (rf/sub [:link-preview/enabled-sites])
@@ -154,5 +155,5 @@
             link-whitelisted? (and link whitelisted?)]
         (cond
           community?                        [community-preview-loader link]
-          (and link-whitelisted? enabled?)  [link-preview-loader link]
+          (and link-whitelisted? enabled?)  [link-preview-loader link context]
           (and link-whitelisted? ask-user?) [link-preview-enable-request])))))
