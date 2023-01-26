@@ -29,17 +29,24 @@
 
 (defn empty-tab
   []
-  [rn/view
-   {:style               style/empty-container
-    :accessibility-label :empty-notifications}
-   [quo/icon :i/placeholder]
-   [quo/text
-    {:size   :paragraph-1
-     :style  style/empty-title
-     :weight :semi-bold}
-    (i18n/label :t/empty-notifications-title)]
-   [quo/text {:size :paragraph-2}
-    (i18n/label :t/empty-notifications-subtitle)]])
+  (let [filter-status (rf/sub [:activity-center/filter-status])]
+    [rn/view
+     {:style               style/empty-container
+      :accessibility-label :empty-notifications}
+     [rn/view {:style style/empty-rectangle-placeholder}]
+     [quo/text
+      {:size   :paragraph-1
+       :style  style/empty-title
+       :weight :semi-bold}
+      (i18n/label (if (= :unread filter-status)
+                    :t/empty-notifications-title-unread
+                    :t/empty-notifications-title-read))]
+     [quo/text
+      {:size  :paragraph-2
+       :style style/empty-subtitle}
+      (i18n/label (if (= :unread filter-status)
+                    :t/empty-notifications-subtitle-unread
+                    :t/empty-notifications-subtitle-read))]]))
 
 (defn tabs
   []
