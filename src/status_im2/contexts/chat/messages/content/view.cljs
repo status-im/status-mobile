@@ -66,16 +66,20 @@
       constants/content-type-contact-request [not-implemented/not-implemented
                                               [old-message/system-contact-request message-data]])))
 
+(defn message-on-long-press
+  [message-data context]
+  (rf/dispatch [:bottom-sheet/show-sheet
+                {:content (drawers/reactions-and-actions message-data context)}]))
+
 (defn user-message-content
   [{:keys [content-type quoted-message content] :as message-data}
    {:keys [chat-id] :as context}]
-  (let [response-to (:response-to content)]
+  (let [context     (assoc context :on-long-press #(message-on-long-press message-data context))
+        response-to (:response-to content)]
     [rn/touchable-highlight
      {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
       :style          {:border-radius 16}
-      :on-press       #()
-      :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                     {:content (drawers/reactions-and-actions message-data context)}])}
+      :on-long-press  #(message-on-long-press message-data context)}
      [rn/view {:padding-vertical 8}
       (when (and (seq response-to) quoted-message)
         [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
@@ -86,7 +90,7 @@
         (case content-type
 
           constants/content-type-text    [not-implemented/not-implemented
-                                          [content.text/text-content message-data]]
+                                          [content.text/text-content message-data context]]
 
           constants/content-type-emoji   [not-implemented/not-implemented
                                           [old-message/emoji message-data]]
@@ -94,12 +98,12 @@
           constants/content-type-sticker [not-implemented/not-implemented
                                           [old-message/sticker message-data]]
 
-          constants/content-type-image   [image/image-message 0 message-data]
+          constants/content-type-image   [image/image-message 0 message-data context]
 
           constants/content-type-audio   [not-implemented/not-implemented
                                           [old-message/audio message-data]]
 
-          constants/content-type-album   [album/album-message message-data]
+          constants/content-type-album   [album/album-message message-data context]
 
           [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
         [status/status message-data]]]]]))

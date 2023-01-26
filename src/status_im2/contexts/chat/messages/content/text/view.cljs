@@ -5,7 +5,7 @@
    [status-im2.contexts.chat.messages.link-preview.view :as link-preview]))
 
 (defn text-content
-  [message-data]
+  [message-data context]
   [rn/view
    [old-message/render-parsed-text message-data]
-   [link-preview/link-preview message-data]])
+   [link-preview/link-preview message-data context]])
