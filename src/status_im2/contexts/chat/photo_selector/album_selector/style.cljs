@@ -9,7 +9,7 @@
    :margin-horizontal  8
    :border-radius      12
    :align-items        :center
-   :background-color   (when selected? colors/neutral-5)})
+   :background-color   (when selected? colors/primary-50-opa-5)})
 
 (def cover
   {:width         40

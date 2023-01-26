@@ -82,7 +82,7 @@
 (defn album-title
   [photos? selected-album]
   [rn/touchable-opacity
-   {:style               style/title-container
+   {:style               (style/title-container)
     :active-opacity      1
     :accessibility-label :album-title
     :on-press            #(rf/dispatch (if photos?
@@ -93,16 +93,17 @@
     [quo/icon (if photos? :i/chevron-down :i/chevron-up)
      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])
 
+
 (defn photo-selector
   []
-  (let [selected-images (rf/sub [:chats/sending-image])
-        selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
-        selected        (reagent/atom [])]
-    (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-    [:f>
-     (fn []
+  [:f>
+   (fn []
+     (let [selected-images (rf/sub [:chats/sending-image])
+           selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
+           selected        (reagent/atom [])]
        (rn/use-effect-once
         (fn []
+          (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
           (if selected-images
             (reset! selected (vec (vals selected-images)))
             (reset! selected []))
@@ -136,5 +137,5 @@
                :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                        selected-album loading?
                                                        has-next-page?])}]
-             [bottom-gradient selected-images insets selected]]))])]))
+             [bottom-gradient selected-images insets selected]]))]))])
 

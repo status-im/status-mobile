@@ -5,6 +5,7 @@
     "repo": "status-go",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.125.2",
     "commit-sha1": "fc03393e1b9cc430c6c3357629e47b4aec4f113d",
     "src-sha256": "1lc1kj0dmqz9ibv2pmvfkyw56hd5k28k84fp47k5s4d5baxcyigi"
@@ -29,4 +30,9 @@
     "src-sha256": "1cia31skfhr78b1zqxzd0196hsbaqdh0mbqhyry275pcsw979lp2"
 >>>>>>> 1c406eb07... update status-go
 >>>>>>> 1e8722132... update status-go
+=======
+    "version": "e57d1c34beee03aeb3ed83d946a1e7cf96bf6bdd",
+    "commit-sha1": "e57d1c34beee03aeb3ed83d946a1e7cf96bf6bdd",
+    "src-sha256": "1cia31skfhr78b1zqxzd0196hsbaqdh0mbqhyry275pcsw979lp2"
+>>>>>>> ae976abc7... refactor
 }

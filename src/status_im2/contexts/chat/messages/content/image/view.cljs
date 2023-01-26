@@ -40,6 +40,7 @@
             :native-ID (when (= shared-element-id message-id) :shared-element)}]]]))))
 =======
          {:active-opacity 1
+          :key            message-id
           :style          {:margin-top (when (> index 0) 20)}
           :on-press       (fn []
                             (rf/dispatch [:chat.ui/update-shared-element-id message-id])
