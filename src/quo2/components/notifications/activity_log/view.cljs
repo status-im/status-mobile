@@ -151,7 +151,7 @@
          [rn/view style/footer-container
           (map-indexed
             (fn [i item]
-              ^{:key (str "footer-item-" timestamp "-" i)}
+              ^{:key (str timestamp "-" i)}
               [footer-item-view item replying? reply-input]) items)])])))
 
 (defn view

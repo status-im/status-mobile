@@ -5,7 +5,8 @@
             [status-im2.contexts.chat.events :as chat.events]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            status-im2.contexts.activity-center.notification.contact-requests.events))
 
 (def defaults
   {:filter-status          :unread
