@@ -144,5 +144,6 @@
 	</array>
 	<key>NFCReaderUsageDescription</key>
 	<string>Enable Keycard</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key><true/>
 </dict>
 </plist>
