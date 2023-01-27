@@ -100,7 +100,7 @@
     :accessory           :text
     :accessory-text      pin-count
     :disabled            (zero? pin-count)
-    :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-pinned-messages public-key])
+    :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :pinned-messages-list public-key])
     :chevron             true}])
 
 (defn nickname-settings

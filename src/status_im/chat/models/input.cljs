@@ -217,20 +217,26 @@
                                 :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
 (rf/defn send-edited-message
-  [{:keys [db] :as cofx} text {:keys [message-id quoted-message]}]
-  (rf/merge
-   cofx
-   {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (message-content/emoji-only-content?
-                                                       {:text text :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)}]
-                     :js-response true
-                     :on-error    #(log/error "failed to edit message " %)
-                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
-   (cancel-message-edit)))
+  [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
+  (let [pinned-message (get-in db [:pin-messages chat-id message-id])]
+    (rf/merge
+     cofx
+     {:json-rpc/call [{:method      "wakuext_editMessage"
+                       :params      [{:id           message-id
+                                      :text         text
+                                      :content-type (if (message-content/emoji-only-content?
+                                                         {:text text :response-to quoted-message})
+                                                      constants/content-type-emoji
+                                                      constants/content-type-text)}]
+                       :js-response true
+                       :on-error    #(log/error "failed to edit message " %)
+                       :on-success  (fn [result]
+                                      (re-frame/dispatch [:sanitize-messages-and-process-response
+                                                          result])
+                                      (when pinned-message
+                                        (re-frame/dispatch [:pin-message/load-pin-messages
+                                                            chat-id])))}]}
+     (cancel-message-edit))))
 
 (rf/defn send-current-message
   "Sends message from current chat input"

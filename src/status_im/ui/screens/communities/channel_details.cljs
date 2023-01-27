@@ -64,5 +64,5 @@
               :accessory      :text
               :accessory-text (count pinned-messages)
               :chevron        true
-              :on-press       #(re-frame/dispatch [:chat.ui/navigate-to-pinned-messages
+              :on-press       #(re-frame/dispatch [:bottom-sheet/show-sheet :pinned-messages-list
                                                    chat-id])}]])]))))
