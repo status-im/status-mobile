@@ -28,7 +28,9 @@
   (let [response-to  (:response-to (:content message))
         default-size 36]
     [rn/touchable-opacity
-     {:on-press       #(rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id])
+     {:on-press       #(do
+                         (rf/dispatch [:dismiss-keyboard])
+                         (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))
       :active-opacity 1
       :style          (merge {:flex-direction :row :margin-vertical 8}
                              (old-style/message-wrapper message))}

@@ -118,7 +118,7 @@
         [mentions/autocomplete-mentions suggestions (:text-input-ref refs)]]))])
 
 (defn effect!
-  [{:keys [keyboard-shown] :as params}]
+  [{:keys [keyboard-shown reply edit suggestions images] :as params}]
   (rn/use-effect
    (fn []
      (when (or (not @keyboard-hiding?)
@@ -126,7 +126,8 @@
        (reset! keyboard-hiding? false)
        (if (not keyboard-shown)
          (minimize params)
-         (update-y params))))))
+         (update-y params))))
+   [reply edit suggestions images]))
 
 (defn prepare-params
   [[refs window-height translate-y bg-opacity bg-bottom min-y max-y parent-height

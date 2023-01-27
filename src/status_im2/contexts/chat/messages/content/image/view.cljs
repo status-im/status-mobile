@@ -21,18 +21,18 @@
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
-         {:active-opacity 1
-          :style          {:margin-top (when (> index 0) 20)}
-          :on-press       (fn []
-                            (rf/dispatch [:chat.ui/update-shared-element-id message-id])
-                            (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
-                                                          [message] 0])
-                                           100))
-          :on-long-press  on-long-press}
-         ;; This text comp is temporary. Should later use
-         ;; `status-im2.contexts.chat.messages.content.text.view`
-         (when (and (not= text "placeholder") (= index 0)) [rn/text text])
-         [rn/image
-          {:source    {:uri (:image content)}
-           :style     (merge dimensions {:border-radius 12})
-           :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))
+         {:style         {:margin-top (when (> index 0) 20) :width (:width dimensions)}
+          :on-press      (fn []
+                           (rf/dispatch [:chat.ui/update-shared-element-id message-id])
+                           (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
+                                                         [message] 0])
+                                          100))
+          :on-long-press on-long-press}
+         [rn/view
+          ;; This text comp is temporary. Should later use
+          ;; `status-im2.contexts.chat.messages.content.text.view`
+          (when (and (not= text "placeholder") (= index 0)) [rn/text text])
+          [rn/image
+           {:source    {:uri (:image content)}
+            :style     (merge dimensions {:border-radius 12})
+            :native-ID (when (= shared-element-id message-id) :shared-element)}]]]))))

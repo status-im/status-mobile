@@ -68,6 +68,7 @@
 
 (defn message-on-long-press
   [message-data context]
+  (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:bottom-sheet/show-sheet
                 {:content (drawers/reactions-and-actions message-data context)}]))
 
@@ -79,6 +80,7 @@
     [rn/touchable-highlight
      {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
       :style          {:border-radius 16}
+      :on-press       #(rf/dispatch [:dismiss-keyboard])
       :on-long-press  #(message-on-long-press message-data context)}
      [rn/view {:padding-vertical 8}
       (when (and (seq response-to) quoted-message)
