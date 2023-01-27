@@ -7,10 +7,12 @@
 (defn notification-dot
   [{:keys [style]}]
   [rn/view
-   {:style (merge {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
-                   :width            size
-                   :height           size
-                   :border-radius    (/ size 2)
-                   :position         :absolute
-                   :z-index          1}
-                  style)}])
+   {:accessibility-label :notification-dot
+    :style               (merge
+                          {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
+                           :width            size
+                           :height           size
+                           :border-radius    (/ size 2)
+                           :position         :absolute
+                           :z-index          1}
+                          style)}])
