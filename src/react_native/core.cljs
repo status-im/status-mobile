@@ -88,6 +88,8 @@
                 props)]
         children))
 
+(def memo react/memo)
+
 (def create-ref react/createRef)
 
 (def use-ref react/useRef)

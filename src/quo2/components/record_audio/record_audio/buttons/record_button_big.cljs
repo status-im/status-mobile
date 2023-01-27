@@ -1,6 +1,5 @@
 (ns quo2.components.record-audio.record-audio.buttons.record-button-big
-  (:require [quo.react :refer [memo]]
-            [quo2.components.icon :as icons]
+  (:require [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn :refer [use-effect]]
@@ -34,7 +33,7 @@
 
 (def ^:private animated-ring
   (reagent/adapt-react-class
-   (memo
+   (rn/memo
     (fn [props]
       (let [{:keys [scale opacity color]} (bean/bean props)]
         (reagent/as-element

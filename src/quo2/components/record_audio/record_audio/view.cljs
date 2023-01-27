@@ -1,7 +1,6 @@
 (ns quo2.components.record-audio.record-audio.view
   (:require [cljs-bean.core :as bean]
             [oops.core :as oops]
-            [quo.react :refer [memo]]
             [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
@@ -518,7 +517,7 @@
 
 (def record-audio
   (reagent/adapt-react-class
-   (memo
+   (rn/memo
     (fn [props]
       (let [{:keys [onStartRecording onReviewingAudio onSend onCancel]} (bean/bean props)]
         (reagent/as-element
