@@ -3,6 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
@@ -21,11 +22,19 @@
 (defn get-message-content
   [{:keys [content-type] :as message}]
   (case content-type
-    constants/content-type-text    (get-in message [:content :text])
+    constants/content-type-text        (get-in message [:content :text])
 
-    constants/content-type-image   [old-message/message-content-image message]
+    constants/content-type-image       [old-message/message-content-image message]
 
-    constants/content-type-sticker [old-message/sticker message]))
+    constants/content-type-sticker     [old-message/sticker message]
+
+    ;; NOTE: The following type (system-text) doesn't have a design yet.
+    ;; https://github.com/status-im/status-mobile/issues/14915
+    constants/content-type-system-text [not-implemented/not-implemented
+                                        [quo/text {:style style/tag-text}
+                                         (get-in message [:content :text])]]
+
+    nil))
 
 (defn view
   [{:keys [author chat-name chat-id message read timestamp]}]
