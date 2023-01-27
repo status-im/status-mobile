@@ -2,6 +2,8 @@
   (:require [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]))
 
+(def tab-background-opacity 0.3)
+
 (defn size->padding-left
   [size]
   (case size
@@ -34,17 +36,20 @@
         padding       (size->padding-left size)]
     (merge {:height                    size
             :align-items               :center
-            :justify-content           :flex-end
             :flex-direction            :row
             :border-top-left-radius    border-radius
             :border-bottom-left-radius border-radius
             :background-color          background-color
             :padding-left              padding}
-           (when-not show-notification-dot?
-             {:padding-horizontal padding
-              :border-radius      border-radius})
+           ;; The minimum padding right of 1 is a mandatory workaround. Without
+           ;; it, the SVG rendered besides the tab will have a 1px margin. This
+           ;; issue still exists in the latest react-native-svg versions.
+           (if show-notification-dot?
+             {:padding-right 1}
+             {:border-radius border-radius
+              :padding-right padding})
            (when disabled
-             {:opacity 0.3}))))
+             {:opacity tab-background-opacity}))))
 
 (def themes
   {:light {:default  {:background-color colors/neutral-20

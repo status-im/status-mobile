@@ -7,18 +7,26 @@
             [react-native.svg :as svg]))
 
 (defn- right-side-with-cutout
-  [{:keys [height width background-color]}]
+  "SVG exported from Figma."
+  [{:keys [height width background-color disabled]}]
+  ;; Do not add a view-box property, it'll cause an artifact where the SVG is
+  ;; rendered slightly smaller than the proper width and height.
   [svg/svg
-   {:width    width
-    :height   height
-    :view-box (str "0 0 " width " " height)
-    :fill     :none}
+   {:width        width
+    :height       height
+    :fill         background-color
+    :fill-opacity (when disabled style/tab-background-opacity)}
    [svg/path
-    {:fill-rule :evenodd
-     :clip-rule :evenodd
-     :fill      background-color
-     :d
-     "M11.4683 6.78094C11.004 6.92336 10.511 7 10 7C7.23858 7 5 4.76142 5 2C5 1.48904 5.07664 0.995988 5.21906 0.531702C4.68658 0.350857 4.13363 0.213283 3.56434 0.123117C2.78702 0 1.85801 0 0 0V32C1.85801 32 2.78702 32 3.56434 31.8769C7.84327 31.1992 11.1992 27.8433 11.8769 23.5643C12 22.787 12 21.858 12 20V12C12 10.142 12 9.21298 11.8769 8.43566C11.7867 7.86637 11.6491 7.31342 11.4683 6.78094Z"}]])
+    {:d
+     "M 11.468 6.781 C 11.004 6.923 10.511 7 10 7 C 7.239 7 5 4.761 5 2 C 5
+     1.489 5.077 0.996 5.219 0.532 C 4.687 0.351 4.134 0.213 3.564 0.123 C 2.787
+     0 1.858 0 0 0 L 0 32 C 1.858 32 2.787 32 3.564 31.877 C 7.843 31.199 11.199
+     27.843 11.877 23.564 C 12 22.787 12 21.858 12 20 L 12 12 C 12 10.142 12
+     9.213 11.877 8.436 C 11.787 7.866 11.649 7.313 11.468 6.781 Z"
+     :clip-path "url(#clip0_5514_84289)"}]
+   [svg/defs
+    [svg/clippath {:id "clip0_5514_84289"}
+     [svg/rect {:width width :height height :fill :none}]]]])
 
 (defn- content
   [{:keys [size label]} children]
@@ -82,4 +90,5 @@
         [right-side-with-cutout
          {:width            (style/size->padding-left size)
           :height           size
+          :disabled         disabled
           :background-color background-color}])]]))
