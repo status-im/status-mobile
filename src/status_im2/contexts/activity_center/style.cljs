@@ -47,4 +47,14 @@
    :padding-vertical 12})
 
 (def empty-title
-  {:padding-bottom 2})
+  {:padding-bottom 2
+   :color          colors/white})
+
+(def empty-subtitle
+  {:color colors/white})
+
+(def empty-rectangle-placeholder
+  {:width            120
+   :height           120
+   :background-color colors/danger-50
+   :margin-bottom    20})
