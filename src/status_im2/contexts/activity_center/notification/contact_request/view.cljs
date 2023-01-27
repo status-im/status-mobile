@@ -20,8 +20,7 @@
                     [rn/touchable-opacity
                      {:on-press (fn []
                                   (rf/dispatch [:hide-popover])
-                                  (rf/dispatch [:chat.ui/start-chat
-                                                {:public-key author}]))}]
+                                  (rf/dispatch [:chat.ui/start-chat author]))}]
                     [:<>])]
     (conj
      pressable

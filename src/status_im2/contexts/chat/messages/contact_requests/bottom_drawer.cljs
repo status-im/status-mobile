@@ -15,7 +15,8 @@
        :on-press #(rf/dispatch [:chat.ui/show-profile contact-id])
        :before   :i/communities}
       (cond
-        (or (= contact-request-state
+        (or (not contact-request-state)
+            (= contact-request-state
                constants/contact-request-state-none)
             (= contact-request-state
                constants/contact-request-state-received))

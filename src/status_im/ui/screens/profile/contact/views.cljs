@@ -21,8 +21,8 @@
             :icon                :main-icons/message
             :disabled            (not mutual?)
             :action              #(re-frame/dispatch [:chat.ui/start-chat
-                                                      {:public-key public-key
-                                                       :ens-name   ens-name}])
+                                                      public-key
+                                                      ens-name])
             :accessibility-label :start-conversation-button}]
           (if added?
             [{:label               (i18n/label :t/remove-from-contacts)

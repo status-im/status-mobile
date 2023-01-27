@@ -73,12 +73,9 @@
         [page-nav]
         [pin.banner/banner chat-id]
         [messages.list/messages-list {:chat chat :show-input? show-input?}]
-        (cond (and (not show-input?)
-                   contact-request-state)
-              [contact-requests.bottom-drawer/view chat-id contact-request-state]
-
-              show-input?
-              [composer/composer chat-id insets])])]))
+        (if-not show-input?
+          [contact-requests.bottom-drawer/view chat-id contact-request-state]
+          [composer/composer chat-id insets])])]))
 
 (defn chat
   []

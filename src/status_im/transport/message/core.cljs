@@ -49,7 +49,7 @@
         ^js visibility-status-updates  (.-statusUpdates response-js)
         ^js current-visibility-status  (.-currentStatus response-js)
         ^js bookmarks                  (.-bookmarks response-js)
-        ^js settings                   (.-settings response-js)
+        ^js settings                   (remove nil? (.-settings response-js))
         ^js cleared-histories          (.-clearedHistories response-js)
         ^js identity-images            (.-identityImages response-js)
         ^js accounts                   (.-accounts response-js)
