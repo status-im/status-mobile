@@ -89,7 +89,7 @@
              [reanimated/flat-list
               {:data [nil]
                :render-fn main-comp
-               :key-fn (fn [i] (str i))
+               :key-fn str
                :header (reagent/as-element (header parameters (:top insets) scroll-y))
                :scroll-event-throttle 8
                :on-scroll (fn [event] (scroll-handler event initial-y scroll-y opacity-value))}]]))]))])
