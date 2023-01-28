@@ -81,21 +81,23 @@
 
 (defn bottom-sheet
   [props children]
-  (let [{on-cancel         :on-cancel
-         disable-drag?     :disable-drag?
-         show-handle?      :show-handle?
-         visible?          :visible?
-         backdrop-dismiss? :backdrop-dismiss?
-         expandable?       :expandable?
-         selected-item     :selected-item
-         :or               {show-handle?      true
-                            backdrop-dismiss? true
-                            expandable?       false}}
+  (let [{on-cancel             :on-cancel
+         disable-drag?         :disable-drag?
+         show-handle?          :show-handle?
+         visible?              :visible?
+         backdrop-dismiss?     :backdrop-dismiss?
+         expandable?           :expandable?
+         selected-item         :selected-item
+         is-initially-expaned? :expanded?
+         :or                   {show-handle?          true
+                                backdrop-dismiss?     true
+                                expandable?           false
+                                is-initially-expaned? false}}
         props
         content-height (reagent/atom nil)
         show-bottom-sheet? (reagent/atom nil)
         keyboard-was-shown? (reagent/atom false)
-        expanded? (reagent/atom false)
+        expanded? (reagent/atom is-initially-expaned?)
         gesture-running? (reagent/atom false)
         reset-atoms (fn []
                       (reset! show-bottom-sheet? nil)

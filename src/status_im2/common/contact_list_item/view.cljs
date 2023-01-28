@@ -19,13 +19,14 @@
       (rf/dispatch [:deselect-member public-key true]))))
 
 (defn open-chat
-  [public-key member? selected?]
+  [public-key member? selected? current-pk]
   (let [view-id (rf/sub [:view-id])]
-    (case view-id
-      :shell-stack        (do (rf/dispatch [:dismiss-keyboard])
-                              (rf/dispatch [:chat.ui/show-profile public-key])
-                              (rf/dispatch [:search/home-filter-changed nil]))
-      :group-chat-profile (group-chat-member-toggle member? selected? public-key))))
+    (when (not= current-pk public-key)
+      (case view-id
+        :shell-stack        (do (rf/dispatch [:dismiss-keyboard])
+                                (rf/dispatch [:chat.ui/show-profile public-key])
+                                (rf/dispatch [:search/home-filter-changed nil]))
+        :group-chat-profile (group-chat-member-toggle member? selected? public-key)))))
 
 (defn action-icon
   [{:keys [public-key]
@@ -55,30 +56,24 @@
             :on-change           on-check}])])]))
 
 (defn contact-list-item
-  [item _ _ {:keys [start-a-new-chat? on-toggle] :as extra-data}]
-  (let [{:keys [public-key
-                compressed-key
-                ens-verified
-                added?
-                images
-                group]}
-        item
-        display-name (first
-                      (rf/sub
-                       [:contacts/contact-two-names-by-identity
-                        public-key]))
-        photo-path (when (seq images)
-                     (rf/sub [:chats/photo-path public-key]))
-        online? (rf/sub [:visibility-status-updates/online?
-                         public-key])
-        user-selected? (rf/sub [:is-contact-selected? public-key])
-        {:keys [contacts admins]} group
-        member? (contains? contacts public-key)
-        current-pk (rf/sub [:multiaccount/public-key])
-        admin? (get admins current-pk)
-        checked? (reagent/atom (if start-a-new-chat?
-                                 user-selected?
-                                 member?))]
+  [item _ _ {:keys [start-a-new-chat? on-toggle group] :as extra-data}]
+  (let [{:keys [public-key compressed-key ens-verified added? images]} item
+        display-name                                    (first
+                                                         (rf/sub
+                                                          [:contacts/contact-two-names-by-identity
+                                                           public-key]))
+        photo-path                                      (when (seq images)
+                                                          (rf/sub [:chats/photo-path public-key]))
+        online?                                         (rf/sub [:visibility-status-updates/online?
+                                                                 public-key])
+        user-selected?                                  (rf/sub [:is-contact-selected? public-key])
+        {:keys [contacts admins]}                       group
+        member?                                         (contains? contacts public-key)
+        current-pk                                      (rf/sub [:multiaccount/public-key])
+        admin?                                          (get admins current-pk)
+        checked?                                        (reagent/atom (if start-a-new-chat?
+                                                                        user-selected?
+                                                                        member?))]
     [rn/touchable-opacity
      (merge
       {:style               (style/container)
@@ -86,7 +81,7 @@
        :active-opacity      1
        :on-press            #(if start-a-new-chat?
                                (on-toggle true user-selected? public-key)
-                               (open-chat public-key member? (swap! checked? not)))
+                               (open-chat public-key member? (swap! checked? not) current-pk))
        :on-long-press       #(rf/dispatch [:bottom-sheet/show-sheet
                                            {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar
@@ -100,11 +95,17 @@
       [rn/view {:style {:flex-direction :row}}
        [quo/text {:weight :semi-bold} display-name]
        (if ens-verified
-         [rn/view {:style {:margin-left 5 :margin-top 4}}
+         [rn/view
+          {:style {:margin-left 5
+                   :margin-top  4}}
           [quo/icon :i/verified
-           {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+           {:no-color true
+            :size     12
+            :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
          (when added?
-           [rn/view {:style {:margin-left 5 :margin-top 4}}
+           [rn/view
+            {:style {:margin-left 5
+                     :margin-top  4}}
             [quo/icon :i/contact
              {:no-color true
               :size     12

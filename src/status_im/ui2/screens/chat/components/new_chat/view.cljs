@@ -115,7 +115,8 @@
              :on-toggle         on-toggle}])]
         (when contacts-selected?
           [toolbar/toolbar
-           {:show-border? false
+           {:size         :default
+            :show-border? false
             :center       [button/button
                            {:type                :primary
                             :accessibility-label :next-button
