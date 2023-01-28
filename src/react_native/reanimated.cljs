@@ -40,6 +40,7 @@
 ;; Hooks
 (def use-shared-value useSharedValue)
 (def use-animated-style useAnimatedStyle)
+
 ;; Animations
 (def with-timing withTiming)
 (def with-delay withDelay)

@@ -69,7 +69,7 @@
                                                             {:extrapolateLeft  "clamp"
                                                              :extrapolateRight "clamp"})
                 opacity-value       (reanimated/use-shared-value 0)]
-            [rn/view {:style (style/container-view view-height theme-color)}
+            [rn/view {:style (style/container-view view-height)}
              [rn/touchable-opacity
               {:active-opacity 1
                :on-press       #(rf/dispatch [:navigate-back])

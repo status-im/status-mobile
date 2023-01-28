@@ -3,7 +3,7 @@
             [react-native.reanimated :as reanimated]))
 
 (defn container-view
-  [view-height theme-color]
+  [view-height]
   {:position :absolute
    :top      0
    :left     0
