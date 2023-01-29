@@ -172,19 +172,23 @@
 (re-frame/reg-fx
  :keychain/save-auth-method
  (fn [[key-uid method]]
-   (log/debug "[keychain] :keychain/save-auth-method"
-              "method"
-              method)
-   (save-credentials
-    (str key-uid "-auth")
-    key-uid
-    method
-    #(when-not %
-       (log/error
-        (str "Error while saving auth method."
-             " "
-             "The app will continue to work normally, "
-             "but you will have to login again next time you launch it."))))))
+   (when-not (empty? key-uid)
+     (log/debug "[keychain] :keychain/save-auth-method"
+                "key-uid"
+                key-uid
+                "method"
+                method)
+     (save-credentials
+      (str key-uid "-auth")
+      key-uid
+      method
+      #(when-not %
+         (log/error
+          (str "Error while saving auth method."
+               " "
+               "The app will continue to work normally, "
+               "but you will have to login again next time you launch it.")))))
+   ))
 
 (re-frame/reg-fx
  :keychain/save-keycard-keys
