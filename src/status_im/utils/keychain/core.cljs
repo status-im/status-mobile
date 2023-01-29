@@ -188,7 +188,7 @@
                " "
                "The app will continue to work normally, "
                "but you will have to login again next time you launch it.")))))
-   ))
+ ))
 
 (re-frame/reg-fx
  :keychain/save-keycard-keys
