@@ -68,7 +68,7 @@
         ^js event-js (.-event data)
         type         (.-type data)]
     (case type
-      "node.login"              (status-node-started cofx (js->clj event-js :keywordize-keys true))
+      ;"node.login"              (status-node-started cofx (js->clj event-js :keywordize-keys true))
       "backup.performed"        {:db (assoc-in db [:multiaccount :last-backup] (.-lastBackup event-js))}
       "envelope.sent"           (transport.message/update-envelopes-status cofx
                                                                            (:ids
