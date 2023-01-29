@@ -693,9 +693,9 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
 #if DEBUG
     NSLog(@"convertToKeycardAccount() method called");
 #endif
-    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
-    NSString *result = StatusgoConvertToKeycardAccount(multiaccountKeystoreDir.path, accountData, settings, currentPassword, newPassword);
-    callback(@[result]);
+    //NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
+    //NSString *result = StatusgoConvertToKeycardAccount(multiaccountKeystoreDir.path, accountData, settings, currentPassword, newPassword);
+    //callback(@[result]);
 }
 
 
