@@ -108,18 +108,28 @@
    (permissions/request-permissions
     {:permissions [:read-external-storage]
      :on-allowed  (fn []
-                    (let [params {:first      num
-                                  :assetType  "Photos"
-                                  :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
-                                  :groupName  (when (not= album (i18n/label :t/recent)) album)
-                                  :include    (clj->js ["imageSize"])}]
-                      (-> (.getPhotos
-                           CameraRoll
-                           (if end-cursor (assoc params :end-cursor end-cursor) params))
-                          (.then #(let [response (types/js->clj %)]
-                                    (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
-                                                        (:page_info response) end-cursor])))
-                          (.catch #(log/warn "could not get camera roll photos")))))})))
+                    (-> (if end-cursor
+                            (.getPhotos
+                             CameraRoll
+                             #js
+                              {:first      num
+                               :after      end-cursor
+                               :assetType  "Photos"
+                               :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
+                               :groupName  (when (not= album (i18n/label :t/recent)) album)
+                               :include    (clj->js ["imageSize"])})
+                            (.getPhotos
+                             CameraRoll
+                             #js
+                              {:first      num
+                               :assetType  "Photos"
+                               :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
+                               :groupName  (when (not= album (i18n/label :t/recent)) album)
+                               :include    (clj->js ["imageSize"])}))
+                        (.then #(let [response (types/js->clj %)]
+                                  (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
+                                                      (:page_info response) end-cursor])))
+                        (.catch #(log/warn "could not get camera roll photos"))))})))
 
 (re-frame/reg-fx
  :chat.ui/camera-roll-get-albums
