@@ -369,7 +369,8 @@ class ProfileView(BaseView):
         chat = self.get_chat_view()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(public_key)
-        chat.confirm_until_presence_of_element(self.add_new_contact_button)
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts)
+        chat.profile_add_to_contacts.click()
         self.click_system_back_button_until_element_is_shown()
 
     def switch_push_notifications(self):

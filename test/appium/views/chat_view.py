@@ -611,6 +611,7 @@ class ChatView(BaseView):
         # Start new chat
         self.public_key_edit_box = EditBox(self.driver, accessibility_id="enter-contact-code-input")
         self.scan_contact_code_button = Button(self.driver, accessibility_id="scan-contact-code-button")
+        self.view_profile_new_contact_button = Button(self.driver, accessibility_id="new-contact-button")
 
         # Chat header
         self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")

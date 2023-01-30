@@ -1179,24 +1179,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
                 self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
 
-        self.chat_1.just_fyi("Sending message while user is still not in contacts")
+        self.chat_1.just_fyi("Sending message")
         message = 'profile_photo'
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
-        # Should be checked in CR flow, as for now no way to start chat with user until he is added to contacts
-        # if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
-        #                                                                                                diff=5):
-        #     self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
-
-        self.chat_1.just_fyi("Users add to contacts each other")
-        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
-        [home.browser_tab.click() for home in (self.home_1, self.home_2)]
-        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
-        self.profile_2 = self.home_2.get_profile_view()
-        self.profile_2.add_contact_via_contacts_list(self.public_key_1)
 
         self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
-        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.default_username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
