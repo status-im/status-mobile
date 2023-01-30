@@ -16,29 +16,12 @@
         {:width calculated-width :height calculated-height}))))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}]
+  [index {:keys [content image-width image-height message-id] :as message}]
   (let [dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))
         text       (:text content)]
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
-<<<<<<< HEAD
-         {:style         {:margin-top (when (> index 0) 20) :width (:width dimensions)}
-          :on-press      (fn []
-                           (rf/dispatch [:chat.ui/update-shared-element-id message-id])
-                           (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
-                                                         [message] 0])
-                                          100))
-          :on-long-press on-long-press}
-         [rn/view
-          ;; This text comp is temporary. Should later use
-          ;; `status-im2.contexts.chat.messages.content.text.view`
-          (when (and (not= text "placeholder") (= index 0)) [rn/text text])
-          [rn/image
-           {:source    {:uri (:image content)}
-            :style     (merge dimensions {:border-radius 12})
-            :native-ID (when (= shared-element-id message-id) :shared-element)}]]]))))
-=======
          {:active-opacity 1
           :key            message-id
           :style          {:margin-top (when (> index 0) 20)}
@@ -54,4 +37,3 @@
           {:source    {:uri (:image content)}
            :style     (merge dimensions {:border-radius 12})
            :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))
->>>>>>> 865b9d3e3... feat: photo & album selector screens
