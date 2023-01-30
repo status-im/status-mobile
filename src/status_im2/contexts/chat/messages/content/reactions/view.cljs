@@ -2,7 +2,8 @@
   (:require [status-im2.constants :as constants]
             [quo2.core :as quo]
             [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]))
 
 (defn message-reactions-row
   [chat-id message-id]
@@ -28,5 +29,7 @@
        [quo/add-reaction
         {:on-press (fn []
                      (rf/dispatch [:dismiss-keyboard])
-                     (rf/dispatch [:bottom-sheet/show-sheet :drawer/reactions
-                                   {:chat-id chat-id :message-id message-id}]))}]])))
+                     (rf/dispatch
+                      [:bottom-sheet/show-sheet
+                       {:content (fn [] [drawers/reactions
+                                         {:chat-id chat-id :message-id message-id}])}]))}]])))
