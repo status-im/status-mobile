@@ -91,6 +91,10 @@
                :render-fn main-comp
                :key-fn str
                :header (reagent/as-element (header parameters (:top insets) scroll-y))
+               ;; using 8 throttle because the app now supports 120hz refresh rate (and there is a
+               ;; noticeable difference between 8 and 16). We can implement a method to limit the
+               ;; throttle to 16 if the device does not support 120hz refresh rate.
+               ;; https://github.com/status-im/status-mobile/issues/14924
                :scroll-event-throttle 8
                :on-scroll (fn [event] (scroll-handler event initial-y scroll-y opacity-value))}]]))]))])
 
