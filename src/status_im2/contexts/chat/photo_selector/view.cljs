@@ -101,13 +101,13 @@
      (let [selected-images (rf/sub [:chats/sending-image])
            selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
            selected        (reagent/atom [])]
-       ;(rn/use-effect-once
-       ; (fn []
-       ;   (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-       ;   (if selected-images
-       ;     (reset! selected (vec (vals selected-images)))
-       ;     (reset! selected []))
-       ;   js/undefined))
+       (rn/use-effect-once
+        (fn []
+          (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+          (if selected-images
+            (reset! selected (vec (vals selected-images)))
+            (reset! selected []))
+          js/undefined))
        [safe-area/consumer
         (fn [insets]
           (let [window-width       (:width (rn/get-window))

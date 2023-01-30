@@ -112,7 +112,7 @@
                          CameraRoll
                          #js
                           {:first      num
-                           :after      end-cursor
+                           :after      (clj->js end-cursor)
                            :assetType  "Photos"
                            :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
                            :groupName  (when (not= album (i18n/label :t/recent)) album)
