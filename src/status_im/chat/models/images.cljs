@@ -113,10 +113,9 @@
                                   :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
                                   :groupName  (when (not= album (i18n/label :t/recent)) album)
                                   :include    (clj->js ["imageSize"])}]
-                      (-> (if end-cursor
-                              (.getPhotos
+                      (-> (.getPhotos
                                CameraRoll
-                               #js (if end-cursor (assoc params :end-cursor end-cursor) params)))
+                               (if end-cursor (assoc params :end-cursor end-cursor) params))
                           (.then #(let [response (types/js->clj %)]
                                     (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
                                                         (:page_info response) end-cursor])))
