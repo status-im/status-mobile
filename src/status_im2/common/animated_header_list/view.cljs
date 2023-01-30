@@ -46,7 +46,7 @@
       [display-picture-comp]]]))
 
 (defn animated-header-list
-  [{:keys [title-comp theme-color main-comp] :as parameters}]
+  [{:keys [title-comp main-comp] :as parameters}]
   [safe-area/consumer
    (fn [insets]
      (let [window-height     (:height (rn/get-window))
