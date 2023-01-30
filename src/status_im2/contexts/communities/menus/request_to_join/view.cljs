@@ -121,8 +121,8 @@
          {:accessibility-label :join-community-button
           :on-press            (fn []
                                  (if can-join?
-                                   (do (rf/dispatch [::communities/join id])
-                                       (rf/dispatch [:bottom-sheet/hide]))
+                                   (do (rf/dispatch [:bottom-sheet/hide])
+                                       (rf/dispatch [::communities/join id]))
                                    (do
                                      (and can-request-access?
                                           (not (pos? requested-to-join-at))

@@ -1,5 +1,5 @@
 (ns status-im.keycard.wallet
-  (:require [status-im.bottom-sheet.core :as bottom-sheet]
+  (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]

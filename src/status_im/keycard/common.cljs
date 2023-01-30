@@ -1,7 +1,7 @@
 (ns status-im.keycard.common
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.keycard.nfc :as nfc]

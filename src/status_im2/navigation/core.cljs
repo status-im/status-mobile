@@ -264,8 +264,8 @@
                  (fn [] (dissmiss-overlay "visibility-status-popover")))
 
 ;; BOTTOM SHEETS
-(re-frame/reg-fx :show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
-(re-frame/reg-fx :hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
+(re-frame/reg-fx :show-bottom-sheet-overlay (fn [] (show-overlay "bottom-sheet")))
+(re-frame/reg-fx :dismiss-bottom-sheet-overlay (fn [] (dissmiss-overlay "bottom-sheet")))
 
 ;; WALLET CONNECT
 (re-frame/reg-fx :show-wallet-connect-sheet (fn [] (show-overlay "wallet-connect-sheet")))

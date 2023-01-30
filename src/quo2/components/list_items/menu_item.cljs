@@ -7,12 +7,14 @@
 (defn themes
   [type]
   (case type
-    :main   {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
-             :background (theme-colors colors/white colors/neutral-90)
-             :text-color (theme-colors colors/neutral-100 colors/white)}
-    :danger {:icon-color (theme-colors colors/danger-50 colors/danger-60)
-             :background (theme-colors colors/white colors/neutral-90)
-             :text-color (theme-colors colors/danger-50 colors/danger-60)}))
+    :main        {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
+                  :background (theme-colors colors/white colors/neutral-90)
+                  :text-color (theme-colors colors/neutral-100 colors/white)}
+    :danger      {:icon-color (theme-colors colors/danger-50 colors/danger-60)
+                  :background (theme-colors colors/white colors/neutral-90)
+                  :text-color (theme-colors colors/danger-50 colors/danger-60)}
+    :transparent {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
+                  :text-color (theme-colors colors/neutral-100 colors/white)}))
 
 (defn menu-item
   [{:keys [type title accessibility-label icon on-press style-props subtitle subtitle-color]

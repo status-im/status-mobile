@@ -1,9 +1,9 @@
 (ns status-im2.contexts.syncing.sheets.sync-device-notice.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
             [status-im2.contexts.syncing.sheets.sync-device-notice.styles :as styles]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn sheet
@@ -54,8 +54,11 @@
       :size     40
       :style    styles/setup-syncing-button
       :before   :i/face-id20
-      :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                               {:show-handle? false
-                                :content      (fn []
-                                                [enter-password/sheet])}])}
+      :on-press (fn []
+                  (rf/dispatch [:bottom-sheet/hide])
+                  (rf/dispatch [:bottom-sheet/show-sheet
+                                {:show-handle? true
+                                 :expanded?    true
+                                 :content      (fn []
+                                                 [enter-password/sheet])}]))}
      (i18n/label :t/setup-syncing)]]])

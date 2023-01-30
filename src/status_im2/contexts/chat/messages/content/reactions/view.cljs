@@ -27,5 +27,9 @@
                                                    :emoji-id   emoji-id}]))
             :accessibility-label (str "emoji-reaction-" emoji-id)}]])
        [quo/add-reaction
-        {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                  {:content (fn [] [drawers/reactions chat-id message-id])}])}]])))
+        {:on-press (fn []
+                     (rf/dispatch [:dismiss-keyboard])
+                     (rf/dispatch
+                      [:bottom-sheet/show-sheet
+                       {:content (fn [] [drawers/reactions
+                                         {:chat-id chat-id :message-id message-id}])}]))}]])))

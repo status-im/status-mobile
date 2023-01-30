@@ -9,7 +9,6 @@
             [reagent.core :as reagent]
             [status-im2.contexts.chat.photo-selector.style :as style]
             [status-im.utils.core :as utils]
-            [quo.react]
             [utils.re-frame :as rf]))
 
 (def selected (reagent/atom []))
@@ -36,7 +35,9 @@
           [quo/button
            {:style               {:align-self        :stretch
                                   :margin-horizontal 20}
-            :on-press            #(on-press-confirm-selection chat-id)
+            :on-press            (fn []
+                                   (rf/dispatch [:bottom-sheet/hide])
+                                   (on-press-confirm-selection chat-id))
             :accessibility-label :confirm-selection}
            (i18n/label :t/confirm-selection)]])))])
 
@@ -114,4 +115,3 @@
             :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading?
                                                     has-next-page?])}]
           [bottom-gradient chat-id selected-images]]))]))
-

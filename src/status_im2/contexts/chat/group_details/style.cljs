@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.group-details.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn actions-view
   []
@@ -40,7 +39,6 @@
    :padding-vertical   12
    :padding-bottom     (+ 33 (:bottom safe-area))
    :width              "100%"
-   :background-color   colors/white
-   :flex-direction     :row
-   :margin-bottom      (if platform/ios? 0 70)})
+   :background-color   (colors/theme-colors colors/white colors/neutral-95-opa-70)
+   :flex-direction     :row})
 

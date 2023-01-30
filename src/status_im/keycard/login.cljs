@@ -1,5 +1,5 @@
 (ns status-im.keycard.login
-  (:require [status-im.bottom-sheet.core :as bottom-sheet]
+  (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
             status-im.keycard.fx

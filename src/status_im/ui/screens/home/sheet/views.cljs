@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.home.sheet.views
   (:require [quo.core :as quo]
             [quo2.foundations.colors :as colors]
-            [re-frame.core :as rf]
+            [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
@@ -11,7 +11,7 @@
             [quo2.core :as quo2]
             [status-im.ui.screens.home.sheet.styles :as style]))
 
-(defn hide-sheet-and-dispatch
+(defn- hide-sheet-and-dispatch
   [event]
   (rf/dispatch [:bottom-sheet/hide])
   (rf/dispatch event))
@@ -51,7 +51,7 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
-   (when @(rf/subscribe [:communities/enabled?])
+   (when (rf/sub [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)
@@ -65,28 +65,21 @@
   []
   [rn/view
    [quo2/menu-item
-    {:theme                      :main
+    {:type                       :transparent
      :title                      (i18n/label :t/new-chat)
      :icon-bg-color              :transparent
      :container-padding-vertical 12
      :title-column-style         {:margin-left 2}
+     :style-props                {:border-bottom-width 1
+                                  :border-bottom-color (colors/theme-colors colors/neutral-10
+                                                                            colors/neutral-90)}
      :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label        :start-a-new-chat
      :icon                       :i/new-message
-     :on-press                   (fn [] ;; Note: currently the bottom button is overlapping with
-                                        ;; safe-area
-                                        ;; because it is using old bottom-sheet
-                                   (rf/dispatch [:bottom-sheet/hide])
-                                   ;; A one second delay is needed because there are 2 bottom-sheets here
-                                   ;; It would better to migrate contact-selection-list component to use
-                                   ;; a screen
-                                   (js/setTimeout #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content
-                                                                  new-chat-aio/contact-selection-list}])
-                                                  1000))}]
-
+     :on-press                   #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                                                            :start-a-new-chat {}])}]
    [quo2/menu-item
-    {:theme                        :main
+    {:type                         :transparent
      :title                        (i18n/label :t/add-a-contact)
      :icon-bg-color                :transparent
      :icon-container-style         {:padding-horizontal 0}
@@ -101,7 +94,6 @@
      :subtitle-color               colors/neutral-50
      :icon                         :i/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
-
 
 (def new-chat-bottom-sheet-comp
   {:content new-chat-bottom-sheet})

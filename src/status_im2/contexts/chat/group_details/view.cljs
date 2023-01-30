@@ -93,10 +93,12 @@
           {:style               {:flex 1}
            :accessibility-label :save
            :on-press            (fn []
-                                  (rf/dispatch [:group-chats.ui/add-members-pressed])
-                                  (js/setTimeout #(rf/dispatch [:group-chats.ui/remove-members-pressed])
+                                  (rf/dispatch [:bottom-sheet/hide])
+                                  (js/setTimeout (fn []
+                                                   (rf/dispatch
+                                                    [:group-chats.ui/remove-members-pressed]))
                                                  500)
-                                  (rf/dispatch [:bottom-sheet/hide]))
+                                  (rf/dispatch [:group-chats.ui/add-members-pressed]))
            :disabled            (and (zero? (count selected-participants))
                                      (zero? (count deselected-members)))}
           (i18n/label :t/save)]]]))])
@@ -135,6 +137,7 @@
        {:style               (style/action-container color)
         :accessibility-label :pinned-messages
         :on-press            (fn []
+                               (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}
        [rn/view
         {:style {:flex-direction  :row

@@ -26,24 +26,10 @@
             options)
    callback))
 
-(def content-height (reagent/atom nil))
-(def show-bottom-sheet? (reagent/atom nil))
-(def keyboard-was-shown? (reagent/atom false))
-(def expanded? (reagent/atom false))
-(def gesture-running? (reagent/atom false))
-
-(defn reset-atoms
-  []
-  (reset! show-bottom-sheet? nil)
-  (reset! content-height nil)
-  (reset! expanded? false)
-  (reset! keyboard-was-shown? false)
-  (reset! gesture-running? false))
-
 (defn get-bottom-sheet-gesture
   [pan-y translate-y bg-height bg-height-expanded
    window-height keyboard-shown disable-drag? expandable?
-   show-bottom-sheet? expanded? close-bottom-sheet]
+   show-bottom-sheet? expanded? close-bottom-sheet gesture-running?]
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
@@ -70,8 +56,8 @@
          (reset! gesture-running? false)
          (when (and (not disable-drag?) show-bottom-sheet?)
            (let [end-pan-y                  (- window-height (.-value translate-y))
-                 expand-threshold           (min (* bg-height * 1.1) (+ bg-height 50))
-                 collapse-threshold         (max (* bg-height-expanded * 0.9) (- bg-height-expanded 50))
+                 expand-threshold           (min (* bg-height 1.1) (+ bg-height 50))
+                 collapse-threshold         (max (* bg-height-expanded 0.9) (- bg-height-expanded 50))
                  should-close-bottom-sheet? (< end-pan-y (max (* bg-height 0.7) 50))]
              (cond
                should-close-bottom-sheet?
@@ -95,17 +81,30 @@
 
 (defn bottom-sheet
   [props children]
-  (let [{on-cancel         :on-cancel
-         disable-drag?     :disable-drag?
-         show-handle?      :show-handle?
-         visible?          :visible?
-         backdrop-dismiss? :backdrop-dismiss?
-         expandable?       :expandable?
-         selected-item     :selected-item
-         :or               {show-handle?      true
-                            backdrop-dismiss? true
-                            expandable?       false}}
+  (let [{on-cancel             :on-cancel
+         disable-drag?         :disable-drag?
+         show-handle?          :show-handle?
+         visible?              :visible?
+         backdrop-dismiss?     :backdrop-dismiss?
+         expandable?           :expandable?
+         selected-item         :selected-item
+         is-initially-expaned? :expanded?
+         :or                   {show-handle?          true
+                                backdrop-dismiss?     true
+                                expandable?           false
+                                is-initially-expaned? false}}
         props
+        content-height (reagent/atom nil)
+        show-bottom-sheet? (reagent/atom nil)
+        keyboard-was-shown? (reagent/atom false)
+        expanded? (reagent/atom is-initially-expaned?)
+        gesture-running? (reagent/atom false)
+        reset-atoms (fn []
+                      (reset! show-bottom-sheet? nil)
+                      (reset! content-height nil)
+                      (reset! expanded? false)
+                      (reset! keyboard-was-shown? false)
+                      (reset! gesture-running? false))
         close-bottom-sheet (fn []
                              (reset! show-bottom-sheet? false)
                              (when (fn? on-cancel) (on-cancel))
@@ -150,7 +149,8 @@
                                       expandable?
                                       show-bottom-sheet?
                                       expanded?
-                                      close-bottom-sheet)
+                                      close-bottom-sheet
+                                      gesture-running?)
                 handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                              [handle-comp window-width]]]
 

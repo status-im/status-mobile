@@ -213,6 +213,11 @@
   [{:keys [db]} id]
   {:db (update db :group/selected-contacts conj id)})
 
+(rf/defn clear-contacts
+  {:events [:group-chat/clear-contacts]}
+  [{:keys [db]}]
+  {:db (assoc db :group/selected-contacts #{})})
+
 (rf/defn deselect-participant
   {:events [:deselect-participant]}
   [{:keys [db]} id]

@@ -45,8 +45,10 @@
       {:label    :primary
        :size     40
        :before   :i/placeholder
-       :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                {:show-handle? false
-                                 :content      (fn []
-                                                 [sync-device-notice/sheet])}])}
+       :on-press (fn []
+                   (rf/dispatch [:bottom-sheet/hide])
+                   (rf/dispatch [:bottom-sheet/show-sheet
+                                 {:show-handle? false
+                                  :content      (fn []
+                                                  [sync-device-notice/sheet])}]))}
       (i18n/label :t/sync-new-device)]]]])

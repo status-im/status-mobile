@@ -35,5 +35,4 @@
    (get-icons 16)
    (get-icons 20)
    (get-icons 24)
-   (get-icons 32)
-   (get-icons 120)))
+   (get-icons 32)))

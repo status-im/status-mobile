@@ -52,7 +52,9 @@
    :community-cover    (js/require "../resources/images/ui/community-cover.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
    :music              (js/require "../resources/images/ui/music.png")
-   :podcasts           (js/require "../resources/images/ui/podcasts.png")})
+   :podcasts           (js/require "../resources/images/ui/podcasts.png")
+   :no-contacts        (js/require "../resources/images/ui/no-contacts.png")
+   :no-contacts-dark   (js/require "../resources/images/ui/no-contacts-dark.png")})
 
 (def mock-images
   {:photo1               (js/require "../resources/images/mock/photo1.png")

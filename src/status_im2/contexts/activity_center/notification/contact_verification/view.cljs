@@ -1,16 +1,15 @@
 (ns status-im2.contexts.activity-center.notification.contact-verification.view
   (:require [clojure.string :as string]
+            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
+            [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.re-frame :as rf]))
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]
   (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch event))
 
 (defn- context-tags

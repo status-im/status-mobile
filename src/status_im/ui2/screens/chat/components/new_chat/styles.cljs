@@ -1,4 +1,5 @@
 (ns status-im.ui2.screens.chat.components.new-chat.styles)
+
 (def contact-selection-heading
   {:style {:flex-direction     :row
            :justify-content    :space-between
@@ -14,3 +15,7 @@
    :margin-bottom   36
    :justify-content :center
    :align-items     :center})
+
+(defn chat-button
+  [{:keys [bottom]}]
+  {:bottom (- bottom 50)})
