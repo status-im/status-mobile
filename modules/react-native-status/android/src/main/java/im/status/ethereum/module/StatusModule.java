@@ -1307,7 +1307,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void convertToKeycardAccount(final String keyUID, final String accountData, final String options, final String password, final String newPassword, final Callback callback) throws JSONException {
         final String keyStoreDir = this.getKeyStorePath(keyUID);
-        executeRunnableStatusGoMethod(() -> Statusgo.convertToKeycardAccount(keyStoreDir, accountData, options, password, newPassword), callback);
+        // Temporary fix for broken status-go compatibilty
+        executeRunnableStatusGoMethod(() -> Statusgo.convertToKeycardAccount(accountData, options, password, newPassword), callback);
     }
 
 }
