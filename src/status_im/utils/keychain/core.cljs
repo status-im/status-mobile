@@ -172,7 +172,7 @@
 (re-frame/reg-fx
  :keychain/save-auth-method
  (fn [[key-uid method]]
-   (when-not (empty? key-uid)
+   (when-not (empty? key-uid) ; key-uid may be nil after restore from local pairing
      (log/debug "[keychain] :keychain/save-auth-method"
                 "key-uid"
                 key-uid
