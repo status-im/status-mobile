@@ -277,7 +277,7 @@ SIMULATOR=iPhone 13
 run-ios: export TARGET := ios
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
-	npx react-native run-ios --simulator="$(SIMULATOR)" --configuration Release
+	npx react-native run-ios --simulator="$(SIMULATOR)"
 else
 	npx react-native run-ios
 endif
