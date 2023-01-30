@@ -4,7 +4,6 @@
    [clojure.string :as string]
    [quo.core :as quo]
    [quo.design-system.colors :as colors]
-   [quo.gesture-handler :as gh]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
    [status-im.ethereum.tokens :as tokens]
@@ -369,7 +368,9 @@
 (defn error-item
   []
   (fn [title show-error]
-    [gh/touchable-highlight {:on-press #(swap! show-error not)}
+    [react/touchable-highlight
+     {:on-press       #(swap! show-error not)
+      :underlay-color (:interactive-02 @colors/theme)}
      [react/view
       {:style {:align-items    :center
                :flex-direction :row}}

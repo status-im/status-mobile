@@ -1,6 +1,5 @@
 (ns status-im.ui2.screens.chat.components.edit.view
   (:require [utils.i18n :as i18n]
-            [quo.gesture-handler :as gesture-handler]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]
@@ -22,14 +21,13 @@
       {:weight :medium
        :size   :paragraph-2}
       (i18n/label :t/editing-message)]]]
-   [gesture-handler/touchable-without-feedback
-    {:accessibility-label :reply-cancel-button
+   [quo/button
+    {:width               24
+     :size                24
+     :accessibility-label :reply-cancel-button
      :on-press            #(do (on-cancel)
-                               (rf/dispatch [:chat.ui/cancel-message-edit]))}
-    [quo/button
-     {:width 24
-      :size  24
-      :type  :outline}
-     [quo/icon :i/close
-      {:size  16
-       :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]]]])
+                               (rf/dispatch [:chat.ui/cancel-message-edit]))
+     :type                :outline}
+    [quo/icon :i/close
+     {:size  16
+      :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]]])
