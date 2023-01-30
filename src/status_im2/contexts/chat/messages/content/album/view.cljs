@@ -42,7 +42,7 @@
     {:width (second size-arr) :height (first size-arr) :album-style album-style}))
 
 (defn album-message
-  [{:keys [albumize?] :as message} {:keys [on-long-press] :as context}]
+  [{:keys [albumize?] :as message}]
   (let [shared-element-id (rf/sub [:shared-element-id])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
@@ -56,59 +56,39 @@
       [rn/view
        {:style (style/album-container portrait?)}
        (map-indexed
-        (fn [index item]
-          (let [images-size-key (if (< images-count constants/max-album-photos) images-count :default)
-                size            (get-in constants/album-image-sizes [images-size-key index])
-                dimensions      (if (not= images-count rectangular-style-count)
-                                  {:width size :height size}
-                                  (find-size size album-style))]
-            [rn/touchable-opacity
-             {:key            (:message-id item)
-              :active-opacity 1
-              :on-press       (fn []
-                                (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
-<<<<<<< HEAD
-                                (js/setTimeout #(rf/dispatch [:chat.ui/navigate-to-horizontal-images
-                                                              (:album message) index])
-                                               100))
-              :on-long-press  on-long-press}
-             [rn/image
-              {:style     (merge
-                           (style/image dimensions index)
-                           {:border-top-left-radius     (border-tlr index)
-                            :border-top-right-radius    (border-trr index images-count album-style)
-                            :border-bottom-left-radius  (border-blr index images-count album-style)
-                            :border-bottom-right-radius (border-brr index images-count)})
-=======
-                                (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
-                                                              {:messages (:album message) :index index}])
-                                               100))}
-             [fast-image/fast-image
-              {:style     (style/image dimensions index portrait?)
->>>>>>> 865b9d3e3... feat: photo & album selector screens
-               :source    {:uri (:image (:content item))}
-               :native-ID (when (and (= shared-element-id (:message-id item))
-                                     (< index constants/max-album-photos))
-                            :shared-element)}]
-             (when (and (> images-count constants/max-album-photos)
-                        (= index (- constants/max-album-photos 1)))
-               [rn/view
-                {:style (merge style/overlay
-                               {:border-bottom-right-radius (border-brr index images-count)})}
-                [quo/text
-                 {:weight :bold
-                  :size   :heading-2
-                  :style  {:color colors/white}}
-<<<<<<< HEAD
-                 (str "+" (- images-count (dec max-display-count)))]])]))
-        (:album message))]
-
-=======
-                 (str "+" (- images-count (dec constants/max-album-photos)))]])]))
-        (:album message))]
->>>>>>> 865b9d3e3... feat: photo & album selector screens
+         (fn [index item]
+           (let [images-size-key (if (< images-count constants/max-album-photos) images-count :default)
+                 size            (get-in constants/album-image-sizes [images-size-key index])
+                 dimensions      (if (not= images-count rectangular-style-count)
+                                   {:width size :height size}
+                                   (find-size size album-style))]
+             [rn/touchable-opacity
+              {:key            (:message-id item)
+               :active-opacity 1
+               :on-press       (fn []
+                                 (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
+                                 (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
+                                                               {:messages (:album message) :index index}])
+                                                100))}
+              [fast-image/fast-image
+               {:style     (style/image dimensions index portrait?)
+                :source    {:uri (:image (:content item))}
+                :native-ID (when (and (= shared-element-id (:message-id item))
+                                      (< index constants/max-album-photos))
+                             :shared-element)}]
+              (when (and (> images-count constants/max-album-photos)
+                         (= index (- constants/max-album-photos 1)))
+                [rn/view
+                 {:style (merge style/overlay
+                                {:border-bottom-right-radius (border-brr index images-count)})}
+                 [quo/text
+                  {:weight :bold
+                   :size   :heading-2
+                   :style  {:color colors/white}}
+                  (str "+" (- images-count (dec constants/max-album-photos)))]])]))
+         (:album message))]
       [:<>
        (map-indexed
-        (fn [index item]
-          [image/image-message index item context])
-        (:album message))])))
+         (fn [index item]
+           [image/image-message index item])
+         (:album message))])))
