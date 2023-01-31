@@ -54,9 +54,9 @@
                 :peers-count (count (:peers peer-stats)))}))
 
 (defn handle-local-pairing-signals
-  [signal-type]
-  (log/info "local pairing signal received"
-            {:signal-type signal-type}))
+  [event]
+  (log/debug "local pairing signal received"
+             {:event event}))
 
 (rf/defn process
   {:events [:signals/signal-received]}
@@ -110,5 +110,5 @@
       "status.updates.timedout" (visibility-status-updates/handle-visibility-status-updates
                                  cofx
                                  (js->clj event-js :keywordize-keys true))
-      "localPairing"            (handle-local-pairing-signals event-str)
+      "localPairing"            (handle-local-pairing-signals (js->clj event-js :keywordize-keys true))
       (log/debug "Event " type " not handled"))))
