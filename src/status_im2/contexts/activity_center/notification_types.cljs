@@ -10,13 +10,13 @@
 (def ^:const contact-verification 10)
 
 (def ^:const all-supported
-  [one-to-one-chat
-   private-group-chat
-   mention
-   reply
-   contact-request
-   admin
-   contact-verification])
+  #{one-to-one-chat
+    private-group-chat
+    mention
+    reply
+    contact-request
+    admin
+    contact-verification})
 
 ;; TODO: Replace with correct enum values once status-go implements them.
 (def ^:const tx 66612)
