@@ -8,11 +8,7 @@
    :right    0
    :height   (+ (:bottom insets) (if platform/ios? 65 85))
    :position :absolute
-<<<<<<< HEAD
-   :bottom   (if platform/ios? 0 (:bottom safe-area))})
-=======
    :bottom   0})
->>>>>>> e9cf18df1... feat: photo & album selector screens
 
 (def buttons-container
   {:position        :absolute

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
+            [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
             [status-im2.constants :as constants]
@@ -50,20 +51,12 @@
     (let [display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity from]))
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
-<<<<<<< HEAD
        {:profile-name   display-name
         :short-chat-key (utils/get-shortened-address (or compressed-key
                                                          from))
         :time-str       (datetime/timestamp->time timestamp)
         :contact?       added?
         :verified?      ens-verified}])))
-=======
-       {:profile-name display-name
-        :chat-key     from
-        :time-str     (datetime/timestamp->time timestamp)
-        :contact?     added?
-        :verified?    ens-verified}])))
->>>>>>> e9cf18df1... feat: photo & album selector screens
 
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]

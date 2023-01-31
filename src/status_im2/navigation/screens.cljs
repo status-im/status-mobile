@@ -1,5 +1,4 @@
 (ns status-im2.navigation.screens
-<<<<<<< HEAD
   (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]
             [status-im2.contexts.activity-center.view :as activity-center]
@@ -10,27 +9,12 @@
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
-            [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
+            [status-im2.contexts.chat.lightbox.view :as lightbox]
             [status-im2.config :as config]
-            [quo.design-system.colors :as colors]))
-=======
-  (:require
-   [react-native.platform :as platform]
-   [status-im2.contexts.chat.photo-selector.view :as photo-selector]
-   [utils.i18n :as i18n] ;; TODO remove when not used anymore
-   [status-im.ui.screens.screens :as old-screens]
-   [status-im2.contexts.activity-center.view :as activity-center]
-   [status-im2.contexts.chat.messages.view :as chat]
-   [status-im2.contexts.communities.discover.view :as communities.discover]
-   [status-im2.contexts.communities.overview.view :as communities.overview]
-   [status-im2.contexts.quo-preview.main :as quo.preview]
-   [status-im2.contexts.shell.view :as shell]
-   [status-im2.contexts.syncing.view :as settings-syncing]
-   [status-im2.contexts.chat.lightbox.view :as lightbox]
-   [status-im2.config :as config]
-   [quo.design-system.colors :as colors]
-   [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]))
->>>>>>> e9cf18df1... feat: photo & album selector screens
+            [quo.design-system.colors :as colors]
+            [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
+            [react-native.platform :as platform]
+            [status-im2.contexts.chat.photo-selector.view :as photo-selector]))
 
 (def components
   [])

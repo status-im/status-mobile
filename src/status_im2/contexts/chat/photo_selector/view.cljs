@@ -1,19 +1,4 @@
 (ns status-im2.contexts.chat.photo-selector.view
-<<<<<<< HEAD
-  (:require [utils.i18n :as i18n]
-            [quo.components.safe-area :as safe-area]
-            [quo2.components.notifications.info-count :as info-count]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [reagent.core :as reagent]
-            [status-im2.contexts.chat.photo-selector.style :as style]
-            [status-im.utils.core :as utils]
-            [utils.re-frame :as rf]))
-
-(def selected (reagent/atom []))
-=======
   (:require
    [react-native.platform :as platform]
    [status-im2.constants :as constants]
@@ -29,7 +14,6 @@
    [status-im.utils.core :as utils]
    [quo.react]
    [utils.re-frame :as rf]))
->>>>>>> e9cf18df1... feat: photo & album selector screens
 
 (defn on-press-confirm-selection
   [selected]
@@ -40,26 +24,6 @@
   (rf/dispatch [:navigate-back]))
 
 (defn bottom-gradient
-<<<<<<< HEAD
-  [chat-id selected-images]
-  [:f>
-   (fn []
-     (let [safe-area (safe-area/use-safe-area)]
-       (when (or (seq @selected) selected-images)
-         [linear-gradient/linear-gradient
-          {:colors [:black :transparent]
-           :start  {:x 0 :y 1}
-           :end    {:x 0 :y 0}
-           :style  (style/gradient-container safe-area)}
-          [quo/button
-           {:style               {:align-self        :stretch
-                                  :margin-horizontal 20}
-            :on-press            (fn []
-                                   (rf/dispatch [:bottom-sheet/hide])
-                                   (on-press-confirm-selection chat-id))
-            :accessibility-label :confirm-selection}
-           (i18n/label :t/confirm-selection)]])))])
-=======
   [selected-images insets selected]
   (when (or (seq @selected) selected-images)
     [linear-gradient/linear-gradient
@@ -74,7 +38,6 @@
        :on-press            #(on-press-confirm-selection selected)
        :accessibility-label :confirm-selection}
       (i18n/label :t/confirm-selection)]]))
->>>>>>> e9cf18df1... feat: photo & album selector screens
 
 (defn clear-button
   [selected]
@@ -145,37 +108,6 @@
             (reset! selected (vec (vals selected-images)))
             (reset! selected []))
           js/undefined))
-<<<<<<< HEAD
-       (let [{window-height :height window-width :width} (rn/use-window-dimensions)
-             safe-area                                   (safe-area/use-safe-area)
-             camera-roll-photos                          (rf/sub [:camera-roll/photos])
-             end-cursor                                  (rf/sub [:camera-roll/end-cursor])
-             loading?                                    (rf/sub [:camera-roll/loading-more])
-             has-next-page?                              (rf/sub [:camera-roll/has-next-page])]
-         [rn/view {:style {:height (- window-height (:top safe-area))}}
-          [rn/touchable-opacity
-           {:on-press #(js/alert "Camera: not implemented")
-            :style    (style/camera-button-container)}
-           [quo/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
-          [rn/view
-           {:style style/title-container}
-           [quo/text {:weight :medium} (i18n/label :t/recent)]
-           [rn/view {:style (style/chevron-container)}
-            [quo/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
-          [clear-button]
-          [rn/flat-list
-           {:key-fn                  identity
-            :render-fn               image
-            :render-data             {:window-width window-width}
-            :data                    camera-roll-photos
-            :num-columns             3
-            :content-container-style {:width          "100%"
-                                      :padding-bottom (+ (:bottom safe-area) 100)}
-            :style                   {:border-radius 20}
-            :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading?
-                                                    has-next-page?])}]
-          [bottom-gradient chat-id selected-images]]))]))
-=======
        [safe-area/consumer
         (fn [insets]
           (let [window-width       (:width (rn/get-window))
@@ -207,8 +139,4 @@
                                                        has-next-page?])}]
              [bottom-gradient selected-images insets selected]]))]))])
 
-<<<<<<< HEAD
->>>>>>> e9cf18df1... feat: photo & album selector screens
-=======
 
->>>>>>> 0bd21154c... refactor
