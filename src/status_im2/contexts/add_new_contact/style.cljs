@@ -1,6 +1,5 @@
 (ns status-im2.contexts.add-new-contact.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im.react-native.resources :as resources]
             [react-native.platform :as platform]
             [quo2.foundations.typography :as typography]))
 
@@ -13,10 +12,8 @@
   {:style {:flex           1
            :flex-direction :row}})
 
-(defn image
-  [file]
-  {:source (resources/get-image file)
-   :style  {:flex 1}})
+(def image
+  {:flex 1})
 
 (defn container-outer
   []
