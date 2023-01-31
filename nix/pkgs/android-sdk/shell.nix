@@ -2,6 +2,7 @@
 
 mkShell {
   name = "android-sdk-shell";
+  buildInputs = [ openjdk ];
   shellHook = ''
     export JAVA_HOME="${openjdk}"
 

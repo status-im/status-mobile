@@ -32,18 +32,6 @@ in {
   # For parsing gradle.properties into an attrset
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
-  # Clojure formatting tool
-  zprint = super.zprint.override rec {
-    buildGraalvmNativeImage = args: super.buildGraalvmNativeImage ( args // rec {
-      inherit (args) pname;
-      version = "1.2.5";
-      src = self.fetchurl {
-        url = "https://github.com/kkinnear/${pname}/releases/download/${version}/${pname}-filter-${version}";
-        sha256 = "sha256-PWdR5jqyzvTk9HoxqDldwtZNik34dmebBtZZ5vtva4A=";
-      };
-    });
-  };
-
   # Fix for missing libarclite_macosx.a in Xcode 14.3.
   # https://github.com/ios-control/ios-deploy/issues/580
   ios-deploy = super.darwin.ios-deploy.overrideAttrs (old: rec {
@@ -60,8 +48,8 @@ in {
   gradle = super.gradle_6;
   nodejs = super.nodejs-18_x;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
-  openjdk = super.openjdk8_headless;
-  xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
+  openjdk = super.openjdk11_headless;
+  xcodeWrapper = super.xcodeenv.composeXcodeWrapper {
     version = "14.0";
     allowHigher = true;
   };
