@@ -5,7 +5,6 @@
             [quo.components.tooltip :as tooltip]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
-            [quo.gesture-handler :as gh]
             [quo.haptic :as haptic]
             [quo.platform :as platform]
             [quo.react-native :as rn]
@@ -243,7 +242,7 @@
                                                                          (not on-long-press))
                                                                     rn/view
                                                                     animated animated/pressable
-                                                                    :else gh/touchable-highlight)]
+                                                                    :else rn/touchable-highlight)]
     [rn/view
      {:background-color (cond (not= background-color nil)
                               background-color
@@ -255,7 +254,8 @@
       (merge {:type                :list-item
               :disabled            disabled
               :bg-color            (when active-background-enabled active-background)
-              :accessibility-label accessibility-label}
+              :accessibility-label accessibility-label
+              :underlay-color      (:interactive-02 @colors/theme)}
              (when on-press
                {:on-press (fn []
                             (optional-haptic)

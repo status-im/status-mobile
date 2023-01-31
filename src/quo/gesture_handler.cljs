@@ -28,6 +28,10 @@
 (def long-press-gesture-handler
   (reagent/adapt-react-class LongPressGestureHandler))
 
+;; NOTE - Touchables provided by react-native-gesture-handler has an issue,
+;; if it is pressed rapidly it becomes unresponsive and ignores further on-press calls.
+;; Issue: https://github.com/status-im/status-mobile/issues/14020
+
 (def touchable-without-feedback-class TouchableWithoutFeedback)
 
 (def touchable-without-feedback
