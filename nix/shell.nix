@@ -20,7 +20,7 @@ in mkShell {
     # lint specific utilities
     clj-kondo zprint
     # other nice to have stuff
-    yarn nodejs python27
+    yarn nodejs python310
   ] # and some special cases
     ++ lib.optionals stdenv.isDarwin [ cocoapods clang tcl ]
     ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]

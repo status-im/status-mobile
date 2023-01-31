@@ -96,7 +96,7 @@
       [rn/view
        {:style     style/featured-list-container
         :on-layout #(swap! view-size
-                      (fn []
+                      (fn [_]
                         (- (oops/oget % "nativeEvent.layout.width") 40)))}
        (when-not (= @view-size 0)
          [rn/flat-list
