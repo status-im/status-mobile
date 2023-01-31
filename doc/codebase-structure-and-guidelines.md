@@ -94,7 +94,7 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
 ## Enabling debug logs
 Calls to `log/debug` will not be printed to the console by default. It can be enabled under "Advanced settings" in the app:
 
-![Enable Debug Logs](./log-settings.png)
+![Enable Debug Logs](images/codebase-structure-and-guidelines/log-settings.png)
 
 ## Translations
 The app relies on system locale to select a language from the [list of supported languages](https://github.com/status-im/status-mobile/blob/bda73867471cf2bb8a68b1cc27c9f94b92d9a58b/src/status_im/i18n_resources.cljs#L9). It falls back to English in cash the system locale is not supported.

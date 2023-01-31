@@ -2,7 +2,7 @@
 
 ## Export icons
 
-![](./export-icons.gif)
+![](images/export-icons/export-icons.gif)
 
 1. Export from figma 2 pngs 2x and 3x put them in `./resources/images/icons`
 2. if necessary, rename file so that filename contains only lower case chars, e.g. `"Icon-Name@2x.png"` should be renamed to `"icon_name@2x.png"`.

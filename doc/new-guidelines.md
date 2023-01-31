@@ -62,6 +62,17 @@ with the source file using it. For a real example, see
     (do-something)]])
 ```
 
+
+
+### Don't use percents to define width/height
+
+We shouldn't use percentage:
+
+- because 100% doesn't make sense in flexbox
+- because we always have fixed margins or paddings in the design. For example, Instead of using `80%` we should use `padding-horizontal 20`. This is because `%` will be different on different devices in pixels, but we should always have same the paddings in pixels on all devices.
+
+
+
 #### Styles def vs defn
 
 Always use `def` over `defn`, unless the style relies on dynamic values, such as

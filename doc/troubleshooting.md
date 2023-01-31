@@ -1,6 +1,27 @@
-# [DEPRECATED] Undefined is not an object evaluating `register_handler_fx`
+## `yarn add` is not working
 
-## Deprecation note
+While running any yarn add command like `yarn add react-native-share@7.0.2`, it is showing error
+
+```
+error status-mobile/node_modules/better-sqlite3: Command failed.
+```
+
+### Cause
+
+Local `node` version can be different from the one needed by Status project.
+
+### Solution
+
+Before running `yarn add`, nix shell should be started:
+
+```
+make shell
+```
+
+
+## [DEPRECATED] Undefined is not an object evaluating `register_handler_fx`
+
+### Deprecation note
 
 This type of error should not occur anymore now that we require the namespace in the `fx.cljs` file. 
 
@@ -14,7 +35,7 @@ That way you don't need to use any magical call like `find-ns` or inline `requir
 
 You also want to make sure users are using the macro by using a aliased namespace defined in require statement rather than require-macro and refer to the macro directly. Otherwise it won't require the cljs file and the require statement of the namespace in the macroexpension might not be there.
 
-## Stacktrace
+### Stacktrace
 
 ```
 13:25:22, Requiring: hi-base32
@@ -34,19 +55,19 @@ _callTimer@http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false
 _callImmediatesPass@http://localhost:8081/index.bundle?pla<…>
 ```
 
-## Cause
+### Cause
 
 - stacktrace mentions `register_handler_fx`, 
 - common cause is when requires have been cleaned up and a require of `status-im.utils.handlers` namespace was removed because it looked like it was unused but was actually used through a fx/defn macro
 
-## Solution
+### Solution
 
 go through known faulty commit looking for deleted requires
 
 
-# Git "unable to access" errors during `yarn install`
+## Git "unable to access" errors during `yarn install`
 
-## Description
+### Description
 Developer updates `package.json` file with a new dependency using a GitHub URL. So it looks like this:
 ```
   "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#feature/exportKeyWithPath",
@@ -60,10 +81,10 @@ fatal: unable to access 'https://github.com/status-im/react-native-status-keycar
 info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command.
 ```
 
-## Cause
+### Cause
 `yarn.lock` is not updated to be in sync with `package.json`.
 
-## Solution
+### Solution
 Update yarn.lock file. In order to do this, perform the following steps on a clean `status-mobile` repo:
 ```
 cd status-mobile
@@ -72,9 +93,9 @@ yarn install
 and don't forget to commit updated `yarn.lock` together with `package.json`.
 
 
-# adb server/client version mismatch errors
+## adb server/client version mismatch errors
 
-## Description
+### Description
 Running some adb commands, e.g. `adb devices` or `make android-ports` (in turn invokes `adb reverse`/`adb forward` commands) may display the following message:
 ```
 adb server version (40) doesn't match this client (41); killing...
@@ -90,10 +111,10 @@ This might cause all kinds of difficult-to-debug errors, e.g.:
   -  `make run-android` throwing `- Error: Command failed: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 Unable to install /status-mobile/android/app/build/outputs/apk/debug/app-debug.apk com.android.ddmlib.InstallException: EOF`
   - dropped CLJS repl connections (that have been enabled previously with the help of `make android-ports`)
 
-## Cause
+### Cause
 System's local adb and Nix's adb differ. As adb include of server/client processes, this can cause subtle version errors that cause adb to kill mismatching server processes.
 
-## Solution
+### Solution
 Always use respective `make` commands, e.g. `make android-ports`, `make android-devices`, etc.
 
 Alternatively, run adb commands only from `make shell TARGET=android` shell. Don't forget the `TARGET=android` env var setting - otherwise `adb` will still be selected from the system's default location. You can double-check this by running `which adb`.
