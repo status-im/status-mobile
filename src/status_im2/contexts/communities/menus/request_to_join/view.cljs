@@ -2,7 +2,6 @@
   (:require [quo.react-native :as rn]
             [quo2.core :as quo]
             [reagent.core :as reagent]
-            [status-im.communities.core :as communities]
             [utils.i18n :as i18n]
             [status-im2.contexts.communities.menus.request-to-join.style :as style]
             [utils.re-frame :as rf]
@@ -121,13 +120,13 @@
          {:accessibility-label :join-community-button
           :on-press            (fn []
                                  (if can-join?
-                                   (do (rf/dispatch [:bottom-sheet/hide])
-                                       (rf/dispatch [::communities/join id]))
                                    (do
-                                     (and can-request-access?
-                                          (not (pos? requested-to-join-at))
-                                          (requests/can-request-access-again? requested-to-join-at))
-                                     (rf/dispatch [::communities/request-to-join id])
-                                     (rf/dispatch [:bottom-sheet/hide]))))
+                                     (rf/dispatch [:communities/join id])
+                                     (rf/dispatch [:bottom-sheet/hide]))
+                                   (do (and can-request-access?
+                                            (not (pos? requested-to-join-at))
+                                            (requests/can-request-access-again? requested-to-join-at))
+                                       (rf/dispatch [:communities/request-to-join id])
+                                       (rf/dispatch [:bottom-sheet/hide]))))
           :disabled            (not @agreed-to-rules?)
           :style               {:flex 1}} (request-to-join-text is-open?)]]])))
