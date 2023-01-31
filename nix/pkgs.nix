@@ -11,11 +11,10 @@ let
   # We follow the master branch of official nixpkgs.
   nixpkgsSrc = fetchFromGitHub {
     name = "nixpkgs-source";
-    # FIXME: Fork used to get Cocoapods 1.12.0 and apksigner macOS build.
-    owner = "status-im";
+    owner = "NixOS";
     repo = "nixpkgs";
-    rev = "d0c06fa3d3982a91aa01bd63ed84020cbde3d3ab";
-    sha256 = "sha256-8blvuUHnuf0hFr/PpBxVohJp5CaGXIXhgJlFN/cv7us=";
+    rev = "e7603eba51f2c7820c0a182c6bbb351181caa8e7";
+    sha256 = "sha256-XJZ/o17eOd2sEsGif+/MQBnfa2DKmndWgJyc7CWajFc=";
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
   };
