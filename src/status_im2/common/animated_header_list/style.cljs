@@ -40,9 +40,9 @@
 (defn entity-picture
   [animation]
   (reanimated/apply-animations-to-style
-   {:width animation
+   {:width  animation
     :height animation}
-   {:transform [{:scale 1}]
+   {:transform        [{:scale 1}]
     :border-radius    40
     :position         :absolute
     :bottom           42
@@ -55,20 +55,20 @@
 (defn header-bottom-part
   [animation]
   (reanimated/apply-animations-to-style
-    {:border-top-right-radius animation
-     :border-top-left-radius  animation}
-    {:position                :absolute
-     :bottom                 0
-     :height                  86
-     :left                    0
-     :right                   0
-     :background-color        (colors/theme-colors colors/white colors/neutral-95)}))
+   {:border-top-right-radius animation
+    :border-top-left-radius  animation}
+   {:position         :absolute
+    :bottom           0
+    :height           86
+    :left             0
+    :right            0
+    :background-color (colors/theme-colors colors/white colors/neutral-95)}))
 
 (defn header-comp
   [y-animation opacity-animation]
   (reanimated/apply-animations-to-style
-    ;; here using `left` won't work on Android, so we are using `translateX`
+   ;; here using `left` won't work on Android, so we are using `translateX`
    {:transform [{:translateX (reanimated/use-shared-value 64)} {:translateY y-animation}]
-    :opacity opacity-animation}
-   {:position  :absolute
-    :z-index   3}))
+    :opacity   opacity-animation}
+   {:position :absolute
+    :z-index  3}))

@@ -1,16 +1,16 @@
 (ns status-im2.common.animated-header-list.view
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [quo2.foundations.colors :as colors]
-    [status-im.ui.components.fast-image :as fast-image]
-    [status-im2.common.animated-header-list.style :as style]
-    [oops.core :as oops]
-    [utils.re-frame :as rf]))
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   [react-native.reanimated :as reanimated]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [quo2.foundations.colors :as colors]
+   [status-im.ui.components.fast-image :as fast-image]
+   [status-im2.common.animated-header-list.style :as style]
+   [oops.core :as oops]
+   [utils.re-frame :as rf]))
 
 (def header-height 234)
 (def cover-height 192)
@@ -19,8 +19,11 @@
 
 (defn interpolate
   [value input-range output-range]
-  (reanimated/interpolate value input-range output-range {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"}))
+  (reanimated/interpolate value
+                          input-range
+                          output-range
+                          {:extrapolateLeft  "clamp"
+                           :extrapolateRight "clamp"}))
 
 (defn scroll-handler
   [event initial-y scroll-y]
@@ -65,7 +68,9 @@
        [:f>
         (fn []
           (let [scroll-y                (reanimated/use-shared-value initial-y)
-                opacity-animation       (interpolate scroll-y [(* threshold 0.33) (* threshold 0.66)] [0 1])
+                opacity-animation       (interpolate scroll-y
+                                                     [(* threshold 0.33) (* threshold 0.66)]
+                                                     [0 1])
                 translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [100 56])
                 title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
             [rn/view {:style (style/container-view view-height)}
