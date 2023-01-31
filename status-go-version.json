@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.126.1",
     "commit-sha1": "cb624b0cc14d95e46754210c9153f8a0444d2845",
     "src-sha256": "1wrjlzwqj7qzsvh2aba4fjfp29ckx416lkxsk3c7las88ji93wzn"
@@ -90,4 +91,9 @@
     "commit-sha1": "13d069ca85c50b77e622e0107ee558f411080b97",
     "src-sha256": "0jaz67vssj67zygmy5yq8w9bnhd7iqiqba7wrbdnwh36bb8b20v2"
 >>>>>>> 665f05d86... updates status-go
+=======
+    "version": "v0.125.4",
+    "commit-sha1": "7e1a894ab824904f0c90acbc307955940ef17800",
+    "src-sha256": "0sf33afgvmn4rj6ka7rxx3jnvpyjxcayv25jyiv1s9dkh581zy1i"
+>>>>>>> 3bfa4d4ff... update status-go
 }
