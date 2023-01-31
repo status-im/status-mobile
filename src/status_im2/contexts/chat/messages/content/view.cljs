@@ -17,27 +17,31 @@
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [reagent.core :as reagent]))
+
+(def delivery-state-showing-time-ms 3000)
 
 (defn avatar
   [{:keys [content last-in-group? pinned quoted-message from]}]
-  [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
-   [rn/view {:padding-top 2 :width 32}
-    (when (or (and (seq (:response-to content))
-                   quoted-message)
-              last-in-group?
-              pinned)
-      (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-            contact      (rf/sub [:contacts/contact-by-address from])
-            photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
-            online?      (rf/sub [:visibility-status-updates/online? from])]
+  (if (or (and (seq (:response-to content))
+               quoted-message)
+          last-in-group?
+          pinned)
+    (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+          contact      (rf/sub [:contacts/contact-by-address from])
+          photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
+          online?      (rf/sub [:visibility-status-updates/online? from])]
+      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
+       [rn/view {:padding-top 2 :width 32}
         [quo/user-avatar
          {:full-name         display-name
           :profile-picture   photo-path
           :status-indicator? true
           :online?           online?
           :size              :small
-          :ring?             false}]))]])
+          :ring?             false}]]])
+    [rn/view {:padding-top 2 :width 32}]))
 
 (defn author
   [{:keys [response-to
@@ -80,46 +84,68 @@
                 {:content (drawers/reactions-and-actions message-data context)}]))
 
 (defn user-message-content
-  [{:keys [content-type quoted-message content] :as message-data}
+  [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
    {:keys [chat-id] :as context}]
-  (let [context     (assoc context :on-long-press #(message-on-long-press message-data context))
-        response-to (:response-to content)]
-    [rn/touchable-highlight
-     {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
-      :style          {:border-radius 16}
-      :on-press       #()
-      :on-long-press  (fn []
-                        (rf/dispatch [:dismiss-keyboard])
-                        (rf/dispatch [:bottom-sheet/show-sheet
-                                      {:content (drawers/reactions-and-actions message-data
-                                                                               context)}]))}
-     [rn/view {:padding-vertical 8}
-      (when (and (seq response-to) quoted-message)
-        [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
-      [rn/view {:padding-horizontal 12 :flex-direction :row}
-       [avatar message-data]
-       [rn/view {:margin-left 8 :flex 1}
-        [author message-data]
-        (case content-type
+  [:f>
+   (let [show-delivery-state? (reagent/atom false)]
+     (fn []
+       (let [first-image     (first (:album message-data))
+             outgoing-status (if (= content-type constants/content-type-album)
+                               (:outgoing-status first-image)
+                               outgoing-status)
+             outgoing        (if (= content-type constants/content-type-album)
+                               (:outgoing first-image)
+                               outgoing)
+             context         (assoc context :on-long-press #(message-on-long-press message-data context))
+             response-to     (:response-to content)]
+         [rn/touchable-highlight
+          {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
+           :style          {:border-radius 16
+                            :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
+           :on-press       (fn []
+                             (when (and outgoing
+                                        (not (= outgoing-status :sending))
+                                        (not @show-delivery-state?))
+                               (reset! show-delivery-state? true)
+                               (js/setTimeout #(reset! show-delivery-state? false)
+                                              delivery-state-showing-time-ms)))
+           :on-long-press  (fn []
+                             (rf/dispatch [:dismiss-keyboard])
+                             (rf/dispatch [:bottom-sheet/show-sheet
+                                           {:content (drawers/reactions-and-actions message-data
+                                                                                    context)}]))}
+          [rn/view {:style {:padding-vertical 8}}
+           (when (and (seq response-to) quoted-message)
+             [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
+           [rn/view
+            {:style {:padding-horizontal 12
+                     :flex-direction     :row}}
+            [avatar message-data]
+            [rn/view
+             {:style {:margin-left 8
+                      :flex        1}}
+             [author message-data]
+             (case content-type
 
-          constants/content-type-text    [not-implemented/not-implemented
-                                          [content.text/text-content message-data context]]
+               constants/content-type-text    [not-implemented/not-implemented
+                                               [content.text/text-content message-data context]]
 
-          constants/content-type-emoji   [not-implemented/not-implemented
-                                          [old-message/emoji message-data]]
+               constants/content-type-emoji   [not-implemented/not-implemented
+                                               [old-message/emoji message-data]]
 
-          constants/content-type-sticker [not-implemented/not-implemented
-                                          [old-message/sticker message-data]]
+               constants/content-type-sticker [not-implemented/not-implemented
+                                               [old-message/sticker message-data]]
 
-          constants/content-type-image   [image/image-message 0 message-data context]
+               constants/content-type-image   [image/image-message 0 message-data context]
 
-          constants/content-type-audio   [not-implemented/not-implemented
-                                          [old-message/audio message-data]]
+               constants/content-type-audio   [not-implemented/not-implemented
+                                               [old-message/audio message-data]]
 
-          constants/content-type-album   [album/album-message message-data context]
+               constants/content-type-album   [album/album-message message-data context]
 
-          [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
-        [status/status message-data]]]]]))
+               [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
+             (when @show-delivery-state?
+               [status/status outgoing-status])]]]])))])
 
 (defn message-with-reactions
   [{:keys [pinned pinned-by mentioned in-pinned-view? content-type
