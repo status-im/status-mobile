@@ -1,6 +1,7 @@
 (ns react-native.reanimated
   (:require ["react-native" :as rn]
             ["react-native-linear-gradient" :default LinearGradient]
+            ["react-native-fast-image" :as FastImage]
             ["@react-native-community/blur" :as blur]
             ["react-native-reanimated" :default reanimated :refer
              (useSharedValue useAnimatedStyle
@@ -35,6 +36,7 @@
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 
 (def linear-gradient (create-animated-component LinearGradient))
+(def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))
 
 ;; Hooks
