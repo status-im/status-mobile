@@ -1,12 +1,13 @@
-(ns status-im2.contexts.chat.images-horizontal.view
+(ns status-im2.contexts.chat.lightbox.view
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
             [utils.re-frame :as rf]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [oops.core :as oops]
-            [status-im2.contexts.chat.images-horizontal.style :as style]
+            [status-im2.contexts.chat.lightbox.style :as style]
             [utils.datetime :as datetime]
             [react-native.linear-gradient :as linear-gradient]))
 
@@ -20,7 +21,7 @@
         window-width      (:width (rn/get-window))
         height            (* (or (:image-height message) 1000)
                              (/ window-width (or (:image-width message) 1000)))]
-    [rn/image
+    [fast-image/fast-image
      {:source    {:uri (:image (:content message))}
       :style     {:width         window-width
                   :height        height
@@ -77,7 +78,7 @@
 
 (defn small-image
   [item]
-  [rn/image
+  [fast-image/fast-image
    {:source {:uri (:image (:content item))}
     :style  {:width         small-image-size
              :height        small-image-size
@@ -105,7 +106,7 @@
        :content-container-style {:padding-vertical   12
                                  :padding-horizontal padding-horizontal}}]]))
 
-(defn images-horizontal
+(defn lightbox
   []
   (let [{:keys [messages index]} (rf/sub [:get-screen-params])
         ;; The initial value of data is the image that was pressed (and not the whole album) in order for

@@ -90,8 +90,10 @@
      {:style {:padding-top 16
               :align-items :center}}
      [rn/touchable-opacity
-      {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                {:content (bottom-sheet (boolean image) editing?)}])}
+      {:on-press (fn []
+                   (rn/dismiss-keyboard!)
+                   (rf/dispatch [:bottom-sheet/show-sheet
+                                 {:content (bottom-sheet (boolean image) editing?)}]))}
       [rn/view
        {:style {:width  128
                 :height 128}}

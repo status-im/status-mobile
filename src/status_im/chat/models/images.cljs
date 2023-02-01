@@ -104,7 +104,7 @@
 
 (re-frame/reg-fx
  ::camera-roll-get-photos
- (fn [[num end-cursor]]
+ (fn [[num end-cursor album]]
    (permissions/request-permissions
     {:permissions [:read-external-storage]
      :on-allowed  (fn []
@@ -115,18 +115,68 @@
                               {:first      num
                                :after      end-cursor
                                :assetType  "Photos"
-                               :groupTypes "All"
+                               :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
+                               :groupName  (when (not= album (i18n/label :t/recent)) album)
                                :include    (clj->js ["imageSize"])})
-                            (.getPhotos CameraRoll
-                                        #js
-                                         {:first      num
-                                          :assetType  "Photos"
-                                          :groupTypes "All"
-                                          :include    (clj->js ["imageSize"])}))
+                            (.getPhotos
+                             CameraRoll
+                             #js
+                              {:first      num
+                               :assetType  "Photos"
+                               :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
+                               :groupName  (when (not= album (i18n/label :t/recent)) album)
+                               :include    (clj->js ["imageSize"])}))
                         (.then #(let [response (types/js->clj %)]
                                   (re-frame/dispatch [:on-camera-roll-get-photos (:edges response)
                                                       (:page_info response) end-cursor])))
                         (.catch #(log/warn "could not get camera roll photos"))))})))
+
+(re-frame/reg-fx
+ :chat.ui/camera-roll-get-albums
+ (fn []
+   (let [albums (atom [{:title :smart-albums :data []}
+                       {:title (i18n/label :t/my-albums) :data []}])]
+     ;; Get the "recent" album first
+     (->
+       (.getPhotos CameraRoll
+                   #js
+                    {:first      1
+                     :groupTypes "All"})
+       (.then
+        (fn [res]
+          (let [recent-album {:title (i18n/label :t/recent)
+                              :count "--"
+                              :uri   (get-in (first (:edges (types/js->clj res))) [:node :image :uri])}]
+            (swap! albums update-in [0 :data] conj recent-album)
+            ;; Get albums, then loop over albums and get each one's cover (first photo)
+            (->
+              (.getAlbums CameraRoll #js {:assetType "All"})
+              (.then
+               (fn [response]
+                 (let [response (types/js->clj response)]
+                   (reduce
+                    (fn [_ album]
+                      (->
+                        (.getPhotos
+                         CameraRoll
+                         #js
+                          {:first      1
+                           :groupTypes "Albums"
+                           :groupName  (:title album)})
+                        (.then (fn [res]
+                                 (let [uri (get-in (first (:edges (types/js->clj res)))
+                                                   [:node :image :uri])]
+                                   (swap! albums update-in [1 :data] conj (merge album {:uri uri}))
+                                   (when (= (count (get-in @albums [1 :data])) (count response))
+                                     (swap! albums update-in
+                                       [1 :data]
+                                       #(->> %
+                                             (sort-by :title)))
+                                     (re-frame/dispatch [:on-camera-roll-get-albums @albums])))))))
+                    nil
+                    response))))
+              (.catch #(log/warn "could not get camera roll albums"))))))))))
+
 
 (rf/defn image-captured
   {:events [:chat.ui/image-captured]}
@@ -139,15 +189,20 @@
 
 (rf/defn on-end-reached
   {:events [:camera-roll/on-end-reached]}
-  [_ end-cursor loading? has-next-page?]
+  [_ end-cursor selected-album loading? has-next-page?]
   (when (and (not loading?) has-next-page?)
     (re-frame/dispatch [:chat.ui/camera-roll-loading-more true])
-    (re-frame/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
+    (re-frame/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor selected-album])))
 
 (rf/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
-  [_ num end-cursor]
-  {::camera-roll-get-photos [num end-cursor]})
+  [_ num end-cursor selected-album]
+  {::camera-roll-get-photos [num end-cursor selected-album]})
+
+(rf/defn camera-roll-get-albums
+  {:events [:chat.ui/camera-roll-get-albums]}
+  [_]
+  {:chat.ui/camera-roll-get-albums []})
 
 (rf/defn camera-roll-loading-more
   {:events [:chat.ui/camera-roll-loading-more]}
@@ -164,22 +219,32 @@
              (assoc :camera-roll/has-next-page (:has_next_page page-info))
              (assoc :camera-roll/loading-more false))}))
 
+(rf/defn on-camera-roll-get-albums
+  {:events [:on-camera-roll-get-albums]}
+  [{:keys [db]} albums]
+  {:db (-> db
+           (assoc :camera-roll/albums albums)
+           (assoc :camera-roll/loading-albums false))})
+
 (rf/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}
-  [{:keys [db]} current-chat-id]
-  {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})})
+  [{:keys [db]}]
+  {:db (update-in db [:chat/inputs (:current-chat-id db) :metadata] assoc :sending-image {})})
 
 (rf/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
   [{:keys [db] :as cofx} chat-id]
-  (let [current-chat-id (or chat-id (:current-chat-id db))]
-    (clear-sending-images cofx current-chat-id)))
+  (clear-sending-images cofx))
 
 (rf/defn image-selected
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} current-chat-id original uri]
   {:db
-   (update-in db [:chat/inputs current-chat-id :metadata :sending-image uri] merge original {:uri uri})})
+   (update-in db
+              [:chat/inputs current-chat-id :metadata :sending-image (:uri original)]
+              merge
+              original
+              {:resized-uri uri})})
 
 (rf/defn image-unselected
   {:events [:chat.ui/image-unselected]}
@@ -214,6 +279,11 @@
       (when (and (< (count images) config/max-images-batch)
                  (not (some #(= (:uri image) (:uri %)) images)))
         {::image-selected [image current-chat-id]}))))
+
+(rf/defn camera-roll-select-album
+  {:events [:chat.ui/camera-roll-select-album]}
+  [{:keys [db]} album]
+  {:db (assoc db :camera-roll/selected-album album)})
 
 (rf/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}
