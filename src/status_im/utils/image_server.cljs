@@ -1,6 +1,5 @@
 (ns status-im.utils.image-server
   (:require [quo.design-system.colors :as colors]
-            [status-im.utils.config :as config]
             [taoensso.timbre :as log]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")

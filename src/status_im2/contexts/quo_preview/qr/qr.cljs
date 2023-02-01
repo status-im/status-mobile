@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
             [quo.react-native :as rn]
-            [status-im.utils.fx :as fx]
             [quo2.components.buttons.button :as quo2-button]
             [taoensso.timbre :as log]))
 
@@ -12,7 +11,13 @@
         url "https://github.com/yeqown/go-qrcode/"
         multiaccount @(re-frame/subscribe [:multiaccount])
         keyuid (get multiaccount :key-uid)
-        media-server-url (str "https://localhost:" port "/QRImagesWithLogo?qrurl=" (js/btoa url) "&keyUid=" keyuid "&imageName=thumbnail")
+        media-server-url (str "https://localhost:"
+                              port
+                              "/GenerateQRCode?qrurl="
+                              (js/btoa url)
+                              "&keyUid="
+                              keyuid
+                              "&imageName=thumbnail")
         ]
   [:<>
   [rn/view {:style {:padding 20}}
