@@ -42,7 +42,9 @@
                         {:color (if (theme/dark?) colors/neutral-60 colors/neutral-40)}))
        :weight :medium
        :size   :paragraph-1} (str "# " name)]]
-    [rn/view {:style {:height 20}}
+    [rn/view
+     {:style {:height          20
+              :justify-content :center}}
      (when (and (not locked?)
                 muted?)
        [quo2.icons/icon :i/muted
@@ -59,6 +61,10 @@
                 (not muted?)
                 (not (pos? (int mentions-count)))
                 unread-messages?)
-       [quo2.icons/icon :i/channel-notification
-        {:size     20
-         :no-color true}])]]])
+       [rn/view
+        {:style {:width            8
+                 :height           8
+                 :border-radius    4
+                 :background-color (colors/theme-colors
+                                    colors/neutral-40
+                                    colors/neutral-60)}}])]]])
