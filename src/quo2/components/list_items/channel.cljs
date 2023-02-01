@@ -5,7 +5,8 @@
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.components.list-items.style :as style]))
 
 (defn list-item
   [{:keys [name locked? mentions-count unread-messages?
@@ -62,9 +63,4 @@
                 (not (pos? (int mentions-count)))
                 unread-messages?)
        [rn/view
-        {:style {:width            8
-                 :height           8
-                 :border-radius    4
-                 :background-color (colors/theme-colors
-                                    colors/neutral-40
-                                    colors/neutral-60)}}])]]])
+        {:style style/unread-grey-dot}])]]])
