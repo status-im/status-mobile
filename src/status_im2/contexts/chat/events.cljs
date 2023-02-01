@@ -324,10 +324,12 @@
                             (rf/dispatch [:bottom-sheet/hide])
                             (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
 
-(rf/defn navigate-to-horizontal-images
-  {:events [:chat.ui/navigate-to-horizontal-images]}
-  [cofx messages index]
-  (navigation/navigate-to cofx :images-horizontal {:messages messages :index index}))
+(rf/defn navigate-to-user-pinned-messages
+  "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  {:events [:chat.ui/navigate-to-pinned-messages]}
+  [cofx chat-id]
+  (navigation/navigate-to cofx :chat-pinned-messages {:chat-id chat-id}))
+
 
 (rf/defn update-shared-element-id
   {:events [:chat.ui/update-shared-element-id]}

@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.images-horizontal.style
+(ns status-im2.contexts.chat.lightbox.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container-view

@@ -3,28 +3,31 @@
             [react-native.platform :as platform]))
 
 (defn gradient-container
-  [safe-area]
-  {:width    "100%"
-   :height   (+ (:bottom safe-area) 65)
+  [insets]
+  {:left     0
+   :right    0
+   :height   (+ (:bottom insets) (if platform/ios? 65 85))
    :position :absolute
-   :bottom   (if platform/ios? 0 (:bottom safe-area))})
+   :bottom   0})
 
-(defn buttons-container
-  [safe-area]
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 20
-   :bottom             (+ (:bottom safe-area) 33)})
+(def buttons-container
+  {:position        :absolute
+   :flex-direction  :row
+   :left            0
+   :right           0
+   :margin-top      20
+   :margin-bottom   12
+   :justify-content :center
+   :z-index         1})
 
 (defn clear-container
   []
   {:background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80)
-   :position           :absolute
-   :align-self         :flex-end
    :padding-horizontal 12
    :padding-vertical   5
-   :right              20
-   :border-radius      10})
+   :border-radius      10
+   :position           :absolute
+   :right              20})
 
 (defn camera-button-container
   []
@@ -34,17 +37,21 @@
    :border-radius    10
    :justify-content  :center
    :align-items      :center
-   :margin-left      20
-   :margin-bottom    24})
+   :position         :absolute
+   :left             20})
 
-(def title-container
-  {:flex-direction :row
-   :position       :absolute
-   :align-self     :center})
+(defn title-container
+  []
+  {:flex-direction     :row
+   :background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80)
+   :border-radius      10
+   :padding-horizontal 12
+   :padding-vertical   5
+   :align-self         :center})
 
 (defn chevron-container
   []
-  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+  {:background-color (colors/theme-colors colors/neutral-30 colors/neutral-100)
    :width            14
    :height           14
    :border-radius    7
@@ -55,10 +62,12 @@
 
 (defn image
   [window-width index]
-  {:width         (- (/ window-width 3) 0.67)
-   :height        (/ window-width 3)
-   :margin-left   (when (not= (mod index 3) 0) 1)
-   :margin-bottom 1})
+  {:width                   (- (/ window-width 3) 0.67)
+   :height                  (/ window-width 3)
+   :margin-left             (when (not= (mod index 3) 0) 1)
+   :margin-bottom           1
+   :border-top-left-radius  (when (= index 0) 10)
+   :border-top-right-radius (when (= index 2) 10)})
 
 (defn overlay
   [window-width]

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
+            [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
             [status-im2.constants :as constants]
@@ -16,8 +17,7 @@
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]
-            [status-im.utils.utils :as utils]))
+            [utils.datetime :as datetime]))
 
 (defn avatar
   [{:keys [content last-in-group? pinned quoted-message from]}]
