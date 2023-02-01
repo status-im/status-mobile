@@ -25,7 +25,7 @@
 
 (defn bottom-gradient
   [selected-images insets selected]
-  (when (or (seq @selected) selected-images)
+  (when (or (seq @selected) (not (empty? selected-images)))
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
@@ -118,11 +118,6 @@
             [rn/view {:style {:flex 1}}
              [rn/view
               {:style style/buttons-container}
-              [rn/touchable-opacity
-               {:on-press            #(js/alert "Camera: not implemented")
-                :style               (style/camera-button-container)
-                :accessibility-label :camera-button}
-               [quo/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
               [album-title true selected-album]
               [clear-button selected]]
              [rn/flat-list
