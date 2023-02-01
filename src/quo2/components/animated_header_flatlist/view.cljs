@@ -1,16 +1,16 @@
 (ns quo2.components.animated-header-flatlist.view
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [quo2.foundations.colors :as colors]
-    [status-im.ui.components.fast-image :as fast-image]
-    [quo2.components.animated-header-flatlist.style :as style]
-    [oops.core :as oops]
-    [utils.re-frame :as rf]))
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   [react-native.reanimated :as reanimated]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [quo2.foundations.colors :as colors]
+   [status-im.ui.components.fast-image :as fast-image]
+   [quo2.components.animated-header-flatlist.style :as style]
+   [oops.core :as oops]
+   [utils.re-frame :as rf]))
 
 (def header-height 234)
 (def cover-height 192)
@@ -99,3 +99,29 @@
                :scroll-event-throttle 8
                :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))]))])
 
+
+;; example usage:
+#_(def parameters
+    {:theme-color          theme-color ; optional
+     :cover-uri            cover-uri ; optional
+     :display-picture-comp display-picture-comp
+     :header-comp          header-comp
+     :title-comp           title-comp
+     :main-comp            main-comp})
+
+#_(defn some-screen
+    []
+    [animated-header-list/animated-header-list parameters])
+
+;; This component takes care of all the animations. There is only one animation that you will need to
+;; pass to the display-picture-comp. example:
+#_(defn display-picture-comp
+    [animation]
+    [:f>
+     (fn []
+       [reanimated/fast-image
+        {:style  (reanimated/apply-animations-to-style
+                  {:width  animation
+                   :height animation}
+                  {:border-radius 72})
+         :source {:uri uri}}])])

@@ -10,7 +10,6 @@
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
             [status-im2.contexts.chat.images-horizontal.view :as images-horizontal]
-            [quo2.components.animated-header-flatlist.test-screen :as test-screen]
             [status-im2.config :as config]
             [quo.design-system.colors :as colors]))
 
@@ -56,11 +55,6 @@
     {:name      :discover-communities
      :options   {:topBar {:visible false}}
      :component communities.discover/discover}
-
-    ;; THIS IS A TEMPORARY SCREEN. WILL REMOVE AFTER QA TESTING.
-    {:name      :animated-header-list
-     :options   {:topBar {:visible false}}
-     :component test-screen/test-screen}
 
     {:name      :community-overview
      :options   {:topBar {:visible false}}
