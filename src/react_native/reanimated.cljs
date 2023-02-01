@@ -29,10 +29,11 @@
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
-(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList reanimated)))
+(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 (defn flat-list
   [props]
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
+
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 
 (def linear-gradient (create-animated-component LinearGradient))
