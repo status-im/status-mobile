@@ -16,6 +16,7 @@
 (def flat-list-ref (atom nil))
 (def small-list-ref (atom nil))
 (def small-image-size 40)
+(def focused-image-size 56)
 
 (defn toggle-opacity
   [opacity-value border-value transparent?]
@@ -103,7 +104,7 @@
   [item index scroll-index]
   [:f>
    (fn []
-     (let [size       (if (= @scroll-index index) 56 small-image-size)
+     (let [size       (if (= @scroll-index index) focused-image-size small-image-size)
            size-value (reanimated/use-shared-value size)]
        (reanimated/set-shared-value size-value (reanimated/with-timing size))
        [rn/touchable-opacity
@@ -124,7 +125,7 @@
   [:f>
    (fn []
      (let [text               (get-in (first messages) [:content :text])
-           padding-horizontal (- (/ (:width (rn/get-window)) 2) (/ small-image-size 2))]
+           padding-horizontal (- (/ (:width (rn/get-window)) 2) (/ focused-image-size 2))]
        [reanimated/linear-gradient
         {:colors [:black :transparent]
          :start  {:x 0 :y 1}

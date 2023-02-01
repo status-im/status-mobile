@@ -36,10 +36,11 @@
   [insets opacity]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
-   {:width    "100%"
-    :position :absolute
-    :bottom   (:bottom insets)
-    :z-index  3}))
+   {:width          "100%"
+    :position       :absolute
+    :bottom         0
+    :padding-bottom (:bottom insets)
+    :z-index        3}))
 
 (def text-style
   {:color             colors/white
