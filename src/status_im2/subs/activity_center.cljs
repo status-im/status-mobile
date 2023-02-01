@@ -9,10 +9,30 @@
    (:notifications activity-center)))
 
 (re-frame/reg-sub
- :activity-center/unread-count
+ :activity-center/unread-counts-by-type
  :<- [:activity-center]
  (fn [activity-center]
-   (:unread-count activity-center)))
+   (:unread-counts-by-type activity-center)))
+
+(re-frame/reg-sub
+ :activity-center/notification-types-with-unread
+ :<- [:activity-center/unread-counts-by-type]
+ (fn [unread-counts]
+   (reduce-kv
+    (fn [acc notification-type unread-count]
+      (if (pos? unread-count)
+        (conj acc notification-type)
+        acc))
+    #{}
+    unread-counts)))
+
+(re-frame/reg-sub
+ :activity-center/unread-count
+ :<- [:activity-center/unread-counts-by-type]
+ (fn [unread-counts]
+   (->> unread-counts
+        vals
+        (reduce + 0))))
 
 (re-frame/reg-sub
  :activity-center/filter-status

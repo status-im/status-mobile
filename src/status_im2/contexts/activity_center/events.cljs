@@ -365,16 +365,30 @@
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
   [_]
+  {:dispatch-n (mapv (fn [notification-type]
+                       [:activity-center.notifications/fetch-unread-count-for-type notification-type])
+                     types/all-supported)})
+
+(rf/defn notifications-fetch-unread-count-for-type
+  {:events [:activity-center.notifications/fetch-unread-count-for-type]}
+  [_ notification-type]
   {:json-rpc/call [{:method     "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
-                    :params     [types/all-supported]
+                    :params     [[notification-type]]
                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success
-                                               %])
-                    :on-error   #()}]})
+                                               notification-type %])
+                    :on-error   #(rf/dispatch [:activity-center.notifications/fetch-unread-count-error
+                                               %])}]})
 
 (rf/defn notifications-fetch-unread-count-success
   {:events [:activity-center.notifications/fetch-unread-count-success]}
-  [{:keys [db]} result]
-  {:db (assoc-in db [:activity-center :unread-count] result)})
+  [{:keys [db]} notification-type result]
+  {:db (assoc-in db [:activity-center :unread-counts-by-type notification-type] result)})
+
+(rf/defn notifications-fetch-unread-count-error
+  {:events [:activity-center.notifications/fetch-unread-count-error]}
+  [_ error]
+  (log/error "Failed to fetch count of notifications" {:error error})
+  nil)
 
 (rf/defn notifications-fetch-error
   {:events [:activity-center.notifications/fetch-error]}
