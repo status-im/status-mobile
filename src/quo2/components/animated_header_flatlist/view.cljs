@@ -1,16 +1,16 @@
-(ns status-im2.common.animated-header-list.view
+(ns quo2.components.animated-header-flatlist.view
   (:require
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [react-native.reanimated :as reanimated]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [quo2.foundations.colors :as colors]
-   [status-im.ui.components.fast-image :as fast-image]
-   [status-im2.common.animated-header-list.style :as style]
-   [oops.core :as oops]
-   [utils.re-frame :as rf]))
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [quo2.foundations.colors :as colors]
+    [status-im.ui.components.fast-image :as fast-image]
+    [quo2.components.animated-header-flatlist.style :as style]
+    [oops.core :as oops]
+    [utils.re-frame :as rf]))
 
 (def header-height 234)
 (def cover-height 192)
@@ -98,3 +98,4 @@
                ;; TODO: https://github.com/status-im/status-mobile/issues/14924
                :scroll-event-throttle 8
                :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))]))])
+

@@ -1,11 +1,11 @@
-(ns status-im2.common.animated-header-list.test-screen
+(ns quo2.components.animated-header-flatlist.test-screen
   (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [react-native.reanimated :as reanimated]
-   [status-im2.common.animated-header-list.view :as animated-header-list]))
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [react-native.reanimated :as reanimated]
+    [quo2.components.animated-header-flatlist.view :as animated-header-list]))
 
 ;; THIS IS A TEMPORARY SCREEN. WILL REMOVE AFTER QA TESTING.
 
@@ -42,9 +42,9 @@
    (fn []
      [reanimated/fast-image
       {:style  (reanimated/apply-animations-to-style
-                {:width  animation
-                 :height animation}
-                {:border-radius 72})
+                 {:width  animation
+                  :height animation}
+                 {:border-radius 72})
        :source
        {:uri
         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])])
