@@ -25,7 +25,7 @@
 
 (defn bottom-gradient
   [selected-images insets selected]
-  (when (or (seq @selected) (not (empty? selected-images)))
+  (when (or (seq @selected) (seq selected-images))
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
