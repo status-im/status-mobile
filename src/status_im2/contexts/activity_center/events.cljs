@@ -366,7 +366,7 @@
   {:events [:activity-center.notifications/fetch-unread-count]}
   [_]
   {:json-rpc/call [{:method     "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
-                    :params     []
+                    :params     [types/all-supported]
                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success
                                                %])
                     :on-error   #()}]})
