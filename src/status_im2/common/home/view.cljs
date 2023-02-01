@@ -95,7 +95,9 @@
       (assoc button-common-props :accessibility-label :open-scanner-button)
       :i/scan]
      [quo/button
-      (assoc button-common-props :accessibility-label :show-qr-button)
+      (merge button-common-props
+             {:accessibility-label :show-qr-button
+              :on-press            #(rf/dispatch [:share/open])})
       :i/qr-code]
      [rn/view
       [unread-indicator]

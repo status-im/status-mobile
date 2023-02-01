@@ -19,7 +19,8 @@
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.utils.platform :as platform]
-            [status-im2.contexts.activity-center.view :as activity-center]))
+            [status-im2.contexts.activity-center.view :as activity-center]
+            [status-im2.contexts.share.view :as share]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -187,6 +188,9 @@
 
                   (= :activity-center view)
                   [activity-center/view request-close]
+
+                  (= :profile-share view)
+                  [share/view]
 
                   :else
                   [view])]]]])))})))
