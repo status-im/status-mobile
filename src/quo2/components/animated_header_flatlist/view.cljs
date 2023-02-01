@@ -98,30 +98,3 @@
                ;; TODO: https://github.com/status-im/status-mobile/issues/14924
                :scroll-event-throttle 8
                :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))]))])
-
-
-;; example usage:
-#_(def parameters
-    {:theme-color          theme-color ; optional
-     :cover-uri            cover-uri ; optional
-     :display-picture-comp display-picture-comp
-     :header-comp          header-comp
-     :title-comp           title-comp
-     :main-comp            main-comp})
-
-#_(defn some-screen
-    []
-    [animated-header-list/animated-header-list parameters])
-
-;; This component takes care of all the animations. There is only one animation that you will need to
-;; pass to the display-picture-comp. example:
-#_(defn display-picture-comp
-    [animation]
-    [:f>
-     (fn []
-       [reanimated/fast-image
-        {:style  (reanimated/apply-animations-to-style
-                  {:width  animation
-                   :height animation}
-                  {:border-radius 72})
-         :source {:uri uri}}])])

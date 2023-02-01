@@ -49,7 +49,7 @@
     :left             20
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/white colors/neutral-95)
+    :background-color (colors/theme-colors colors/white colors/neutral-100)
     :overflow         :hidden}))
 
 (defn header-bottom-part
@@ -62,7 +62,7 @@
     :height           86
     :left             0
     :right            0
-    :background-color (colors/theme-colors colors/white colors/neutral-95)}))
+    :background-color (colors/theme-colors colors/white colors/neutral-100)}))
 
 (defn header-comp
   [y-animation opacity-animation]
