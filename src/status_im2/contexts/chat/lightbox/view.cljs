@@ -26,7 +26,6 @@
 
 (defn image
   [message opacity-value border-value transparent?]
-  (println "mmm" message)
   [:f>
    (fn []
      (let [shared-element-id (rf/sub [:shared-element-id])
