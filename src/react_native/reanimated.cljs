@@ -1,6 +1,7 @@
 (ns react-native.reanimated
   (:require ["react-native" :as rn]
             ["react-native-linear-gradient" :default LinearGradient]
+            ["react-native-fast-image" :as FastImage]
             ["@react-native-community/blur" :as blur]
             ["react-native-reanimated" :default reanimated :refer
              (useSharedValue useAnimatedStyle
@@ -15,6 +16,7 @@
                              SlideOutUp
                              LinearTransition)]
             [reagent.core :as reagent]
+            [react-native.flat-list :as rn-flat-list]
             [utils.collection]))
 
 ;; Animations
@@ -27,9 +29,15 @@
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
+(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
+(defn flat-list
+  [props]
+  [reanimated-flat-list (rn-flat-list/base-list-props props)])
+
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 
 (def linear-gradient (create-animated-component LinearGradient))
+(def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))
 
 ;; Hooks

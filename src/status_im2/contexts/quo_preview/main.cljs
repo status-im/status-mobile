@@ -68,12 +68,16 @@
    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-   [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
+   [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+   [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
                             :insets    {:top false}
                             :component shadows/preview-shadows}]
+   :animated-list         [{:name      :animated-header-list
+                            :options   {:topBar {:visible false}}
+                            :component animated-header-list/mock-screen}]
    :avatar                [{:name      :group-avatar
                             :insets    {:top false}
                             :component group-avatar/preview-group-avatar}
