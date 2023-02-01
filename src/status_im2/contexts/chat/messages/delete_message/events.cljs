@@ -17,12 +17,13 @@
 
 (defn- update-db-delete-locally
   "Delete message in re-frame db and set the undo timelimit"
-  [db chat-id message-id undo-time-limit-ms]
+  [db chat-id message-id undo-time-limit-ms deleted-by]
   (when (get-in db [:messages chat-id message-id])
     (update-in db
                [:messages chat-id message-id]
                assoc
                :deleted?              true
+               :deleted-by            deleted-by
                :deleted-undoable-till (+ (datetime/timestamp) undo-time-limit-ms))))
 
 (defn- update-db-undo-locally
@@ -36,25 +37,29 @@
                  [:messages chat-id message-id]
                  dissoc
                  :deleted?
+                 :deleted-by
                  :deleted-undoable-till)
       (update-db-clear-undo-timer db chat-id message-id))))
 
 (defn- update-db-delete-locally-without-time-limit
   "Delete message in re-frame db, used to handle received removed-messages"
-  [db chat-id message-id]
+  [db chat-id message-id deleted-by]
   (when (get-in db [:messages chat-id message-id])
-    (update-in db [:messages chat-id message-id] assoc :deleted? true)))
+    (update-in db [:messages chat-id message-id] assoc :deleted? true :deleted-by deleted-by)))
 
 (rf/defn delete
   "Delete message now locally and broadcast after undo time limit timeout"
   {:events [:chat.ui/delete-message]}
   [{:keys [db]} {:keys [chat-id message-id]} undo-time-limit-ms]
-  (when (get-in db [:messages chat-id message-id])
+  (when-let [message (get-in db [:messages chat-id message-id])]
     ;; all delete message toast are the same toast with id :delete-message-for-everyone
     ;; new delete operation will reset prev pending deletes' undo timelimit
     ;; undo will undo all pending deletes
     ;; all pending deletes are stored in toast
-    (let [existing-undo-toast (get-in db [:toasts :toasts :delete-message-for-everyone])
+    (let [pub-key             (get-in db [:multiaccount :public-key])
+          message-from        (get message :from)
+          deleted-by          (when (not= pub-key message-from) pub-key)
+          existing-undo-toast (get-in db [:toasts :toasts :delete-message-for-everyone])
           toast-count         (inc (get existing-undo-toast :message-deleted-for-everyone-count 0))
           existing-undos      (-> existing-undo-toast
                                   (get :message-deleted-for-everyone-undos [])
@@ -64,7 +69,7 @@
         {:db (reduce
               ;; sync all pending deletes' undo timelimit, extend to the latest one
               (fn [db-acc {:keys [chat-id message-id]}]
-                (update-db-delete-locally db-acc chat-id message-id undo-time-limit-ms))
+                (update-db-delete-locally db-acc chat-id message-id undo-time-limit-ms deleted-by))
               db
               existing-undos)}
         chat-id)
@@ -154,7 +159,10 @@
   [{:keys [db]} messages chat-id]
   (let [new-db (->> messages
                     (filter #(get-in db [:messages chat-id (:message-id %)]))
-                    (reduce #(update-db-delete-locally-without-time-limit %1 chat-id (:message-id %2))
+                    (reduce #(update-db-delete-locally-without-time-limit %1
+                                                                          chat-id
+                                                                          (:message-id %2)
+                                                                          (:deleted-by %2))
                             db))]
     (when new-db
       (message-list/rebuild-message-list {:db new-db} chat-id))))

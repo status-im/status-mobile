@@ -64,7 +64,7 @@
 (defmulti sm-render :type)
 
 (defmethod sm-render :deleted
-  [{:keys [label timestamp-str labels]}]
+  [{:keys [label timestamp-str labels child]}]
   [rn/view
    {:align-items     :center
     :justify-content :space-between
@@ -77,11 +77,13 @@
      {:icon    :main-icons/delete
       :color   :danger
       :opacity 5}]
-    [text/text
-     {:size  :paragraph-2
-      :style {:color        (get-color :text)
-              :margin-right 5}}
-     (or (get labels label) label (:message-deleted labels))]
+    (if child
+      child
+      [text/text
+       {:size  :paragraph-2
+        :style {:color        (get-color :text)
+                :margin-right 5}}
+       (or (get labels label) label (:message-deleted labels))])
     [sm-timestamp timestamp-str]]])
 
 (defmethod sm-render :added
@@ -185,9 +187,7 @@
           1000))
        [reanimated/touchable-opacity
         {:on-press #(when-not non-pressable?
-                      (reanimated/set-shared-value
-                       sv-color
-                       (get-color :bg :pressed type)))
+                      (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
          :style    (reanimated/apply-animations-to-style
                     {:background-color sv-color}
                     (merge

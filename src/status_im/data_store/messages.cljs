@@ -36,6 +36,7 @@
                         :audioDurationMs          :audio-duration-ms
                         :deleted                  :deleted?
                         :deletedForMe             :deleted-for-me?
+                        :deletedBy                :deleted-by
                         :albumId                  :album-id
                         :imageWidth               :image-width
                         :imageHeight              :image-height

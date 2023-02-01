@@ -448,6 +448,7 @@
     "delete-profile": "Delete profile",
     "delete-my-profile": "Delete my profile",
     "delete-profile-warning": "Warning: If you don’t have your seed phrase written down, you will lose access to your funds after you delete your profile",
+    "deleted-this-message": "deleted this message",
     "enter-channel": "Enter channel",
     "profile-deleted-title": "Profile deleted",
     "profile-deleted-content": "Your profile was successfully deleted",
