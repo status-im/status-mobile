@@ -20,35 +20,46 @@
   [sub-name]
   (testing "returns an empty set when no types have unread notifications"
     (swap! rf-db/app-db assoc-in
-      [:activity-center :notifications]
-      {types/system  {:all {:data [{:id "0x1" :read true}]}}
-       types/mention {:all {:data [{:id "0x2" :read true}]}}})
+      [:activity-center :unread-counts-by-type]
+      {types/one-to-one-chat      0
+       types/private-group-chat   0
+       types/contact-verification 0
+       types/contact-request      0
+       types/mention              0
+       types/reply                0
+       types/admin                0})
 
-    (is (= #{}
-           (rf/sub [sub-name]))))
+    (is (= #{} (rf/sub [sub-name]))))
 
-  (testing "ignores the 'no-type'"
+  (testing "returns a set with all types containing positive unread counts"
     (swap! rf-db/app-db assoc-in
-      [:activity-center :notifications]
-      {types/no-type {:all {:data [{:id "0x1" :read false}
-                                   {:id "0x2" :read true}]}}})
-
-    (is (= #{}
-           (rf/sub [sub-name]))))
-
-  (testing "returns a set with all types containing unread notifications"
-    (swap! rf-db/app-db assoc-in
-      [:activity-center :notifications]
-      {types/reply   {:all    {:data []}
-                      :unread {:data []}}
-       types/system  {:all    {:data [{:id "0x1" :read true}
-                                      {:id "0x2" :read true}
-                                      {:id "0x3" :read false}]}
-                      :unread {:data [{:id "0x3" :read false}]}}
-       types/mention {:all    {:data [{:id "0x4" :read false}]}
-                      :unread {:data [{:id "0x5" :read false}]}}})
+      [:activity-center :unread-counts-by-type]
+      {types/one-to-one-chat      1
+       types/private-group-chat   0
+       types/contact-verification 1
+       types/contact-request      0
+       types/mention              3
+       types/reply                0
+       types/admin                2})
 
     (let [actual (rf/sub [sub-name])]
-      (is (= #{types/system types/mention}
+      (is (= #{types/one-to-one-chat
+               types/contact-verification
+               types/mention
+               types/admin}
              actual))
       (is (set? actual)))))
+
+(h/deftest-sub :activity-center/unread-count
+  [sub-name]
+  (swap! rf-db/app-db assoc-in
+    [:activity-center :unread-counts-by-type]
+    {types/one-to-one-chat      1
+     types/private-group-chat   2
+     types/contact-verification 3
+     types/contact-request      4
+     types/mention              5
+     types/reply                6
+     types/admin                7})
+
+  (is (= 28 (rf/sub [sub-name]))))

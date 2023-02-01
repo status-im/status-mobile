@@ -9,10 +9,30 @@
    (:notifications activity-center)))
 
 (re-frame/reg-sub
- :activity-center/unread-count
+ :activity-center/unread-counts-by-type
  :<- [:activity-center]
  (fn [activity-center]
-   (:unread-count activity-center)))
+   (:unread-counts-by-type activity-center)))
+
+(re-frame/reg-sub
+ :activity-center/notification-types-with-unread
+ :<- [:activity-center/unread-counts-by-type]
+ (fn [unread-counts]
+   (reduce-kv
+    (fn [acc notification-type unread-count]
+      (if (pos? unread-count)
+        (conj acc notification-type)
+        acc))
+    #{}
+    unread-counts)))
+
+(re-frame/reg-sub
+ :activity-center/unread-count
+ :<- [:activity-center/unread-counts-by-type]
+ (fn [unread-counts]
+   (->> unread-counts
+        vals
+        (reduce + 0))))
 
 (re-frame/reg-sub
  :activity-center/filter-status
@@ -33,19 +53,6 @@
  :<- [:activity-center/notifications]
  (fn [[filter-type filter-status notifications]]
    (get-in notifications [filter-type filter-status :data])))
-
-(re-frame/reg-sub
- :activity-center/notification-types-with-unread
- :<- [:activity-center/notifications]
- (fn [notifications]
-   (reduce-kv
-    (fn [acc notification-type {:keys [unread]}]
-      (if (and (not= notification-type types/no-type)
-               (seq (:data unread)))
-        (conj acc notification-type)
-        acc))
-    #{}
-    notifications)))
 
 (re-frame/reg-sub
  :activity-center/filter-status-unread-enabled?
