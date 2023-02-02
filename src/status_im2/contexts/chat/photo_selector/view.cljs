@@ -95,7 +95,8 @@
     {:weight          :medium
      :ellipsize-mode  :tail
      :number-of-lines 1
-     :style           {:max-width 150}} selected-album]
+     :style           {:max-width 150}}
+    selected-album]
    [rn/view {:style (style/chevron-container)}
     [quo/icon (if photos? :i/chevron-down :i/chevron-up)
      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])
@@ -125,6 +126,13 @@
               [rn/view {:style {:flex 1}}
                [rn/view
                 {:style style/buttons-container}
+                (when platform/android?
+                  [rn/touchable-opacity
+                   {:active-opacity 1
+                    :on-press       #(rf/dispatch [:navigate-back])
+                    :style          style/camera-button-container}
+                   [quo/icon :i/close
+                    {:size 20 :color (colors/theme-colors colors/black colors/white)}]])
                 [album-title true selected-album selected temporary-selected]
                 [clear-button selected]]
                [rn/flat-list

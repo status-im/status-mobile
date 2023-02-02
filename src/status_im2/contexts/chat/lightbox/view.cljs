@@ -34,9 +34,9 @@
            height            (* (or (:image-height message) 1000)
                                 (/ width (or (:image-width message) 1000)))]
        [gesture/tap-gesture-handler
-        {:onHandlerStateChange (fn [e]
-                                 (when (= (oget e "nativeEvent.state") (:active gesture/states))
-                                   (toggle-opacity opacity-value border-value transparent?)))}
+        {:on-handler-state-change (fn [e]
+                                    (when (= (oget e "nativeEvent.state") (:active gesture/states))
+                                      (toggle-opacity opacity-value border-value transparent?)))}
         [rn/view {:style {:flex-direction :row}}
          [reanimated/view
           {:style (reanimated/apply-animations-to-style
@@ -112,8 +112,7 @@
          :on-press       (fn []
                            (reset! scroll-index index)
                            (.scrollToIndex ^js @small-list-ref #js {:animated true :index index})
-                           (.scrollToIndex ^js @flat-list-ref #js {:animated true :index index})
-                         )}
+                           (.scrollToIndex ^js @flat-list-ref #js {:animated true :index index}))}
         [reanimated/fast-image
          {:source {:uri (:image (:content item))}
           :style  (reanimated/apply-animations-to-style {:width  size-value
@@ -155,10 +154,8 @@
    (fn []
      (let [{:keys [messages index]} (rf/sub [:get-screen-params])
            ;; The initial value of data is the image that was pressed (and not the whole album) in order
-           ;; for
-           ;; the transition animation to execute properly, otherwise it would animate towards outside
-           ;; the
-           ;; screen (even if we have `initialScrollIndex` set).
+           ;; for the transition animation to execute properly, otherwise it would animate towards
+           ;; outside the screen (even if we have `initialScrollIndex` set).
            data                     (reagent/atom [(nth messages index)])
            scroll-index             (reagent/atom index)
            transparent?             (reagent/atom false)
