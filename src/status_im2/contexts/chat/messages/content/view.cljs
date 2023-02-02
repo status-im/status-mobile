@@ -1,23 +1,23 @@
 (ns status-im2.contexts.chat.messages.content.view
-  (:require [react-native.core :as rn]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im.utils.utils :as utils]
-            [status-im2.contexts.chat.messages.content.style :as style]
-            [status-im2.contexts.chat.messages.content.pin.view :as pin]
+            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-            [status-im2.contexts.chat.messages.content.text.view :as content.text]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
-            [status-im2.contexts.chat.messages.content.status.view :as status]
-            [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
             [status-im2.contexts.chat.messages.content.album.view :as album]
             [status-im2.contexts.chat.messages.content.image.view :as image]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]))
+            [status-im2.contexts.chat.messages.content.pin.view :as pin]
+            [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
+            [status-im2.contexts.chat.messages.content.status.view :as status]
+            [status-im2.contexts.chat.messages.content.style :as style]
+            [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+            [status-im2.contexts.chat.messages.content.text.view :as content.text]
+            [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]
+            [utils.datetime :as datetime]
+            [utils.re-frame :as rf]))
 
 (defn avatar
   [{:keys [content last-in-group? pinned quoted-message from]}]
@@ -94,7 +94,7 @@
                                       {:content (drawers/reactions-and-actions message-data
                                                                                context)}]))}
      [rn/view {:padding-vertical 8}
-      (when (and (seq response-to) quoted-message)
+      (when (and (seq response-to) quoted-message chat-id)
         [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
       [rn/view {:padding-horizontal 12 :flex-direction :row}
        [avatar message-data]

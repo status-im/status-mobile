@@ -1,22 +1,23 @@
 (ns status-im2.contexts.chat.messages.pin.list.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im2.contexts.chat.messages.content.view :as message]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn message-render-fn
-  [{:keys [whisper-timestamp] :as message}
+  [{:keys [whisper-timestamp chat-id] :as message}
    _
    {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
   ;; TODO (flexsurfer) probably we don't want reactions here
   [message/message-with-reactions
    message
    {:group-chat          group-chat
+    :chat-id             chat-id
     :public?             public?
     :community?          community?
     :current-public-key  current-public-key
