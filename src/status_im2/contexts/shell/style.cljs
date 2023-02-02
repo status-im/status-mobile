@@ -1,7 +1,6 @@
 (ns status-im2.contexts.shell.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Bottom Tabs
@@ -36,9 +35,9 @@
 
 ;; Home Stack
 (defn home-stack
-  []
+  [screen-height]
   (let [{:keys [width height]} (shell.constants/dimensions)
-        height                 (or @animation/screen-height height)]
+        height                 (or screen-height height)]
     {:border-bottom-left-radius  20
      :border-bottom-right-radius 20
      :background-color           (colors/theme-colors colors/neutral-5 colors/neutral-95)

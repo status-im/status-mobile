@@ -1,10 +1,11 @@
 (ns status-im2.contexts.add-new-contact.views
-  (:require [status-im2.contexts.add-new-contact.style :as style]
-            [utils.i18n :as i18n]
-            [utils.debounce :as debounce]
-            [utils.re-frame :as rf]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
-            [quo2.core :as quo]))
+            [status-im.react-native.resources :as resources]
+            [status-im2.contexts.add-new-contact.style :as style]
+            [utils.debounce :as debounce]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn new-contact
   []
@@ -14,7 +15,9 @@
                                                     (= error :uncompressed-key))]
     [rn/keyboard-avoiding-view (style/container-kbd)
      [rn/view style/container-image
-      [rn/image (style/image :add-new-contact)]
+      [rn/image
+       {:source (resources/get-image :add-new-contact)
+        :style  style/image}]
       [quo/button
        (merge (style/button-close)
               {:on-press

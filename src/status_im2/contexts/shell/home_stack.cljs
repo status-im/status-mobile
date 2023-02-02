@@ -48,7 +48,7 @@
      [:f>
       (fn []
         (let [shared-values             @animation/shared-values-atom
-              home-stack-original-style (styles/home-stack)
+              home-stack-original-style (styles/home-stack @animation/screen-height)
               home-stack-animated-style (reanimated/apply-animations-to-style
                                          {:top            (:home-stack-top shared-values)
                                           :left           (:home-stack-left shared-values)

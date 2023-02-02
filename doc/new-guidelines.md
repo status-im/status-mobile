@@ -38,31 +38,28 @@ Pay special attention to:
 
 ### Component styles
 
-Prefer to define styles in separate files named `style.cljs`, usually colocated
-with the source file using it. For a real example, see
-[src/status_im/ui2/screens/chat/messages/style.cljs](../src/status_im/ui2/screens/chat/messages/style.cljs).
+Prefer to define styles in a separate file named `style.cljs`, colocated with
+the source file. For a real example, see
+[src/quo2/components/record_audio/record_audio/style.cljs](../src/quo2/components/record_audio/record_audio/style.cljs).
 
 ```clojure
 ;; bad
-(defn animated-checkbox-view [{:keys [size]}]
-  [animated/view
+(defn checkbox-view
+  [{:keys [size]}]
+  [rn/view
    {:style {:width           size
             :height          size
             :border-radius   4
             :justify-content :center
             :align-items     :center}}
-   [animated/view
-    (do-something)]])
+   [rn/view (do-something)]])
 
 ;; good
-(defn animated-checkbox-view [{:keys [size]}]
-  [animated/view
-   {:style (style/animated-checkbox-style size)}
-   [animated/view
-    (do-something)]])
+(defn checkbox-view
+  [{:keys [size]}]
+  [rn/view {:style (style/checkbox size)}
+   [rn/view (do-something)]])
 ```
-
-
 
 ### Don't use percents to define width/height
 
