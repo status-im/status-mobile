@@ -119,10 +119,10 @@
        [quo/button
         {:on-press                  #(rf/dispatch
                                       [:bottom-sheet/show-sheet
-                                       {:content        (fn [] [join-menu/request-to-join
-                                                                community])
+                                       {:content                   (fn [] [join-menu/request-to-join
+                                                                           community])
                                         :bottom-safe-area-spacing? false
-                                        :content-height 300}])
+                                        :content-height            300}])
          :accessibility-label       :show-request-to-join-screen-button
          :override-background-color community-color
          :style                     style/join-button

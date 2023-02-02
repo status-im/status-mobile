@@ -55,7 +55,8 @@
   {:flex         1
    :margin-right 12})
 
-(defn bottom-container [safe-area]
+(defn bottom-container
+  [safe-area]
   {:padding-top     32
    :padding-bottom  (:bottom safe-area)
    :flex-direction  :row

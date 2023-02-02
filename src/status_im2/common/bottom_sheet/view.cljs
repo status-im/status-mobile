@@ -81,20 +81,20 @@
 
 (defn bottom-sheet
   [props children]
-  (let [{on-cancel             :on-cancel
-         disable-drag?         :disable-drag?
-         show-handle?          :show-handle?
-         visible?              :visible?
-         backdrop-dismiss?     :backdrop-dismiss?
-         expandable?           :expandable?
+  (let [{on-cancel                 :on-cancel
+         disable-drag?             :disable-drag?
+         show-handle?              :show-handle?
+         visible?                  :visible?
+         backdrop-dismiss?         :backdrop-dismiss?
+         expandable?               :expandable?
          bottom-safe-area-spacing? :bottom-safe-area-spacing?
-         selected-item         :selected-item
-         is-initially-expanded? :expanded?
-         :or                   {show-handle?          true
-                                backdrop-dismiss?     true
-                                expandable?           false
-                                bottom-safe-area-spacing? true
-                                is-initially-expanded? false}}
+         selected-item             :selected-item
+         is-initially-expanded?    :expanded?
+         :or                       {show-handle?              true
+                                    backdrop-dismiss?         true
+                                    expandable?               false
+                                    bottom-safe-area-spacing? true
+                                    is-initially-expanded?    false}}
         props
         content-height (reagent/atom nil)
         show-bottom-sheet? (reagent/atom nil)
