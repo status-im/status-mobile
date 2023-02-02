@@ -31,13 +31,13 @@
    :overflow :hidden})
 
 (defn content-style
-  [insets]
+  [insets bottom-safe-area-spacing?]
   {:position       :absolute
    :left           0
    :right          0
    :top            0
    :padding-top    border-radius
-   :padding-bottom (:bottom insets)})
+   :padding-bottom (if bottom-safe-area-spacing? (:bottom insets) 0)})
 
 (defn selected-background
   []

@@ -87,17 +87,19 @@
          visible?              :visible?
          backdrop-dismiss?     :backdrop-dismiss?
          expandable?           :expandable?
+         bottom-safe-area-spacing? :bottom-safe-area-spacing?
          selected-item         :selected-item
-         is-initially-expaned? :expanded?
+         is-initially-expanded? :expanded?
          :or                   {show-handle?          true
                                 backdrop-dismiss?     true
                                 expandable?           false
-                                is-initially-expaned? false}}
+                                bottom-safe-area-spacing? true
+                                is-initially-expanded? false}}
         props
         content-height (reagent/atom nil)
         show-bottom-sheet? (reagent/atom nil)
         keyboard-was-shown? (reagent/atom false)
-        expanded? (reagent/atom is-initially-expaned?)
+        expanded? (reagent/atom is-initially-expanded?)
         gesture-running? (reagent/atom false)
         reset-atoms (fn []
                       (reset! show-bottom-sheet? nil)
@@ -226,7 +228,7 @@
                           {:behaviour (if platform/ios? :padding :height)
                            :style     {:flex 1}}
                           [rn/view
-                           {:style     (styles/content-style insets)
+                           {:style     (styles/content-style insets bottom-safe-area-spacing?)
                             :on-layout (when-not (and
                                                   (some? @content-height)
                                                   (> @content-height 0))
