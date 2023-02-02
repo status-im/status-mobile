@@ -276,12 +276,11 @@
                                                 (common/vector->string (get-in db
                                                                                [:keycard :pin
                                                                                 :current])))]
-    (rf/merge cofx
-              {:keycard/generate-and-load-key
-               {:mnemonic             mnemonic
-                :pin                  pin'
-                :key-uid              (:key-uid multiaccount)
-                :delete-multiaccount? (get-in db [:keycard :delete-account?])}})))
+    {:keycard/generate-and-load-key
+     {:mnemonic             mnemonic
+      :pin                  pin'
+      :key-uid              (:key-uid multiaccount)
+      :delete-multiaccount? (get-in db [:keycard :delete-account?])}}))
 
 (rf/defn factory-reset-card-toggle
   {:events [:keycard.onboarding.intro.ui/factory-reset-card-toggle]}

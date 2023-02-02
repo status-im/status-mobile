@@ -26,7 +26,7 @@
 
 (rf/defn dispatch-event
   [_ event]
-  {:dispatch [event]})
+  {:dispatch-n [[event]]})
 
 (defn vector->string
   "Converts numbers stored in vector into string,
