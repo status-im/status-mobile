@@ -103,6 +103,8 @@
        (if (fn? ret) ret js/undefined))
     (bean/->js deps))))
 
+(def use-callback react/useCallback)
+
 (defn use-effect-once
   [effect-fn]
   (use-effect effect-fn))

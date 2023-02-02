@@ -29,8 +29,7 @@
    :position           :absolute
    :right              20})
 
-(defn camera-button-container
-  []
+(def camera-button-container
   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :width            32
    :height           32
@@ -82,4 +81,3 @@
    :border-radius 8
    :top           8
    :right         8})
-

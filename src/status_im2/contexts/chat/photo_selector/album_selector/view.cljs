@@ -21,7 +21,12 @@
       {:source {:uri uri}
        :style  style/cover}]
      [rn/view {:style {:margin-left 12}}
-      [quo/text {:weight :medium} title]
+      [quo/text
+       {:weight          :medium
+        :ellipsize-mode  :tail
+        :number-of-lines 1
+        :style           {:margin-right 50}}
+       title]
       [quo/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
@@ -39,6 +44,10 @@
     [quo/divider-label
      {:label           title
       :container-style style/divider}]))
+
+(defn key-fn
+  [item index]
+  (str (:title item) index))
 
 (defn album-selector
   []
@@ -61,4 +70,4 @@
           :render-section-header-fn       section-header
           :style                          {:margin-top 12}
           :content-container-style        {:padding-bottom 40}
-          :key-fn                         :title}]]))])
+          :key-fn                         key-fn}]]))])

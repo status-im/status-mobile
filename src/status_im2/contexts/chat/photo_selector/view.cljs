@@ -80,15 +80,23 @@
       (inc (utils/first-index #(= (:uri item) (:uri %)) @selected))])])
 
 (defn album-title
-  [photos? selected-album]
+  [photos? selected-album selected temporary-selected]
   [rn/touchable-opacity
    {:style               (style/title-container)
     :active-opacity      1
     :accessibility-label :album-title
-    :on-press            #(rf/dispatch (if photos?
-                                         [:open-modal :album-selector]
-                                         [:navigate-back]))}
-   [quo/text {:weight :medium} selected-album]
+    :on-press            (fn []
+                           (if photos?
+                             (do
+                               (reset! temporary-selected @selected)
+                               (rf/dispatch [:open-modal :album-selector]))
+                             (rf/dispatch [:navigate-back])))}
+   [quo/text
+    {:weight          :medium
+     :ellipsize-mode  :tail
+     :number-of-lines 1
+     :style           {:max-width 150}}
+    selected-album]
    [rn/view {:style (style/chevron-container)}
     [quo/icon (if photos? :i/chevron-down :i/chevron-up)
      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])
@@ -96,41 +104,47 @@
 (defn photo-selector
   []
   [:f>
-   (fn []
-     (let [selected-images (rf/sub [:chats/sending-image])
-           selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
-           selected        (reagent/atom [])]
-       (rn/use-effect
-        (fn []
-          (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-          (if selected-images
-            (reset! selected (vec (vals selected-images)))
-            (reset! selected [])))
-        [selected-album])
-       [safe-area/consumer
-        (fn [insets]
-          (let [window-width       (:width (rn/get-window))
-                camera-roll-photos (rf/sub [:camera-roll/photos])
-                end-cursor         (rf/sub [:camera-roll/end-cursor])
-                loading?           (rf/sub [:camera-roll/loading-more])
-                has-next-page?     (rf/sub [:camera-roll/has-next-page])]
-            [rn/view {:style {:flex 1}}
-             [rn/view
-              {:style style/buttons-container}
-              [album-title true selected-album]
-              [clear-button selected]]
-             [rn/flat-list
-              {:key-fn                  identity
-               :render-fn               image
-               :render-data             {:window-width window-width :selected selected}
-               :data                    camera-roll-photos
-               :num-columns             3
-               :content-container-style {:width          "100%"
-                                         :padding-bottom (+ (:bottom insets) 100)
-                                         :padding-top    80}
-               :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
-                                                       selected-album loading?
-                                                       has-next-page?])}]
-             [bottom-gradient selected-images insets selected]]))]))])
-
-
+   (let [temporary-selected (reagent/atom [])] ; used when switching albums
+     (fn []
+       (let [selected        (reagent/atom []) ; currently selected
+             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
+             selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+         (rn/use-effect
+          (fn []
+            (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+            (if (seq selected-images)
+              (reset! selected (vec (vals selected-images)))
+              (reset! selected @temporary-selected)))
+          [selected-album])
+         [safe-area/consumer
+          (fn [insets]
+            (let [window-width       (:width (rn/get-window))
+                  camera-roll-photos (rf/sub [:camera-roll/photos])
+                  end-cursor         (rf/sub [:camera-roll/end-cursor])
+                  loading?           (rf/sub [:camera-roll/loading-more])
+                  has-next-page?     (rf/sub [:camera-roll/has-next-page])]
+              [rn/view {:style {:flex 1}}
+               [rn/view
+                {:style style/buttons-container}
+                (when platform/android?
+                  [rn/touchable-opacity
+                   {:active-opacity 1
+                    :on-press       #(rf/dispatch [:navigate-back])
+                    :style          style/camera-button-container}
+                   [quo/icon :i/close
+                    {:size 20 :color (colors/theme-colors colors/black colors/white)}]])
+                [album-title true selected-album selected temporary-selected]
+                [clear-button selected]]
+               [rn/flat-list
+                {:key-fn                  identity
+                 :render-fn               image
+                 :render-data             {:window-width window-width :selected selected}
+                 :data                    camera-roll-photos
+                 :num-columns             3
+                 :content-container-style {:width          "100%"
+                                           :padding-bottom (+ (:bottom insets) 100)
+                                           :padding-top    80}
+                 :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
+                                                         selected-album loading?
+                                                         has-next-page?])}]
+               [bottom-gradient selected-images insets selected]]))])))])
