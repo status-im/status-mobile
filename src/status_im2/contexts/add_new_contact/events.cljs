@@ -37,7 +37,7 @@
 
 (defn identify-type
   [input]
-  (let [regex           #"https?://join.status.im/u/(.+)"
+  (let [regex           #"^https?://join.status.im/u/(.+)"
         id              (as-> (utils/safe-trim input) $
                           (if-some [[_ match] (re-matches regex $)]
                             match
