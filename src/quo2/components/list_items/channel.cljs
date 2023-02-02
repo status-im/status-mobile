@@ -6,7 +6,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
-            [quo2.components.style :as components-style]))
+            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]))
 
 (defn list-item
   [{:keys [name locked? mentions-count unread-messages?
@@ -62,5 +62,4 @@
                 (not muted?)
                 (not (pos? (int mentions-count)))
                 unread-messages?)
-       [rn/view
-        {:style components-style/unread-grey-dot}])]]])
+       [unread-grey-dot])]]])
