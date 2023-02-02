@@ -720,11 +720,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Check enabling and sending first gif")
         self.channel_2.send_message(giphy_url)
-        # workaround to get chat view focused
-        self.channel_2.send_message(giphy_url)
         self.channel_2.element_by_translation_id("dont-ask").click()
-        # workaround to get chat view focused
-        self.channel_1.send_message(giphy_url)
         self.channel_1.element_by_text("Enable").wait_and_click()
 
         self.channel_1.element_by_translation_id("enable-all").wait_and_click()
@@ -798,12 +794,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.home_1.communities_tab.is_element_displayed():
             self.channel_1.click_system_back_button_until_element_is_shown()
         comm_to_leave_element = self.home_1.get_chat(self.community_leave, community=True)
-        comm_to_leave_element.click()
+        comm_to_leave_element.long_press_element()
         community_to_leave = CommunityView(self.drivers[0])
-        community_to_leave.community_options_button.click()
-        community_to_leave.community_info_button.click()
         community_to_leave.leave_community_button.click()
-        community_to_leave.click_system_back_button_until_element_is_shown()
+        community_to_leave.leave_community_button.click()
         if comm_to_leave_element.is_element_displayed():
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()

@@ -320,6 +320,11 @@ class HomeView(BaseView):
         self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
+        # New UI bottom sheet
+        self.start_a_new_chat_bottom_sheet_button = Button(self.driver, accessibility_id="start-a-new-chat")
+        self.add_a_contact_chat_bottom_sheet_button = Button(self.driver, accessibility_id="add-a-contact")
+
+
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
         while True:
@@ -387,26 +392,39 @@ class HomeView(BaseView):
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat', new_ui=False):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
+        self.new_chat_button.click()
+        chat_view = self.get_chat_view()
         if new_ui:
-            self.new_chat_button.click()
+            self.start_a_new_chat_bottom_sheet_button.click()
+            [chat_view.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
         else:
-            self.plus_button.click()
-        chat_view = self.new_group_chat_button.click()
-        if user_names_to_add:
-            for user_name in user_names_to_add:
-                if len(user_names_to_add) > 5:
-                    chat_view.search_by_keyword(user_name[:5])
-                    chat_view.get_username_checkbox(user_name).click()
-                    chat_view.search_input.clear()
-                else:
-                    chat_view.get_username_checkbox(user_name).click()
+            chat_view = self.new_group_chat_button.click()
+            if user_names_to_add:
+                for user_name in user_names_to_add:
+                    if len(user_names_to_add) > 5:
+                        chat_view.search_by_keyword(user_name[:5])
+                        chat_view.get_username_checkbox(user_name).click()
+                        chat_view.search_input.clear()
+                    else:
+                        chat_view.get_username_checkbox(user_name).click()
         chat_view.next_button.click()
         chat_view.chat_name_editbox.send_keys(group_chat_name)
         chat_view.create_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat_view
 
-    def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png', require_approval=True):
+    def send_contact_request_via_bottom_sheet(self, key:str):
+        chat = self.get_chat_view()
+        self.new_chat_button.click()
+        self.add_a_contact_chat_bottom_sheet_button.click()
+        chat.public_key_edit_box.click()
+        chat.public_key_edit_box.send_keys(key)
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts)
+        chat.profile_add_to_contacts.click()
+        self.click_system_back_button_until_element_is_shown()
+
+    def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
+                         require_approval=True):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_button.click()
         chat_view = self.communities_button.click()

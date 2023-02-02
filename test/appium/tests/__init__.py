@@ -11,10 +11,10 @@ import time
 
 async def start_threads(quantity: int, func: type, returns: dict, *args):
     loop = asyncio.get_event_loop()
-    from tests.cloudbase_test_api import sauce
-    for _ in range(60):
-        if 16 - len([job for job in sauce.jobs.get_jobs() if job['status'] == 'in progress']) < quantity:
-            time.sleep(10)
+#    from tests.conftest import sauce
+#     for _ in range(60):
+#         if 16 - len([job for job in sauce.jobs.get_user_jobs() if job['status'] == 'in progress']) < quantity:
+#             time.sleep(10)
     for i in range(quantity):
         returns[i] = loop.run_in_executor(None, func, *args)
     for k in returns:

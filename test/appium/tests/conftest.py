@@ -3,10 +3,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from http.client import RemoteDisconnected
 from os import environ
+from time import sleep
+from io import BytesIO
 
 import pytest
 from _pytest.runner import runtestprotocol
-from sauceclient import SauceClient, SauceException
+import requests
 
 import tests
 from support.device_stats_db import DeviceStatsDB
@@ -17,7 +19,6 @@ sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 github_token = environ.get('GIT_HUB_TOKEN')
 
-sauce = SauceClient(sauce_username, sauce_access_key)
 
 
 def pytest_addoption(parser):
@@ -143,6 +144,8 @@ class Option:
 option = Option()
 testrail_report = None
 github_report = None
+apibase = None
+sauce = None
 
 
 def is_master(config):
@@ -150,12 +153,10 @@ def is_master(config):
 
 
 def is_uploaded():
-    from tests.cloudbase_test_api import sauce
-    stored_files = sauce.storage.get_stored_files()
-    for i in range(len(stored_files['files'])):
-        if stored_files['files'][i]['name'] == test_suite_data.apk_name:
+    stored_files = sauce.storage.files()
+    for i in range(len(stored_files)):
+        if stored_files[i].name == test_suite_data.apk_name:
             return True
-
 
 def pytest_configure(config):
     global option
@@ -165,9 +166,19 @@ def pytest_configure(config):
     testrail_report = TestrailReport()
     from support.github_report import GithubHtmlReport
     global github_report
+    from saucelab_api_client.saucelab_api_client import SauceLab
     github_report = GithubHtmlReport()
     tests.pytest_config_global = vars(config.option)
     config.addinivalue_line("markers", "testrail_id(name): empty")
+    global apibase
+    if config.getoption('datacenter') == 'us-west-1':
+        apibase = 'saucelabs.com'
+    elif config.getoption('datacenter') == 'eu-central-1':
+        apibase = 'eu-central-1.saucelabs.com'
+    else:
+        raise NotImplementedError("Unknown SauceLabs datacenter")
+    global sauce
+    sauce = SauceLab('https://api.' + apibase +'/', sauce_username, sauce_access_key)
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -191,11 +202,24 @@ def pytest_configure(config):
                                                     description='e2e tests are running')
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
-                    from tests.cloudbase_test_api import sauce, upload_from_url
                     if 'http' in config.getoption('apk'):
-                        upload_from_url(config.getoption('apk'))
+                        response = requests.get(config.getoption('apk'), stream=True)
+                        response.raise_for_status()
+                        apk_name = config.getoption('apk').split("/")[-1]
+                        file = BytesIO(response.content)
+                        del response
+                        for _ in range(3):
+                            try:
+                                requests.post('https://' + apibase + '/rest/v1/storage/'
+                                              + sauce_username + '/' + apk_name + '?overwrite=true',
+                                              auth=(sauce_username, sauce_access_key),
+                                              data=file,
+                                              headers={'Content-Type': 'application/octet-stream'})
+                                break
+                            except ConnectionError:
+                                sleep(10)
                     else:
-                        sauce.storage.upload_file(config.getoption('apk'))
+                        sauce.storage.upload(config.getoption('apk'))
 
 
 def pytest_unconfigure(config):
@@ -305,10 +329,10 @@ def pytest_runtest_makereport(item, call):
 
 
 def update_sauce_jobs(test_name, job_ids, passed):
-    from tests.cloudbase_test_api import sauce
+    from sauceclient import SauceException
     for job_id in job_ids.keys():
         try:
-            sauce.jobs.update_job(job_id, name=test_name, passed=passed)
+            sauce.jobs.update_job(username=sauce_username, job_id=job_id, name=test_name, passed=passed)
         except (RemoteDisconnected, SauceException):
             pass
 

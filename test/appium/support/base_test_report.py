@@ -5,9 +5,8 @@ import os
 from hashlib import md5
 from sauceclient import SauceException
 import re
-
 from support.test_data import SingleTestData
-from tests.cloudbase_test_api import sauce, apibase
+
 
 class BaseTestReport:
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
@@ -102,6 +101,7 @@ class BaseTestReport:
 
     def get_sauce_job_url(self, job_id, first_command=0):
         token = self.get_sauce_token(job_id)
+        from tests.conftest import apibase
         url = 'https://%s/jobs/%s?auth=%s' % (apibase, job_id, token)
         if first_command > 0:
             url += "#%s" % first_command
@@ -113,13 +113,17 @@ class BaseTestReport:
                '?BRANCH_NAME=%s&APK_NAME=%s&PR_ID=%s&TR_CASE_IDS=%s' % (branch_name, apk_name, pr_id, tr_case_ids)
 
     def get_sauce_final_screenshot_url(self, job_id):
-        token = self.get_sauce_token(job_id)
-        for _ in range(10):
-            try:
-                scr_number = sauce.jobs.get_job_assets(job_id)['screenshots'][-1]
-                return 'https://assets.%s/jobs/%s/%s?auth=%s' % (apibase, job_id, scr_number, token)
-            except SauceException:
-                time.sleep(3)
+        return 'https://media.giphy.com/media/9M5jK4GXmD5o1irGrF/giphy.gif'
+        # temp blocked, no sense with groups
+        # from tests.conftest import sauce, apibase
+        # token = self.get_sauce_token(job_id)
+        # username = sauce.accounts.account_user.get_active_user().username
+        # for _ in range(10):
+        #     try:
+        #         scr_number = sauce.jobs.get_job_assets(username=username, job_id=job_id)['screenshots'][-1]
+        #         return 'https://assets.%s/jobs/%s/%s?auth=%s' % (apibase, job_id, scr_number, token)
+        #     except SauceException:
+        #         time.sleep(3)
 
     @staticmethod
     def is_test_successful(test):

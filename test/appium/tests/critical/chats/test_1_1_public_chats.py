@@ -982,15 +982,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_2.switch_push_notifications()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
-        self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.contacts_button)
-        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
+        self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.chats_tab)
+        self.home_1.chats_tab.click()
+        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
-        self.home_1.chats_tab.click()
         self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
         self.chat_1.send_message('hey')
         self.home_2.click_system_back_button_until_element_is_shown()
@@ -1103,10 +1103,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                     self.errors.append(
                         "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
                     )
-            # workaround for 14672
-            chat.tap_by_coordinates(500, 100)
-        # Part of the test is blocked by #14637
-            #chat.click_system_back_button()
+            chat.click_system_back_button()
 
         self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
         for message in (self.message_3, self.message_4):
@@ -1162,7 +1159,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.chat_1.click_system_back_button_until_element_is_shown()
             self.home_1.get_chat(self.default_username_2).click()
-        self.chat_1.send_message("workaround for 14637")
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
@@ -1324,6 +1320,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
         [home.toggle_airplane_mode() for home in (self.home_1, self.home_2)]
+
         # Not implemented yet
         # self.home_1.connection_offline_icon.wait_and_click(20)
         # for element in self.home_1.not_connected_to_node_text, self.home_1.not_connected_to_peers_text:
