@@ -48,7 +48,8 @@
     :keyboard-should-persist-taps      :always
     :shows-horizontal-scroll-indicator false
     :data                              community-ids
-    :render-fn                         render-fn}])
+    :render-fn                         render-fn
+    :content-container-style           {:padding-bottom 30}}])
 
 (defn segments-community-lists
   [selected-tab]

@@ -40,7 +40,8 @@
         :on-end-reached               #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps :always
         :data                         items
-        :render-fn                    chat-list-item/chat-list-item}])))
+        :render-fn                    chat-list-item/chat-list-item
+        :content-container-style      {:padding-bottom 30}}])))
 
 (defn welcome-blank-contacts
   []
@@ -93,7 +94,7 @@
 (defn home
   []
   [:<>
-   [common.home/top-nav {:type :default}]
+   [common.home/top-nav {:type :default :hide-search true}]
    [common.home/title-column
     {:label               (i18n/label :t/messages)
      :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet {}])
