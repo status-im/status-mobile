@@ -1,4 +1,4 @@
-(ns quo2.components.list-items.style
+(ns quo2.components.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def unread-grey-dot
