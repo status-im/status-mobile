@@ -219,18 +219,23 @@
 (re-frame/reg-sub
  :communities/categorized-channels
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [joined categories chats]}] [_ _]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:chats/chats])])
+ (fn [[{:keys [joined categories chats]} full-chats-data] [_ community-id]]
    (reduce
     (fn [acc [_ {:keys [name categoryID id emoji can-post?]}]]
-      (let [category (keyword (get-in categories [categoryID :name] (i18n/label :t/none)))]
+      (let [category                          (keyword (get-in categories
+                                                               [categoryID :name]
+                                                               (i18n/label :t/none)))
+            {:keys [unviewed-messages-count]} (get full-chats-data (str community-id id))]
         (update acc
                 category
                 #(vec (conj %1 %2))
-                {:name    name
-                 :emoji   emoji
-                 :locked? (or (not joined) (not can-post?))
-                 :id      id})))
+                {:name             name
+                 :emoji            emoji
+                 :unread-messages? (pos? unviewed-messages-count)
+                 :locked?          (or (not joined) (not can-post?))
+                 :id               id})))
     {}
     chats)))
 

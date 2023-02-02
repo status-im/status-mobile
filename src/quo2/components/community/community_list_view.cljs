@@ -6,6 +6,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.icon :as community-icon]
+            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]
             [react-native.core :as rn]))
 
 (defn notification-view
@@ -26,13 +27,7 @@
     [counter/counter {:type :default} unread-mentions-count]
 
     unread-messages?
-    [rn/view
-     {:style {:width            8
-              :height           8
-              :border-radius    4
-              :background-color (colors/theme-colors
-                                 colors/neutral-40
-                                 colors/neutral-60)}}]))
+    [unread-grey-dot]))
 
 (defn communities-list-view-item
   [props
