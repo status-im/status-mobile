@@ -5,7 +5,8 @@
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]))
 
 (defn list-item
   [{:keys [name locked? mentions-count unread-messages?
@@ -42,7 +43,9 @@
                         {:color (if (theme/dark?) colors/neutral-60 colors/neutral-40)}))
        :weight :medium
        :size   :paragraph-1} (str "# " name)]]
-    [rn/view {:style {:height 20}}
+    [rn/view
+     {:style {:height          20
+              :justify-content :center}}
      (when (and (not locked?)
                 muted?)
        [quo2.icons/icon :i/muted
@@ -59,6 +62,4 @@
                 (not muted?)
                 (not (pos? (int mentions-count)))
                 unread-messages?)
-       [quo2.icons/icon :i/channel-notification
-        {:size     20
-         :no-color true}])]]])
+       [unread-grey-dot])]]])
