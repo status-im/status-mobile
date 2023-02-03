@@ -50,25 +50,6 @@ def retry_curl_upload(url, file, auth, conn_timeout = 5, timeout = 60, retries =
   end
 end
 
-# uploads `file` to sauce labs (overwrites if there is anoter file from the
-# same commit)
-def upload_to_saucelabs(file)
-  key = ENV['SAUCE_ACCESS_KEY']
-  username = ENV['SAUCE_USERNAME']
-  unique_name = ENV['SAUCE_LABS_NAME']
-
-  url = "https://eu-central-1.saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
-
-  upload_result = retry_curl_upload(url, file, "#{username}:#{key}")
-
-  # fail the lane if upload fails
-  unless upload_result.include? 'filename'
-    UI.user_error!(
-      "failed to upload file to saucelabs despite retries: #{upload_result}"
-    )
-  end
-end
-
 # Creates and unlocks a keychain into which Fastlane match imports signing keys and certs.
 class Keychain
   attr_accessor :name, :pass
@@ -364,16 +345,5 @@ platform :android do
   lane :upload_diawi do
     uniApk = APK_PATHS.detect { |a| a.include? 'universal' }
     upload_to_diawi(uniApk)
-  end
-
-  desc '`fastlane android saucelabs` - upload .apk to sauce labs'
-  desc 'expects to have an .apk prepared: `result/app.apk`'
-  desc 'expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable'
-  desc 'expects to have a saucelabs username token as SAUCE_USERNAME env variable'
-  desc 'expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable'
-  desc "will fails if file isn't there"
-  lane :saucelabs do
-    e2eApk = APK_PATHS.detect { |a| a.include? 'x86' }
-    upload_to_saucelabs(e2eApk)
   end
 end

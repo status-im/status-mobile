@@ -4,11 +4,11 @@ from datetime import datetime
 from http.client import RemoteDisconnected
 from os import environ
 from time import sleep
-from io import BytesIO
+import os
+import urllib.request
 
 import pytest
 from _pytest.runner import runtestprotocol
-import requests
 
 import tests
 from support.device_stats_db import DeviceStatsDB
@@ -203,18 +203,14 @@ def pytest_configure(config):
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
                     if 'http' in config.getoption('apk'):
-                        response = requests.get(config.getoption('apk'), stream=True)
-                        response.raise_for_status()
                         apk_name = config.getoption('apk').split("/")[-1]
-                        file = BytesIO(response.content)
-                        del response
+                        # it works with just a file_name, but I've added full path because not sure how it'll behave on the remote run (Jenkins)
+                        file_path = os.path.join(os.path.dirname(__file__), apk_name)
                         for _ in range(3):
                             try:
-                                requests.post('https://' + apibase + '/rest/v1/storage/'
-                                              + sauce_username + '/' + apk_name + '?overwrite=true',
-                                              auth=(sauce_username, sauce_access_key),
-                                              data=file,
-                                              headers={'Content-Type': 'application/octet-stream'})
+                                urllib.request.urlretrieve(config.getoption('apk'), filename=file_path)  # if url is not valid it raises an error
+                                sauce.storage.upload(file_path)
+                                os.remove(file_path)
                                 break
                             except ConnectionError:
                                 sleep(10)
