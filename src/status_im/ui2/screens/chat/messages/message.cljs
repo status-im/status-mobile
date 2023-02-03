@@ -230,58 +230,6 @@
         (re-frame/dispatch [:pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
-(defn on-long-press-fn
-  [on-long-press
-   {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community?
-           can-delete-message-for-everyone?]
-    :as   message} content]
-  (on-long-press
-   (concat
-    (when (and outgoing edit-enabled)
-      [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
-        :label    (i18n/label :t/edit-message)
-        :icon     :i/edit
-        :id       :edit}])
-    (when show-input?
-      [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-        :label    (i18n/label :t/message-reply)
-        :icon     :i/reply
-        :id       :reply}])
-    [{:type     :main
-      :on-press #(react/copy-to-clipboard
-                  (components.reply/get-quoted-text-with-mentions
-                   (get content :parsed-text)))
-      :label    (i18n/label :t/copy-text)
-      :icon     :i/copy
-      :id       :copy}]
-    (when message-pin-enabled
-      [{:type     :main
-        :on-press #(pin-message message)
-        :label    (i18n/label (if pinned
-                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
-                                (if community? :t/pin-to-channel :t/pin-to-chat)))
-        :icon     :i/pin
-        :id       (if pinned :unpin :pin)}])
-    (when-not pinned
-      [{:type     :danger
-        :on-press (fn []
-                    (re-frame/dispatch
-                     [:chat.ui/delete-message-for-me message
-                      config/delete-message-for-me-undo-time-limit-ms]))
-        :label    (i18n/label :t/delete-for-me)
-        :icon     :i/delete
-        :id       :delete-for-me}])
-    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
-      [{:type     :danger
-        :on-press #(re-frame/dispatch [:chat.ui/delete-message
-                                       message
-                                       config/delete-message-undo-time-limit-ms])
-        :label    (i18n/label :t/delete-for-everyone)
-        :icon     :i/delete
-        :id       :delete-for-all}]))))
-
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
   [{:keys [content content-type]}]
