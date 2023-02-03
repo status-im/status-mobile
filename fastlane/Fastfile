@@ -334,16 +334,4 @@ platform :android do
       version_code: '2020042307'
     )
   end
-
-  desc '`fastlane android upload_diawi` - upload .apk to diawi'
-  desc 'expects to have an .apk prepared: `result/app.apk`'
-  desc 'expects to have a diawi token as DIAWI_TOKEN env variable'
-  desc 'expects to have a github token as GITHUB_TOKEN env variable'
-  desc "will fails if file isn't there"
-  desc '---'
-  desc 'Output: writes `fastlane/diawi.out` file url of the uploded file'
-  lane :upload_diawi do
-    uniApk = APK_PATHS.detect { |a| a.include? 'universal' }
-    upload_to_diawi(uniApk)
-  end
 end
