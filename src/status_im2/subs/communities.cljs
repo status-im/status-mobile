@@ -224,16 +224,19 @@
  (fn [[{:keys [joined categories chats]} full-chats-data] [_ community-id]]
    (reduce
     (fn [acc [_ {:keys [name categoryID id emoji can-post?]}]]
-      (let [category                          (keyword (get-in categories
-                                                               [categoryID :name]
-                                                               (i18n/label :t/none)))
-            {:keys [unviewed-messages-count]} (get full-chats-data (str community-id id))]
+      (let [category                                                  (keyword
+                                                                       (get-in categories
+                                                                               [categoryID :name]
+                                                                               (i18n/label :t/none)))
+            {:keys [unviewed-messages-count unviewed-mentions-count]} (get full-chats-data
+                                                                           (str community-id id))]
         (update acc
                 category
                 #(vec (conj %1 %2))
                 {:name             name
                  :emoji            emoji
                  :unread-messages? (pos? unviewed-messages-count)
+                 :mentions-count   (or unviewed-mentions-count 0)
                  :locked?          (or (not joined) (not can-post?))
                  :id               id})))
     {}
