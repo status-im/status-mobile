@@ -68,7 +68,7 @@
   (-> c
       (set/rename-keys {:canRequestAccess            :can-request-access?
                         :canManageUsers              :can-manage-users?
-                        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
+                        :canDeleteMessageForEveryone :can-delete-message-for-everyone-in-community?
                         :canJoin                     :can-join?
                         :requestedToJoinAt           :requested-to-join-at
                         :isMember                    :is-member?})
