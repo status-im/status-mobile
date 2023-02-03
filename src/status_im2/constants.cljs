@@ -273,3 +273,9 @@
 (def ^:const theme-type-light 1)
 (def ^:const theme-type-dark 2)
 (def ^:const bottom-sheet-animation-delay 450)
+
+(def ^:const local-pair-event-process-success "process-success")
+(def ^:const local-pair-event-process-error "process-error")
+(def ^:const local-pair-action-connect 1)
+(def ^:const local-pair-action-pairing-account 2)
+(def ^:const local-pair-action-sync-device 3)

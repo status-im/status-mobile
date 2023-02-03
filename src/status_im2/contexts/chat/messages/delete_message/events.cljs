@@ -90,9 +90,11 @@
           :undo-on-press                      #(do (rf/dispatch [:chat.ui/undo-all-delete-message])
                                                    (rf/dispatch [:toasts/close
                                                                  :delete-message-for-everyone]))}]]
-       :utils/dispatch-later [{:dispatch [:chat.ui/delete-message-and-send
-                                          {:chat-id chat-id :message-id message-id}]
-                               :ms       undo-time-limit-ms}]))))
+       :utils/dispatch-later (mapv (fn [{:keys [chat-id message-id]}]
+                                     {:dispatch [:chat.ui/delete-message-and-send
+                                                 {:chat-id chat-id :message-id message-id}]
+                                      :ms       undo-time-limit-ms})
+                                   existing-undos)))))
 
 (rf/defn undo
   {:events [:chat.ui/undo-delete-message]}

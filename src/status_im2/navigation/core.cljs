@@ -25,7 +25,10 @@
 
 (defn dismiss-all-modals
   []
-  (log/debug "dissmiss-all-modals")
+  (log/debug "dissmiss-all-modals"
+             {:curr-modal  @state/curr-modal
+              :modals      @state/modals
+              :dissmissing @state/dissmissing})
   (when @state/curr-modal
     (reset! state/curr-modal false)
     (reset! state/dissmissing true)
@@ -75,7 +78,11 @@
 
 (defn open-modal
   [comp]
-  (log/debug "open-modal" comp)
+  (log/debug "open-modal"
+             {:comp        comp
+              :dissmissing @state/dissmissing
+              :curr-modal  @state/curr-modal
+              :modals      @state/modals})
   (let [{:keys [options]} (get views/screens comp)]
     (if @state/dissmissing
       (reset! state/dissmissing comp)
@@ -122,6 +129,10 @@
 
 (defn modal-dismissed-listener
   []
+  (log/debug "modal-dismissed"
+             {:modals      @state/modals
+              :curr-modal  @state/curr-modal
+              :dissmissing @state/dissmissing})
   (if (> (count @state/modals) 1)
     (let [new-modals (butlast @state/modals)]
       (reset! state/modals (vec new-modals))
@@ -180,6 +191,7 @@
  :init-root-fx
  (fn [new-root-id]
    (log/debug :init-root-fx new-root-id)
+   (dismiss-all-modals)
    (reset! state/root-comp-id new-root-id)
    (reset! state/root-id @state/root-comp-id)
    (navigation/set-root (get (roots/roots) new-root-id))))
@@ -188,6 +200,7 @@
  :init-root-with-component-fx
  (fn [[new-root-id new-root-comp-id]]
    (log/debug :init-root-with-component-fx new-root-id new-root-comp-id)
+   (dismiss-all-modals)
    (reset! state/root-comp-id new-root-comp-id)
    (reset! state/root-id @state/root-comp-id)
    (navigation/set-root (get (roots/roots) new-root-id))))
