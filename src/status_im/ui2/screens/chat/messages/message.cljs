@@ -4,12 +4,11 @@
    [quo.react-native :as rn]
    [quo2.components.icon :as icons]
    [quo2.components.markdown.text :as text]
+   [quo2.core :as quo]
    [quo2.foundations.colors :as colors]
    [quo2.foundations.typography :as typography]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [status-im2.constants :as constants]
-   [utils.i18n :as i18n]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.fast-image :as fast-image]
    [status-im.ui.components.react :as react]
@@ -21,14 +20,15 @@
    [status-im.ui.screens.chat.utils :as chat.utils]
    [status-im.ui.screens.communities.icon :as communities.icon]
    [status-im.ui2.screens.chat.components.reply.view :as components.reply]
-   [status-im2.config :as config]
-   [utils.datetime :as datetime]
    [status-im.utils.utils :as utils]
+   [status-im2.config :as config]
+   [status-im2.constants :as constants]
    [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
    [status-im2.contexts.chat.messages.delete-message-for-me.events]
    [status-im2.contexts.chat.messages.delete-message.events]
-   [utils.re-frame :as rf]
-   [quo2.core :as quo])
+   [utils.datetime :as datetime]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn system-text?

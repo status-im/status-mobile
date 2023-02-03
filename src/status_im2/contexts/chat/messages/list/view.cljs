@@ -1,19 +1,19 @@
 (ns status-im2.contexts.chat.messages.list.view
-  (:require [utils.i18n :as i18n]
-            [oops.core :as oops]
+  (:require [oops.core :as oops]
             [quo2.core :as quo]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.content.view :as message]
+            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-            [status-im2.common.not-implemented :as not-implemented]
-            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
-            [status-im.ui.screens.chat.message.gap :as message.gap]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defonce messages-list-ref (atom nil))
 
