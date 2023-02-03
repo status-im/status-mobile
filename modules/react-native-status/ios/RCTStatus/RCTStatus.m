@@ -865,6 +865,12 @@ RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(emojiHash:(NSString *)publicKey
+                  callback:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoEmojiHash(publicKey);
+    callback(@[result]);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
   return StatusgoIdenticon(publicKey);
 }
