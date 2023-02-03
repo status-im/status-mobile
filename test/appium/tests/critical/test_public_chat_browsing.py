@@ -704,12 +704,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         'yotube_short': {
                             'url': 'https://youtu.be/Je7yErjEVt4',
                             'txt': 'Status, your gateway to Ethereum',
+                            'subtitle': 'YouTube'},
+                        'yotube_full': {
+                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                            'txt': 'Status & Keycard – Hardware-Enforced Security',
                             'subtitle': 'YouTube'}
-                        # blocked by 14865
-                        # 'yotube_full': {
-                        #     'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                        #     'txt': 'Status & Keycard – Hardware-Enforced Security',
-                        #     'subtitle': 'YouTube'}
                         # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
                         # 'twitter': {
                         #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
