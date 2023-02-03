@@ -109,8 +109,7 @@
   (case type
     shell.constants/one-to-one-chat-card
     [quo/user-avatar
-     (merge {:ring?             false
-             :size              :medium
+     (merge {:size              :medium
              :status-indicator? false}
             avatar-params)]
 

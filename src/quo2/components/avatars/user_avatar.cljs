@@ -1,6 +1,5 @@
 (ns quo2.components.avatars.user-avatar
-  (:require [clojure.string :refer [blank? split upper-case]]
-            [quo2.components.icon :as icons]
+  (:require [clojure.string :as string]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :refer [dark?]]
@@ -40,115 +39,100 @@
             :font-size               :label}})
 
 (defn dot-indicator
-  [size status-indicator? online? ring? dark?]
-  (when status-indicator?
-    (let [dimensions   (get-in sizes [size :status-indicator])
-          border-width (get-in sizes [size :status-indicator-border])
-          right        (case size
-                         :big    2
-                         :medium 0
-                         :small  -2
-                         0)
-          bottom       (case size
-                         :big    (if ring?
-                                   -1
-                                   2)
-                         :medium (if ring?
-                                   0
-                                   -2)
-                         :small  (if ring?
-                                   -2
-                                   -2)
-                         0)]
-      [rn/view
-       {:style {:background-color (if online?
-                                    colors/success-50
-                                    colors/neutral-40)
-                :width            dimensions
-                :height           dimensions
-                :border-width     border-width
-                :border-radius    dimensions
-                :border-color     (if dark?
-                                    colors/neutral-100
-                                    colors/white)
-                :position         :absolute
-                :bottom           bottom
-                :right            right}}])))
+  [{:keys [size online? ring? dark?]}]
+  (let [dimensions   (get-in sizes [size :status-indicator])
+        border-width (get-in sizes [size :status-indicator-border])
+        right        (case size
+                       :big    2
+                       :medium 0
+                       :small  -2
+                       0)
+        bottom       (case size
+                       :big    (if ring? -1 2)
+                       :medium (if ring? 0 -2)
+                       :small  -2
+                       0)]
+    [rn/view
+     {:style {:background-color (if online?
+                                  colors/success-50
+                                  colors/neutral-40)
+              :width            dimensions
+              :height           dimensions
+              :border-width     border-width
+              :border-radius    dimensions
+              :border-color     (if dark?
+                                  colors/neutral-100
+                                  colors/white)
+              :position         :absolute
+              :bottom           bottom
+              :right            right}}]))
 
-(defn container-styling
+(defn initials-style
   [inner-dimensions outer-dimensions]
-  {:width         inner-dimensions
-   :position      :absolute
-   :top           (/ (- outer-dimensions inner-dimensions) 2)
-   :left          (/ (- outer-dimensions inner-dimensions) 2)
-   :height        inner-dimensions
-   :border-radius inner-dimensions})
+  {:position         :absolute
+   :top              (/ (- outer-dimensions inner-dimensions) 2)
+   :left             (/ (- outer-dimensions inner-dimensions) 2)
+   :width            inner-dimensions
+   :height           inner-dimensions
+   :border-radius    inner-dimensions
+   :justify-content  :center
+   :align-items      :center
+   :background-color (colors/custom-color-by-theme :turquoise 50 60)})
 
-(defn container
-  [inner-dimensions outer-dimensions & children]
-  [rn/view
-   {:style (merge {:background-color (colors/custom-color-by-theme :turquoise 50 60)
-                   :justify-content  :center
-                   :align-items      :center}
-                  (container-styling inner-dimensions outer-dimensions))}
-   children])
+(defn outer-styles
+  [outer-dimensions]
+  {:width         outer-dimensions
+   :height        outer-dimensions
+   :border-radius outer-dimensions})
 
-(def small-sizes #{:xs :xxs :xxxs})
-(def identicon-sizes #{:big :medium :small})
+(def one-initial-letter-sizes #{:xs :xxs :xxxs})
+(def valid-ring-sizes #{:big :medium :small})
+
+(defn initials-avatar
+  [{:keys [full-name size inner-dimensions outer-dimensions]}]
+  (let [amount-initials (if (one-initial-letter-sizes size) 1 2)
+        initials        (as-> full-name $
+                          (string/split $ " ")
+                          (map (comp string/upper-case first) $)
+                          (take amount-initials $)
+                          (string/join $))
+        font-size       (get-in sizes [size :font-size])]
+    [rn/view {:style (initials-style inner-dimensions outer-dimensions)}
+     [text/text
+      {:style  {:color colors/white-opa-70}
+       :weight :semi-bold
+       :size   font-size}
+      initials]]))
 
 (defn user-avatar
-  [{:keys [ring?
-           online?
-           size
-           status-indicator?
-           profile-picture
-           full-name]
-    :or   {full-name         "empty name"
-           status-indicator? true
+  "If no `profile-picture` is given, draws the initials based on the `full-name` and
+  uses `ring-background` to display the ring behind the initials when given. Otherwise,
+  shows the profile picture which already comes with the ring drawn over it."
+  [{:keys [full-name status-indicator? online? size profile-picture ring-background]
+    :or   {status-indicator? true
            online?           true
-           size              :big
-           ring?             true}}]
-  (let [initials             (if full-name
-                               (reduce str (map first (split full-name " ")))
-                               "")
-        first-initial-letter (if full-name
-                               (or (first full-name) "")
-                               "")
-        identicon?           (contains? identicon-sizes size)
-        small?               (contains? small-sizes size)
-        outer-dimensions     (get-in sizes [size :outer])
-        inner-dimensions     (get-in sizes
-                                     [size
-                                      (if ring?
-                                        :inner
-                                        :outer)])
-        font-size            (get-in sizes [size :font-size])
-        icon-text            (if-not (or (blank? first-initial-letter)
-                                         (blank? initials))
-                               (if small?
-                                 first-initial-letter
-                                 initials)
-                               "")]
+           size              :big}}]
+  (let [full-name        (or full-name "empty name")
+        draw-ring?       (and ring-background (valid-ring-sizes size))
+        outer-dimensions (get-in sizes [size :outer])
+        inner-dimensions (get-in sizes [size (if draw-ring? :inner :outer)])]
     [rn/view
-     {:accessibility-label :user-avatar
-      :style               {:width         outer-dimensions
-                            :height        outer-dimensions
-                            :border-radius outer-dimensions}}
-     (when (and false (and ring? identicon?)) ;;TODO not implemented yet
-       [icons/icon :i/identicon-ring
-        {:size     outer-dimensions
-         :no-color true}])
-     (if profile-picture
-       ;; display image
+     {:style               (outer-styles outer-dimensions)
+      :accessibility-label :user-avatar}
+     ;; The `profile-picture` already has the ring in it
+     (when-let [image (or profile-picture ring-background)]
        [fast-image/fast-image
-        {:source profile-picture
-         :style  (container-styling inner-dimensions outer-dimensions)}]
-       ;; else display initials
-       [container inner-dimensions outer-dimensions
-        ^{:key :icon-text}
-        [text/text
-         {:weight :semi-bold
-          :size   font-size
-          :style  {:color colors/white-opa-70}}
-         (upper-case icon-text)]])
-     [dot-indicator size status-indicator? online? ring? (dark?)]]))
+        {:style  (outer-styles outer-dimensions)
+         :source image}])
+     (when-not profile-picture
+       [initials-avatar
+        {:full-name        full-name
+         :size             size
+         :inner-dimensions inner-dimensions
+         :outer-dimensions outer-dimensions}])
+     (when status-indicator?
+       [dot-indicator
+        {:size    size
+         :online? online?
+         :ring?   draw-ring?
+         :dark?   (dark?)}])]))
