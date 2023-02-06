@@ -4,12 +4,12 @@ pipeline {
 
   parameters {
     string(
-      name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs (base for upgrade, usually release build)',
+      name: 'APK_URL',
+      description: 'URL of APK to be tested(base for upgrade, usually release build)',
     )
      string(
-      name: 'APK_NAME_UPGRADE',
-      description: 'Filename of APK of upgraded application (installed on top of base)',
+      name: 'APK_URL_UPGRADE',
+      description: 'URL of APK of upgraded application (installed on top of base)',
     )
      string(
       name: 'KEYWORD_EXPRESSION',
@@ -29,6 +29,17 @@ pipeline {
 
 
   stages {
+    stage('Prep') {
+      steps { script {
+        if (params.APK_URL == null) {
+          error("APK_URL parameter not set!")
+        }
+        if (params.APK_URL_UPGRADE == null) {
+          error("APK_URL_UPGRADE parameter not set!")
+        }
+      } }
+    }
+
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -36,6 +47,7 @@ pipeline {
         }
       } }
     }
+
     stage('Test') {
       steps { script {
        /* for managing optional arguments */
@@ -77,8 +89,8 @@ pipeline {
                 --numprocesses 4 \
                 --rerun_count=2 \
                 --testrail_report=True \
-                --apk=${params.APK_NAME} \
-                --apk_upgrade=${params.APK_NAME_UPGRADE} \
+                --apk=${params.APK_URL} \
+                --apk_upgrade=${params.APK_URL_UPGRADE} \
                  ${extraPytestOpts}
             """
           }

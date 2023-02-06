@@ -4,8 +4,8 @@ pipeline {
 
   parameters {
     string(
-      name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs.',
+      name: 'APK_URL',
+      description: 'URL of APK uploaded to SauceLabs.',
     )
     string(
       name: 'KEYWORD_EXPRESSION',
@@ -20,6 +20,14 @@ pipeline {
 
 
   stages {
+    stage('Prep') {
+      steps { script {
+        if (params.PR_ID == null) {
+          error("PR_ID parameter not set!")
+        }
+      } }
+    }
+
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -27,6 +35,7 @@ pipeline {
         }
       } }
     }
+
     stage('Test') {
       steps {
         withCredentials([

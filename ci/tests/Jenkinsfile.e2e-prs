@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.6.3'
+library 'status-jenkins-lib@v1.6.5'
 
 pipeline {
 
@@ -9,16 +9,6 @@ pipeline {
       name: 'BRANCH_NAME',
       description: 'Name of the branch to checkout and build.',
       defaultValue: 'develop',
-    )
-/* Commented to use TEST_MARKERS values from job params
-    string(
-      name: 'TEST_MARKERS',
-      description: 'Marker expression for matching tests to run.',
-      defaultValue: 'new_ui_critical',
-    ) */
-    string(
-      name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs, path, or URL.',
     )
     string(
       name: 'PR_ID',
@@ -34,6 +24,19 @@ pipeline {
       description: 'IDs of the TestRail case, separated by a comma (Optional)',
       defaultValue: '',
     )
+    /* FIXME: Remove this no longer relevant argument */
+    string(
+      name: 'APK_NAME',
+      description: 'OBSOLETE ARGUMENT TO BE REMOVED',
+      defaultValue: 'DUMMY',
+    )
+    /* Commented to use TEST_MARKERS values from job params
+    string(
+      name: 'TEST_MARKERS',
+      description: 'Marker expression for matching tests to run.',
+      defaultValue: 'new_ui_critical',
+    )
+    */
   }
 
   options {
@@ -41,12 +44,25 @@ pipeline {
   }
 
   stages {
-    stage('Checks') {
+    stage('Prep') {
       steps { script {
-        if (params.APK_NAME == null) { error("APK_NAME parameter not set!") }
-        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
+        currentBuild.displayName = "PR-${params.PR_ID}"
+        if (params.PR_ID == null) {
+          error("PR_ID parameter not set!")
+        }
       } }
     }
+
+    stage('Fetch') {
+      steps { script { /* WARNING: This copies the latest available artifact. */
+        copyArtifacts(
+          projectName: "status-mobile/prs/android-e2e/PR-${params.PR_ID}",
+          selector: lastWithArtifacts(),
+        )
+        apk_path = "${env.PWD}/${utils.findFile('result/*.apk')}"
+      } }
+    }
+
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -54,9 +70,9 @@ pipeline {
         }
       } }
     }
+
     stage('Test') {
       steps { script {
-        currentBuild.displayName = "PR-${params.PR_ID}"
         /* for managing optional arguments */
         def extraPytestOpts = ''
         if (params.TR_CASE_IDS != '') {
@@ -103,7 +119,7 @@ pipeline {
                 --rerun_count=2 \
                 --testrail_report=True \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --apk=${params.APK_NAME} \
+                --apk=${apk_path} \
                 --build=PR-${params.PR_ID}-${utils.timestamp()} \
                 --pr_number=${params.PR_ID} \
                 ${extraPytestOpts}
