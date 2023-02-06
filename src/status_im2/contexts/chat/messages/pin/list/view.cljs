@@ -2,6 +2,7 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -36,9 +37,11 @@
      :can-delete-message-for-everyone-in-community? can-delete-message-for-everyone-in-community?}))
 
 (defn message-render-fn
-  [message _ _ context]
+  [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
   ;; TODO (flexsurfer) probably we don't want reactions here
-  [message/message-with-reactions message context])
+  (if (or deleted? deleted-for-me?)
+    [content.deleted/deleted-message message]
+    [message/message-with-reactions message context]))
 
 (defn pinned-messages-list
   [chat-id]
