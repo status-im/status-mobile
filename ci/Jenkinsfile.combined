@@ -105,7 +105,7 @@ pipeline {
         e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
           job: 'status-mobile/e2e/status-app-nightly',
-          parameters: [string(name: 'APK_NAME', value: e2eApk)],
+          parameters: [string(name: 'APK_URL', value: e2eApk)],
           wait: false
         )
       } }

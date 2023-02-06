@@ -13,7 +13,6 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
-            [quo.react :as quo.react]
             [quo.components.safe-area :as safe-area]
             [status-im.react-native.resources :as resources]))
 
@@ -65,7 +64,6 @@
   []
   [:f>
    (fn []
-     (quo.react/effect! #(rf/dispatch [:group-chat/clear-contacts]) [])
      (let [contacts                                     (rf/sub
                                                          [:contacts/sorted-and-grouped-by-first-letter])
            selected-contacts-count                      (rf/sub [:selected-contacts-count])
