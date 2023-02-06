@@ -8159,9 +8159,9 @@ react-native-share@^7.0.1:
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.0.1.tgz#1deef27afcd8275222ba0efeac337e7cea99bc4b"
   integrity sha512-hq7nOirgih/zIF9UU9FuYKZ3NGvasu2c/eJesvyPKYiykTtgQZM+mvDwFk/ogEsGwRtTPJBtj8/6IyIFcGa7lw==
 
-"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.37":
-  version "2.5.37"
-  resolved "git+https://github.com/status-im/react-native-status-keycard.git#af61b0213adbf4b5a6bae97c85496d95007d5acb"
+"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39":
+  version "2.5.39"
+  resolved "git+https://github.com/status-im/react-native-status-keycard.git#93dd64754e676172310e6ea7187cc49f2dc013c6"
 
 react-native-svg@^9.8.4:
   version "9.13.6"

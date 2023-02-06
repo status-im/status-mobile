@@ -67,7 +67,7 @@
     "react-native-safe-area-context": "^2.0.0",
     "react-native-shake": "^3.3.1",
     "react-native-share": "^7.0.1",
-    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.37",
+    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
     "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status",
