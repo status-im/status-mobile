@@ -154,18 +154,9 @@
 
 (re-frame/reg-sub
  :chats/pinned
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:messages/pin-messages])
-    (re-frame/subscribe [:chats/chat-messages chat-id])])
- (fn [[pin-messages messages] [_ chat-id]]
-   (let [pin-messages (get pin-messages chat-id {})]
-     (reduce-kv (fn [acc message-id message]
-                  (let [{:keys [deleted? deleted-for-me?]} (get messages message-id)]
-                    (if (or deleted? deleted-for-me?)
-                      acc
-                      (assoc acc message-id message))))
-                {}
-                pin-messages))))
+ :<- [:messages/pin-messages]
+ (fn [pin-messages [_ chat-id]]
+   (get pin-messages chat-id {})))
 
 ;; local messages will not have a :pinned-at key until user navigates away and to
 ;; chat screen. For this reason we want to retain order of local messages with :pinned-at nil
