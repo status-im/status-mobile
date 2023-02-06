@@ -34,8 +34,7 @@
   [cofx]
   ;; we need to disable notifications before starting the logout process
   (rf/merge cofx
-            {:dispatch       [:wallet-connect-legacy/clean-up-sessions]
-             :dispatch-later [{:ms       100
+            {:dispatch-later [{:ms       100
                                :dispatch [::logout-method
                                           {:auth-method keychain/auth-method-none
                                            :logout?     true}]}]}

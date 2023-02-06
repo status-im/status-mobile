@@ -1,6 +1,5 @@
 (ns status-im.qr-scanner.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
             [status-im.chat.models :as chat]
             [status-im.ethereum.core :as ethereum]
@@ -88,10 +87,7 @@
 (rf/defn handle-wallet-connect
   {:events [::handle-wallet-connect-uri]}
   [cofx data]
-  (let [wc-version (last (string/split (first (string/split data "?")) "@"))]
-    (if (= wc-version "1")
-      {:dispatch [:wallet-connect-legacy/pair data]}
-      {:dispatch [:wallet-connect/pair data]})))
+  {:dispatch [:wallet-connect/pair data]})
 
 (rf/defn handle-local-pairing
   {:events [::handle-local-pairing-uri]}
@@ -102,14 +98,15 @@
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
   (case type
-    :public-chat    (handle-public-chat cofx data)
-    :group-chat     (handle-group-chat cofx data)
-    :private-chat   (handle-private-chat cofx data)
-    :contact        (handle-view-profile cofx data)
-    :browser        (handle-browse cofx data)
-    :eip681         (handle-eip681 cofx data)
-    :wallet-connect (handle-wallet-connect cofx data)
-    :localpairing   (handle-local-pairing cofx data)
+    :public-chat  (handle-public-chat cofx data)
+    :group-chat   (handle-group-chat cofx data)
+    :private-chat (handle-private-chat cofx data)
+    :contact      (handle-view-profile cofx data)
+    :browser      (handle-browse cofx data)
+    :eip681       (handle-eip681 cofx data)
+    ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
+    ;;:wallet-connect (handle-wallet-connect cofx data)
+    :localpairing (handle-local-pairing cofx data)
     (do
       (log/info "Unable to find matcher for scanned value"
                 {:type  type

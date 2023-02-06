@@ -34,7 +34,6 @@
     [status-im.utils.types :as types]
     [status-im.utils.utils :as utils]
     [status-im.utils.wallet-connect :as wallet-connect]
-    [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]
     [status-im2.common.json-rpc.events :as json-rpc]
@@ -173,8 +172,7 @@
      (transactions/get-fetched-transfers))
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
-   (prices/update-prices)
-   (wallet-connect-legacy/get-connector-session-from-db)))
+   (prices/update-prices)))
 
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}

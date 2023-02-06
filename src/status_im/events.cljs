@@ -49,7 +49,6 @@
     status-im.visibility-status-popover.core
     status-im.visibility-status-updates.core
     status-im.waku.core
-    status-im.wallet-connect-legacy.core
     status-im.wallet-connect.core
     status-im.wallet.accounts.core
     status-im.wallet.choose-recipient.core
