@@ -1,15 +1,15 @@
 (ns status-im2.contexts.add-new-contact.views
   (:require
-    [clojure.string :as str]
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.clipboard :as clipboard]
-    [status-im.react-native.resources :as resources]
-    [status-im.qr-scanner.core :as qr-scanner]
+   [clojure.string :as str]
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [react-native.clipboard :as clipboard]
+   [status-im.react-native.resources :as resources]
+   [status-im.qr-scanner.core :as qr-scanner]
     [status-im2.contexts.add-new-contact.style :as style]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn new-contact
   []
@@ -43,12 +43,12 @@
                  {:default-value  input
                   :placeholder    (i18n/label :t/type-some-chat-key)
                   :on-change-text #(debounce/debounce-and-dispatch
-                                     [:contacts/set-new-identity %]
-                                     600)})]
+                                    [:contacts/set-new-identity %]
+                                    600)})]
          (when (str/blank? input)
            [quo/button
-            {:type :outline
-             :size 24
+            {:type     :outline
+             :size     24
              :on-press (fn []
                          (clipboard/get-string #(rf/dispatch [:contacts/set-new-identity %])))}
             (i18n/label :t/paste)])]

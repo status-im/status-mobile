@@ -43,8 +43,8 @@
    :weight :semi-bold
    :style  {:margin-bottom 6
             :color         (colors/theme-colors
-                             colors/neutral-100
-                             colors/white)}})
+                            colors/neutral-100
+                            colors/white)}})
 
 (defn text-subtitle
   []
@@ -52,8 +52,8 @@
    :weight :regular
    :style  {:margin-bottom 20
             :color         (colors/theme-colors
-                             colors/neutral-100
-                             colors/white)}})
+                            colors/neutral-100
+                            colors/white)}})
 
 (defn text-description
   []
@@ -61,8 +61,8 @@
    :weight :medium
    :style  {:margin-bottom 6
             :color         (colors/theme-colors
-                             colors/neutral-50
-                             colors/neutral-40)}})
+                            colors/neutral-50
+                            colors/neutral-40)}})
 
 (def icon-error
   {:size  16
@@ -84,22 +84,22 @@
            :flex             1
            :flex-direction   :row
            :background-color (colors/theme-colors
-                               colors/white
-                               colors/neutral-95)
+                              colors/white
+                              colors/neutral-95)
            :border-width     1
            :border-radius    12
            :border-color     (if error?
                                colors/danger-50-opa-40
                                (colors/theme-colors
-                                 colors/neutral-20
-                                 colors/neutral-80))}})
+                                colors/neutral-20
+                                colors/neutral-80))}})
 
 (def text-input
   {:accessibility-label    :enter-contact-code-input
    :auto-capitalize        :none
    :placeholder-text-color (colors/theme-colors
-                             colors/neutral-40
-                             colors/neutral-50)
+                            colors/neutral-40
+                            colors/neutral-50)
    :multiline              true
    :style
    (merge typography/monospace
@@ -108,8 +108,8 @@
            :margin-top   -6
            :margin-right 5
            :color        (colors/theme-colors
-                           colors/black
-                           colors/white)})})
+                          colors/black
+                          colors/white)})})
 
 (def button-paste
   {:type :ghost
@@ -122,8 +122,8 @@
    :accessibility-label       :new-contact-close-button
    :size                      32
    :override-background-color (colors/theme-colors
-                                colors/white-opa-60
-                                colors/neutral-80-opa-60)
+                               colors/white-opa-60
+                               colors/neutral-80-opa-60)
    :style                     {:position :absolute
                                :left     20
                                :top      20}})
