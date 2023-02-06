@@ -87,7 +87,7 @@
        [:f>
         (fn []
           (let [{window-height :height} (rn/use-window-dimensions)
-                is-open? (not= 3 (:access permissions))]
+                is-open?                (not= 3 (:access permissions))]
             [rn/scroll-view {:style {:max-height (- window-height (:top insets))}}
              [rn/view style/page-container
               [rn/view
@@ -138,7 +138,7 @@
                                           (do (and can-request-access?
                                                    (not (pos? requested-to-join-at))
                                                    (requests/can-request-access-again?
-                                                     requested-to-join-at))
+                                                    requested-to-join-at))
                                               (rf/dispatch [:communities/request-to-join id])
                                               (rf/dispatch [:bottom-sheet/hide]))))
                  :disabled            (not @agreed-to-rules?)
