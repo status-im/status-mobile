@@ -56,9 +56,9 @@
    :margin-right 12})
 
 (defn bottom-container
-  [safe-area]
+  [safe-area-insets]
   {:padding-top     32
-   :padding-bottom  (:bottom safe-area)
+   :padding-bottom  (:bottom safe-area-insets)
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-evenly})
