@@ -88,11 +88,14 @@
            "#"
            literal])
 
+    "edited"
+    (conj acc [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
+
     (conj acc literal)))
 
 ;; TEXT
 (defn render-block
-  [{:keys [content content-type in-popover?]} acc
+  [{:keys [content content-type edited-at in-popover?]} acc
    {:keys [type ^js literal children]}]
   (case type
 
@@ -101,7 +104,10 @@
           (reduce
            (fn [acc e] (render-inline (:text content) content-type acc e))
            [rn/text (style/text-style content-type in-popover?)]
-           children))
+           (conj
+            children
+            (when edited-at
+              {:type "edited"}))))
 
     "blockquote"
     (conj acc
@@ -122,17 +128,6 @@
             (render-block message-data acc e))
           [:<>]
           (:parsed-text content)))
-
-(defn message-status
-  [{:keys [outgoing-status edited-at]}]
-  (when (or edited-at outgoing-status)
-    [rn/view {:flex-direction :row}
-     [rn/text {:style (style/message-status-text)}
-      (str "["
-           (if edited-at
-             "edited"
-             (or outgoing-status ""))
-           " DEBUG]")]]))
 
 (defn quoted-message
   [{:keys [message-id chat-id]} reply pin?]

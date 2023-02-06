@@ -3,7 +3,8 @@
             [quo2.foundations.colors :as quo2.colors]
             [status-im2.constants :as constants]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.photos :as photos]))
+            [status-im.ui.screens.chat.styles.photos :as photos]
+            [quo2.foundations.typography :as typography]))
 
 (defn style-message-text
   []
@@ -310,6 +311,17 @@
                   :style
                   assoc
                   :text-decoration-line :line-through)))
+
+(defn edited-style
+  []
+  (cond->
+    (update (default-text-style)
+            :style
+            assoc
+            :color          (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)
+            :font-size      13
+            :line-height    18.2
+            :letter-spacing (typography/tracking 13))))
 
 (def code-block-background "#2E386B")
 

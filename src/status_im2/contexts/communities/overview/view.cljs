@@ -4,7 +4,6 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
@@ -263,11 +262,8 @@
   [_]
   (fn [{:keys [:enabled :label]}]
     (when enabled
-      [blur/view
-       {:blur-amount   32
-        :blur-type     :xlight
-        :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
-        :style         style/blur-channel-header}
+      [rn/view
+       {:style style/blur-channel-header}
        [quo/divider-label
         {:label            (:label label)
          :chevron-position :left}]])))
@@ -294,7 +290,18 @@
        {:cover-image                    cover
         :page-nav-right-section-buttons (page-nav-right-section-buttons id)
         :name                           name
-        :on-scroll                      #(reset! scroll-height %)}
+        :on-scroll                      #(reset! scroll-height %)
+        :navigate-back?                 true
+        :background-color               (colors/theme-colors
+                                         colors/white
+                                         colors/neutral-90)
+        :height                         (if platform/ios?
+                                          (if (> @scroll-height @first-channel-height)
+                                            134
+                                            100)
+                                          (if (> @scroll-height @first-channel-height)
+                                            140
+                                            106))}
 
        [sticky-category-header
         {:enabled (> @scroll-height @first-channel-height)
@@ -313,4 +320,3 @@
     [rn/view
      {:style style/community-overview-container}
      [community-card-page-view community]]))
-

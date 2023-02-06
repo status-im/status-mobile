@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.6.3'
+library 'status-jenkins-lib@v1.6.5'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -75,20 +75,12 @@ pipeline {
         stage('Upload') {
           steps { script {
             def urls = apks.collect { s3.uploadArtifact(it) }
-            /* return only the universal APK */
-            if (urls.size() > 1) {
+            if (urls.size() > 1) { /* Return only the universal APK. */
               env.PKG_URL = urls.find { it.contains('universal') }
-            } else { /* if no universal is available pick first */
+            } else { /* If no universal is available pick first. */
               env.PKG_URL = urls.first()
             }
             jenkins.setBuildDesc(APK: env.PKG_URL)
-            /* e2e builds get tested in SauceLabs */
-            if (utils.isE2EBuild()) {
-              env.SAUCE_URL = android.uploadToSauceLabs()
-            }
-            if (utils.isNightlyBuild()) {
-              env.DIAWI_URL = android.uploadToDiawi()
-            }
           } }
         }
       }

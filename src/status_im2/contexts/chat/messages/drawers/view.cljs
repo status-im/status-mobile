@@ -19,7 +19,7 @@
       (rf/dispatch [:pin-message/send-pin-message (assoc message-data :pinned (not pinned))]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned] :as message-data}
+  [{:keys [outgoing content pinned outgoing-status] :as message-data}
    {:keys [edit-enabled show-input? can-delete-message-for-everyone? community? message-pin-enabled]}]
   (concat
    (when (and outgoing edit-enabled)
@@ -28,7 +28,7 @@
        :label    (i18n/label :t/edit-message)
        :icon     :i/edit
        :id       :edit}])
-   (when show-input?
+   (when (and show-input? (not= outgoing-status :sending))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/reply-to-message message-data])
        :label    (i18n/label :t/message-reply)
@@ -117,7 +117,7 @@
             icon]])))]))
 
 (defn reactions-and-actions
-  [{:keys [message-id] :as message-data} {:keys [chat-id] :as context}]
+  [{:keys [message-id outgoing-status] :as message-data} {:keys [chat-id] :as context}]
   (fn []
     (let [actions        (get-actions message-data context)
           main-actions   (filter #(= (:type %) :main) actions)
@@ -125,7 +125,8 @@
           admin-actions  (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
-       [reactions {:chat-id chat-id :message-id message-id}]
+       (when (not= outgoing-status :sending)
+         [reactions {:chat-id chat-id :message-id message-id}])
 
        ;; MAIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}

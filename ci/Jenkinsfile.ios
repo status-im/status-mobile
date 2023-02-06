@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.6.3'
+library 'status-jenkins-lib@v1.6.5'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -72,15 +72,11 @@ pipeline {
           }
         }
         stage('Upload') {
+          when { expression { !utils.isReleaseBuild() } }
           steps { script {
-            env.PKG_URL = s3.uploadArtifact(api)
+            env.DIAWI_URL = ios.uploadToDiawi()
+            env.PKG_URL = env.DIAWI_URL
             jenkins.setBuildDesc(IPA: env.PKG_URL)
-            /* e2e builds get tested in SauceLabs */
-            if (utils.isE2EBuild()) {
-              env.SAUCE_URL = ios.uploadToSauceLabs()
-            } else if (!utils.isReleaseBuild()) {
-              env.DIAWI_URL = ios.uploadToDiawi()
-            }
           } }
         }
       }

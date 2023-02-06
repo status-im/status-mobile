@@ -8,11 +8,13 @@
    :margin-top     20})
 
 (def blur-channel-header
-  {:position :absolute
-   :top      (if platform/ios? 56 60)
-   :height   34
-   :width    "100%"
-   :flex     1})
+  {:position         :absolute
+   :top              (if platform/ios? 56 60)
+   :height           34
+   :right            0
+   :left             0
+   :flex             1
+   :background-color :transparent})
 
 (def join-button
   {:width        "100%"

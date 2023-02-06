@@ -1959,5 +1959,6 @@
     "you-have-no-contacts": "You have no contacts",
     "my-albums": "My albums",
     "images": "images",
-    "only-6-images": "You can only add 6 images to your message"
+    "only-6-images": "You can only add 6 images to your message",
+    "delivered": "Delivered"
 }

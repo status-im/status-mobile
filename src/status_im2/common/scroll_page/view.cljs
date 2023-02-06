@@ -27,9 +27,17 @@
    (min maximum)))
 
 (defn scroll-page-header
-  [scroll-height name page-nav cover sticky-header]
+  [scroll-height
+   height
+   name
+   page-nav
+   cover
+   sticky-header
+   top-nav
+   title-colum
+   navigate-back?]
   (let [input-range         (if platform/ios? [-47 10] [0 150])
-        output-range        (if platform/ios? [-100 0] [-169 -45])
+        output-range        (if platform/ios? [-208 0] [-208 -45])
         y                   (reanimated/use-shared-value scroll-height)
         translate-animation (reanimated/interpolate y
                                                     input-range
@@ -47,35 +55,41 @@
      [scroll-height])
     [:<>
      [reanimated/blur-view
-      {:blur-amount   32
-       :blur-type     :xlight
-       :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
-       :style         (style/blur-slider translate-animation)}]
+      {:blur-amount   20
+       :blur-type     :transparent
+       :overlay-color :transparent
+       :style         (style/blur-slider translate-animation height)}]
      [rn/view
       {:style {:z-index    6
                :margin-top (if platform/ios? 44 0)}}
-      [reanimated/view
-       {:style (style/sticky-header-title opacity-animation)}
-       [rn/image
-        {:source cover
-         :style  style/sticky-header-image}]
-       [quo/text
-        {:size   :paragraph-1
-         :weight :semi-bold
-         :style  {:line-height 21}}
-        name]]
-      [quo/page-nav
-       {:horizontal-description? true
-        :one-icon-align-left?    true
-        :align-mid?              false
-        :page-nav-color          :transparent
-        :mid-section             {:type            :text-with-description
-                                  :main-text       nil
-                                  :description-img nil}
-        :right-section-buttons   page-nav
-        :left-section            {:icon                  :i/close
+      (when cover
+        [reanimated/view
+         {:style (style/sticky-header-title opacity-animation)}
+         [rn/image
+          {:source cover
+           :style  style/sticky-header-image}]
+         [quo/text
+          {:size   :paragraph-1
+           :weight :semi-bold
+           :style  {:line-height 21}}
+          name]])
+      (if top-nav
+        [top-nav]
+        [quo/page-nav
+         (merge {:horizontal-description? true
+                 :one-icon-align-left?    true
+                 :align-mid?              false
+                 :page-nav-color          :transparent
+                 :mid-section             {:type            :text-with-description
+                                           :main-text       nil
+                                           :description-img nil}
+                 :right-section-buttons   page-nav}
+                (when navigate-back?
+                  {:left-section {:icon                  :i/close
                                   :icon-background-color (icon-color)
-                                  :on-press              #(rf/dispatch [:navigate-back])}}]
+                                  :on-press              #(rf/dispatch [:navigate-back])}}))])
+      (when title-colum
+        [title-colum])
       sticky-header]]))
 
 
@@ -101,14 +115,24 @@
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn [{:keys [cover-image page-nav-right-section-buttons name on-scroll]}
-         sticky-header
-         children]
+    (fn
+      [{:keys [cover-image
+               page-nav-right-section-buttons
+               name
+               on-scroll
+               height
+               top-nav
+               title-colum
+               background-color
+               navigate-back?]}
+       sticky-header
+       children]
       [:<>
-       [:f> scroll-page-header @scroll-height name page-nav-right-section-buttons cover-image
-        sticky-header]
+       [:f> scroll-page-header @scroll-height height name
+        page-nav-right-section-buttons cover-image sticky-header top-nav title-colum
+        navigate-back?]
        [rn/scroll-view
-        {:style                           (style/scroll-view-container
+        {:content-container-style         (style/scroll-view-container
                                            (diff-with-max-min @scroll-height 16 0))
          :shows-vertical-scroll-indicator false
          :scroll-event-throttle           16
@@ -119,17 +143,18 @@
                                                                     "nativeEvent.contentOffset.y")))
                                             (when on-scroll
                                               (on-scroll @scroll-height)))}
-        [rn/view {:style {:height 151}}
-         [rn/image
-          {:source cover-image
-           :style  {:overflow :visible
-                    :flex     1}}]]
+        (when cover-image
+          [rn/view {:style {:height 151}}
+           [rn/image
+            {:source cover-image
+             :style  {:overflow :visible
+                      :flex     1}}]])
         (when children
           [rn/view
            {:flex             1
             :border-radius    (diff-with-max-min @scroll-height 16 0)
-            :background-color (colors/theme-colors
-                               colors/white
-                               colors/neutral-90)}
-           [:f> display-picture @scroll-height cover-image]
+            :background-color background-color
+            :padding-top      48}
+           (when cover-image
+             [:f> display-picture @scroll-height cover-image])
            children])]])))
