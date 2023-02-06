@@ -27,101 +27,102 @@
 
 (def status
   (clj->js
-   {:openAccounts                           (fn [callback]
-                                              (callback
-                                               (.openAccounts
-                                                native-status
-                                                test-dir)))
-    :multiAccountStoreDerived               (fn [json callback]
-                                              (callback (.multiAccountStoreDerivedAccounts
-                                                         native-status
-                                                         json)))
+   {:openAccounts
+    (fn [callback]
+      (callback (.openAccounts native-status test-dir)))
+
+    :multiAccountStoreDerived
+    (fn [json callback]
+      (callback (.multiAccountStoreDerivedAccounts native-status json)))
+
     :clearCookies                           identity
+
     :clearStorageAPIs                       identity
+
     :setBlankPreviewFlag                    identity
-    :callPrivateRPC                         (fn [payload callback]
-                                              (callback
-                                               (.callPrivateRPC
-                                                native-status
-                                                payload)))
-    :saveAccountAndLogin                    (fn [multiaccount-data password settings config
-                                                 accounts-data]
-                                              (.saveAccountAndLogin
-                                               native-status
-                                               multiaccount-data
-                                               password
-                                               settings
-                                               config
-                                               accounts-data))
-    :logout                                 (fn []
-                                              (.logout native-status))
-    :generateAlias                          (fn [seed]
-                                              (.generateAlias native-status seed))
-    :generateAliasAndIdenticonAsync         (fn [seed callback]
-                                              (let [generated-identicon (.identicon native-status seed)
-                                                    generated-alias     (.generateAlias native-status
-                                                                                        seed)]
-                                                (callback generated-alias generated-identicon)))
-    :multiAccountGenerateAndDeriveAddresses (fn [json callback]
-                                              (callback
-                                               (.multiAccountGenerateAndDeriveAddresses
-                                                native-status
-                                                json)))
-    :multiAccountImportMnemonic             (fn [json callback]
-                                              (callback
-                                               (.multiAccountImportMnemonic
-                                                native-status
-                                                json)))
-    :multiAccountLoadAccount                (fn [json callback]
-                                              (callback
-                                               (.multiAccountLoadAccount
-                                                native-status
-                                                json)))
-    :multiAccountDeriveAddresses            (fn [json callback]
-                                              (callback
-                                               (.multiAccountDeriveAddresses
-                                                native-status
-                                                json)))
-    :initKeystore                           (fn [key-uid callback]
-                                              (callback
-                                               (.initKeystore
-                                                native-status
-                                                (str test-dir "/keystore/" key-uid))))
 
-    :identicon                              (fn [pk]
-                                              (.identicon native-status pk))
+    :callPrivateRPC
+    (fn [payload callback]
+      (callback (.callPrivateRPC native-status payload)))
 
-    :encodeTransfer                         (fn [to-norm amount-hex]
-                                              (.encodeTransfer native-status to-norm amount-hex))
+    :saveAccountAndLogin
+    (fn [multiaccount-data password settings config accounts-data]
+      (.saveAccountAndLogin native-status multiaccount-data password settings config accounts-data))
 
-    :encodeFunctionCall                     (fn [method params-json]
-                                              (.encodeFunctionCall native-status method params-json))
+    :logout
+    (fn [] (.logout native-status))
 
-    :decodeParameters                       (fn [decode-param-json]
-                                              (.decodeParameters native-status decode-param-json))
+    :generateAlias
+    (fn [seed] (.generateAlias native-status seed))
 
-    :hexToNumber                            (fn [hex]
-                                              (.hexToNumber native-status hex))
+    :generateAliasAndIdenticonAsync
+    (fn [seed callback]
+      (let [generated-identicon (.identicon native-status seed)
+            generated-alias     (.generateAlias native-status seed)]
+        (callback generated-alias generated-identicon)))
 
-    :numberToHex                            (fn [num-str]
-                                              (.numberToHex native-status num-str))
+    :multiAccountGenerateAndDeriveAddresses
+    (fn [json callback]
+      (callback (.multiAccountGenerateAndDeriveAddresses native-status json)))
 
-    :checkAddressChecksum                   (fn [address]
-                                              (.checkAddressChecksum native-status address))
+    :multiAccountImportMnemonic
+    (fn [json callback]
+      (callback (.multiAccountImportMnemonic native-status json)))
 
-    :sha3                                   (fn [str]
-                                              (.sha3 native-status str))
+    :multiAccountLoadAccount
+    (fn [json callback]
+      (callback (.multiAccountLoadAccount native-status json)))
 
-    :toChecksumAddress                      (fn [address]
-                                              (.toChecksumAddress native-status address))
+    :multiAccountDeriveAddresses
+    (fn [json callback]
+      (callback (.multiAccountDeriveAddresses native-status json)))
 
-    :isAddress                              (fn [address]
-                                              (.isAddress native-status address))
+    :multiformatDeserializePublicKey
+    (fn [public-key deserialization-key callback]
+      (callback (.multiformatDeserializePublicKey
+                 native-status
+                 public-key
+                 deserialization-key)))
 
-    :validateMnemonic                       (fn [json callback]
-                                              (callback
-                                               (.validateMnemonic
-                                                native-status
-                                                json)))
+    :initKeystore
+    (fn [key-uid callback]
+      (callback (.initKeystore native-status
+                               (str test-dir "/keystore/" key-uid))))
+
+    :identicon
+    (fn [pk] (.identicon native-status pk))
+
+    :encodeTransfer
+    (fn [to-norm amount-hex]
+      (.encodeTransfer native-status to-norm amount-hex))
+
+    :encodeFunctionCall
+    (fn [method params-json]
+      (.encodeFunctionCall native-status method params-json))
+
+    :decodeParameters
+    (fn [decode-param-json]
+      (.decodeParameters native-status decode-param-json))
+
+    :hexToNumber
+    (fn [hex] (.hexToNumber native-status hex))
+
+    :numberToHex
+    (fn [num-str] (.numberToHex native-status num-str))
+
+    :checkAddressChecksum
+    (fn [address] (.checkAddressChecksum native-status address))
+
+    :sha3
+    (fn [str] (.sha3 native-status str))
+
+    :toChecksumAddress
+    (fn [address] (.toChecksumAddress native-status address))
+
+    :isAddress
+    (fn [address] (.isAddress native-status address))
+
+    :validateMnemonic
+    (fn [json callback] (callback (.validateMnemonic native-status json)))
 
     :startLocalNotifications                identity}))

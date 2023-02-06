@@ -1,5 +1,5 @@
 (ns status-im.integration-test
-  (:require [cljs.test :refer [deftest is run-tests]]
+  (:require [cljs.test :refer [deftest is]]
             [clojure.string :as string]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
@@ -10,7 +10,7 @@
             [status-im.transport.core :as transport]
             [status-im.utils.test :as utils.test]
             status-im2.navigation.core
-            status-im2.subs.root ;;so integration tests can run independently
+            status-im2.subs.root ; so integration tests can run independently
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
 
@@ -107,9 +107,7 @@
          [::transport/messenger-started]
          (assert-messenger-started)
          (logout!)
-         (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                    ; an
-                                                    ; inconsistent state between tests
+         (rf-test/wait-for [::logout/logout-method]
            (assert-logout)))))))
 
 (deftest create-community-test
@@ -156,9 +154,7 @@
            [:wallet.accounts/account-stored]
            (assert-new-account-created) ; assert account was created
            (logout!)
-           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                      ; an
-                                                      ; inconsistent state between tests
+           (rf-test/wait-for [::logout/logout-method]
              (assert-logout))))))))
 
 (deftest back-up-seed-phrase-test
@@ -191,9 +187,7 @@
              [:my-profile/finish-success]
              (is (nil? @(rf/subscribe [:mnemonic]))) ; assert seed phrase has been removed
              (logout!)
-             (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
-                                                        ; in
-                                                        ; an inconsistent state between tests
+             (rf-test/wait-for [::logout/logout-method]
                (assert-logout)))))))))
 
 (def multiaccount-name "Narrow Frail Lemming")
@@ -226,9 +220,7 @@
            [::transport/messenger-started]
            (assert-messenger-started)
            (logout!)
-           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                      ; an
-                                                      ; inconsistent state between tests
+           (rf-test/wait-for [::logout/logout-method]
              (assert-logout))))))))
 
 (def chat-id
@@ -254,9 +246,7 @@
            (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (logout!)
-           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in
-                                                      ; an
-                                                      ; inconsistent state between tests
+           (rf-test/wait-for [::logout/logout-method]
              (assert-logout))))))))
 
 (deftest delete-chat-test
@@ -282,9 +272,7 @@
            (rf/dispatch-sync [:chat.ui/show-remove-confirmation chat-id])
            (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
            (logout!)
-           (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not
-             ; in an
-             ; inconsistent state between tests
+           (rf-test/wait-for [::logout/logout-method]
              (assert-logout))))))))
 
 (deftest mute-chat-test
@@ -316,10 +304,41 @@
                [:chat/mute-successfully]
                (is (not @(rf/subscribe [:chats/muted chat-id])))
                (logout!)
-               (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is
-                                                          ; not in
-                                                          ; an inconsistent state between tests
+               (rf-test/wait-for [::logout/logout-method]
                  (assert-logout))))))))))
 
-(comment
-  (run-tests))
+(deftest add-contact-test
+  (log/info "========= add-contact-test ==================")
+  (let
+    [compressed-key   "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gA"
+     public-key
+     "0x048a6773339d11ccf5fd81677b7e54daeec544a1287bd92b725047ad6faa9a9b9f8ea86ed5a226d2a994f5f46d0b43321fd8de7b7997a166e67905c8c73cd37cea"
+     three-words-name "Rich Total Pondskater"]
+    (rf-test/run-test-async
+     (initialize-app!)
+     (rf-test/wait-for
+       [:setup/initialize-view]
+       (generate-and-derive-addresses!)
+       (rf-test/wait-for
+         [:multiaccount-generate-and-derive-addresses-success]
+         (assert-multiaccount-loaded)
+         (create-multiaccount!)
+         (rf-test/wait-for
+           [::transport/messenger-started]
+           (assert-messenger-started)
+           ;; search for contact using compressed key
+           (rf/dispatch [:contacts/set-new-identity compressed-key])
+           (rf-test/wait-for
+             [:contacts/set-new-identity-success]
+             (let [new-identity @(rf/subscribe [:contacts/new-identity])]
+               (is (= public-key (:public-key new-identity)))
+               (is (= :valid (:state new-identity))))
+             ;; click 'view profile' button
+             (rf/dispatch [:chat.ui/show-profile public-key])
+             (rf-test/wait-for
+               [:contacts/contact-built]
+               (let [contact @(rf/subscribe [:contacts/current-contact])]
+                 (is (= three-words-name (:three-words-name (:names contact)))))
+               (logout!)
+               (rf-test/wait-for [::logout/logout-method]
+                 (assert-logout))))))))))
