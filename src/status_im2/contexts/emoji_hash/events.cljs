@@ -11,8 +11,7 @@
      (fn [response]
        (let [response-clj (transform/json->clj response)
              emoji-hash   (get response-clj :result)]
-         (rf/dispatch [:emoji-hash/add-to-multiaccount emoji-hash])
-       )))))
+         (rf/dispatch [:emoji-hash/add-to-multiaccount emoji-hash]))))))
 
 (rf/defn add-emoji-hash-to-multiaccount
   {:events [:emoji-hash/add-to-multiaccount]}
