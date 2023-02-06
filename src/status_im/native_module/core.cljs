@@ -482,7 +482,7 @@
     (.generateAliasAsync ^js (status) public-key callback)))
 
 (defn public-key->emoji-hash
-  "Generate an emoji has from the multiaccount public key"
+  "Generate an emoji hash from the multiaccount public key"
   [public-key callback]
   (when (validators/valid-public-key? public-key)
     (.emojiHash ^js (status) public-key callback)))
