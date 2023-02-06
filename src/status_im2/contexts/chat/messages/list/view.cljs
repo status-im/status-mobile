@@ -69,6 +69,7 @@
                                   (if platform/low-device? 700 200))))
 
 (defn get-render-data
+  "compute data used to render message list, including pinned message list and message list in chats"
   [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled
            in-pinned-view?]}]
   (let [current-public-key                                       (rf/sub [:multiaccount/public-key])
