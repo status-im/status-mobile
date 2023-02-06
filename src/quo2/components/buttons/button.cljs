@@ -255,7 +255,8 @@
                    {:background-color
                     (if (= state :pressed)
                       (colors/theme-colors colors/neutral-100 colors/white)
-                      :transparent)}
+                      :transparent)
+                    :width            width}
                    style)}
           [rn/view
            {:style (merge

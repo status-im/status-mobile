@@ -12,23 +12,30 @@
    :flex    1})
 
 (defn blur-slider
-  [animation]
+  [animation height]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY animation}]}
-   {:z-index  5
-    :top      0
-    :position :absolute
-    :height   (if platform/ios? 100 124)
-    :width    "100%"
-    :flex     1}))
+   {:z-index          5
+    :position         :absolute
+    :top              0
+    :height           height
+    :right            0
+    :left             0
+    :background-color (if platform/ios?
+                        (colors/theme-colors
+                         colors/white-opa-70
+                         colors/neutral-95-opa-70)
+                        :transparent)}))
 
 (defn scroll-view-container
   [border-radius]
-  {:position      :absolute
+  {:flex          1
+   :position      :absolute
    :top           -48
+   :left          0
+   :right         0
    :overflow      :scroll
-   :border-radius border-radius
-   :height        "100%"})
+   :border-radius border-radius})
 
 (defn sticky-header-title
   [animation]
