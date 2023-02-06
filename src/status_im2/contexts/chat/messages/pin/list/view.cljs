@@ -12,29 +12,29 @@
 (defn get-render-data
   [{:keys [group-chat chat-id public? community-id admins space-keeper edit-enabled
            in-pinned-view?]}]
-  (let [current-public-key (rf/sub [:multiaccount/public-key])
-        {:keys [can-delete-message-for-everyone-in-community?] :as community} (rf/sub
-                                                                               [:communities/community
-                                                                                community-id])
-        group-admin? (get admins current-public-key)
-        community-admin? (when community (community :admin))
-        message-pin-enabled (and (not public?)
-                                 (or (not group-chat)
-                                     (and group-chat
-                                          (or group-admin?
-                                              community-admin?))))]
-    {:group-chat                                    group-chat
-     :public?                                       public?
-     :community?                                    (not (nil? community-id))
-     :group-admin?                                  group-admin?
-     :community-admin?                              community-admin?
-     :current-public-key                            current-public-key
-     :space-keeper                                  space-keeper
-     :chat-id                                       chat-id
-     :message-pin-enabled                           message-pin-enabled
-     :edit-enabled                                  edit-enabled
-     :in-pinned-view?                               in-pinned-view?
-     :can-delete-message-for-everyone-in-community? can-delete-message-for-everyone-in-community?}))
+  (let [current-public-key                                       (rf/sub [:multiaccount/public-key])
+        {:keys [can-delete-message-for-everyone?] :as community} (rf/sub
+                                                                  [:communities/community
+                                                                   community-id])
+        group-admin?                                             (get admins current-public-key)
+        community-admin?                                         (when community (community :admin))
+        message-pin-enabled                                      (and (not public?)
+                                                                      (or (not group-chat)
+                                                                          (and group-chat
+                                                                               (or group-admin?
+                                                                                   community-admin?))))]
+    {:group-chat                       group-chat
+     :public?                          public?
+     :community?                       (not (nil? community-id))
+     :group-admin?                     group-admin?
+     :community-admin?                 community-admin?
+     :current-public-key               current-public-key
+     :space-keeper                     space-keeper
+     :chat-id                          chat-id
+     :message-pin-enabled              message-pin-enabled
+     :edit-enabled                     edit-enabled
+     :in-pinned-view?                  in-pinned-view?
+     :can-delete-message-for-everyone? can-delete-message-for-everyone?}))
 
 (defn message-render-fn
   [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
@@ -45,15 +45,15 @@
 
 (defn pinned-messages-list
   [chat-id]
-  (let [pinned-messages                                          (vec (vals (rf/sub [:chats/pinned
-                                                                                     chat-id])))
-        current-chat                                             (rf/sub [:chat-by-id chat-id])
+  (let [pinned-messages (vec (vals (rf/sub [:chats/pinned
+                                            chat-id])))
+        current-chat (rf/sub [:chat-by-id chat-id])
 
         {:keys [group-chat chat-id public? community-id admins]}
         current-chat
 
-        community                                                (rf/sub [:communities/community
-                                                                          community-id])]
+        community (rf/sub [:communities/community
+                           community-id])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529

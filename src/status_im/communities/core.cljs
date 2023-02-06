@@ -68,7 +68,7 @@
   (-> c
       (set/rename-keys {:canRequestAccess            :can-request-access?
                         :canManageUsers              :can-manage-users?
-                        :canDeleteMessageForEveryone :can-delete-message-for-everyone-in-community?
+                        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
                         :canJoin                     :can-join?
                         :requestedToJoinAt           :requested-to-join-at
                         :isMember                    :is-member?})
@@ -210,11 +210,11 @@
 (rf/defn chat-created
   {:events [::chat-created]}
   [_ community-id user-pk]
-  {:json-rpc/call [{:method      "wakuext_sendChatMessage"
-                    :params      [{:chatId      user-pk
-                                   :text        "Upgrade here to see an invitation to community"
-                                   :communityId community-id
-                                   :contentType constants/content-type-community}]
+  {:json-rpc/call [{:method "wakuext_sendChatMessage"
+                    :params [{:chatId      user-pk
+                              :text        "Upgrade here to see an invitation to community"
+                              :communityId community-id
+                              :contentType constants/content-type-community}]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])

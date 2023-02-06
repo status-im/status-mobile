@@ -23,7 +23,7 @@
 (defn get-actions
   [{:keys [outgoing content pinned outgoing-status] :as message-data}
    {:keys [edit-enabled show-input? community? community-admin?
-           can-delete-message-for-everyone-in-community?
+           can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
    (when (and outgoing edit-enabled)
@@ -67,7 +67,7 @@
    (when (and config/delete-message-enabled?
               (cond
                 outgoing   true
-                community? (or can-delete-message-for-everyone-in-community?
+                community? (or can-delete-message-for-everyone?
                                community-admin?)
                 group-chat group-admin?
                 :else      false))
