@@ -108,20 +108,22 @@
                      (= type types/contact-request)
                      (not accepted)
                      (not dismissed))
-                (toasts/upsert cofx {:icon       :placeholder
-                                     :icon-color colors/primary-50-opa-40
-                                     :title      (i18n/label :t/contact-request-sent-toast
-                                                             {:name name})
-                                     :text       (get-in message [:content :text])})
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-sent-toast
+                                                        {:name name})
+                                :text       (get-in message [:content :text])})
 
                 (and (= author my-public-key)
                      (= type types/contact-request)
                      accepted
                      (not dismissed))
-                (toasts/upsert cofx {:icon       :placeholder
-                                     :icon-color colors/primary-50-opa-40
-                                     :title      (i18n/label :t/contact-request-accepted-toast
-                                                             {:name (:alias message)})})
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-accepted-toast
+                                                        {:name (:alias message)})})
 
                 :else
                 cofx))

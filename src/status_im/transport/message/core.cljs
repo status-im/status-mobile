@@ -68,8 +68,8 @@
 
       (seq activity-notifications)
       (let [notifications (->> activity-notifications
-                            types/js->clj
-                            (map data-store.activities/<-rpc))]
+                               types/js->clj
+                               (map data-store.activities/<-rpc))]
         (js/console.log "ALWX NOTI" (clj->js notifications))
         (js-delete response-js "activityCenterNotifications")
         (rf/merge cofx

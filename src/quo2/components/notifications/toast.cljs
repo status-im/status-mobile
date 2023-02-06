@@ -31,15 +31,15 @@
    [into
     [rn/view
      {:style (merge
-               {:flex-direction     :row
-                :padding-vertical   3
-                :padding-horizontal 8
-                :align-items        :center
-                :border-radius      8
-                :background-color   (get-in themes
-                                            [:action-container (theme/get-theme)
-                                             :background-color])}
-               style)}]
+              {:flex-direction     :row
+               :padding-vertical   3
+               :padding-horizontal 8
+               :align-items        :center
+               :border-radius      8
+               :background-color   (get-in themes
+                                           [:action-container (theme/get-theme)
+                                            :background-color])}
+              style)}]
     children]])
 
 (defn toast-undo-action
