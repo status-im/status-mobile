@@ -4,7 +4,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply.view :as components.reply]
             [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -63,12 +62,11 @@
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
        :id       :delete-for-me}])
-   (when (and config/delete-message-enabled?
-              (cond
-                outgoing   true
-                community? can-delete-message-for-everyone?
-                group-chat group-admin?
-                :else      false))
+   (when (cond
+           outgoing   true
+           community? can-delete-message-for-everyone?
+           group-chat group-admin?
+           :else      false)
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch [:bottom-sheet/hide])
