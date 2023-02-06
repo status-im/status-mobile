@@ -45,7 +45,7 @@
   [from username current-public-key]
   (or (and (= from current-public-key)
            (i18n/label :t/You))
-      (format-author username)))
+      (when username (format-author username))))
 
 (defn reply-deleted-message
   []
