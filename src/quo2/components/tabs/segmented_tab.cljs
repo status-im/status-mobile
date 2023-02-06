@@ -29,11 +29,12 @@
             {:margin-left (if (= 0 indx) 0 2)
              :flex        1}
             [tab/view
-             {:id        id
-              :segmented true
-              :size      size
-              :active    (= id active-id)
-              :on-press  #(do (reset! active-tab-id %)
-                              (when on-change
-                                (on-change %)))}
+             {:id         id
+              :segmented? true
+              :size       size
+              :active     (= id active-id)
+              :on-press   (fn [tab-id]
+                            (reset! active-tab-id tab-id)
+                            (when on-change
+                              (on-change tab-id)))}
              label]])]))))

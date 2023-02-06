@@ -55,6 +55,7 @@
            id
            on-press
            override-theme
+           segmented?
            size
            notification-dot?]
     :or   {size 32}}
@@ -80,6 +81,7 @@
       [rn/view
        {:style (style/tab {:size                   size
                            :disabled               disabled
+                           :segmented?             segmented?
                            :background-color       background-color
                            :show-notification-dot? show-notification-dot?})}
        (when before
