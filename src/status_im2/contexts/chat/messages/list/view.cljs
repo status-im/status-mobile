@@ -85,7 +85,6 @@
      :group-admin?                     group-admin?
      :public?                          public?
      :community?                       (not (nil? community-id))
-     :community-admin?                 community-admin?
      :current-public-key               current-public-key
      :space-keeper                     space-keeper
      :chat-id                          chat-id

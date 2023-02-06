@@ -27,7 +27,6 @@
      :public?                          public?
      :community?                       (not (nil? community-id))
      :group-admin?                     group-admin?
-     :community-admin?                 community-admin?
      :current-public-key               current-public-key
      :space-keeper                     space-keeper
      :chat-id                          chat-id
