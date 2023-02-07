@@ -65,7 +65,9 @@ the source file. For a real example, see
 
 In ReactNative, all layouts use the [flexbox
 model](https://reactnative.dev/docs/flexbox), so percentages are unnecessary the
-vast majority of the time, don't use them.
+vast majority of the time, don't use them. Check out this great [interactive
+flexbox guide](https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/) by
+Joshua Comeau.
 
 ```clojure
 ;; bad
