@@ -63,12 +63,17 @@ the source file. For a real example, see
 
 ### Don't use percents to define width/height
 
-We shouldn't use percentage:
+In ReactNative all layouts use the [flexbox
+model](https://reactnative.dev/docs/flexbox), so percentages are unnecessary the
+vast majority of the time, don't use them.
 
-- because 100% doesn't make sense in flexbox
-- because we always have fixed margins or paddings in the design. For example, Instead of using `80%` we should use `padding-horizontal 20`. This is because `%` will be different on different devices in pixels, but we should always have same the paddings in pixels on all devices.
+```clojure
+;; bad
+[rn/view {:style {:width "80%"}}]
 
-
+;; good
+[rn/view {:style {:padding-horizontal 20}}]
+```
 
 #### Styles def vs defn
 
