@@ -63,12 +63,19 @@ the source file. For a real example, see
 
 ### Don't use percents to define width/height
 
-We shouldn't use percentage:
+In ReactNative, all layouts use the [flexbox
+model](https://reactnative.dev/docs/flexbox), so percentages are unnecessary the
+vast majority of the time, don't use them. Check out this great [interactive
+flexbox guide](https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/) by
+Joshua Comeau.
 
-- because 100% doesn't make sense in flexbox
-- because we always have fixed margins or paddings in the design. For example, Instead of using `80%` we should use `padding-horizontal 20`. This is because `%` will be different on different devices in pixels, but we should always have same the paddings in pixels on all devices.
+```clojure
+;; bad
+[rn/view {:style {:width "80%"}}]
 
-
+;; good
+[rn/view {:style {:padding-horizontal 20}}]
+```
 
 #### Styles def vs defn
 
@@ -161,6 +168,26 @@ Use the simple `defn` to declare components. Don't use `utils.views/defview` and
 (defn browser []
   (let [window-width (rf/sub [:dimensions/window-width])]
     (do-something window-width)))
+```
+
+#### Use `[]` instead of `()` in Reagent components
+
+- The `()` version [does NOT work with Form-2 and
+  Form-3](https://github.com/reagent-project/reagent/blob/master/doc/UsingSquareBracketsInsteadOfParens.md#a-further-significant-why)
+  components.
+- Components defined with `[]` will be [more efficient at re-render
+  time](https://github.com/reagent-project/reagent/blob/master/doc/UsingSquareBracketsInsteadOfParens.md#which-and-why)
+  because they're interpreted by Reagent and transformed into distinct React
+  components, with their own lifecycle.
+
+```clojure
+;; bad
+[rn/view
+ (message-card message)]
+
+;; good
+[rn/view
+ [message-card message]]
 ```
 
 ### Using re-frame subscriptions and dispatching events
@@ -300,8 +327,8 @@ core interop macros.
 
 ### Accessibility labels
 
-Use keywords instead of strings. As a bonus, remember keywords are cached in
-memory.
+Accessibility labels are currently used only for end-to-end tests. Use keywords
+instead of strings (remember keywords are cached).
 
 ```clojure
 ;; bad
@@ -311,6 +338,18 @@ memory.
 ;; good
 [text/text {:accessibility-label :profile-nickname}
  "Markov"]
+```
+
+Avoid dynamic labels, for example to specify an element's index because
+[Appium](https://appium.io/) already supports element selection based on
+indices.
+
+```clojure
+;; bad
+[button {:accessibility-label (str "do-something" index)}]
+
+;; good
+[button {:accessibility-label :do-something}]
 ```
 
 ### Icons
