@@ -1,6 +1,6 @@
 (ns status-im2.contexts.add-new-contact.views
   (:require
-   [clojure.string :as str]
+   [clojure.string :as string]
    [quo2.core :as quo]
    [react-native.core :as rn]
    [react-native.clipboard :as clipboard]
@@ -45,7 +45,7 @@
                   :on-change-text #(debounce/debounce-and-dispatch
                                     [:contacts/set-new-identity %]
                                     600)})]
-         (when (str/blank? input)
+         (when (string/blank? input)
            [quo/button
             {:type     :outline
              :size     24
