@@ -14,10 +14,10 @@
    :overflow       :hidden})
 
 (defn image
-  [dimensions index portrait? count]
+  [dimensions index portrait? images-count]
   {:width         (:width dimensions)
    :height        (:height dimensions)
-   :margin-left   (when (or (and (not= index 0) (not= index 2) (not= count 3))
+   :margin-left   (when (or (and (not= index 0) (not= index 2) (not= images-count 3))
                             (and (not portrait?) (= index 2))
                             (and portrait? (> index 0)))
                     1)
