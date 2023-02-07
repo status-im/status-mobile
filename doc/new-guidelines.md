@@ -305,8 +305,8 @@ core interop macros.
 
 ### Accessibility labels
 
-Use keywords instead of strings. As a bonus, remember keywords are cached in
-memory.
+Accessibility labels are currently used only for end-to-end tests. Use keywords
+instead of strings (remember keywords are cached).
 
 ```clojure
 ;; bad
@@ -316,6 +316,18 @@ memory.
 ;; good
 [text/text {:accessibility-label :profile-nickname}
  "Markov"]
+```
+
+Avoid dynamic labels, for example to specify an element's index because
+[Appium](https://appium.io/) already supports element selection based on
+indices.
+
+```clojure
+;; bad
+[button {:accessibility-label (str "do-something" index)}]
+
+;; good
+[button {:accessibility-label :do-something}]
 ```
 
 ### Icons
