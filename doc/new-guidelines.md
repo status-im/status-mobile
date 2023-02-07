@@ -63,7 +63,7 @@ the source file. For a real example, see
 
 ### Don't use percents to define width/height
 
-In ReactNative all layouts use the [flexbox
+In ReactNative, all layouts use the [flexbox
 model](https://reactnative.dev/docs/flexbox), so percentages are unnecessary the
 vast majority of the time, don't use them.
 
