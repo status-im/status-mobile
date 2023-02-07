@@ -31,11 +31,16 @@
   {:flex-direction :row})
 
 (defn tab
-  [{:keys [size disabled background-color show-notification-dot?]}]
+  [{:keys [background-color
+           disabled
+           segmented?
+           show-notification-dot?
+           size]}]
   (let [border-radius (size->border-radius size)
         padding       (size->padding-left size)]
     (merge {:height                    size
             :align-items               :center
+            :justify-content           :center
             :flex-direction            :row
             :border-top-left-radius    border-radius
             :border-bottom-left-radius border-radius
@@ -48,6 +53,8 @@
              {:padding-right 1}
              {:border-radius border-radius
               :padding-right padding})
+           (when segmented?
+             {:flex 1})
            (when disabled
              {:opacity tab-background-opacity}))))
 
