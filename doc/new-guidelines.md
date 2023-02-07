@@ -181,11 +181,11 @@ Use the simple `defn` to declare components. Don't use `utils.views/defview` and
 ```clojure
 ;; bad
 [rn/view
- (render-parsed-text message)]
+ (message-card message)]
 
 ;; good
 [rn/view
- [render-parsed-text message]]
+ [message-card message]]
 ```
 
 ### Using re-frame subscriptions and dispatching events
