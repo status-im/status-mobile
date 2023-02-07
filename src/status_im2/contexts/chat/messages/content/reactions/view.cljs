@@ -8,7 +8,7 @@
 (defn message-reactions-row
   [chat-id message-id messages-ids]
   (let [reactions (if messages-ids
-                    (apply concat (mapv #(rf/sub [:chats/message-reactions % chat-id]) messages-ids))
+                    (mapcat #(rf/sub [:chats/message-reactions % chat-id]) messages-ids)
                     (rf/sub [:chats/message-reactions message-id chat-id]))]
     (when (seq reactions)
       [rn/view {:margin-left 52 :margin-bottom 12 :flex-direction :row}
@@ -30,7 +30,7 @@
             :accessibility-label (str "emoji-reaction-" emoji-id)}]])
        [quo/add-reaction
         {:on-press (fn []
-                     ;; an album, issue: https://github.com/status-im/status-mobile/issues/14995
+                     ;; issue: https://github.com/status-im/status-mobile/issues/14995
                      (if messages-ids
                        (js/alert "Reactions for albums is not yet supported")
                        (do

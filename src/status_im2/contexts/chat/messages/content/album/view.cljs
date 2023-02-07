@@ -17,7 +17,7 @@
     {:width (second size-arr) :height (first size-arr) :album-style album-style}))
 
 (defn album-message
-  [{:keys [albumize?] :as message} context on-long-press]
+  [message]
   (let [shared-element-id (rf/sub [:shared-element-id])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
@@ -26,8 +26,12 @@
         images-count      (count (:album message))
         ;; album images are always square, except when we have 3 images, then they must be rectangular
         ;; (portrait or landscape)
-        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
-    (if (and albumize? (> images-count 1))
+        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))
+        text       (:text (:content first-image))]
+      [:<>
+       ;; This text comp is temporary. Should later use
+       ;; `status-im2.contexts.chat.messages.content.text.view`
+       (when (not= text "placeholder") [quo/text {:style {:margin-bottom 10}} text])
       [rn/view
        {:style (style/album-container portrait?)}
        (map-indexed
@@ -62,9 +66,4 @@
                   :size   :heading-2
                   :style  {:color colors/white}}
                  (str "+" (- images-count (dec constants/max-album-photos)))]])]))
-        (:album message))]
-      [:<>
-       (map-indexed
-        (fn [index item]
-          [image/image-message index item context on-long-press])
-        (:album message))])))
+        (:album message))]]))
