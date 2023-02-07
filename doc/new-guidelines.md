@@ -168,6 +168,26 @@ Use the simple `defn` to declare components. Don't use `utils.views/defview` and
     (do-something window-width)))
 ```
 
+#### Use `[]` instead of `()` in Reagent components
+
+- The `()` version [does NOT work with Form-2 and
+  Form-3](https://github.com/reagent-project/reagent/blob/master/doc/UsingSquareBracketsInsteadOfParens.md#a-further-significant-why)
+  components.
+- Components defined with `[]` will be [more efficient at re-render
+  time](https://github.com/reagent-project/reagent/blob/master/doc/UsingSquareBracketsInsteadOfParens.md#which-and-why)
+  because they're interpreted by Reagent and transformed into distinct React
+  components, with their own lifecycle.
+
+```clojure
+;; bad
+[rn/view
+ (render-parsed-text message)]
+
+;; good
+[rn/view
+ [render-parsed-text message]]
+```
+
 ### Using re-frame subscriptions and dispatching events
 
 Use the `utils.re-frame` namespace instead of `re-frame.core` to subscribe and
