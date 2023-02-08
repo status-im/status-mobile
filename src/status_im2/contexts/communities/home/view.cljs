@@ -30,7 +30,7 @@
       (let [community (rf/sub [:communities/home-item id])]
         ^{:key index}
         [quo/communities-membership-list-item
-         {:on-press      #(rf/dispatch [:navigate-to :community-overview id])
+         {:on-press      #(rf/dispatch [:navigate-to-nav2 :community-overview id])
           :on-long-press #(rf/dispatch
                            [:bottom-sheet/show-sheet
                             {:content       (fn []

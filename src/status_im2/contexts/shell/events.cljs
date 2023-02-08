@@ -72,13 +72,13 @@
 
         nil))
 
-    :community
+    :community-overview
     {:navigate-from :communities-stack
-     :card-id       (:community-id id)
+     :card-id       id
      :switcher-card {:type      shell.constants/community-card
-                     :card-id   (:community-id id)
+                     :card-id   id
                      :clock     now
-                     :screen-id (:community-id id)}}
+                     :screen-id id}}
     nil))
 
 (rf/defn add-switcher-card
