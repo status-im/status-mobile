@@ -405,6 +405,7 @@
               (data-store.chats/fetch-chats-rpc
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
+                     (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
               (initialize-appearance)
               (initialize-communities-enabled)

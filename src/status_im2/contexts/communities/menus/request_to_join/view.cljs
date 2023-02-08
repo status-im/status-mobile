@@ -23,7 +23,9 @@
            can-join?
            can-request-access?
            requested-to-join-at]}]
-  (let [agreed-to-rules? (reagent/atom false)]
+  (let [agreed-to-rules? (reagent/atom false)
+        pending?         (rf/sub [:communities/my-pending-request-to-join id])
+       ]
     [safe-area/consumer
      (fn [insets]
        [:f>
@@ -73,7 +75,7 @@
                                             (rf/dispatch [:communities/join id])
                                             (rf/dispatch [:bottom-sheet/hide]))
                                           (do (and can-request-access?
-                                                   (not (pos? requested-to-join-at))
+                                                   (not pending?)
                                                    (requests/can-request-access-again?
                                                     requested-to-join-at))
                                               (rf/dispatch [:communities/request-to-join id])
