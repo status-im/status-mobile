@@ -90,8 +90,7 @@
                             {:name (:name community)})
      :customization-color (or (:customization-color community) :primary)
      :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:navigate-to-nav2 :community
-                                               {:community-id id} true])
+     :on-press            #(re-frame/dispatch [:navigate-to-nav2 :community-overview id true])
      :content             {:community-info {:type :permission}}}))
 
 (defn community-channel-card
@@ -101,7 +100,7 @@
    {:content  {:community-channel {:emoji        (:emoji channel)
                                    :channel-name (str "# " (:name channel))}}
     :on-press (fn []
-                (re-frame/dispatch [:navigate-to-nav2 :community {:community-id community-id}])
+                (re-frame/dispatch [:navigate-to-nav2 :community-overview community-id true])
                 (js/setTimeout
                  #(re-frame/dispatch [:chat/navigate-to-chat channel-id true])
                  100))}))
