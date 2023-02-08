@@ -113,9 +113,9 @@
 
 (defn button-paste
   []
-  {:type     :outline
-   :size     24
-   :style    {:margin-top 6}})
+  {:type  :outline
+   :size  24
+   :style {:margin-top 6}})
 
 (defn button-close
   []

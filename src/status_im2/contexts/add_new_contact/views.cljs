@@ -48,8 +48,8 @@
          (when (string/blank? input)
            [quo/button
             (merge (style/button-paste)
-              {:on-press (fn []
-                           (clipboard/get-string #(rf/dispatch [:contacts/set-new-identity %])))})
+                   {:on-press (fn []
+                                (clipboard/get-string #(rf/dispatch [:contacts/set-new-identity %])))})
             (i18n/label :t/paste)])]
         [quo/button
          (merge style/button-qr
