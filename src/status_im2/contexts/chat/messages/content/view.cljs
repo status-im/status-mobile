@@ -99,21 +99,24 @@
              context         (assoc context :on-long-press #(message-on-long-press message-data context))
              response-to     (:response-to content)]
          [rn/touchable-highlight
-          {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
-           :style          {:border-radius 16
-                            :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
-           :on-press       (fn []
-                             (when (and outgoing
-                                        (not (= outgoing-status :sending))
-                                        (not @show-delivery-state?))
-                               (reset! show-delivery-state? true)
-                               (js/setTimeout #(reset! show-delivery-state? false)
-                                              delivery-state-showing-time-ms)))
-           :on-long-press  (fn []
-                             (rf/dispatch [:dismiss-keyboard])
-                             (rf/dispatch [:bottom-sheet/show-sheet
-                                           {:content (drawers/reactions-and-actions message-data
-                                                                                    context)}]))}
+          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
+                                  :message-sending
+                                  :message-sent)
+           :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
+           :style               {:border-radius 16
+                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
+           :on-press            (fn []
+                                  (when (and outgoing
+                                             (not (= outgoing-status :sending))
+                                             (not @show-delivery-state?))
+                                    (reset! show-delivery-state? true)
+                                    (js/setTimeout #(reset! show-delivery-state? false)
+                                                   delivery-state-showing-time-ms)))
+           :on-long-press       (fn []
+                                  (rf/dispatch [:dismiss-keyboard])
+                                  (rf/dispatch [:bottom-sheet/show-sheet
+                                                {:content (drawers/reactions-and-actions message-data
+                                                                                         context)}]))}
           [rn/view {:style {:padding-vertical 8}}
            (when (and (seq response-to) quoted-message)
              [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
