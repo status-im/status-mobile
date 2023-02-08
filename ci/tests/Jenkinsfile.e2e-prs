@@ -129,4 +129,9 @@ pipeline {
       } }
     }
   }
+  post {
+    cleanup {
+      sh 'make purge'
+    }
+  }
 }

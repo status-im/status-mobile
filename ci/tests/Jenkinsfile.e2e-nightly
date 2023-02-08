@@ -97,5 +97,8 @@ pipeline {
         )
       }
     }
+    cleanup {
+      sh 'make purge'
+    }
   }
 }
