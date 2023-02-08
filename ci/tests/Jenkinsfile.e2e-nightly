@@ -1,3 +1,5 @@
+library 'status-jenkins-lib@v1.6.5'
+
 pipeline {
 
   agent { label 'linux' }
@@ -18,13 +20,17 @@ pipeline {
     disableConcurrentBuilds()
   }
 
-
   stages {
-    stage('Prep') {
+    stage('Fetch') {
+      when { expression { !params.APK_URL } }
       steps { script {
-        if (params.PR_ID == null) {
-          error("PR_ID parameter not set!")
-        }
+        copyArtifacts(
+          projectName: "status-mobile/nightly",
+          filter: '*-x86.apk',
+          /* WARNING: This copies the latest available artifact. */
+          selector: lastWithArtifacts(),
+        )
+        apk_path = "${env.WORKSPACE}/${utils.findFile('*-x86.apk')}"
       } }
     }
 
@@ -73,7 +79,7 @@ pipeline {
                 -m testrail_id \
                 -m \"new_ui_critical or new_ui_medium\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --apk=${params.APK_NAME}
+                --apk=${params.APK_URL ?: apk_path}
             """
           }
         }

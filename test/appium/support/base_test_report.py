@@ -108,9 +108,9 @@ class BaseTestReport:
         return url
 
     @staticmethod
-    def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", apk_name="", tr_case_ids=""):
+    def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", tr_case_ids=""):
         return 'https://ci.status.im/job/status-mobile/job/e2e/job/status-app-prs-rerun/parambuild/' \
-               '?BRANCH_NAME=%s&APK_NAME=%s&PR_ID=%s&TR_CASE_IDS=%s' % (branch_name, apk_name, pr_id, tr_case_ids)
+               '?BRANCH_NAME=%s&PR_ID=%s&TR_CASE_IDS=%s' % (branch_name, pr_id, tr_case_ids)
 
     def get_sauce_final_screenshot_url(self, job_id):
         return 'https://media.giphy.com/media/9M5jK4GXmD5o1irGrF/giphy.gif'

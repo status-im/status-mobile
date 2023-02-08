@@ -8,6 +8,8 @@ pipeline {
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 40, unit: 'MINUTES')
+    /* Allow copying of artifacts from this job. */
+    copyArtifactPermission('/status-mobile/e2e/*')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
