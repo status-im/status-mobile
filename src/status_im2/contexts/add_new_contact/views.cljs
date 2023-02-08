@@ -39,7 +39,7 @@
        [rn/view style/container-text-input
         [rn/view (style/text-input-container error?)
          [rn/text-input
-          (merge style/text-input
+          (merge (style/text-input)
                  {:default-value  input
                   :placeholder    (i18n/label :t/type-some-chat-key)
                   :on-change-text #(debounce/debounce-and-dispatch
@@ -47,10 +47,9 @@
                                     600)})]
          (when (string/blank? input)
            [quo/button
-            {:type     :outline
-             :size     24
-             :on-press (fn []
-                         (clipboard/get-string #(rf/dispatch [:contacts/set-new-identity %])))}
+            (merge (style/button-paste)
+              {:on-press (fn []
+                           (clipboard/get-string #(rf/dispatch [:contacts/set-new-identity %])))})
             (i18n/label :t/paste)])]
         [quo/button
          (merge style/button-qr

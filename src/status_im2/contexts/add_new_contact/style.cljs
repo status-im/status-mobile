@@ -76,7 +76,7 @@
 
 (defn text-input-container
   [error?]
-  {:style {:padding-top      7
+  {:style {:padding-top      1
            :padding-left     12
            :padding-right    7
            :padding-bottom   7
@@ -94,7 +94,8 @@
                                 colors/neutral-20
                                 colors/neutral-80))}})
 
-(def text-input
+(defn text-input
+  []
   {:accessibility-label    :enter-contact-code-input
    :auto-capitalize        :none
    :placeholder-text-color (colors/theme-colors
@@ -105,11 +106,16 @@
    (merge typography/monospace
           typography/paragraph-1
           {:flex         1
-           :margin-top   -6
            :margin-right 5
            :color        (colors/theme-colors
                           colors/black
                           colors/white)})})
+
+(defn button-paste
+  []
+  {:type     :outline
+   :size     24
+   :style    {:margin-top 6}})
 
 (defn button-close
   []
