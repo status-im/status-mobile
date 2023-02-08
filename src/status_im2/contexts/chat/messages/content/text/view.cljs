@@ -70,11 +70,15 @@
     :paragraph
     (conj blocks
           (reduce
+<<<<<<< HEAD
             render-inline
 <<<<<<< HEAD
             [quo/text]
             children))
 =======
+=======
+           render-inline
+>>>>>>> 32f1b61b7 (lint)
            [quo/text]
            children))
 >>>>>>> 996ec9167 (refactor)
