@@ -111,10 +111,6 @@
                           colors/black
                           colors/white)})})
 
-(def button-paste
-  {:type :ghost
-   :size 20})
-
 (defn button-close
   []
   {:type                      :grey
