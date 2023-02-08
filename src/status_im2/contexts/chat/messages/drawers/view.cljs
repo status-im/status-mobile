@@ -20,29 +20,30 @@
                     (assoc message-data :pinned message-not-pinned?)]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned outgoing-status] :as message-data}
+  [{:keys [outgoing content pinned outgoing-status deleted? deleted-for-me?] :as message-data}
    {:keys [edit-enabled show-input? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
-   (when (and outgoing edit-enabled)
+   (when (and outgoing edit-enabled (not (or deleted? deleted-for-me?)))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/edit-message message-data])
        :label    (i18n/label :t/edit-message)
        :icon     :i/edit
        :id       :edit}])
-   (when (and show-input? (not= outgoing-status :sending))
+   (when (and show-input? (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/reply-to-message message-data])
        :label    (i18n/label :t/message-reply)
        :icon     :i/reply
        :id       :reply}])
-   [{:type     :main
-     :on-press #(react/copy-to-clipboard
-                 (components.reply/get-quoted-text-with-mentions
-                  (get content :parsed-text)))
-     :label    (i18n/label :t/copy-text)
-     :icon     :i/copy
-     :id       :copy}]
+   (when-not (or deleted? deleted-for-me?)
+     [{:type     :main
+       :on-press #(react/copy-to-clipboard
+                   (components.reply/get-quoted-text-with-mentions
+                    (get content :parsed-text)))
+       :label    (i18n/label :t/copy-text)
+       :icon     :i/copy
+       :id       :copy}])
    (when message-pin-enabled
      [{:type     :main
        :on-press #(pin-message message-data)
@@ -51,7 +52,7 @@
                                (if community? :t/pin-to-channel :t/pin-to-chat)))
        :icon     :i/pin
        :id       (if pinned :unpin :pin)}])
-   (when-not pinned
+   (when-not (or pinned deleted? deleted-for-me?)
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch
@@ -63,10 +64,12 @@
        :icon     :i/delete
        :id       :delete-for-me}])
    (when (cond
-           outgoing   true
-           community? can-delete-message-for-everyone?
-           group-chat group-admin?
-           :else      false)
+           deleted?        false
+           deleted-for-me? false
+           outgoing        true
+           community?      can-delete-message-for-everyone?
+           group-chat      group-admin?
+           :else           false)
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch [:bottom-sheet/hide])
@@ -123,7 +126,8 @@
             icon]])))]))
 
 (defn reactions-and-actions
-  [{:keys [message-id outgoing-status] :as message-data} {:keys [chat-id] :as context}]
+  [{:keys [message-id outgoing-status deleted? deleted-for-me?] :as message-data}
+   {:keys [chat-id] :as context}]
   (fn []
     (let [actions        (get-actions message-data context)
           main-actions   (filter #(= (:type %) :main) actions)
@@ -131,7 +135,7 @@
           admin-actions  (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
-       (when (not= outgoing-status :sending)
+       (when (and (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
          [reactions {:chat-id chat-id :message-id message-id}])
 
        ;; MAIN ACTIONS

@@ -14,7 +14,7 @@
   [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
   ;; TODO (flexsurfer) probably we don't want reactions here
   (if (or deleted? deleted-for-me?)
-    [content.deleted/deleted-message message]
+    [content.deleted/deleted-message message context]
     [message/message-with-reactions message context]))
 
 (defn pinned-messages-list

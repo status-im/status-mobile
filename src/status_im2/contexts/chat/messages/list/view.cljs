@@ -125,7 +125,7 @@
         [message.gap/gap message-data]]
        [rn/view {:padding-horizontal 8}
         (if (or deleted? deleted-for-me?)
-          [content.deleted/deleted-message message-data]
+          [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context])]))])
 
 (defn messages-list
