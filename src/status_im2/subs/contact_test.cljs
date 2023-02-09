@@ -95,7 +95,8 @@
              :names                 {:nickname         nil
                                      :display-name     ""
                                      :three-words-name "Fake Slim Shady"
-                                     :ens-name         "@slim.shady"}
+                                     :ens-name         "slim.shady"}
+             :two-names             ["slim.shady" "Fake Slim Shady"]
              :has-added-us          true
              :contact-request-state 1}]}
    {:title "I"
@@ -124,7 +125,8 @@
              :names                 {:nickname         nil
                                      :display-name     ""
                                      :three-words-name "Instant noodles"
-                                     :ens-name         "@slim.shady"}
+                                     :ens-name         "slim.shady"}
+             :two-names             ["slim.shady" "Instant noodles"]
              :has-added-us          true
              :contact-request-state 1}]}
    {:title "R"
@@ -153,7 +155,8 @@
              :names                 {:nickname         nil
                                      :display-name     ""
                                      :three-words-name "Real Slim Shady"
-                                     :ens-name         "@slim.shady"}
+                                     :ens-name         "slim.shady"}
+             :two-names             ["slim.shady" "Real Slim Shady"]
              :has-added-us          true
              :contact-request-state 1}]}])
 
