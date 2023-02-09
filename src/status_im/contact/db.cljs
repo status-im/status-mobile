@@ -43,8 +43,8 @@
 (defn sort-contacts
   [contacts]
   (sort (fn [c1 c2]
-          (let [name1 (or (:name c1) (:address c1) (:public-key c1))
-                name2 (or (:name c2) (:address c2) (:public-key c2))]
+          (let [name1 (first (:two-names c1))
+                name2 (first (:two-names c2))]
             (compare (string/lower-case name1)
                      (string/lower-case name2))))
         (vals contacts)))

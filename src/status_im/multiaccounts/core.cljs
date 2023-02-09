@@ -40,11 +40,8 @@
              :three-words-name (or alias (gfycat/generate-gfy public-key))}
       ;; Preferred name is our own otherwise we make sure it's verified
       (or preferred-name (and ens-verified name))
-      (assoc :ens-name (str "@" (or (stateofus/username ens-name) ens-name))))))
+      (assoc :ens-name (or (stateofus/username ens-name) ens-name)))))
 
-;; NOTE: this does a bit of unnecessary work, we could short-circuit the work
-;; once the first two are found, i.e don't calculate short key if 2 are already
-;; available
 (defn contact-two-names
   "Returns vector of two names in next order nickname, ens name, display-name, three word name, public key"
   [{:keys [names
@@ -56,17 +53,17 @@
                 display-name
                 three-words-name]}
         (or names (contact-names contact))
-        short-public-key (when public-key?
-                           (utils/get-shortened-address (or compressed-key
-                                                            public-key)))]
-    (->> [nickname ens-name display-name three-words-name short-public-key]
-         (remove string/blank?)
-         (take 2))))
+        non-empty-names (remove string/blank? [nickname ens-name display-name three-words-name])]
+    (if (> (count non-empty-names) 1)
+      (take 2 non-empty-names)
+      [(first non-empty-names)
+       (when public-key? (utils/get-shortened-address (or compressed-key public-key)))])))
 
 (defn contact-with-names
   "Returns contact with :names map "
   [contact]
-  (assoc contact :names (contact-names contact)))
+  (let [contact' (assoc contact :names (contact-names contact))]
+    (assoc contact' :two-names (contact-two-names contact' true))))
 
 (defn displayed-name
   "Use preferred name, name or alias in that order"
@@ -76,7 +73,7 @@
     ;; Preferred name is our own otherwise we make sure it's verified
     (if (or preferred-name (and ens-verified name))
       (let [username (stateofus/username ens-name)]
-        (str "@" (or username ens-name)))
+        (or username ens-name))
       (or alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
