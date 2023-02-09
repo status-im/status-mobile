@@ -55,7 +55,7 @@
         (or names (contact-names contact))
         non-empty-names (remove string/blank? [nickname ens-name display-name three-words-name])]
     (if (> (count non-empty-names) 1)
-      (take 2 non-empty-names)
+      (vec (take 2 non-empty-names))
       [(first non-empty-names)
        (when public-key? (utils/get-shortened-address (or compressed-key public-key)))])))
 

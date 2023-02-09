@@ -29,11 +29,11 @@
   (testing "names is nil"
     (testing "nickname has precedence"
       (is
-       (= [nickname formatted-ens]
+       (= [nickname ens-name]
           (ma/contact-two-names contact public-key))))
     (testing "ens name is second option"
       (is
-       (= [formatted-ens display-name]
+       (= [ens-name display-name]
           (ma/contact-two-names
            (dissoc contact :nickname)
            public-key))))
