@@ -29,7 +29,8 @@
    :position           :absolute
    :right              20})
 
-(def camera-button-container
+(defn close-button-container
+  []
   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :width            32
    :height           32
