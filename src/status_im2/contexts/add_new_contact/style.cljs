@@ -108,7 +108,7 @@
           {:flex         1
            :margin-right 5
            :margin-top   (if platform/android?
-                           3
+                           4
                            0)
            :padding      0
            :color        (colors/theme-colors
