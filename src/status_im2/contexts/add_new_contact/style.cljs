@@ -107,6 +107,9 @@
           typography/paragraph-1
           {:flex         1
            :margin-right 5
+           :margin-top   (if platform/android?
+                           3
+                           0)
            :padding      0
            :color        (colors/theme-colors
                           colors/black
