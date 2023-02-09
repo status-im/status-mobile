@@ -22,10 +22,10 @@
     (i18n/label :t/deleted-this-message)]])
 
 (defn- compute-on-long-press-fn
-  [{:keys [deleted? pinned-by] :as message}
+  [{:keys [deleted? pinned] :as message}
    {:keys [message-pin-enabled] :as context}]
   ;; only show drawer for user who has the permission to unpin messages
-  (when (and pinned-by deleted? message-pin-enabled)
+  (when (and pinned deleted? message-pin-enabled)
     (fn []
       (rf/dispatch [:dismiss-keyboard])
       (rf/dispatch [:bottom-sheet/show-sheet
