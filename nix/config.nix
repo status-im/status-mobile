@@ -14,6 +14,7 @@
 
     status-go = {
       src-override = null;
+      gomobile-src-override = null;
       ipfs-gateway-url = "https://ipfs.status.im/";
     };
   };

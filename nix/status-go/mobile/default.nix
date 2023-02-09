@@ -37,7 +37,7 @@ in {
   ios = callPackage ./build.nix {
     platform = "ios";
     platformVersion = "8.0";
-    targets = [ "ios" "iossimulator" ];
+    targets = [ "iossimulator" ];
     outputFileName = "Statusgo.xcframework";
     inherit meta source buildNimbusLc goBuildLdFlags;
   };

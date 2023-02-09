@@ -9,17 +9,47 @@ self: super:
 
 let
   inherit (super) stdenv stdenvNoCC callPackage;
-in {
-  # Fix for MacOS
-  mkShell = super.mkShell.override { stdenv = stdenvNoCC; };
-
-  # Various utilities
-  utils = callPackage ./tools/utils.nix { };
   lib = (super.lib or { }) // (import ./lib {
     inherit (super) lib;
     inherit (self) config;
   });
 
+  gomobileSrcOverride = "/Users/vvlasov/c/mobile";
+  # Warning message about using local sources
+  localSrcWarn = (path: "Using local gomobile sources from ${path}");
+  localGomobileSrc = rec {
+    owner = "status-im";
+    repo = "mobile";
+    rev = "unknown";
+    shortRev = rev;
+    rawVersion = "develop";
+    cleanVersion = rawVersion;
+    goPackagePath = "github.com/${owner}/${repo}";
+    # We use builtins.path so that we can name the resulting derivation,
+    # Normally the name would not be deterministic, taken from the checkout directory.
+    src = builtins.path rec {
+      path = lib.traceValFn localSrcWarn gomobileSrcOverride;
+      name = "${repo}-source-${shortRev}";
+      # Keep this filter as restrictive as possible in order
+      # to avoid unnecessary rebuilds and limit closure size
+      filter = lib.mkFilter {
+        root = path;
+        include = [ ".*" ];
+        exclude = [
+          ".*/[.]git.*" ".*[.]md" ".*[.]yml" ".*/.*_test.go$"
+          "VERSION" "_assets/.*" "build/.*"
+          ".*/.*LICENSE.*" ".*/CONTRIB.*" ".*/AUTHOR.*"
+        ];
+      };
+    };
+  };
+in {
+  inherit lib;
+  # Fix for MacOS
+  mkShell = super.mkShell.override { stdenv = stdenvNoCC; };
+
+  # Various utilities
+  utils = callPackage ./tools/utils.nix { };
   # Project dependencies
   deps = {
     clojure = callPackage ./deps/clojure { };
@@ -45,10 +75,12 @@ in {
   buildGoPackage = super.buildGo118Package;
   buildGoModule = super.buildGo118Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
-    patches = self.fetchurl { # https://github.com/golang/mobile/pull/84
-      url = "https://github.com/golang/mobile/commit/f20e966e05b8f7e06bed500fa0da81cf6ebca307.patch";
-      sha256 = "sha256-TZ/Yhe8gMRQUZFAs9G5/cf2b9QGtTHRSObBFD5Pbh7Y=";
-    };
+    deleteVendor = true;
+    src = localGomobileSrc.src;
+    # patches = self.fetchurl { # https://github.com/golang/mobile/pull/84
+    #   url = "https://github.com/golang/mobile/commit/f20e966e05b8f7e06bed500fa0da81cf6ebca307.patch";
+    #   sha256 = "sha256-TZ/Yhe8gMRQUZFAs9G5/cf2b9QGtTHRSObBFD5Pbh7Y=";
+    # };
   })).override {
     # FIXME: No Android SDK packages for aarch64-darwin.
     withAndroidPkgs = stdenv.system != "aarch64-darwin";

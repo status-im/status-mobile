@@ -46,6 +46,9 @@ config=''
 if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
     config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
+if [[ -n "${GOMOBILE_SRC_OVERRIDE}" ]]; then
+    config+="status-im.status-go.gomobile-src-override=\"${GOMOBILE_SRC_OVERRIDE}\";"
+fi
 config+="status-im.build-type=\"${BUILD_TYPE}\";"
 
 if [[ -n "$config" ]]; then
