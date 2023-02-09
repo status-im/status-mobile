@@ -83,6 +83,13 @@
   (rf/dispatch [:bottom-sheet/show-sheet
                 {:content (drawers/reactions-and-actions message-data context)}]))
 
+(defn on-long-press
+  [message-data context]
+  (rf/dispatch [:dismiss-keyboard])
+  (rf/dispatch [:bottom-sheet/show-sheet
+                {:content (drawers/reactions-and-actions message-data
+                                                         context)}]))
+
 (defn user-message-content
   [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
    {:keys [chat-id] :as context}]
@@ -99,21 +106,20 @@
              context         (assoc context :on-long-press #(message-on-long-press message-data context))
              response-to     (:response-to content)]
          [rn/touchable-highlight
-          {:underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
-           :style          {:border-radius 16
-                            :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
-           :on-press       (fn []
-                             (when (and outgoing
-                                        (not (= outgoing-status :sending))
-                                        (not @show-delivery-state?))
-                               (reset! show-delivery-state? true)
-                               (js/setTimeout #(reset! show-delivery-state? false)
-                                              delivery-state-showing-time-ms)))
-           :on-long-press  (fn []
-                             (rf/dispatch [:dismiss-keyboard])
-                             (rf/dispatch [:bottom-sheet/show-sheet
-                                           {:content (drawers/reactions-and-actions message-data
-                                                                                    context)}]))}
+          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
+                                  :message-sending
+                                  :message-sent)
+           :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
+           :style               {:border-radius 16
+                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
+           :on-press            (fn []
+                                  (when (and outgoing
+                                             (not (= outgoing-status :sending))
+                                             (not @show-delivery-state?))
+                                    (reset! show-delivery-state? true)
+                                    (js/setTimeout #(reset! show-delivery-state? false)
+                                                   delivery-state-showing-time-ms)))
+           :on-long-press       #(on-long-press message-data context)}
           [rn/view {:style {:padding-vertical 8}}
            (when (and (seq response-to) quoted-message)
              [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
@@ -127,21 +133,23 @@
              [author message-data]
              (case content-type
 
-               constants/content-type-text    [not-implemented/not-implemented
-                                               [content.text/text-content message-data context]]
+               constants/content-type-text
+               [not-implemented/not-implemented [content.text/text-content message-data context]]
 
-               constants/content-type-emoji   [not-implemented/not-implemented
-                                               [old-message/emoji message-data]]
+               constants/content-type-emoji
+               [not-implemented/not-implemented [old-message/emoji message-data]]
 
-               constants/content-type-sticker [not-implemented/not-implemented
-                                               [old-message/sticker message-data]]
+               constants/content-type-sticker
+               [not-implemented/not-implemented [old-message/sticker message-data]]
 
-               constants/content-type-image   [image/image-message 0 message-data context]
+               constants/content-type-audio
+               [not-implemented/not-implemented [old-message/audio message-data]]
 
-               constants/content-type-audio   [not-implemented/not-implemented
-                                               [old-message/audio message-data]]
+               constants/content-type-image
+               [image/image-message 0 message-data context on-long-press]
 
-               constants/content-type-album   [album/album-message message-data context]
+               constants/content-type-album
+               [album/album-message message-data context on-long-press]
 
                [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
              (when @show-delivery-state?
@@ -149,7 +157,7 @@
 
 (defn message-with-reactions
   [{:keys [pinned pinned-by mentioned in-pinned-view? content-type
-           last-in-group? message-id]
+           last-in-group? message-id messages-ids]
     :as   message-data}
    {:keys [chat-id] :as context}]
   [rn/view
@@ -162,4 +170,4 @@
         content-type)
      [system-message-content message-data]
      [user-message-content message-data context])
-   [reactions/message-reactions-row chat-id message-id]])
+   [reactions/message-reactions-row chat-id message-id messages-ids]])

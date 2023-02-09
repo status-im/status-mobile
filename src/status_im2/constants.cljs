@@ -214,8 +214,8 @@
   {2        {0 image-size
              1 image-size}
    3        {0 [(* image-size 2) (* image-size 1.5)]
-             1 [(- image-size 1) (- (* image-size 0.67) 1)]
-             2 [(- image-size 1) (- (* image-size 0.67) 1)]}
+             1 [(- image-size 0.5) (- (* image-size 0.67) 1)]
+             2 [(- image-size 0.5) (- (* image-size 0.67) 1)]}
    4        {0 image-size
              1 image-size
              2 image-size

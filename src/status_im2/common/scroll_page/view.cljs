@@ -36,7 +36,7 @@
    top-nav
    title-colum
    navigate-back?]
-  (let [input-range         (if platform/ios? [-47 10] [0 150])
+  (let [input-range         (if platform/ios? [-47 10] [0 92])
         output-range        (if platform/ios? [-208 0] [-208 -45])
         y                   (reanimated/use-shared-value scroll-height)
         translate-animation (reanimated/interpolate y
@@ -128,9 +128,8 @@
        sticky-header
        children]
       [:<>
-       [:f> scroll-page-header @scroll-height height name
-        page-nav-right-section-buttons cover-image sticky-header top-nav title-colum
-        navigate-back?]
+       [:f> scroll-page-header @scroll-height height name page-nav-right-section-buttons
+        cover-image sticky-header top-nav title-colum navigate-back?]
        [rn/scroll-view
         {:content-container-style         (style/scroll-view-container
                                            (diff-with-max-min @scroll-height 16 0))

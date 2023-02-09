@@ -224,7 +224,8 @@
       {:style {:flex           1
                :flex-direction :row
                :align-items    :center}}
-      [left-section-view left-section put-middle-section-on-left?]
+      (when left-section
+        [left-section-view left-section put-middle-section-on-left?])
       (when put-middle-section-on-left?
         [mid-section-view
          (assoc mid-section-props

@@ -130,7 +130,7 @@
                   [rn/touchable-opacity
                    {:active-opacity 1
                     :on-press       #(rf/dispatch [:navigate-back])
-                    :style          style/camera-button-container}
+                    :style          (style/close-button-container)}
                    [quo/icon :i/close
                     {:size 20 :color (colors/theme-colors colors/black colors/white)}]])
                 [album-title true selected-album selected temporary-selected]

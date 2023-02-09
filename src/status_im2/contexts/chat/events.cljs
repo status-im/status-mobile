@@ -172,7 +172,7 @@
                  ;; used here.
                  (when (and community-id (not navigate-to-shell?))
                    {:dispatch-n [[:shell/add-switcher-card
-                                  :community {:community-id community-id}]]})))
+                                  :community-overview community-id]]})))
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))

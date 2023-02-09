@@ -59,7 +59,7 @@ pipeline {
           projectName: "status-mobile/prs/android-e2e/PR-${params.PR_ID}",
           selector: lastWithArtifacts(),
         )
-        apk_path = "${env.PWD}/${utils.findFile('result/*.apk')}"
+        apk_path = "${env.WORKSPACE}/${utils.findFile('result/*.apk')}"
       } }
     }
 
@@ -127,6 +127,11 @@ pipeline {
           }
         }
       } }
+    }
+  }
+  post {
+    cleanup {
+      sh 'make purge'
     }
   }
 }

@@ -11,6 +11,7 @@
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.menus.community-options.view :as options]
             [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]
+            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.re-frame :as rf]))
 
@@ -319,4 +320,9 @@
         community (rf/sub [:communities/community id])]
     [rn/view
      {:style style/community-overview-container}
-     [community-card-page-view community]]))
+     [community-card-page-view community]
+     [floating-shell-button/floating-shell-button
+      {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+                 :label    (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :bottom   41}]]))

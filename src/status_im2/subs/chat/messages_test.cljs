@@ -10,7 +10,9 @@
   [{:message-id "0x111" :album-id "abc" :albumize? true}
    {:message-id "0x222" :album-id "abc" :albumize? true}
    {:message-id "0x333" :album-id "abc" :albumize? true}
-   {:message-id "0x444" :album-id "abc" :albumize? true}])
+   {:message-id "0x444" :album-id "abc" :albumize? true}
+   {:message-id "0x555" :album-id "edf" :timestamp 10 :content {:text "Wassup!"}}
+   {:message-id "0x666" :album-id "edf" :timestamp 20 :content {:text "Wassup!"}}])
 
 (def messages-albumized-state
   [{:album        [{:message-id "0x444" :album-id "abc" :albumize? true}
@@ -20,7 +22,10 @@
     :album-id     "abc"
     :albumize?    true
     :message-id   "abc"
-    :content-type constants/content-type-album}])
+    :messages-ids ["0x444" "0x333" "0x222" "0x111"]
+    :content-type constants/content-type-album}
+   {:message-id "0x555" :album-id "edf" :timestamp 10 :content {:text "Wassup!"}}
+   {:message-id "0x666" :album-id "edf" :timestamp 20 :content {:text nil}}])
 
 (deftest albumize-messages
   (testing "Finding albums in the messages list"

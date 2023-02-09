@@ -5,8 +5,8 @@
    :align-items        :center
    :height             56
    :padding-vertical   12
-   :margin-bottom      8
-   :padding-horizontal 20})
+   :padding-horizontal 20
+   :background-color   :transparent})
 
 (def title-column-text
   {:accessibility-label :communities-screen-title

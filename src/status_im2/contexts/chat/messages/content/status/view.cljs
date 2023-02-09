@@ -7,7 +7,9 @@
 
 (defn status
   [outgoing-status]
-  [rn/view {:style style/status-container}
+  [rn/view
+   {:accessibility-label :message-status
+    :style               style/status-container}
    [quo/icon
     (if (= outgoing-status :delivered)
       :i/delivered
