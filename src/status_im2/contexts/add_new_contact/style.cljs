@@ -107,6 +107,7 @@
           typography/paragraph-1
           {:flex         1
            :margin-right 5
+           :padding      0
            :color        (colors/theme-colors
                           colors/black
                           colors/white)})})
