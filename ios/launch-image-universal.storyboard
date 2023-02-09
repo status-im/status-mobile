@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lsa-QA-3zn">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lsa-QA-3zn">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,14 +16,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="launch_image" translatesAutoresizingMaskIntoConstraints="NO" id="cqW-9w-FC0">
+                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="cqW-9w-FC0">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" red="0.035294117647058823" green="0.062745098039215685" blue="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </imageView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="2aN-f8-qiu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="cqW-9w-FC0" secondAttribute="bottom" id="2Ue-hX-Tna"/>
+                            <constraint firstAttribute="trailing" secondItem="cqW-9w-FC0" secondAttribute="trailing" id="Sfz-tk-PSg"/>
+                            <constraint firstItem="cqW-9w-FC0" firstAttribute="leading" secondItem="0g6-xG-Wkj" secondAttribute="leading" id="UQo-dC-xeN"/>
+                            <constraint firstItem="cqW-9w-FC0" firstAttribute="top" secondItem="0g6-xG-Wkj" secondAttribute="top" id="YrE-J2-QHf"/>
+                            <constraint firstItem="cqW-9w-FC0" firstAttribute="centerX" secondItem="0g6-xG-Wkj" secondAttribute="centerX" id="ZQS-4G-GAL"/>
+                            <constraint firstItem="cqW-9w-FC0" firstAttribute="centerY" secondItem="0g6-xG-Wkj" secondAttribute="centerY" id="noT-Rj-8Uy"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hOp-FG-FML" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -33,7 +38,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launch_image" width="90" height="101"/>
+        <image name="launch-icon.png" width="84" height="88"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

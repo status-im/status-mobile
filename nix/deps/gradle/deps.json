@@ -480,6 +480,21 @@
   },
 
   {
+    "path": "androidx/core/core-splashscreen/1.0.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "core-splashscreen-1.0.0.pom": {
+        "sha1": "763acf4fa60a08a3c059a4c50d3d54ac34a0cfa2",
+        "sha256": "0arxyx9zlzwlr0h88xmgzlgbjfp3s79pd7mbk3ipfqwkfgbzzmq3"
+      },
+      "core-splashscreen-1.0.0.aar": {
+        "sha1": "6b1eccca966811faafb13f6c2f88351504dc9eae",
+        "sha256": "0wiarwyh5rk7ca54b0i47rs7ix49r2krrvhiqamw8gyaq4yv51iy"
+      }
+    }
+  },
+
+  {
     "path": "androidx/core/core/1.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -10573,6 +10588,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.21",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-common-1.6.21.pom": {
+        "sha1": "747a8ea8a8a4328946cf0252c5ceb2aa0ceb054f",
+        "sha256": "18kbabqzyiv5rzcvxzn28wsk6cxnh7aliiayian2sg7xfgp5dhav"
+      },
+      "kotlin-stdlib-common-1.6.21.jar": {
+        "sha1": "5e5b55c26dbc80372a920aef60eb774b714559b8",
+        "sha256": "0qr34h6pkf6bw6vagc06y78ln6gikj3qq3hrgfai8flzrmcyqfqq"
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -11018,6 +11048,21 @@
       "kotlin-stdlib-1.6.20.jar": {
         "sha1": "6cedc143badbb4f1c6b7f5a340b04edff1743208",
         "sha256": "16dp5hga717xxwy7c189i4c9g17c8j04zg6hh7yk6qmjcwmirdgf"
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib/1.6.21",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-1.6.21.pom": {
+        "sha1": "f44be76009ce4253eaa59b914f4dccc384442016",
+        "sha256": "0d0zmvx7znha69ir50z72n7nzgw4yr6rfzb6mb6kdn0vl1dp4hnf"
+      },
+      "kotlin-stdlib-1.6.21.jar": {
+        "sha1": "11ef67f1900634fd951bad28c53ec957fabbe5b8",
+        "sha256": "14m428q4m7y8srb7z5m0qfq8ic3f62layqwgn9rpacxvf9k5573k"
       }
     }
   },

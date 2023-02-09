@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.provider.Settings;
 import android.os.Bundle;
+import android.os.Handler;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -31,7 +32,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import com.facebook.react.ReactFragmentActivity;
 import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.modules.core.PermissionListener;
-import org.devio.rn.splashscreen.SplashScreen;
+import androidx.core.splashscreen.SplashScreen;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
@@ -42,6 +43,8 @@ public class MainActivity extends NavigationActivity
 
 
     @Nullable private PermissionListener mPermissionListener;
+    private boolean keepSplash = true;
+    private final int SPLASH_DELAY = 3200;
 
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -121,21 +124,8 @@ public class MainActivity extends NavigationActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
-            case Configuration.UI_MODE_NIGHT_YES:
-                setTheme(R.style.DarkTheme);
-                SplashScreen.show(this, R.style.DarkTheme, R.id.lottie);
-                break;
-            case Configuration.UI_MODE_NIGHT_NO:
-                setTheme(R.style.LightTheme);
-                SplashScreen.show(this, R.style.LightTheme, R.id.lottie);
-                break;
-            default:
-                setTheme(R.style.LightTheme);
-                SplashScreen.show(this, R.style.LightTheme, R.id.lottie);
-        }
-        SplashScreen.setAnimationFinished(true);
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        setTheme(R.style.DarkTheme);
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);
 
@@ -196,6 +186,11 @@ public class MainActivity extends NavigationActivity
                 }
             }
         };
+
+        splashScreen.setKeepOnScreenCondition(() -> keepSplash);
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> keepSplash = false, SPLASH_DELAY);
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
