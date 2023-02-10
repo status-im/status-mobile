@@ -36,8 +36,7 @@
    :margin-bottom 20})
 
 (def title-container
-  {:flex            1
-   :flex-direction  :row
+  {:flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
 
@@ -56,10 +55,10 @@
   {:flex         1
    :margin-right 12})
 
-(def request-button
-  {:margin-top      32
-   :margin-bottom   16
-   :flex            1
+(defn bottom-container
+  [safe-area-insets]
+  {:padding-top     32
+   :padding-bottom  (:bottom safe-area-insets)
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-evenly})

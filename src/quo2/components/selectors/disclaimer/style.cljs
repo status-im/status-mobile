@@ -3,8 +3,7 @@
 
 (defn container
   []
-  {:flex             1
-   :flex-direction   :row
+  {:flex-direction   :row
    :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80-opa-40)
    :padding          11
    :align-self       :stretch
