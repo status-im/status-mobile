@@ -74,7 +74,7 @@
            :style  {:line-height 21}}
           name]])
       (if top-nav
-        top-nav
+        [top-nav]
         [quo/page-nav
          (merge {:horizontal-description? true
                  :one-icon-align-left?    true
@@ -89,7 +89,7 @@
                                   :icon-background-color (icon-color)
                                   :on-press              #(rf/dispatch [:navigate-back])}}))])
       (when title-colum
-        title-colum)
+        [title-colum])
       sticky-header]]))
 
 
