@@ -21,6 +21,7 @@
    quo2.components.dividers.divider-label
    quo2.components.dividers.new-messages
    quo2.components.drawers.action-drawers.view
+   quo2.components.drawers.drawer-buttons.view
    quo2.components.drawers.permission-context.view
    quo2.components.dropdowns.dropdown
    quo2.components.header
@@ -126,6 +127,7 @@
 
 ;;;; DRAWERS
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
+(def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; LIST ITEMS

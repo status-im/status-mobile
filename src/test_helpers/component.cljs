@@ -9,6 +9,8 @@
   [component]
   (rtl/render (reagent/as-element component)))
 
+(def mock-fn js/jest.fn)
+
 (defn fire-event
   ([event-name element]
    (fire-event event-name element nil))
@@ -33,6 +35,8 @@
 (defn get-by-label-text
   [label]
   (rtl/screen.getByLabelText (name label)))
+
+
 
 (defn expect [match] (js/expect match))
 

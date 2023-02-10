@@ -12,7 +12,7 @@ module.exports = {
       },
     "testTimeout": 60000,
     "transformIgnorePatterns": [
-        "/node_modules/(?!(@react-native|react-native-haptic-feedback|react-native-redash|react-native-image-crop-picker|@react-native-community|react-native-linear-gradient|react-native-background-timer|react-native|rn-emoji-keyboard|react-native-languages|react-native-shake|react-native-reanimated|react-native-redash|react-native-permissions)/).*/"
+        "/node_modules/(?!(@react-native|react-native-haptic-feedback|react-native-redash|react-native-image-crop-picker|@react-native-community|react-native-linear-gradient|react-native-background-timer|react-native|rn-emoji-keyboard|react-native-languages|react-native-shake|react-native-reanimated|react-native-redash|react-native-permissions|@react-native-community/blur)/).*/"
     ],
     "globals": {
         "__TEST__": true
