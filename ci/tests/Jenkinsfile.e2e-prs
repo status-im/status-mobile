@@ -15,6 +15,10 @@ pipeline {
       description: 'ID of the Pull Request triggering this build.',
     )
     string(
+      name: 'APK_URL',
+      description: 'Optional, set if job require APK to be downloaded from URL.',
+    )
+    string(
       name: 'KEYWORD_EXPRESSION',
       description: 'This will run tests which contain names that match the given string expression  (Optional)',
       defaultValue: '',
@@ -54,9 +58,11 @@ pipeline {
     }
 
     stage('Fetch') {
-      steps { script { /* WARNING: This copies the latest available artifact. */
+      when { expression { !params.APK_URL } }
+      steps { script {
         copyArtifacts(
           projectName: "status-mobile/prs/android-e2e/PR-${params.PR_ID}",
+          /* WARNING: This copies the latest available artifact. */
           selector: lastWithArtifacts(),
         )
         apk_path = "${env.WORKSPACE}/${utils.findFile('result/*.apk')}"
@@ -119,7 +125,7 @@ pipeline {
                 --rerun_count=2 \
                 --testrail_report=True \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --apk=${apk_path} \
+                --apk=${params.APK_URL ?: apk_path} \
                 --build=PR-${params.PR_ID}-${utils.timestamp()} \
                 --pr_number=${params.PR_ID} \
                 ${extraPytestOpts}

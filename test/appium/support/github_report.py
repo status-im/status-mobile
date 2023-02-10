@@ -71,13 +71,11 @@ class GithubHtmlReport(BaseTestReport):
         if not_executed_tests:
             html += "<li><a href=\"%s\">Rerun not executed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
                 pr_id=pr_id,
-                apk_name=apk_name,
                 tr_case_ids=','.join([str(i) for i in tests]))
 
         if failed_tests:
             html += "<li><a href=\"%s\">Rerun failed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
                 pr_id=pr_id,
-                apk_name=apk_name,
                 tr_case_ids=','.join([str(test.testrail_case_id) for test in tests]))
 
         if not not_executed_tests:

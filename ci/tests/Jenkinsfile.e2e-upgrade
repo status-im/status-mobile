@@ -1,3 +1,5 @@
+library 'status-jenkins-lib@v1.6.5'
+
 pipeline {
 
   agent { label 'linux' }

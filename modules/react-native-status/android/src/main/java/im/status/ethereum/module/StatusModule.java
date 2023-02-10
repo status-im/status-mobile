@@ -1139,6 +1139,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         executeRunnableStatusGoMethod(() -> Statusgo.generateAlias(seed), callback);
     }
 
+    @ReactMethod
+    public void emojiHash(final String publicKey, final Callback callback) throws JSONException {
+        executeRunnableStatusGoMethod(() -> Statusgo.emojiHash(publicKey), callback);
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String identicon(final String seed) {
         return Statusgo.identicon(seed);
