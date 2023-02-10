@@ -77,18 +77,30 @@
 
 (defn home-page-comunity-lists
   [{:keys [selected-tab padding-top]}]
-  (fn []
-    [rn/view {:style {:flex 1}}
-     [communities-header selected-tab padding-top]
-     [render-communities-segments selected-tab]]))
+  [rn/view {:style {:flex 1}}
+   [communities-header selected-tab padding-top]
+   [render-communities-segments selected-tab]])
 
 (defn home-sticky-header
   [{:keys [selected-tab scroll-height padding-top]}]
-  (fn []
-    (when (> @scroll-height 80)
-      [rn/view
-       {:style style/blur-tabs-header}
-       [community-segments selected-tab padding-top]])))
+  (when (> @scroll-height 80)
+    [rn/view
+     {:style style/blur-tabs-header}
+     [community-segments selected-tab padding-top]]))
+
+(defn home-nav
+  []
+  [common.home/top-nav
+   {:type        :default
+    :hide-search true
+    :style       {:background-color :transparent}}])
+
+(defn title-column
+  []
+  [common.home/title-column
+   {:label               (i18n/label :t/communities)
+    :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+    :accessibility-label :new-chat-button}])
 
 (defn communities-screen-content
   []
@@ -98,16 +110,8 @@
       [scroll-page/scroll-page
        {:name             (i18n/label :t/communities)
         :on-scroll        #(reset! scroll-height %)
-        :top-nav          (fn []
-                            [common.home/top-nav
-                             {:type        :default
-                              :hide-search true
-                              :style       {:background-color :transparent}}])
-        :title-colum      (fn []
-                            [common.home/title-column
-                             {:label               (i18n/label :t/communities)
-                              :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
-                              :accessibility-label :new-chat-button}])
+        :top-nav          [home-nav]
+        :title-colum      [title-column]
         :background-color (colors/theme-colors
                            colors/white
                            colors/neutral-95)
