@@ -75,13 +75,17 @@ in {
   buildGoPackage = super.buildGo118Package;
   buildGoModule = super.buildGo118Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
-    deleteVendor = true;
-    src = localGomobileSrc.src;
+    src = "/Users/vvlasov/c/mobile";
+    vendorSha256 = "sha256-TZ/Yhe8gMRQUZFAs9G5/cf2b9QGtTHRSObBFD5Pbh7Y=";
     # patches = self.fetchurl { # https://github.com/golang/mobile/pull/84
     #   url = "https://github.com/golang/mobile/commit/f20e966e05b8f7e06bed500fa0da81cf6ebca307.patch";
     #   sha256 = "sha256-TZ/Yhe8gMRQUZFAs9G5/cf2b9QGtTHRSObBFD5Pbh7Y=";
     # };
-  })).override {
+    })).override rec {
+      buildGoModule = args: super.buildGoModule ( args // {
+        src =  "/Users/vvlasov/c/mobile";
+        vendorSha256 = "sha256-C6GD3NMolRIve1siG8wpcQav7ZWTugjce8K22EQDD7M=";
+    });
     # FIXME: No Android SDK packages for aarch64-darwin.
     withAndroidPkgs = stdenv.system != "aarch64-darwin";
     androidPkgs = self.androidEnvCustom.compose;
