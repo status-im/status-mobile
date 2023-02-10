@@ -1,9 +1,9 @@
 (ns status-im2.subs.chat.messages
   (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.messages.list.events :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
-            [utils.datetime :as datetime]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.messages.list.events :as models.message-list]
+            [utils.datetime :as datetime]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -24,7 +24,7 @@
      :acc            (conj acc msg)}
 
     (and (not= last-datemark datemark) ; not the same day
-         (< whisper-timestamp last-timestamp))               ; not out-of-order
+         (< whisper-timestamp last-timestamp)) ; not out-of-order
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc
@@ -32,7 +32,7 @@
                             :type  :datemark}
                            msg)}
     :else
-    {:last-timestamp (min whisper-timestamp last-timestamp)  ; use last datemark
+    {:last-timestamp (min whisper-timestamp last-timestamp) ; use last datemark
      :last-datemark  last-datemark
      :acc            (conj acc (assoc msg :datemark last-datemark))}))
 
@@ -156,7 +156,8 @@
  :chats/pinned
  :<- [:messages/pin-messages]
  (fn [pin-messages [_ chat-id]]
-   (get pin-messages chat-id {})))
+   (let [messages (get pin-messages chat-id {})]
+     (reduce-kv #(assoc-in %1 [%2 :pinned] true) messages messages))))
 
 ;; local messages will not have a :pinned-at key until user navigates away and to
 ;; chat screen. For this reason we want to retain order of local messages with :pinned-at nil

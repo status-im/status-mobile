@@ -19,8 +19,8 @@
 
 (defn pinned-messages-list
   [chat-id]
-  (let [pinned-messages                                          (vec (vals (rf/sub [:chats/pinned
-                                                                                     chat-id])))
+  (let [pinned-messages                                          (rf/sub [:chats/pinned-sorted-list
+                                                                          chat-id])
         current-chat                                             (rf/sub [:chat-by-id chat-id])
 
         {:keys [group-chat chat-id public? community-id admins]}
@@ -63,9 +63,10 @@
                                                   :chat-id         chat-id
                                                   :public?         public?
                                                   :community-id    community-id
+                                                  :show-input?     false
                                                   :admins          admins
                                                   :edit-enabled    true
-                                                  :in-pinned-view? false})
+                                                  :in-pinned-view? true})
          :render-fn   message-render-fn
          :key-fn      list-key-fn
          :separator   quo/separator}]
