@@ -44,7 +44,8 @@
    [status-im2.navigation.events :as navigation]
    [status-im2.common.log :as logging]
    [taoensso.timbre :as log]
-   [utils.security.core :as security]))
+   [utils.security.core :as security]
+   [status-im2.contexts.emoji-hash.events :as emoji-hash]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -473,6 +474,7 @@
               (get-group-chat-invitations)
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
+              (emoji-hash/fetch-for-current-public-key)
               (link-preview/request-link-preview-whitelist)
               (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
               (switcher-cards-store/fetch-switcher-cards-rpc))))
