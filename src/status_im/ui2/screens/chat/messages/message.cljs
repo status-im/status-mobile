@@ -99,7 +99,7 @@
   [{:keys [content content-type edited-at in-popover?]} acc
    {:keys [type ^js literal children]}
    use-status-tag?]
-  
+
   (case type
 
     "paragraph"
@@ -128,7 +128,7 @@
 (defn render-parsed-text
   [{:keys [content chat-id] :as message-data}]
   (let [{:keys [chat-type]} (rf/sub [:chats/chat chat-id])
-        use-status-tag? (= constants/community-chat-type chat-type)]
+        use-status-tag?     (= constants/community-chat-type chat-type)]
     (reduce (fn [acc e]
               (render-block message-data acc e use-status-tag?))
             [:<>]
