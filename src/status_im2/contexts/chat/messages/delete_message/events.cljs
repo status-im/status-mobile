@@ -130,13 +130,15 @@
 (rf/defn undo
   {:events [:chat.ui/undo-delete-message]}
   [{:keys [db]} {:keys [chat-id message-id should-pin-back?]}]
-  (when-let [message (get-in db [:messages chat-id message-id])]
-    (cond-> (message-list/rebuild-message-list
-             {:db (update-db-undo-locally db chat-id message-id)}
-             chat-id)
-      should-pin-back?
-      (assoc :dispatch
-             [:pin-message/send-pin-message-locally (assoc message :pinned true)]))))
+  (when (get-in db [:messages chat-id message-id])
+    (let [effects (message-list/rebuild-message-list
+                   {:db (update-db-undo-locally db chat-id message-id)}
+                   chat-id)
+          message (get-in effects [:db :messages chat-id message-id])]
+      (cond-> effects
+        should-pin-back?
+        (assoc :dispatch
+               [:pin-message/send-pin-message-locally (assoc message :pinned true)])))))
 
 (rf/defn undo-all
   {:events [:chat.ui/undo-all-delete-message]}
@@ -160,22 +162,18 @@
   [{:keys [db]} {:keys [message-id chat-id]} force?]
   (when-let [message (get-in db [:messages chat-id message-id])]
     (when (or force? (check-before-delete-and-send db chat-id message-id))
-      (let [unpin? (should-and-able-to-unpin-to-be-deleted-message
-                    db
-                    {:chat-id chat-id :message-id message-id})]
-        (cond-> {:db            (update-db-clear-undo-timer db chat-id message-id)
-                 :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                                  :params      [message-id]
-                                  :js-response true
-                                  :on-error    #(log/error "failed to delete message "
-                                                           {:message-id message-id :error %})
-                                  :on-success  #(rf/dispatch
-                                                 [:sanitize-messages-and-process-response
-                                                  %])}]}
-          unpin?
-          (assoc :dispatch
-                 [:pin-message/send-pin-message
-                  {:chat-id chat-id :message-id message-id :pinned false}]))))))
+      {:db            (update-db-clear-undo-timer db chat-id message-id)
+       :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
+                        :params      [message-id]
+                        :js-response true
+                        :on-error    #(log/error "failed to delete message "
+                                                 {:message-id message-id :error %})
+                        :on-success  #(rf/dispatch
+                                       [:sanitize-messages-and-process-response
+                                        %])}]
+       :dispatch
+       [:pin-message/send-pin-message
+        {:chat-id chat-id :message-id message-id :pinned false}]})))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"
