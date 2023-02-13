@@ -36,7 +36,7 @@
    top-nav
    title-colum
    navigate-back?]
-  (let [input-range         (if platform/ios? [-47 10] [0 92])
+  (let [input-range         (if platform/ios? [-47 10] [0 10])
         output-range        (if platform/ios? [-208 0] [-208 -45])
         y                   (reanimated/use-shared-value scroll-height)
         translate-animation (reanimated/interpolate y
@@ -60,8 +60,11 @@
        :overlay-color :transparent
        :style         (style/blur-slider translate-animation height)}]
      [rn/view
-      {:style {:z-index    6
-               :margin-top (if platform/ios? 44 0)}}
+      {:style {:z-index  6
+               :position :absolute
+               :top      0
+               :left     0
+               :right    0}}
       (when cover
         [reanimated/view
          {:style (style/sticky-header-title opacity-animation)}
@@ -74,7 +77,8 @@
            :style  {:line-height 21}}
           name]])
       (if top-nav
-        top-nav
+        [rn/view {:margin-top (if platform/ios? 44 0)}
+         top-nav]
         [quo/page-nav
          (merge {:horizontal-description? true
                  :one-icon-align-left?    true
@@ -155,8 +159,7 @@
           [rn/view
            {:flex             1
             :border-radius    (diff-with-max-min @scroll-height 16 0)
-            :background-color background-color
-            :padding-top      48}
+            :background-color background-color}
            (when cover-image
              [:f> display-picture @scroll-height cover-image])
            children])]])))
