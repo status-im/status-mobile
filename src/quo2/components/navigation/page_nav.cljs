@@ -5,7 +5,8 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [status-im.utils.platform :as platform]))
 
 (def ^:private centrify-style
   {:display         :flex
