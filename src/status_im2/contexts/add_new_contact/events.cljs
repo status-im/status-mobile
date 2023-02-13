@@ -6,8 +6,10 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.native-module.core :as status]
+            [status-im2.navigation.events :as navigation]
             [status-im2.utils.validators :as validators]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :contacts/decompress-public-key
@@ -109,3 +111,10 @@
   {:events [:contacts/clear-new-identity :contacts/new-chat-focus]}
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
+
+(rf/defn scan-qr-code
+  {:events [:contacts/qr-code-scanned]}
+  [{:keys [db] :as cofx} input]
+  (rf/merge cofx
+            (set-new-identity input)
+            (navigation/navigate-back)))
