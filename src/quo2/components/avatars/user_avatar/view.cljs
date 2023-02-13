@@ -1,4 +1,4 @@
-(ns quo2.components.avatars.user-avatar
+(ns quo2.components.avatars.user-avatar.view
   (:require [clojure.string :as string]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]

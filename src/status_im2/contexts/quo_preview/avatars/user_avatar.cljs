@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.avatars.user-avatar
-  (:require [quo2.components.avatars.user-avatar :as quo2]
+  (:require [quo2.components.avatars.user-avatar.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]

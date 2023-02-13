@@ -5,7 +5,7 @@
     quo2.components.avatars.channel-avatar
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
-    quo2.components.avatars.user-avatar
+    quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
     quo2.components.buttons.button
@@ -102,7 +102,7 @@
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
-(def user-avatar quo2.components.avatars.user-avatar/user-avatar)
+(def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
 
 ;;;; BANNER

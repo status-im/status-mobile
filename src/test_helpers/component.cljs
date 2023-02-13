@@ -30,6 +30,10 @@
   [text]
   (rtl/screen.getByText text))
 
+(defn find-by-text
+  [text]
+  (rtl/screen.findByText text))
+
 (defn get-by-label-text
   [label]
   (rtl/screen.getByLabelText (name label)))
