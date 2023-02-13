@@ -35,6 +35,12 @@
         (reduce + 0))))
 
 (re-frame/reg-sub
+ :activity-center/mark-all-as-read-undoable-till
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:mark-all-as-read-undoable-till activity-center)))
+
+(re-frame/reg-sub
  :activity-center/filter-status
  :<- [:activity-center]
  (fn [activity-center]

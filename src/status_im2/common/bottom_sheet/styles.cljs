@@ -4,12 +4,12 @@
 (def border-radius 20)
 
 (defn handle
-  []
+  [override-theme]
   {:position         :absolute
    :top              8
    :width            32
    :height           4
-   :background-color (colors/theme-colors colors/neutral-100 colors/white)
+   :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
    :opacity          0.1
    :border-radius    100
    :align-self       :center})
@@ -40,17 +40,17 @@
    :padding-bottom (if bottom-safe-area-spacing? (:bottom insets) 0)})
 
 (defn selected-background
-  []
+  [override-theme]
   {:border-radius     12
    :padding-left      12
    :margin-horizontal 8
    :margin-bottom     10
    :height            48
-   :background-color  (colors/theme-colors colors/white colors/neutral-90)})
+   :background-color  (colors/theme-colors colors/white colors/neutral-90 override-theme)})
 
 (defn background
-  []
-  {:background-color        (colors/theme-colors colors/white colors/neutral-95)
+  [override-theme]
+  {:background-color        (colors/theme-colors colors/white colors/neutral-95 override-theme)
    :flex                    1
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius})
