@@ -115,8 +115,7 @@
                           colors/black
                           colors/white)})})
 
-(defn button-paste
-  []
+(def button-paste
   {:type  :outline
    :size  24
    :style {:margin-top 6}})
