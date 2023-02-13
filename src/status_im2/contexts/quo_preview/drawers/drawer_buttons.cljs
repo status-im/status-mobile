@@ -44,11 +44,10 @@
     {:container-style {:margin-left  40
                        :margin-right 24}
      :top-card        {:on-press #(js/alert "top card clicked")
-                       :heading  (:top-heading @state)
-                       :children (:top-sub-heading @state)}
+                       :heading  (:top-heading @state)}
      :bottom-card     {:on-press #(js/alert "bottom card clicked")
-                       :heading  (:bottom-heading @state)
-                       :children text-with-link}}]])
+                       :heading  (:bottom-heading @state)}}
+    (:top-sub-heading @state) [text-with-link]]])
 
 (defn cool-preview
   []
@@ -60,7 +59,7 @@
        [rn/view {:padding-bottom 400}
         [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60}
-         (render-drawer-buttons state)]]])))
+         [render-drawer-buttons state]]]])))
 
 (defn preview-drawer-buttons
   []

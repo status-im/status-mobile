@@ -7,49 +7,39 @@
 
 (defn render-bottom
   [children]
-  [rn/view
-   {:flex-direction  :row
-    :justify-content :space-between}
-   [children]
+  [rn/view {:style style/bottom-container}
+   children
    [rn/view
-    {:style {:border-radius   40
-             :border-width    1
-             :margin-left     24
-             :height          28
-             :width           28
-             :justify-content :center
-             :align-items     :center
-             :border-color    (colors/alpha colors/white 0.05)}}
+    {:style style/bottom-icon}
     [icon/icon :arrow-right
      {:color colors/white
-
       :size  20}]]])
+
+(defn label? [el] (or (string? el) (keyword? el)))
 
 (defn render-children-bottom
   [children]
-  (if (or (string? children) (keyword children))
+  (if (label? children)
     [render-bottom
-     (fn []
-       [text/text
-        {:size   :paragraph-2
-         :style  {:flex  1
-                  :color (colors/alpha colors/white 0.7)}
-         :weight :semi-bold}
-        children])]
+     [text/text
+      {:size   :paragraph-2
+       :style  style/bottom-text
+       :weight :semi-bold}
+      children]]
     [render-bottom children]))
 
 (defn render-children-top
   [children]
-  (if (or (string? children) (keyword children))
+  (if (label? children)
     [text/text
      {:size   :paragraph-2
-      :style  {:color (colors/alpha colors/white 0.7)}
+      :style  style/top-text
       :weight :semi-bold}
      children]
-    [children]))
+    children))
 
 (defn card
-  [{:keys [on-press style heading children gap is-top?]}]
+  [{:keys [on-press style heading gap top?]} children]
   [rn/touchable-highlight
    {:on-press       on-press
     :border-radius  20
@@ -58,12 +48,10 @@
    [rn/view {}
     [text/text
      {:size   :heading-1
-      :style  {:color         colors/white
-               :margin-bottom gap}
-
+      :style  (style/heading-text gap)
       :weight :semi-bold}
      heading]
-    (if is-top?
+    (if top?
       [render-children-top children]
       [render-children-bottom children])]])
 
@@ -72,20 +60,21 @@
    opts
    {:container-style  style-object
     :top-card         { :on-press event
-                        :heading  string 
-                        :children string or render-fn}
+                        :heading  string}
     :bottom-card      { :on-press event
-                        :heading  string 
-                        :children string or render-fn}}"
-  [{:keys [container-style top-card bottom-card]}]
+                        :heading  string}}
+    child-1           string, keyword or hiccup
+    child-2           string, keyword or hiccup
+   "
+  [{:keys [container-style top-card bottom-card]} child-1 child-2]
   [rn/view
    {:style (merge container-style style/outer-container)}
    [card
-    (merge {:gap     4
-            :is-top? true
-            :style   style/top-card}
-           top-card)]
+    (merge {:gap   4
+            :top?  true
+            :style style/top-card}
+           top-card) child-1]
    [card
     (merge {:style style/bottom-card
             :gap   20}
-           bottom-card)]])
+           bottom-card) child-2]])
