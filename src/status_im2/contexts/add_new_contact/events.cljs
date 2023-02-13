@@ -112,7 +112,7 @@
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
 
-(rf/defn scan-qr-code
+(rf/defn qr-code-scanned
   {:events [:contacts/qr-code-scanned]}
   [{:keys [db] :as cofx} input]
   (rf/merge cofx
