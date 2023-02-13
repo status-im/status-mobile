@@ -2,6 +2,7 @@
   (:require [quo2.components.banners.banner.component-spec]
             [quo2.components.buttons.--tests--.buttons-component-spec]
             [quo2.components.counter.--tests--.counter-component-spec]
+            [quo2.components.small-option-card.--tests--.small-option-card-component-spec]
             [quo2.components.dividers.--tests--.divider-label-component-spec]
             [quo2.components.drawers.action-drawers.component-spec]
             [quo2.components.drawers.permission-context.component-spec]
