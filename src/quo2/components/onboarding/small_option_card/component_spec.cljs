@@ -1,5 +1,5 @@
-(ns quo2.components.small-option-card.--tests--.small-option-card-component-spec
-  (:require [quo2.components.small-option-card.view :as small-option-card]
+(ns quo2.components.onboarding.small-option-card.component-spec
+  (:require [quo2.components.onboarding.small-option-card.view :as small-option-card]
             [status-im.react-native.resources :as resources]
             [test-helpers.component :as h]))
 

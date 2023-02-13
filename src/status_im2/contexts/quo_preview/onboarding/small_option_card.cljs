@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.onboarding.small-option-card
   (:require
    [quo.react-native :as rn]
-   [quo2.components.small-option-card.view :as quo2]
+   [quo2.components.onboarding.small-option-card.view :as quo2]
    [quo2.foundations.colors :as colors]
    [reagent.core :as reagent]
    [status-im.react-native.resources :as resources]

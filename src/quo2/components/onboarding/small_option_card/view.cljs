@@ -1,6 +1,6 @@
-(ns quo2.components.small-option-card.view
+(ns quo2.components.onboarding.small-option-card.view
   (:require [quo2.components.markdown.text :as text]
-            [quo2.components.small-option-card.style :as style]
+            [quo2.components.onboarding.small-option-card.style :as style]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]))

@@ -1,4 +1,4 @@
-(ns quo2.components.small-option-card.style
+(ns quo2.components.onboarding.small-option-card.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def text-container {:flex 1})
