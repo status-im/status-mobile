@@ -1,6 +1,6 @@
 (ns quo2.components.navigation.page-nav
   (:require [clojure.string :as string]
-            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
