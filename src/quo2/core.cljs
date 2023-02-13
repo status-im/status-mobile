@@ -50,6 +50,7 @@
    quo2.components.separator
    quo2.components.settings.accounts.view
    quo2.components.settings.privacy-option
+   quo2.components.small-option-card.view
    quo2.components.tabs.account-selector
    quo2.components.tabs.tabs
    quo2.components.tags.context-tags
@@ -100,6 +101,9 @@
 
 ;;;; BANNER
 (def banner quo2.components.banners.banner.view/banner)
+
+;;;; CARDS
+(def small-option-card quo2.components.small-option-card.view/small-option-card)
 
 ;;;; COMMUNITY
 (def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
