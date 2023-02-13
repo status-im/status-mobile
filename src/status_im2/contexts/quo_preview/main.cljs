@@ -68,6 +68,7 @@
    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
+   [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
    [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]))
 
@@ -105,6 +106,9 @@
                            {:name      :dynamic-button
                             :insets    {:top false}
                             :component dynamic-button/preview-dynamic-button}]
+   :cards                 [{:name      :small-option-card
+                            :insets    {:top false}
+                            :component small-option-card/preview-small-option-card}]
    :code                  [{:name      :snippet
                             :insets    {:top false}
                             :component code-snippet/preview-code-snippet}]
