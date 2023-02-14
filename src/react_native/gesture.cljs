@@ -1,6 +1,6 @@
 (ns react-native.gesture
   (:require ["react-native-gesture-handler" :refer
-             (GestureDetector Gesture gestureHandlerRootHOC TapGestureHandler State)]
+             (GestureDetector Gesture gestureHandlerRootHOC)]
             [reagent.core :as reagent]))
 
 (def gesture Gesture)

@@ -71,27 +71,26 @@
     (.Tap gesture/gesture)
     (.numberOfTaps 2)
     (.onStart (fn [evt]
+                ;; Scale to x2
                 (if (= (get-val scale) min-scale)
-                  ;; Scale to x2
-                  (do
-                    ;; Find translate-x value
-                    (let [focal-x     (- (/ width 2) (.-x evt))
-                          max-pan-x   (get-max-offset width width double-tap-scale)
-                          translate-x (min (Math/abs focal-x) max-pan-x)
-                          translate-x (if (neg? focal-x) (- translate-x) translate-x)
-                          ;; Find translate-y value
-                          focal-y     (- (/ height 2) (.-y evt))
-                          max-pan-y   (get-max-offset height screen-height double-tap-scale)
-                          translate-y (min (Math/abs focal-y) max-pan-y)
-                          translate-y (if (neg? focal-y) (- translate-y) translate-y)]
-                      ;; apply animations
-                      (set-val pan-x (timing translate-x))
-                      (set-val pan-x-start (timing translate-x))
-                      ;; animate y position only if the double-tap-scale exceeds the threshold
-                      (when (> double-tap-scale y-threshold-scale)
-                        (set-val pan-y (timing translate-y))
-                        (set-val pan-y-start (timing translate-y)))
-                      (rescale double-tap-scale)))
+                  ;; Find translate-x value
+                  (let [focal-x     (- (/ width 2) (.-x evt))
+                        max-pan-x   (get-max-offset width width double-tap-scale)
+                        translate-x (min (Math/abs focal-x) max-pan-x)
+                        translate-x (if (neg? focal-x) (- translate-x) translate-x)
+                        ;; Find translate-y value
+                        focal-y     (- (/ height 2) (.-y evt))
+                        max-pan-y   (get-max-offset height screen-height double-tap-scale)
+                        translate-y (min (Math/abs focal-y) max-pan-y)
+                        translate-y (if (neg? focal-y) (- translate-y) translate-y)]
+                    ;; apply animations
+                    (set-val pan-x (timing translate-x))
+                    (set-val pan-x-start (timing translate-x))
+                    ;; animate y position only if the double-tap-scale exceeds the threshold
+                    (when (> double-tap-scale y-threshold-scale)
+                      (set-val pan-y (timing translate-y))
+                      (set-val pan-y-start (timing translate-y)))
+                    (rescale double-tap-scale))
                   ;; Otherwise scale back to x1
                   (rescale min-scale))))))
 
@@ -171,15 +170,14 @@
              (set-val pinch-x (timing init-offset))
              (set-val pinch-x-start (timing init-offset)))
            ;; Otherwise, apply animations
-           (do
-             (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-x))
-                   upper-bound (- (Math/abs max-offset) (get-val pinch-x))]
-               (set-val pan-x-start (get-val pan-x))
-               ;; Apply decaying animation
-               (set-val-decay pan-x (* (.-velocityX evt) velocity-factor) [lower-bound upper-bound])
-               (set-val-decay pan-x-start
-                              (* (.-velocityX evt) velocity-factor)
-                              [lower-bound upper-bound])))))))))
+           (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-x))
+                 upper-bound (- (Math/abs max-offset) (get-val pinch-x))]
+             (set-val pan-x-start (get-val pan-x))
+             ;; Apply decaying animation
+             (set-val-decay pan-x (* (.-velocityX evt) velocity-factor) [lower-bound upper-bound])
+             (set-val-decay pan-x-start
+                            (* (.-velocityX evt) velocity-factor)
+                            [lower-bound upper-bound]))))))))
 
 
 (defn pan-y-gesture
@@ -213,15 +211,14 @@
              (set-val pinch-y-start (timing init-offset)))
            ;; Otherwise, apply animations
            :else
-           (do
-             (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-y))
-                   upper-bound (- (Math/abs max-offset) (get-val pinch-y))]
-               (set-val pan-y-start (get-val pan-y))
-               ;; Apply decaying animation
-               (set-val-decay pan-y (* (.-velocityY evt) velocity-factor) [lower-bound upper-bound])
-               (set-val-decay pan-y-start
-                              (* (.-velocityY evt) velocity-factor)
-                              [lower-bound upper-bound])))))))))
+           (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-y))
+                 upper-bound (- (Math/abs max-offset) (get-val pinch-y))]
+             (set-val pan-y-start (get-val pan-y))
+             ;; Apply decaying animation
+             (set-val-decay pan-y (* (.-velocityY evt) velocity-factor) [lower-bound upper-bound])
+             (set-val-decay pan-y-start
+                            (* (.-velocityY evt) velocity-factor)
+                            [lower-bound upper-bound]))))))))
 
 ;; A helper method to rescale and reset values
 (defn rescale-image
@@ -231,22 +228,21 @@
            pinch-y-start]}
    {:keys [pan-x-enabled? pan-y-enabled? x-threshold-scale y-threshold-scale focal-x focal-y]}]
   (let [duration (if exit? 100 default-duration)]
-    (do
-      (set-val scale (timing value duration))
-      (set-val saved-scale (timing value duration))
-      (when (= value min-scale)
-        (set-val pan-x (timing init-offset duration))
-        (set-val pinch-x (timing init-offset duration))
-        (set-val pan-x-start (timing init-offset duration))
-        (set-val pinch-x-start (timing init-offset duration))
-        (set-val pan-y (timing init-offset duration))
-        (set-val pinch-y (timing init-offset duration))
-        (set-val pinch-y-start (timing init-offset duration))
-        (set-val pan-y-start (timing init-offset duration))
-        (reset! focal-x nil)
-        (reset! focal-y nil))
-      (reset! pan-x-enabled? (> value x-threshold-scale))
-      (reset! pan-y-enabled? (> value y-threshold-scale)))))
+    (set-val scale (timing value duration))
+    (set-val saved-scale (timing value duration))
+    (when (= value min-scale)
+      (set-val pan-x (timing init-offset duration))
+      (set-val pinch-x (timing init-offset duration))
+      (set-val pan-x-start (timing init-offset duration))
+      (set-val pinch-x-start (timing init-offset duration))
+      (set-val pan-y (timing init-offset duration))
+      (set-val pinch-y (timing init-offset duration))
+      (set-val pinch-y-start (timing init-offset duration))
+      (set-val pan-y-start (timing init-offset duration))
+      (reset! focal-x nil)
+      (reset! focal-y nil))
+    (reset! pan-x-enabled? (> value x-threshold-scale))
+    (reset! pan-y-enabled? (> value y-threshold-scale))))
 
 ;; On ios, when attempting to navigate back while zoomed in, the shared-element transition
 ;; animation doesn't execute properly, so we need to zoom out first
