@@ -4,10 +4,10 @@
 (def swipe-action-width 72)
 (def swipe-button-border-radius 16)
 
-(def user-avatar-tag
+(def tag
   {:background-color colors/white-opa-10})
 
-(def user-avatar-tag-text
+(def tag-text
   {:color colors/white})
 
 (def left-swipe-opacity-interpolation-js

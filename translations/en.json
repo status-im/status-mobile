@@ -1975,5 +1975,11 @@
     "strength-divider-weak-label": "Weak",
     "strength-divider-okay-label": "Okay",
     "strength-divider-strong-label": "Strong",
-    "strength-divider-very-strong-label": "Very strong"
+    "strength-divider-very-strong-label": "Very strong",
+    "community-request-accepted": "Request accepted",
+    "community-request-accepted-body-text": "Now you are a member of",
+    "community-request-not-accepted": "Request hasn't been accepted",
+    "community-request-not-accepted-body-text": "Your request to join {{community-name}} hasn't been accepted",
+    "community-request-pending": "Request pending",
+    "community-request-pending-body-text": "You requested to join"
 }

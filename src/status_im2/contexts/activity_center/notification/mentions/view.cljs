@@ -1,20 +1,13 @@
 (ns status-im2.contexts.activity-center.notification.mentions.view
   (:require [clojure.string :as string]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.gesture :as gesture]
             [status-im2.contexts.activity-center.notification.common.view :as common]
+            [status-im2.contexts.activity-center.notification.common.style :as common-style]
             [status-im2.contexts.activity-center.notification.mentions.style :as style]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-(def tag-params
-  {:size           :small
-   :override-theme :dark
-   :color          colors/primary-50
-   :style          style/tag
-   :text-style     style/tag-text})
 
 (defn message-body
   [message]
@@ -22,7 +15,7 @@
         parsed-text-children (:children (first parsed-text))]
     (into [quo/text
            {:number-of-lines     1
-            :style               style/tag-text
+            :style               common-style/tag-text
             :accessibility-label :activity-message-body
             :size                :paragraph-1}]
           (map-indexed (fn [index {:keys [type literal]}]
@@ -64,8 +57,8 @@
        :timestamp (datetime/timestamp->relative timestamp)
        :unread?   (not read)
        :context   [[common/user-avatar-tag author]
-                   [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
+                   [quo/text {:style common-style/tag-text} (string/lower-case (i18n/label :t/on))]
                    (if community-chat?
-                     [quo/context-tag tag-params {:uri community-image} community-name chat-name]
-                     [quo/group-avatar-tag chat-name tag-params])]
+                     [quo/context-tag common/tag-params {:uri community-image} community-name chat-name]
+                     [quo/group-avatar-tag chat-name common/tag-params])]
        :message   {:body (message-body message)}}]]))

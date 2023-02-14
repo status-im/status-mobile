@@ -12,6 +12,8 @@
             [status-im2.contexts.activity-center.notification.membership.view :as membership]
             [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
+            [status-im2.contexts.activity-center.notification.community-request.view :as
+             community-request]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -196,7 +198,12 @@
             [admin/view notification set-swipeable-height]]
 
            (some types/membership [type])
-           [membership/view notification]
+           (case type
+             types/private-group-chat [membership/view notification]
+
+             types/community-request  [community-request/view notification]
+
+             nil)
 
            :else
            nil)]))))

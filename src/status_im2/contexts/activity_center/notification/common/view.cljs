@@ -8,15 +8,17 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(def tag-params
+  {:size           :small
+   :override-theme :dark
+   :color          colors/primary-50
+   :style          style/tag
+   :text-style     style/tag-text})
+
 (defn user-avatar-tag
   [user-id]
   (let [contact (rf/sub [:contacts/contact-by-identity user-id])]
-    [quo/user-avatar-tag
-     {:color          :purple
-      :override-theme :dark
-      :size           :small
-      :style          style/user-avatar-tag
-      :text-style     style/user-avatar-tag-text}
+    [quo/user-avatar-tag tag-params
      (:primary-name contact)
      (multiaccounts/displayed-photo contact)]))
 

@@ -1,23 +1,16 @@
 (ns status-im2.contexts.activity-center.notification.reply.view
   (:require [clojure.string :as string]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.gesture :as gesture]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
+            [status-im2.contexts.activity-center.notification.common.style :as common-style]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-(def tag-params
-  {:size           :small
-   :override-theme :dark
-   :color          colors/primary-50
-   :style          style/tag
-   :text-style     style/tag-text})
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn get-message-content
@@ -32,7 +25,7 @@
     ;; NOTE: The following type (system-text) doesn't have a design yet.
     ;; https://github.com/status-im/status-mobile/issues/14915
     constants/content-type-system-text [not-implemented/not-implemented
-                                        [quo/text {:style style/tag-text}
+                                        [quo/text {:style common-style/tag-text}
                                          (get-in message [:content :text])]]
 
     nil))
@@ -68,7 +61,7 @@
        :context   [[common/user-avatar-tag author]
                    [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
                    (if community-chat?
-                     [quo/context-tag tag-params {:uri community-image} community-name chat-name]
-                     [quo/group-avatar-tag chat-name tag-params])]
+                     [quo/context-tag common/tag-params {:uri community-image} community-name chat-name]
+                     [quo/group-avatar-tag chat-name common/tag-params])]
        :message   {:body-number-of-lines 1
                    :body                 (get-message-content message)}}]]))
