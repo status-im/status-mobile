@@ -6,14 +6,12 @@
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
+            [react-native.core :as rn]
             [utils.re-frame :as rf]
-            [status-im.ui.components.toolbar :as toolbar]
             [status-im2.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui2.screens.chat.components.new-chat.styles :as style]
-            [quo.components.safe-area :as safe-area]
             [status-im.react-native.resources :as resources]))
 
 (defn- hide-sheet-and-dispatch
@@ -33,11 +31,11 @@
 
 (defn- no-contacts-view
   []
-  [react/view
+  [rn/view
    {:style {:justify-content :center
             :align-items     :center
             :margin-top      120}}
-   [react/image
+   [rn/image
     {:source (resources/get-image (if (quo2.colors/dark?) :no-contacts-dark :no-contacts))}]
    [text/text
     {:weight :semi-bold
@@ -74,9 +72,8 @@
            added?                                       (reagent/atom '())
            {:keys [nickname ens-name three-words-name]} names
            first-username                               (or ens-name nickname three-words-name)
-           no-contacts?                                 (empty? contacts)
-           safe-area                                    (safe-area/use-safe-area)]
-       [react/view {:style {:height (* window-height 0.9)}}
+           no-contacts?                                 (empty? contacts)]
+       [rn/view {:style {:height (* window-height 0.9)}}
         [quo2/button
          {:type                      :grey
           :icon                      true
@@ -85,7 +82,7 @@
           :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                                quo2.colors/neutral-90)}
          :i/close]
-        [react/view style/contact-selection-heading
+        [rn/view style/contact-selection-heading
          [quo2/text
           {:weight :semi-bold
            :size   :heading-1
@@ -99,9 +96,8 @@
             (i18n/label :t/selected-count-from-max
                         {:selected (inc selected-contacts-count)
                          :max      constants/max-group-chat-participants})])]
-        [react/view
-         {:style {:height        430
-                  :margin-bottom -20}}
+        [rn/view
+         {:style {:flex 1}}
          (if no-contacts?
            [no-contacts-view]
            [contact-list/contact-list
@@ -110,21 +106,19 @@
              :added?            added?
              :search?           false
              :start-a-new-chat? true
-             :on-toggle         on-toggle}])]
+             :on-toggle         on-toggle}
+            70])]
         (when contacts-selected?
-          [toolbar/toolbar
-           {:size         :default
-            :show-border? false
-            :center       [button/button
-                           {:type                :primary
-                            :accessibility-label :next-button
-                            :style               (style/chat-button safe-area)
-                            :on-press            (fn []
-                                                   (if one-contact-selected?
-                                                     (hide-sheet-and-dispatch [:chat.ui/start-chat
-                                                                               public-key])
-                                                     (hide-sheet-and-dispatch [:navigate-to
-                                                                               :new-group])))}
-                           (if one-contact-selected?
-                             (i18n/label :t/chat-with {:selected-user first-username})
-                             (i18n/label :t/setup-group-chat))]}])]))])
+          [button/button
+           {:type                :primary
+            :style               style/chat-button
+            :accessibility-label :next-button
+            :on-press            (fn []
+                                   (if one-contact-selected?
+                                     (hide-sheet-and-dispatch [:chat.ui/start-chat
+                                                               public-key])
+                                     (hide-sheet-and-dispatch [:navigate-to
+                                                               :new-group])))}
+           (if one-contact-selected?
+             (i18n/label :t/chat-with {:selected-user first-username})
+             (i18n/label :t/setup-group-chat))])]))])

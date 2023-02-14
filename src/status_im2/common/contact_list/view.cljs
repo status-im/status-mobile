@@ -9,7 +9,7 @@
   [quo/divider-label {:label title}])
 
 (defn contact-list
-  [data]
+  [data padding-bottom]
   (let [contacts (if (:group data)
                    (rf/sub [:contacts/grouped-by-first-letter])
                    (rf/sub [:contacts/filtered-active-sections]))]
@@ -18,6 +18,6 @@
       :sticky-section-headers-enabled false
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
-      :content-container-style        {:padding-bottom 20}
+      :content-container-style        {:padding-bottom (or padding-bottom 20)}
       :render-data                    data
       :render-fn                      contact-list-item/contact-list-item}]))
