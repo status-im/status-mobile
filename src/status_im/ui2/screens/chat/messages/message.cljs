@@ -38,7 +38,8 @@
   (rf/sub [:messages/resolve-mention from]))
 
 (defn render-inline
-  [_message-text content-type acc {:keys [type literal destination]} use-status-tag?]
+  [_message-text content-type acc {:keys [type literal destination]} use-status-tag?
+   community-channel-names-and-ids community-id current-chat-id]
   (case type
     ""
     (conj acc literal)
@@ -78,14 +79,19 @@
                     #(rf/dispatch [:chat.ui/show-profile literal]))}
        [mention-element literal]]])
     "status-tag"
-    (conj acc
-          [rn/text
-           (when use-status-tag?
-             {:style    {:color                :blue
-                         :text-decoration-line :underline}
-              :on-press #(rf/dispatch [:chat.ui/start-public-chat literal])})
-           "#"
-           literal])
+    (let [{:keys [id] :as channel-to-open} (some #(when (= (:name %) literal)
+                                                    %)
+                                                 community-channel-names-and-ids)]
+      (conj acc
+            [rn/text
+             (when (and channel-to-open
+                        use-status-tag?)
+               {:style    {:color                :blue
+                           :text-decoration-line :underline}
+                :on-press #(when-not (= current-chat-id (str community-id id))
+                             (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))})
+             "#"
+             literal]))
 
     "edited"
     (conj acc [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
@@ -96,14 +102,22 @@
 (defn render-block
   [{:keys [content content-type edited-at in-popover?]} acc
    {:keys [type ^js literal children]}
-   use-status-tag?]
+   use-status-tag? community-channel-names-and-ids community-id current-chat-id]
 
   (case type
 
     "paragraph"
     (conj acc
           (reduce
-           (fn [acc e] (render-inline (:text content) content-type acc e use-status-tag?))
+           (fn [acc e]
+             (render-inline (:text content)
+                            content-type
+                            acc
+                            e
+                            use-status-tag?
+                            community-channel-names-and-ids
+                            community-id
+                            current-chat-id))
            [rn/text (style/text-style content-type in-popover?)]
            (conj
             children
@@ -124,11 +138,25 @@
     acc))
 
 (defn render-parsed-text
-  [{:keys [content chat-id] :as message-data}]
-  (let [{:keys [chat-type]} (rf/sub [:chats/chat chat-id])
-        use-status-tag?     (= constants/community-chat-type chat-type)]
+  [{:keys [content chat-id]
+    :as   message-data}]
+  (let [{:keys [chat-type community-id]} (rf/sub [:chats/chat chat-id])
+        community-channels               (first (vals (rf/sub [:communities/categorized-channels
+                                                               community-id])))
+        current-chat-id                  (rf/sub [:chats/current-chat-id])
+        community-channel-names-and-ids  (mapv (fn [{:keys [name id]}]
+                                                 {:name name
+                                                  :id   id})
+                                               community-channels)
+        use-status-tag?                  (= constants/community-chat-type chat-type)]
     (reduce (fn [acc e]
-              (render-block message-data acc e use-status-tag?))
+              (render-block message-data
+                            acc
+                            e
+                            use-status-tag?
+                            community-channel-names-and-ids
+                            community-id
+                            current-chat-id))
             [:<>]
             (:parsed-text content))))
 
@@ -224,7 +252,7 @@
   [rn/view style/status-container
    [rn/text {:style (style/status-text)}
     (reduce
-     (fn [acc e] (render-inline (:text content) content-type acc e false))
+     (fn [acc e] (render-inline (:text content) content-type acc e false [] nil nil))
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
