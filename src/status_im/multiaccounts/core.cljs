@@ -66,15 +66,16 @@
     (assoc contact' :two-names (contact-two-names contact' true))))
 
 (defn displayed-name
-  "Use preferred name, name or alias in that order"
-  [{:keys [name preferred-name alias public-key ens-verified]}]
+  "Use preferred name, display-name, name or alias in that order"
+  [{:keys [name display-name preferred-name alias public-key ens-verified]}]
   (let [ens-name (or preferred-name
+                     display-name
                      name)]
     ;; Preferred name is our own otherwise we make sure it's verified
     (if (or preferred-name (and ens-verified name))
       (let [username (stateofus/username ens-name)]
         (or username ens-name))
-      (or alias (gfycat/generate-gfy public-key)))))
+      (or display-name alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
   [contacts identity]
