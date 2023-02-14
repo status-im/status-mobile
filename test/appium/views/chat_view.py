@@ -871,13 +871,15 @@ class ChatView(BaseView):
 
     def pin_message(self, message, action="pin"):
         self.driver.info("Looking for message '%s' pin" % message)
-        self.element_by_text_part(message).long_press_element()
-        self.element_by_translation_id(action).click()
+        element = self.element_by_translation_id(action)
+        self.element_by_text_part(message).long_press_until_element_is_shown(element)
+        element.click()
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
-        self.element_by_text_part(message_to_edit).long_press_element()
-        self.element_by_translation_id("edit-message").click()
+        element = self.element_by_translation_id("edit-message")
+        self.element_by_text_part(message_to_edit).long_press_until_element_is_shown(element)
+        element.click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
         self.send_message_button.click()
@@ -896,7 +898,7 @@ class ChatView(BaseView):
 
     def quote_message(self, message=str):
         self.driver.info("Quoting '%s' message" % message)
-        self.element_by_text_part(message).long_press_element()
+        self.element_by_text_part(message).long_press_until_element_is_shown(self.reply_message_button)
         self.reply_message_button.click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
@@ -904,16 +906,16 @@ class ChatView(BaseView):
         key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
         # so we tap on its below element as exception here (not the case for link/tag message!)
+        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         if message == 'audio':
             self.audio_message_in_chat_timer.long_press_element()
         else:
             if not emoji_message:
-                self.chat_element_by_text(message).long_press_element()
+                self.chat_element_by_text(message).long_press_until_element_is_shown(element)
             else:
                 self.element_by_text_part(message).long_press_element()
         # old UI
         # element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
-        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
 
