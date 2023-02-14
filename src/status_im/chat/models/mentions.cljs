@@ -193,17 +193,21 @@
    [alias name nickname]))
 
 (defn add-searchable-phrases-to-contact
-  [{:keys [alias name added? blocked? identicon public-key nickname ens-verified]} community-chat?]
+  [{:keys [alias name added? blocked? identicon public-key nickname ens-verified display-name]}
+   community-chat?]
   (when (and alias
              (not (string/blank? alias))
              (or name
+                 display-name
                  nickname
                  added?
                  community-chat?)
              (not blocked?))
     (add-searchable-phrases
      {:alias        alias
-      :name         (or (and ens-verified (utils/safe-replace name ".stateofus.eth" "")) alias)
+      :name         (or (and ens-verified (utils/safe-replace name ".stateofus.eth" ""))
+                        (when-not (string/blank? display-name) display-name)
+                        alias)
       :identicon    identicon
       :nickname     nickname
       :ens-verified ens-verified
