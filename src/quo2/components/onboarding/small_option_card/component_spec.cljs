@@ -15,37 +15,40 @@
     :on-press on-press}])
 
 (h/describe "small-option-card"
-  (let [title           "A title"
-        subtitle        "A subtitle"
-        component-props {:title title :subtitle subtitle}]
-    (h/test "Title & subtitle are rendered - `:main` variant"
-      (h/render (testing-small-option-card :main component-props))
-      (-> (h/get-by-text title) h/expect .toBeTruthy)
-      (-> (h/get-by-text subtitle) h/expect .toBeTruthy))
+  (h/describe "Title & subtitle are rendered"
+    (let [title           "A title"
+          subtitle        "A subtitle"
+          component-props {:title title :subtitle subtitle}]
+      (h/test "`:main` variant"
+        (h/render (testing-small-option-card :main component-props))
+        (-> (h/get-by-text title) h/expect .toBeTruthy)
+        (-> (h/get-by-text subtitle) h/expect .toBeTruthy))
 
-    (h/test "Title & subtitle are rendered - `:icon` variant"
-      (h/render (testing-small-option-card :icon component-props))
-      (-> (h/get-by-text title) h/expect .toBeTruthy)
-      (-> (h/get-by-text subtitle) h/expect .toBeTruthy)))
+      (h/test "`:icon` variant"
+        (h/render (testing-small-option-card :icon component-props))
+        (-> (h/get-by-text title) h/expect .toBeTruthy)
+        (-> (h/get-by-text subtitle) h/expect .toBeTruthy))))
 
-  (let [on-press-fn     (h/mock-fn)
-        component-props {:on-press on-press-fn}]
-    (h/test "Card pressed - `:main` variant"
-      (h/render (testing-small-option-card :main component-props))
-      (h/fire-event :press (h/get-by-test-id :small-option-card))
-      (-> on-press-fn js/expect .toHaveBeenCalled))
+  (h/describe "Card pressed"
+    (let [on-press-fn     (h/mock-fn)
+          component-props {:on-press on-press-fn}]
+      (h/test "`:main` variant"
+        (h/render (testing-small-option-card :main component-props))
+        (h/fire-event :press (h/get-by-test-id :small-option-card))
+        (-> on-press-fn js/expect .toHaveBeenCalled))
 
-    (h/test "Card pressed - `:icon` variant"
-      (h/render (testing-small-option-card :icon component-props))
-      (h/fire-event :press (h/get-by-test-id :small-option-card))
-      (-> on-press-fn js/expect .toHaveBeenCalled)))
+      (h/test "`:icon` variant"
+        (h/render (testing-small-option-card :icon component-props))
+        (h/fire-event :press (h/get-by-test-id :small-option-card))
+        (-> on-press-fn js/expect .toHaveBeenCalled))))
 
-  (let [image           (resources/get-mock-image :small-opt-card-main)
-        component-props {:image image}]
-    (h/test "Image rendered - `:main` variant"
-      (h/render (testing-small-option-card :main component-props))
-      (-> (h/get-by-test-id :small-option-card.main-image) h/expect .-not .toBeNull))
+  (h/describe "Image rendered"
+    (let [image           (resources/get-mock-image :small-opt-card-main)
+          component-props {:image image}]
+      (h/test "`:main` variant"
+        (h/render (testing-small-option-card :main component-props))
+        (-> (h/get-by-test-id :small-option-card.main-image) h/expect .-not .toBeNull))
 
-    (h/test "Image rendered - `:icon` variant"
-      (h/render (testing-small-option-card :icon component-props))
-      (-> (h/get-by-test-id :small-option-card.icon-image) h/expect .-not .toBeNull))))
+      (h/test "`:icon` variant"
+        (h/render (testing-small-option-card :icon component-props))
+        (-> (h/get-by-test-id :small-option-card.icon-image) h/expect .-not .toBeNull)))))
