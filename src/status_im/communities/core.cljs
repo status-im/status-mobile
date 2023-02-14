@@ -202,6 +202,15 @@
                                                                %)
                                                     (re-frame/dispatch [::failed-to-leave %]))}]}))
 
+(rf/defn status-tag-pressed
+  {:events [:communities/status-tag-pressed]}
+  [{:keys [db]} community-id literal]
+  (let [current-chat-id (:current-chat-id db)
+        {:keys [id]}    (some #(when (= (:name %) literal) %)
+                              (vals (get-in db [:communities community-id :chats])))]
+    (cond-> {}
+      (not= current-chat-id (str community-id id)) (assoc :dispatch [:chat/navigate-to-chat (str community-id id)]))))
+
 (rf/defn fetch
   [_]
   {:json-rpc/call [{:method     "wakuext_communities"
