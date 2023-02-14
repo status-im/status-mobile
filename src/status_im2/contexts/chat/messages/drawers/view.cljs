@@ -10,16 +10,18 @@
             [status-im2.common.not-implemented :as not-implemented]))
 
 (defn pin-message
-  [{:keys [chat-id pinned] :as message-data}]
-  (let [pinned-messages (rf/sub [:chats/pinned chat-id])]
-    (if (and (not pinned) (> (count pinned-messages) 2))
+  [{:keys [chat-id pinned pinned-by] :as message-data}]
+  (let [pinned-messages     (rf/sub [:chats/pinned chat-id])
+        message-not-pinned? (and (empty? pinned-by) (not pinned))]
+    (if (and message-not-pinned? (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (rf/dispatch [:dismiss-keyboard])) 500)
         (rf/dispatch [:pin-message/show-pin-limit-modal chat-id]))
-      (rf/dispatch [:pin-message/send-pin-message (assoc message-data :pinned (not pinned))]))))
+      (rf/dispatch [:pin-message/send-pin-message
+                    (assoc message-data :pinned message-not-pinned?)]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned outgoing-status] :as message-data}
+  [{:keys [outgoing content pinned-by outgoing-status] :as message-data}
    {:keys [edit-enabled show-input? can-delete-message-for-everyone? community? message-pin-enabled]}]
   (concat
    (when (and outgoing edit-enabled)
@@ -44,12 +46,12 @@
    (when message-pin-enabled
      [{:type     :main
        :on-press #(pin-message message-data)
-       :label    (i18n/label (if pinned
+       :label    (i18n/label (if pinned-by
                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
                                (if community? :t/pin-to-channel :t/pin-to-chat)))
        :icon     :i/pin
-       :id       (if pinned :unpin :pin)}])
-   (when-not pinned
+       :id       (if pinned-by :unpin :pin)}])
+   (when-not pinned-by
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch
