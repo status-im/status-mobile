@@ -38,7 +38,8 @@
                                                      admins
                                                      contacts
                                                      current-multiaccount)
-          [{:name "generated"
+          [{:primary-name "generated"
+            :name "generated"
             :identicon "generated"
             :alias "generated"
             :admin? true

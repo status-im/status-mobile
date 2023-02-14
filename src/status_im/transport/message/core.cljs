@@ -7,10 +7,9 @@
     [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
     [status-im2.constants :as constants]
-    [status-im.contact.core :as models.contact]
+    [status-im2.contexts.contacts.events :as models.contact]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
-    [status-im.data-store.contacts :as data-store.contacts]
     [status-im.data-store.invitations :as data-store.invitations]
     [status-im.data-store.messages :as data-store.messages]
     [status-im.data-store.reactions :as data-store.reactions]
@@ -84,15 +83,7 @@
                   (models.pairing/handle-installations installations-clj)))
 
       (seq contacts)
-      (let [contacts-clj (types/js->clj contacts)
-            ^js chats    (.-chatsForContacts response-js)]
-        (js-delete response-js "contacts")
-        (js-delete response-js "chatsForContacts")
-        (rf/merge cofx
-                  (process-next response-js sync-handler)
-                  (models.contact/ensure-contacts
-                   (map data-store.contacts/<-rpc contacts-clj)
-                   chats)))
+      (models.contact/process-js-contacts cofx response-js)
 
       (seq communities)
       (let [communities-clj (types/js->clj communities)]

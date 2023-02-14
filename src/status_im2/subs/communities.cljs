@@ -51,6 +51,13 @@
    (get-in communities [id :members])))
 
 (re-frame/reg-sub
+ :communities/current-community-members
+ :<- [:chats/current-chat]
+ :<- [:communities]
+ (fn [[{:keys [community-id]} communities]]
+   (get-in communities [community-id :members])))
+
+(re-frame/reg-sub
  :communities/sorted-community-members
  (fn [[_ community-id]]
    (let [contacts     (re-frame/subscribe [:contacts/contacts])

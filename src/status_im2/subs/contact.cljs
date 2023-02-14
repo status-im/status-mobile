@@ -70,14 +70,16 @@
  :contacts/active
  :<- [:contacts/contacts]
  (fn [contacts]
-   (contact.db/get-active-contacts contacts)))
+   (->> contacts
+        (filter (fn [[_ contact]] (:active? contact)))
+        contact.db/sort-contacts)))
 
 (re-frame/reg-sub
  :contacts/active-sections
  :<- [:contacts/active]
  (fn [contacts]
    (->> contacts
-        (group-by #(string/upper-case (ffirst (:two-names %))))
+        (group-by #(string/upper-case (first (:primary-name %))))
         sort
         (mapv (fn [[title items]] {:title title :data items})))))
 
@@ -117,7 +119,7 @@
                      :allow-new-users?
                      (< selected-contacts-count
                         (dec constants/max-group-chat-participants))))
-        (group-by (comp (fnil string/upper-case "") first :alias))
+        (group-by (comp (fnil string/upper-case "") first :primary-name))
         (sort-by first)
         (map (fn [[title data]]
                {:title title
@@ -135,8 +137,14 @@
  (fn [contacts]
    (->> contacts
         (filter (fn [[_ contact]]
-                  (:blocked contact)))
-        (contact.db/sort-contacts))))
+                  (:blocked? contact)))
+        contact.db/sort-contacts)))
+
+(re-frame/reg-sub
+ :contacts/blocked-set
+ :<- [:contacts/blocked]
+ (fn [contacts]
+   (into #{} (map :public-key contacts))))
 
 (re-frame/reg-sub
  :contacts/blocked-count
@@ -195,7 +203,7 @@
  (fn [[_ identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity identity])])
  (fn [[contact] _]
-   (:added contact)))
+   (:added? contact)))
 
 (re-frame/reg-sub
  :contacts/contact-blocked?
@@ -248,7 +256,7 @@
  :contacts/all-contacts-not-in-current-chat
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
-   (filter :added contacts)))
+   (filter :added? contacts)))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts

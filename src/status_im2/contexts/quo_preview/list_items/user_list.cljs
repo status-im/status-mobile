@@ -1,10 +1,9 @@
-(ns status-im2.contexts.quo-preview.messages.author
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.messages.author.view :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+(ns status-im2.contexts.quo-preview.list-items.user-list
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
+            [quo2.foundations.colors :as colors]
             [status-im2.contexts.quo-preview.preview :as preview]
+            [quo2.components.list-items.user-list :as user-list]
             [utils.address :as address]))
 
 (def descriptor
@@ -18,10 +17,6 @@
    {:label "Chat key"
     :key   :chat-key
     :type  :text}
-   {:label "Time"
-    :key   :time-str
-    :type  :text
-    :limit 5}
    {:label "Is contact?"
     :key   :contact?
     :type  :boolean}
@@ -30,18 +25,30 @@
     :type  :boolean}
    {:label "Is untrustworthy?"
     :key   :untrustworthy?
-    :type  :boolean}])
+    :type  :boolean}
+   {:label "Online?"
+    :key   :online?
+    :type  :boolean}
+   {:label   "Accessory:"
+    :key     :accessory
+    :type    :select
+    :options [{:key   {:type :options}
+               :value "Options"}
+              {:key   {:type :checkbox}
+               :value "Checkbox"}
+              {:key   {:type :close}
+               :value "Close"}]}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:primary-name    "Alisher Yakupov"
-                             :seconadary-name ""
-                             :short-chat-key  (address/get-shortened-key
-                                               "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
-                             :time-str        "09:30"
-                             :contact?        false
-                             :verified?       false
-                             :untrustworthy?  false})]
+  (let [state (reagent/atom {:primary-name   "Alisher Yakupov"
+                             :short-chat-key (address/get-shortened-key
+                                              "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
+                             :ens-verified   true
+                             :contact?       false
+                             :verified?      false
+                             :untrustworthy? false
+                             :online?        false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -51,11 +58,9 @@
          {:padding-vertical    60
           :padding--horizontal 15
           :justify-content     :center}
-         [rn/view
-          [text/text "Author:"]
-          [quo2/author @state]]]]])))
+         [user-list/user-list @state]]]])))
 
-(defn preview-author
+(defn preview-user-list
   []
   [rn/keyboard-avoiding-view {:style {:flex 1}}
    [rn/view

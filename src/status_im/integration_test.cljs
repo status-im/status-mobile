@@ -338,7 +338,7 @@
              (rf-test/wait-for
                [:contacts/contact-built]
                (let [contact @(rf/subscribe [:contacts/current-contact])]
-                 (is (= three-words-name (:three-words-name (:names contact)))))
+                 (is (= three-words-name (:primary-name contact))))
                (logout!)
                (rf-test/wait-for [::logout/logout-method]
                  (assert-logout))))))))))

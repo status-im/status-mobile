@@ -2,10 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models.loading :as chat.loading]
-            [status-im.chat.models.mentions :as mentions]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
@@ -33,26 +31,6 @@
   [{:keys [db]} chat-id message-id]
   ;; TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
   (message-list/rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
-
-(rf/defn add-senders-to-chat-users
-  {:events [:chat/add-senders-to-chat-users]}
-  [{:keys [db]} messages]
-  (reduce (fn [acc {:keys [chat-id alias name identicon from]}]
-            (let [alias (if (string/blank? alias)
-                          (gfycat/generate-gfy from)
-                          alias)]
-              (update-in acc
-                         [:db :chats chat-id :users]
-                         assoc
-                         from
-                         (mentions/add-searchable-phrases
-                          {:alias      alias
-                           :name       (or name alias)
-                           :identicon  identicon
-                           :public-key from
-                           :nickname   (get-in db [:contacts/contacts from :nickname])}))))
-          {:db db}
-          messages))
 
 (defn add-message
   [{:keys [db] :as acc} message-js chat-id message-id cursor-clock-value]
@@ -118,7 +96,7 @@
 (defn receive-many
   [{:keys [db]} ^js response-js]
   (let [messages-js ^js (.splice (.-messages response-js) 0 (if platform/low-device? 3 10))
-        {:keys [db senders]}
+        {:keys [db]}
         (reduce reduce-js-messages
                 {:db db :chats #{} :senders {} :transactions #{}}
                 messages-js)]
@@ -128,9 +106,7 @@
      :utils/dispatch-later
      (concat [{:ms 20 :dispatch [:process-response response-js]}]
              (when (and (:current-chat-id db) (= "active" (:app-state db)))
-               [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}])
-             (when (seq senders)
-               [{:ms 100 :dispatch [:chat/add-senders-to-chat-users (vals senders)]}]))}))
+               [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}]))}))
 
 (rf/defn update-db-message-status
   [{:keys [db] :as cofx} chat-id message-id status]

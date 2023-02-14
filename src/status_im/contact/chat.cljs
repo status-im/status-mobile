@@ -1,6 +1,6 @@
 (ns status-im.contact.chat
   (:require [re-frame.core :as re-frame]
-            [status-im.contact.core :as contact]
+            [status-im2.contexts.contacts.events :as contact]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]))
 
