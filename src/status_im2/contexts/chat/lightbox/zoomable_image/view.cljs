@@ -63,8 +63,8 @@
     (.onStart #(on-tap))))
 
 (defn double-tap-gesture
-  [{:keys [scale pan-x pan-x-start pan-y pan-y-start]}
-   {:keys [width height screen-height]}
+  [{:keys [width height screen-height]}
+   {:keys [scale pan-x pan-x-start pan-y pan-y-start]}
    {:keys [y-threshold-scale]}
    rescale]
   (->
@@ -95,8 +95,8 @@
                   (rescale min-scale))))))
 
 (defn pinch-gesture
-  [{:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pan-x-start pan-y-start]}
-   {:keys [width height]}
+  [{:keys [width height]}
+   {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pan-x-start pan-y-start]}
    {:keys [pan-x-enabled? pan-y-enabled? x-threshold-scale y-threshold-scale focal-x focal-y]}
    rescale]
   (->
@@ -146,9 +146,9 @@
            (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))))))))
 
 (defn pan-x-gesture
-  [{:keys [scale pan-x-start pan-x pinch-x pinch-x-start]}
-   {:keys [pan-x-enabled?]}
-   {:keys [width]}]
+  [{:keys [width]}
+   {:keys [scale pan-x-start pan-x pinch-x pinch-x-start]}
+   {:keys [pan-x-enabled?]}]
   (->
     (.Pan gesture/gesture)
     (.enabled @pan-x-enabled?)
@@ -181,9 +181,9 @@
 
 
 (defn pan-y-gesture
-  [{:keys [scale pan-y-start pan-y pinch-y pinch-y-start]}
+  [{:keys [height screen-height]}
+   {:keys [scale pan-y-start pan-y pinch-y pinch-y-start]}
    {:keys [pan-y-enabled? y-threshold-scale]}
-   {:keys [height screen-height]}
    rescale]
   (->
     (.Pan gesture/gesture)
@@ -291,10 +291,10 @@
        [:f>
         (fn []
           (let [tap               (tap-gesture on-tap)
-                double-tap        (double-tap-gesture animations dimensions props rescale)
-                pinch             (pinch-gesture animations dimensions props rescale)
-                pan-x             (pan-x-gesture animations props dimensions)
-                pan-y             (pan-y-gesture animations props dimensions rescale)
+                double-tap        (double-tap-gesture dimensions animations props rescale)
+                pinch             (pinch-gesture dimensions animations props rescale)
+                pan-x             (pan-x-gesture dimensions animations props)
+                pan-y             (pan-y-gesture dimensions animations props rescale)
                 composed-gestures (.Exclusive gesture/gesture
                                               (.Simultaneous gesture/gesture pinch pan-x pan-y)
                                               (.Exclusive gesture/gesture double-tap tap))]
