@@ -59,8 +59,8 @@
 (defn tap-gesture
   [on-tap]
   (->
-    (.Tap gesture/gesture)
-    (.onStart #(on-tap))))
+    (gesture/gesture-tap)
+    (gesture/on-start #(on-tap))))
 
 (defn double-tap-gesture
   [{:keys [width height screen-height]}
@@ -68,31 +68,31 @@
    {:keys [y-threshold-scale]}
    rescale]
   (->
-    (.Tap gesture/gesture)
-    (.numberOfTaps 2)
-    (.onStart (fn [evt]
-                ;; Scale to x2
-                (if (= (get-val scale) min-scale)
-                  ;; Find translate-x value
-                  (let [focal-x     (- (/ width 2) (.-x evt))
-                        max-pan-x   (get-max-offset width width double-tap-scale)
-                        translate-x (min (Math/abs focal-x) max-pan-x)
-                        translate-x (if (neg? focal-x) (- translate-x) translate-x)
-                        ;; Find translate-y value
-                        focal-y     (- (/ height 2) (.-y evt))
-                        max-pan-y   (get-max-offset height screen-height double-tap-scale)
-                        translate-y (min (Math/abs focal-y) max-pan-y)
-                        translate-y (if (neg? focal-y) (- translate-y) translate-y)]
-                    ;; apply animations
-                    (set-val pan-x (timing translate-x))
-                    (set-val pan-x-start (timing translate-x))
-                    ;; animate y position only if the double-tap-scale exceeds the threshold
-                    (when (> double-tap-scale y-threshold-scale)
-                      (set-val pan-y (timing translate-y))
-                      (set-val pan-y-start (timing translate-y)))
-                    (rescale double-tap-scale))
-                  ;; Otherwise scale back to x1
-                  (rescale min-scale))))))
+    (gesture/gesture-tap)
+    (gesture/number-of-taps 2)
+    (gesture/on-start (fn [evt]
+                        ;; Scale to x2
+                        (if (= (get-val scale) min-scale)
+                          ;; Find translate-x value
+                          (let [focal-x     (- (/ width 2) (.-x evt))
+                                max-pan-x   (get-max-offset width width double-tap-scale)
+                                translate-x (min (Math/abs focal-x) max-pan-x)
+                                translate-x (if (neg? focal-x) (- translate-x) translate-x)
+                                ;; Find translate-y value
+                                focal-y     (- (/ height 2) (.-y evt))
+                                max-pan-y   (get-max-offset height screen-height double-tap-scale)
+                                translate-y (min (Math/abs focal-y) max-pan-y)
+                                translate-y (if (neg? focal-y) (- translate-y) translate-y)]
+                            ;; apply animations
+                            (set-val pan-x (timing translate-x))
+                            (set-val pan-x-start (timing translate-x))
+                            ;; animate y position only if the double-tap-scale exceeds the threshold
+                            (when (> double-tap-scale y-threshold-scale)
+                              (set-val pan-y (timing translate-y))
+                              (set-val pan-y-start (timing translate-y)))
+                            (rescale double-tap-scale))
+                          ;; Otherwise scale back to x1
+                          (rescale min-scale))))))
 
 (defn pinch-gesture
   [{:keys [width height]}
@@ -100,30 +100,30 @@
    {:keys [pan-x-enabled? pan-y-enabled? x-threshold-scale y-threshold-scale focal-x focal-y]}
    rescale]
   (->
-    (.Pinch gesture/gesture)
-    (.onStart (fn [evt]
-                ;; Read the x and y touch positions on the screen
-                (reset! focal-x (.-focalX evt))
-                (reset! focal-y (.-focalY evt))))
-    (.onUpdate (fn [evt]
-                 ;; First, find the scale ration
-                 (let [new-scale     (* (.-scale evt) (get-val saved-scale))
-                       scale-ratio   (get-scale-ratio new-scale (get-val saved-scale))
-                       ;; Then, find the translate-x value (pinch-x)
-                       scaled-width  (/ width (get-val saved-scale))
-                       x-start       (+ (get-val pinch-x-start) (get-val pan-x-start))
-                       center-x      (get-current-center width scaled-width x-start)
-                       new-pinch-x   (* (- center-x @focal-x) scale-ratio)
-                       ;; Lastly, find the translate-y value (pinch-y)
-                       scaled-height (/ height (get-val scale))
-                       y-start       (+ (get-val pinch-y-start) (get-val pan-y-start))
-                       center-y      (get-current-center height scaled-height y-start)
-                       new-pinch-y   (* (- center-y @focal-y) scale-ratio)]
-                   ;; Update the values
-                   (set-val pinch-x (+ new-pinch-x (get-val pinch-x-start)))
-                   (set-val pinch-y (+ new-pinch-y (get-val pinch-y-start)))
-                   (set-val scale new-scale))))
-    (.onEnd
+    (gesture/gesture-pinch)
+    (gesture/on-start (fn [evt]
+                        ;; Read the x and y touch positions on the screen
+                        (reset! focal-x (.-focalX evt))
+                        (reset! focal-y (.-focalY evt))))
+    (gesture/on-update (fn [evt]
+                         ;; First, find the scale ration
+                         (let [new-scale     (* (.-scale evt) (get-val saved-scale))
+                               scale-ratio   (get-scale-ratio new-scale (get-val saved-scale))
+                               ;; Then, find the translate-x value (pinch-x)
+                               scaled-width  (/ width (get-val saved-scale))
+                               x-start       (+ (get-val pinch-x-start) (get-val pan-x-start))
+                               center-x      (get-current-center width scaled-width x-start)
+                               new-pinch-x   (* (- center-x @focal-x) scale-ratio)
+                               ;; Lastly, find the translate-y value (pinch-y)
+                               scaled-height (/ height (get-val scale))
+                               y-start       (+ (get-val pinch-y-start) (get-val pan-y-start))
+                               center-y      (get-current-center height scaled-height y-start)
+                               new-pinch-y   (* (- center-y @focal-y) scale-ratio)]
+                           ;; Update the values
+                           (set-val pinch-x (+ new-pinch-x (get-val pinch-x-start)))
+                           (set-val pinch-y (+ new-pinch-y (get-val pinch-y-start)))
+                           (set-val scale new-scale))))
+    (gesture/on-end
      (fn []
        (cond
          ;; if less than min-scale, then scale back to x1
@@ -150,14 +150,14 @@
    {:keys [scale pan-x-start pan-x pinch-x pinch-x-start]}
    {:keys [pan-x-enabled?]}]
   (->
-    (.Pan gesture/gesture)
-    (.enabled @pan-x-enabled?)
-    (.averageTouches true)
-    (.onUpdate (fn [evt]
-                 (let [scaled-translation (/ (.-translationX evt) (get-val scale))
-                       updated-value      (+ scaled-translation (get-val pan-x-start))]
-                   (set-val pan-x updated-value))))
-    (.onEnd
+    (gesture/gesture-pan)
+    (gesture/enabled @pan-x-enabled?)
+    (gesture/average-touches true)
+    (gesture/on-update (fn [evt]
+                         (let [scaled-translation (/ (.-translationX evt) (get-val scale))
+                               updated-value      (+ scaled-translation (get-val pan-x-start))]
+                           (set-val pan-x updated-value))))
+    (gesture/on-end
      (fn [evt]
        (let [curr-offset (+ (get-val pan-x) (get-val pinch-x))
              max-offset  (get-max-offset width width (get-val scale))
@@ -186,14 +186,14 @@
    {:keys [pan-y-enabled? y-threshold-scale]}
    rescale]
   (->
-    (.Pan gesture/gesture)
-    (.enabled @pan-y-enabled?)
-    (.averageTouches true)
-    (.onUpdate (fn [evt]
-                 (let [scaled-translation (/ (.-translationY evt) (get-val scale))
-                       updated-value      (+ scaled-translation (get-val pan-y-start))]
-                   (set-val pan-y updated-value))))
-    (.onEnd
+    (gesture/gesture-pan)
+    (gesture/enabled @pan-y-enabled?)
+    (gesture/average-touches true)
+    (gesture/on-update (fn [evt]
+                         (let [scaled-translation (/ (.-translationY evt) (get-val scale))
+                               updated-value      (+ scaled-translation (get-val pan-y-start))]
+                           (set-val pan-y updated-value))))
+    (gesture/on-end
      (fn [evt]
        (let [curr-offset (+ (get-val pan-y) (get-val pinch-y))
              max-offset  (get-max-offset height screen-height (get-val scale))
@@ -246,48 +246,48 @@
 
 ;; On ios, when attempting to navigate back while zoomed in, the shared-element transition
 ;; animation doesn't execute properly, so we need to zoom out first
-(defn handle-close-lightbox
-  [close-lightbox index scale rescale]
-  (when (= close-lightbox index)
+(defn handle-exit-lightbox-signal
+  [exit-lightbox-signal index scale rescale]
+  (when (= exit-lightbox-signal index)
     (if (> scale min-scale)
       (do
         (rescale min-scale true)
         (js/setTimeout #(rf/dispatch [:navigate-back]) 70))
       (rf/dispatch [:navigate-back]))
-    (js/setTimeout #(rf/dispatch [:chat.ui/close-lightbox nil]) 500)))
+    (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
 
 ;; Finally, the component
 (defn zoomable-image
   [{:keys [image-width image-height content message-id]} index border-value on-tap]
   [:f>
    (fn []
-     (let [shared-element-id (rf/sub [:shared-element-id])
-           close-lightbox    (rf/sub [:close-lightbox])
-           width             (:width (rn/get-window))
-           height            (* image-height (/ (:width (rn/get-window)) image-width))
-           screen-height     (:height (rn/get-window))
-           dimensions        {:width         width
-                              :height        height
-                              :screen-height screen-height}
-           animations        {:scale         (use-val min-scale)
-                              :saved-scale   (use-val min-scale)
-                              :pan-x-start   (use-val init-offset)
-                              :pan-x         (use-val init-offset)
-                              :pan-y-start   (use-val init-offset)
-                              :pan-y         (use-val init-offset)
-                              :pinch-x-start (use-val init-offset)
-                              :pinch-x       (use-val init-offset)
-                              :pinch-y-start (use-val init-offset)
-                              :pinch-y       (use-val init-offset)}
-           props             {:x-threshold-scale 1
-                              :y-threshold-scale (/ screen-height (min screen-height height))
-                              :pan-x-enabled?    (reagent/atom false)
-                              :pan-y-enabled?    (reagent/atom false)
-                              :focal-x           (reagent/atom nil)
-                              :focal-y           (reagent/atom nil)}
-           rescale           (fn [value duration]
-                               (rescale-image value duration animations props))]
-       (handle-close-lightbox close-lightbox index (get-val (:scale animations)) rescale)
+     (let [shared-element-id    (rf/sub [:shared-element-id])
+           exit-lightbox-signal (rf/sub [:exit-lightbox-signal])
+           width                (:width (rn/get-window))
+           height               (* image-height (/ (:width (rn/get-window)) image-width))
+           screen-height        (:height (rn/get-window))
+           dimensions           {:width         width
+                                 :height        height
+                                 :screen-height screen-height}
+           animations           {:scale         (use-val min-scale)
+                                 :saved-scale   (use-val min-scale)
+                                 :pan-x-start   (use-val init-offset)
+                                 :pan-x         (use-val init-offset)
+                                 :pan-y-start   (use-val init-offset)
+                                 :pan-y         (use-val init-offset)
+                                 :pinch-x-start (use-val init-offset)
+                                 :pinch-x       (use-val init-offset)
+                                 :pinch-y-start (use-val init-offset)
+                                 :pinch-y       (use-val init-offset)}
+           props                {:x-threshold-scale 1
+                                 :y-threshold-scale (/ screen-height (min screen-height height))
+                                 :pan-x-enabled?    (reagent/atom false)
+                                 :pan-y-enabled?    (reagent/atom false)
+                                 :focal-x           (reagent/atom nil)
+                                 :focal-y           (reagent/atom nil)}
+           rescale              (fn [value duration]
+                                  (rescale-image value duration animations props))]
+       (handle-exit-lightbox-signal exit-lightbox-signal index (get-val (:scale animations)) rescale)
        [:f>
         (fn []
           (let [tap               (tap-gesture on-tap)
@@ -295,9 +295,9 @@
                 pinch             (pinch-gesture dimensions animations props rescale)
                 pan-x             (pan-x-gesture dimensions animations props)
                 pan-y             (pan-y-gesture dimensions animations props rescale)
-                composed-gestures (.Exclusive gesture/gesture
-                                              (.Simultaneous gesture/gesture pinch pan-x pan-y)
-                                              (.Exclusive gesture/gesture double-tap tap))]
+                composed-gestures (gesture/exclusive
+                                   (gesture/simultaneous pinch pan-x pan-y)
+                                   (gesture/exclusive double-tap tap))]
             [gesture/gesture-detector {:gesture composed-gestures}
              [reanimated/fast-image
               {:source    {:uri (:image content)}

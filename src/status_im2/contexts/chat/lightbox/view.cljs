@@ -79,7 +79,7 @@
         {:style (style/top-view-container (:top insets) opacity-value)}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch (if platform/ios?
-                                    [:chat.ui/close-lightbox @index]
+                                    [:chat.ui/exit-lightbox-signal @index]
                                     [:navigate-back]))
           :style    style/close-container}
          [quo/icon :close {:size 20 :color colors/white}]]

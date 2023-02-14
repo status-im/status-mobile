@@ -33,7 +33,7 @@
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :screen-params :navigation/screen-params)
 (reg-root-key-sub :shared-element-id :shared-element-id)
-(reg-root-key-sub :close-lightbox :close-lightbox)
+(reg-root-key-sub :exit-lightbox-signal :exit-lightbox-signal)
 
 
 ;;bottom sheet

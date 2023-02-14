@@ -336,7 +336,7 @@
   [{:keys [db]} shared-element-id]
   {:db (assoc db :shared-element-id shared-element-id)})
 
-(rf/defn close-lightbox
-  {:events [:chat.ui/close-lightbox]}
+(rf/defn exit-lightbox-signal
+  {:events [:chat.ui/exit-lightbox-signal]}
   [{:keys [db]} value]
-  {:db (assoc db :close-lightbox value)})
+  {:db (assoc db :exit-lightbox-signal value)})
