@@ -34,12 +34,12 @@
           component-props {:on-press on-press-fn}]
       (h/test "`:main` variant"
         (h/render (testing-small-option-card :main component-props))
-        (h/fire-event :press (h/get-by-test-id :small-option-card))
+        (h/fire-event :press (h/get-by-label-text :small-option-card))
         (-> on-press-fn js/expect .toHaveBeenCalled))
 
       (h/test "`:icon` variant"
         (h/render (testing-small-option-card :icon component-props))
-        (h/fire-event :press (h/get-by-test-id :small-option-card))
+        (h/fire-event :press (h/get-by-label-text :small-option-card))
         (-> on-press-fn js/expect .toHaveBeenCalled))))
 
   (h/describe "Image rendered"
@@ -47,8 +47,8 @@
           component-props {:image image}]
       (h/test "`:main` variant"
         (h/render (testing-small-option-card :main component-props))
-        (-> (h/get-by-test-id :small-option-card.main-image) h/expect .-not .toBeNull))
+        (-> (h/get-by-label-text :small-option-card-main-image) h/expect .-not .toBeNull))
 
       (h/test "`:icon` variant"
         (h/render (testing-small-option-card :icon component-props))
-        (-> (h/get-by-test-id :small-option-card.icon-image) h/expect .-not .toBeNull)))))
+        (-> (h/get-by-label-text :small-option-card-icon-image) h/expect .-not .toBeNull)))))

@@ -26,10 +26,10 @@
   [rn/view {:style style/icon-variant}
    [rn/view {:style style/icon-variant-image-container}
     [fast-image/fast-image
-     {:test-ID     :small-option-card.icon-image
-      :style       style/icon-variant-image
-      :resize-mode :contain
-      :source      image}]]
+     {:accessibility-label :small-option-card-icon-image
+      :style               style/icon-variant-image
+      :resize-mode         :contain
+      :source              image}]]
    [texts
     {:title    title
      :subtitle subtitle}]])
@@ -42,10 +42,10 @@
      {:title    title
       :subtitle subtitle}]]
    [fast-image/fast-image
-    {:test-ID     :small-option-card.main-image
-     :style       {:flex 1}
-     :resize-mode :contain
-     :source      image}]])
+    {:accessibility-label :small-option-card-main-image
+     :style               {:flex 1}
+     :resize-mode         :contain
+     :source              image}]])
 
 (defn small-option-card
   [{:keys [variant title subtitle image on-press]
@@ -53,11 +53,11 @@
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)]
     [rn/touchable-highlight
-     {:test-ID        :small-option-card
-      :style          style/touchable-overlay
-      :active-opacity 1
-      :underlay-color colors/white-opa-5
-      :on-press       on-press}
+     {:accessibility-label :small-option-card
+      :style               style/touchable-overlay
+      :active-opacity      1
+      :underlay-color      colors/white-opa-5
+      :on-press            on-press}
      [rn/view {:style (style/card-container main-variant?)}
       [rn/view {:style (style/card main-variant?)}
        [card-component
