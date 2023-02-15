@@ -6,7 +6,7 @@
    [reagent.core :as reagent]
    [utils.re-frame :as rf]))
 
-;; Definitions
+;;;; Definitions
 (def min-scale 1)
 
 (def double-tap-scale 2)
@@ -19,7 +19,7 @@
 
 (def default-duration 300)
 
-;; Some aliases for reanimated methods, as they are used 10s of times in this file
+;;;; Some aliases for reanimated methods, as they are used 10s of times in this file
 (defn get-val
   [animation]
   (reanimated/get-shared-value animation))
@@ -42,20 +42,25 @@
   [animation value bounds]
   (reanimated/animate-shared-value-with-decay animation value bounds))
 
-;; MATH
+;;;; MATH
 (defn get-max-offset
   [size screen-size scale]
-  (/ (/ (- (* size scale) screen-size) 2) scale))
+  (/ (/ (- (* size scale) screen-size)
+        2)
+     scale))
 
 (defn get-scale-ratio
   [new-scale saved-scale]
-  (/ (- (dec new-scale) (dec saved-scale)) new-scale))
+  (/ (- (dec new-scale) (dec saved-scale))
+     new-scale))
 
 (defn get-current-center
   [size scaled-size offset]
-  (- (+ (/ (- size scaled-size) 2) (/ scaled-size 2)) offset))
+  (- (+ (/ (- size scaled-size) 2)
+        (/ scaled-size 2))
+     offset))
 
-;; 5 Gestures: tap, double-tap, pinch, pan-x, pan-y
+;;;; 5 Gestures: tap, double-tap, pinch, pan-x, pan-y
 (defn tap-gesture
   [on-tap]
   (->
@@ -220,7 +225,7 @@
                             (* (.-velocityY evt) velocity-factor)
                             [lower-bound upper-bound]))))))))
 
-;; A helper method to rescale and reset values
+;;;; A helper method to rescale and reset values
 (defn rescale-image
   [value
    exit?
@@ -244,8 +249,8 @@
     (reset! pan-x-enabled? (> value x-threshold-scale))
     (reset! pan-y-enabled? (> value y-threshold-scale))))
 
-;; On ios, when attempting to navigate back while zoomed in, the shared-element transition
-;; animation doesn't execute properly, so we need to zoom out first
+;;; On ios, when attempting to navigate back while zoomed in, the shared-element transition
+;;; animation doesn't execute properly, so we need to zoom out first
 (defn handle-exit-lightbox-signal
   [exit-lightbox-signal index scale rescale]
   (when (= exit-lightbox-signal index)
@@ -256,7 +261,7 @@
       (rf/dispatch [:navigate-back]))
     (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
 
-;; Finally, the component
+;;;; Finally, the component
 (defn zoomable-image
   [{:keys [image-width image-height content message-id]} index border-value on-tap]
   [:f>
