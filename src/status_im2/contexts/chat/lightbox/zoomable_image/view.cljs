@@ -67,6 +67,20 @@
     (gesture/gesture-tap)
     (gesture/on-start #(on-tap))))
 
+(defn find-double-tap-x
+  [width evt]
+  (let [focal-x     (- (/ width 2) (.-x evt))
+        max-pan-x   (get-max-offset width width double-tap-scale)
+        translate-x (min (Math/abs focal-x) max-pan-x)]
+    (if (neg? focal-x) (- translate-x) translate-x)))
+
+(defn find-double-tap-y
+  [height screen-height evt]
+  (let [focal-y     (- (/ height 2) (.-y evt))
+        max-pan-y   (get-max-offset height screen-height double-tap-scale)
+        translate-y (min (Math/abs focal-y) max-pan-y)]
+    (if (neg? focal-y) (- translate-y) translate-y)))
+
 (defn double-tap-gesture
   [{:keys [width height screen-height]}
    {:keys [scale pan-x pan-x-start pan-y pan-y-start]}
@@ -76,77 +90,64 @@
     (gesture/gesture-tap)
     (gesture/number-of-taps 2)
     (gesture/on-start (fn [evt]
-                        ;; Scale to x2
                         (if (= (get-val scale) min-scale)
-                          ;; Find translate-x value
-                          (let [focal-x     (- (/ width 2) (.-x evt))
-                                max-pan-x   (get-max-offset width width double-tap-scale)
-                                translate-x (min (Math/abs focal-x) max-pan-x)
-                                translate-x (if (neg? focal-x) (- translate-x) translate-x)
-                                ;; Find translate-y value
-                                focal-y     (- (/ height 2) (.-y evt))
-                                max-pan-y   (get-max-offset height screen-height double-tap-scale)
-                                translate-y (min (Math/abs focal-y) max-pan-y)
-                                translate-y (if (neg? focal-y) (- translate-y) translate-y)]
-                            ;; apply animations
+                          (let [translate-x (find-double-tap-x width evt)
+                                translate-y (find-double-tap-y height screen-height evt)]
                             (set-val pan-x (timing translate-x))
                             (set-val pan-x-start (timing translate-x))
-                            ;; animate y position only if the double-tap-scale exceeds the threshold
                             (when (> double-tap-scale y-threshold-scale)
                               (set-val pan-y (timing translate-y))
                               (set-val pan-y-start (timing translate-y)))
                             (rescale double-tap-scale))
-                          ;; Otherwise scale back to x1
                           (rescale min-scale))))))
+
+(defn find-pinch-x
+  [scale-ratio width focal-x {:keys [saved-scale pinch-x-start pan-x-start]}]
+  (let [scaled-width (/ width (get-val saved-scale))
+        x-start      (+ (get-val pinch-x-start) (get-val pan-x-start))
+        center-x     (get-current-center width scaled-width x-start)]
+    (* (- center-x @focal-x) scale-ratio)))
+
+(defn find-pinch-y
+  [scale-ratio height focal-y {:keys [saved-scale pinch-y-start pan-y-start]}]
+  (let [scaled-height (/ height (get-val saved-scale))
+        y-start       (+ (get-val pinch-y-start) (get-val pan-y-start))
+        center-y      (get-current-center height scaled-height y-start)]
+    (* (- center-y @focal-y) scale-ratio)))
 
 (defn pinch-gesture
   [{:keys [width height]}
-   {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pan-x-start pan-y-start]}
+   {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start] :as animations}
    {:keys [pan-x-enabled? pan-y-enabled? x-threshold-scale y-threshold-scale focal-x focal-y]}
    rescale]
   (->
     (gesture/gesture-pinch)
     (gesture/on-start (fn [evt]
-                        ;; Read the x and y touch positions on the screen
                         (reset! focal-x (.-focalX evt))
                         (reset! focal-y (.-focalY evt))))
     (gesture/on-update (fn [evt]
-                         ;; First, find the scale ration
-                         (let [new-scale     (* (.-scale evt) (get-val saved-scale))
-                               scale-ratio   (get-scale-ratio new-scale (get-val saved-scale))
-                               ;; Then, find the translate-x value (pinch-x)
-                               scaled-width  (/ width (get-val saved-scale))
-                               x-start       (+ (get-val pinch-x-start) (get-val pan-x-start))
-                               center-x      (get-current-center width scaled-width x-start)
-                               new-pinch-x   (* (- center-x @focal-x) scale-ratio)
-                               ;; Lastly, find the translate-y value (pinch-y)
-                               scaled-height (/ height (get-val scale))
-                               y-start       (+ (get-val pinch-y-start) (get-val pan-y-start))
-                               center-y      (get-current-center height scaled-height y-start)
-                               new-pinch-y   (* (- center-y @focal-y) scale-ratio)]
-                           ;; Update the values
+                         (let [new-scale   (* (.-scale evt) (get-val saved-scale))
+                               scale-ratio (get-scale-ratio new-scale (get-val saved-scale))
+                               new-pinch-x (find-pinch-x scale-ratio width focal-x animations)
+                               new-pinch-y (find-pinch-y scale-ratio height focal-y animations)]
                            (set-val pinch-x (+ new-pinch-x (get-val pinch-x-start)))
                            (set-val pinch-y (+ new-pinch-y (get-val pinch-y-start)))
                            (set-val scale new-scale))))
     (gesture/on-end
      (fn []
        (cond
-         ;; if less than min-scale, then scale back to x1
          (< (get-val scale) min-scale)
          (rescale min-scale)
-         ;; if greater than max-scale, then scale back to max-scale
          (> (get-val scale) max-scale)
          (do
            (set-val pinch-x-start (get-val pinch-x))
            (set-val pinch-y-start (get-val pinch-y))
            (rescale max-scale))
-         ;; Otherwise, apply animations
          :else
          (do
            (set-val saved-scale (get-val scale))
            (set-val pinch-x-start (get-val pinch-x))
            (set-val pinch-y-start (get-val pinch-y))
-           ;; Enable panning if the scale is bigger than the corresponding threshold
            (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
            (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))))))))
 
@@ -168,17 +169,14 @@
              max-offset  (get-max-offset width width (get-val scale))
              max-offset  (if (neg? curr-offset) (- max-offset) max-offset)]
          (if (> (Math/abs curr-offset) (Math/abs max-offset))
-           ;; Snap the image back to its edge if the translation is beyond its edge
            (do
              (set-val pan-x (timing max-offset))
              (set-val pan-x-start (timing max-offset))
              (set-val pinch-x (timing init-offset))
              (set-val pinch-x-start (timing init-offset)))
-           ;; Otherwise, apply animations
            (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-x))
                  upper-bound (- (Math/abs max-offset) (get-val pinch-x))]
              (set-val pan-x-start (get-val pan-x))
-             ;; Apply decaying animation
              (set-val-decay pan-x (* (.-velocityX evt) velocity-factor) [lower-bound upper-bound])
              (set-val-decay pan-x-start
                             (* (.-velocityX evt) velocity-factor)
@@ -204,22 +202,18 @@
              max-offset  (get-max-offset height screen-height (get-val scale))
              max-offset  (if (neg? curr-offset) (- max-offset) max-offset)]
          (cond
-           ;; On-end, if scale is less than min-scale, then scale back to x1
            (< (get-val scale) y-threshold-scale)
            (rescale min-scale)
-           ;; Snap the image back to its edge if the translation is beyond its edge
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
              (set-val pan-y (timing max-offset))
              (set-val pan-y-start (timing max-offset))
              (set-val pinch-y (timing init-offset))
              (set-val pinch-y-start (timing init-offset)))
-           ;; Otherwise, apply animations
            :else
            (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-y))
                  upper-bound (- (Math/abs max-offset) (get-val pinch-y))]
              (set-val pan-y-start (get-val pan-y))
-             ;; Apply decaying animation
              (set-val-decay pan-y (* (.-velocityY evt) velocity-factor) [lower-bound upper-bound])
              (set-val-decay pan-y-start
                             (* (.-velocityY evt) velocity-factor)

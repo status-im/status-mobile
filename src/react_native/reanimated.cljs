@@ -91,7 +91,7 @@
 (defn apply-animations-to-style
   [animations style]
   (use-animated-style
-    (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style))))
+   (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style))))
 
 ;; Animators
 (defn animate-shared-value-with-timing
@@ -99,7 +99,7 @@
   (set-shared-value anim
                     (with-timing val
                                  (js-obj "duration" duration
-                                         "easing" (get easings easing)))))
+                                         "easing"   (get easings easing)))))
 
 (defn animate-shared-value-with-delay
   [anim val duration easing delay]
@@ -107,14 +107,14 @@
                     (with-delay delay
                                 (with-timing val
                                              (js-obj "duration" duration
-                                                     "easing" (get easings easing))))))
+                                                     "easing"   (get easings easing))))))
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
   (set-shared-value anim
                     (with-repeat (with-timing val
                                               (js-obj "duration" duration
-                                                      "easing" (get easings easing)))
+                                                      "easing"   (get easings easing)))
                                  number-of-repetitions
                                  reverse?)))
 
@@ -125,19 +125,19 @@
    (set-shared-value anim
                      (with-delay delay
                                  (with-repeat
-                                   (with-timing val
-                                                #js
-                                                        {:duration duration
-                                                         :easing   (get easings easing)})
-                                   number-of-repetitions
-                                   reverse?)))))
+                                  (with-timing val
+                                               #js
+                                                {:duration duration
+                                                 :easing   (get easings easing)})
+                                  number-of-repetitions
+                                  reverse?)))))
 
 (defn animate-shared-value-with-spring
   [anim val {:keys [mass stiffness damping]}]
   (set-shared-value anim
                     (with-spring val
-                                 (js-obj "mass" mass
-                                         "damping" damping
+                                 (js-obj "mass"      mass
+                                         "damping"   damping
                                          "stiffness" stiffness))))
 
 (defn animate-shared-value-with-decay
