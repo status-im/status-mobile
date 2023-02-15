@@ -8,6 +8,7 @@
    [re-frame.core :as re-frame]
    [react-native.core :as rn]
    [react-native.safe-area :as safe-area]
+   [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
    [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
    [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
    [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
@@ -46,6 +47,7 @@
    [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
    [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
    [status-im2.contexts.quo-preview.notifications.toast :as toast]
+   [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
    [status-im2.contexts.quo-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
    [status-im2.contexts.quo-preview.profile.collectible :as collectible]
    [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
@@ -68,8 +70,7 @@
    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-   [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
-   [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]))
+   [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -186,6 +187,9 @@
                            {:name      :toast
                             :insets    {:top false}
                             :component toast/preview-toasts}]
+   :onboarding            [{:name      :small-option-card
+                            :insets    {:top false}
+                            :component small-option-card/preview-small-option-card}]
    :posts-and-attachments [{:name      :messages-skeleton
                             :insets    {:top false}
                             :component messages-skeleton/preview-messages-skeleton}]

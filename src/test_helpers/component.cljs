@@ -45,3 +45,5 @@
 (defn advance-timers-by-time
   [time-ms]
   (js/jest.advanceTimersByTime time-ms))
+
+(def mock-fn js/jest.fn)
