@@ -27,12 +27,10 @@ The most important thing is that
 
 status-mobile code that makes it to the `develop` branch, should always point to a tagged version of status-go in the `develop` branch of status-go.
 
-In practice this means:
-
-
-1) Create a PR in status-go, get it reviewed by status-go devs
-2) Create a PR in status-mobile, get it reviewed by devs, then go through manual QA testing (if necessary). Once QA has successfully tested the status-mobile PR, it is now ready to merge
-3) Merge status-go PR first, make sure you bump the `VERSION` file in status-go
+In practice, this means that sometimes they need to be merged in lockstep.
+1) Create a PR in status-go and status-mobile. Update the status-go version to the PR revision `scripts/update-status-go.sh $git_revision`.
+2) Get both PRs reviewed and approved. Once status-mobile PR has been approved, go through manual QA testing if necessary. Don't merge status-mobile PR just yet.
+3) Now that you know the integration between client & server is working, bump the `VERSION` in status-go and merge it.
 4) Once merged, tag the version with the new version and push the tag:
 ```
   git checkout develop
@@ -41,4 +39,7 @@ In practice this means:
   git push origin vx.y.z
 ```
 5) Update status-mobile with the new status-go version, using the new tag `scripts/update-status-go.sh "vx.y.z"`
-6) Push, make sure it's rebased and go through the merge process as above.
+6) In status-mobile, push, rebase against `develop` and merge it 🚀
+
+
+important note : make sure your status-go PRs get a tested-ok by QA before merging them in. 
