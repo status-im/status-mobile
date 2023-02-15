@@ -31,8 +31,8 @@ In practice this means:
 
 
 1) Create a PR in status-go, get it reviewed by status-go devs
-2) Create a PR in status-mobile, get it reviewed by devs, then go through manual testing (if necessary)
-3) Once ready to merge, merge status-go PR first, make sure you bump the `VERSION` file in status-go
+2) Create a PR in status-mobile, get it reviewed by devs, then go through manual QA testing (if necessary). Once QA has successfully tested the status-mobile PR, it is now ready to merge
+3) Merge status-go PR first, make sure you bump the `VERSION` file in status-go
 4) Once merged, tag the version with the new version and push the tag:
 ```
   git checkout develop
