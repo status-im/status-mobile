@@ -8,6 +8,8 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
+            [status-im.utils.types :as types]
+            [status-im.native-module.core :as status]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im2.utils.validators :as validators]
             [status-im.utils.http :as http]
@@ -71,15 +73,27 @@
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
-  (let [valid-key (and (validators/valid-public-key? user-id)
-                       (not= user-id ens/default-key))]
+  (let [valid-public-key?     (and (validators/valid-public-key? user-id)
+                                   (not= user-id ens/default-key))
+        valid-compressed-key? (validators/valid-compressed-key? user-id)]
     (cond
-      valid-key
+      valid-public-key?
       (callback {:type       :contact
                  :public-key user-id
                  :ens-name   ens-name})
 
-      (and (not valid-key)
+      valid-compressed-key?
+      (status/compressed-key->public-key
+       user-id
+       (fn [response]
+         (let [{:keys [error]} (types/json->clj response)]
+           (when-not error
+             (match-contact-async
+              chain
+              {:user-id (str "0x" (subs response 5)) :ens-name ens-name}
+              callback)))))
+
+      (and (not valid-public-key?)
            (string? user-id)
            (not (string/blank? user-id))
            (not= user-id "0x"))

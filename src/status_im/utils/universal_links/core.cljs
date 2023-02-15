@@ -113,11 +113,7 @@
      :pop-to-root-tab-fx :profile-stack}
 
     public-key
-    (navigation/navigate-to-cofx (-> cofx
-                                     (assoc-in [:db :contacts/identity] public-key)
-                                     (assoc-in [:db :contacts/ens-name] ens-name))
-                                 :profile
-                                 {})))
+    {:dispatch [:chat.ui/show-profile public-key ens-name]}))
 
 (rf/defn handle-eip681
   [cofx data]
