@@ -6,7 +6,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- generate-header-and-body-text
+(defn- get-header-and-body-text
   [membership-status]
   (case membership-status
     1 {:header-text (i18n/label :t/community-request-pending)
@@ -22,7 +22,7 @@
 
 (defn view
   [{:keys [community-id membership-status read timestamp]}]
-  (let [{:keys [header-text body-text]} (generate-header-and-body-text membership-status)
+  (let [{:keys [header-text body-text]} (get-header-and-body-text membership-status)
         community                       (rf/sub [:communities/community community-id])
         community-name                  (:name community)
         community-image                 (get-in community [:images :thumbnail :uri])]
