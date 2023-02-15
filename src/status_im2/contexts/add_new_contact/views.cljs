@@ -2,6 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.react-native.resources :as resources]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im2.contexts.add-new-contact.style :as style]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
@@ -42,7 +43,8 @@
                                    600)})]
         [quo/button
          (merge style/button-qr
-                {:on-press #(js/alert "TODO: to be implemented")})
+                {:on-press #(rf/dispatch [::qr-scanner/scan-code
+                                          {:handler :contacts/qr-code-scanned}])})
          :i/scan]]
        (when error?
          [rn/view style/container-error
