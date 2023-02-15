@@ -8,8 +8,7 @@
             [status-im.native-module.core :as status]
             [status-im2.navigation.events :as navigation]
             [status-im2.utils.validators :as validators]
-            [status-im.utils.utils :as utils]
-            [utils.re-frame :as rf]))
+            [status-im.utils.utils :as utils]))
 
 (re-frame/reg-fx
  :contacts/decompress-public-key
