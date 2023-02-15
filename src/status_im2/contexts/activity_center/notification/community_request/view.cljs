@@ -1,5 +1,6 @@
 (ns status-im2.contexts.activity-center.notification.community-request.view
   (:require [quo2.core :as quo]
+            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.style :as common-style]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
@@ -9,14 +10,17 @@
 (defn- get-header-and-body-text
   [membership-status]
   (case membership-status
-    1 {:header-text (i18n/label :t/community-request-pending)
-       :body-text   (i18n/label :t/community-request-pending-body-text)}
+    constants/activity-center-membership-status-pending
+    {:header-text (i18n/label :t/community-request-pending)
+     :body-text   (i18n/label :t/community-request-pending-body-text)}
 
-    2 {:header-text (i18n/label :t/community-request-accepted)
-       :body-text   (i18n/label :t/community-request-accepted-body-text)}
+    constants/activity-center-membership-status-accepted
+    {:header-text (i18n/label :t/community-request-accepted)
+     :body-text   (i18n/label :t/community-request-accepted-body-text)}
 
-    3 {:header-text (i18n/label :t/community-request-declined)
-       :body-text   (i18n/label :t/community-request-declined=body-text)}
+    constants/activity-center-membership-status-declined
+    {:header-text (i18n/label :t/community-request-declined)
+     :body-text   (i18n/label :t/community-request-declined=body-text)}
 
     nil))
 
