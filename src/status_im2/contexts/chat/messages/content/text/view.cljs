@@ -46,7 +46,7 @@
       [quo/text
        {:weight :medium
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
-       (rf/sub [:contacts/contact-name-by-identity literal])]])
+       (rf/sub [:messages/resolve-mention literal])]])
 
     (conj units literal)))
 

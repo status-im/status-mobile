@@ -31,7 +31,7 @@
                            "mention" [quo/text
                                       {:style style/mention-text
                                        :size  :paragraph-1}
-                                      (str "@" (rf/sub [:contacts/contact-name-by-identity literal]))]
+                                      (str "@" (rf/sub [:messages/resolve-mention literal]))]
                            literal))
                        parsed-text-children))))
 
