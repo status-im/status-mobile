@@ -13,6 +13,8 @@
 
 (defn gesture-pinch [] (.Pinch Gesture))
 
+(defn on-begin [gesture handler] (.onBegin gesture handler))
+
 (defn on-start [gesture handler] (.onStart gesture handler))
 
 (defn on-update [gesture handler] (.onUpdate gesture handler))

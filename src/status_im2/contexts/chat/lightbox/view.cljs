@@ -173,29 +173,27 @@
        (reset! data messages)
        [safe-area/consumer
         (fn [insets]
-          [:f>
-           (fn []
-             ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
-             (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
-             [rn/view {:style style/container-view}
-              (when-not @transparent?
-                [top-view (first messages) insets opacity-value scroll-index])
-              [rn/flat-list
-               {:ref                       #(reset! flat-list-ref %)
-                :key-fn                    :message-id
-                :style                     {:width (+ window-width 16)}
-                :data                      @data
-                :render-fn                 image
-                :render-data               {:opacity-value opacity-value
-                                            :border-value  border-value
-                                            :transparent?  transparent?}
-                :horizontal                true
-                :paging-enabled            true
-                :get-item-layout           get-item-layout
-                :viewability-config        {:view-area-coverage-percent-threshold 50}
-                :on-viewable-items-changed callback
-                :content-container-style   {:justify-content :center
-                                            :align-items     :center}}]
-              (when-not @transparent?
-                [bottom-view messages index scroll-index insets opacity-value])])])]))])
+          ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
+          (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
+          [rn/view {:style style/container-view}
+           (when-not @transparent?
+             [top-view (first messages) insets opacity-value scroll-index])
+           [rn/flat-list
+            {:ref                       #(reset! flat-list-ref %)
+             :key-fn                    :message-id
+             :style                     {:width (+ window-width 16)}
+             :data                      @data
+             :render-fn                 image
+             :render-data               {:opacity-value opacity-value
+                                         :border-value  border-value
+                                         :transparent?  transparent?}
+             :horizontal                true
+             :paging-enabled            true
+             :get-item-layout           get-item-layout
+             :viewability-config        {:view-area-coverage-percent-threshold 50}
+             :on-viewable-items-changed callback
+             :content-container-style   {:justify-content :center
+                                         :align-items     :center}}]
+           (when-not @transparent?
+             [bottom-view messages index scroll-index insets opacity-value])])]))])
 
