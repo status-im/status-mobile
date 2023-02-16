@@ -39,10 +39,10 @@
 
 (defn view
   [{:keys [author chat-name community-id chat-id message read timestamp]}]
-  (let [is-chat-from-community? (not (string/blank? community-id))
-        community               (rf/sub [:communities/community community-id])
-        community-name          (:name community)
-        community-image         (get-in community [:images :thumbnail :uri])]
+  (let [community-chat? (not (string/blank? community-id))
+        community       (rf/sub [:communities/community community-id])
+        community-name  (:name community)
+        community-image (get-in community [:images :thumbnail :uri])]
     [rn/touchable-opacity
      {:on-press (fn []
                   (rf/dispatch [:hide-popover])
@@ -54,7 +54,7 @@
        :unread?   (not read)
        :context   [[common/user-avatar-tag author]
                    [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
-                   (if is-chat-from-community?
+                   (if community-chat?
                      [quo/context-tag tag-params {:uri community-image} community-name chat-name]
                      [quo/group-avatar-tag chat-name tag-params])]
        :message   {:body-number-of-lines 1
