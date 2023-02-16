@@ -41,7 +41,7 @@
                       {:type :negative :label (i18n/label :t/declined)}
                       nil)}
         (case (:contact-request-state message)
-          constants/contact-request-state-mutual
+          constants/contact-request-message-state-pending
           {:button-1 {:label               (i18n/label :t/decline)
                       :accessibility-label :decline-contact-request
                       :type                :danger
