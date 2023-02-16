@@ -14,7 +14,8 @@
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.communities.mock :as mock]))
 
 (def crop-size 1000)
 
@@ -100,10 +101,10 @@
 (rf/defn handle-communities
   {:events [::fetched]}
   [{:keys [db]} communities]
-  {:db (reduce (fn [db {:keys [id] :as community}]
-                 (assoc-in db [:communities id] (<-rpc community)))
-               db
-               communities)})
+  {:db (mock/add-mock-data (reduce (fn [db {:keys [id] :as community}]
+                                     (assoc-in db [:communities id] (<-rpc community)))
+                                   db
+                                   communities))})
 
 (rf/defn handle-response
   [_ response-js]

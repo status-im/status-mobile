@@ -216,6 +216,34 @@
         (sort-by :position)
         (into []))))
 
+
+(def token-images
+  {"KNC"  (js/require "../resources/images/tokens/mainnet/KNC.png")
+   "MANA" (js/require "../resources/images/tokens/mainnet/MANA.png")
+   "RARE" (js/require "../resources/images/tokens/mainnet/RARE.png")
+   "ETH"  (js/require "../resources/images/tokens/mainnet/ETH.png")
+   "DAI"  (js/require "../resources/images/tokens/mainnet/DAI.png")})
+
+(defn token-image
+  [token]
+  (get token-images token))
+
+(defn enrich-gate-for-ui
+  [{:keys [token] :as gate}]
+  (assoc gate :token-img-src (token-image token) :is-sufficient? false))
+
+(defn enrich-gates-vector-for-ui
+  [gates]
+  (vec (map enrich-gate-for-ui gates)))
+
+(defn enrich-gates-for-ui
+  [gates]
+  (vec (map (fn [v]
+              (if (vector? v)
+                (enrich-gates-vector-for-ui v)
+                (enrich-gate-for-ui v)))
+            gates)))
+
 (re-frame/reg-sub
  :communities/categorized-channels
  (fn [[_ community-id]]
@@ -223,7 +251,7 @@
     (re-frame/subscribe [:chats/chats])])
  (fn [[{:keys [joined categories chats]} full-chats-data] [_ community-id]]
    (reduce
-    (fn [acc [_ {:keys [name categoryID id emoji can-post?]}]]
+    (fn [acc [_ {:keys [name categoryID id emoji can-post? gates]}]]
       (let [category                                                  (keyword
                                                                        (get-in categories
                                                                                [categoryID :name]
@@ -235,6 +263,11 @@
                 #(vec (conj %1 %2))
                 {:name             name
                  :emoji            emoji
+                 :gates            (merge
+                                    (when (contains? gates :read)
+                                      {:read (enrich-gates-for-ui (:read gates))})
+                                    (when (contains? gates :write)
+                                      {:write (enrich-gates-for-ui (:write gates))}))
                  :unread-messages? (pos? unviewed-messages-count)
                  :mentions-count   (or unviewed-mentions-count 0)
                  :locked?          (or (not joined) (not can-post?))
@@ -250,3 +283,33 @@
     {:full-name "Marcus C"}
     {:full-name "MNO PQR"}
     {:full-name "STU VWX"}]))
+
+(re-frame/reg-sub
+ :community/join-gates
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [gates]}] _]
+   (when gates
+     {:join (enrich-gates-for-ui (gates :join))})))
+
+(defn icons-for-permission-tag
+  [gates]
+  (vec (map-indexed (fn [i {:keys [token]}]
+                      {:id i :token-icon (token-image token)})
+                    gates)))
+
+(re-frame/reg-sub
+ :community/permission-tag-tokens
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [gates]}] _]
+   (when gates
+     (let [join-gates (gates :join)
+           first-item (first join-gates)]
+       (if (vector? first-item)
+         (vec (map-indexed (fn [i v]
+                             {:id    i
+                              :group (icons-for-permission-tag v)})
+                           join-gates))
+         [{:id    0
+           :group (icons-for-permission-tag join-gates)}])))))

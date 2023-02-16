@@ -31,7 +31,7 @@
     (utils/join-existing-users-string user-list)]])
 
 (defn channel-token-gating-details
-  [name token-gating emoji channel-color]
+  [name gates emoji channel-color]
   [rn/view {:height 350 :margin-top 20}
    [quo/token-gating
     {:channel {:name                   name
@@ -42,15 +42,15 @@
                                          (js/alert
                                           "Entered channel"
                                           "Wuhuu!! You successfully entered the channel :)"))
-               :gates                  token-gating}}]])
+               :gates                  gates}}]])
 
 (defn open-channel-token-gating-details
-  [name token-gating emoji channel-color]
+  [name gates emoji channel-color]
   (rf/dispatch
    [:bottom-sheet/show-sheet
     {:content
      (fn []
-       [channel-token-gating-details name token-gating emoji channel-color])
+       [channel-token-gating-details name gates emoji channel-color])
      :content-height 210}]))
 
 (defn layout-y
@@ -160,13 +160,13 @@
                  :gates                    tokens}}]])
 
 (defn add-on-press-handler
-  [community-id {:keys [name emoji id locked? token-gating] :or {locked? false} :as chat}]
+  [community-id {:keys [name emoji id locked? gates] :or {locked? false} :as chat}]
   (merge
    chat
-   (if (and locked? token-gating)
+   (if (and locked? gates)
      {:on-press #(open-channel-token-gating-details
                   name
-                  token-gating
+                  gates
                   emoji
                   (colors/custom-color :pink 50))}
 
@@ -210,14 +210,16 @@
 
 (defn community-content
   [{:keys [name description locked joined images
-           status tokens tags requested-to-join-at id]
+           status tags requested-to-join-at id]
     :as   community}
    {:keys [on-categories-heights-changed
            on-first-channel-height-changed]}]
-  (let [pending?          (pos? requested-to-join-at)
-        thumbnail-image   (get-in images [:thumbnail])
-        chats-by-category (rf/sub [:communities/categorized-channels id])
-        users             (rf/sub [:communities/users id])]
+  (let [pending?              (pos? requested-to-join-at)
+        thumbnail-image       (get-in images [:thumbnail])
+        chats-by-category     (rf/sub [:communities/categorized-channels id])
+        users                 (rf/sub [:communities/users id])
+        join-gates            (rf/sub [:community/join-gates id])
+        permission-tag-tokens (rf/sub [:community/permission-tag-tokens id])]
     [rn/view
      [rn/view {:padding-horizontal 20}
       (when (and (not joined)
@@ -230,7 +232,7 @@
          [quo/permission-tag-container
           {:locked   locked
            :status   status
-           :tokens   tokens
+           :tokens   permission-tag-tokens
            :on-press #(rf/dispatch
                        [:bottom-sheet/show-sheet
                         {:content-height 210
@@ -239,7 +241,7 @@
                            [community-token-gating-details
                             name
                             thumbnail-image
-                            tokens])}])}]])
+                            join-gates])}])}]])
       (when (or pending? joined)
         [rn/view
          {:position :absolute

@@ -412,7 +412,8 @@
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-unread-contact-requests)
-              (activity-center/notifications-fetch-unread-count))))
+              (activity-center/notifications-fetch-unread-count)
+              #_(communities/resolve-mock-community-info))))
 
 (re-frame/reg-fx
  ::open-last-chat
