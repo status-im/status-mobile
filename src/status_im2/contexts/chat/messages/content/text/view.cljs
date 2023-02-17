@@ -39,17 +39,6 @@
 
     :mention
     (conj
-<<<<<<< HEAD
-      units
-      [rn/touchable-opacity
-       {:active-opacity 1
-        :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
-        :style          (merge style/block {:background-color colors/primary-50-opa-10})}
-       [quo/text
-        {:weight :medium
-         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
-        (rf/sub [:contacts/contact-name-by-identity literal])]])
-=======
      units
      [rn/touchable-opacity
       {:active-opacity 1
@@ -59,7 +48,6 @@
        {:weight :medium
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:contacts/contact-name-by-identity literal])]])
->>>>>>> 996ec9167 (refactor)
 
     (conj units literal)))
 
@@ -70,18 +58,9 @@
     :paragraph
     (conj blocks
           (reduce
-<<<<<<< HEAD
-            render-inline
-<<<<<<< HEAD
-            [quo/text]
-            children))
-=======
-=======
            render-inline
->>>>>>> 32f1b61b7 (lint)
            [quo/text]
            children))
->>>>>>> 996ec9167 (refactor)
 
     :blockquote
     (conj blocks
