@@ -143,8 +143,8 @@
 (defn animate-shared-value-with-decay
   [anim velocity clamp]
   (set-shared-value anim
-                    (with-decay (clj->js {"velocity" velocity
-                                          "clamp"    clamp}))))
+                    (with-decay (clj->js {:velocity velocity
+                                          :clamp    clamp}))))
 
 (def in-out
   (.-inOut Easing))
@@ -152,5 +152,5 @@
 (defn with-timing-duration
   [val duration]
   (with-timing val
-               (clj->js {"duration" duration
-                         "easing"   (in-out (.-quad ^js Easing))})))
+               (clj->js {:duration duration
+                         :easing   (in-out (.-quad ^js Easing))})))

@@ -171,10 +171,11 @@
                                       (on-viewable-items-changed e
                                                                  scroll-index))]
        (reset! data messages)
+       (rn/use-effect-once (fn []
+                             (.scrollToIndex ^js @flat-list-ref #js {:animated false :index index})
+                             js/undefined))
        [safe-area/consumer
         (fn [insets]
-          ;; We use setTimeout to enqueue `scrollToIndex` until the `data` has been updated.
-          (js/setTimeout #(.scrollToIndex ^js @flat-list-ref #js {:animated false :index index}) 0)
           [rn/view {:style style/container-view}
            (when-not @transparent?
              [top-view (first messages) insets opacity-value scroll-index])
