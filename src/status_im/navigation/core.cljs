@@ -21,7 +21,7 @@
 (def splash-screen (-> rn .-NativeModules .-SplashScreen))
 
 (defonce set-navigation-default-options
-         (.setDefaultOptions Navigation (clj->js {:layout {:orientation "portrait"}})))
+  (.setDefaultOptions Navigation (clj->js {:layout {:orientation "portrait"}})))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp
@@ -33,7 +33,7 @@
       (.registerComponent Navigation key (fn [] (gestureHandlerRootHOC screen)) (fn [] screen)))))
 
 (defonce rset-lazy-reg
-         (.setLazyComponentRegistrator Navigation reg-comp))
+  (.setLazyComponentRegistrator Navigation reg-comp))
 
 (defn dismiss-all-modals
   []
@@ -104,17 +104,17 @@
   (.dismissModal Navigation (name (last @state/modals))))
 
 (defonce register-nav-button-reg
-         (.registerNavigationButtonPressedListener
-          (.events Navigation)
-          (fn [^js evn]
-            (let [id (.-buttonId evn)]
-              (if (= "dismiss-modal" id)
-                (do
-                  (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
-                    (re-frame/dispatch event))
-                  (dissmissModal))
-                (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
-                  (handler)))))))
+  (.registerNavigationButtonPressedListener
+   (.events Navigation)
+   (fn [^js evn]
+     (let [id (.-buttonId evn)]
+       (if (= "dismiss-modal" id)
+         (do
+           (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
+             (re-frame/dispatch event))
+           (dissmissModal))
+         (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
+           (handler)))))))
 
 (defn set-view-id
   [view-id]
@@ -126,53 +126,53 @@
       (re-frame/dispatch on-focus))))
 
 (defonce register-modal-reg
-         (.registerModalDismissedListener
-          (.events Navigation)
-          (fn [_]
-            (if (> (count @state/modals) 1)
-              (let [new-modals (butlast @state/modals)]
-                (reset! state/modals (vec new-modals))
-                (set-view-id (last new-modals)))
-              (do
-                (reset! state/modals [])
-                (reset! state/curr-modal false)
-                (set-view-id @state/pushed-screen-id)))
+  (.registerModalDismissedListener
+   (.events Navigation)
+   (fn [_]
+     (if (> (count @state/modals) 1)
+       (let [new-modals (butlast @state/modals)]
+         (reset! state/modals (vec new-modals))
+         (set-view-id (last new-modals)))
+       (do
+         (reset! state/modals [])
+         (reset! state/curr-modal false)
+         (set-view-id @state/pushed-screen-id)))
 
-            (let [comp @state/dissmissing]
-              (reset! state/dissmissing false)
-              (when (keyword? comp)
-                (open-modal comp))))))
+     (let [comp @state/dissmissing]
+       (reset! state/dissmissing false)
+       (when (keyword? comp)
+         (open-modal comp))))))
 
 ;; SCREEN DID APPEAR
 (defonce screen-appear-reg
-         (.registerComponentDidAppearListener
-          (.events Navigation)
-          (fn [^js evn]
-            (let [view-id (keyword (.-componentName evn))]
-              (log/debug "screen-appear-reg" view-id)
-              (when (get views/screens view-id)
-                (when (and (not= view-id :bottom-sheet)
-                           (not= view-id :popover)
-                           (not= view-id :visibility-status-popover))
-                  (set-view-id view-id)
-                  (when-not @state/curr-modal
-                    (reset! state/pushed-screen-id view-id))))))))
+  (.registerComponentDidAppearListener
+   (.events Navigation)
+   (fn [^js evn]
+     (let [view-id (keyword (.-componentName evn))]
+       (log/debug "screen-appear-reg" view-id)
+       (when (get views/screens view-id)
+         (when (and (not= view-id :bottom-sheet)
+                    (not= view-id :popover)
+                    (not= view-id :visibility-status-popover))
+           (set-view-id view-id)
+           (when-not @state/curr-modal
+             (reset! state/pushed-screen-id view-id))))))))
 
 ;; SCREEN DID DISAPPEAR
 (defonce screen-disappear-reg
-         (.registerComponentDidDisappearListener
-          (.events Navigation)
-          (fn [^js evn]
-            (let [view-id (keyword (.-componentName evn))]
-              (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover"
-                           "wallet-connect-sheet" "wallet-connect-success-sheet"
-                           "wallet-connect-app-management-sheet"}
-                         (.-componentName evn))
-                (re-frame/dispatch [::view-disappeared view-id])
-                (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
-                  (.setNativeProps ^js ref (clj->js {:text value})))
-                (doseq [[^js text-input default-value] @react/text-input-refs]
-                  (.setNativeProps text-input (clj->js {:text default-value}))))))))
+  (.registerComponentDidDisappearListener
+   (.events Navigation)
+   (fn [^js evn]
+     (let [view-id (keyword (.-componentName evn))]
+       (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover"
+                    "wallet-connect-sheet" "wallet-connect-success-sheet"
+                    "wallet-connect-app-management-sheet"}
+                  (.-componentName evn))
+         (re-frame/dispatch [::view-disappeared view-id])
+         (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
+           (.setNativeProps ^js ref (clj->js {:text value})))
+         (doseq [[^js text-input default-value] @react/text-input-refs]
+           (.setNativeProps text-input (clj->js {:text default-value}))))))))
 
 ;; SET ROOT
 (re-frame/reg-fx
@@ -203,19 +203,19 @@
     {:init-root-fx (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
 
 (defonce
- rset-app-launched
- (.registerAppLaunchedListener (.events Navigation)
-                               (fn []
-                                 (reset! state/curr-modal false)
-                                 (reset! state/dissmissing false)
-                                 (if (or (= @state/root-id :multiaccounts)
-                                         (= @state/root-id :multiaccounts-keycard))
-                                   (re-frame/dispatch-sync [::set-multiaccount-root])
-                                   (when @state/root-id
-                                     (reset! state/root-comp-id @state/root-id)
-                                     (.setRoot Navigation (clj->js (get (roots/roots) @state/root-id)))
-                                     (re-frame/dispatch [::login-core/check-last-chat])))
-                                 (.hide ^js splash-screen))))
+  rset-app-launched
+  (.registerAppLaunchedListener (.events Navigation)
+                                (fn []
+                                  (reset! state/curr-modal false)
+                                  (reset! state/dissmissing false)
+                                  (if (or (= @state/root-id :multiaccounts)
+                                          (= @state/root-id :multiaccounts-keycard))
+                                    (re-frame/dispatch-sync [::set-multiaccount-root])
+                                    (when @state/root-id
+                                      (reset! state/root-comp-id @state/root-id)
+                                      (.setRoot Navigation (clj->js (get (roots/roots) @state/root-id)))
+                                      (re-frame/dispatch [::login-core/check-last-chat])))
+                                  (.hide ^js splash-screen))))
 
 (defn get-screen-component
   [comp]
@@ -294,19 +294,19 @@
    (.popToRoot Navigation (name comp))))
 
 (defonce register-bottom-tab-reg
-         (.registerBottomTabSelectedListener
-          (.events Navigation)
-          (fn [^js evn]
-            (let [selected-tab-index (.-selectedTabIndex evn)
-                  comp               (get tab-root-ids selected-tab-index)
-                  tab-key            (get (set/map-invert tab-key-idx) selected-tab-index)]
-              (re-frame/dispatch [:set :current-tab tab-key])
-              (when (= @state/root-comp-id comp)
-                (when (= :chat tab-key)
-                  (re-frame/dispatch [:chat/close]))
-                (when platform/android?
-                  (.popToRoot Navigation (name comp))))
-              (reset! state/root-comp-id comp)))))
+  (.registerBottomTabSelectedListener
+   (.events Navigation)
+   (fn [^js evn]
+     (let [selected-tab-index (.-selectedTabIndex evn)
+           comp               (get tab-root-ids selected-tab-index)
+           tab-key            (get (set/map-invert tab-key-idx) selected-tab-index)]
+       (re-frame/dispatch [:set :current-tab tab-key])
+       (when (= @state/root-comp-id comp)
+         (when (= :chat tab-key)
+           (re-frame/dispatch [:chat/close]))
+         (when platform/android?
+           (.popToRoot Navigation (name comp))))
+       (reset! state/root-comp-id comp)))))
 
 ;; OVERLAY (Popover and bottom sheets)
 (defn dissmiss-overlay
@@ -331,20 +331,20 @@
 
 ;; POPOVER
 (defonce popover-reg
-         (.registerComponent Navigation
-                             "popover"
-                             (fn [] (gestureHandlerRootHOC views/popover-comp))
-                             (fn [] views/popover-comp)))
+  (.registerComponent Navigation
+                      "popover"
+                      (fn [] (gestureHandlerRootHOC views/popover-comp))
+                      (fn [] views/popover-comp)))
 
 (re-frame/reg-fx :show-popover (fn [] (show-overlay "popover")))
 (re-frame/reg-fx :hide-popover (fn [] (dissmiss-overlay "popover")))
 
 ;; VISIBILITY STATUS POPOVER
 (defonce visibility-status-popover-reg
-         (.registerComponent Navigation
-                             "visibility-status-popover"
-                             (fn [] (gestureHandlerRootHOC views/visibility-status-popover-comp))
-                             (fn [] views/visibility-status-popover-comp)))
+  (.registerComponent Navigation
+                      "visibility-status-popover"
+                      (fn [] (gestureHandlerRootHOC views/visibility-status-popover-comp))
+                      (fn [] views/visibility-status-popover-comp)))
 
 (re-frame/reg-fx :show-visibility-status-popover
                  (fn [] (show-overlay "visibility-status-popover")))
@@ -353,10 +353,10 @@
 
 ;; BOTTOM SHEETS
 (defonce bottom-sheet-reg
-         (.registerComponent Navigation
-                             "bottom-sheet"
-                             (fn [] (gestureHandlerRootHOC views/sheet-comp))
-                             (fn [] views/sheet-comp)))
+  (.registerComponent Navigation
+                      "bottom-sheet"
+                      (fn [] (gestureHandlerRootHOC views/sheet-comp))
+                      (fn [] views/sheet-comp)))
 
 (re-frame/reg-fx :show-bottom-sheet-overlay (fn [] (show-overlay "bottom-sheet")))
 (re-frame/reg-fx :dismiss-bottom-sheet-overlay (fn [] (dissmiss-overlay "bottom-sheet")))
@@ -364,22 +364,22 @@
 ;; WALLET CONNECT
 
 (defonce wallet-connect-sheet-reg
-         (.registerComponent Navigation
-                             "wallet-connect-sheet"
-                             (fn [] (gestureHandlerRootHOC views/wallet-connect-comp))
-                             (fn [] views/wallet-connect-comp)))
+  (.registerComponent Navigation
+                      "wallet-connect-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-comp))
+                      (fn [] views/wallet-connect-comp)))
 
 (defonce wallet-connect-success-sheet-reg
-         (.registerComponent Navigation
-                             "wallet-connect-success-sheet"
-                             (fn [] (gestureHandlerRootHOC views/wallet-connect-success-comp))
-                             (fn [] views/wallet-connect-success-comp)))
+  (.registerComponent Navigation
+                      "wallet-connect-success-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-success-comp))
+                      (fn [] views/wallet-connect-success-comp)))
 
 (defonce wallet-connect-app-management-sheet-reg
-         (.registerComponent Navigation
-                             "wallet-connect-app-management-sheet"
-                             (fn [] (gestureHandlerRootHOC views/wallet-connect-app-management-comp))
-                             (fn [] views/wallet-connect-app-management-comp)))
+  (.registerComponent Navigation
+                      "wallet-connect-app-management-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-app-management-comp))
+                      (fn [] views/wallet-connect-app-management-comp)))
 
 (re-frame/reg-fx :show-wallet-connect-sheet (fn [] (show-overlay "wallet-connect-sheet")))
 (re-frame/reg-fx :hide-wallet-connect-sheet (fn [] (dissmiss-overlay "wallet-connect-sheet")))
@@ -395,10 +395,10 @@
 ;; SIGNING
 
 (defonce signing-sheet-reg
-         (.registerComponent Navigation
-                             "signing-sheet"
-                             (fn [] (gestureHandlerRootHOC views/signing-comp))
-                             (fn [] views/signing-comp)))
+  (.registerComponent Navigation
+                      "signing-sheet"
+                      (fn [] (gestureHandlerRootHOC views/signing-comp))
+                      (fn [] views/signing-comp)))
 
 (re-frame/reg-fx :show-signing-sheet (fn [] (show-overlay "signing-sheet")))
 (re-frame/reg-fx :hide-signing-sheet (fn [] (dissmiss-overlay "signing-sheet")))
@@ -407,10 +407,10 @@
 ;; TODO why is this not a regular bottom sheet ?
 
 (defonce select-acc-sheet-reg
-         (.registerComponent Navigation
-                             "select-acc-sheet"
-                             (fn [] (gestureHandlerRootHOC views/select-acc-comp))
-                             (fn [] views/select-acc-comp)))
+  (.registerComponent Navigation
+                      "select-acc-sheet"
+                      (fn [] (gestureHandlerRootHOC views/select-acc-comp))
+                      (fn [] views/select-acc-comp)))
 
 (re-frame/reg-fx :show-select-acc-sheet (fn [] (show-overlay "select-acc-sheet")))
 (re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))

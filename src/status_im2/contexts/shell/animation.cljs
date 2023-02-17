@@ -3,7 +3,7 @@
             [utils.re-frame :as rf]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
-            [status-im.async-storage.core :as async-storage]  ;;TODO remove when not used anymore
+            [status-im.async-storage.core :as async-storage] ;;TODO remove when not used anymore
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Atoms

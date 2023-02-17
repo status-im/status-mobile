@@ -104,7 +104,7 @@
       (cond-> {:title (i18n/label :t/account-settings)}
         (and @new-account (not= "" (:name @new-account)))
         (assoc :right-accessories
-               [{:label    (i18n/label :t/apply)
+               [{:label (i18n/label :t/apply)
                  :on-press
                  #(do
                     (re-frame/dispatch [:wallet.accounts/save-account

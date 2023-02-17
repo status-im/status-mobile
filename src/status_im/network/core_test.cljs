@@ -94,26 +94,27 @@
 
 (deftest set-input-test
   (testing "it updates and validate a field"
-    (is (= {:db {:networks/manage {:url        {:value "http://valid.com"
-                                                :error false}
-                                   :name       {:value ""
-                                                :error true}
-                                   :symbol     {:value "symbol"
-                                                :error false}
-                                   :chain      {:value "mainnet"
-                                                :error false}
-                                   :network-id {:value nil
-                                                :error false}}}}
-           (network.core/set-input {:db {:networks/manage {:url    {:value "something"
-                                                                    :error true}
-                                                           :name   {:value ""
-                                                                    :error false}
-                                                           :symbol {:value "symbol"
-                                                                    :error false}
-                                                           :chain  {:value "mainnet"
-                                                                    :error false}}}}
-                                   :url
-                                   "http://valid.com")))))
+    (is
+     (= {:db {:networks/manage {:url        {:value "http://valid.com"
+                                             :error false}
+                                :name       {:value ""
+                                             :error true}
+                                :symbol     {:value "symbol"
+                                             :error false}
+                                :chain      {:value "mainnet"
+                                             :error false}
+                                :network-id {:value nil
+                                             :error false}}}}
+        (network.core/set-input {:db {:networks/manage {:url    {:value "something"
+                                                                 :error true}
+                                                        :name   {:value ""
+                                                                 :error false}
+                                                        :symbol {:value "symbol"
+                                                                 :error false}
+                                                        :chain  {:value "mainnet"
+                                                                 :error false}}}}
+                                :url
+                                "http://valid.com")))))
 
 (deftest not-save-invalid-url
   (testing "it does not save a network with an invalid url"

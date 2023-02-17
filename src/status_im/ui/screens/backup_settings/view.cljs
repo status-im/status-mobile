@@ -33,19 +33,19 @@
   (views/letsubs
     [{:keys [last-backup backup-enabled?]}
      [:multiaccount]
-     performing-backup?                    [:backup/performing-backup]]
+     performing-backup? [:backup/performing-backup]]
     [:<>
      [react/scroll-view
       [quo/list-item
-       {:size                    :small
-        :title                   (i18n/label :t/backup-through-waku)
-        :accessibility-label     :backup-enabled
+       {:size :small
+        :title (i18n/label :t/backup-through-waku)
+        :accessibility-label :backup-enabled
         :container-margin-bottom 8
         :on-press
         #(re-frame/dispatch
           [:multiaccounts.ui/switch-backup-enabled (not backup-enabled?)])
-        :accessory               :switch
-        :active                  backup-enabled?}]
+        :accessory :switch
+        :active backup-enabled?}]
       [quo/list-item
        {:size      :small
         :title     (i18n/label :t/last-backup-performed)

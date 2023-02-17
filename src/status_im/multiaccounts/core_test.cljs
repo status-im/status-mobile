@@ -54,19 +54,19 @@
        (= [random-name short-compressed-key]
           (ma/contact-two-names
            (dissoc contact
-                   :nickname
-                   :name
-                   :display-name)
+            :nickname
+            :name
+            :display-name)
            public-key)))))
   (testing "public-key is the least favorite"
     (is
      (= [random-name short-public-key]
         (ma/contact-two-names
          (dissoc contact
-                 :nickname
-                 :name
-                 :compressed-key
-                 :display-name)
+          :nickname
+          :name
+          :compressed-key
+          :display-name)
          public-key))))
   (testing "names is provided"
     (let [names              {:nickname         override-nickname

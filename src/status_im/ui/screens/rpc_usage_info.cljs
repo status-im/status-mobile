@@ -161,4 +161,4 @@
     :component-will-unmount (fn []
                               (utils/clear-interval @rpc-refresh-interval)
                               (reset! rpc-refresh-interval nil))
-    :reagent-render         usage-info-render}))
+    :reagent-render usage-info-render}))

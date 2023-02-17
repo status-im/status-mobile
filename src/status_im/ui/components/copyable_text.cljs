@@ -103,7 +103,7 @@
                             (- (+ 17 @height))))
                          (react/copy-to-clipboard copied-text))]
           [react/view
-           {:style     (if container-style container-style {})
+           {:style (if container-style container-style {})
             :on-layout
             #(do
                (reset! width (-> ^js % .-nativeEvent .-layout .-width))

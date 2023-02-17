@@ -263,19 +263,19 @@
         {:keys [selected-id multiaccounts]}
         (:intro-wizard db)
 
-        multiaccount                        (or (->> multiaccounts
-                                                     (filter #(= (:id %) selected-id))
-                                                     first)
-                                                (assoc (get-in db [:intro-wizard :root-key])
-                                                       :derived
-                                                       (get-in db [:intro-wizard :derived])))
-        recovery-mnemonic                   (get-in db [:intro-wizard :passphrase])
-        mnemonic                            (or (:mnemonic multiaccount)
-                                                recovery-mnemonic)
-        pin'                                (or pin
-                                                (common/vector->string (get-in db
-                                                                               [:keycard :pin
-                                                                                :current])))]
+        multiaccount (or (->> multiaccounts
+                              (filter #(= (:id %) selected-id))
+                              first)
+                         (assoc (get-in db [:intro-wizard :root-key])
+                                :derived
+                                (get-in db [:intro-wizard :derived])))
+        recovery-mnemonic (get-in db [:intro-wizard :passphrase])
+        mnemonic (or (:mnemonic multiaccount)
+                     recovery-mnemonic)
+        pin' (or pin
+                 (common/vector->string (get-in db
+                                                [:keycard :pin
+                                                 :current])))]
     {:keycard/generate-and-load-key
      {:mnemonic             mnemonic
       :pin                  pin'

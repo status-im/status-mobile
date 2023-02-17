@@ -15,25 +15,26 @@
 (defn create-pan-responder
   [y pan-active]
   (when-not platform/android?
-    (js->clj (.-panHandlers
-              ^js
-              (.create
-               ^js rn/pan-responder
-               #js
-                {:onPanResponderGrant     (fn []
-                                            (animated/set-value pan-active 1))
-                 :onPanResponderMove      (fn [_ ^js state]
-                                            (animated/set-value y (.-moveY state)))
-                 :onPanResponderRelease   (fn []
-                                            (animated/set-value pan-active 0)
-                                            (js/setTimeout
-                                             #(animated/set-value y 0)
-                                             100))
-                 :onPanResponderTerminate (fn []
-                                            (animated/set-value pan-active 0)
-                                            (js/setTimeout
-                                             #(animated/set-value y 0)
-                                             100))})))))
+    (js->clj
+     (.-panHandlers
+      ^js
+      (.create
+       ^js rn/pan-responder
+       #js
+        {:onPanResponderGrant     (fn []
+                                    (animated/set-value pan-active 1))
+         :onPanResponderMove      (fn [_ ^js state]
+                                    (animated/set-value y (.-moveY state)))
+         :onPanResponderRelease   (fn []
+                                    (animated/set-value pan-active 0)
+                                    (js/setTimeout
+                                     #(animated/set-value y 0)
+                                     100))
+         :onPanResponderTerminate (fn []
+                                    (animated/set-value pan-active 0)
+                                    (js/setTimeout
+                                     #(animated/set-value y 0)
+                                     100))})))))
 
 (def ios-view
   (reagent/adapt-react-class

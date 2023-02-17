@@ -40,11 +40,11 @@
     (fn []
       [:f>
        (fn []
-         (let [duration     (or (rf/sub [:toasts/toast-cursor id :duration]) 3000)
+         (let [duration (or (rf/sub [:toasts/toast-cursor id :duration]) 3000)
                on-dismissed #((or (rf/sub [:toasts/toast-cursor id :on-dismissed]) identity) id)
                create-timer (fn []
                               (reset! timer (utils.utils/set-timeout close! duration)))
-               translate-y  (reanimated/use-shared-value 0)
+               translate-y (reanimated/use-shared-value 0)
                pan
                (->
                  (gesture/gesture-pan)

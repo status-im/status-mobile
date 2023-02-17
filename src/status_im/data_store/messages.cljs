@@ -18,29 +18,30 @@
 (defn <-rpc
   [message]
   (-> message
-      (set/rename-keys {:id                       :message-id
-                        :whisperTimestamp         :whisper-timestamp
-                        :compressedKey            :compressed-key
-                        :editedAt                 :edited-at
-                        :contactVerificationState :contact-verification-state
-                        :contactRequestState      :contact-request-state
-                        :commandParameters        :command-parameters
-                        :gapParameters            :gap-parameters
-                        :messageType              :message-type
-                        :localChatId              :chat-id
-                        :communityId              :community-id
-                        :contentType              :content-type
-                        :clock                    :clock-value
-                        :quotedMessage            :quoted-message
-                        :outgoingStatus           :outgoing-status
-                        :audioDurationMs          :audio-duration-ms
-                        :deleted                  :deleted?
-                        :deletedForMe             :deleted-for-me?
-                        :deletedBy                :deleted-by
-                        :albumId                  :album-id
-                        :imageWidth               :image-width
-                        :imageHeight              :image-height
-                        :new                      :new?})
+      (set/rename-keys
+       {:id                       :message-id
+        :whisperTimestamp         :whisper-timestamp
+        :compressedKey            :compressed-key
+        :editedAt                 :edited-at
+        :contactVerificationState :contact-verification-state
+        :contactRequestState      :contact-request-state
+        :commandParameters        :command-parameters
+        :gapParameters            :gap-parameters
+        :messageType              :message-type
+        :localChatId              :chat-id
+        :communityId              :community-id
+        :contentType              :content-type
+        :clock                    :clock-value
+        :quotedMessage            :quoted-message
+        :outgoingStatus           :outgoing-status
+        :audioDurationMs          :audio-duration-ms
+        :deleted                  :deleted?
+        :deletedForMe             :deleted-for-me?
+        :deletedBy                :deleted-by
+        :albumId                  :album-id
+        :imageWidth               :image-width
+        :imageHeight              :image-height
+        :new                      :new?})
 
       (update :quoted-message
               set/rename-keys

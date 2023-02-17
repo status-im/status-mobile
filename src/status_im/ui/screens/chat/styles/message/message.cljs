@@ -144,7 +144,7 @@
 (defn emoji-message
   [{:keys [incoming-group]}]
   {:font-size    28
-   :line-height  34                     ;TODO: Smaller crops the icon on the top
+   :line-height  34 ;TODO: Smaller crops the icon on the top
    :margin-right 0 ;; Margin to display outgoing message status
    :margin-top   (if incoming-group 4 0)})
 
@@ -318,9 +318,9 @@
     (update (default-text-style)
             :style
             assoc
-            :color          (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)
-            :font-size      13
-            :line-height    18.2
+            :color (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)
+            :font-size 13
+            :line-height 18.2
             :letter-spacing (typography/tracking 13))))
 
 (def code-block-background "#2E386B")
@@ -361,8 +361,8 @@
           :style
           assoc
           :line-height 19
-          :font-size   14
-          :color       colors/black-transparent-50))
+          :font-size 14
+          :color colors/black-transparent-50))
 
 (defn outgoing-blockquote-text-style
   []

@@ -188,22 +188,22 @@
 
 (defn view
   []
-  (let [{:keys [community-id]}                             (rf/sub [:get-screen-params])
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])
         {:keys [id name images members permissions color]}
         (rf/sub [:communities/community community-id])
-        sorted-categories                                  (rf/sub [:communities/sorted-categories
-                                                                    community-id])
-        categories                                         (if (categories-tab?)
-                                                             sorted-categories
-                                                             (conj sorted-categories
-                                                                   {:id           ""
-                                                                    :position     (count
-                                                                                   sorted-categories)
-                                                                    :name         (i18n/label :t/none)
-                                                                    :community-id community-id}))
-        chats                                              (rf/sub
-                                                            [:chats/sorted-categories-by-community-id
-                                                             community-id])]
+        sorted-categories (rf/sub [:communities/sorted-categories
+                                   community-id])
+        categories (if (categories-tab?)
+                     sorted-categories
+                     (conj sorted-categories
+                           {:id           ""
+                            :position     (count
+                                           sorted-categories)
+                            :name         (i18n/label :t/none)
+                            :community-id community-id}))
+        chats (rf/sub
+               [:chats/sorted-categories-by-community-id
+                community-id])]
     (reset-data categories chats)
     [:<>
      [topbar/topbar

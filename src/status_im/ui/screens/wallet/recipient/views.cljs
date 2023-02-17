@@ -23,14 +23,14 @@
 (defn- recipient-topbar
   []
   [topbar/topbar
-   {:navigation        {:on-press
-                        #(do
-                           (re-frame/dispatch [:wallet/recipient-modal-closed])
-                           (re-frame/dispatch [:search/recipient-filter-changed nil])
-                           (re-frame/dispatch [:navigate-back]))}
-    :modal?            true
-    :border-bottom     false
-    :title             (i18n/label :t/recipient)
+   {:navigation {:on-press
+                 #(do
+                    (re-frame/dispatch [:wallet/recipient-modal-closed])
+                    (re-frame/dispatch [:search/recipient-filter-changed nil])
+                    (re-frame/dispatch [:navigate-back]))}
+    :modal? true
+    :border-bottom false
+    :title (i18n/label :t/recipient)
     :right-accessories
     [{:icon                :qr
       :accessibility-label :scan-contact-code-button
@@ -61,8 +61,8 @@
     (fn [title cnt content]
       [react/view {:padding-vertical 8}
        [quo/list-item
-        {:title     title
-         :on-press  #(swap! opened? not)
+        {:title title
+         :on-press #(swap! opened? not)
          :accessory
          [react/view {:flex-direction :row :align-items :center}
           (when (pos? cnt)

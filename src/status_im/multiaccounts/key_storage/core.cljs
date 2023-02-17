@@ -173,7 +173,7 @@ We don't need to take the exact steps, just set the required state and redirect 
 "
 (rf/defn import-multiaccount
   [{:keys [db] :as cofx}]
-  {:dispatch                                   [:bottom-sheet/hide]
+  {:dispatch [:bottom-sheet/hide]
    ::multiaccounts.recover/import-multiaccount
    {:passphrase    (get-in db [:multiaccounts/key-storage :seed-phrase])
     :password      nil
@@ -235,9 +235,9 @@ We don't need to take the exact steps, just set the required state and redirect 
             {:db (-> db
                      (update :intro-wizard
                              assoc
-                             :root-key              root-data
-                             :derived               derived-data
-                             :recovering?           true
+                             :root-key root-data
+                             :derived derived-data
+                             :recovering? true
                              :selected-storage-type :advanced)
                      (assoc-in [:keycard :flow] :recovery)
                      (assoc-in [:keycard :from-key-storage-and-migration?] true)

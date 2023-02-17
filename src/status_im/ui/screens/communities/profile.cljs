@@ -18,14 +18,15 @@
   []
   (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [requests-to-join (rf/sub [:communities/requests-to-join-for-community community-id])
-            community (rf/sub [:communities/community community-id])
-            {:keys [color members permissions description name admin]} community
-            roles false
-            notifications false
-            show-members-count? (not= (:access permissions) constants/community-no-membership-access)
-            request-membership? (= (:access permissions) constants/community-on-request-access)
-            members-count (count members)]
+      (let [requests-to-join     (rf/sub [:communities/requests-to-join-for-community community-id])
+            community            (rf/sub [:communities/community community-id])
+            {:keys [color members permissions description
+                    name admin]} community
+            roles                false
+            notifications        false
+            show-members-count?  (not= (:access permissions) constants/community-no-membership-access)
+            request-membership?  (= (:access permissions) constants/community-on-request-access)
+            members-count        (count members)]
         [:<>
          [quo/animated-header
           {:left-accessories  [{:icon                :main-icons/arrow-left
@@ -76,15 +77,15 @@
             [quo/separator {:style {:margin-vertical 8}}]]
            (when show-members-count?
              [quo/list-item
-              {:chevron   true
+              {:chevron true
                :accessory
                [react/view {:flex-direction :row}
                 (when (pos? members-count)
                   [quo/text {:color :secondary} (str members-count)])
                 [unviewed-indicator/unviewed-indicator (count requests-to-join)]]
-               :on-press  #(rf/dispatch [:navigate-to :community-members {:community-id community-id}])
-               :title     (i18n/label :t/members-label)
-               :icon      :main-icons/group-chat}])
+               :on-press #(rf/dispatch [:navigate-to :community-members {:community-id community-id}])
+               :title (i18n/label :t/members-label)
+               :icon :main-icons/group-chat}])
            (when (and admin roles)
              [quo/list-item
               {:chevron true

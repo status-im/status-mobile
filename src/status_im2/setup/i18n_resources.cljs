@@ -10,8 +10,8 @@
     :tr :vi :zh :zh_Hant :zh_TW})
 
 (defonce loaded-languages
-         (atom
-          (conj #{:en} default-device-language)))
+  (atom
+   (conj #{:en} default-device-language)))
 
 (defn valid-language
   [lang]

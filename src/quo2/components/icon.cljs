@@ -24,6 +24,6 @@
 
               container-style)
        :accessibility-label accessibility-label
-       :source              (icons/icon-source (str (name icon-name) size))}])))
+       :source (icons/icon-source (str (name icon-name) size))}])))
 
 (def icon (memoize memo-icon-fn))

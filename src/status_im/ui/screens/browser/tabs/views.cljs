@@ -57,15 +57,15 @@
   (views/letsubs [browsers [:browser/browsers-vals]]
     [react/view {:flex 1}
      [topbar/topbar
-      {:modal?            true
-       :border-bottom     false
-       :navigation        :none
+      {:modal? true
+       :border-bottom false
+       :navigation :none
        :right-accessories
        [{:label               (i18n/label :t/close-all)
          :accessibility-label :close-all
          :on-press            #(do (re-frame/dispatch [:browser.ui/clear-all-browsers-pressed])
                                    (re-frame/dispatch [:browser.ui/open-empty-tab]))}]
-       :title             (i18n/label :t/tabs)}]
+       :title (i18n/label :t/tabs)}]
      [components/separator-dark]
      [list/flat-list
       {:data      (conj browsers

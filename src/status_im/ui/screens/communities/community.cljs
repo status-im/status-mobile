@@ -1,29 +1,29 @@
 (ns status-im.ui.screens.communities.community
   (:require
-   [utils.i18n :as i18n]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo2.components.community.style :as styles] ;; TODO reimplement with quo2 library and new
-                                                ;; designs
-   [quo2.components.navigation.floating-shell-button :as floating-shell-button]
-   [react-native.core :as rn]
-   [status-im.communities.core :as communities]
-   [status-im2.constants :as constants]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.accordion :as accordion]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.plus-button :as components.plus-button]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im.ui.screens.chat.sheets :as sheets]
-   [status-im.ui.screens.home.views.inner-item :as inner-item]
-   [status-im.utils.core :as utils]
-   [utils.datetime :as datetime]
-   [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]
+    [quo.core :as quo]
+    [quo.design-system.colors :as colors]
+    [quo2.components.community.style :as styles] ;; TODO reimplement with quo2 library and new
+                                                 ;; designs
+    [quo2.components.navigation.floating-shell-button :as floating-shell-button]
+    [react-native.core :as rn]
+    [status-im.communities.core :as communities]
+    [status-im2.constants :as constants]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.accordion :as accordion]
+    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.plus-button :as components.plus-button]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.chat.sheets :as sheets]
+    [status-im.ui.screens.home.views.inner-item :as inner-item]
+    [status-im.utils.core :as utils]
+    [utils.datetime :as datetime]
+    [utils.re-frame :as rf]))
 
 (def request-cooldown-ms (* 24 60 60 1000))
 

@@ -275,30 +275,30 @@
         contact-request   @(re-frame/subscribe [:chats/sending-contact-request])]
 
     [rn/text-input
-     {:style                    (styles/text-input contact-request)
-      :ref                      (:text-input-ref refs)
+     {:style (styles/text-input contact-request)
+      :ref (:text-input-ref refs)
       :max-font-size-multiplier 1
-      :accessibility-label      :chat-message-input
-      :text-align-vertical      :center
-      :multiline                true
-      :editable                 (not cooldown-enabled?)
-      :blur-on-submit           false
-      :auto-focus               false
-      :on-focus                 #(set-active-panel nil)
-      :max-length               chat.constants/max-text-size
-      :placeholder-text-color   (:text-02 @colors/theme)
-      :placeholder              (if cooldown-enabled?
-                                  (i18n/label :cooldown/text-input-disabled)
-                                  (i18n/label :t/type-a-message))
-      :underline-color-android  :transparent
-      :auto-capitalize          :sentences
-      :on-selection-change      (partial on-selection-change
-                                         timeout-id
-                                         last-text-change
-                                         mentionable-users)
+      :accessibility-label :chat-message-input
+      :text-align-vertical :center
+      :multiline true
+      :editable (not cooldown-enabled?)
+      :blur-on-submit false
+      :auto-focus false
+      :on-focus #(set-active-panel nil)
+      :max-length chat.constants/max-text-size
+      :placeholder-text-color (:text-02 @colors/theme)
+      :placeholder (if cooldown-enabled?
+                     (i18n/label :cooldown/text-input-disabled)
+                     (i18n/label :t/type-a-message))
+      :underline-color-android :transparent
+      :auto-capitalize :sentences
+      :on-selection-change (partial on-selection-change
+                                    timeout-id
+                                    last-text-change
+                                    mentionable-users)
       :on-change
       (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-      :on-text-input            (partial on-text-input mentionable-users chat-id)}
+      :on-text-input (partial on-text-input mentionable-users chat-id)}
      (if mentions-enabled
        (for [[idx [type text]] (map-indexed
                                 (fn [idx item]
@@ -314,9 +314,9 @@
   (let [ens-name? (not= alias name)]
     [list-item/list-item
      (cond->
-       {:icon              [photos/member-photo public-key]
-        :size              :small
-        :text-size         :small
+       {:icon [photos/member-photo public-key]
+        :size :small
+        :text-size :small
         :title
         [text/text
          {:weight          :medium
@@ -404,13 +404,14 @@
       (let [;we want to control components on native level, so instead of RN state we set native props
             ;via reference
             ;we don't react on input text in this view, @input-texts below is a regular atom
-            refs {:actions-ref    actions-ref
-                  :send-ref       send-ref
-                  :sticker-ref    sticker-ref
-                  :text-input-ref text-input-ref}
-            {:keys [send stickers image extensions audio sending-image]} @toolbar-options
-            show-send (or show-send sending-image)
-            contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
+            refs                    {:actions-ref    actions-ref
+                                     :send-ref       send-ref
+                                     :sticker-ref    sticker-ref
+                                     :text-input-ref text-input-ref}
+            {:keys [send stickers image extensions audio
+                    sending-image]} @toolbar-options
+            show-send               (or show-send sending-image)
+            contact-request         @(re-frame/subscribe [:chats/sending-contact-request])]
         [rn/view
          {:style     (styles/toolbar)
           :on-layout on-chat-toolbar-layout}

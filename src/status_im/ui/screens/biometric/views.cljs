@@ -65,9 +65,9 @@
   []
   (let [bio-label-type (get-bio-type-label)]
     [biometric-popover
-     {:title-label      :t/biometric-disable-password-title
-      :ok-button-label  :t/continue
-      :on-confirm       :biometric/disable
+     {:title-label :t/biometric-disable-password-title
+      :ok-button-label :t/continue
+      :on-confirm :biometric/disable
 
       :description-text
       [[{:style {:color colors/gray}}

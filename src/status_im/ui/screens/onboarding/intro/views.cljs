@@ -72,7 +72,7 @@
              :size   :x-large}
             (i18n/label (:title s))]
            [quo/text
-            {:style     (styles/wizard-text-with-height @text-height)
+            {:style (styles/wizard-text-with-height @text-height)
              :on-layout
              (fn [^js e]
                (let [new-height (-> e .-nativeEvent .-layout .-height)]

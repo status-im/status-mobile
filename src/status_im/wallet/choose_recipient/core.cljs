@@ -100,8 +100,8 @@
                       {:success-callback
                        #(re-frame/dispatch
                          [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                       :network-id       (get-in (ethereum/current-network db)
-                                                 [:config :NetworkId])}})
+                       :network-id (get-in (ethereum/current-network db)
+                                           [:config :NetworkId])}})
                    (when (and chain-id (not= current-chain-id chain-id))
                      {:ui/show-error (i18n/label :t/wallet-invalid-chain-id
                                                  {:data uri :chain current-chain-id})})))))
@@ -124,7 +124,7 @@
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
       {::resolve-addresses
-       {:chain-id  (ethereum/chain-id db)
+       {:chain-id (ethereum/chain-id db)
         :ens-names ens-names
         :callback
         (fn [addresses]

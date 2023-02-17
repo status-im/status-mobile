@@ -56,7 +56,7 @@
                   {:keys [use-mailservers?]} [:multiaccount]]
     [react/view {:style styles/wrapper}
      [topbar/topbar
-      {:title             (i18n/label :t/history-nodes)
+      {:title (i18n/label :t/history-nodes)
        :right-accessories
        [{:icon     :main-icons/add-circle
          :on-press #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]

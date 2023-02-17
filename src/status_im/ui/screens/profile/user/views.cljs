@@ -177,10 +177,10 @@
          :on-press            #(re-frame/dispatch [:navigate-to :settings-syncing])}])
      [react/view {:padding-vertical 24}
       [quo/list-item
-       {:icon                :main-icons/log-out
-        :title               (i18n/label :t/sign-out)
+       {:icon :main-icons/log-out
+        :title (i18n/label :t/sign-out)
         :accessibility-label :log-out-button
-        :theme               :negative
+        :theme :negative
         :on-press
         #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}]]]))
 

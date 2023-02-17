@@ -21,10 +21,10 @@
  :<- [:multiaccount]
  (fn [current-account]
    (some->
-    current-account
-    (select-keys [:name :preferred-name :public-key :identicon :image :images])
-    (set/rename-keys {:name :alias})
-    (multiaccounts/contact-with-names))))
+     current-account
+     (select-keys [:name :preferred-name :public-key :identicon :image :images])
+     (set/rename-keys {:name :alias})
+     (multiaccounts/contact-with-names))))
 
 (re-frame/reg-sub
  :multiaccount/preferred-name
@@ -194,9 +194,9 @@
  :<- [:multiaccount/resetting-password?]
  (fn [[form-vals errors resetting?]]
    (let [{:keys [current-password new-password confirm-new-password]} form-vals]
-     {:form-vals     form-vals
-      :errors        errors
-      :resetting?    resetting?
+     {:form-vals form-vals
+      :errors errors
+      :resetting? resetting?
       :next-enabled?
       (and (pos? (count current-password))
            (pos? (count new-password))

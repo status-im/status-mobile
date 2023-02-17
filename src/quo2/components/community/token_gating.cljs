@@ -90,32 +90,36 @@
 
 (defn token-requirement-list
   [props community-color]
-  (let [{:keys [gate token-requirements-changed? required-tokens-lost?]} props
+  (let [{:keys [gate token-requirements-changed?
+                required-tokens-lost?]}     props
         [gate-type token-requirement-lists] gate
-        multiple-token-requirements? (multiple-token-requirements? token-requirement-lists)
-        is-sufficient? (are-multiple-token-requirements-met? token-requirement-lists)
-        you-must-hold-label (if (= gate-type :join)
-                              (cond
-                                token-requirements-changed? :t/you-must-now-hold
-                                required-tokens-lost?       :t/you-must-always-hold
-                                :else                       :t/you-must-hold)
-                              :t/you-must-hold)
-        message-label (cond
-                        (= gate-type :join)
-                        (cond
-                          token-requirements-changed? :t/community-join-requirements-changed
-                          required-tokens-lost?       :t/community-join-requirements-tokens-lost
-                          :else                       (if is-sufficient?
+        multiple-token-requirements?        (multiple-token-requirements? token-requirement-lists)
+        is-sufficient?                      (are-multiple-token-requirements-met?
+                                             token-requirement-lists)
+        you-must-hold-label                 (if (= gate-type :join)
+                                              (cond
+                                                token-requirements-changed? :t/you-must-now-hold
+                                                required-tokens-lost?       :t/you-must-always-hold
+                                                :else                       :t/you-must-hold)
+                                              :t/you-must-hold)
+        message-label                       (cond
+                                              (= gate-type :join)
+                                              (cond
+                                                token-requirements-changed?
+                                                :t/community-join-requirements-changed
+                                                required-tokens-lost?
+                                                :t/community-join-requirements-tokens-lost
+                                                :else (if is-sufficient?
                                                         :t/community-join-requirements-met
                                                         :t/community-join-requirements-not-met))
-                        (= gate-type :read)
-                        (if is-sufficient?
-                          :t/community-channel-read-requirements-met
-                          :t/community-channel-read-requirements-not-met)
-                        (= gate-type :write)
-                        (if is-sufficient?
-                          :t/community-channel-write-requirements-met
-                          :t/community-channel-write-requirements-not-met))]
+                                              (= gate-type :read)
+                                              (if is-sufficient?
+                                                :t/community-channel-read-requirements-met
+                                                :t/community-channel-read-requirements-not-met)
+                                              (= gate-type :write)
+                                              (if is-sufficient?
+                                                :t/community-channel-write-requirements-met
+                                                :t/community-channel-write-requirements-not-met))]
     [rn/view
      [rn/view {:style (get styles :token-requirement-text-spacing)}
       [text/text

@@ -1,34 +1,32 @@
 (ns status-im.ui2.screens.chat.messages.message
   (:require
-   [quo.design-system.colors :as quo.colors]
-   [quo.react-native :as rn]
-   [quo2.components.icon :as icons]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [quo2.foundations.typography :as typography]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im2.constants :as constants]
-   [utils.i18n :as i18n]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.fast-image :as fast-image]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.chat.image.preview.views :as preview]
-   [status-im.ui.screens.chat.message.audio :as message.audio]
-   [status-im.ui.screens.chat.message.gap :as message.gap]
-   [status-im.ui.screens.chat.sheets :as sheets]
-   [status-im.ui.screens.chat.styles.message.message :as style]
-   [status-im.ui.screens.chat.utils :as chat.utils]
-   [status-im.ui.screens.communities.icon :as communities.icon]
-   [status-im.ui2.screens.chat.components.reply.view :as components.reply]
-   [status-im2.config :as config]
-   [utils.datetime :as datetime]
-   [status-im.utils.utils :as utils]
-   [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-   [status-im2.contexts.chat.messages.delete-message-for-me.events]
-   [status-im2.contexts.chat.messages.delete-message.events]
-   [utils.re-frame :as rf]
-   [quo2.core :as quo])
+    [quo.design-system.colors :as quo.colors]
+    [quo.react-native :as rn]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.typography :as typography]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.fast-image :as fast-image]
+    [status-im.ui.screens.chat.image.preview.views :as preview]
+    [status-im.ui.screens.chat.message.audio :as message.audio]
+    [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im.ui.screens.chat.sheets :as sheets]
+    [status-im.ui.screens.chat.styles.message.message :as style]
+    [status-im.ui.screens.chat.utils :as chat.utils]
+    [status-im.ui.screens.communities.icon :as communities.icon]
+    [status-im.ui2.screens.chat.components.reply.view :as components.reply]
+    [status-im.utils.utils :as utils]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
+    [status-im2.contexts.chat.messages.delete-message-for-me.events]
+    [status-im2.contexts.chat.messages.delete-message.events]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn system-text?
@@ -246,58 +244,6 @@
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
         (re-frame/dispatch [:pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
-
-(defn on-long-press-fn
-  [on-long-press
-   {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community?
-           can-delete-message-for-everyone?]
-    :as   message} content]
-  (on-long-press
-   (concat
-    (when (and outgoing edit-enabled)
-      [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
-        :label    (i18n/label :t/edit-message)
-        :icon     :i/edit
-        :id       :edit}])
-    (when show-input?
-      [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-        :label    (i18n/label :t/message-reply)
-        :icon     :i/reply
-        :id       :reply}])
-    [{:type     :main
-      :on-press #(react/copy-to-clipboard
-                  (components.reply/get-quoted-text-with-mentions
-                   (get content :parsed-text)))
-      :label    (i18n/label :t/copy-text)
-      :icon     :i/copy
-      :id       :copy}]
-    (when message-pin-enabled
-      [{:type     :main
-        :on-press #(pin-message message)
-        :label    (i18n/label (if pinned
-                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
-                                (if community? :t/pin-to-channel :t/pin-to-chat)))
-        :icon     :i/pin
-        :id       (if pinned :unpin :pin)}])
-    (when-not pinned
-      [{:type     :danger
-        :on-press (fn []
-                    (re-frame/dispatch
-                     [:chat.ui/delete-message-for-me message
-                      config/delete-message-for-me-undo-time-limit-ms]))
-        :label    (i18n/label :t/delete-for-me)
-        :icon     :i/delete
-        :id       :delete-for-me}])
-    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
-      [{:type     :danger
-        :on-press #(re-frame/dispatch [:chat.ui/delete-message
-                                       message
-                                       config/delete-message-undo-time-limit-ms])
-        :label    (i18n/label :t/delete-for-everyone)
-        :icon     :i/delete
-        :id       :delete-for-all}]))))
 
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status

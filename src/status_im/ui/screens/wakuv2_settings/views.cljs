@@ -28,8 +28,8 @@
   (views/letsubs [nodes [:wakuv2-nodes/list]]
     [:<>
      [topbar/topbar
-      {:title             (i18n/label :t/wakuv2-settings)
-       :navigation        :none
+      {:title (i18n/label :t/wakuv2-settings)
+       :navigation :none
        :right-accessories
        [{:icon                :main-icons/add
          :accessibility-label :add-wakuv2-node

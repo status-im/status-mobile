@@ -70,7 +70,7 @@
                                     (let [~@vars-bindings]
                                       (apply ~f ~args)))])))
                        (into {}))
-                 {:display-name   (name '~n)
+                 {:display-name (name '~n)
                   :reagent-render
                   (fn ~params
                     (let [~@vars-bindings]

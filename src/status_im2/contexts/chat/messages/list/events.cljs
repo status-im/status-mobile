@@ -100,11 +100,11 @@
   [current-message next-message]
   (assoc
    next-message
-   :first?          false
+   :first? false
    :first-outgoing? (and
                      (not (:first-outgoing? current-message))
                      (:first-outgoing? next-message))
-   :outgoing-seen?  (:outgoing-seen? current-message)
+   :outgoing-seen? (:outgoing-seen? current-message)
    :first-in-group?
    (not (same-group? current-message next-message))))
 

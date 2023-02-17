@@ -185,7 +185,7 @@
 
 (rf/defn set-lowest-fetched-block
   [{:keys [db]} address transfers]
-  (let [checksum                                      (eip55/address->checksum address)
+  (let [checksum (eip55/address->checksum address)
         {:keys [min-block min-block-transfers-count]}
         (reduce
          (fn [{:keys [min-block] :as acc}
@@ -295,29 +295,32 @@
 (rf/defn check-ens-transactions
   [{:keys [db] :as cofx} transfers]
   (let [set-of-transactions-hash (reduce (fn [acc {:keys [hash]}] (conj acc hash)) #{} transfers)
-        registrations (filter
-                       (fn [[hash {:keys [state]}]]
-                         (and
-                          (or (= state :dismissed) (= state :submitted))
-                          (contains? set-of-transactions-hash hash)))
-                       (get db :ens/registrations))
-        fxs (map (fn [[hash {:keys [username custom-domain?]}]]
-                   (let [transfer            (first (filter (fn [transfer]
-                                                              (let [transfer-hash (get transfer :hash)]
-                                                                (= transfer-hash hash)))
-                                                            transfers))
-                         type                (get transfer :type)
-                         transaction-success (get transfer :transfer)]
-                     (cond
-                       (= transaction-success true)
-                       (rf/merge cofx
-                                 (ens/clear-ens-registration hash)
-                                 (ens/save-username custom-domain? username false))
-                       (= type :failed)
-                       (ens/update-ens-tx-state :failure username custom-domain? hash)
-                       :else
-                       nil)))
-                 registrations)]
+        registrations            (filter
+                                  (fn [[hash {:keys [state]}]]
+                                    (and
+                                     (or (= state :dismissed) (= state :submitted))
+                                     (contains? set-of-transactions-hash hash)))
+                                  (get db :ens/registrations))
+        fxs                      (map
+                                  (fn [[hash {:keys [username custom-domain?]}]]
+                                    (let [transfer            (first (filter (fn [transfer]
+                                                                               (let [transfer-hash
+                                                                                     (get transfer
+                                                                                          :hash)]
+                                                                                 (= transfer-hash hash)))
+                                                                             transfers))
+                                          type                (get transfer :type)
+                                          transaction-success (get transfer :transfer)]
+                                      (cond
+                                        (= transaction-success true)
+                                        (rf/merge cofx
+                                                  (ens/clear-ens-registration hash)
+                                                  (ens/save-username custom-domain? username false))
+                                        (= type :failed)
+                                        (ens/update-ens-tx-state :failure username custom-domain? hash)
+                                        :else
+                                        nil)))
+                                  registrations)]
     (apply rf/merge cofx fxs)))
 
 (rf/defn new-transfers

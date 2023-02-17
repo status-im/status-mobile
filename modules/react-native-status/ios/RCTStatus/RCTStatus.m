@@ -329,12 +329,13 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
     NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *rootDataDir = rootUrl.path;
     NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
 
     [configDict setValue:keystoreDir forKey:@"keystorePath"];
+    [configDict setValue:rootDataDir forKey:@"rootDataDir"];
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
-
     NSString *result = StatusgoInputConnectionStringForBootstrapping(cs,modifiedConfigJSON);
     callback(@[result]);
 }
