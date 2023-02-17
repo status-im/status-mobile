@@ -1,12 +1,12 @@
 (ns status-im2.contexts.chat.lightbox.zoomable-image.view
   (:require
-   [react-native.core :as rn]
-   [react-native.gesture :as gesture]
-   [react-native.platform :as platform]
-   [react-native.reanimated :as reanimated]
-   [reagent.core :as reagent]
-   [utils.re-frame :as rf]
-   [oops.core :refer [oget]]))
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [utils.re-frame :as rf]
+    [oops.core :refer [oget]]))
 
 ;;;; Definitions
 (def min-scale 1)
