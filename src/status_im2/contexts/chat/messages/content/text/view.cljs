@@ -32,8 +32,7 @@
     :link
     (conj units
           [quo/text
-           {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
-                       :text-decoration-line :underline}
+           {:style    {:color (colors/theme-colors colors/primary-50 colors/primary-60)}
             :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
            destination])
 
