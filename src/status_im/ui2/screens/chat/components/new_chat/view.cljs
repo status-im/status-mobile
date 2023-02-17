@@ -8,6 +8,7 @@
             [utils.i18n :as i18n]
             [react-native.core :as rn]
             [utils.re-frame :as rf]
+            [clojure.string :as string]
             [status-im2.common.contact-list.view :as contact-list]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.invite.events :as invite.events]
@@ -62,17 +63,24 @@
   []
   [:f>
    (fn []
-     (let [contacts                                     (rf/sub
-                                                         [:contacts/sorted-and-grouped-by-first-letter])
-           selected-contacts-count                      (rf/sub [:selected-contacts-count])
-           window-height                                (rf/sub [:dimensions/window-height])
-           one-contact-selected?                        (= selected-contacts-count 1)
-           contacts-selected?                           (pos? selected-contacts-count)
-           {:keys [names public-key]}                   (-> contacts first :data first)
-           added?                                       (reagent/atom '())
-           {:keys [nickname ens-name three-words-name]} names
-           first-username                               (or ens-name nickname three-words-name)
-           no-contacts?                                 (empty? contacts)]
+     (let [contacts                   (rf/sub
+                                       [:contacts/sorted-and-grouped-by-first-letter])
+           selected-contacts-count    (rf/sub [:selected-contacts-count])
+           selected-contacts          (rf/sub [:group/selected-contacts])
+           window-height              (rf/sub [:dimensions/window-height])
+           one-contact-selected?      (= selected-contacts-count 1)
+           contacts-selected?         (pos? selected-contacts-count)
+           {:keys [names public-key]} (when one-contact-selected?
+                                        (rf/sub [:contacts/contact-by-identity
+                                                 (first selected-contacts)]))
+           added?                     (reagent/atom '())
+           {:keys [nickname ens-name display-name
+                   three-words-name]} names
+           first-username             (or ens-name
+                                          nickname
+                                          (when-not (string/blank? display-name) display-name)
+                                          three-words-name)
+           no-contacts?               (empty? contacts)]
        [rn/view {:style {:height (* window-height 0.9)}}
         [quo2/button
          {:type                      :grey
