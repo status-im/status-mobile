@@ -64,15 +64,16 @@
   "Pin message, rebuild pinned messages list locally"
   {:events [:pin-message/send-pin-message-locally]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
-  (let [current-public-key (get-in db [:multiaccount :public-key])
-        message            (merge pin-message {:pinned-by current-public-key})]
+  (let [current-public-key       (get-in db [:multiaccount :public-key])
+        message                  (merge pin-message {:pinned-by current-public-key})
+        pin-message-lists-exist? (some? (get-in db [:pin-message-lists chat-id]))]
     (rf/merge cofx
               {:db (cond-> db
                      pinned
                      (->
                        (update-in [:pin-message-lists chat-id] message-list/add message)
                        (assoc-in [:pin-messages chat-id message-id] message))
-                     (not pinned)
+                     (and (not pinned) pin-message-lists-exist?)
                      (->
                        (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
                        (update-in [:pin-messages chat-id] dissoc message-id)))})))
@@ -80,12 +81,12 @@
 (rf/defn send-pin-message
   "Pin message, rebuild pinned messages list"
   {:events [:pin-message/send-pin-message]}
-  [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
+  [{:keys [db] :as cofx} {:keys [chat-id message-id pinned remote-only?] :as pin-message}]
   (let [current-public-key (get-in db [:multiaccount :public-key])
         message            (merge pin-message {:pinned-by current-public-key})
         preferred-name     (get-in db [:multiaccount :preferred-name])]
     (rf/merge cofx
-              (send-pin-message-locally pin-message)
+              (when-not remote-only? (send-pin-message-locally pin-message))
               (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)
                                                          :message_id (pin-message :message-id)
                                                          :pinned     (pin-message :pinned)})

@@ -162,18 +162,32 @@
   [{:keys [db]} {:keys [message-id chat-id]} force?]
   (when-let [message (get-in db [:messages chat-id message-id])]
     (when (or force? (check-before-delete-and-send db chat-id message-id))
-      {:db            (update-db-clear-undo-timer db chat-id message-id)
-       :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                        :params      [message-id]
-                        :js-response true
-                        :on-error    #(log/error "failed to delete message "
-                                                 {:message-id message-id :error %})
-                        :on-success  #(rf/dispatch
-                                       [:sanitize-messages-and-process-response
-                                        %])}]
-       :dispatch
-       [:pin-message/send-pin-message
-        {:chat-id chat-id :message-id message-id :pinned false}]})))
+      (let [unpin-locally?
+            ;; this only check against local client data
+            ;; generally msg is already unpinned at delete locally phase when user
+            ;; has unpin permission
+            ;;
+            ;; will be true only if
+            ;; 1. admin delete an unpinned msg
+            ;; 2. another admin pin the msg within the undo time limit
+            ;; 3. msg finally deleted
+            (should-and-able-to-unpin-to-be-deleted-message db
+                                                            {:chat-id    chat-id
+                                                             :message-id message-id})]
+        {:db            (update-db-clear-undo-timer db chat-id message-id)
+         :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
+                          :params      [message-id]
+                          :js-response true
+                          :on-error    #(log/error "failed to delete message "
+                                                   {:message-id message-id :error %})
+                          :on-success  #(rf/dispatch
+                                         [:sanitize-messages-and-process-response
+                                          %])}]
+         :dispatch      [:pin-message/send-pin-message
+                         {:chat-id      chat-id
+                          :message-id   message-id
+                          :pinned       false
+                          :remote-only? (not unpin-locally?)}]}))))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"
