@@ -202,6 +202,7 @@
                      constants/path-wallet-root-keyword
                      :address])
             :name name
+            :display-name name
             :identicon identicon
             ;; public key of the chat account
             :public-key public-key
