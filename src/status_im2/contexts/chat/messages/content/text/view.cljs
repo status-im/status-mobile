@@ -84,4 +84,3 @@
   [rn/view
    [render-parsed-text message-data]
    [link-preview/link-preview message-data context]])
-
