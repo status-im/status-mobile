@@ -1,30 +1,30 @@
 (ns status-im.ui.screens.add-new.new-chat.views
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo.platform :as platform]
-   [quo.react-native :as rn]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.ethereum.ens :as ens]
-   [utils.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.ui.components.animation :as animation]
-   [status-im.ui.components.chat-icon.screen :as chat-icon]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.invite.views :as invite]
-   [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.chat.photos :as photos]
-   [status-im2.utils.validators :as validators]
-   [status-im.utils.gfycat.core :as gfycat]
-   [status-im.utils.identicon :as identicon]
-   [status-im.utils.utils :as utils]
-   [utils.debounce :as debounce])
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.design-system.colors :as colors]
+    [quo.platform :as platform]
+    [quo.react-native :as rn]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ethereum.ens :as ens]
+    [utils.i18n :as i18n]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.qr-scanner.core :as qr-scanner]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.invite.views :as invite]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im2.utils.validators :as validators]
+    [status-im.utils.gfycat.core :as gfycat]
+    [status-im.utils.identicon :as identicon]
+    [status-im.utils.utils :as utils]
+    [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row
@@ -155,8 +155,8 @@
     [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
      [react/view {:style {:flex 1}}
       [topbar/topbar
-       {:title             (i18n/label :t/new-chat)
-        :modal?            true
+       {:title (i18n/label :t/new-chat)
+        :modal? true
         :right-accessories
         [{:icon                :qr
           :accessibility-label :scan-contact-code-button
@@ -176,13 +176,13 @@
           :on-submit-editing
           #(when (= state :valid)
              (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false nil] 3000))
-          :placeholder         (i18n/label :t/enter-contact-code)
-          :show-cancel         false
+          :placeholder (i18n/label :t/enter-contact-code)
+          :show-cancel false
           :accessibility-label :enter-contact-code-input
-          :auto-capitalize     :none
-          :return-key-type     :go
-          :monospace           true
-          :auto-correct        false}]]]
+          :auto-capitalize :none
+          :return-key-type :go
+          :monospace true
+          :auto-correct false}]]]
       [react/scroll-view
        {:style                        {:flex 1}
         :keyboard-dismiss-mode        :on-drag
@@ -306,8 +306,8 @@
                                                                              public-key]))]
         [react/view {:style {:flex 1}}
          [topbar/topbar
-          {:title             (i18n/label :t/new-contact)
-           :modal?            true
+          {:title (i18n/label :t/new-contact)
+           :modal? true
            :right-accessories
            [{:icon                :qr
              :accessibility-label :scan-contact-code-button
@@ -331,11 +331,11 @@
              #(when (= state :valid)
                 (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true @entered-nickname]
                                              3000))
-             :placeholder         (i18n/label :t/enter-contact-code)
-             :show-cancel         false
+             :placeholder (i18n/label :t/enter-contact-code)
+             :show-cancel false
              :accessibility-label :enter-contact-code-input
-             :auto-capitalize     :none
-             :return-key-type     :go}]]
+             :auto-capitalize :none
+             :return-key-type :go}]]
           [react/view
            {:justify-content :center
             :align-items     :center}
@@ -351,7 +351,7 @@
                  (= state :valid)
                  (str (when ens-name (str ens-name " • "))
                       (utils/get-shortened-address public-key))
-                 :else            "")]]
+                 :else "")]]
          [react/text {:style {:margin-horizontal 16 :color colors/gray}}
           (i18n/label :t/nickname-description)]
          [react/view {:padding 16}

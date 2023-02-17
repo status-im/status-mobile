@@ -19,15 +19,15 @@
 
 (defn pinned-messages-list
   [chat-id]
-  (let [pinned-messages                                          (rf/sub [:chats/pinned-sorted-list
-                                                                          chat-id])
-        current-chat                                             (rf/sub [:chat-by-id chat-id])
+  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list
+                                 chat-id])
+        current-chat (rf/sub [:chat-by-id chat-id])
 
         {:keys [group-chat chat-id public? community-id admins]}
         current-chat
 
-        community                                                (rf/sub [:communities/community
-                                                                          community-id])]
+        community (rf/sub [:communities/community
+                           community-id])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529

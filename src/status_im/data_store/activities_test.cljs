@@ -27,38 +27,39 @@
                (dissoc :last-message :message :reply-message)))))
 
   (testing "transforms messages from RPC response"
-    (is (= {:last-message  {:quoted-message     nil
-                            :outgoing-status    nil
-                            :command-parameters nil
-                            :content            {:sticker     nil
-                                                 :rtl?        nil
-                                                 :ens-name    nil
-                                                 :parsed-text nil
-                                                 :response-to nil
-                                                 :chat-id     nil
-                                                 :image       nil
-                                                 :line-count  nil
-                                                 :links       nil
-                                                 :text        nil}
-                            :outgoing           false}
-            :message       nil
-            :reply-message {:quoted-message     nil
-                            :outgoing-status    nil
-                            :command-parameters nil
-                            :content            {:sticker     nil
-                                                 :rtl?        nil
-                                                 :ens-name    nil
-                                                 :parsed-text nil
-                                                 :response-to nil
-                                                 :chat-id     nil
-                                                 :image       nil
-                                                 :line-count  nil
-                                                 :links       nil
-                                                 :text        nil}
-                            :outgoing           false}}
-           (-> raw-notification
-               store/<-rpc
-               (select-keys [:last-message :message :reply-message])))))
+    (is
+     (= {:last-message  {:quoted-message     nil
+                         :outgoing-status    nil
+                         :command-parameters nil
+                         :content            {:sticker     nil
+                                              :rtl?        nil
+                                              :ens-name    nil
+                                              :parsed-text nil
+                                              :response-to nil
+                                              :chat-id     nil
+                                              :image       nil
+                                              :line-count  nil
+                                              :links       nil
+                                              :text        nil}
+                         :outgoing           false}
+         :message       nil
+         :reply-message {:quoted-message     nil
+                         :outgoing-status    nil
+                         :command-parameters nil
+                         :content            {:sticker     nil
+                                              :rtl?        nil
+                                              :ens-name    nil
+                                              :parsed-text nil
+                                              :response-to nil
+                                              :chat-id     nil
+                                              :image       nil
+                                              :line-count  nil
+                                              :links       nil
+                                              :text        nil}
+                         :outgoing           false}}
+        (-> raw-notification
+            store/<-rpc
+            (select-keys [:last-message :message :reply-message])))))
 
   (testing "augments notification based on its type"
     (is (= {:chat-name chat-name

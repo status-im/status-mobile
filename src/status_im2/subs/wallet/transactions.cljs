@@ -42,16 +42,16 @@
         (if (= type :inbound)
           [from :from-contact :to-wallet]
           [to :to-contact :from-wallet])
-        wallet                                             (i18n/label :main-wallet)
-        contact                                            (get contacts contact-address)
+        wallet (i18n/label :main-wallet)
+        contact (get contacts contact-address)
         {:keys [symbol-display symbol decimals] :as asset}
         (or token native-currency)
-        amount-text                                        (if value
-                                                             (wallet.utils/format-amount value decimals)
-                                                             "...")
-        currency-text                                      (when asset
-                                                             (clojure.core/name (or symbol-display
-                                                                                    symbol)))]
+        amount-text (if value
+                      (wallet.utils/format-amount value decimals)
+                      "...")
+        currency-text (when asset
+                        (clojure.core/name (or symbol-display
+                                               symbol)))]
     (cond-> transaction
       contact (assoc key-contact (:name contact))
       :always (assoc key-wallet
@@ -155,8 +155,8 @@
     (re-frame/subscribe [:wallet/filters])
     (re-frame/subscribe [:wallet.transactions/all-filters?])])
  (fn [[transactions filters all-filters?] [_ address]]
-   {:all-filters?                 all-filters?
-    :total                        (count transactions)
+   {:all-filters? all-filters?
+    :total (count transactions)
     :transaction-history-sections
     (->> transactions
          vals
@@ -230,7 +230,7 @@
    (let [confirmations (wallet.db/get-confirmations transaction
                                                     current-block)]
      (assoc transaction
-            :confirmations          confirmations
+            :confirmations confirmations
             :confirmations-progress
             (if (>= confirmations transactions/confirmations-count-threshold)
               100

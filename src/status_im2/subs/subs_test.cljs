@@ -10,11 +10,11 @@
 
 (def grouped-transactions
   '({:title "20 Sep"
-     :key   :20170920
+     :key :20170920
      :data
      ({:timestamp "1505912551000"})}
     {:title "18 Sep"
-     :key   :20170918
+     :key :20170918
      :data
      ({:timestamp "1505764322000"}
       {:timestamp "1505750000000"})}))
@@ -27,7 +27,7 @@
 (deftest login-ma-keycard-pairing
   (testing "returns nil when no :multiaccounts/login"
     (let [res (onboarding/login-ma-keycard-pairing
-               {:multiaccounts/login         nil
+               {:multiaccounts/login nil
                 :multiaccounts/multiaccounts
                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
                {})]
@@ -35,7 +35,7 @@
 
   (testing "returns :keycard-pairing when :multiaccounts/login is present"
     (let [res (onboarding/login-ma-keycard-pairing
-               {:multiaccounts/login         {:key-uid "0x1"}
+               {:multiaccounts/login {:key-uid "0x1"}
                 :multiaccounts/multiaccounts
                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
                {})]

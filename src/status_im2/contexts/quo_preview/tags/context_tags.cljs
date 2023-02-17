@@ -53,25 +53,25 @@
                              :channel-name "Channel"
                              :type         :group-avatar})]
     (fn []
-      (let [contacts             {example-pk  {:public-key example-pk
-                                               :names      {:three-words-name
-                                                            "Automatic incompatible Coati"}
-                                               :photo      example-photo}
-                                  example-pk2 {:public-key example-pk2
-                                               :names      {:three-words-name
-                                                            "Clearcut Flickering Rattlesnake"}
-                                               :photo      example-photo2}}
+      (let [contacts {example-pk  {:public-key example-pk
+                                   :names      {:three-words-name
+                                                "Automatic incompatible Coati"}
+                                   :photo      example-photo}
+                      example-pk2 {:public-key example-pk2
+                                   :names      {:three-words-name
+                                                "Clearcut Flickering Rattlesnake"}
+                                   :photo      example-photo2}}
             contacts-public-keys (map (fn [{:keys [public-key]}]
                                         {:key   public-key
                                          :value (multiaccounts/displayed-name
                                                  (get contacts public-key))})
                                       (vals contacts))
-            current-username     (if (seq (:contact @state))
-                                   (->> @state
-                                        :contact
-                                        contacts
-                                        multiaccounts/displayed-name)
-                                   "Please select a user")
+            current-username (if (seq (:contact @state))
+                               (->> @state
+                                    :contact
+                                    contacts
+                                    multiaccounts/displayed-name)
+                               "Please select a user")
             descriptor
             (cond
               (= (:type @state) :context-tag)  (into main-descriptor context-tag-descriptor)

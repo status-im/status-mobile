@@ -107,14 +107,14 @@
 (def all-tokens
   {:mainnet {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address
                                                            "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-                                                           :name     "Status Network Token"
-                                                           :symbol   :SNT
+                                                           :name "Status Network Token"
+                                                           :symbol :SNT
                                                            :decimals 18}}
    :goerli  {"0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
              {:address
               "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
-              :name     "Status Test Token"
-              :symbol   :STT
+              :name "Status Test Token"
+              :symbol :STT
               :decimals 18}}})
 
 (deftest generate-erc20-uri
@@ -209,8 +209,8 @@
           :function-arguments {:uint256 1000 :address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"}}
          {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address
                                                         "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-                                                        :name     "Status Network Token"
-                                                        :symbol   :SNT
+                                                        :name "Status Network Token"
+                                                        :symbol :SNT
                                                         :decimals 18}})]
     (is (.equals (money/bignumber 1000) value))
     (is (= :SNT symbol))

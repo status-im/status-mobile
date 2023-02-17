@@ -7,9 +7,9 @@
             [taoensso.timbre :as log]))
 
 (defonce card
-         (if config/keycard-test-menu-enabled?
-           (simulated-keycard/SimulatedKeycard.)
-           (real-keycard/RealKeycard.)))
+  (if config/keycard-test-menu-enabled?
+    (simulated-keycard/SimulatedKeycard.)
+    (real-keycard/RealKeycard.)))
 
 (defn check-nfc-support
   []
@@ -153,7 +153,7 @@
   (log/debug "[keycard] init-card")
   (keycard/init-card
    card
-   {:pin        pin
+   {:pin pin
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] init-card")
@@ -171,7 +171,7 @@
   (log/debug "[keycard] install-applet-and-init-card")
   (keycard/install-applet-and-init-card
    card
-   {:pin        pin
+   {:pin pin
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] install-applet-and-init-card")
@@ -508,7 +508,7 @@
   (log/debug "[keycard] sign-typed-data")
   (keycard/sign-typed-data
    card
-   {:hash       hash
+   {:hash hash
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] sign-typed-data")

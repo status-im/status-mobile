@@ -116,9 +116,9 @@
   (.logout ^js (status)))
 
 (defonce listener
-         (.addListener ^js react-native-utils/device-event-emitter
-                       "gethEvent"
-                       #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
+  (.addListener ^js react-native-utils/device-event-emitter
+                "gethEvent"
+                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -466,7 +466,7 @@
       (callback true))
 
     ;; in unknown scenarios we also consider the device rooted to avoid degrading security
-    :else             (callback true)))
+    :else (callback true)))
 
 (defn generate-gfycat
   "Generate a 3 words random name based on the user public-key, synchronously"

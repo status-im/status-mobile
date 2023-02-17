@@ -128,7 +128,7 @@
         (too-precise-amount? normalized-amount decimals)
         {:amount-error (i18n/label :t/validation-amount-is-too-precise {:decimals decimals})}
 
-        :else                                            nil))))
+        :else nil))))
 
 (defn get-sufficient-funds-error
   [balance symbol amount]
@@ -188,10 +188,10 @@
  :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance                                    (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token}               (tokens/asset-for all-tokens current-network symbol)
-         {:keys [value error]}                      (wallet.db/parse-amount amount-text decimals)
-         amount                                     (money/formatted->internal value symbol decimals)
+   (let [balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
+         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
+         amount (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
          (merge transaction
                 {:amount-error error}
@@ -215,10 +215,10 @@
  :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance                                    (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token}               (tokens/asset-for all-tokens current-network symbol)
-         {:keys [value error]}                      (wallet.db/parse-amount amount-text decimals)
-         amount                                     (money/formatted->internal value symbol decimals)
+   (let [balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
+         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
+         amount (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
          (assoc transaction :amount-error error)]
      (assoc transaction-new

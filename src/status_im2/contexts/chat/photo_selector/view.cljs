@@ -1,19 +1,19 @@
 (ns status-im2.contexts.chat.photo-selector.view
   (:require
-   [react-native.platform :as platform]
-   [status-im2.constants :as constants]
-   [utils.i18n :as i18n]
-   [react-native.safe-area :as safe-area]
-   [quo2.components.notifications.info-count :as info-count]
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.linear-gradient :as linear-gradient]
-   [reagent.core :as reagent]
-   [status-im2.contexts.chat.photo-selector.style :as style]
-   [status-im.utils.core :as utils]
-   [quo.react]
-   [utils.re-frame :as rf]))
+    [react-native.platform :as platform]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
+    [react-native.safe-area :as safe-area]
+    [quo2.components.notifications.info-count :as info-count]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [reagent.core :as reagent]
+    [status-im2.contexts.chat.photo-selector.style :as style]
+    [status-im.utils.core :as utils]
+    [quo.react]
+    [utils.re-frame :as rf]))
 
 (defn on-press-confirm-selection
   [selected]

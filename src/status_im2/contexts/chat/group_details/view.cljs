@@ -105,12 +105,14 @@
 
 (defn group-details
   []
-  (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub
-                                                                                   [:chats/current-chat])
-        members (rf/sub [:contacts/group-members-sections])
+  (let [{:keys [admins chat-id chat-name color public?
+                muted contacts]
+         :as   group}   (rf/sub
+                         [:chats/current-chat])
+        members         (rf/sub [:contacts/group-members-sections])
         pinned-messages (rf/sub [:chats/pinned chat-id])
-        current-pk (rf/sub [:multiaccount/public-key])
-        admin? (get admins current-pk)]
+        current-pk      (rf/sub [:multiaccount/public-key])
+        admin?          (get admins current-pk)]
     [rn/view
      {:style {:flex             1
               :background-color (colors/theme-colors colors/white colors/neutral-95)}}

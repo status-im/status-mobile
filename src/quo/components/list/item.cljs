@@ -227,22 +227,22 @@
            animated                  platform/ios?
            active-background-enabled true
            haptic-type               :selection}}]
-  (let [theme                                                     (if disabled :disabled theme)
+  (let [theme (if disabled :disabled theme)
         {:keys [text-color active-background passive-background]}
         (themes theme)
-        icon-color                                                (or icon-color
-                                                                      (:icon-color (themes theme)))
-        icon-bg-color                                             (or icon-bg-color
-                                                                      (:icon-bg-color (themes theme)))
-        optional-haptic                                           (fn []
-                                                                    (when haptic-feedback
-                                                                      (haptic/trigger haptic-type)))
-        component                                                 (cond
-                                                                    (and (not on-press)
-                                                                         (not on-long-press))
-                                                                    rn/view
-                                                                    animated animated/pressable
-                                                                    :else rn/touchable-highlight)]
+        icon-color (or icon-color
+                       (:icon-color (themes theme)))
+        icon-bg-color (or icon-bg-color
+                          (:icon-bg-color (themes theme)))
+        optional-haptic (fn []
+                          (when haptic-feedback
+                            (haptic/trigger haptic-type)))
+        component (cond
+                    (and (not on-press)
+                         (not on-long-press))
+                    rn/view
+                    animated animated/pressable
+                    :else rn/touchable-highlight)]
     [rn/view
      {:background-color (cond (not= background-color nil)
                               background-color

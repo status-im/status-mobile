@@ -192,31 +192,31 @@
         (cond->
           (merge
            {;; address of the master key
-            :address                  address
+            :address address
             ;; sha256 of master public key
-            :key-uid                  key-uid
+            :key-uid key-uid
             ;; The address from which we derive any wallet
             :wallet-root-address
             (get-in multiaccount
                     [:derived
                      constants/path-wallet-root-keyword
                      :address])
-            :name                     name
-            :identicon                identicon
+            :name name
+            :identicon identicon
             ;; public key of the chat account
-            :public-key               public-key
+            :public-key public-key
             ;; compressed key of the chat account
-            :compressed-key           compressed-key
+            :compressed-key compressed-key
             ;; default address for Dapps
-            :dapps-address            (:address wallet-account)
-            :latest-derived-path      0
-            :signing-phrase           signing-phrase
+            :dapps-address (:address wallet-account)
+            :latest-derived-path 0
+            :signing-phrase signing-phrase
             :send-push-notifications? true
-            :backup-enabled?          true
-            :installation-id          (random-guid-generator)
+            :backup-enabled? true
+            :installation-id (random-guid-generator)
             ;; default mailserver (history node) setting
-            :use-mailservers?         true
-            :recovered                recovered}
+            :use-mailservers? true
+            :recovered recovered}
            config/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys

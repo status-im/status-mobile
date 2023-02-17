@@ -1,31 +1,31 @@
 (ns status-im.browser.core
   (:require
-   ["eth-phishing-detect" :as eth-phishing-detect]
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im2.common.bottom-sheet.events :as bottom-sheet]
-   [status-im.browser.eip3085 :as eip3085]
-   [status-im.browser.eip3326 :as eip3326]
-   [status-im.browser.permissions :as browser.permissions]
-   [status-im.browser.webview-ref :as webview-ref]
-   [status-im2.constants :as constants]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.ens :as ens]
-   [utils.i18n :as i18n]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.native-module.core :as status]
-   [status-im.signing.core :as signing]
-   [status-im.ui.components.list-selection :as list-selection]
-   [utils.re-frame :as rf]
-   [status-im.utils.http :as http]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.random :as random]
-   [status-im.utils.types :as types]
-   [status-im.utils.universal-links.utils :as links]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]
-   [utils.debounce :as debounce]
-   [utils.security.core :as security]))
+    ["eth-phishing-detect" :as eth-phishing-detect]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im2.common.bottom-sheet.events :as bottom-sheet]
+    [status-im.browser.eip3085 :as eip3085]
+    [status-im.browser.eip3326 :as eip3326]
+    [status-im.browser.permissions :as browser.permissions]
+    [status-im.browser.webview-ref :as webview-ref]
+    [status-im2.constants :as constants]
+    [status-im.ethereum.core :as ethereum]
+    [status-im.ethereum.ens :as ens]
+    [utils.i18n :as i18n]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.native-module.core :as status]
+    [status-im.signing.core :as signing]
+    [status-im.ui.components.list-selection :as list-selection]
+    [utils.re-frame :as rf]
+    [status-im.utils.http :as http]
+    [status-im.utils.platform :as platform]
+    [status-im.utils.random :as random]
+    [status-im.utils.types :as types]
+    [status-im.utils.universal-links.utils :as links]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.debounce :as debounce]
+    [utils.security.core :as security]))
 
 (rf/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -201,8 +201,8 @@
               {:db (-> (update db
                                :browser/options
                                assoc
-                               :url             (str gateway path)
-                               :resolving?      false)
+                               :url (str gateway path)
+                               :resolving? false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
 (rf/defn resolve-ens-multihash-error
@@ -384,8 +384,9 @@
                                       (not (vector? params)))
                                  ;; We don't use signer argument for keycard sign-typed-data
                                  ["0x0" params]
-                                 message? (normalize-sign-message-params params typed?)
-                                 :else [nil nil])]
+                                 message?                     (normalize-sign-message-params params
+                                                                                             typed?)
+                                 :else                        [nil nil])]
         (when (or (not message?) (and address data))
           (signing/sign cofx
                         (merge

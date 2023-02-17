@@ -57,15 +57,15 @@
   [_ {:keys [v4 data typed? on-completed]}]
   (if typed?
     {::hash-typed-data
-     {:data         data
-      :v4           v4
+     {:data data
+      :v4 v4
       :on-completed
       (or on-completed
           #(re-frame/dispatch
             [:signing.keycard.callback/hash-message-completed
              data typed? %]))}}
     {::hash-message
-     {:message      data
+     {:message data
       :on-completed
       (or on-completed
           #(re-frame/dispatch

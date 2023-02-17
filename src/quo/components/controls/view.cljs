@@ -14,24 +14,24 @@
   (fn [props]
     (let [{:keys [value onChange disabled]}
           (bean/bean props)
-          state                             (animated/use-value 0)
-          tap-state                         (animated/use-value (:undetermined gh/states))
-          tap-handler                       (animated/on-gesture {:state tap-state})
-          hold                              (react/use-memo
-                                             (fn []
-                                               (animated/with-timing-transition
-                                                (animated/eq tap-state (:began gh/states))
-                                                {}))
-                                             [])
-          transition                        (react/use-memo
-                                             (fn []
-                                               (animated/with-spring-transition state
-                                                                                (:lazy
-                                                                                 animated/springs)))
-                                             [])
-          press-end                         (fn []
-                                              (when (and (not disabled) onChange)
-                                                (onChange (not value))))]
+          state (animated/use-value 0)
+          tap-state (animated/use-value (:undetermined gh/states))
+          tap-handler (animated/on-gesture {:state tap-state})
+          hold (react/use-memo
+                (fn []
+                  (animated/with-timing-transition
+                   (animated/eq tap-state (:began gh/states))
+                   {}))
+                [])
+          transition (react/use-memo
+                      (fn []
+                        (animated/with-spring-transition state
+                                                         (:lazy
+                                                          animated/springs)))
+                      [])
+          press-end (fn []
+                      (when (and (not disabled) onChange)
+                        (onChange (not value))))]
       (animated/code!
        (fn []
          (animated/cond* (animated/eq tap-state (:end gh/states))

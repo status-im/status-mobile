@@ -30,14 +30,14 @@
   (let [extra-action-selected? (reagent/atom false)]
     (fn []
       (let [{:keys [group-chat chat-id public-key color name]} context
-            id                                                 (or chat-id public-key)
+            id (or chat-id public-key)
             display-name
             (if-not group-chat (first (rf/sub [:contacts/contact-two-names-by-identity id])) name)
-            contact                                            (when-not group-chat
-                                                                 (rf/sub [:contacts/contact-by-address
-                                                                          id]))
-            photo-path                                         (when-not (empty? (:images contact))
-                                                                 (rf/sub [:chats/photo-path id]))]
+            contact (when-not group-chat
+                      (rf/sub [:contacts/contact-by-address
+                               id]))
+            photo-path (when-not (empty? (:images contact))
+                         (rf/sub [:chats/photo-path id]))]
         [rn/view
          {:style               {:margin-horizontal 20}
           :accessibility-label accessibility-label}

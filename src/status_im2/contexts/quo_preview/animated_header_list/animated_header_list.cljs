@@ -1,11 +1,11 @@
 (ns status-im2.contexts.quo-preview.animated-header-list.animated-header-list
   (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [react-native.reanimated :as reanimated]
-   [quo2.components.animated-header-flatlist.view :as animated-header-list]))
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [react-native.reanimated :as reanimated]
+    [quo2.components.animated-header-flatlist.view :as animated-header-list]))
 
 (def data [0 1 2 3 4 5 6 7 8 9 10])
 
@@ -23,9 +23,9 @@
 (defn main-comp
   []
   [rn/flat-list
-   {:data      data
+   {:data data
     :render-fn child
-    :key-fn    (fn [item] (str item))
+    :key-fn (fn [item] (str item))
     :header
     [rn/view
      {:style {:height             70
@@ -39,10 +39,10 @@
   [:f>
    (fn []
      [reanimated/fast-image
-      {:style  (reanimated/apply-animations-to-style
-                {:width  animation
-                 :height animation}
-                {:border-radius 72})
+      {:style (reanimated/apply-animations-to-style
+               {:width  animation
+                :height animation}
+               {:border-radius 72})
        :source
        {:uri
         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])])
@@ -75,13 +75,13 @@
 (def theme-color (colors/theme-alpha "#5BCC95" 0.2 0.2))
 
 (def parameters
-  {:theme-color          theme-color
+  {:theme-color theme-color
    :cover-uri
    "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/kitten-playing-with-toy-mouse-royalty-free-image-590055188-1542816918.jpg?crop=1.00xw:0.758xh;0,0.132xh&resize=480:*"
    :display-picture-comp display-picture-comp
-   :header-comp          header-comp
-   :title-comp           title-comp
-   :main-comp            main-comp})
+   :header-comp header-comp
+   :title-comp title-comp
+   :main-comp main-comp})
 
 (defn mock-screen
   []

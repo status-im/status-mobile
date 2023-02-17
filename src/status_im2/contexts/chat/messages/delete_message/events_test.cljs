@@ -29,7 +29,7 @@
                                        :message-deleted-for-everyone-count 1
                                        :message-deleted-for-everyone-undos [{:message-id
                                                                              "pending-delete-message"
-                                                                             :chat-id    cid}]))
+                                                                             :chat-id cid}]))
                 effects (delete-message/delete {:db db} message 1000)]
             (is (= (get-in effects [:db :messages cid mid :deleted-undoable-till])
                    (get-in effects [:db :messages cid "pending-delete-message" :deleted-undoable-till])

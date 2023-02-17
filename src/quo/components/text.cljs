@@ -47,7 +47,10 @@
     (into [component
            (merge {:style (text-style props)}
                   (dissoc props
-                          :style  :size
-                          :weight :color
-                          :align  :animated?))]
+                   :style
+                   :size
+                   :weight
+                   :color
+                   :align
+                   :animated?))]
           (reagent/children this))))

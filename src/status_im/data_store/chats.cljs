@@ -39,10 +39,10 @@
 (defn- unmarshal-members
   [{:keys [members chat-type] :as chat}]
   (cond
-    (= constants/public-chat-type chat-type)        (assoc chat
-                                                           :contacts       #{}
-                                                           :admins         #{}
-                                                           :members-joined #{})
+    (= constants/public-chat-type chat-type) (assoc chat
+                                                    :contacts       #{}
+                                                    :admins         #{}
+                                                    :members-joined #{})
     (= constants/private-group-chat-type chat-type) (merge chat
                                                            (reduce members-reducer
                                                                    {:admins         #{}

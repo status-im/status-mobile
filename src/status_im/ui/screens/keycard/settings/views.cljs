@@ -138,4 +138,4 @@
    {:back-button-handler
     :navigate-back
     :hide-login-actions? true
-    :default-enter-step  :reset}])
+    :default-enter-step :reset}])

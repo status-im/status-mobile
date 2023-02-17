@@ -76,12 +76,12 @@
 
 (defn text-input
   [error?]
-  {:accessibility-label    :enter-contact-code-input
-   :auto-capitalize        :none
+  {:accessibility-label :enter-contact-code-input
+   :auto-capitalize :none
    :placeholder-text-color (colors/theme-colors
                             colors/neutral-40
                             colors/neutral-50)
-   :multiline              true
+   :multiline true
    :style
    (merge typography/monospace
           typography/paragraph-1

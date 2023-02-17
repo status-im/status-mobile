@@ -10,23 +10,23 @@
 
 ;; TODO: update with real data
 (def community-rules
-  [{:index   1
-    :title   "Be respectful"
+  [{:index 1
+    :title "Be respectful"
     :content
     "You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated."}
-   {:index   2
-    :title   "No Inappropriate Language"
+   {:index 2
+    :title "No Inappropriate Language"
     :content
     "The use of profanity should be kept to a minimum. However, any derogatory language towards any user is prohibited."}
-   {:index   3
-    :title   "No spamming"
+   {:index 3
+    :title "No spamming"
     :content
     "Don't send a lot of small messages right after each other. Do not disrupt chat by spamming."}
    {:index   4
     :title   "No pornographic, adult or NSFW material"
     :content "This is a community server and not meant to share this kind of material."}
-   {:index   5
-    :title   "No advertisements"
+   {:index 5
+    :title "No advertisements"
     :content
     "We do not tolerate any kind of advertisements, whether it be for other communities or streams."}
    {:index   6

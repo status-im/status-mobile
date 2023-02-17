@@ -76,9 +76,9 @@
       [:sign/send-accept-transaction-message message-id tx-hash signature]
       [:sign/send-transaction-message chat-id value contract tx-hash signature])
     :signing/show-transaction-result nil
-    :db                              (-> db
-                                         (assoc-in [:keycard :pin :sign] [])
-                                         (assoc-in [:keycard :pin :status] nil))}
+    :db (-> db
+            (assoc-in [:keycard :pin :sign] [])
+            (assoc-in [:keycard :pin :status] nil))}
    (common/clear-on-card-connected)
    (common/get-application-info nil)
    (common/hide-connection-sheet)))

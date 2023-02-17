@@ -71,7 +71,7 @@
                      (cond
                        @ready-to-send?
                        (start-y-animation)
-                       @recording?     (reset-y-animation)))
+                       @recording? (reset-y-animation)))
                    [@ready-to-send?])
        [:<>
         [reanimated/view {:style (style/send-button-container opacity)}

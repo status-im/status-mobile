@@ -85,9 +85,9 @@
   (fn [{:keys [id on-press disabled? size resource active accessibility-label
                label type labelled? blurred? icon-color]
         :or   {size 32}}]
-    (let [state                                                  (cond disabled? :disabled
-                                                                       active    :active
-                                                                       :else     :default)
+    (let [state (cond disabled? :disabled
+                      active    :active
+                      :else     :default)
           {:keys [border-color blurred-border-color text-color]}
           (get-in themes [(theme/get-theme) state])]
       [rn/view {:style {:align-items :center}}

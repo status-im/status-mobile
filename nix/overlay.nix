@@ -32,6 +32,18 @@ in {
   # For parsing gradle.properties into an attrset
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
+  # Clojure formatting tool
+  zprint = super.zprint.override rec {
+    buildGraalvmNativeImage = args: super.buildGraalvmNativeImage ( args // rec {
+      inherit (args) pname;
+      version = "1.2.5";
+      src = self.fetchurl {
+        url = "https://github.com/kkinnear/${pname}/releases/download/${version}/${pname}-filter-${version}";
+        sha256 = "sha256-PWdR5jqyzvTk9HoxqDldwtZNik34dmebBtZZ5vtva4A=";
+      };
+    });
+  };
+
   # Package version adjustments
   gradle = super.gradle_5;
   nodejs = super.nodejs-16_x;

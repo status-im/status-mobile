@@ -31,16 +31,16 @@
   (log/debug "[wallet-subs] recent-history-fetching-ended"
              "accounts" accounts
              "block"    blockNumber)
-  {:db                         (-> db
-                                   (assoc :ethereum/current-block blockNumber)
-                                   (update-in [:wallet :accounts]
-                                              wallet/remove-transactions-since-block
-                                              blockNumber)
-                                   (transactions/update-fetching-status accounts :recent? false)
-                                   (dissoc :wallet/waiting-for-recent-history?
-                                           :wallet/refreshing-history?
-                                           :wallet/fetching-error
-                                           :wallet/recent-history-fetching-started?))
+  {:db (-> db
+           (assoc :ethereum/current-block blockNumber)
+           (update-in [:wallet :accounts]
+                      wallet/remove-transactions-since-block
+                      blockNumber)
+           (transactions/update-fetching-status accounts :recent? false)
+           (dissoc :wallet/waiting-for-recent-history?
+                   :wallet/refreshing-history?
+                   :wallet/fetching-error
+                   :wallet/recent-history-fetching-started?))
    :transactions/get-transfers
    {:chain-tokens (:wallet/all-tokens db)
     :addresses    (reduce
