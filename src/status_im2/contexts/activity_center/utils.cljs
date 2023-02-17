@@ -2,5 +2,10 @@
 
 (defn contact-name
   [contact]
-  (or (get-in contact [:names :nickname])
-      (get-in contact [:names :three-words-name])))
+  (->> [(get-in contact [:names :nickname])
+        (get-in contact [:names :ens-name])
+        (get-in contact [:names :display-name])
+        (get-in contact [:names :three-words-name])]
+
+       (filter seq)
+       first))
