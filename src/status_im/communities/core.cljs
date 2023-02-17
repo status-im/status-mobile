@@ -204,10 +204,8 @@
   (let [current-chat-id (:current-chat-id db)
         {:keys [id]}    (some #(when (= (:name %) literal) %)
                               (vals (get-in db [:communities community-id :chats])))]
-    (cond-> {}
-      (not= current-chat-id (str community-id id)) (assoc :dispatch
-                                                          [:chat/navigate-to-chat
-                                                           (str community-id id)]))))
+    (when-not (= current-chat-id (str community-id id))
+      {:dispatch [:chat/navigate-to-chat (str community-id id)]})))
 
 (rf/defn fetch
   [_]
