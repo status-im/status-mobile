@@ -134,16 +134,16 @@
              (case content-type
 
                constants/content-type-text
-               [not-implemented/not-implemented [content.text/text-content message-data context]]
+               [content.text/text-content message-data context]
 
                constants/content-type-emoji
-               [not-implemented/not-implemented [old-message/emoji message-data]]
+               [old-message/emoji message-data]
 
                constants/content-type-sticker
-               [not-implemented/not-implemented [old-message/sticker message-data]]
+               [old-message/sticker message-data]
 
                constants/content-type-audio
-               [not-implemented/not-implemented [old-message/audio message-data]]
+               [old-message/audio message-data]
 
                constants/content-type-image
                [image/image-message 0 message-data context on-long-press]
@@ -151,7 +151,7 @@
                constants/content-type-album
                [album/album-message message-data context on-long-press]
 
-               [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
+               [content.unknown/unknown-content message-data])
              (when @show-delivery-state?
                [status/status outgoing-status])]]]])))])
 
