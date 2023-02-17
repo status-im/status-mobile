@@ -339,4 +339,4 @@
 (rf/defn exit-lightbox-signal
   {:events [:chat.ui/exit-lightbox-signal]}
   [{:keys [db]} value]
-  {:db (assoc db :exit-lightbox-signal value)})
+  {:db (assoc db :lightbox/exit-signal value)})

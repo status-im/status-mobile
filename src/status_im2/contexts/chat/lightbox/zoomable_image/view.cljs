@@ -257,7 +257,7 @@
   [:f>
    (fn []
      (let [shared-element-id    (rf/sub [:shared-element-id])
-           exit-lightbox-signal (rf/sub [:exit-lightbox-signal])
+           exit-lightbox-signal (rf/sub [:lightbox/exit-signal])
            width                (:width (rn/get-window))
            height               (* image-height (/ (:width (rn/get-window)) image-width))
            screen-height        (:height (rn/get-window))
