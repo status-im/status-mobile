@@ -87,7 +87,6 @@
           db-notifications
           new-notifications))
 
-;; TODO(alwx):
 (rf/defn notifications-reconcile
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]

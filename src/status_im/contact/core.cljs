@@ -74,7 +74,7 @@
                       (assoc-in [:contacts/contacts public-key :contact-request-state]
                                 constants/contact-request-state-none))
    :json-rpc/call [{:method     "wakuext_retractContactRequest"
-                    :params     [{:contactId public-key}]
+                    :params     [{:id public-key}]
                     :on-success #(log/debug "contact removed successfully")}]
    :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
 
