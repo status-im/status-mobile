@@ -41,12 +41,10 @@
 
 (def touchable-overlay {:border-radius 16})
 
-(defn card-container
-  [main-variant?]
-  (when main-variant? {:height 343}))
-
 (defn card
   [main-variant?]
   {:background-color colors/white-opa-5
    :border-radius    16
    :height           (if main-variant? 335 56)})
+
+(def main-variant-extra-space {:height 8})
