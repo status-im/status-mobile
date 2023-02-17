@@ -1,19 +1,19 @@
 (ns status-im2.contexts.chat.messages.list.view
-  (:require [utils.i18n :as i18n]
-            [oops.core :as oops]
+  (:require [oops.core :as oops]
             [quo2.core :as quo]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.content.view :as message]
+            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-            [status-im2.common.not-implemented :as not-implemented]
-            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
-            [status-im.ui.screens.chat.message.gap :as message.gap]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -69,6 +69,7 @@
                                   (if platform/low-device? 700 200))))
 
 (defn get-render-data
+  "compute data used to render message list, including pinned message list and message list in chats"
   [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled
            in-pinned-view?]}]
   (let [current-public-key                                       (rf/sub [:multiaccount/public-key])
@@ -82,6 +83,7 @@
                                                                                (or group-admin?
                                                                                    community-admin?))))]
     {:group-chat                       group-chat
+     :group-admin?                     group-admin?
      :public?                          public?
      :community?                       (not (nil? community-id))
      :current-public-key               current-public-key
@@ -123,7 +125,7 @@
         [message.gap/gap message-data]]
        [rn/view {:padding-horizontal 8}
         (if (or deleted? deleted-for-me?)
-          [content.deleted/deleted-message message-data]
+          [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context])]))])
 
 (defn messages-list

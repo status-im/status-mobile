@@ -173,7 +173,7 @@
          (utils/truncate-str (:info content) 24)])]]]])
 
 (defn system-message
-  [{:keys [type style non-pressable? animate-landing? labels] :as message}]
+  [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
   [:f>
    (fn []
      (let [sv-color (reanimated/use-shared-value
@@ -186,16 +186,17 @@
           :linear
           1000))
        [reanimated/touchable-opacity
-        {:on-press #(when-not non-pressable?
-                      (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
-         :style    (reanimated/apply-animations-to-style
-                    {:background-color sv-color}
-                    (merge
-                     {:flex-direction     :row
-                      :flex               1
-                      :border-radius      16
-                      :padding-vertical   9
-                      :padding-horizontal 11
-                      :background-color   sv-color}
-                     style))}
+        {:on-press      #(when-not non-pressable?
+                           (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
+         :on-long-press on-long-press
+         :style         (reanimated/apply-animations-to-style
+                         {:background-color sv-color}
+                         (merge
+                          {:flex-direction     :row
+                           :flex               1
+                           :border-radius      16
+                           :padding-vertical   9
+                           :padding-horizontal 11
+                           :background-color   sv-color}
+                          style))}
         [sm-render message labels]]))])
