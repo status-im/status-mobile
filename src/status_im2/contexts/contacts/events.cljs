@@ -1,8 +1,8 @@
 (ns status-im2.contexts.contacts.events
   (:require
-   [utils.re-frame :as rf]
-   [status-im.contact.db :as contact.db]
-   [status-im.data-store.contacts :as contacts-store]))
+    [utils.re-frame :as rf]
+    [status-im.contact.db :as contact.db]
+    [status-im.data-store.contacts :as contacts-store]))
 
 (rf/defn load-contacts
   {:events [:contacts/contacts-loaded]}

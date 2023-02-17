@@ -69,17 +69,17 @@
                        (= contact-verification-status constants/contact-verification-status-declined))
           [quo/activity-log
            (merge
-            {:title            (i18n/label :t/identity-verification-request)
-             :icon             :i/friend
-             :timestamp        (datetime/timestamp->relative (:timestamp notification))
-             :unread?          (not (:read notification))
-             :on-update-reply  #(reset! reply %)
-             :replying?        replying?
+            {:title (i18n/label :t/identity-verification-request)
+             :icon :i/friend
+             :timestamp (datetime/timestamp->relative (:timestamp notification))
+             :unread? (not (:read notification))
+             :on-update-reply #(reset! reply %)
+             :replying? replying?
              :max-reply-length max-reply-length
-             :valid-reply?     valid-reply?
-             :context          (context-tags challenger? notification)
-             :message          (activity-message challenger? notification)
-             :status           (activity-status challenger? contact-verification-status)
+             :valid-reply? valid-reply?
+             :context (context-tags challenger? notification)
+             :message (activity-message challenger? notification)
+             :status (activity-status challenger? contact-verification-status)
              :items
              (if challenger?
                (when (= contact-verification-status constants/contact-verification-status-accepted)

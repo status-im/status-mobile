@@ -58,13 +58,13 @@
   [{:keys [id author message last-message] :as notification}]
   (let [message (or message last-message)]
     [quo/activity-log
-     {:title     (i18n/label :t/contact-request)
-      :icon      :i/add-user
+     {:title (i18n/label :t/contact-request)
+      :icon :i/add-user
       :timestamp (datetime/timestamp->relative (:timestamp notification))
-      :unread?   (not (:read notification))
-      :context   [[common/user-avatar-tag author]
-                  (i18n/label :t/contact-request-sent)]
-      :message   {:body (get-in message [:content :text])}
+      :unread? (not (:read notification))
+      :context [[common/user-avatar-tag author]
+                (i18n/label :t/contact-request-sent)]
+      :message {:body (get-in message [:content :text])}
       :items
       (case (:contact-request-state message)
         constants/contact-request-message-state-accepted
