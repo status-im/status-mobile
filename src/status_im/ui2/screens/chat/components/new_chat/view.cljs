@@ -76,8 +76,8 @@
            added?                     (reagent/atom '())
            {:keys [nickname ens-name display-name
                    three-words-name]} names
-           first-username             (or ens-name
-                                          nickname
+           first-username             (or nickname
+                                          ens-name
                                           (when-not (string/blank? display-name) display-name)
                                           three-words-name)
            no-contacts?               (empty? contacts)]
