@@ -1,9 +1,9 @@
 {
-  "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
-  "_comment": "Instead use: scripts/update-status-go.sh <rev>",
-  "owner": "status-im",
-  "repo": "status-go",
-  "version": "v0.131.10",
-  "commit-sha1": "8ff91ba0024f5ecf05d29904288537b236329f51",
-  "src-sha256": "1m3an4fhzhh0vq8bb24xfjwdysfdd9qrz08a3gfz3ddahkh41jad"
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "4c329a6b48a74c24630a8df0c0cd5090e024b682",
+    "commit-sha1": "4c329a6b48a74c24630a8df0c0cd5090e024b682",
+    "src-sha256": "0pknvxg2xxb1a22l45ir7y0ka1nd6qd17pklx6lz3kbfzbq3vwa2"
 }
