@@ -168,9 +168,9 @@
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
              (set-val pan-x (timing max-offset))
-             (set-val pan-x-start (timing max-offset))
+             (set-val pan-x-start max-offset)
              (set-val pinch-x (timing init-offset))
-             (set-val pinch-x-start (timing init-offset)))
+             (set-val pinch-x-start init-offset))
            :else
            (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-x-start))
                  upper-bound (- (Math/abs max-offset) (get-val pinch-x-start))]
@@ -201,9 +201,9 @@
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
              (set-val pan-y (timing max-offset))
-             (set-val pan-y-start (timing max-offset))
+             (set-val pan-y-start max-offset)
              (set-val pinch-y (timing init-offset))
-             (set-val pinch-y-start (timing init-offset)))
+             (set-val pinch-y-start init-offset))
            :else
            (let [lower-bound (- (- (Math/abs max-offset)) (get-val pinch-y-start))
                  upper-bound (- (Math/abs max-offset) (get-val pinch-y-start))]
