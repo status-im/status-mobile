@@ -797,7 +797,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
          final JSONObject jsonConfig = new JSONObject(configJSON);
          final String keyStorePath = pathCombine(this.getNoBackupDirectory(), "/keystore");
          jsonConfig.put("keystorePath", keyStorePath);
-
+         jsonConfig.put("rootDataDir", this.getNoBackupDirectory());
         executeRunnableStatusGoMethod(() -> Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()), callback);
     }
 

@@ -115,7 +115,7 @@
   (let [ks (keys fleet)]
     (some #(string/includes? (str %) "waku") ks)))
 
-(defn- get-multiaccount-node-config
+(defn get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
     :as   db}]
   (let [wakuv2-config (get multiaccount :wakuv2-config {})
