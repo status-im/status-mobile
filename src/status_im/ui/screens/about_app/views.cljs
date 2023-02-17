@@ -18,12 +18,12 @@
                   node-version [:get-app-node-version]]
     [react/scroll-view
      [quo/list-item
-      {:size                :small
-       :title               (i18n/label :t/privacy-policy)
+      {:size :small
+       :title (i18n/label :t/privacy-policy)
        :accessibility-label :privacy-policy
        :on-press
        #(re-frame/dispatch [:navigate-to :privacy-policy])
-       :chevron             true}]
+       :chevron true}]
      [quo/list-item
       {:size                :small
        :title               (i18n/label :t/terms-of-service)

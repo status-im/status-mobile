@@ -1,11 +1,11 @@
 (ns status-im2.contexts.chat.messages.link-preview.events
   (:require
-   [camel-snake-kebab.core :as csk]
-   [status-im.communities.core :as models.communities]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [taoensso.timbre :as log]
-   [utils.collection]
-   [utils.re-frame :as rf]))
+    [camel-snake-kebab.core :as csk]
+    [status-im.communities.core :as models.communities]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [taoensso.timbre :as log]
+    [utils.collection]
+    [utils.re-frame :as rf]))
 
 (defn community-link
   [id]

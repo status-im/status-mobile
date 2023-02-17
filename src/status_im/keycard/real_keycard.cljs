@@ -10,9 +10,9 @@
             [taoensso.timbre :as log]))
 
 (defonce event-emitter
-         (if platform/ios?
-           (new (.-NativeEventEmitter rn) status-keycard)
-           (.-DeviceEventEmitter rn)))
+  (if platform/ios?
+    (new (.-NativeEventEmitter rn) status-keycard)
+    (.-DeviceEventEmitter rn)))
 
 (defonce active-listeners (atom []))
 

@@ -103,7 +103,7 @@
      (into [rn/view {:style header-actions-style}]
            (map header-action accessories))
 
-     component         component
+     component component
 
      :else
      [rn/view {:style header-action-placeholder}])])
@@ -112,7 +112,7 @@
   [{:keys [title subtitle component title-align]}]
   [:<>
    (cond
-     component            component
+     component component
 
      (and title subtitle)
      [:<>
@@ -126,12 +126,12 @@
         :number-of-lines 1}
        subtitle]]
 
-     title                [text/text
-                           {:weight          :bold
-                            :number-of-lines 0
-                            :align           title-align
-                            :size            :large}
-                           title])])
+     title [text/text
+            {:weight          :bold
+             :number-of-lines 0
+             :align           title-align
+             :size            :large}
+            title])])
 
 (defn header
   [{:keys [left-width right-width]}]

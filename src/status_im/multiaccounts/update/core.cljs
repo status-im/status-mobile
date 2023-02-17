@@ -26,9 +26,9 @@
        (js/Error.
         "Please shake the phone to report this error and restart the app. multiaccount is currently empty, which means something went wrong when trying to update it with"))
       (rf/merge cofx
-                {:db            (if setting-value
-                                  (assoc-in db [:multiaccount setting] setting-value)
-                                  (update db :multiaccount dissoc setting))
+                {:db (if setting-value
+                       (assoc-in db [:multiaccount setting] setting-value)
+                       (update db :multiaccount dissoc setting))
                  :json-rpc/call
                  [{:method     "settings_saveSetting"
                    :params     [setting setting-value]

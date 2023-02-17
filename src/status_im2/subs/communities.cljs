@@ -195,10 +195,10 @@
  :<- [:communities/requests-to-join]
  (fn [requests [_ community-id]]
    (->>
-    (get requests community-id {})
-    vals
-    (filter (fn [{:keys [state]}]
-              (= state constants/request-to-join-pending-state))))))
+     (get requests community-id {})
+     vals
+     (filter (fn [{:keys [state]}]
+               (= state constants/request-to-join-pending-state))))))
 
 (re-frame/reg-sub
  :community/categories

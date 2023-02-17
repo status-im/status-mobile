@@ -1,51 +1,51 @@
 (ns status-im.multiaccounts.login.core
   (:require
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.async-storage.core :as async-storage]
-   [status-im.communities.core :as communities]
-   [status-im.contact.core :as contact]
-   [status-im.data-store.chats :as data-store.chats]
-   [status-im.data-store.invitations :as data-store.invitations]
-   [status-im.data-store.settings :as data-store.settings]
-   [status-im.data-store.switcher-cards :as switcher-cards-store]
-   [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.tokens :as tokens]
-   [status-im.ethereum.transactions.core :as transactions]
-   [status-im.fleet.core :as fleet]
-   [utils.i18n :as i18n]
-   [status-im.keycard.common :as keycard.common]
-   [status-im.mobile-sync-settings.core :as mobile-network]
-   [status-im.multiaccounts.biometric.core :as biometric]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.native-module.core :as status]
-   [status-im.node.core :as node]
-   [status-im.notifications.core :as notifications]
-   [status-im.popover.core :as popover]
-   [status-im.signing.eip1559 :as eip1559]
-   [status-im.transport.core :as transport]
-   [status-im.ui.components.react :as react]
-   [status-im2.config :as config]
-   [utils.re-frame :as rf]
-   [status-im.utils.keychain.core :as keychain]
-   [status-im.utils.mobile-sync :as utils.mobile-sync]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.types :as types]
-   [status-im.utils.utils :as utils]
-   [status-im.utils.wallet-connect :as wallet-connect]
-   [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
-   [status-im.wallet.core :as wallet]
-   [status-im.wallet.prices :as prices]
-   [status-im2.common.json-rpc.events :as json-rpc]
-   [status-im2.contexts.activity-center.events :as activity-center]
-   [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
-   [status-im2.navigation.events :as navigation]
-   [status-im2.common.log :as logging]
-   [taoensso.timbre :as log]
-   [utils.security.core :as security]
-   [status-im2.contexts.emoji-hash.events :as emoji-hash]))
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.async-storage.core :as async-storage]
+    [status-im.communities.core :as communities]
+    [status-im.contact.core :as contact]
+    [status-im.data-store.chats :as data-store.chats]
+    [status-im.data-store.invitations :as data-store.invitations]
+    [status-im.data-store.settings :as data-store.settings]
+    [status-im.data-store.switcher-cards :as switcher-cards-store]
+    [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
+    [status-im.ethereum.core :as ethereum]
+    [status-im.ethereum.eip55 :as eip55]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.ethereum.transactions.core :as transactions]
+    [status-im.fleet.core :as fleet]
+    [utils.i18n :as i18n]
+    [status-im.keycard.common :as keycard.common]
+    [status-im.mobile-sync-settings.core :as mobile-network]
+    [status-im.multiaccounts.biometric.core :as biometric]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.native-module.core :as status]
+    [status-im.node.core :as node]
+    [status-im.notifications.core :as notifications]
+    [status-im.popover.core :as popover]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im.transport.core :as transport]
+    [status-im.ui.components.react :as react]
+    [status-im2.config :as config]
+    [utils.re-frame :as rf]
+    [status-im.utils.keychain.core :as keychain]
+    [status-im.utils.mobile-sync :as utils.mobile-sync]
+    [status-im.utils.platform :as platform]
+    [status-im.utils.types :as types]
+    [status-im.utils.utils :as utils]
+    [status-im.utils.wallet-connect :as wallet-connect]
+    [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
+    [status-im.wallet.core :as wallet]
+    [status-im.wallet.prices :as prices]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im2.contexts.activity-center.events :as activity-center]
+    [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
+    [status-im2.navigation.events :as navigation]
+    [status-im2.common.log :as logging]
+    [taoensso.timbre :as log]
+    [utils.security.core :as security]
+    [status-im2.contexts.emoji-hash.events :as emoji-hash]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -270,7 +270,7 @@
 (rf/defn check-network-version
   [_ network-id]
   {:json-rpc/call
-   [{:method     "net_version"
+   [{:method "net_version"
      :on-success
      (fn [fetched-network-id]
        (when (not= network-id (str (int fetched-network-id)))
@@ -447,9 +447,9 @@
   {:events [::get-chats-callback]}
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
-        notifications-enabled?                      (get-in db [:multiaccount :notifications-enabled?])
-        network-id                                  (str (get-in networks
-                                                                 [current-network :config :NetworkId]))
+        notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
+        network-id (str (get-in networks
+                                [current-network :config :NetworkId]))
         remote-push-notifications-enabled?
         (get-in db [:multiaccount :remote-push-notifications-enabled?])]
     (rf/merge cofx
@@ -462,7 +462,7 @@
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
-                       ::open-last-chat                   (get-in db [:multiaccount :key-uid])}
+                       ::open-last-chat (get-in db [:multiaccount :key-uid])}
                 (or notifications-enabled? remote-push-notifications-enabled?)
                 (assoc ::notifications/enable remote-push-notifications-enabled?))
               (transport/start-messenger)
@@ -503,7 +503,7 @@
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
     (rf/merge cofx
-              {:db            (assoc db :chats/loading? true)
+              {:db (assoc db :chats/loading? true)
                :json-rpc/call
                [{:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
@@ -552,7 +552,7 @@
   (-> db
       (dissoc :connectivity/ui-status-properties)
       (update :keycard dissoc :from-key-storage-and-migration?)
-      (update :keycard      dissoc
+      (update :keycard dissoc
               :on-card-read
               :card-read-in-progress?
               :pin
@@ -569,20 +569,20 @@
   (let [{:keys [key-uid password save-password? creating?]}
         (:multiaccounts/login db)
 
-        multiaccounts                                       (:multiaccounts/multiaccounts db)
-        recovered-account?                                  (get db :recovered-account?)
-        login-only?                                         (not (or creating?
-                                                                     recovered-account?
-                                                                     (keycard-setup? cofx)))
-        from-migration?                                     (get-in db
-                                                                    [:keycard
-                                                                     :from-key-storage-and-migration?])
-        nodes                                               nil]
+        multiaccounts (:multiaccounts/multiaccounts db)
+        recovered-account? (get db :recovered-account?)
+        login-only? (not (or creating?
+                             recovered-account?
+                             (keycard-setup? cofx)))
+        from-migration? (get-in db
+                                [:keycard
+                                 :from-key-storage-and-migration?])
+        nodes nil]
     (log/debug "[multiaccount] multiaccount-login-success"
                "login-only?"        login-only?
                "recovered-account?" recovered-account?)
     (rf/merge cofx
-              {:db            (on-login-update-db db login-only? now)
+              {:db (on-login-update-db db login-only? now)
                :json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}

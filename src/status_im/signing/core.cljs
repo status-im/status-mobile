@@ -101,9 +101,10 @@
 (rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
   [{{:signing/keys [sign tx] :as db} :db :as cofx}]
-  (let [{:keys [in-progress? password]} sign
-        {:keys [tx-obj gas gasPrice maxPriorityFeePerGas maxFeePerGas message nonce]} tx
-        hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
+  (let [{:keys [in-progress? password]}      sign
+        {:keys [tx-obj gas gasPrice maxPriorityFeePerGas
+                maxFeePerGas message nonce]} tx
+        hashed-password                      (ethereum/sha3 (security/safe-unmask-data password))]
     (if message
       (sign-message cofx)
       (let [tx-obj-to-send (merge tx-obj
@@ -294,7 +295,7 @@
                                           :success-event :signing/update-estimated-gas-success
                                           :error-event   :signing/update-estimated-gas-error}})
        (fn [cofx]
-         {:db                       (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
+         {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
           :signing/update-gas-price
           {:success-callback #(re-frame/dispatch
                                [:wallet.send/update-gas-price-success :signing/tx % tx-obj])
@@ -311,12 +312,12 @@
 (rf/defn send-transaction-message
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {:json-rpc/call [{:method      "wakuext_sendTransaction"
+  {:json-rpc/call [{:method "wakuext_sendTransaction"
                     ;; We make sure `value` is serialized as string, and not
                     ;; as an integer or big-int
-                    :params      [chat-id (str value) contract transaction-hash
-                                  (or (:result (types/json->clj signature))
-                                      (ethereum/normalized-hex signature))]
+                    :params [chat-id (str value) contract transaction-hash
+                             (or (:result (types/json->clj signature))
+                                 (ethereum/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -324,10 +325,10 @@
 (rf/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {:json-rpc/call [{:method      "wakuext_acceptRequestTransaction"
-                    :params      [transaction-hash message-id
-                                  (or (:result (types/json->clj signature))
-                                      (ethereum/normalized-hex signature))]
+  {:json-rpc/call [{:method "wakuext_acceptRequestTransaction"
+                    :params [transaction-hash message-id
+                             (or (:result (types/json->clj signature))
+                                 (ethereum/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -356,7 +357,7 @@
      (wallet/watch-tx (get from :address) transaction-hash)
      (if (keycard.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
-        {:data         data
+        {:data data
          :on-completed
          (fn [hash]
            (re-frame/dispatch
@@ -370,9 +371,9 @@
              hash]))})
        (fn [_]
          {:signing.fx/sign-message
-          {:params       {:data     data
-                          :password hashed-password
-                          :account  from}
+          {:params {:data     data
+                    :password hashed-password
+                    :account  from}
            :on-completed
            (fn [res]
              (re-frame/dispatch
@@ -413,9 +414,9 @@
       {:db (update db
                    :signing/sign
                    assoc
-                   :error        (if (= 5 (:code error))
-                                   (i18n/label :t/wrong-password)
-                                   (:message error))
+                   :error (if (= 5 (:code error))
+                            (i18n/label :t/wrong-password)
+                            (:message error))
                    :in-progress? false)}
       (rf/merge cofx
                 (when-not (= (-> db :signing/sign :type) :pinless)
@@ -495,7 +496,7 @@
                          :chat-id  identity
                          :command? true
                          :data     (status/encode-transfer to-norm amount-hex)})}))
-      {:db            db
+      {:db db
        :json-rpc/call
        [{:method      "wakuext_requestAddressForTransaction"
          :params      [(:current-chat-id db)

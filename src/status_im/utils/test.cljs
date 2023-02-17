@@ -35,11 +35,11 @@
     (fn [json callback]
       (callback (.multiAccountStoreDerivedAccounts native-status json)))
 
-    :clearCookies                           identity
+    :clearCookies identity
 
-    :clearStorageAPIs                       identity
+    :clearStorageAPIs identity
 
-    :setBlankPreviewFlag                    identity
+    :setBlankPreviewFlag identity
 
     :callPrivateRPC
     (fn [payload callback]
@@ -125,4 +125,4 @@
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
 
-    :startLocalNotifications                identity}))
+    :startLocalNotifications identity}))

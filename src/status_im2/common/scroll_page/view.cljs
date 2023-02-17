@@ -21,10 +21,10 @@
 (defn diff-with-max-min
   [value maximum minimum]
   (->>
-   (+ value scroll-position-0)
-   (- maximum)
-   (max minimum)
-   (min maximum)))
+    (+ value scroll-position-0)
+    (- maximum)
+    (max minimum)
+    (min maximum)))
 
 (defn scroll-page-header
   [scroll-height

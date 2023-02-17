@@ -1,36 +1,36 @@
 (ns status-im.wallet.core
   (:require
-   [clojure.set :as set]
-   [clojure.string :as string]
-   [re-frame.core :as re-frame]
-   [status-im.async-storage.core :as async-storage]
-   [status-im2.common.bottom-sheet.events :as bottom-sheet]
-   [status-im.contact.db :as contact.db]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.ens :as ens]
-   [status-im.ethereum.stateofus :as stateofus]
-   [status-im.ethereum.tokens :as tokens]
-   [utils.i18n :as i18n]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.popover.core :as popover.core]
-   [status-im.qr-scanner.core :as qr-scaner]
-   [status-im.signing.eip1559 :as eip1559]
-   [status-im.signing.gas :as signing.gas]
-   [status-im2.config :as config]
-   [status-im.utils.core :as utils.core]
-   [utils.re-frame :as rf]
-   [utils.datetime :as datetime]
-   [status-im.utils.mobile-sync :as mobile-network-utils]
-   [status-im.utils.money :as money]
-   [status-im.utils.utils :as utils.utils]
-   [status-im.wallet.db :as wallet.db]
-   [status-im.wallet.prices :as prices]
-   status-im.wallet.recipient.core
-   [status-im.wallet.utils :as wallet.utils]
-   [status-im2.common.json-rpc.events :as json-rpc]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]))
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.async-storage.core :as async-storage]
+    [status-im2.common.bottom-sheet.events :as bottom-sheet]
+    [status-im.contact.db :as contact.db]
+    [status-im.ethereum.core :as ethereum]
+    [status-im.ethereum.eip55 :as eip55]
+    [status-im.ethereum.ens :as ens]
+    [status-im.ethereum.stateofus :as stateofus]
+    [status-im.ethereum.tokens :as tokens]
+    [utils.i18n :as i18n]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.popover.core :as popover.core]
+    [status-im.qr-scanner.core :as qr-scaner]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im.signing.gas :as signing.gas]
+    [status-im2.config :as config]
+    [status-im.utils.core :as utils.core]
+    [utils.re-frame :as rf]
+    [utils.datetime :as datetime]
+    [status-im.utils.mobile-sync :as mobile-network-utils]
+    [status-im.utils.money :as money]
+    [status-im.utils.utils :as utils.utils]
+    [status-im.wallet.db :as wallet.db]
+    [status-im.wallet.prices :as prices]
+    status-im.wallet.recipient.core
+    [status-im.wallet.utils :as wallet.utils]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -125,8 +125,8 @@
 (defn get-token-balances
   [{:keys [addresses tokens scan-all-tokens? assets]}]
   (json-rpc/call
-   {:method            "wallet_getTokensBalances"
-    :params            [addresses (keys tokens)]
+   {:method "wallet_getTokensBalances"
+    :params [addresses (keys tokens)]
     :number-of-retries 50
     :on-success
     (fn [results]
@@ -450,13 +450,13 @@
 (rf/defn accept-request-transaction-button-clicked-from-command
   {:events [:wallet.ui/accept-request-transaction-button-clicked-from-command]}
   [{:keys [db]} chat-id {:keys [value contract] :as request-parameters}]
-  (let [identity                  (:current-chat-id db)
-        all-tokens                (:wallet/all-tokens db)
+  (let [identity (:current-chat-id db)
+        all-tokens (:wallet/all-tokens db)
         {:keys [symbol decimals]}
         (if (seq contract)
           (get all-tokens contract)
           (tokens/native-currency (ethereum/get-current-network db)))
-        amount-text               (str (money/internal->formatted value symbol decimals))]
+        amount-text (str (money/internal->formatted value symbol decimals))]
     {:db       (assoc db
                       :wallet/prepare-transaction
                       {:from               (ethereum/get-default-account (:multiaccount/accounts db))
@@ -499,13 +499,13 @@
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id       (get-in (ethereum/current-network db)
-                                                        [:config :NetworkId])}})
+                              :network-id (get-in (ethereum/current-network db)
+                                                  [:config :NetworkId])}})
 
 (rf/defn prepare-transaction-from-chat
   {:events [:wallet/prepare-transaction-from-chat]}
   [{:keys [db]}]
-  (let [identity                                (:current-chat-id db)
+  (let [identity (:current-chat-id db)
         {:keys [ens-verified name] :as contact}
         (or (get-in db [:contacts/contacts identity])
             (-> identity
@@ -557,8 +557,8 @@
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id       (get-in (ethereum/current-network db)
-                                                        [:config :NetworkId])}})
+                              :network-id (get-in (ethereum/current-network db)
+                                                  [:config :NetworkId])}})
 
 (rf/defn cancel-transaction-command
   {:events [:wallet/cancel-transaction-command]}
@@ -695,8 +695,8 @@
   [{:keys [db] :as cofx}]
   (log/info "[wallet] after-checking-history")
   {:db (dissoc db
-               :wallet/recent-history-fetching-started?
-               :wallet/refreshing-history?)})
+        :wallet/recent-history-fetching-started?
+        :wallet/refreshing-history?)})
 
 (defn set-timeout
   [db]
@@ -713,14 +713,14 @@
         timeout     (if force-restart?
                       old-timeout
                       (set-timeout db))]
-    {:db                          (-> db
-                                      (assoc :wallet-service/restart-timeout    timeout
-                                             :wallet-service/custom-interval    (get-next-custom-interval
-                                                                                 db)
-                                             :wallet/was-started?               true
-                                             :wallet/on-recent-history-fetching
-                                             on-recent-history-fetching))
-     ::check-recent-history       addresses
+    {:db (-> db
+             (assoc :wallet-service/restart-timeout timeout
+                    :wallet-service/custom-interval (get-next-custom-interval
+                                                     db)
+                    :wallet/was-started? true
+                    :wallet/on-recent-history-fetching
+                    on-recent-history-fetching))
+     ::check-recent-history addresses
      ::utils.utils/clear-timeouts
      [(when (not= timeout old-timeout) old-timeout)]}))
 

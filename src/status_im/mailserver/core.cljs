@@ -281,10 +281,10 @@
                         (:value name)
                         (:value url))
             current    (connected? db (:id mailserver))]
-        {:db            (-> db
-                            (dissoc :mailserver.edit/mailserver)
-                            (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
-                                      mailserver))
+        {:db (-> db
+                 (dissoc :mailserver.edit/mailserver)
+                 (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
+                           mailserver))
          :json-rpc/call
          [{:method     "mailservers_addMailserver"
            :params     [(mailserver->rpc mailserver current-fleet)]
@@ -296,7 +296,7 @@
                             [:multiaccounts.logout.ui/logout-confirmed]))
                          (log/debug "saved mailserver" id "successfuly"))
            :on-failure #(log/error "failed to save mailserver" id %)}]
-         :dispatch      [:navigate-back]}))))
+         :dispatch [:navigate-back]}))))
 
 (defn can-delete?
   [db id]
@@ -307,18 +307,18 @@
   {:events [:mailserver.ui/delete-confirmed]}
   [{:keys [db] :as cofx} id]
   (if (can-delete? db id)
-    {:db            (-> db
-                        (update-in
-                         [:mailserver/mailservers (node/current-fleet-key db)]
-                         dissoc
-                         id)
-                        (dissoc :mailserver.edit/mailserver))
+    {:db (-> db
+             (update-in
+              [:mailserver/mailservers (node/current-fleet-key db)]
+              dissoc
+              id)
+             (dissoc :mailserver.edit/mailserver))
      :json-rpc/call
      [{:method     "mailservers_deleteMailserver"
        :params     [(name id)]
        :on-success #(log/debug "deleted mailserver" id)
        :on-failure #(log/error "failed to delete mailserver" id %)}]
-     :dispatch      [:navigate-back]}
+     :dispatch [:navigate-back]}
     {:dispatch [:navigate-back]}))
 
 (rf/defn show-connection-confirmation
@@ -326,7 +326,7 @@
   [{:keys [db]} mailserver-id]
   (let [current-fleet (node/current-fleet-key db)]
     {:ui/show-confirmation
-     {:title               (i18n/label :t/close-app-title)
+     {:title (i18n/label :t/close-app-title)
       :content
       (i18n/label :t/connect-mailserver-content
                   {:name (get-in db
@@ -336,7 +336,7 @@
       :on-accept
       #(re-frame/dispatch
         [:mailserver.ui/connect-confirmed current-fleet mailserver-id])
-      :on-cancel           nil}}))
+      :on-cancel nil}}))
 
 (rf/defn show-delete-confirmation
   {:events [:mailserver.ui/delete-pressed]}

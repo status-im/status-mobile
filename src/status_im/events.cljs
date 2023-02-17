@@ -1,64 +1,64 @@
 (ns status-im.events
   (:require
-   clojure.set
-   [re-frame.core :as re-frame]
-   [status-im.async-storage.core :as async-storage]
-   status-im.backup.core
-   status-im.bootnodes.core
-   status-im.browser.core
-   status-im.browser.permissions
-   status-im.chat.models
-   status-im.chat.models.images
-   status-im.chat.models.input
-   status-im.chat.models.loading
-   status-im.chat.models.transport
-   [status-im2.constants :as constants]
-   status-im.contact.block
-   status-im.contact.chat
-   status-im.contact.core
-   status-im.currency.core
-   status-im.ethereum.subscriptions
-   status-im.fleet.core
-   status-im.http.core
-   [utils.i18n :as i18n]
-   [status-im.keycard.core :as keycard]
-   status-im.log-level.core
-   status-im.mailserver.constants
-   [status-im.mailserver.core :as mailserver]
-   [status-im.multiaccounts.biometric.core :as biometric]
-   status-im.multiaccounts.login.core
-   status-im.multiaccounts.logout.core
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   status-im.multiaccounts.update.core
-   [status-im.native-module.core :as status]
-   status-im.network.net-info
-   status-im.pairing.core
-   status-im.profile.core
-   status-im.search.core
-   status-im.signals.core
-   status-im.stickers.core
-   status-im.transport.core
-   [status-im.ui.components.permissions :as permissions]
-   [status-im.ui.components.react :as react]
-   status-im.ui.screens.privacy-and-security-settings.events
-   [status-im.utils.dimensions :as dimensions]
-   [utils.re-frame :as rf]
-   status-im.utils.logging.core
-   [status-im.utils.universal-links.core :as universal-links]
-   [status-im.utils.utils :as utils]
-   status-im.visibility-status-popover.core
-   status-im.visibility-status-updates.core
-   status-im.waku.core
-   status-im.wallet-connect-legacy.core
-   status-im.wallet-connect.core
-   status-im.wallet.accounts.core
-   status-im.wallet.choose-recipient.core
-   [status-im.wallet.core :as wallet]
-   status-im.wallet.custom-tokens.core
-   status-im2.contexts.activity-center.events
-   status-im2.contexts.shell.events
-   status-im.chat.models.gaps
-   [status-im2.navigation.events :as navigation]))
+    clojure.set
+    [re-frame.core :as re-frame]
+    [status-im.async-storage.core :as async-storage]
+    status-im.backup.core
+    status-im.bootnodes.core
+    status-im.browser.core
+    status-im.browser.permissions
+    status-im.chat.models
+    status-im.chat.models.images
+    status-im.chat.models.input
+    status-im.chat.models.loading
+    status-im.chat.models.transport
+    [status-im2.constants :as constants]
+    status-im.contact.block
+    status-im.contact.chat
+    status-im.contact.core
+    status-im.currency.core
+    status-im.ethereum.subscriptions
+    status-im.fleet.core
+    status-im.http.core
+    [utils.i18n :as i18n]
+    [status-im.keycard.core :as keycard]
+    status-im.log-level.core
+    status-im.mailserver.constants
+    [status-im.mailserver.core :as mailserver]
+    [status-im.multiaccounts.biometric.core :as biometric]
+    status-im.multiaccounts.login.core
+    status-im.multiaccounts.logout.core
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    status-im.multiaccounts.update.core
+    [status-im.native-module.core :as status]
+    status-im.network.net-info
+    status-im.pairing.core
+    status-im.profile.core
+    status-im.search.core
+    status-im.signals.core
+    status-im.stickers.core
+    status-im.transport.core
+    [status-im.ui.components.permissions :as permissions]
+    [status-im.ui.components.react :as react]
+    status-im.ui.screens.privacy-and-security-settings.events
+    [status-im.utils.dimensions :as dimensions]
+    [utils.re-frame :as rf]
+    status-im.utils.logging.core
+    [status-im.utils.universal-links.core :as universal-links]
+    [status-im.utils.utils :as utils]
+    status-im.visibility-status-popover.core
+    status-im.visibility-status-updates.core
+    status-im.waku.core
+    status-im.wallet-connect-legacy.core
+    status-im.wallet-connect.core
+    status-im.wallet.accounts.core
+    status-im.wallet.choose-recipient.core
+    [status-im.wallet.core :as wallet]
+    status-im.wallet.custom-tokens.core
+    status-im2.contexts.activity-center.events
+    status-im2.contexts.shell.events
+    status-im.chat.models.gaps
+    [status-im2.navigation.events :as navigation]))
 
 (re-frame/reg-fx
  :dismiss-keyboard

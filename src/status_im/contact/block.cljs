@@ -43,11 +43,11 @@
                    (types/js->clj chats)))]
     (apply rf/merge
            cofx
-           {:db                          (-> db
-                                             (update :chats dissoc public-key)
-                                             (update :chats-home-list disj public-key)
-                                             (assoc-in [:contacts/contacts public-key :added] false))
-            :dispatch                    [:shell/close-switcher-card public-key]
+           {:db (-> db
+                    (update :chats dissoc public-key)
+                    (update :chats-home-list disj public-key)
+                    (assoc-in [:contacts/contacts public-key :added] false))
+            :dispatch [:shell/close-switcher-card public-key]
             :clear-message-notifications
             [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
            (activity-center/notifications-fetch-unread-count)

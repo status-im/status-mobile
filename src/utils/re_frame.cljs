@@ -68,8 +68,8 @@
   (when js/goog.DEBUG
     (swap! handler-nesting-level inc))
   (let [[first-arg & rest-args] args
-        initial-fxs?            (map? first-arg)
-        fx-fns                  (if initial-fxs? rest-args args)
+        initial-fxs? (map? first-arg)
+        fx-fns (if initial-fxs? rest-args args)
         res
         (clojure.core/reduce (fn [fxs fx-fn]
                                (let [updated-cofx (update-db cofx fxs)]

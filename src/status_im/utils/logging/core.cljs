@@ -29,9 +29,9 @@
   "logs attached"
   [{:keys [:web3-node-version :mailserver/current-id
            :node-info :peers-summary :bug-report/details]}]
-  (let [build-number               build/build-no
-        build-version              (str build/version " (" build-number ")")
-        separator                  (string/join (take 40 (repeat "-")))
+  (let [build-number build/build-no
+        build-version (str build/version " (" build-number ")")
+        separator (string/join (take 40 (repeat "-")))
         [enode-id ip-address port]
         (transport.utils/extract-url-components (:enode node-info))]
     (string/join
@@ -142,7 +142,7 @@
   {:events [:shake-event]}
   [{:keys [db]}]
   (when-not (:logging/dialog-shown? db)
-    {:db                      (assoc db :logging/dialog-shown? true)
+    {:db (assoc db :logging/dialog-shown? true)
      :utils/show-confirmation
      (cond-> {:title               (i18n/label :t/send-logs)
               :content             (i18n/label :t/send-logs-to
@@ -221,11 +221,11 @@
   (let [{:keys [steps description]}
         (get db :bug-report/details)
 
-        title                       (or description (i18n/label :t/bug-report-description-placeholder))
-        body                        (str title
-                                         "\n\n"
-                                         (or steps (i18n/label :t/bug-report-steps-placeholder)))
-        url                         (gstring/format gh-issue-url (js/escape title) (js/escape body))]
+        title (or description (i18n/label :t/bug-report-description-placeholder))
+        body (str title
+                  "\n\n"
+                  (or steps (i18n/label :t/bug-report-steps-placeholder)))
+        url (gstring/format gh-issue-url (js/escape title) (js/escape body))]
     {::open-url url}))
 
 (rf/defn submit-gh-issue

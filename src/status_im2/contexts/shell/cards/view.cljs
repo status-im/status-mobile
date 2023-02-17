@@ -25,7 +25,7 @@
                               :size           :small
                               :override-theme :dark
                               :label          (i18n/label :t/kicked)}]
-       (:count :permission) [:<>]  ;; Add components for these cases
+       (:count :permission) [:<>] ;; Add components for these cases
 
        nil)
 

@@ -131,5 +131,5 @@
     (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
 
 (defonce selectable-text-input
-         (reagent/adapt-react-class
-          (.requireNativeComponent ^js react-native "RNSelectableTextInput")))
+  (reagent/adapt-react-class
+   (.requireNativeComponent ^js react-native "RNSelectableTextInput")))

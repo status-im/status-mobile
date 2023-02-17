@@ -175,11 +175,11 @@
                                             (update :wallet-connect-legacy/sessions
                                                     conj
                                                     session))
-     :json-rpc/call                     [{:method     "wakuext_addWalletConnectSession"
-                                          :params     [{:id       peer-id
-                                                        :info     info
-                                                        :dappName dapp-name
-                                                        :dappUrl  dapp-url}]
+     :json-rpc/call                     [{:method "wakuext_addWalletConnectSession"
+                                          :params [{:id       peer-id
+                                                    :info     info
+                                                    :dappName dapp-name
+                                                    :dappUrl  dapp-url}]
                                           :on-success
                                           #(log/info
                                             "wakuext_addWalletConnectSession success call back , data =>"
@@ -271,14 +271,14 @@
         connector (:connector session)
         peer-id   (get-in session [:params 0 :peerId])]
     {:hide-wallet-connect-app-management-sheet nil
-     :hide-wallet-connect-success-sheet        nil
-     :wc-1-kill-session                        connector
-     :db                                       (-> db
-                                                   (assoc :wallet-connect-legacy/sessions
-                                                          (filter #(not= (:connector %) connector)
-                                                                  sessions))
-                                                   (dissoc :wallet-connect/session-managed)
-                                                   (dissoc :wallet-connect/session-connected))
+     :hide-wallet-connect-success-sheet nil
+     :wc-1-kill-session connector
+     :db (-> db
+             (assoc :wallet-connect-legacy/sessions
+                    (filter #(not= (:connector %) connector)
+                            sessions))
+             (dissoc :wallet-connect/session-managed)
+             (dissoc :wallet-connect/session-connected))
      :json-rpc/call
      [{:method     "wakuext_destroyWalletConnectSession"
        :params     [peer-id]
@@ -334,8 +334,10 @@
                                       (not (vector? params)))
                                  ;; We don't use signer argument for keycard sign-typed-data
                                  ["0x0" params]
-                                 message? (browser/normalize-sign-message-params params typed?)
-                                 :else [nil nil])]
+                                 message?                     (browser/normalize-sign-message-params
+                                                               params
+                                                               typed?)
+                                 :else                        [nil nil])]
         (when (or (not message?) (and address data))
           (signing/sign
            cofx

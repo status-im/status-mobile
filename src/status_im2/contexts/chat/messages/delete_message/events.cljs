@@ -1,11 +1,11 @@
 (ns status-im2.contexts.chat.messages.delete-message.events
   (:require
-   [quo2.foundations.colors :as colors]
-   [status-im2.contexts.chat.messages.list.events :as message-list]
-   [taoensso.timbre :as log]
-   [utils.datetime :as datetime]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- update-db-clear-undo-timer
   [db chat-id message-id]
@@ -76,18 +76,18 @@
     ;; new delete operation will reset prev pending deletes' undo timelimit
     ;; undo will undo all pending deletes
     ;; all pending deletes are stored in toast
-    (let [unpin?              (should-and-able-to-unpin-to-be-deleted-message
-                               db
-                               {:chat-id chat-id :message-id message-id})
+    (let [unpin? (should-and-able-to-unpin-to-be-deleted-message
+                  db
+                  {:chat-id chat-id :message-id message-id})
 
-          pub-key             (get-in db [:multiaccount :public-key])
+          pub-key (get-in db [:multiaccount :public-key])
 
           ;; compute deleted by
-          message-from        (get message :from)
-          deleted-by          (when (not= pub-key message-from) pub-key)
+          message-from (get message :from)
+          deleted-by (when (not= pub-key message-from) pub-key)
 
           existing-undo-toast (get-in db [:toasts :toasts :delete-message-for-everyone])
-          toast-count         (inc (get existing-undo-toast :message-deleted-for-everyone-count 0))
+          toast-count (inc (get existing-undo-toast :message-deleted-for-everyone-count 0))
           existing-undos
           (-> existing-undo-toast
               (get :message-deleted-for-everyone-undos [])

@@ -17,7 +17,7 @@
 (defn toolbar
   []
   [topbar/topbar
-   {:title      (i18n/label :t/wallet-assets)
+   {:title (i18n/label :t/wallet-assets)
     :navigation
     {:on-press #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
 
@@ -99,20 +99,20 @@
        {:header
         [react/view {:margin-top 16}
          [quo/list-item
-          {:theme    :accent
-           :title    (i18n/label :t/add-custom-token)
-           :icon     :main-icons/add
+          {:theme :accent
+           :title (i18n/label :t/add-custom-token)
+           :icon :main-icons/add
            :on-press
            #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
-        :sections                    (concat
-                                      (when (seq custom-tokens)
-                                        [{:title (i18n/label :t/custom)
-                                          :data  custom-tokens}])
-                                      [{:title (i18n/label :t/default-assets)
-                                        :data  default-tokens}])
-        :key-fn                      :address
+        :sections (concat
+                   (when (seq custom-tokens)
+                     [{:title (i18n/label :t/custom)
+                       :data  custom-tokens}])
+                   [{:title (i18n/label :t/default-assets)
+                     :data  default-tokens}])
+        :key-fn :address
         :stickySectionHeadersEnabled false
         :render-section-header-fn
         (fn [{:keys [title]}]
           [quo/list-header title])
-        :render-fn                   render-token-wrapper}]]]))
+        :render-fn render-token-wrapper}]]]))

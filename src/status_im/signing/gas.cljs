@@ -190,7 +190,7 @@
              (assoc-in [:signing/edit-fee :selected-fee-option] option)
              (update :signing/edit-fee
                      build-edit
-                     :maxFeePerGas     (money/wei->gwei fee))
+                     :maxFeePerGas (money/wei->gwei fee))
              (update :signing/edit-fee
                      build-edit
                      :maxPriorityFeePerGas (money/wei->gwei tip)))}))
@@ -200,12 +200,12 @@
   [{:keys [db]} value]
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]}
         (get db :signing/edit-fee)
-        latest-base-fee                             (get db :wallet/current-base-fee)
-        max-fee-value                               (:value-number maxFeePerGas)
-        max-priority-fee-value                      (:value-number maxPriorityFeePerGas)
-        new-value                                   (money/bignumber value)
-        fee-without-tip                             (money/sub max-fee-value max-priority-fee-value)
-        base-fee                                    (money/wei->gwei (money/bignumber latest-base-fee))
+        latest-base-fee (get db :wallet/current-base-fee)
+        max-fee-value (:value-number maxFeePerGas)
+        max-priority-fee-value (:value-number maxPriorityFeePerGas)
+        new-value (money/bignumber value)
+        fee-without-tip (money/sub max-fee-value max-priority-fee-value)
+        base-fee (money/wei->gwei (money/bignumber latest-base-fee))
         new-max-fee-value
         (money/to-fixed
          (if (money/greater-than base-fee fee-without-tip)

@@ -57,11 +57,11 @@
                   :margin-right (get-value-from-size size 8 6)}
                  token-img-style)}]
       [text/text
-       {:weight          :medium
+       {:weight :medium
         :number-of-lines 1
         :style
         {:margin-right (get-value-from-size size 12 11)}
-        :size            (get-value-from-size size :paragraph-2 :label)} label]
+        :size (get-value-from-size size :paragraph-2 :label)} label]
       overlay]]))
 
 (defn token-tag
@@ -82,9 +82,9 @@
         {size :small border-color (colors/custom-color-by-theme :purple 50 60)}}]
 
     [tag
-     {:size          size
+     {:size size
       :token-img-src token-img-src
-      :border-color  (when is-required border-color)
+      :border-color (when is-required border-color)
       :overlay
       (when (or is-required is-purchasable)
         [rn/view

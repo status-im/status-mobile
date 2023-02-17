@@ -36,11 +36,11 @@
                {:messages-initialized? true
                 :cursor
                 "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000"
-                :cursor-clock-value    9}}}}
+                :cursor-clock-value 9}}}}
             (dissoc (message/receive-many
                      cofx
                      #js {:messages (to-array [message])})
-                    :utils/dispatch-later)))))
+             :utils/dispatch-later)))))
       ;; <- cursor
       ;; <- first-hidden-item
       ;; <- message
@@ -56,11 +56,11 @@
                {:messages-initialized? true
                 :cursor
                 "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000"
-                :cursor-clock-value    9}}}}
+                :cursor-clock-value 9}}}}
             (dissoc (message/receive-many
                      cofx
                      #js {:messages (to-array [message])})
-                    :utils/dispatch-later)))))
+             :utils/dispatch-later)))))
       ;; <- cursor
       ;; <- message
       ;; <- first-hidden-item
@@ -70,7 +70,7 @@
           (let [result (dissoc (message/receive-many
                                 cofx
                                 #js {:messages (to-array [message])})
-                               :utils/dispatch-later)]
+                        :utils/dispatch-later)]
             (testing "it sets all-loaded? to false"
               (is (not (get-in result [:db :pagination-info chat-id :all-loaded?]))))
             (testing "it updates cursor-clock-value & cursor"
@@ -89,7 +89,7 @@
                                            :cursor
                                            :cursor-clock-value)
                                 #js {:messages (to-array [message])})
-                               :utils/dispatch-later)]
+                        :utils/dispatch-later)]
             (testing "it sets all-loaded? to false"
               (is (not (get-in result [:db :pagination-info chat-id :all-loaded?]))))
             (testing "it updates cursor-clock-value & cursor"
@@ -112,7 +112,7 @@
                 result  (dissoc (message/receive-many
                                  cofx
                                  #js {:messages (to-array [message])})
-                                :utils/dispatch-later)]
+                         :utils/dispatch-later)]
             (testing "it sets all-loaded? to false"
               (is (not (get-in result [:db :pagination-info chat-id :all-loaded?]))))
             (testing "it does not update cursor-clock-value & cursor"

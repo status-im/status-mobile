@@ -177,48 +177,48 @@
     (fn [chat-id insets]
       [:f>
        (fn []
-         (let [reply                                    (rf/sub [:chats/reply-message])
-               edit                                     (rf/sub [:chats/edit-message])
-               suggestions                              (rf/sub [:chat/mention-suggestions])
-               images                                   (rf/sub [:chats/sending-image])
+         (let [reply (rf/sub [:chats/reply-message])
+               edit (rf/sub [:chats/edit-message])
+               suggestions (rf/sub [:chat/mention-suggestions])
+               images (rf/sub [:chats/sending-image])
 
-               {window-height :height}                  (rn/use-window-dimensions)
+               {window-height :height} (rn/use-window-dimensions)
                {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-               translate-y                              (reanimated/use-shared-value 0)
-               bg-opacity                               (reanimated/use-shared-value 0)
-               bg-bottom                                (reanimated/use-shared-value (- window-height))
+               translate-y (reanimated/use-shared-value 0)
+               bg-opacity (reanimated/use-shared-value 0)
+               bg-bottom (reanimated/use-shared-value (- window-height))
 
-               suggestions?                             (and (seq suggestions)
-                                                             keyboard-shown
-                                                             (not @keyboard-hiding?))
+               suggestions? (and (seq suggestions)
+                                 keyboard-shown
+                                 (not @keyboard-hiding?))
 
-               max-y                                    (- window-height
-                                                           (- (if (> keyboard-height 0)
-                                                                keyboard-height
-                                                                360)
-                                                              (:bottom insets))
-                                                           46)
+               max-y (- window-height
+                        (- (if (> keyboard-height 0)
+                             keyboard-height
+                             360)
+                           (:bottom insets))
+                        46)
 
-               min-y                                    (+ 108
-                                                           (:bottom insets)
-                                                           (if suggestions?
-                                                             (min (/ max-y 2)
-                                                                  (+ 16
-                                                                     (* 46 (dec (count suggestions)))))
-                                                             (+ 0
-                                                                (when (or edit reply) 38)
-                                                                (when (seq images) 80))))
+               min-y (+ 108
+                        (:bottom insets)
+                        (if suggestions?
+                          (min (/ max-y 2)
+                               (+ 16
+                                  (* 46 (dec (count suggestions)))))
+                          (+ 0
+                             (when (or edit reply) 38)
+                             (when (seq images) 80))))
 
-               parent-height                            (reanimated/use-shared-value min-y)
-               max-parent-height                        (Math/abs (- max-y 110 (:bottom insets)))
+               parent-height (reanimated/use-shared-value min-y)
+               max-parent-height (Math/abs (- max-y 110 (:bottom insets)))
 
                params
                (prepare-params
                 [refs window-height translate-y bg-opacity bg-bottom min-y max-y parent-height
                  max-parent-height chat-id suggestions reply edit images keyboard-shown])
 
-               input-content-change                     (get-input-content-change params)
-               bottom-sheet-gesture                     (get-bottom-sheet-gesture params)]
+               input-content-change (get-input-content-change params)
+               bottom-sheet-gesture (get-bottom-sheet-gesture params)]
            (effect! params)
            [reanimated/view
             {:style (reanimated/apply-animations-to-style

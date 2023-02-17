@@ -277,7 +277,7 @@
   (rf/merge cofx
             {:clear-message-notifications
              [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]
-             :dispatch                    [:shell/close-switcher-card chat-id]}
+             :dispatch [:shell/close-switcher-card chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 

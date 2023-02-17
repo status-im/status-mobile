@@ -40,11 +40,11 @@
   [{:keys [db] :as cofx} masked-password]
   (log/info "[delete-profile] delete")
   (let [{:keys [key-uid wallet-root-address]} (:multiaccount db)]
-    {:db              (dissoc db :delete-profile/error)
+    {:db (dissoc db :delete-profile/error)
      ::delete-profile
      {:masked-password masked-password
-      :key-uid         key-uid
-      :address         wallet-root-address
+      :key-uid key-uid
+      :address wallet-root-address
       :callback
       (fn [error result]
         (log/info "[delete-profile] callback" error)

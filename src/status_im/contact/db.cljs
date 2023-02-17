@@ -66,10 +66,10 @@
 (defn get-all-contacts-in-group-chat
   [members admins contacts {:keys [public-key] :as current-account}]
   (let [current-contact (some->
-                         current-account
-                         (select-keys [:name :preferred-name :public-key :identicon :images])
-                         (set/rename-keys {:name           :alias
-                                           :preferred-name :name}))
+                          current-account
+                          (select-keys [:name :preferred-name :public-key :identicon :images])
+                          (set/rename-keys {:name           :alias
+                                            :preferred-name :name}))
         all-contacts    (cond-> contacts
                           current-contact
                           (assoc public-key current-contact))]

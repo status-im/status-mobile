@@ -247,8 +247,10 @@
                                       (not (vector? params)))
                                  ;; We don't use signer argument for keycard sign-typed-data
                                  ["0x0" params]
-                                 message? (browser/normalize-sign-message-params params typed?)
-                                 :else [nil nil])]
+                                 message?                     (browser/normalize-sign-message-params
+                                                               params
+                                                               typed?)
+                                 :else                        [nil nil])]
         (when (or (not message?) (and address data))
           (signing/sign cofx
                         (merge

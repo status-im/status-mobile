@@ -26,7 +26,7 @@
 
 (defn check-lag
   []
-  (let [latest-block      (reagent/atom nil)
+  (let [latest-block (reagent/atom nil)
         last-loaded-block (reagent/atom nil)
         on-press
         (fn []

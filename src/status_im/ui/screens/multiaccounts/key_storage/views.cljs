@@ -26,15 +26,15 @@
           (when action {:navigation {:on-press #(re-frame/dispatch [action])}}))])
 
 (defonce accordian-data
-         [{:id    :type
-           :label (i18n/label :t/type)
-           :value (i18n/label :t/master-account)}
-          {:id    :back-up
-           :label (i18n/label :t/back-up)
-           :value (i18n/label :t/recovery-phrase)}
-          {:id    :storage
-           :label (i18n/label :t/storage)
-           :value (i18n/label :t/key-on-device)}])
+  [{:id    :type
+    :label (i18n/label :t/type)
+    :value (i18n/label :t/master-account)}
+   {:id    :back-up
+    :label (i18n/label :t/back-up)
+    :value (i18n/label :t/recovery-phrase)}
+   {:id    :storage
+    :label (i18n/label :t/storage)
+    :value (i18n/label :t/key-on-device)}])
 
 (defn accordion-content
   []

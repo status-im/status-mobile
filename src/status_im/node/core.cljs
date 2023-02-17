@@ -139,8 +139,8 @@
       current-fleet
       (assoc :NoDiscovery   wakuv2-enabled
              :Rendezvous    (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
-             :ClusterConfig {:Enabled              true
-                             :Fleet                (name current-fleet-key)
+             :ClusterConfig {:Enabled true
+                             :Fleet (name current-fleet-key)
                              :DiscV5BootstrapNodes
                              (if wakuv2-enabled
                                waku-nodes
@@ -155,22 +155,22 @@
                                (into (pick-nodes 2
                                                  (vals (:whisper current-fleet)))
                                      (vals (:static current-fleet))))
-                             :RendezvousNodes      (if wakuv2-enabled [] rendezvous-nodes)
-                             :WakuNodes            (or waku-nodes [])})
+                             :RendezvousNodes (if wakuv2-enabled [] rendezvous-nodes)
+                             :WakuNodes (or waku-nodes [])})
 
       :always
       (assoc :LocalNotificationsConfig {:Enabled true}
-             :BrowsersConfig           {:Enabled true}
-             :PermissionsConfig        {:Enabled true}
-             :MailserversConfig        {:Enabled true}
-             :EnableNTPSync            true
+             :BrowsersConfig {:Enabled true}
+             :PermissionsConfig {:Enabled true}
+             :MailserversConfig {:Enabled true}
+             :EnableNTPSync true
              :WakuConfig
              {:Enabled         true
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient     true
               :MinimumPoW      0.000001}
-             :WakuV2Config             (merge (assoc wakuv2-config :Enabled wakuv2-enabled)
-                                              wakuv2-default-config)
+             :WakuV2Config (merge (assoc wakuv2-config :Enabled wakuv2-enabled)
+                                  wakuv2-default-config)
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id
@@ -182,8 +182,8 @@
               :VerifyTransactionChainID   config/verify-transaction-chain-id
               :DataSyncEnabled            true
               :PFSEnabled                 true}
-             :RequireTopics            (get-topics current-network)
-             :StatusAccountsConfig     {:Enabled true})
+             :RequireTopics (get-topics current-network)
+             :StatusAccountsConfig {:Enabled true})
 
       (and
        config/bootnodes-settings-enabled?

@@ -256,7 +256,7 @@
                     (if (= state :pressed)
                       (colors/theme-colors colors/neutral-100 colors/white)
                       :transparent)
-                    :width            width}
+                    :width width}
                    style)}
           [rn/view
            {:style (merge

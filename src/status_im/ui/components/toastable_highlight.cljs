@@ -105,7 +105,7 @@
                           (when on-press
                             (on-press)))]
           [react/view
-           {:style     (if container-style container-style {})
+           {:style (if container-style container-style {})
             :on-layout
             #(do
                (reset! width (-> ^js % .-nativeEvent .-layout .-width))
