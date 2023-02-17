@@ -68,7 +68,8 @@
 (defn displayed-name
   "Use preferred name, display-name, name or alias in that order"
   [{:keys [name display-name preferred-name alias public-key ens-verified]}]
-  (let [ens-name (or preferred-name
+  (let [display-name (if (string/blank? display-name) nil display-name)
+        ens-name (or preferred-name
                      display-name
                      name)]
     ;; Preferred name is our own otherwise we make sure it's verified
