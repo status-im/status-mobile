@@ -427,7 +427,7 @@
             (navigation/navigate-to :community-create nil)))
 
 (rf/defn open-edit-community
-  {:events [::open-edit-community]}
+  {:events [::open-edit-community :communities/open-edit-community]}
   [{:keys [db] :as cofx} id]
   (let [{:keys [name description images permissions color]} (get-in db [:communities id])
         {:keys [access]}                                    permissions]
