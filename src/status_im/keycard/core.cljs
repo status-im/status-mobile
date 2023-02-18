@@ -297,7 +297,7 @@
       (let [puk     (common/vector->string (get-in db [:keycard :pin :puk]))
             pin     (common/vector->string (get-in db [:keycard :pin :reset]))
             key-uid (get-in db [:keycard :application-info :key-uid])]
-        {:db                  (assoc-in db [:keycard :pin :status] :verifying)
+        {:db (assoc-in db [:keycard :pin :status] :verifying)
          :keycard/unblock-pin
          {:puk     puk
           :new-pin pin}}))}))

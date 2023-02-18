@@ -111,7 +111,7 @@
          [key-storage/keycard-upsell-banner]))
 
      [toolbar/toolbar
-      {:size   :large
+      {:size :large
        :center
        [react/view {:padding-horizontal 8}
         [quo/button

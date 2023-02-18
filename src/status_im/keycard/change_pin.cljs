@@ -73,7 +73,7 @@
       (onboarding/load-preparing-screen cofx)
       (common/show-connection-sheet
        cofx
-       {:sheet-options     {:on-cancel [::on-cancel]}
+       {:sheet-options {:on-cancel [::on-cancel]}
         :on-card-connected :keycard/change-pin
         :handler
         (fn [{:keys [db] :as cofx}]
@@ -83,7 +83,7 @@
                              (get-in db [:keycard :pin :current]))]
             (rf/merge
              cofx
-             {:db                 (assoc-in db [:keycard :pin :status] :verifying)
+             {:db (assoc-in db [:keycard :pin :status] :verifying)
 
               :keycard/change-pin
               {:new-pin     new-pin
@@ -94,7 +94,7 @@
   [{:keys [db] :as cofx}]
   (common/show-connection-sheet
    cofx
-   {:sheet-options     {:on-cancel [::on-cancel]}
+   {:sheet-options {:on-cancel [::on-cancel]}
     :on-card-connected :keycard/change-puk
     :handler
     (fn [{:keys [db] :as cofx}]
@@ -113,7 +113,7 @@
   [{:keys [db] :as cofx}]
   (common/show-connection-sheet
    cofx
-   {:sheet-options     {:on-cancel [::on-cancel]}
+   {:sheet-options {:on-cancel [::on-cancel]}
     :on-card-connected :keycard/change-pairing
     :handler
     (fn [{:keys [db] :as cofx}]

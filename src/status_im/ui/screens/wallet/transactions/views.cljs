@@ -147,10 +147,10 @@
          {:size      :large
           :animating true}]])
      [list/section-list
-      {:sections        transaction-history-sections
-       :key-fn          :hash
-       :render-data     {:keycard-account? keycard-account?}
-       :render-fn       render-transaction
+      {:sections transaction-history-sections
+       :key-fn :hash
+       :render-data {:keycard-account? keycard-account?}
+       :render-fn render-transaction
        :empty-component
        [react/i18n-text
         {:style styles/empty-text

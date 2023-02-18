@@ -80,12 +80,12 @@
                           "Group name and number of people is public"]}]]
           [rn/view {:margin-vertical 8}
            [quo/privacy-option
-            {:icon       :i/world
-             :header     "Sample card with very long text to test proper overflow behavior"
-             :on-select  #(swap! state assoc :selected :overflow)
-             :on-toggle  #(js/alert "card toggled")
-             :active?    (= :overflow (:selected @state))
-             :footer     "This footer is exceedingly long to test the overflowing behavior of text in it"
+            {:icon :i/world
+             :header "Sample card with very long text to test proper overflow behavior"
+             :on-select #(swap! state assoc :selected :overflow)
+             :on-toggle #(js/alert "card toggled")
+             :active? (= :overflow (:selected @state))
+             :footer "This footer is exceedingly long to test the overflowing behavior of text in it"
              :list-items
              ["A very, very very long text line that serves to test the overflow behavior of this component"]}]]]]))))
 

@@ -75,9 +75,9 @@
           :justify-content  :center}
          [quo2/button
           (merge (dissoc @state
-                         :theme
-                         :before
-                         :after)
+                  :theme
+                  :before
+                  :after)
                  {:on-press #(println "Hello world!")}
                  (when @above
                    {:above :i/placeholder})

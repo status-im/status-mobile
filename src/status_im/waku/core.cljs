@@ -56,8 +56,8 @@
                                          {:db (update db
                                                       :wakuv2-nodes/manage
                                                       assoc
-                                                      :new?                (nil? name)
-                                                      :id                  id)}
+                                                      :new? (nil? name)
+                                                      :id id)}
                                          (set-input :name name)
                                          (set-input :address address))]
     (assoc fxs :dispatch [:navigate-to :edit-wakuv2-node])))
@@ -93,12 +93,12 @@
   {:events [:wakuv2.ui/save-all-pressed]}
   [{:keys [db] :as cofx}]
   {:ui/show-confirmation
-   {:title               (i18n/label :t/close-app-title)
-    :content             (i18n/label :t/wakuv2-change-nodes)
+   {:title (i18n/label :t/close-app-title)
+    :content (i18n/label :t/wakuv2-change-nodes)
     :confirm-button-text (i18n/label :t/close-app-button)
     :on-accept
     #(re-frame/dispatch [:wakuv2.ui/save-all-confirmed])
-    :on-cancel           nil}})
+    :on-cancel nil}})
 
 (rf/defn save-all
   {:events [:wakuv2.ui/save-all-confirmed]}

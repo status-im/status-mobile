@@ -57,23 +57,24 @@
 
 (defn contact-list-item
   [item _ _ {:keys [start-a-new-chat? on-toggle group] :as extra-data}]
-  (let [{:keys [public-key compressed-key ens-verified added? images]} item
-        display-name (first
-                      (rf/sub
-                       [:contacts/contact-two-names-by-identity
-                        public-key]))
-        photo-path (when (seq images)
-                     (rf/sub [:chats/photo-path public-key]))
-        online? (rf/sub [:visibility-status-updates/online?
-                         public-key])
-        user-selected? (rf/sub [:is-contact-selected? public-key])
+  (let [{:keys [public-key compressed-key ens-verified
+                added? images]}   item
+        display-name              (first
+                                   (rf/sub
+                                    [:contacts/contact-two-names-by-identity
+                                     public-key]))
+        photo-path                (when (seq images)
+                                    (rf/sub [:chats/photo-path public-key]))
+        online?                   (rf/sub [:visibility-status-updates/online?
+                                           public-key])
+        user-selected?            (rf/sub [:is-contact-selected? public-key])
         {:keys [contacts admins]} group
-        member? (contains? contacts public-key)
-        current-pk (rf/sub [:multiaccount/public-key])
-        admin? (get admins current-pk)
-        checked? (reagent/atom (if start-a-new-chat?
-                                 user-selected?
-                                 member?))]
+        member?                   (contains? contacts public-key)
+        current-pk                (rf/sub [:multiaccount/public-key])
+        admin?                    (get admins current-pk)
+        checked?                  (reagent/atom (if start-a-new-chat?
+                                                  user-selected?
+                                                  member?))]
     [rn/touchable-opacity
      (merge
       {:style               (style/container)

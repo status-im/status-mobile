@@ -29,8 +29,8 @@
          ", " (get-display-name (second requests))
          " "
          (i18n/label :t/and)
-         " "  (- (count requests) 2)
-         " "  (i18n/label :t/more))))
+         " " (- (count requests) 2)
+         " " (i18n/label :t/more))))
 
 (defn contact-requests
   [requests]

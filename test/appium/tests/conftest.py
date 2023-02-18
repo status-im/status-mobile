@@ -9,7 +9,7 @@ import urllib.request
 
 import pytest
 from _pytest.runner import runtestprotocol
-
+from requests.exceptions import ConnectionError as c_er
 import tests
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
@@ -329,7 +329,7 @@ def update_sauce_jobs(test_name, job_ids, passed):
     for job_id in job_ids.keys():
         try:
             sauce.jobs.update_job(username=sauce_username, job_id=job_id, name=test_name, passed=passed)
-        except (RemoteDisconnected, SauceException):
+        except (RemoteDisconnected, SauceException, c_er):
             pass
 
 

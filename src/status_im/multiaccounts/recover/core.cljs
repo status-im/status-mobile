@@ -137,9 +137,9 @@
      {:db (update db
                   :intro-wizard
                   assoc
-                  :root-key     root-data
-                  :derived      derived-data
-                  :step         :recovery-success)}
+                  :root-key root-data
+                  :derived derived-data
+                  :step :recovery-success)}
      (when (existing-account? multiaccounts key-uid)
        (show-existing-multiaccount-alert key-uid))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
@@ -199,14 +199,14 @@
     (if (= step :enter-phrase)
       {:db (dissoc db :intro-wizard)}
       {:db (update db
-                   :intro-wizard     assoc
+                   :intro-wizard assoc
                    :step
                    (case step
                      :recovery-success   :enter-phrase
                      :select-key-storage :recovery-success
                      :create-code        :select-key-storage)
                    :confirm-failure? false
-                   :key-code         nil)})))
+                   :key-code nil)})))
 
 (rf/defn cancel-pressed
   {:events [:multiaccounts.recover/cancel-pressed]}
@@ -243,7 +243,7 @@
             {:db (update db
                          :intro-wizard
                          assoc
-                         :step                  :select-key-storage
+                         :step :select-key-storage
                          :selected-storage-type :default)}
             (if (nfc/nfc-supported?)
               (navigation/navigate-to-cofx :select-key-storage nil)

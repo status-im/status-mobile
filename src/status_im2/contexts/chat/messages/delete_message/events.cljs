@@ -1,11 +1,11 @@
 (ns status-im2.contexts.chat.messages.delete-message.events
   (:require
-   [utils.i18n :as i18n]
-   [quo2.foundations.colors :as colors]
-   [status-im2.contexts.chat.messages.list.events :as message-list]
-   [taoensso.timbre :as log]
-   [utils.datetime :as datetime]
-   [utils.re-frame :as rf]))
+    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- update-db-clear-undo-timer
   [db chat-id message-id]
@@ -47,6 +47,26 @@
   (when (get-in db [:messages chat-id message-id])
     (update-in db [:messages chat-id message-id] assoc :deleted? true :deleted-by deleted-by)))
 
+(defn- should-and-able-to-unpin-to-be-deleted-message
+  "check
+  1. if the to-be deleted message is pinned
+  2. if user has the permission to unpin message in current chat"
+  [db {:keys [chat-id message-id]}]
+  (let [{:keys [group-chat chat-id public? community-id admins]} (get-in db [:chats chat-id])
+        community                                                (get-in db [:communities community-id])
+        community-admin?                                         (get community :admin false)
+        pub-key                                                  (get-in db [:multiaccount :public-key])
+        group-admin?                                             (get admins pub-key)
+        message-pin-enabled                                      (and (not public?)
+                                                                      (or (not group-chat)
+                                                                          (and group-chat
+                                                                               (or group-admin?
+                                                                                   community-admin?))))
+        pinned                                                   (get-in db
+                                                                         [:pin-messages chat-id
+                                                                          message-id])]
+    (and pinned message-pin-enabled)))
+
 (rf/defn delete
   "Delete message now locally and broadcast after undo time limit timeout"
   {:events [:chat.ui/delete-message]}
@@ -56,14 +76,22 @@
     ;; new delete operation will reset prev pending deletes' undo timelimit
     ;; undo will undo all pending deletes
     ;; all pending deletes are stored in toast
-    (let [pub-key             (get-in db [:multiaccount :public-key])
-          message-from        (get message :from)
-          deleted-by          (when (not= pub-key message-from) pub-key)
+    (let [unpin? (should-and-able-to-unpin-to-be-deleted-message
+                  db
+                  {:chat-id chat-id :message-id message-id})
+
+          pub-key (get-in db [:multiaccount :public-key])
+
+          ;; compute deleted by
+          message-from (get message :from)
+          deleted-by (when (not= pub-key message-from) pub-key)
+
           existing-undo-toast (get-in db [:toasts :toasts :delete-message-for-everyone])
-          toast-count         (inc (get existing-undo-toast :message-deleted-for-everyone-count 0))
-          existing-undos      (-> existing-undo-toast
-                                  (get :message-deleted-for-everyone-undos [])
-                                  (conj {:message-id message-id :chat-id chat-id}))]
+          toast-count (inc (get existing-undo-toast :message-deleted-for-everyone-count 0))
+          existing-undos
+          (-> existing-undo-toast
+              (get :message-deleted-for-everyone-undos [])
+              (conj {:message-id message-id :chat-id chat-id :should-pin-back? unpin?}))]
       (assoc
        (message-list/rebuild-message-list
         {:db (reduce
@@ -89,7 +117,10 @@
           :undo-duration                      (/ undo-time-limit-ms 1000)
           :undo-on-press                      #(do (rf/dispatch [:chat.ui/undo-all-delete-message])
                                                    (rf/dispatch [:toasts/close
-                                                                 :delete-message-for-everyone]))}]]
+                                                                 :delete-message-for-everyone]))}]
+        (when unpin?
+          [:pin-message/send-pin-message-locally
+           {:chat-id chat-id :message-id message-id :pinned false}])]
        :utils/dispatch-later (mapv (fn [{:keys [chat-id message-id]}]
                                      {:dispatch [:chat.ui/delete-message-and-send
                                                  {:chat-id chat-id :message-id message-id}]
@@ -98,11 +129,16 @@
 
 (rf/defn undo
   {:events [:chat.ui/undo-delete-message]}
-  [{:keys [db]} {:keys [chat-id message-id]}]
+  [{:keys [db]} {:keys [chat-id message-id should-pin-back?]}]
   (when (get-in db [:messages chat-id message-id])
-    (message-list/rebuild-message-list
-     {:db (update-db-undo-locally db chat-id message-id)}
-     chat-id)))
+    (let [effects (message-list/rebuild-message-list
+                   {:db (update-db-undo-locally db chat-id message-id)}
+                   chat-id)
+          message (get-in effects [:db :messages chat-id message-id])]
+      (cond-> effects
+        should-pin-back?
+        (assoc :dispatch
+               [:pin-message/send-pin-message-locally (assoc message :pinned true)])))))
 
 (rf/defn undo-all
   {:events [:chat.ui/undo-all-delete-message]}
@@ -126,19 +162,32 @@
   [{:keys [db]} {:keys [message-id chat-id]} force?]
   (when-let [message (get-in db [:messages chat-id message-id])]
     (when (or force? (check-before-delete-and-send db chat-id message-id))
-      (cond-> {:db            (update-db-clear-undo-timer db chat-id message-id)
-               :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                                :params      [message-id]
-                                :js-response true
-                                :on-error    #(log/error "failed to delete message "
-                                                         {:message-id message-id :error %})
-                                :on-success  #(rf/dispatch
-                                               [:sanitize-messages-and-process-response
-                                                %])}]}
-        (get-in db [:pin-messages chat-id message-id])
-        (assoc :dispatch
-               [:pin-message/send-pin-message
-                {:chat-id chat-id :message-id message-id :pinned false}])))))
+      (let [unpin-locally?
+            ;; this only check against local client data
+            ;; generally msg is already unpinned at delete locally phase when user
+            ;; has unpin permission
+            ;;
+            ;; will be true only if
+            ;; 1. admin delete an unpinned msg
+            ;; 2. another admin pin the msg within the undo time limit
+            ;; 3. msg finally deleted
+            (should-and-able-to-unpin-to-be-deleted-message db
+                                                            {:chat-id    chat-id
+                                                             :message-id message-id})]
+        {:db            (update-db-clear-undo-timer db chat-id message-id)
+         :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
+                          :params      [message-id]
+                          :js-response true
+                          :on-error    #(log/error "failed to delete message "
+                                                   {:message-id message-id :error %})
+                          :on-success  #(rf/dispatch
+                                         [:sanitize-messages-and-process-response
+                                          %])}]
+         :dispatch      [:pin-message/send-pin-message
+                         {:chat-id      chat-id
+                          :message-id   message-id
+                          :pinned       false
+                          :remote-only? (not unpin-locally?)}]}))))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"

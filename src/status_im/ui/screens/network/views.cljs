@@ -49,7 +49,7 @@
                   networks        [:get-networks]]
     [:<>
      [topbar/topbar
-      {:title             (i18n/label :t/network-settings)
+      {:title (i18n/label :t/network-settings)
        :right-accessories
        [{:icon     :main-icons/add
          :on-press #(re-frame/dispatch [::network/add-network-pressed])}]}]

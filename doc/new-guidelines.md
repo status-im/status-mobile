@@ -1,4 +1,4 @@
-# Guidelines
+# Code Style Guidelines
 
 >The goal of this document is to help all contributors (core and external) to
 >write code in _unison_ and help establish good practices that serve the Status
@@ -77,7 +77,21 @@ Joshua Comeau.
 [rn/view {:style {:padding-horizontal 20}}]
 ```
 
-#### Styles def vs defn
+### Don't prepend booleans with is-
+
+It is a common practice in JavaScript and other languages to prepend boolean variable names with `is-*`. 
+In ClojureScript it is common practice to suffix boolean variable names with a `?`. 
+There is no need for both of these and so it is preferable to stick with the latter.
+
+```clojure
+;; bad
+(let [is-open? true] ...)
+
+;; good
+(let [open? true] ...)
+```
+
+### Styles def vs defn
 
 Always use `def` over `defn`, unless the style relies on dynamic values, such as
 deref'ed atoms.
@@ -170,7 +184,7 @@ Use the simple `defn` to declare components. Don't use `utils.views/defview` and
     (do-something window-width)))
 ```
 
-#### Use `[]` instead of `()` in Reagent components
+### Use `[]` instead of `()` in Reagent components
 
 - The `()` version [does NOT work with Form-2 and
   Form-3](https://github.com/reagent-project/reagent/blob/master/doc/UsingSquareBracketsInsteadOfParens.md#a-further-significant-why)

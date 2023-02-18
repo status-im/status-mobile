@@ -1,12 +1,12 @@
 (ns quo2.components.profile.profile-card.view
   (:require
-   [quo2.components.profile.profile-card.style :as style]
-   [quo2.foundations.colors :as colors]
-   [quo2.components.avatars.user-avatar :as user-avatar]
-   [quo2.components.icon :as icon]
-   [quo2.components.markdown.text :as text]
-   [quo2.components.buttons.button :as button]
-   [react-native.core :as rn]))
+    [quo2.components.profile.profile-card.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.components.avatars.user-avatar :as user-avatar]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.buttons.button :as button]
+    [react-native.core :as rn]))
 
 
 (defn profile-card

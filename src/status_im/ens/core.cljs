@@ -170,7 +170,7 @@
   (let [{:keys [username]}
         (:ens/registration db)
         {:keys [public-key]} (:multiaccount db)
-        chain-id             (ethereum/chain-id db)]
+        chain-id (ethereum/chain-id db)]
     (ens/register-prepare-tx
      chain-id
      address

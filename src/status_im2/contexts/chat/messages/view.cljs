@@ -26,13 +26,14 @@
 
 (defn page-nav
   []
-  (let [{:keys [group-chat chat-id chat-name emoji chat-type]} (rf/sub [:chats/current-chat])
-        display-name (if (= chat-type constants/one-to-one-chat-type)
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                       (str emoji " " chat-name))
-        online? (rf/sub [:visibility-status-updates/online? chat-id])
-        contact (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
+  (let [{:keys [group-chat chat-id chat-name emoji
+                chat-type]} (rf/sub [:chats/current-chat])
+        display-name        (if (= chat-type constants/one-to-one-chat-type)
+                              (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                              (str emoji " " chat-name))
+        online?             (rf/sub [:visibility-status-updates/online? chat-id])
+        contact             (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [quo/page-nav
      {:align-mid?            true
 

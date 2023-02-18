@@ -37,13 +37,13 @@
   {:events [:fleet.ui/fleet-selected]}
   [_ fleet]
   {:ui/show-confirmation
-   {:title               (i18n/label :t/close-app-title)
-    :content             (i18n/label :t/change-fleet
-                                     {:fleet fleet})
+   {:title (i18n/label :t/close-app-title)
+    :content (i18n/label :t/change-fleet
+                         {:fleet fleet})
     :confirm-button-text (i18n/label :t/close-app-button)
     :on-accept
     #(re-frame/dispatch [:fleet.ui/save-fleet-confirmed (keyword fleet)])
-    :on-cancel           nil}})
+    :on-cancel nil}})
 
 (defn nodes->fleet
   [nodes]

@@ -1,37 +1,33 @@
 (ns status-im2.contexts.chat.messages.pin.list.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]))
+            [status-im2.contexts.chat.messages.list.view :as list.view]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn message-render-fn
-  [{:keys [whisper-timestamp] :as message}
-   _
-   {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
+  [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
   ;; TODO (flexsurfer) probably we don't want reactions here
-  [message/message-with-reactions
-   message
-   {:group-chat          group-chat
-    :public?             public?
-    :community?          community?
-    :current-public-key  current-public-key
-    :show-input?         show-input?
-    :message-pin-enabled true
-    :in-pinned-view?     true
-    :pinned              true
-    :timestamp-str       (datetime/timestamp->time whisper-timestamp)
-    :edit-enabled        edit-enabled}])
+  (if (or deleted? deleted-for-me?)
+    [content.deleted/deleted-message message context]
+    [message/message-with-reactions message context]))
 
 (defn pinned-messages-list
   [chat-id]
-  (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
-        current-chat    (rf/sub [:chat-by-id chat-id])
-        community       (rf/sub [:communities/community (:community-id current-chat)])]
+  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list
+                                 chat-id])
+        current-chat (rf/sub [:chat-by-id chat-id])
+
+        {:keys [group-chat chat-id public? community-id admins]}
+        current-chat
+
+        community (rf/sub [:communities/community
+                           community-id])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529
@@ -62,10 +58,18 @@
           (str "# " (:chat-name current-chat))]])]
      (if (> (count pinned-messages) 0)
        [rn/flat-list
-        {:data      pinned-messages
-         :render-fn message-render-fn
-         :key-fn    list-key-fn
-         :separator quo/separator}]
+        {:data        pinned-messages
+         :render-data (list.view/get-render-data {:group-chat      group-chat
+                                                  :chat-id         chat-id
+                                                  :public?         public?
+                                                  :community-id    community-id
+                                                  :show-input?     false
+                                                  :admins          admins
+                                                  :edit-enabled    true
+                                                  :in-pinned-view? true})
+         :render-fn   message-render-fn
+         :key-fn      list-key-fn
+         :separator   quo/separator}]
        [rn/view
         {:style {:justify-content :center
                  :align-items     :center

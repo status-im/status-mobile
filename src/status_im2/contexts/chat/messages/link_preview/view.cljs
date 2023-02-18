@@ -1,15 +1,15 @@
 (ns status-im2.contexts.chat.messages.link-preview.view
   (:require
-   [clojure.string :as string]
-   [utils.i18n :as i18n]
-   [reagent.core :as reagent]
-   [react-native.core :as rn]
-   [status-im2.constants :as constants]
-   [status-im2.contexts.chat.messages.link-preview.events]
-   [status-im2.contexts.chat.messages.link-preview.style :as style]
-   [quo2.core :as quo]
-   [utils.re-frame :as rf]
-   [utils.security.core :as security]))
+    [clojure.string :as string]
+    [utils.i18n :as i18n]
+    [reagent.core :as reagent]
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.link-preview.events]
+    [status-im2.contexts.chat.messages.link-preview.style :as style]
+    [quo2.core :as quo]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn link-belongs-to-domain
   [link domain]

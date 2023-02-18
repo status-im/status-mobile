@@ -66,15 +66,15 @@
            border-radius   8
            haptic-type     :selection}}
    children]
-  (let [theme'                                                        (cond
-                                                                        disabled :disabled
-                                                                        :else    theme)
+  (let [theme' (cond
+                 disabled :disabled
+                 :else    theme)
         {:keys [icon-color background-color text-color border-color]}
         (themes theme')
 
-        optional-haptic                                               (fn []
-                                                                        (when haptic-feedback
-                                                                          (haptic/trigger haptic-type)))]
+        optional-haptic (fn []
+                          (when haptic-feedback
+                            (haptic/trigger haptic-type)))]
     [animation/pressable
      (merge {:bg-color            background-color
              :border-radius       border-radius

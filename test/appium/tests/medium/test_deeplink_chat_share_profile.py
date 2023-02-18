@@ -35,7 +35,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.ens_banner_close_button.click_if_shown()
 
     @marks.testrail_id(702244)
-    def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
+    def test_deep_link_with_invalid_user_public_key_own_profile_key_old(self):
         self.drivers[0].close_app()
 
         self.sign_in.just_fyi('Check that no error when opening invalid deep link')

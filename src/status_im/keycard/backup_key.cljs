@@ -61,9 +61,9 @@
             {:db               (-> db
                                    (update :intro-wizard
                                            assoc
-                                           :root-key              root-data
-                                           :derived               derived-data
-                                           :recovering?           true
+                                           :root-key root-data
+                                           :derived derived-data
+                                           :recovering? true
                                            :selected-storage-type :advanced)
                                    (assoc-in [:keycard :flow] :recovery)
                                    (update :multiaccounts/key-storage dissoc :seed-phrase))

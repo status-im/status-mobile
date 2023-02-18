@@ -15,9 +15,9 @@
                :value "Medium"}
               {:key   :large
                :value "Large"}]}
-   {:label   "Color"
-    :key     :color
-    :type    :select
+   {:label "Color"
+    :key :color
+    :type :select
     :options
     (map
      (fn [c]

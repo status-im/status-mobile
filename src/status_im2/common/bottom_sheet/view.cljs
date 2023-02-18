@@ -236,5 +236,5 @@
                            children]]
                          (when show-handle?
                            handle-comp)]]]
-                      (not show-handle?)
-                      (conj [gesture/gesture-detector {:gesture bottom-sheet-gesture}]))]))])]))
+               (not show-handle?)
+               (conj [gesture/gesture-detector {:gesture bottom-sheet-gesture}]))]))])]))

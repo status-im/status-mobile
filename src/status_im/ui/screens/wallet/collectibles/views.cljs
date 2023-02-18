@@ -78,15 +78,15 @@
 (defn nft-traits-scroller
   [traits]
   [react/scroll-view
-   {:horizontal                        true
-    :deceleration-rate                 "fast"
-    :snap-to-alignment                 "left"
+   {:horizontal true
+    :deceleration-rate "fast"
+    :snap-to-alignment "left"
     :shows-horizontal-scroll-indicator
     false
-    :scroll-event-throttle             64
-    :style                             {:padding-left    16
-                                        :margin-vertical 16
-                                        :padding-bottom  8}}
+    :scroll-event-throttle 64
+    :style {:padding-left    16
+            :margin-vertical 16
+            :padding-bottom  8}}
    (for [trait traits]
      ^{:key (:trait_type trait)}
      [nft-trait-card trait])
@@ -118,7 +118,7 @@
     {:width         width
      :border-radius 16
      :margin-bottom 16}
-    :on-press            (when clickable? #(re-frame/dispatch [::wallet/show-nft-details asset]))
+    :on-press (when clickable? #(re-frame/dispatch [::wallet/show-nft-details asset]))
     :accessibility-label
     :nft-asset}
    (cond
@@ -146,7 +146,7 @@
         :height "100%"}]]
 
      ;; ¯\_(ツ)_/¯
-     :else              [missing-image-placeholder])])
+     :else [missing-image-placeholder])])
 
 (defn nft-assets
   [{:keys [num-assets address collectible-slug]}]
@@ -186,34 +186,34 @@
         {:title
          [react/view {:flex 1}
           [quo/list-item
-           {:title               (:name collectible)
-            :text-size           :large
+           {:title (:name collectible)
+            :text-size :large
             :accessibility-label
             (keyword (str "collection-" index))
-            :icon                (if (seq (:image_url collectible))
-                                   [wallet.components/token-icon
-                                    {:style  {:border-radius 40
-                                              :overflow      :hidden
-                                              :border-width  1
-                                              :border-color  colors/gray-lighter}
-                                     :source {:uri (:image_url collectible)}}]
-                                   :main-icons/photo)
-            :accessory           :text
-            :accessory-text      (:owned_asset_count collectible)}]]
-         :padding-vertical     0
+            :icon (if (seq (:image_url collectible))
+                    [wallet.components/token-icon
+                     {:style  {:border-radius 40
+                               :overflow      :hidden
+                               :border-width  1
+                               :border-color  colors/gray-lighter}
+                      :source {:uri (:image_url collectible)}}]
+                    :main-icons/photo)
+            :accessory :text
+            :accessory-text (:owned_asset_count collectible)}]]
+         :padding-vertical 0
          :dropdown-margin-left -12
          :open-container-style {:border-top-width    8
                                 :border-bottom-width 8
                                 :border-color        colors/gray-lighter}
-         :on-open              #(re-frame/dispatch
-                                 [::wallet/fetch-collectible-assets-by-owner-and-collection
-                                  address
-                                  (:slug collectible)
-                                  (:owned_asset_count collectible)])
-         :content              [nft-assets
-                                {:address          address
-                                 :num-assets       (:owned_asset_count collectible)
-                                 :collectible-slug (:slug collectible)}]}])]))
+         :on-open #(re-frame/dispatch
+                    [::wallet/fetch-collectible-assets-by-owner-and-collection
+                     address
+                     (:slug collectible)
+                     (:owned_asset_count collectible)])
+         :content [nft-assets
+                   {:address          address
+                    :num-assets       (:owned_asset_count collectible)
+                    :collectible-slug (:slug collectible)}]}])]))
 
 (defn enable-opensea-view
   []
@@ -238,8 +238,8 @@
       :on-press
       #(re-frame/dispatch
         [::multiaccounts.update/toggle-opensea-nfts-visiblity true])
-      :theme               :main
-      :type                :primary}
+      :theme :main
+      :type :primary}
      (i18n/label :display-collectibles)]]
    [quo/text
     {:size  :small
@@ -309,10 +309,10 @@
         ;; the last string is an emoji. It might not show up in all editors but its there
         {:toast-label (str (i18n/label :profile-picture-updated)) " " "😎"}
         [quo/list-item
-         {:title               (i18n/label :t/use-as-profile-picture)
-          :theme               :accent
-          :on-press            #(re-frame/dispatch
-                                 [::multiaccounts/save-profile-picture-from-url (:image_url nft)])
-          :icon                :main-icons/profile
+         {:title (i18n/label :t/use-as-profile-picture)
+          :theme :accent
+          :on-press #(re-frame/dispatch
+                      [::multiaccounts/save-profile-picture-from-url (:image_url nft)])
+          :icon :main-icons/profile
           :accessibility-label
           :set-nft-as-pfp}]])]))

@@ -33,11 +33,11 @@
           [react/view styles/installed-icon
            [icons/icon :main-icons/check {:color colors/white-persist :height 20 :width 20}]]
           [react/touchable-highlight
-           {:on-press #(cond pending         nil
+           {:on-press #(cond pending nil
                              (or owned free)
                              (re-frame/dispatch [:stickers/install-pack id])
                              not-enough-snt? nil
-                             :else           (re-frame/dispatch [:stickers/buy-pack id]))}
+                             :else (re-frame/dispatch [:stickers/buy-pack id]))}
            [react/view (styles/price-badge (and (not (or owned free)) not-enough-snt?))
             (when (and (not free) (not owned))
               [icons/tiny-icon :tiny-icons/tiny-snt

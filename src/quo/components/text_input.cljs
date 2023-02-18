@@ -186,7 +186,7 @@
                             {:icon     :main-icons/show
                              :on-press #(reset! visible true)}
 
-                            :else                                  after)
+                            :else after)
             secure        (boolean (and secure-text-entry (not @visible))) ; must be a boolean to work on
                                                                            ; iOS
             auto-complete (cond
@@ -259,12 +259,15 @@
              (when (and platform/ios? (not after))
                {:clear-button-mode :while-editing})
              (dissoc props
-                     :style
-                     :keyboard-type :on-focus
-                     :on-blur
-                     :secure-text-entry
-                     :ref           :get-ref
-                     :auto-correct  :auto-complete-type))]
+              :style
+              :keyboard-type
+              :on-focus
+              :on-blur
+              :secure-text-entry
+              :ref
+              :get-ref
+              :auto-correct
+              :auto-complete-type))]
            (when after
              [accessory-element after])]
           (when (and show-cancel

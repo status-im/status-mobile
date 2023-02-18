@@ -163,7 +163,7 @@
                     (inc idx))
 
              code-tag?
-             (let [len                     (code-tag-len idxs idx)
+             (let [len (code-tag-len idxs idx)
                    {:keys [data next-idx]}
                    (apply-style-tag data idx pos c len true true)]
                (recur data next-idx))
@@ -175,7 +175,7 @@
                    (apply-style-tag data idx pos c len can-be-start? can-be-end?)]
                (recur data next-idx))
 
-             :else          (recur data (inc idx)))))))))
+             :else (recur data (inc idx)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -273,7 +273,7 @@
       (= chat-type constants/public-chat-type)
       (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
 
-      :else                                           mentionable-users)))
+      :else mentionable-users)))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
@@ -431,35 +431,36 @@
              {:from     idx
               :checked? false})
            new-idxs)
-      (let [diff                   (- new-text-len old-text-len)
+      (let [diff (- new-text-len old-text-len)
             {:keys [state added?]}
             (->> at-idxs
-                 (keep (fn [{:keys [from to] :as entry}]
-                         (let [to+1 (inc to)]
-                           (cond
-                             ;; starts after change
-                             (>= from old-end)
-                             (assoc entry
-                                    :from (+ from diff)
-                                    :to   (+ to diff))
+                 (keep
+                  (fn [{:keys [from to] :as entry}]
+                    (let [to+1 (inc to)]
+                      (cond
+                        ;; starts after change
+                        (>= from old-end)
+                        (assoc entry
+                               :from (+ from diff)
+                               :to   (+ to diff))
 
-                             ;; starts and end before change
-                             (and
-                              (< from start)
-                              (or
-                               ;; is not checked yet
-                               (not to+1)
-                               (< to+1 start)))
-                             entry
+                        ;; starts and end before change
+                        (and
+                         (< from start)
+                         (or
+                          ;; is not checked yet
+                          (not to+1)
+                          (< to+1 start)))
+                        entry
 
-                             ;; starts before change intersects with it
-                             (and (< from start)
-                                  (>= to+1 start))
-                             {:from     from
-                              :checked? false}
+                        ;; starts before change intersects with it
+                        (and (< from start)
+                             (>= to+1 start))
+                        {:from     from
+                         :checked? false}
 
-                             ;; starts in changed part of text
-                             :else nil))))
+                        ;; starts in changed part of text
+                        :else nil))))
                  (reduce
                   (fn [{:keys [state added?] :as acc} {:keys [from] :as entry}]
                     (if (and last-new-idx
@@ -595,11 +596,11 @@
 (rf/defn calculate-suggestions
   {:events [::calculate-suggestions]}
   [{:keys [db]} mentionable-users]
-  (let [chat-id                                        (:current-chat-id db)
-        text                                           (get-in db [:chat/inputs chat-id :input-text])
+  (let [chat-id (:current-chat-id db)
+        text (get-in db [:chat/inputs chat-id :input-text])
         {:keys [new-text at-idxs start end] :as state}
         (get-in db [:chats/mentions chat-id :mentions])
-        new-text                                       (or new-text text)]
+        new-text (or new-text text)]
     (log/debug "[mentions] calculate suggestions"
                "state"
                state)
@@ -608,17 +609,17 @@
                (assoc-in [:chats/mention-suggestions chat-id] nil)
                (assoc-in [:chats/mentions chat-id :mentions :at-idxs] nil)
                (assoc-in [:chat/inputs-with-mentions chat-id] [[:text text]]))}
-      (let [new-at-idxs      (check-idx-for-mentions
-                              text
-                              at-idxs
-                              mentionable-users)
+      (let [new-at-idxs (check-idx-for-mentions
+                         text
+                         at-idxs
+                         mentionable-users)
             calculated-input (calculate-input text new-at-idxs)
-            addition?        (<= start end)
-            end              (if addition?
-                               (+ start (count new-text))
-                               start)
-            at-sign-idx      (string/last-index-of text at-sign start)
-            searched-text    (string/lower-case (subs text (inc at-sign-idx) end))
+            addition? (<= start end)
+            end (if addition?
+                  (+ start (count new-text))
+                  start)
+            at-sign-idx (string/last-index-of text at-sign start)
+            searched-text (string/lower-case (subs text (inc at-sign-idx) end))
             mentions
             (when (and (not (> at-sign-idx start))
                        (not (> (- end at-sign-idx) 100)))
@@ -642,8 +643,8 @@
 
 (defn new-input-text-with-mention
   [{:keys [db]} {:keys [name]}]
-  (let [chat-id                           (:current-chat-id db)
-        text                              (get-in db [:chat/inputs chat-id :input-text])
+  (let [chat-id (:current-chat-id db)
+        text (get-in db [:chat/inputs chat-id :input-text])
         {:keys [mention-end at-sign-idx]}
         (get-in db [:chats/mentions chat-id :mentions])]
     (log/debug "[mentions] clear suggestions"
@@ -688,7 +689,7 @@
   [{:keys [db] :as cofx}
    {:keys [start end] :as selection}
    mentionable-users]
-  (let [chat-id                       (:current-chat-id db)
+  (let [chat-id (:current-chat-id db)
         {:keys [mention-end at-idxs]}
         (get-in db [:chats/mentions chat-id :mentions])]
     (when (seq at-idxs)

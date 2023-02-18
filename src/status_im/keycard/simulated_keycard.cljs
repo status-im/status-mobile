@@ -34,17 +34,17 @@
   []
   (swap! state assoc
     :application-info
-    {:free-pairing-slots     5
-     :app-version            "3.0"
+    {:free-pairing-slots 5
+     :app-version "3.0"
      :secure-channel-pub-key
      "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e"
-     :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
-     :paired?                true
-     :has-master-key?        true
-     :initialized?           true
-     :pin-retry-counter      3
-     :puk-retry-counter      5
-     :key-uid                (get-in @re-frame.db/app-db [:multiaccounts/login :key-uid])})
+     :instance-uid "1b360b10a9a68b7d494e8f059059f118"
+     :paired? true
+     :has-master-key? true
+     :initialized? true
+     :pin-retry-counter 3
+     :puk-retry-counter 5
+     :key-uid (get-in @re-frame.db/app-db [:multiaccounts/login :key-uid])})
   (swap! state assoc :pin default-pin :puk default-puk :password kk1-password)
   (connect-card))
 
@@ -55,17 +55,17 @@
   (reset! initialization false)
   (swap! state assoc
     :application-info
-    {:free-pairing-slots     5
-     :app-version            "3.0"
+    {:free-pairing-slots 5
+     :app-version "3.0"
      :secure-channel-pub-key
      "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e"
-     :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
-     :paired?                false
-     :has-master-key?        true
-     :initialized?           true
-     :pin-retry-counter      3
-     :puk-retry-counter      5
-     :key-uid                "0x16839e8b1b8a395acb18100c7e2b161701c225adf31eefa02114099b4d81a30b"})
+     :instance-uid "1b360b10a9a68b7d494e8f059059f118"
+     :paired? false
+     :has-master-key? true
+     :initialized? true
+     :pin-retry-counter 3
+     :puk-retry-counter 5
+     :key-uid "0x16839e8b1b8a395acb18100c7e2b161701c225adf31eefa02114099b4d81a30b"})
   (swap! state assoc :pin default-pin :puk default-puk :password kk1-password)
   (connect-card))
 
@@ -195,17 +195,17 @@
   (reset! initialization true)
   (swap! state assoc
     :application-info
-    {:free-pairing-slots     5
-     :app-version            "3.0"
+    {:free-pairing-slots 5
+     :app-version "3.0"
      :secure-channel-pub-key
      "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e"
-     :key-uid                ""
-     :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
-     :paired?                false
-     :has-master-key?        false
-     :pin-retry-counter      3
-     :puk-retry-counter      5
-     :initialized?           true})
+     :key-uid ""
+     :instance-uid "1b360b10a9a68b7d494e8f059059f118"
+     :paired? false
+     :has-master-key? false
+     :pin-retry-counter 3
+     :puk-retry-counter 5
+     :initialized? true})
   (swap! state assoc :pin pin :puk default-puk :password kk1-password)
   (later
    #(on-success {:password kk1-password
@@ -393,11 +393,11 @@
    on-failure
    #(let [{:keys [key-uid wallet-root-address]}
           (get @re-frame.db/app-db :multiaccount)
-          accounts                              (get @re-frame.db/app-db :multiaccount/accounts)
-          hashed-password                       account-password
-          path-num                              (inc (get-in @re-frame.db/app-db
-                                                             [:multiaccount :latest-derived-path]))
-          path                                  (str "m/" path-num)]
+          accounts (get @re-frame.db/app-db :multiaccount/accounts)
+          hashed-password account-password
+          path-num (inc (get-in @re-frame.db/app-db
+                                [:multiaccount :latest-derived-path]))
+          path (str "m/" path-num)]
       (status/multiaccount-load-account
        wallet-root-address
        hashed-password

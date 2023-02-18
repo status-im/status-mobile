@@ -16,7 +16,11 @@
 
              ;; respect blank line
              ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-bl
-             :respect-bl]
+             :respect-bl
+
+             ;; hang multiline left-hand-thing 
+             ;; https://github.com/kkinnear/zprint/issues/273
+             :multi-lhs-hang]
  :fn-map
  {"reg-sub"         :arg1-pair
   "h/describe"      :arg1-body

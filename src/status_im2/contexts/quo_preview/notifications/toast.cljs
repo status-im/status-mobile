@@ -45,8 +45,8 @@
   []
   [toast-button
    "Toast: multiline"
-   {:icon          :placeholder
-    :icon-color    "green"
+   {:icon :placeholder
+    :icon-color "green"
     :text
     "This is an example multiline toast This is an example multiline toast This is an example multiline toast"
     :undo-duration 4
@@ -74,7 +74,7 @@
         (when toast-opts
           [rn/view {:style {:margin-bottom 10}}
            [button/button
-            {:size     32
+            {:size 32
              :on-press
              #(rf/dispatch
                [:toasts/upsert

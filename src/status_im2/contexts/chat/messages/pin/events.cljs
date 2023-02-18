@@ -1,14 +1,14 @@
 (ns status-im2.contexts.chat.messages.pin.events
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.common.toasts.events :as toasts]
-            [status-im2.constants :as constants]
+  (:require [quo2.foundations.colors :as colors]
+            [re-frame.core :as re-frame]
             [status-im.data-store.pin-messages :as data-store.pin-messages]
             [status-im.transport.message.protocol :as protocol]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+            [status-im2.common.toasts.events :as toasts]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.messages.list.events :as message-list]
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (rf/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}
@@ -59,23 +59,34 @@
                  (assoc-in [:pin-message-lists chat-id]
                            (message-list/add-many nil (vals all-messages))))}))))
 
-(rf/defn send-pin-message
-  "Pin message, rebuild pinned messages list"
-  {:events [:pin-message/send-pin-message]}
+
+(rf/defn send-pin-message-locally
+  "Pin message, rebuild pinned messages list locally"
+  {:events [:pin-message/send-pin-message-locally]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
-  (let [current-public-key (get-in db [:multiaccount :public-key])
-        message            (merge pin-message {:pinned-by current-public-key})
-        preferred-name     (get-in db [:multiaccount :preferred-name])]
+  (let [current-public-key       (get-in db [:multiaccount :public-key])
+        message                  (merge pin-message {:pinned-by current-public-key})
+        pin-message-lists-exist? (some? (get-in db [:pin-message-lists chat-id]))]
     (rf/merge cofx
               {:db (cond-> db
                      pinned
                      (->
                        (update-in [:pin-message-lists chat-id] message-list/add message)
                        (assoc-in [:pin-messages chat-id message-id] message))
-                     (not pinned)
+                     (and (not pinned) pin-message-lists-exist?)
                      (->
                        (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
-                       (update-in [:pin-messages chat-id] dissoc message-id)))}
+                       (update-in [:pin-messages chat-id] dissoc message-id)))})))
+
+(rf/defn send-pin-message
+  "Pin message, rebuild pinned messages list"
+  {:events [:pin-message/send-pin-message]}
+  [{:keys [db] :as cofx} {:keys [chat-id message-id pinned remote-only?] :as pin-message}]
+  (let [current-public-key (get-in db [:multiaccount :public-key])
+        message            (merge pin-message {:pinned-by current-public-key})
+        preferred-name     (get-in db [:multiaccount :preferred-name])]
+    (rf/merge cofx
+              (when-not remote-only? (send-pin-message-locally pin-message))
               (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)
                                                          :message_id (pin-message :message-id)
                                                          :pinned     (pin-message :pinned)})

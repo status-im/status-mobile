@@ -168,7 +168,7 @@
 
 ;; Colors for customizing profiles and communities themes
 (def customization
-  {:primary   {50 primary-50  ;; User can also use primary color as customisation color
+  {:primary   {50 primary-50 ;; User can also use primary color as customisation color
                60 primary-60}
    :purple    {50 "#8661C1"
                60 "#5E478C"}

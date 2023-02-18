@@ -93,16 +93,16 @@
    (when (= type :seed)
      [react/view {:padding-top 16}
       [quo/text-input
-       {:label               (i18n/label :t/recovery-phrase)
-        :auto-focus          false
-        :placeholder         (i18n/label :t/multiaccounts-recover-enter-phrase-title)
-        :auto-correct        false
-        :keyboard-type       :visible-password
-        :multiline           true
-        :height              95
-        :error               account-error
+       {:label (i18n/label :t/recovery-phrase)
+        :auto-focus false
+        :placeholder (i18n/label :t/multiaccounts-recover-enter-phrase-title)
+        :auto-correct false
+        :keyboard-type :visible-password
+        :multiline true
+        :height 95
+        :error account-error
         :accessibility-label :add-account-enter-seed
-        :monospace           true
+        :monospace true
         :on-change-text
         #(do
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
@@ -111,15 +111,15 @@
    (when (= type :key)
      [react/view {:margin-top 30}
       [quo/text-input
-       {:label               (i18n/label :t/private-key)
-        :auto-focus          false
-        :placeholder         (i18n/label :t/enter-a-private-key)
-        :auto-correct        false
-        :keyboard-type       :visible-password
-        :error               account-error
-        :secure-text-entry   true
+       {:label (i18n/label :t/private-key)
+        :auto-focus false
+        :placeholder (i18n/label :t/enter-a-private-key)
+        :auto-correct false
+        :keyboard-type :visible-password
+        :error account-error
+        :secure-text-entry true
         :accessibility-label :add-account-enter-private-key
-        :text-content-type   :none
+        :text-content-type :none
         :on-change-text
         #(do
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
@@ -135,7 +135,7 @@
      {:style         {:flex 1}
       :ignore-offset true}
      [topbar/topbar
-      {:navigation        :none
+      {:navigation :none
        :right-accessories
        [{:label    (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
@@ -169,8 +169,8 @@
       {:show-border? true
        :right
        [quo/button
-        {:type                :secondary
-         :after               :main-icon/next
+        {:type :secondary
+         :after :main-icon/next
          :accessibility-label :add-account-add-account-button
          :on-press
          (if (and keycard?

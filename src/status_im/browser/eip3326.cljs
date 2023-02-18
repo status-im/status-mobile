@@ -42,10 +42,10 @@
           {:dispatch [:bottom-sheet/show-sheet
                       {:content (fn []
                                   [sheet/permissions-panel dapp-name message-id params])}]}))
-      {:browser/send-to-bridge {:type      constants/web3-send-async-callback
+      {:browser/send-to-bridge {:type constants/web3-send-async-callback
                                 :messageId message-id
                                 :error
-                                {:code    4902
+                                {:code 4902
                                  :message
                                  (str
                                   "Unrecognized chain ID: "
