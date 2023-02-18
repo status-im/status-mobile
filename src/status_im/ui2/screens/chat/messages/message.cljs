@@ -38,7 +38,7 @@
   (rf/sub [:messages/resolve-mention from]))
 
 (defn render-inline
-  [_message-text content-type acc {:keys [type literal destination]} use-status-tag?
+  [_message-text content-type acc {:keys [type literal destination]}
    community-id]
   (case type
     ""
@@ -81,7 +81,7 @@
     "status-tag"
     (conj acc
           [rn/text
-           (when use-status-tag?
+           (when community-id
              {:style    {:color                :blue
                          :text-decoration-line :underline}
               :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
@@ -97,7 +97,7 @@
 (defn render-block
   [{:keys [content content-type edited-at in-popover?]} acc
    {:keys [type ^js literal children]}
-   use-status-tag? community-id]
+   community-id]
 
   (case type
 
@@ -109,7 +109,6 @@
                             content-type
                             acc
                             e
-                            use-status-tag?
                             community-id))
            [rn/text (style/text-style content-type in-popover?)]
            (conj
@@ -133,13 +132,12 @@
 (defn render-parsed-text
   [{:keys [content chat-id]
     :as   message-data}]
-  (let [{:keys [chat-type community-id]} (rf/sub [:chats/chat chat-id])
-        use-status-tag?                  (= constants/community-chat-type chat-type)]
+  (let [community-id                  (rf/sub [:community-id-by-chat-id chat-id])
+        _ (prn community-id)]
     (reduce (fn [acc e]
               (render-block message-data
                             acc
                             e
-                            use-status-tag?
                             community-id))
             [:<>]
             (:parsed-text content))))
@@ -236,7 +234,7 @@
   [rn/view style/status-container
    [rn/text {:style (style/status-text)}
     (reduce
-     (fn [acc e] (render-inline (:text content) content-type acc e false nil))
+     (fn [acc e] (render-inline (:text content) content-type acc e nil))
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
