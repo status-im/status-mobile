@@ -25,8 +25,8 @@
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]
    (-> chats
-        (get chat-id)
-        :community-id)))
+       (get chat-id)
+       :community-id)))
 
 (re-frame/reg-sub
  :chats/by-community-id
