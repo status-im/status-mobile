@@ -132,8 +132,7 @@
 (defn render-parsed-text
   [{:keys [content chat-id]
     :as   message-data}]
-  (let [community-id                  (rf/sub [:community-id-by-chat-id chat-id])
-        _ (prn community-id)]
+  (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
     (reduce (fn [acc e]
               (render-block message-data
                             acc
