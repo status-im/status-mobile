@@ -1,7 +1,7 @@
-(ns quo2.components.input.view
+(ns quo2.components.inputs.input.view
   (:require [oops.core :as oops]
             [quo2.components.icon :as icon]
-            [quo2.components.input.style :as style]
+            [quo2.components.inputs.input.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
             [reagent.core :as reagent]))

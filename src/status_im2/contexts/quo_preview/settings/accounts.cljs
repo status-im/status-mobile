@@ -8,7 +8,7 @@
 
 (def descriptor
   [{:label   "Custom color"
-    :key     :custom-color
+    :key     :customization-color
     :type    :select
     :options (map (fn [[k _]]
                     {:key k :value (string/capitalize (name k))})
@@ -22,12 +22,12 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:custom-color    :blue
-                             :account-name    "Booze for Dubai"
-                             :account-address "0x21a ... 49e"
-                             :avatar-icon     :i/placeholder
-                             :on-press-menu   (fn []
-                                                (js/alert "Menu button pressed"))})]
+  (let [state (reagent/atom {:customization-color :blue
+                             :account-name        "Booze for Dubai"
+                             :account-address     "0x21a ... 49e"
+                             :avatar-icon         :i/placeholder
+                             :on-press-menu       (fn []
+                                                    (js/alert "Menu button pressed"))})]
     (fn []
       [rn/view
        {:margin-bottom 50

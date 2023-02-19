@@ -30,7 +30,8 @@
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box
-    quo2.components.input.view
+    quo2.components.inputs.input.view
+    quo2.components.inputs.title-input.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -142,7 +143,8 @@
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; INPUTS
-(def input quo2.components.input.view/input)
+(def input quo2.components.inputs.input.view/input)
+(def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)

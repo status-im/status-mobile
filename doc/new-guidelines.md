@@ -116,6 +116,20 @@ deref'ed atoms.
   {:background-color (colors/theme-colors colors/white colors/neutral-90)})
 ```
 
+### Custom Colors
+
+The Status designs have a lot of customization of user and group colors with components and pages. For consistency it is best to use `customization-color` as the prop key on pages and components. This will help easily identify what pages and components in the application are using customized colors.
+
+```clojure
+;; bad
+(defn community-card [{keys [custom-color]}] 
+  ...)
+
+;; good
+(defn community-card [{keys [customization-color]}] 
+  ...)
+```
+
 ### Using TODOs comments
 
 _TODO_ comments are used extensively in the codebase, but prefer to use them
