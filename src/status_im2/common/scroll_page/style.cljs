@@ -58,7 +58,7 @@
   [animation]
   (reanimated/apply-animations-to-style
    {:transform [{:scale animation}]}
-   {:border-radius    40
+   {:border-radius    50
     :border-width     1
     :border-color     colors/white
     :position         :absolute
