@@ -4,6 +4,10 @@
             [status-im.data-store.messages :as messages]
             [status-im2.contexts.activity-center.notification-types :as notification-types]))
 
+(defn mark-notifications-as-read
+  [notifications]
+  (map #(assoc % :read true) notifications))
+
 (defn- rpc->type
   [{:keys [type name] :as chat}]
   (case type

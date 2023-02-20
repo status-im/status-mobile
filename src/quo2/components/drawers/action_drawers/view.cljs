@@ -6,10 +6,10 @@
             [quo2.components.drawers.action-drawers.style :as style]))
 
 (defn- get-icon-color
-  [danger?]
+  [danger? override-theme]
   (if danger?
     colors/danger-50
-    (colors/theme-colors colors/neutral-50 colors/neutral-40)))
+    (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
 (def divider
   [rn/view
@@ -25,6 +25,7 @@
            danger?
            on-press
            add-divider?
+           override-theme
            accessibility-label]
     :as   action-props}]
   (when action-props
@@ -33,7 +34,7 @@
      [rn/touchable-highlight
       {:accessibility-label accessibility-label
        :style               (style/container sub-label)
-       :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
+       :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90 override-theme)
        :on-press            on-press}
       [rn/view
        {:style (style/row-container sub-label)}
@@ -42,7 +43,7 @@
          :accessible          true
          :style               style/left-icon}
         [icon/icon icon
-         {:color (get-icon-color danger?)
+         {:color (get-icon-color danger? override-theme)
           :size  20}]]
        [rn/view
         {:style style/text-container}
@@ -50,14 +51,15 @@
          {:size   :paragraph-1
           :weight :medium
           :style  {:color
-                   (when danger?
-                     (colors/theme-colors colors/danger-50 colors/danger-60))}}
+                   (cond
+                     danger? (colors/theme-colors colors/danger-50 colors/danger-60 override-theme)
+                     :else   (colors/theme-colors colors/neutral-100 colors/white override-theme))}}
          label]
         (when sub-label
           [text/text
            {:size  :paragraph-2
             :style {:color
-                    (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+                    (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)}}
            sub-label])]
        (when right-icon
          [rn/view
@@ -65,7 +67,7 @@
            :accessible          true
            :accessibility-label :right-icon-for-action}
           [icon/icon right-icon
-           {:color (get-icon-color danger?)
+           {:color (get-icon-color danger? override-theme)
             :size  20}]])]]]))
 
 (defn action-drawer
