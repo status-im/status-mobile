@@ -170,26 +170,40 @@
 (def customization
   {:primary   {50 primary-50 ;; User can also use primary color as customisation color
                60 primary-60}
-   :purple    {50 "#8661C1"
-               60 "#5E478C"}
+   :purple    {50 "#7140FD"
+               60 "#5A33CA"}
    :indigo    {50 "#496289"
                60 "#3D5273"}
-   :turquoise {50 "#448EA2"
-               60 "#397788"}
-   :blue      {50 "#4CB4EF"
-               60 "#4097C9"}
+   :turquoise {50 "#2A799B"
+               60 "#22617C"}
+   :blue      {50 "#2A4AF5"
+               60 "#223BC4"}
    :green     {50 "#5BCC95"
                60 "#4CAB7D"}
-   :yellow    {50 "#FFCB53"
-               60 "#D6AA46"}
-   :orange    {50 "#FB8F61"
-               60 "#D37851"}
+   :yellow    {50 "#F6B03C"
+               60 "#C58D30"}
+   :orange    {50 "#FF7D46"
+               60 "#CC6438"}
    :red       {50 "#F46666"
                60 "#CD5656"}
-   :pink      {50 "#FC7BAB"
-               60 "#D46790"}
+   :pink      {50 "#F66F8F"
+               60 "#C55972"}
    :brown     {50 "#99604D"
                60 "#805141"}
+   :sky       {50 "#1992D7"
+               60 "#1475AC"}
+   :army      {50 "#216266"
+               60 "#1A4E52"}
+   :magenta   {50 "#EC266C"
+               60 "#BD1E56"}
+   :copper    {50 "#CB6256"
+               60 "#A24E45"}
+   :camel     {50 "#C78F67"
+               60 "#9F7252"}
+   :yin       {50 "#09101C"
+               60 "#1D232E"}
+   :yang      {50 "#FFFFFF"
+               60 "#EBEBEB"}
    :beige     {50 "#CAAE93"
                60 "#AA927C"}})
 
