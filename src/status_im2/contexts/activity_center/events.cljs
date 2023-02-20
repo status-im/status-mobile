@@ -201,8 +201,8 @@
                                          undoable-till))
      :dispatch             [:toasts/upsert
                             (merge
-                             {:id            :activity-center-mark-all-as-read
-                              :duration      undo-time-limit-ms
+                             {:id :activity-center-mark-all-as-read
+                              :duration undo-time-limit-ms
                               :undo-duration (/ undo-time-limit-ms 1000)
                               :undo-on-press
                               (fn []
