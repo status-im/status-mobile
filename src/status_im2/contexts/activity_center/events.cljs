@@ -114,7 +114,7 @@
                                                         {:name name})
                                 :text       (get-in message [:content :text])})
 
-                (and (= author my-public-key)               ;; we show it for user who sent the request
+                (and (= author my-public-key) ;; we show it for user who sent the request
                      (= type types/contact-request)
                      accepted
                      (not dismissed))
