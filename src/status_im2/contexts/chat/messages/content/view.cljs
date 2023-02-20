@@ -133,8 +133,7 @@
              [author message-data]
              (case content-type
 
-               constants/content-type-text
-               [not-implemented/not-implemented [content.text/text-content message-data context]]
+               constants/content-type-text [content.text/text-content message-data context]
 
                constants/content-type-emoji
                [not-implemented/not-implemented [old-message/emoji message-data]]
