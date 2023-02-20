@@ -101,7 +101,7 @@
   {:events [:activity-center.notifications/show-toasts]}
   [{:keys [db]} new-notifications]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
-    (reduce (fn [cofx {:keys [author type accepted dismissed message name]}]
+    (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
               (cond
                 (and (not= author my-public-key)
                      (= type types/contact-request)
@@ -114,7 +114,7 @@
                                                         {:name name})
                                 :text       (get-in message [:content :text])})
 
-                (and (= author my-public-key)
+                (and (= author my-public-key)               ;; we show it for user who sent the request
                      (= type types/contact-request)
                      accepted
                      (not dismissed))
