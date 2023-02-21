@@ -63,24 +63,25 @@
   []
   [:f>
    (fn []
-     (let [contacts                   (rf/sub
-                                       [:contacts/sorted-and-grouped-by-first-letter])
-           selected-contacts-count    (rf/sub [:selected-contacts-count])
-           selected-contacts          (rf/sub [:group/selected-contacts])
-           window-height              (rf/sub [:dimensions/window-height])
-           one-contact-selected?      (= selected-contacts-count 1)
-           contacts-selected?         (pos? selected-contacts-count)
+     (let [contacts (rf/sub
+                     [:contacts/sorted-and-grouped-by-first-letter])
+           selected-contacts-count (rf/sub [:selected-contacts-count])
+           selected-contacts (rf/sub [:group/selected-contacts])
+           window-height (rf/sub [:dimensions/window-height])
+           one-contact-selected? (= selected-contacts-count 1)
+           contacts-selected? (pos? selected-contacts-count)
            {:keys [names public-key]} (when one-contact-selected?
                                         (rf/sub [:contacts/contact-by-identity
                                                  (first selected-contacts)]))
-           added?                     (reagent/atom '())
+           added? (reagent/atom '())
            {:keys [nickname ens-name display-name
-                   three-words-name]} names
-           first-username             (or nickname
-                                          ens-name
-                                          (when-not (string/blank? display-name) display-name)
-                                          three-words-name)
-           no-contacts?               (empty? contacts)]
+                   three-words-name]}
+           names
+           first-username (or nickname
+                              ens-name
+                              (when-not (string/blank? display-name) display-name)
+                              three-words-name)
+           no-contacts? (empty? contacts)]
        [rn/view {:style {:height (* window-height 0.9)}}
         [quo2/button
          {:type                      :grey
