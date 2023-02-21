@@ -61,7 +61,7 @@
                  :Name
                  "StatusIM")
     config/dev-build?
-    (assoc :ListenAddr ":30304"
+    (assoc :ListenAddr ":0"
            :DataDir    (str (:DataDir config) "_dev"))))
 
 (def wakuv2-default-config
