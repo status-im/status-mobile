@@ -3,8 +3,12 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.chat.events :as chat.events]
+            [status-im2.common.toasts.events :as toasts]
+            status-im2.contexts.activity-center.notification.contact-requests.events
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
+            [utils.i18n :as i18n]
+            [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]))
 
 (def defaults
@@ -92,6 +96,38 @@
                           update-notifications
                           new-notifications)
      :dispatch [:activity-center.notifications/fetch-unread-count]}))
+
+(rf/defn show-toasts
+  {:events [:activity-center.notifications/show-toasts]}
+  [{:keys [db]} new-notifications]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
+              (cond
+                (and (not= author my-public-key)
+                     (= type types/contact-request)
+                     (not accepted)
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-sent-toast
+                                                        {:name name})
+                                :text       (get-in message [:content :text])})
+
+                (and (= author my-public-key) ;; we show it for user who sent the request
+                     (= type types/contact-request)
+                     accepted
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-accepted-toast
+                                                        {:name (:alias message)})})
+
+                :else
+                cofx))
+            {:db db}
+            new-notifications)))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}

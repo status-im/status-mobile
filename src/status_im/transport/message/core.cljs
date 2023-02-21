@@ -67,13 +67,13 @@
       (models.message/receive-many cofx response-js)
 
       (seq activity-notifications)
-      (do
+      (let [notifications (->> activity-notifications
+                               types/js->clj
+                               (map data-store.activities/<-rpc))]
         (js-delete response-js "activityCenterNotifications")
         (rf/merge cofx
-                  (->> activity-notifications
-                       types/js->clj
-                       (map data-store.activities/<-rpc)
-                       activity-center/notifications-reconcile)
+                  (activity-center/notifications-reconcile notifications)
+                  (activity-center/show-toasts notifications)
                   (process-next response-js sync-handler)))
 
       (seq installations)

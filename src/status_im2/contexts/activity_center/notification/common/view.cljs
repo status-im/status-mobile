@@ -6,8 +6,8 @@
             [utils.re-frame :as rf]))
 
 (defn user-avatar-tag
-  [user]
-  (let [contact (rf/sub [:contacts/contact-by-identity user])]
+  [user-id]
+  (let [contact (rf/sub [:contacts/contact-by-identity user-id])]
     [quo/user-avatar-tag
      {:color          :purple
       :override-theme :dark

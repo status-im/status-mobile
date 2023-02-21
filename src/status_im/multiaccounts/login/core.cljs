@@ -4,7 +4,6 @@
     [re-frame.core :as re-frame]
     [status-im.async-storage.core :as async-storage]
     [status-im.communities.core :as communities]
-    [status-im.contact.core :as contact]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
     [status-im.data-store.settings :as data-store.settings]
@@ -41,6 +40,7 @@
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.contexts.activity-center.events :as activity-center]
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
+    [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
@@ -468,7 +468,7 @@
               (transport/start-messenger)
               (initialize-transactions-management-enabled)
               (check-network-version network-id)
-              (contact/initialize-contacts)
+              (contacts/initialize-contacts)
               (initialize-browser)
               (mobile-network/on-network-status-change)
               (get-group-chat-invitations)
