@@ -42,7 +42,7 @@
              (get-quoted-text-with-mentions children)
 
              (= type "mention")
-             @(re-frame/subscribe [:contacts/contact-name-by-identity literal])
+             @(re-frame/subscribe [:messages/resolve-mention literal])
 
              (seq children)
              (get-quoted-text-with-mentions children)

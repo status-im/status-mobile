@@ -19,7 +19,7 @@
     "@babel/preset-typescript": "^7.17.12",
     "@react-native-async-storage/async-storage": "^1.17.9",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
-    "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.0-status",
+    "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.1-status",
     "@react-native-community/cameraroll": "git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0",
     "@react-native-community/clipboard": "^1.2.2",
     "@react-native-community/hooks": "^2.5.1",

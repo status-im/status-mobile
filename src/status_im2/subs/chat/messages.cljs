@@ -3,6 +3,7 @@
             [status-im.chat.models.reactions :as models.reactions]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.list.events :as models.message-list]
+            [utils.i18n :as i18n]
             [utils.datetime :as datetime]))
 
 (defn intersperse-datemark
@@ -271,3 +272,13 @@
                           joined
                           loading-messages?)
            (albumize-messages))))))
+
+(re-frame/reg-sub
+ :messages/resolve-mention
+ (fn [[_ mention] _]
+   [(re-frame/subscribe [:contacts/contact-name-by-identity mention])])
+ (fn [[contact-name] [_ mention]]
+   (if (= mention constants/everyone-mention-id)
+     (i18n/label :t/everyone-mention)
+     contact-name)))
+

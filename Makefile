@@ -349,8 +349,8 @@ component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
-component-test: ##@test Run tests once in NodeJS
-	# Here we create the gyp bindings for nodejs
+component-test: ##@test Run component tests once in NodeJS
+	yarn install
 	yarn shadow-cljs compile component-test && \
 	jest --config=test/jest/jest.config.js
 

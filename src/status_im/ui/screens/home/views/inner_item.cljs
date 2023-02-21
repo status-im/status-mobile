@@ -49,7 +49,7 @@
 
                  "mention"
                  {:components [react/text-class
-                               @(re-frame/subscribe [:contacts/contact-name-by-identity literal])]
+                               @(re-frame/subscribe [:messages/resolve-mention literal])]
                   :length     4} ;; we can't predict name length so take the smallest possible
 
                  "status-tag"

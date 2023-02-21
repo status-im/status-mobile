@@ -35,7 +35,7 @@
 
 (defn mention-element
   [from]
-  (rf/sub [:contacts/contact-name-by-identity from]))
+  (rf/sub [:messages/resolve-mention from]))
 
 (defn render-inline
   [_message-text content-type acc {:keys [type literal destination]}]
