@@ -74,7 +74,7 @@
                   (and on-error (not ok?))
                   (on-error data)
 
-                  :else                    false)))
+                  :else false)))
        (.catch (fn [error]
                  (if on-error
                    (on-error {:response-body error})
@@ -111,7 +111,7 @@
                   (and on-error (not ok?))
                   (on-error response)
 
-                  :else                    false)))
+                  :else false)))
        (.catch (or on-error #())))))
 
 (defn normalize-url
@@ -158,7 +158,7 @@
     (string/split param #"=")
     (concat (repeat ""))
     (->>
-     (take 2))))
+      (take 2))))
 
 (defn- url-decode
   [string]

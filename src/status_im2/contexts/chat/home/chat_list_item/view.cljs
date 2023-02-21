@@ -38,7 +38,7 @@
                   children)
 
                  "mention"
-                 {:components [quo/text (rf/sub [:contacts/contact-name-by-identity literal])]
+                 {:components [quo/text (rf/sub [:messages/resolve-mention literal])]
                   :length     4} ;; we can't predict name length so take the
                                  ;; smallest possible
 

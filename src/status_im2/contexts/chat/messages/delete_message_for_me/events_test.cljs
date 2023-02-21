@@ -30,7 +30,7 @@
                                        :message-deleted-for-me-count 1
                                        :message-deleted-for-me-undos [{:message-id
                                                                        "pending-delete-message"
-                                                                       :chat-id    cid}]))
+                                                                       :chat-id cid}]))
                 effects (delete-message-for-me/delete {:db db} message 1000)]
             (is (= (get-in effects [:db :messages cid mid :deleted-for-me-undoable-till])
                    (get-in effects
@@ -67,7 +67,7 @@
         (let [db             (update-in db
                                         [:messages cid mid]
                                         assoc
-                                        :deleted-for-me?              true
+                                        :deleted-for-me? true
                                         :deleted-for-me-undoable-till
                                         (+ (datetime/timestamp) 1000))
               result-message (get-in (delete-message-for-me/undo {:db db} message)

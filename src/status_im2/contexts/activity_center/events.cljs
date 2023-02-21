@@ -3,8 +3,13 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.chat.events :as chat.events]
+            [status-im2.common.toasts.events :as toasts]
+            status-im2.contexts.activity-center.notification.contact-requests.events
             [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]
+            [quo2.foundations.colors :as colors]
+            [status-im2.constants :as constants]))
 
 (def defaults
   {:filter-status          :unread
@@ -92,6 +97,38 @@
                           new-notifications)
      :dispatch [:activity-center.notifications/fetch-unread-count]}))
 
+(rf/defn show-toasts
+  {:events [:activity-center.notifications/show-toasts]}
+  [{:keys [db]} new-notifications]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
+              (cond
+                (and (not= author my-public-key)
+                     (= type types/contact-request)
+                     (not accepted)
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-sent-toast
+                                                        {:name name})
+                                :text       (get-in message [:content :text])})
+
+                (and (= author my-public-key) ;; we show it for user who sent the request
+                     (= type types/contact-request)
+                     accepted
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-accepted-toast
+                                                        {:name (:alias message)})})
+
+                :else
+                cofx))
+            {:db db}
+            new-notifications)))
+
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
   [cofx response]
@@ -152,6 +189,66 @@
   {:events [:activity-center.notifications/mark-as-read-success]}
   [cofx notification]
   (notifications-reconcile cofx [(assoc notification :read true)]))
+
+(rf/defn mark-all-as-read
+  {:events [:activity-center.notifications/mark-all-as-read]}
+  [{:keys [db now]}]
+  (when-let [undoable-till (get-in db [:activity-center :mark-all-as-read-undoable-till])]
+    (when (>= now undoable-till)
+      {:json-rpc/call [{:method     "wakuext_markAllActivityCenterNotificationsRead"
+                        :params     []
+                        :on-success #(rf/dispatch
+                                      [:activity-center.notifications/mark-all-as-read-success])
+                        :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                   nil
+                                                   :notification/mark-all-as-read
+                                                   %])}]})))
+
+(rf/defn mark-all-as-read-success
+  {:events [:activity-center.notifications/mark-all-as-read-success]}
+  [{:keys [db]}]
+  {:db (-> (reduce (fn [acc notification-type]
+                     (assoc-in acc [:activity-center :unread-counts-by-type notification-type] 0))
+                   db
+                   types/all-supported)
+           (update :activity-center dissoc :mark-all-as-read-undoable-till))})
+
+(rf/defn undo-mark-all-as-read
+  {:events [:activity-center.notifications/undo-mark-all-as-read-locally]}
+  [{:keys [db]} {:keys [notifications]}]
+  {:db (-> db
+           (update-in [:activity-center :notifications]
+                      update-notifications
+                      notifications)
+           (update :activity-center dissoc :mark-all-as-read-undoable-till))})
+
+(rf/defn mark-all-as-read-locally
+  {:events [:activity-center.notifications/mark-all-as-read-locally]}
+  [{:keys [db now]} get-toast-ui-props]
+  (let [unread-notifications (get-in db [:activity-center :notifications types/no-type :unread :data])
+        undo-time-limit-ms   constants/activity-center-mark-all-as-read-undo-time-limit-ms
+        undoable-till        (+ now undo-time-limit-ms)]
+    {:db                   (-> db
+                               (update-in [:activity-center :notifications]
+                                          update-notifications
+                                          (data-store.activities/mark-notifications-as-read
+                                           unread-notifications))
+                               (assoc-in [:activity-center :mark-all-as-read-undoable-till]
+                                         undoable-till))
+     :dispatch             [:toasts/upsert
+                            (merge
+                             {:id :activity-center-mark-all-as-read
+                              :duration undo-time-limit-ms
+                              :undo-duration (/ undo-time-limit-ms 1000)
+                              :undo-on-press
+                              (fn []
+                                (rf/dispatch
+                                 [:activity-center.notifications/undo-mark-all-as-read-locally
+                                  {:notifications unread-notifications}])
+                                (rf/dispatch [:toasts/close :activity-center-mark-all-as-read]))}
+                             (get-toast-ui-props))]
+     :utils/dispatch-later [{:dispatch [:activity-center.notifications/mark-all-as-read]
+                             :ms       undo-time-limit-ms}]}))
 
 ;;;; Acceptance/dismissal
 

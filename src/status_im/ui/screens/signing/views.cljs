@@ -1,32 +1,32 @@
 (ns status-im.ui.screens.signing.views
   (:require-macros [status-im.utils.views :as views])
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.ethereum.tokens :as tokens]
-   [utils.i18n :as i18n]
-   [status-im.keycard.common :as keycard.common]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.react-native.resources :as resources]
-   [status-im.signing.eip1559 :as eip1559]
-   [status-im.ui.components.bottom-panel.views :as bottom-panel]
-   [status-im.ui.components.chat-icon.screen :as chat-icon]
-   [status-im.ui.components.copyable-text :as copyable-text]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-   [status-im.ui.screens.keycard.pin.views :as pin.views]
-   [status-im.ui.screens.signing.sheets :as sheets]
-   [status-im.ui.screens.signing.styles :as styles]
-   [status-im.ui.screens.wallet.components.views :as wallet.components]
-   [status-im.utils.platform :as platform]
-   [status-im.utils.types :as types]
-   [status-im.utils.utils :as utils]
-   [status-im.wallet.utils :as wallet.utils]
-   [utils.security.core :as security]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.design-system.colors :as colors]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ethereum.tokens :as tokens]
+    [utils.i18n :as i18n]
+    [status-im.keycard.common :as keycard.common]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.react-native.resources :as resources]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im.ui.components.bottom-panel.views :as bottom-panel]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+    [status-im.ui.screens.keycard.pin.views :as pin.views]
+    [status-im.ui.screens.signing.sheets :as sheets]
+    [status-im.ui.screens.signing.styles :as styles]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.utils.platform :as platform]
+    [status-im.utils.types :as types]
+    [status-im.utils.utils :as utils]
+    [status-im.wallet.utils :as wallet.utils]
+    [utils.security.core :as security]))
 
 (defn separator
   []
@@ -244,10 +244,10 @@
   (let [message (:message formatted-data)]
     [react/view (assoc (styles/message) :padding-vertical 16)
      [keycard-sheet/connect-keycard
-      {:on-connect    ::keycard.common/on-card-connected
+      {:on-connect ::keycard.common/on-card-connected
        :on-disconnect ::keycard.common/on-card-disconnected
-       :connected?    connected?
-       :on-cancel     #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
+       :connected? connected?
+       :on-cancel #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
        :params
        (cond
          (:receiver message) {:title              (i18n/label :t/confirmation-request)

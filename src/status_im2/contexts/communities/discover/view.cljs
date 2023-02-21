@@ -14,7 +14,7 @@
             [status-im2.contexts.communities.discover.style :as style]
             [utils.re-frame :as rf]))
 
-(def mock-community-item-data  ;; TODO: remove once communities are loaded with this data.
+(def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
   {:data {:community-color "#0052FF"
           :status          :gated
           :locked?         true

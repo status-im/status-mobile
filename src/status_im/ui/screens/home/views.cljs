@@ -1,32 +1,32 @@
 (ns status-im.ui.screens.home.views
   (:require
-   [quo.core :as quo]
-   [quo.design-system.colors :as colors]
-   [quo2.components.buttons.button :as quo2.button]
-   [quo2.components.markdown.text :as quo2.text]
-   [quo2.foundations.colors :as quo2.colors]
-   [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.add-new.db :as db]
-   [utils.i18n :as i18n]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-   [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
-   [status-im.ui.components.connectivity.view :as connectivity]
-   [status-im.ui.components.icons.icons :as icons]
-   [status-im.ui.components.invite.views :as invite]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.plus-button :as components.plus-button]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.components.search-input.view :as search-input]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.screens.chat.sheets :as sheets]
-   [status-im.ui.screens.communities.views :as communities.views]
-   [status-im.ui.screens.home.styles :as styles]
-   [status-im.ui.screens.home.views.inner-item :as inner-item]
-   [status-im.utils.utils :as utils]
-   [utils.debounce :as debounce])
+    [quo.core :as quo]
+    [quo.design-system.colors :as colors]
+    [quo2.components.buttons.button :as quo2.button]
+    [quo2.components.markdown.text :as quo2.text]
+    [quo2.foundations.colors :as quo2.colors]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.add-new.db :as db]
+    [utils.i18n :as i18n]
+    [status-im.qr-scanner.core :as qr-scanner]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+    [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+    [status-im.ui.components.connectivity.view :as connectivity]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.invite.views :as invite]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.plus-button :as components.plus-button]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.chat.sheets :as sheets]
+    [status-im.ui.screens.communities.views :as communities.views]
+    [status-im.ui.screens.home.styles :as styles]
+    [status-im.ui.screens.home.views.inner-item :as inner-item]
+    [status-im.utils.utils :as utils]
+    [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view
@@ -117,8 +117,8 @@
   [search-value]
   (let [{:keys [state ens-name public-key compressed-key]}
         @(re-frame/subscribe [:contacts/new-identity])
-        valid-private?                                     (= state :valid)
-        valid-public?                                      (db/valid-topic? search-value)]
+        valid-private? (= state :valid)
+        valid-public? (db/valid-topic? search-value)]
     (when (or valid-public? valid-private?)
       [react/view
        [quo/list-header (i18n/label :t/search-no-chat-found)]

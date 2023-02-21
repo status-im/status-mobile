@@ -40,18 +40,18 @@
 #_(deftest login
     (testing "login with keycard"
       (let
-        [wpk    "c56c7ac797c27b3790ce02c2459e9957c5d20d7a2c55320535526ce9e4dcbbef"
+        [wpk "c56c7ac797c27b3790ce02c2459e9957c5d20d7a2c55320535526ce9e4dcbbef"
          epk
          "04f43da85ff1c333f3e7277b9ac4df92c9120fbb251f1dede7d41286e8c055acfeb845f6d2654821afca25da119daff9043530b296ee0e28e202ba92ec5842d617"
          db
          {:keycard
           {:multiaccount
            {:encryption-public-key epk
-            :whisper-private-key   wpk
-            :wallet-address        "83278851e290d2488b6add2a257259f5741a3b7d"
+            :whisper-private-key wpk
+            :wallet-address "83278851e290d2488b6add2a257259f5741a3b7d"
             :whisper-public-key
             "0x04491c1272149d7fa668afa45968c9914c0661641ace7dbcbc585c15070257840a0b4b1f71ce66c2147e281e1a44d6231b4731a26f6cc0a49e9616bbc7fc2f1a93"
-            :whisper-address       "b8bec30855ff20c2ddab32282e2b2c8c8baca70d"}}}
+            :whisper-address "b8bec30855ff20c2ddab32282e2b2c8c8baca70d"}}}
          result (login.core/login {:db db})]
         (is (= (-> result (get :keycard/login-with-keycard) keys count)
                3))

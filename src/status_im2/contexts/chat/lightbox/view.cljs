@@ -1,17 +1,17 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [react-native.reanimated :as reanimated]
-   [utils.re-frame :as rf]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im2.contexts.chat.lightbox.style :as style]
-   [utils.datetime :as datetime]
-   [react-native.gesture :as gesture]
-   [oops.core :refer [oget]]))
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [react-native.reanimated :as reanimated]
+    [utils.re-frame :as rf]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.contexts.chat.lightbox.style :as style]
+    [utils.datetime :as datetime]
+    [react-native.gesture :as gesture]
+    [oops.core :refer [oget]]))
 
 (def flat-list-ref (atom nil))
 (def small-list-ref (atom nil))

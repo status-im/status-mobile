@@ -38,7 +38,7 @@
        (assoc opts :repl true)
 
        (string/starts-with? arg "--test=")
-       (let [test-arg  (subs arg 7)
+       (let [test-arg (subs arg 7)
              test-syms
              (->> (string/split test-arg ",")
                   (map symbol))]

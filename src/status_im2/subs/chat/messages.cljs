@@ -1,9 +1,10 @@
 (ns status-im2.subs.chat.messages
   (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.messages.list.events :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
-            [utils.datetime :as datetime]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.messages.list.events :as models.message-list]
+            [utils.i18n :as i18n]
+            [utils.datetime :as datetime]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -24,7 +25,7 @@
      :acc            (conj acc msg)}
 
     (and (not= last-datemark datemark) ; not the same day
-         (< whisper-timestamp last-timestamp))               ; not out-of-order
+         (< whisper-timestamp last-timestamp)) ; not out-of-order
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc
@@ -32,7 +33,7 @@
                             :type  :datemark}
                            msg)}
     :else
-    {:last-timestamp (min whisper-timestamp last-timestamp)  ; use last datemark
+    {:last-timestamp (min whisper-timestamp last-timestamp) ; use last datemark
      :last-datemark  last-datemark
      :acc            (conj acc (assoc msg :datemark last-datemark))}))
 
@@ -158,14 +159,18 @@
    [(re-frame/subscribe [:messages/pin-messages])
     (re-frame/subscribe [:chats/chat-messages chat-id])])
  (fn [[pin-messages messages] [_ chat-id]]
-   (let [pin-messages (get pin-messages chat-id {})]
-     (reduce-kv (fn [acc message-id message]
-                  (let [{:keys [deleted? deleted-for-me?]} (get messages message-id)]
-                    (if (or deleted? deleted-for-me?)
-                      acc
-                      (assoc acc message-id message))))
-                {}
-                pin-messages))))
+   (let [pinned-messages (get pin-messages chat-id {})]
+     (reduce-kv
+      (fn [pinned-messages pinned-message-id pinned-message]
+        (let [{:keys [deleted? deleted-for-me? deleted-by]} (get messages pinned-message-id)
+              pinned-message                                (assoc pinned-message
+                                                                   :deleted?        deleted?
+                                                                   :deleted-for-me? deleted-for-me?
+                                                                   :deleted-by      deleted-by
+                                                                   :pinned          true)]
+          (assoc pinned-messages pinned-message-id pinned-message)))
+      pinned-messages
+      pinned-messages))))
 
 ;; local messages will not have a :pinned-at key until user navigates away and to
 ;; chat screen. For this reason we want to retain order of local messages with :pinned-at nil
@@ -267,3 +272,13 @@
                           joined
                           loading-messages?)
            (albumize-messages))))))
+
+(re-frame/reg-sub
+ :messages/resolve-mention
+ (fn [[_ mention] _]
+   [(re-frame/subscribe [:contacts/contact-name-by-identity mention])])
+ (fn [[contact-name] [_ mention]]
+   (if (= mention constants/everyone-mention-id)
+     (i18n/label :t/everyone-mention)
+     contact-name)))
+

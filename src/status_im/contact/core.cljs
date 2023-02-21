@@ -8,19 +8,6 @@
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
-(rf/defn load-contacts
-  {:events [::contacts-loaded]}
-  [{:keys [db] :as cofx} all-contacts]
-  (let [contacts-list (map #(vector (:public-key %)
-                                    (if (empty? (:address %))
-                                      (dissoc % :address)
-                                      %))
-                           all-contacts)
-        contacts      (into {} contacts-list)]
-    {:db (cond-> (-> db
-                     (update :contacts/contacts #(merge contacts %))
-                     (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts))))}))
-
 (defn build-contact
   [{{:keys          [multiaccount]
      :contacts/keys [contacts]}
@@ -66,7 +53,7 @@
 
 (rf/defn add-contact
   "Add a contact and set pending to false"
-  {:events [:contact.ui/add-to-contact-pressed]}
+  {:events [:contact.ui/add-contact-pressed]}
   [{:keys [db] :as cofx} public-key nickname ens-name]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (contacts-store/add
@@ -87,25 +74,9 @@
                       (assoc-in [:contacts/contacts public-key :contact-request-state]
                                 constants/contact-request-state-none))
    :json-rpc/call [{:method     "wakuext_retractContactRequest"
-                    :params     [{:contactId public-key}]
+                    :params     [{:id public-key}]
                     :on-success #(log/debug "contact removed successfully")}]
    :dispatch      [:chat/offload-messages constants/timeline-chat-id]})
-
-(rf/defn accept-contact-request
-  {:events [:contact-requests.ui/accept-request]}
-  [{:keys [db]} id]
-  {:json-rpc/call [{:method      "wakuext_acceptContactRequest"
-                    :params      [{:id id}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
-
-(rf/defn decline-contact-request
-  {:events [:contact-requests.ui/decline-request]}
-  [{:keys [db]} id]
-  {:json-rpc/call [{:method      "wakuext_dismissContactRequest"
-                    :params      [{:id id}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (rf/defn initialize-contacts
   [cofx]

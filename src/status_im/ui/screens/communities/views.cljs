@@ -149,7 +149,7 @@
       (cond-> {:title (i18n/label :t/communities)}
         communities-enabled?
         (assoc :right-accessories
-               [{:icon                :main-icons/more
+               [{:icon :main-icons/more
                  :accessibility-label :chat-menu-button
                  :on-press
                  #(rf/dispatch [:bottom-sheet/show-sheet

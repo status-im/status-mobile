@@ -33,63 +33,64 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def svg #js {})
 
 (def react-native
-  (clj->js {:NativeModules            {:RNGestureHandlerModule {:Direction (fn [])}
-                                       :PushNotifications      {}
-                                       :Status                 utils.test/status
-                                       :ReanimatedModule       {:configureProps (fn [])}}
+  (clj->js
+   {:NativeModules            {:RNGestureHandlerModule {:Direction (fn [])}
+                               :PushNotifications      {}
+                               :Status                 utils.test/status
+                               :ReanimatedModule       {:configureProps (fn [])}}
 
-            :View                     {}
-            :RefreshControl           {}
-            :AppState                 {}
-            :Alert                    {:alert (fn [])}
-            :FlatList                 {}
-            :SectionList              {}
-            :Text                     {}
-            :StatusBar                {}
-            :ScrollView               {}
-            :KeyboardAvoidingView     {}
-            :TextInput                {}
-            :Image                    {}
-            :Picker                   {:Item {}}
-            :Switch                   {}
-            :Modal                    {}
-            :Keyboard                 {:dismiss (fn [])}
-            :Linking                  {}
-            :TouchableWithoutFeedback {}
-            :TouchableHighlight       {}
-            :Pressable                {}
-            :TouchableOpacity         {}
-            :ActivityIndicator        {}
-            :StyleSheet               {:create (fn [])}
-            :Animated                 {:createAnimatedComponent identity
-                                       :Value                   (fn [])
-                                       :ValueXY                 (fn [])
-                                       :View                    {}
-                                       :FlatList                {}
-                                       :ScrollView              {}
-                                       :Text                    {}}
-            :Easing                   {:bezier (fn [])
-                                       :poly   (fn [])
-                                       :out    (fn [])
-                                       :in     (fn [])
-                                       :inOut  (fn [])}
-            :DeviceEventEmitter       {:addListener (fn [])}
-            :Dimensions               {:get (fn []) :addEventListener identity}
-            :useWindowDimensions      {}
-            :Platform                 {:select (fn [])}
-            :I18nManager              {:isRTL ""}
-            :NativeEventEmitter       (fn [])
-            :LayoutAnimation          {:Presets       #js
-                                                       {:easeInEaseOut nil
-                                                        :linear        nil
-                                                        :spring        nil}
-                                       :Types         #js {}
-                                       :Properties    #{}
-                                       :create        (fn [])
-                                       :configureNext (fn [])}
-            :requireNativeComponent   (fn [] {:propTypes ""})
-            :Appearance               {:getColorScheme    (fn [])
-                                       :addChangeListener (fn [])}}))
+    :View                     {}
+    :RefreshControl           {}
+    :AppState                 {}
+    :Alert                    {:alert (fn [])}
+    :FlatList                 {}
+    :SectionList              {}
+    :Text                     {}
+    :StatusBar                {}
+    :ScrollView               {}
+    :KeyboardAvoidingView     {}
+    :TextInput                {}
+    :Image                    {}
+    :Picker                   {:Item {}}
+    :Switch                   {}
+    :Modal                    {}
+    :Keyboard                 {:dismiss (fn [])}
+    :Linking                  {}
+    :TouchableWithoutFeedback {}
+    :TouchableHighlight       {}
+    :Pressable                {}
+    :TouchableOpacity         {}
+    :ActivityIndicator        {}
+    :StyleSheet               {:create (fn [])}
+    :Animated                 {:createAnimatedComponent identity
+                               :Value                   (fn [])
+                               :ValueXY                 (fn [])
+                               :View                    {}
+                               :FlatList                {}
+                               :ScrollView              {}
+                               :Text                    {}}
+    :Easing                   {:bezier (fn [])
+                               :poly   (fn [])
+                               :out    (fn [])
+                               :in     (fn [])
+                               :inOut  (fn [])}
+    :DeviceEventEmitter       {:addListener (fn [])}
+    :Dimensions               {:get (fn []) :addEventListener identity}
+    :useWindowDimensions      {}
+    :Platform                 {:select (fn [])}
+    :I18nManager              {:isRTL ""}
+    :NativeEventEmitter       (fn [])
+    :LayoutAnimation          {:Presets       #js
+                                               {:easeInEaseOut nil
+                                                :linear        nil
+                                                :spring        nil}
+                               :Types         #js {}
+                               :Properties    #{}
+                               :create        (fn [])
+                               :configureNext (fn [])}
+    :requireNativeComponent   (fn [] {:propTypes ""})
+    :Appearance               {:getColorScheme    (fn [])
+                               :addChangeListener (fn [])}}))
 
 (set! js/ReactNative react-native)
 
@@ -175,19 +176,19 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def react-native-navigation
   #js
    {:Navigation #js
-                 {:constants                   (fn [] #js {:then identity})
-                  :setDefaultOptions           identity
-                  :setRoot                     identity
-                  :dismissOverlay              #(js/Promise.resolve)
-                  :showOverlay                 identity
+                 {:constants (fn [] #js {:then identity})
+                  :setDefaultOptions identity
+                  :setRoot identity
+                  :dismissOverlay #(js/Promise.resolve)
+                  :showOverlay identity
                   :setLazyComponentRegistrator identity
-                  :pop                         identity
-                  :push                        identity
-                  :mergeOptions                identity
-                  :popToRoot                   identity
-                  :showModal                   identity
-                  :dismissModal                identity
-                  :registerComponent           identity
+                  :pop identity
+                  :push identity
+                  :mergeOptions identity
+                  :popToRoot identity
+                  :showModal identity
+                  :dismissModal identity
+                  :registerComponent identity
                   :events
                   (fn []
                     #js

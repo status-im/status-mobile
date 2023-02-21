@@ -36,6 +36,8 @@
 (def ^:const activity-center-membership-status-accepted 2)
 (def ^:const activity-center-membership-status-declined 3)
 
+(def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
+
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up 2)
 (def ^:const emoji-reaction-thumbs-down 3)
@@ -279,3 +281,5 @@
 (def ^:const local-pair-action-connect 1)
 (def ^:const local-pair-action-pairing-account 2)
 (def ^:const local-pair-action-sync-device 3)
+
+(def ^:const everyone-mention-id "0x00001")

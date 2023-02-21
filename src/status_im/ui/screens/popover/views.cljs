@@ -99,7 +99,7 @@
           :else
           (do (reset! current-popover nil)
               (on-hide))))
-      :component-will-unmount     on-hide
+      :component-will-unmount on-hide
       :reagent-render
       (fn []
         (when @current-popover

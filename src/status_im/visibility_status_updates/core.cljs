@@ -51,7 +51,7 @@
 
 (defn handle-other-visibility-status-updates
   [acc public-key clock visibility-status-update]
-  (let [status-type                  (:status-type visibility-status-update)
+  (let [status-type (:status-type visibility-status-update)
         visibility-status-update-old
         (get-in acc [:visibility-status-updates public-key])]
     (if (and (valid-status-type? status-type)
@@ -123,7 +123,7 @@
   [{:keys [db] :as cofx} status-type]
   (let [events-to-dispatch-later
         (cond->
-          [{:ms       10
+          [{:ms 10
             :dispatch
             [:visibility-status-updates/update-visibility-status
              status-type]}]
@@ -131,7 +131,7 @@
            (= status-type constants/visibility-status-inactive)
            (> (:peers-count db) 0))
           ;; Disable broadcasting further updates
-          (conj {:ms       1000
+          (conj {:ms 1000
                  :dispatch
                  [:visibility-status-updates/send-visibility-status-updates? false]}))]
     (rf/merge cofx
@@ -143,7 +143,7 @@
   {:events [:visibility-status-updates/delayed-visibility-status-update]}
   [{:keys [db]} status-type]
   {:dispatch-later
-   [{:ms       200
+   [{:ms 200
      :dispatch
      [:visibility-status-updates/visibility-status-option-pressed status-type]}]})
 
@@ -158,7 +158,7 @@
            send-visibility-status-updates?
            (= status-type constants/visibility-status-inactive))
       (rf/merge cofx
-                {:dispatch-later [{:ms       1000
+                {:dispatch-later [{:ms 1000
                                    :dispatch
                                    [:visibility-status-updates/send-visibility-status-updates? false]}]
                  :db             (assoc-in db [:multiaccount :send-status-updates?] false)}

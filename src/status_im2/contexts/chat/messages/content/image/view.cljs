@@ -1,10 +1,10 @@
 (ns status-im2.contexts.chat.messages.content.image.view
   (:require
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [status-im2.constants :as constants]
-   [utils.re-frame :as rf]))
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [status-im2.constants :as constants]
+    [utils.re-frame :as rf]))
 
 (defn calculate-dimensions
   [width height]

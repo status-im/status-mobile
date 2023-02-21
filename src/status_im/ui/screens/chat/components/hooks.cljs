@@ -21,25 +21,26 @@
                             :max-height   (+ (if platform/ios? bottom 0) default-kb-height)})]
     (react/effect!
      (fn []
-       (letfn [(dimensions-change [evt]
-                 (swap! keyboard assoc :end-position (-> ^js evt .-window .-height)))
-               (keyboard-dimensions [evt]
-                 (let [duration   (.-duration ^js evt)
-                       easing     (.-easing ^js evt)
-                       screen-y   (-> ^js evt .-endCoordinates .-screenY)
-                       new-height (- height screen-y)]
-                   (when-not (= new-height (:height @keyboard))
-                     (when (and duration easing platform/ios?)
-                       (rn/configure-next
-                        #js
-                         {:duration (max min-duration duration)
-                          :update   #js
-                                     {:duration (max min-duration duration)
-                                      :type     (-> ^js rn/layout-animation .-Types (aget easing))}})))
-                   (reset! keyboard {:height       new-height
-                                     :end-position screen-y
-                                     :duration     (max min-duration duration)
-                                     :max-height   (max new-height (:max-height @keyboard))})))]
+       (letfn
+         [(dimensions-change [evt]
+            (swap! keyboard assoc :end-position (-> ^js evt .-window .-height)))
+          (keyboard-dimensions [evt]
+            (let [duration   (.-duration ^js evt)
+                  easing     (.-easing ^js evt)
+                  screen-y   (-> ^js evt .-endCoordinates .-screenY)
+                  new-height (- height screen-y)]
+              (when-not (= new-height (:height @keyboard))
+                (when (and duration easing platform/ios?)
+                  (rn/configure-next
+                   #js
+                    {:duration (max min-duration duration)
+                     :update   #js
+                                {:duration (max min-duration duration)
+                                 :type     (-> ^js rn/layout-animation .-Types (aget easing))}})))
+              (reset! keyboard {:height       new-height
+                                :end-position screen-y
+                                :duration     (max min-duration duration)
+                                :max-height   (max new-height (:max-height @keyboard))})))]
          (.addEventListener rn/dimensions "change" dimensions-change)
          (reset! keyboard-listener (.addListener rn/keyboard keyboard-change-event keyboard-dimensions))
          (fn []

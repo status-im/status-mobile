@@ -22,7 +22,7 @@
              (get-quoted-text-with-mentions children)
 
              (= type "mention")
-             (rf/sub [:contacts/contact-name-by-identity literal])
+             (rf/sub [:messages/resolve-mention literal])
 
              (seq children)
              (get-quoted-text-with-mentions children)
@@ -45,7 +45,7 @@
   [from username current-public-key]
   (or (and (= from current-public-key)
            (i18n/label :t/You))
-      (format-author username)))
+      (when username (format-author username))))
 
 (defn reply-deleted-message
   []

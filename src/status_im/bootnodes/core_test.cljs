@@ -125,8 +125,8 @@
     (let [cofx {:db {:networks/current-network "mainnet_rpc"
                      :multiaccount             {:custom-bootnodes
                                                 {"mainnet_rpc"
-                                                 {"a" {:id      "a"
-                                                       :name    "name"
+                                                 {"a" {:id "a"
+                                                       :name "name"
                                                        :address
                                                        "enode://old-id:old-password@url:port"}}}}}}]
       (is (model/fetch cofx "a")))))
@@ -154,8 +154,8 @@
     (let [cofx   {:db {:networks/current-network "mainnet_rpc"
                        :multiaccount             {:custom-bootnodes
                                                   {"mainnet_rpc"
-                                                   {"a" {:id      "a"
-                                                         :name    "name"
+                                                   {"a" {:id "a"
+                                                         :name "name"
                                                          :address
                                                          "enode://old-id:old-password@url:port"}}}
                                                   :custom-bootnodes-enabled?
@@ -167,8 +167,8 @@
     (let [cofx   {:db {:networks/current-network "mainnet_rpc"
                        :multiaccount             {:custom-bootnodes
                                                   {"mainnet_rpc"
-                                                   {"a" {:id      "a"
-                                                         :name    "name"
+                                                   {"a" {:id "a"
+                                                         :name "name"
                                                          :address
                                                          "enode://old-id:old-password@url:port"}}}
                                                   :custom-bootnodes-enabled?

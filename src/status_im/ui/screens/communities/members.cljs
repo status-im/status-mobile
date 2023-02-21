@@ -76,8 +76,8 @@
                                               {:content (fn []
                                                           [member-sheet first-name member community-id
                                                            can-kick-users? can-manage-users? admin?])}])
-                               :type                :icon
-                               :theme               :icon
+                               :type :icon
+                               :theme :icon
                                :accessibility-label :menu-option}
                               :main-icons/more])}]))
 
@@ -98,13 +98,13 @@
         requests-count (count requests)]
     [:<>
      [quo/list-item
-      {:chevron   true
+      {:chevron true
        :accessory
        [react/view {:flex-direction :row}
         (when (pos? requests-count)
           [unviewed-indicator/unviewed-indicator requests-count])]
-       :on-press  #(rf/dispatch [:navigate-to :community-requests-to-join {:community-id community-id}])
-       :title     (i18n/label :t/membership-requests)}]
+       :on-press #(rf/dispatch [:navigate-to :community-requests-to-join {:community-id community-id}])
+       :title (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 
 (defn members

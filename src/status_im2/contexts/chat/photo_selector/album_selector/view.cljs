@@ -1,12 +1,12 @@
 (ns status-im2.contexts.chat.photo-selector.album-selector.view
   (:require
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [quo2.foundations.colors :as colors]
-   [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
-   [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
+    [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
 
 (defn album
   [{:keys [title count uri]} index _ selected-album]

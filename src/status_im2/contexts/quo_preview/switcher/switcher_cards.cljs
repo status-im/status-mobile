@@ -71,9 +71,9 @@
    {:label "Last Message"
     :key   :last-message
     :type  :text}
-   {:label   "Customization"
-    :key     :customization-color
-    :type    :select
+   {:label "Customization"
+    :key :customization-color
+    :type :select
     :options
     (map
      (fn [c]

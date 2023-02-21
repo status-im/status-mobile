@@ -15,7 +15,7 @@
     (is (= false (#'status-im.wallet.db/too-precise-amount? "100.000000000000000001" 18)))
     (is (= false (#'status-im.wallet.db/too-precise-amount? "1e-18" 18)))
     (is (= true (#'status-im.wallet.db/too-precise-amount? "1e-19" 18)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "0xa.a" 2)))  ;; 0xa.a is 10.625
+    (is (= true (#'status-im.wallet.db/too-precise-amount? "0xa.a" 2))) ;; 0xa.a is 10.625
     (is (= false (#'status-im.wallet.db/too-precise-amount? "0xa.a" 3)))
     (is (= false (#'status-im.wallet.db/too-precise-amount? "1000" 3)))))
 

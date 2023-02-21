@@ -52,12 +52,12 @@
   ([sync?] (apply-settings sync? :default))
   ([sync? remember?]
    (fn [{:keys [db] :as cofx}]
-     (let [network          (:network/type db)
+     (let [network (:network/type db)
            remember-choice?
            (if (not= :default remember?)
              remember?
              (:mobile-network/remember-choice? db))
-           cellular?        (utils/cellular? network)]
+           cellular? (utils/cellular? network)]
        (log/info "apply mobile network settings"
                  "sunc?"     sync?
                  "remember?" remember?

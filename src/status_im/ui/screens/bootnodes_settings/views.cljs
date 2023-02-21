@@ -28,7 +28,7 @@
                   bootnodes         [:custom-bootnodes/network-bootnodes]]
     [:<>
      [topbar/topbar
-      {:title             (i18n/label :t/bootnodes-settings)
+      {:title (i18n/label :t/bootnodes-settings)
        :right-accessories
        [{:icon                :main-icons/add
          :accessibility-label :add-bootnode

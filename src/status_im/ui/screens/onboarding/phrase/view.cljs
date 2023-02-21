@@ -136,8 +136,8 @@
               {:on-change-text
                #(re-frame/dispatch [:multiaccounts.recover/enter-passphrase-input-changed
                                     (security/mask-data %)])
-               :placeholder    (i18n/label :t/bip39-password-placeholder)
-               :show-cancel    false}])]]
+               :placeholder (i18n/label :t/bip39-password-placeholder)
+               :show-cancel false}])]]
          [react/view {:align-items :center}
           [react/text
            {:style {:color         colors/gray

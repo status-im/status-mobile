@@ -301,59 +301,59 @@
 (re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
 
 (defonce
- _
- [(navigation/set-default-options {:layout {:orientation "portrait"}})
-  (navigation/set-lazy-component-registrator reg-comp)
-  (navigation/reg-button-pressed-listener button-pressed-listener)
-  (navigation/reg-modal-dismissed-listener modal-dismissed-listener)
-  (navigation/reg-component-did-appear-listener component-did-appear-listener)
-  (navigation/reg-component-did-disappear-listener component-did-disappear-listener)
-  (navigation/reg-app-launched-listener app-launched-listener)
+  _
+  [(navigation/set-default-options {:layout {:orientation "portrait"}})
+   (navigation/set-lazy-component-registrator reg-comp)
+   (navigation/reg-button-pressed-listener button-pressed-listener)
+   (navigation/reg-modal-dismissed-listener modal-dismissed-listener)
+   (navigation/reg-component-did-appear-listener component-did-appear-listener)
+   (navigation/reg-component-did-disappear-listener component-did-disappear-listener)
+   (navigation/reg-app-launched-listener app-launched-listener)
 
-  (navigation/register-component
-   "popover"
-   (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
-   (fn [] views/popover-comp))
+   (navigation/register-component
+    "popover"
+    (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
+    (fn [] views/popover-comp))
 
-  (navigation/register-component
-   "toasts"
-   (fn [] views/toasts-comp)
-   js/undefined)
+   (navigation/register-component
+    "toasts"
+    (fn [] views/toasts-comp)
+    js/undefined)
 
-  (navigation/register-component
-   "visibility-status-popover"
-   (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
-   (fn [] views/visibility-status-popover-comp))
+   (navigation/register-component
+    "visibility-status-popover"
+    (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
+    (fn [] views/visibility-status-popover-comp))
 
-  (navigation/register-component
-   "bottom-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp))
-   (fn [] views/sheet-comp))
+   (navigation/register-component
+    "bottom-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp))
+    (fn [] views/sheet-comp))
 
-  (navigation/register-component
-   "wallet-connect-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-comp))
-   (fn [] views/wallet-connect-comp))
+   (navigation/register-component
+    "wallet-connect-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-comp))
+    (fn [] views/wallet-connect-comp))
 
-  (navigation/register-component
-   "wallet-connect-success-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-success-comp))
-   (fn [] views/wallet-connect-success-comp))
+   (navigation/register-component
+    "wallet-connect-success-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-success-comp))
+    (fn [] views/wallet-connect-success-comp))
 
-  (navigation/register-component
-   "wallet-connect-app-management-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-app-management-comp))
-   (fn [] views/wallet-connect-app-management-comp))
+   (navigation/register-component
+    "wallet-connect-app-management-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-app-management-comp))
+    (fn [] views/wallet-connect-app-management-comp))
 
-  (navigation/register-component
-   "signing-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
-   (fn [] views/signing-comp))
+   (navigation/register-component
+    "signing-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
+    (fn [] views/signing-comp))
 
-  (navigation/register-component
-   "select-acc-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
-   (fn [] views/select-acc-comp))])
+   (navigation/register-component
+    "select-acc-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
+    (fn [] views/select-acc-comp))])
 
 ;; NAVIGATION
 

@@ -1,11 +1,11 @@
 (ns status-im2.contexts.quo-preview.foundations.shadows
   (:require
-   [quo2.foundations.shadows :as shadows]
-   [quo2.foundations.colors :as colors]
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+    [quo2.foundations.shadows :as shadows]
+    [quo2.foundations.colors :as colors]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn demo-box
   [shadow-on? name shadow-style]

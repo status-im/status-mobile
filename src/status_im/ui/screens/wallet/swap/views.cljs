@@ -21,28 +21,28 @@
 (defn render-asset
   [{{:keys
      [icon decimals amount color value]
-     :as   token}
+     :as token}
     :token
     currency :currency
     on-press :on-press}]
   [quo/list-item
-   {:title               [quo/text {:weight :medium}
-                          [quo/text {:weight :inherit}
-                           (str (if amount
-                                  (wallet.utils/format-amount amount decimals)
-                                  "...")
-                                " ")]
-                          [quo/text
-                           {:color  :secondary
-                            :weight :inherit}
-                           (wallet.utils/display-symbol token)]]
-    :on-press            on-press
-    :subtitle            (str (if value value "...") " " currency)
+   {:title [quo/text {:weight :medium}
+            [quo/text {:weight :inherit}
+             (str (if amount
+                    (wallet.utils/format-amount amount decimals)
+                    "...")
+                  " ")]
+            [quo/text
+             {:color  :secondary
+              :weight :inherit}
+             (wallet.utils/display-symbol token)]]
+    :on-press on-press
+    :subtitle (str (if value value "...") " " currency)
     :accessibility-label
     (str (:symbol token) "-asset-value")
-    :icon                (if icon
-                           [wallet.components/token-icon icon]
-                           [chat-icon/custom-icon-view-list (:name token) color])}])
+    :icon (if icon
+            [wallet.components/token-icon icon]
+            [chat-icon/custom-icon-view-list (:name token) color])}])
 
 (defn asset-selector
   []
@@ -92,14 +92,14 @@
     [react/touchable-highlight
      {:on-press #(re-frame/dispatch [::wallet.swap/open-asset-selector-modal source?])}
      [react/view
-      {:style               {:flex-direction     :row
-                             :align-items        :center
-                             :border-width       1
-                             :border-color       colors/gray-lighter
-                             :border-radius      8
-                             :margin-left        16
-                             :padding-horizontal 8
-                             :padding-vertical   2}
+      {:style {:flex-direction     :row
+               :align-items        :center
+               :border-width       1
+               :border-color       colors/gray-lighter
+               :border-radius      8
+               :margin-left        16
+               :padding-horizontal 8
+               :padding-vertical   2}
        :accessibility-label
        :choose-asset-button}
       [quo/text {:style {:margin-right 8}}
@@ -177,18 +177,18 @@
             :margin-top    12
             :border-color  colors/gray-lighter}}
    [quo/list-item
-    {:title                     title
-     :subtitle                  body
+    {:title title
+     :subtitle body
      :active-background-enabled
      false
-     :on-press                  on-press
-     :theme                     :main
-     :chevron                   true
-     :icon                      [react/view
-                                 {:style {:background-color colors/blue-light
-                                          :padding          8
-                                          :border-radius    4}}
-                                 (icons/icon icon {:color :dark})]}]])
+     :on-press on-press
+     :theme :main
+     :chevron true
+     :icon [react/view
+            {:style {:background-color colors/blue-light
+                     :padding          8
+                     :border-radius    4}}
+            (icons/icon icon {:color :dark})]}]])
 
 (defn card-body-row
   [key value primary?]
@@ -430,13 +430,13 @@
   []
   (let [{:keys [name]}
         (rf/sub [:multiaccount/current-account])
-        all-tokens     (rf/sub [:wallet/all-tokens])
-        from-symbol    (rf/sub [:wallet/swap-from-token])
-        to-symbol      (rf/sub [:wallet/swap-to-token])
+        all-tokens (rf/sub [:wallet/all-tokens])
+        from-symbol (rf/sub [:wallet/swap-from-token])
+        to-symbol (rf/sub [:wallet/swap-to-token])
         advanced-mode? (rf/sub [:wallet/swap-advanced-mode?])
-        amount         "0.02"
-        from-token     (tokens/symbol->token all-tokens (or from-symbol :DGX))
-        to-token       (tokens/symbol->token all-tokens (or to-symbol :SNT))]
+        amount "0.02"
+        from-token (tokens/symbol->token all-tokens (or from-symbol :DGX))
+        to-token (tokens/symbol->token all-tokens (or to-symbol :SNT))]
 
     [kb-presentation/keyboard-avoiding-view
      {:style         (merge

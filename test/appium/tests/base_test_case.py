@@ -5,7 +5,7 @@ import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
 from http.client import RemoteDisconnected
-from re import findall
+import re
 
 import pytest
 import requests
@@ -23,12 +23,12 @@ from tests import test_suite_data, start_threads, appium_container, pytest_confi
 from tests import transl
 from tests.conftest import apibase
 
-
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
 executor_local = 'http://localhost:4723/wd/hub'
 
 implicit_wait = 5
+
 
 def get_capabilities_local():
     desired_caps = dict()
@@ -105,7 +105,7 @@ class AbstractTestCase:
     def app_path(self):
         app_folder = 'im.status.ethereum'
         apk = pytest_config_global['apk']
-        if findall(r'pr\d\d\d\d\d', apk) or findall(r'\d\d\d\d\d.apk', apk):
+        if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
             app_folder += '.pr'
         app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
         return app_path
@@ -130,20 +130,22 @@ class AbstractTestCase:
     github_report = GithubHtmlReport()
 
     @staticmethod
-    def is_alert_present(driver):
-        try:
-            return driver.find_element(MobileBy.ID, 'android:id/message')
-        except NoSuchElementException:
-            return False
-
-    @staticmethod
     def get_alert_text(driver):
-        return driver.find_element(MobileBy.ID, 'android:id/message').text
+        try:
+            return driver.find_element(MobileBy.ID, 'android:id/message').text
+        except NoSuchElementException:
+            return None
 
     def add_alert_text_to_report(self, driver):
-        if self.is_alert_present(driver):
-            test_suite_data.current_test.testruns[-1].error += "; also Unexpected Alert is shown: '%s'" \
-                                                               % self.get_alert_text(driver)
+        try:
+            alert_text = self.get_alert_text(driver)
+            if alert_text:
+                test_suite_data.current_test.testruns[-1].error = "%s; also Unexpected Alert is shown: '%s'" % (
+                    test_suite_data.current_test.testruns[-1].error, alert_text
+                )
+        except RemoteDisconnected:
+            test_suite_data.current_test.testruns[-1].error = "%s; \n RemoteDisconnected" % \
+                                                              test_suite_data.current_test.testruns[-1].error
 
     def pull_geth(self, driver):
         result = ""
@@ -393,7 +395,8 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             except WebDriverException:
                 pass
             if option.datacenter == 'eu-central-1':
-                url = 'https://eu-central-1.saucelabs.com/rest/v1/%s/jobs/%s/assets/%s' % (sauce_username, session_id, "log.json")
+                url = 'https://eu-central-1.saucelabs.com/rest/v1/%s/jobs/%s/assets/%s' % (
+                    sauce_username, session_id, "log.json")
             else:
                 url = sauce.jobs.get_job_asset_url(username=sauce_username, job_id=session_id, filename="log.json")
             WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)

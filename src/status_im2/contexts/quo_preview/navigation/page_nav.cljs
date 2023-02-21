@@ -44,26 +44,26 @@
 (defn- cool-preview
   []
   (let
-    [right-icon       {:background-color (if (colors/dark?)
-                                           colors/neutral-80
-                                           colors/neutral-20)
-                       :icon             :i/placeholder
-                       :icon-color       nil}
+    [right-icon {:background-color (if (colors/dark?)
+                                     colors/neutral-80
+                                     colors/neutral-20)
+                 :icon             :i/placeholder
+                 :icon-color       nil}
      base-props
      {:horizontal-description? true
-      :one-icon-align-left?    true
-      :align-mid?              false
-      :page-nav-color          :transparent
+      :one-icon-align-left? true
+      :align-mid? false
+      :page-nav-color :transparent
       :page-nav-background-uri ""
       :mid-section
-      {:type                  :text-with-description
-       :icon                  :i/placeholder
-       :main-text             "Status"
-       :left-icon             :i/placeholder
-       :right-icon            :i/placeholder
-       :description           "SNT"
-       :description-color     "black"
-       :description-icon      :i/placeholder
+      {:type :text-with-description
+       :icon :i/placeholder
+       :main-text "Status"
+       :left-icon :i/placeholder
+       :right-icon :i/placeholder
+       :description "SNT"
+       :description-color "black"
+       :description-icon :i/placeholder
        :description-user-icon
        "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"}
       :left-section
@@ -101,10 +101,10 @@
                                                     :horizontal-description? false
                                                     :mid-section             {:type
                                                                               :text-with-description}})}
-     state            (reagent/atom
-                       (-> (get variations (:selected-variation @selected-variation))
-                           (assoc :right-section-buttons
-                                  (repeat (:number-of-right-icons @selected-variation) right-icon))))]
+     state (reagent/atom
+            (-> (get variations (:selected-variation @selected-variation))
+                (assoc :right-section-buttons
+                       (repeat (:number-of-right-icons @selected-variation) right-icon))))]
     (fn []
       [rn/view
        {:margin-bottom 50

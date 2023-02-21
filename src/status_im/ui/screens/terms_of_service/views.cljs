@@ -98,7 +98,7 @@
      [quo/separator {:style {:margin-vertical (:base spacing/spacing)}}]
 
      [toolbar/toolbar
-      {:size   :large
+      {:size :large
        :center
        [react/view {:padding-horizontal 8}
         [quo/button

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.activity-center.notification.reply.view
-  (:require [quo2.core :as quo]
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.ui2.screens.chat.messages.message :as old-message]
@@ -37,13 +38,11 @@
     nil))
 
 (defn view
-  [{:keys [author chat-name chat-id message read timestamp]}]
-  (let [chat                    (rf/sub [:chats/chat chat-id])
-        community-id            (:community-id chat)
-        is-chat-from-community? (not (nil? community-id))
-        community               (rf/sub [:communities/community community-id])
-        community-name          (:name community)
-        community-image         (get-in community [:images :thumbnail :uri])]
+  [{:keys [author chat-name community-id chat-id message read timestamp]}]
+  (let [community-chat? (not (string/blank? community-id))
+        community       (rf/sub [:communities/community community-id])
+        community-name  (:name community)
+        community-image (get-in community [:images :thumbnail :uri])]
     [rn/touchable-opacity
      {:on-press (fn []
                   (rf/dispatch [:hide-popover])
@@ -55,7 +54,7 @@
        :unread?   (not read)
        :context   [[common/user-avatar-tag author]
                    [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
-                   (if is-chat-from-community?
+                   (if community-chat?
                      [quo/context-tag tag-params {:uri community-image} community-name chat-name]
                      [quo/group-avatar-tag chat-name tag-params])]
        :message   {:body-number-of-lines 1

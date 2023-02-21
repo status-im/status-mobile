@@ -29,17 +29,17 @@
   the output channel immediately (wrapped in a vector).
   When input channel is closed, output channel is closed as well and go-loop exits."
   [input-ch output-ch flush-time]
-  (async/go-loop [acc []
+  (async/go-loop [acc    []
                   flush? false]
-                 (if flush?
-                   (do (async/put! output-ch acc)
-                       (recur [] false))
-                   (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
-                     (if (= ch input-ch)
-                       (if v
-                         (recur (conj acc v) (and (seq acc) flush?))
-                         (async/close! output-ch))
-                       (recur acc (seq acc)))))))
+    (if flush?
+      (do (async/put! output-ch acc)
+          (recur [] false))
+      (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
+        (if (= ch input-ch)
+          (if v
+            (recur (conj acc v) (and (seq acc) flush?))
+            (async/close! output-ch))
+          (recur acc (seq acc)))))))
 
 (defn task-queue
   "Creates `core.async` channel which will process 0 arg functions put there in serial fashion.
@@ -49,8 +49,8 @@
   [& args]
   (let [task-queue (apply async/chan args)]
     (async/go-loop [task-fn (async/<! task-queue)]
-                   (run-task task-fn)
-                   (recur (async/<! task-queue)))
+      (run-task task-fn)
+      (recur (async/<! task-queue)))
     task-queue))
 
 ;; ---------------------------------------------------------------------------
@@ -87,22 +87,22 @@
   (let [do-now-chan (async/chan (async/sliding-buffer 1))
         try-it      (fn [exec-fn catch-fn] (try (exec-fn) (catch :default e (catch-fn e))))]
     (async/go-loop []
-                   (let [timeout-chan  (timeout interval-ms)
-                         finished-chan (async/promise-chan)
-                         [v ch]        (async/alts! [do-now-chan timeout-chan])
-                         worker        (if (and (= ch do-now-chan) (fn? v))
-                                         v
-                                         work-fn)]
-                     (when-not (and (= ch do-now-chan) (nil? v))
-                       ;; don't let try catch be parsed by go-block
-                       (try-it #(worker (fn [] (async/put! finished-chan true)))
-                               (fn [e]
-                                 (log/error "failed to run job" e)
-                                 ;; if an error occurs in work-fn log it and consider it done
-                                 (async/put! finished-chan true)))
-                       ;; sanity timeout for work-fn
-                       (async/alts! [finished-chan (timeout timeout-ms)])
-                       (recur))))
+      (let [timeout-chan  (timeout interval-ms)
+            finished-chan (async/promise-chan)
+            [v ch]        (async/alts! [do-now-chan timeout-chan])
+            worker        (if (and (= ch do-now-chan) (fn? v))
+                            v
+                            work-fn)]
+        (when-not (and (= ch do-now-chan) (nil? v))
+          ;; don't let try catch be parsed by go-block
+          (try-it #(worker (fn [] (async/put! finished-chan true)))
+                  (fn [e]
+                    (log/error "failed to run job" e)
+                    ;; if an error occurs in work-fn log it and consider it done
+                    (async/put! finished-chan true)))
+          ;; sanity timeout for work-fn
+          (async/alts! [finished-chan (timeout timeout-ms)])
+          (recur))))
     do-now-chan))
 
 (comment

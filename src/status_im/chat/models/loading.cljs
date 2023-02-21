@@ -118,7 +118,7 @@
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
-    (let [already-loaded-messages                              (get-in db [:messages chat-id])
+    (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
           {:keys [all-messages new-messages senders contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
@@ -138,11 +138,11 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
-          current-clock-value                                  (get-in db
-                                                                       [:pagination-info chat-id
-                                                                        :cursor-clock-value])
-          clock-value                                          (when cursor (cursor->clock-value cursor))
-          new-messages                                         (map mark-album new-messages)]
+          current-clock-value (get-in db
+                                      [:pagination-info chat-id
+                                       :cursor-clock-value])
+          clock-value (when cursor (cursor->clock-value cursor))
+          new-messages (map mark-album new-messages)]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]

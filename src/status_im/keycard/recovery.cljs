@@ -107,7 +107,7 @@
             (update :keycard
                     dissoc
                     :secrets
-                    :card-state                      :multiaccount-wallet-address
+                    :card-state :multiaccount-wallet-address
                     :multiaccount-whisper-public-key
                     :application-info)
             (assoc-in [:keycard :setup-step] :begin)
@@ -123,7 +123,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (update db
-                         :keycard                     dissoc
+                         :keycard dissoc
                          :multiaccount-wallet-address
                          :multiaccount-whisper-public-key)}
             (navigation/navigate-to-cofx (if platform/android?
@@ -337,13 +337,13 @@
               (assoc :multiaccounts/new-installation-id (random-guid-generator)))}
      (common/remove-listener-to-hardware-back-button)
      (common/hide-connection-sheet)
-     (cond backup?                                 (on-backup-success backup?)
-           migration?                              (migrate-account)
+     (cond backup? (on-backup-success backup?)
+           migration? (migrate-account)
 
            (get-in db [:keycard :delete-account?])
            (delete-multiaccount)
 
-           :else                                   (create-keycard-multiaccount)))))
+           :else (create-keycard-multiaccount)))))
 
 (rf/defn on-generate-and-load-key-error
   {:events [:keycard.callback/on-generate-and-load-key-error]}
@@ -364,12 +364,12 @@
         pairing'          (or pairing (common/get-pairing db key-uid))
         pin               (common/vector->string (get-in db [:keycard :pin :import-multiaccount]))]
     (rf/merge cofx
-              {:db                  (-> db
-                                        (assoc-in [:keycard :multiaccount :instance-uid] instance-uid)
-                                        (assoc-in [:keycard :pin :status] :verifying)
-                                        (assoc-in [:keycard :secrets]
-                                                  {:pairing   pairing'
-                                                   :paired-on (datetime/timestamp)}))
+              {:db (-> db
+                       (assoc-in [:keycard :multiaccount :instance-uid] instance-uid)
+                       (assoc-in [:keycard :pin :status] :verifying)
+                       (assoc-in [:keycard :secrets]
+                                 {:pairing   pairing'
+                                  :paired-on (datetime/timestamp)}))
                :keycard/import-keys
                {:pin        pin
                 :on-success :keycard.callback/on-generate-and-load-key-success}})))

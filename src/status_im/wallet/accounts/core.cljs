@@ -1,30 +1,30 @@
 (ns status-im.wallet.accounts.core
   (:require
-   [clojure.string :as string]
-   [quo.design-system.colors :as colors]
-   [re-frame.core :as re-frame]
-   [status-im2.constants :as constants]
-   [status-im.ens.core :as ens.core]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.eip55 :as eip55]
-   [status-im.ethereum.eip681 :as eip681]
-   [status-im.ethereum.mnemonic :as mnemonic]
-   [status-im.ethereum.stateofus :as stateofus]
-   [utils.i18n :as i18n]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im.multiaccounts.key-storage.core :as key-storage]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.native-module.core :as status]
-   [status-im.ui.components.list-selection :as list-selection]
-   [utils.re-frame :as rf]
-   [status-im.utils.hex :as hex]
-   [status-im.utils.mobile-sync :as utils.mobile-sync]
-   [status-im.utils.types :as types]
-   [status-im.wallet.core :as wallet]
-   [status-im.wallet.prices :as prices]
-   [status-im2.navigation.events :as navigation]
-   [taoensso.timbre :as log]
-   [utils.security.core :as security]))
+    [clojure.string :as string]
+    [quo.design-system.colors :as colors]
+    [re-frame.core :as re-frame]
+    [status-im2.constants :as constants]
+    [status-im.ens.core :as ens.core]
+    [status-im.ethereum.core :as ethereum]
+    [status-im.ethereum.eip55 :as eip55]
+    [status-im.ethereum.eip681 :as eip681]
+    [status-im.ethereum.mnemonic :as mnemonic]
+    [status-im.ethereum.stateofus :as stateofus]
+    [utils.i18n :as i18n]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.multiaccounts.key-storage.core :as key-storage]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.native-module.core :as status]
+    [status-im.ui.components.list-selection :as list-selection]
+    [utils.re-frame :as rf]
+    [status-im.utils.hex :as hex]
+    [status-im.utils.mobile-sync :as utils.mobile-sync]
+    [status-im.utils.types :as types]
+    [status-im.wallet.core :as wallet]
+    [status-im.wallet.prices :as prices]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.security.core :as security]))
 
 (rf/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -152,8 +152,8 @@
   [{:keys [db]} hashed-password]
   (let [{:keys [key-uid wallet-root-address]}
         (get db :multiaccount)
-        path-num                              (inc (get-in db [:multiaccount :latest-derived-path]))
-        accounts                              (:multiaccount/accounts db)]
+        path-num (inc (get-in db [:multiaccount :latest-derived-path]))
+        accounts (:multiaccount/accounts db)]
     {:db                (assoc-in db [:add-account :step] :generating)
      ::generate-account {:derivation-info {:path    (str "m/" path-num)
                                            :address wallet-root-address}

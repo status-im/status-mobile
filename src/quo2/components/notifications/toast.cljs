@@ -10,6 +10,8 @@
 (def ^:private themes
   {:container        {:dark  {:background-color colors/white-opa-70}
                       :light {:background-color colors/neutral-80-opa-90}}
+   :title            {:dark  {:color colors/neutral-100}
+                      :light {:color colors/white}}
    :text             {:dark  {:color colors/neutral-100}
                       :light {:color colors/white}}
    :icon             {:dark  {:color colors/neutral-100}
@@ -18,8 +20,8 @@
                       :light {:background-color :colors/white-opa-5}}})
 
 (defn- merge-theme-style
-  [component-key styles]
-  (merge (get-in themes [component-key (theme/get-theme)]) styles))
+  [component-key styles override-theme]
+  (merge (get-in themes [component-key (or override-theme (theme/get-theme))]) styles))
 
 (defn toast-action-container
   [{:keys [on-press style]} & children]
@@ -41,17 +43,17 @@
     children]])
 
 (defn toast-undo-action
-  [duration on-press]
+  [duration on-press override-theme]
   [toast-action-container
    {:on-press on-press :accessibility-label :toast-undo-action}
    [rn/view {:style {:margin-right 5}}
     [count-down-circle/circle-timer {:duration duration}]]
    [text/text
-    {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {})}
+    {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {} override-theme)}
     [i18n/label :t/undo]]])
 
 (defn- toast-container
-  [{:keys [left middle right container-style]}]
+  [{:keys [left title text right container-style override-theme]}]
   [rn/view {:style (merge {:padding-left 12 :padding-right 12} container-style)}
    [rn/view
     {:style (merge-theme-style :container
@@ -62,27 +64,41 @@
                                 :padding-vertical 8
                                 :padding-left     10
                                 :padding-right    8
-                                :border-radius    12})}
+                                :border-radius    12}
+                               override-theme)}
     [rn/view {:style {:padding 2}} left]
     [rn/view {:style {:padding 4 :flex 1}}
-     [text/text
-      {:size                :paragraph-2
-       :weight              :medium
-       :style               (merge-theme-style :text {})
-       :accessibility-label :toast-content}
-      middle]]
+     (when title
+       [text/text
+        {:size                :paragraph-1
+         :weight              :semi-bold
+         :style               (merge-theme-style :title {} override-theme)
+         :accessibility-label :toast-title}
+        title])
+     (when text
+       [text/text
+        {:size                :paragraph-2
+         :weight              :medium
+         :style               (merge-theme-style :text {} override-theme)
+         :accessibility-label :toast-content}
+        text])]
     (when right right)]])
 
 (defn toast
-  [{:keys [icon icon-color text action undo-duration undo-on-press container-style]}]
+  [{:keys [icon icon-color title text action undo-duration undo-on-press container-style
+           override-theme]}]
   [toast-container
    {:left            (when icon
                        [icon/icon icon
                         {:container-style {:width 20 :height 20}
                          :color           (or icon-color
-                                              (get-in themes [:icon (theme/get-theme) :color]))}])
-    :middle          text
+                                              (get-in themes
+                                                      [:icon (or override-theme (theme/get-theme))
+                                                       :color]))}])
+    :title           title
+    :text            text
     :right           (if undo-duration
-                       [toast-undo-action undo-duration undo-on-press]
+                       [toast-undo-action undo-duration undo-on-press override-theme]
                        action)
-    :container-style container-style}])
+    :container-style container-style
+    :override-theme  override-theme}])

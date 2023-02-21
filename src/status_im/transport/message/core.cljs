@@ -1,29 +1,29 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"} status-im.transport.message.core
   (:require
-   [clojure.string :as string]
-   [status-im.browser.core :as browser]
-   [status-im2.contexts.chat.events :as chat.events]
-   [status-im.chat.models.message :as models.message]
-   [status-im.chat.models.reactions :as models.reactions]
-   [status-im.communities.core :as models.communities]
-   [status-im2.constants :as constants]
-   [status-im.contact.core :as models.contact]
-   [status-im.data-store.activities :as data-store.activities]
-   [status-im.data-store.chats :as data-store.chats]
-   [status-im.data-store.contacts :as data-store.contacts]
-   [status-im.data-store.invitations :as data-store.invitations]
-   [status-im.data-store.messages :as data-store.messages]
-   [status-im.data-store.reactions :as data-store.reactions]
-   [status-im.group-chats.core :as models.group]
-   [status-im.multiaccounts.login.core :as multiaccounts.login]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.multiaccounts.update.core :as update.core]
-   [status-im.pairing.core :as models.pairing]
-   [utils.re-frame :as rf]
-   [status-im.utils.types :as types]
-   [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-   [status-im2.contexts.activity-center.events :as activity-center]
-   [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
+    [clojure.string :as string]
+    [status-im.browser.core :as browser]
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im.chat.models.message :as models.message]
+    [status-im.chat.models.reactions :as models.reactions]
+    [status-im.communities.core :as models.communities]
+    [status-im2.constants :as constants]
+    [status-im.contact.core :as models.contact]
+    [status-im.data-store.activities :as data-store.activities]
+    [status-im.data-store.chats :as data-store.chats]
+    [status-im.data-store.contacts :as data-store.contacts]
+    [status-im.data-store.invitations :as data-store.invitations]
+    [status-im.data-store.messages :as data-store.messages]
+    [status-im.data-store.reactions :as data-store.reactions]
+    [status-im.group-chats.core :as models.group]
+    [status-im.multiaccounts.login.core :as multiaccounts.login]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.multiaccounts.update.core :as update.core]
+    [status-im.pairing.core :as models.pairing]
+    [utils.re-frame :as rf]
+    [status-im.utils.types :as types]
+    [status-im.visibility-status-updates.core :as models.visibility-status-updates]
+    [status-im2.contexts.activity-center.events :as activity-center]
+    [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
 
 (rf/defn process-next
   [cofx ^js response-js sync-handler]
@@ -67,13 +67,13 @@
       (models.message/receive-many cofx response-js)
 
       (seq activity-notifications)
-      (do
+      (let [notifications (->> activity-notifications
+                               types/js->clj
+                               (map data-store.activities/<-rpc))]
         (js-delete response-js "activityCenterNotifications")
         (rf/merge cofx
-                  (->> activity-notifications
-                       types/js->clj
-                       (map data-store.activities/<-rpc)
-                       activity-center/notifications-reconcile)
+                  (activity-center/notifications-reconcile notifications)
+                  (activity-center/show-toasts notifications)
                   (process-next response-js sync-handler)))
 
       (seq installations)
@@ -243,7 +243,7 @@
   {:events [:sanitize-messages-and-process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
   (when response-js
-    (let [current-chat-id                                   (:current-chat-id db)
+    (let [current-chat-id (:current-chat-id db)
           {:keys [db messages transactions chats statuses]}
           (reduce group-by-and-update-unviewed-counts
                   {:db              db

@@ -90,8 +90,8 @@
                                         (not (confirm-password @password @confirm))
                                         (reset! show-error true)
 
-                                        :else                                       (reset! show-error
-                                                                                      false)))}]]]
+                                        :else (reset! show-error
+                                                false)))}]]]
           [quo/text
            {:color :secondary
             :align :center

@@ -75,8 +75,8 @@
      [(:header params)])
    (if @(re-frame/subscribe [:keycard/nfc-enabled?])
      [card-sync-flow
-      {:connected?           connected?
-       :params               (select-keys params [:state-translations])
+      {:connected? connected?
+       :params (select-keys params [:state-translations])
        :on-card-disconnected
        #(re-frame/dispatch [on-disconnect])
        :on-card-connected
