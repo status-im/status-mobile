@@ -1,0 +1,47 @@
+library 'status-jenkins-lib@v1.6.6'
+
+pipeline {
+  agent {
+    label 'linux'
+  }
+
+  triggers {
+    cron('H 5 * * *')
+  }
+
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 15, unit: 'MINUTES')
+    /* Disable concurrent jobs */
+    disableConcurrentBuilds()
+    /* Don't keep more than 50 builds */
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+  }
+
+  stages {
+    stage('Get Nodes') {
+      steps { script {
+        stagePerNode = nodesByLabel('macos').collectEntries {
+          ["${it}" : generateNodeCleanupStage(it)]
+        }
+      } }
+    }
+
+    stage('Clean Xcode') {
+      steps { script {
+        parallel stagePerNode
+      } }
+    }
+  }
+}
+
+def generateNodeCleanupStage(nodeLabel) {
+  return { stage(nodeLabel) {
+    node(nodeLabel) {
+      dir('/Users/jenkins/Library/Developer/Xcode') {
+        sh 'rm -fr Archives DerivedData'
+      }
+    }
+  } }
+}
