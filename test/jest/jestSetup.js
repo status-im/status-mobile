@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { NativeModules } = require('react-native');
+const {NativeModules} = require('react-native');
 
 require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
@@ -8,12 +8,11 @@ require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
 jest.mock('react-native-navigation', () => ({
-    getNavigationConstants:
-        () => ({ constants: [] }),
-    Navigation: { constants: async () => { } }
+    getNavigationConstants: () => ({constants: []}),
+    Navigation: {constants: async () => {}},
 }));
 
-jest.mock("react-native-background-timer", () => ({}))
+jest.mock('react-native-background-timer', () => ({}));
 
 jest.mock('react-native-languages', () => ({
     RNLanguages: {
@@ -22,7 +21,7 @@ jest.mock('react-native-languages', () => ({
     },
     default: {
         language: 'en',
-        locale: 'en'
+        locale: 'en',
     },
 }));
 
@@ -57,16 +56,16 @@ jest.mock('@react-native-community/audio-toolkit', () => ({
         SEEKING: 3,
         PLAYING: 4,
         RECORDING: 4,
-        PAUSED: 5
-    }
+        PAUSED: 5,
+    },
 }));
 
 NativeModules.ReactLocalization = {
     language: 'en',
-    locale: 'en'
+    locale: 'en',
 };
 global.navigator = {
     userAgent: 'node',
-}
+};
 
-global.WebSocket = WebSocket
+global.WebSocket = WebSocket;

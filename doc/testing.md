@@ -18,8 +18,6 @@ Also test watcher can be launched. It will re-run the entire test suite when any
 
 Developers can also manually change the shadow-cljs option `:ns-regex` to control which namespaces the test runner should pick. 
 
-
-
 ## Testing with REPL
 
 The most convenient way to develop and run test locally is using REPL:
@@ -52,3 +50,19 @@ In the video below, you can see two buffers side-by-side. On the left the source
 Here I'm showing a terminal-only experience using Tmux (left pane Emacs, right pane the output coming from running the make target).
 
 [2022-12-19 13-17.webm](https://user-images.githubusercontent.com/46027/208471199-1909c446-c82d-42a0-9350-0c15ca562713.webm)
+
+## Component tests
+
+To run tests:
+
+```
+   make component-test
+```
+
+Also test watcher can be launched. It will re-run the entire test suite when any file is modified
+
+```
+   make component-test-watch
+```
+
+Check [component tests doc](./component-tests-overview.md) for more.
