@@ -22,7 +22,7 @@
                              :group [{:id         1
                                       :token-icon (resources/get-mock-image :status-logo)}]}]}})
 
-(defn render-fn
+(defn community-list-item
   [community-item _ _ {:keys [width view-type]}]
   (let [item  (merge community-item
                      (get mock-community-item-data :data))
@@ -97,8 +97,8 @@
       [rn/view
        {:style     style/featured-list-container
         :on-layout #(swap! view-size
-                      (fn []
-                        (- (oops/oget % "nativeEvent.layout.width") 20)))}
+                           (fn []
+                             (- (oops/oget % "nativeEvent.layout.width") 20)))}
        (when-not (= @view-size 0)
          [rn/flat-list
           {:key-fn                            :id
@@ -107,9 +107,10 @@
            :shows-horizontal-scroll-indicator false
            :separator                         [rn/view {:width 12}]
            :data                              communities
-           :render-fn                         render-fn
+           :render-fn                         community-list-item
            :render-data                       {:width     @view-size
-                                               :view-type view-type}}])])))
+                                               :view-type view-type}
+           :contentContainerStyle             style/flat-list-container}])])))
 
 (defn discover-communities-header
   [{:keys [featured-communities-count

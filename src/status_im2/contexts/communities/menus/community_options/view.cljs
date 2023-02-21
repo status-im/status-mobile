@@ -48,7 +48,6 @@
   {:icon                (if muted? :i/muted :i/activity-center)
    :accessibility-label (if muted? :unmute-community :mute-community)
    :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
-   :sub-label           (when muted? (str "muted for 15 minutes"))
    :right-icon          :i/chevron-right
    :on-press            #(hide-sheet-and-dispatch [:community/set-muted id (not muted?)])})
 

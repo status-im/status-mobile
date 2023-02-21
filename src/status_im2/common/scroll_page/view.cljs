@@ -117,7 +117,7 @@
       [:<>
        [:f> scroll-page-header @scroll-height height name page-nav-right-section-buttons
         logo sticky-header top-nav title-colum navigate-back?]
-       [rn/scroll-view
+       [rn/flat-list
         {:content-container-style         (style/scroll-view-container
                                            (diff-with-max-min @scroll-height 16 0))
          :shows-vertical-scroll-indicator false
@@ -128,21 +128,19 @@
                                                                     event
                                                                     "nativeEvent.contentOffset.y")))
                                             (when on-scroll
-                                              (on-scroll @scroll-height)))}
-        (when cover-image
-          [rn/view {:style {:height 151}}
-           [rn/image
-            {:source cover-image
-             ;; Using negative margin-bottom as a workaround because on Android,
-             ;; ScrollView clips its children despite setting overflow: 'visible'.
-             ;; Related issue: https://github.com/facebook/react-native/issues/31218
-             :style  {:margin-bottom -16
-                      :flex          1}}]])
-        (when children
-          [rn/view
-           {:flex             1
-            :border-radius    (diff-with-max-min @scroll-height 16 0)
-            :background-color background-color}
-           (when cover-image
-             [:f> display-picture @scroll-height logo])
-           children])]])))
+                                              (on-scroll @scroll-height)))
+         :header                          [rn/view {:style {:flex 1}}
+                                           (when cover-image
+                                             [rn/view {:style {:height 151}}
+                                              [rn/image
+                                               {:source cover-image
+                                                :style  {:overflow :visible
+                                                         :flex     1}}]])
+                                           (when children
+                                             [rn/view
+                                              {:flex             1
+                                               :border-radius    (diff-with-max-min @scroll-height 16 0)
+                                               :background-color background-color}
+                                              (when cover-image
+                                                [:f> display-picture @scroll-height cover-image])
+                                              children])]}]])))
