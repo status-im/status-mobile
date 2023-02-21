@@ -4,17 +4,17 @@
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
-            [status-im2.constants :as constants]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
-            [utils.re-frame :as rf]
             [status-im.utils.universal-links.core :as universal-links]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im2.common.toasts.events :as toasts]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (def crop-size 1000)
 
@@ -115,7 +115,7 @@
   (let [community-name (aget response-js "communities" 0 "name")]
     (rf/merge cofx
               (handle-response cofx response-js)
-              (toasts/upsert {:icon       :placeholder
+              (toasts/upsert {:icon       :correct
                               :icon-color (:positive-01 @colors/theme)
                               :text       (i18n/label :t/left-community {:community community-name})})
               (navigation/navigate-back)
@@ -128,7 +128,7 @@
         community-name (aget response-js "communities" 0 "name")]
     (rf/merge cofx
               (handle-response cofx response-js)
-              (toasts/upsert {:icon       :placeholder
+              (toasts/upsert {:icon       :correct
                               :icon-color (:positive-01 @colors/theme)
                               :text       (i18n/label (if (= event-name ::joined)
                                                         :t/joined-community
