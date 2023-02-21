@@ -281,3 +281,5 @@
 (def ^:const local-pair-action-connect 1)
 (def ^:const local-pair-action-pairing-account 2)
 (def ^:const local-pair-action-sync-device 3)
+
+(def ^:const everyone-mention-id "0x00001")

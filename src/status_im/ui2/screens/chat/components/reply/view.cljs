@@ -22,7 +22,7 @@
              (get-quoted-text-with-mentions children)
 
              (= type "mention")
-             (rf/sub [:contacts/contact-name-by-identity literal])
+             (rf/sub [:messages/resolve-mention literal])
 
              (seq children)
              (get-quoted-text-with-mentions children)
