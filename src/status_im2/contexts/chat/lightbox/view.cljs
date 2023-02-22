@@ -19,7 +19,7 @@
 (def focused-image-size 56)
 
 (defn toggle-opacity
-  [opacity-value border-value transparent?]
+  [opacity-value border-value transparent? index]
   (let [opacity (reanimated/get-shared-value opacity-value)]
     (if (= opacity 1)
       (do
@@ -27,14 +27,15 @@
         (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
       (do
         (reset! transparent? (not @transparent?))
-        (js/setTimeout #(reanimated/set-shared-value opacity-value (reanimated/with-timing 1)) 50)))
+        (js/setTimeout #(reanimated/set-shared-value opacity-value (reanimated/with-timing 1)) 50)
+        (js/setTimeout #(.scrollToIndex ^js @small-list-ref #js {:animated false :index index}) 100)))
     (reanimated/set-shared-value border-value (reanimated/with-timing (if (= opacity 1) 0 12)))))
 
 (defn image
   [message index _ {:keys [opacity-value border-value transparent?]}]
   [rn/view {:style {:flex-direction :row}}
    [zoomable-image/zoomable-image message index border-value
-    #(toggle-opacity opacity-value border-value transparent?)]
+    #(toggle-opacity opacity-value border-value transparent? index)]
    [rn/view {:style {:width 16}}]])
 
 
@@ -88,7 +89,6 @@
            :on-press       #(js/alert "to be implemented")
            :style          style/close-container}
           [quo/icon :options {:size 20 :color colors/white}]]]]))])
-
 
 (defn small-image
   [item index scroll-index]
