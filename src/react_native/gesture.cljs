@@ -7,28 +7,28 @@
 
 (def gesture-handler-root-hoc gestureHandlerRootHOC)
 
-(defn gesture-tap [] (.Tap Gesture))
+(defn gesture-tap [] (.Tap ^js Gesture))
 
-(defn gesture-pan [] (.Pan Gesture))
+(defn gesture-pan [] (.Pan ^js Gesture))
 
-(defn gesture-pinch [] (.Pinch Gesture))
+(defn gesture-pinch [] (.Pinch ^js Gesture))
 
-(defn on-begin [gesture handler] (.onBegin gesture handler))
+(defn on-begin [gesture handler] (.onBegin ^js gesture handler))
 
-(defn on-start [gesture handler] (.onStart gesture handler))
+(defn on-start [gesture handler] (.onStart ^js gesture handler))
 
-(defn on-update [gesture handler] (.onUpdate gesture handler))
+(defn on-update [gesture handler] (.onUpdate ^js gesture handler))
 
-(defn on-end [gesture handler] (.onEnd gesture handler))
+(defn on-end [gesture handler] (.onEnd ^js gesture handler))
 
-(defn number-of-taps [gesture count] (.numberOfTaps gesture count))
+(defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
-(defn enabled [gesture enabled?] (.enabled gesture enabled?))
+(defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))
 
-(defn average-touches [gesture average-touches?] (.averageTouches gesture average-touches?))
+(defn average-touches [gesture average-touches?] (.averageTouches ^js gesture average-touches?))
 
 (defn simultaneous
-  ([g1 g2] (.Simultaneous Gesture g1 g2))
-  ([g1 g2 g3] (.Simultaneous Gesture g1 g2 g3)))
+  ([g1 g2] (.Simultaneous ^js Gesture g1 g2))
+  ([g1 g2 g3] (.Simultaneous ^js Gesture g1 g2 g3)))
 
-(defn exclusive [g1 g2] (.Exclusive Gesture g1 g2))
+(defn exclusive [g1 g2] (.Exclusive ^js Gesture g1 g2))

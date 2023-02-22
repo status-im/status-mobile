@@ -20,10 +20,13 @@
 (defn preview-zoomable
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
+   {:background-color colors/neutral-100
     :flex             1}
    [rn/flat-list
-    {:flex                      1
-     :keyboardShouldPersistTaps :always
+    {:keyboardShouldPersistTaps :always
+     :style {:flex 1
+             :height "100%"}
+     :content-container-style {:justify-content :center
+                               :align-items :center}
      :header                    [cool-preview]
      :key-fn                    str}]])
