@@ -9,6 +9,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
+    [status-im2.contexts.quo-preview.zoomable.view :as zoomabmle-image]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
@@ -82,7 +83,10 @@
                             :component shadows/preview-shadows}]
    :animated-list         [{:name      :animated-header-list
                             :options   {:topBar {:visible false}}
-                            :component animated-header-list/mock-screen}]
+                            :component animated-header-list/mock-screen}
+                           {:name      :zoomable-image
+                            :options   {:topBar {:visible false}}
+                            :component zoomabmle-image/preview-zoomable}]
    :avatar                [{:name      :group-avatar
                             :insets    {:top false}
                             :component group-avatar/preview-group-avatar}
