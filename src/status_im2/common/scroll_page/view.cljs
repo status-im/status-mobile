@@ -146,8 +146,11 @@
           [rn/view {:style {:height 151}}
            [rn/image
             {:source cover-image
-             :style  {:overflow :visible
-                      :flex     1}}]])
+             ;; Using negative margin-bottom as a workaround because on Android,
+             ;; ScrollView clips its children despite setting overflow: 'visible'.
+             ;; Related issue: https://github.com/facebook/react-native/issues/31218
+             :style  {:margin-bottom -16
+                      :flex          1}}]])
         (when children
           [rn/view
            {:flex             1
