@@ -1,23 +1,25 @@
 (ns quo2.components.notifications.toast
-  (:require [utils.i18n :as i18n]
-            [quo2.components.icon :as icon]
+  (:require [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.count-down-circle :as count-down-circle]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.shadows :as shadows]
             [quo2.theme :as theme]
-            [react-native.core :as rn]))
+            [react-native.blur :as blur]
+            [react-native.core :as rn]
+            [utils.i18n :as i18n]))
 
 (def ^:private themes
   {:container        {:dark  {:background-color colors/white-opa-70}
-                      :light {:background-color colors/neutral-80-opa-90}}
+                      :light {:background-color colors/neutral-80-opa-70}}
    :title            {:dark  {:color colors/neutral-100}
                       :light {:color colors/white}}
    :text             {:dark  {:color colors/neutral-100}
                       :light {:color colors/white}}
    :icon             {:dark  {:color colors/neutral-100}
                       :light {:color colors/white}}
-   :action-container {:dark  {:background-color :colors/neutral-80-opa-5}
-                      :light {:background-color :colors/white-opa-5}}})
+   :action-container {:dark  {:background-color colors/neutral-80-opa-5}
+                      :light {:background-color colors/white-opa-5}}})
 
 (defn- merge-theme-style
   [component-key styles override-theme]
@@ -55,17 +57,23 @@
 (defn- toast-container
   [{:keys [left title text right container-style override-theme]}]
   [rn/view {:style (merge {:padding-left 12 :padding-right 12} container-style)}
-   [rn/view
-    {:style (merge-theme-style :container
-                               {:flex-direction   :row
-                                :width            "100%"
-                                :margin           :auto
-                                :justify-content  :space-between
-                                :padding-vertical 8
-                                :padding-left     10
-                                :padding-right    8
-                                :border-radius    12}
-                               override-theme)}
+   [blur/view
+    {:style         (merge-theme-style :container
+                                       (merge
+                                        (:shadow-1 shadows/normal-scale)
+                                        {:flex-direction   :row
+                                         :flex             1
+                                         :margin           :auto
+                                         :justify-content  :space-between
+                                         :padding-vertical 8
+                                         :padding-left     10
+                                         :padding-right    8
+                                         :border-radius    12})
+                                       override-theme)
+     :blur-amount   13
+     :blur-radius   10
+     :blur-type     :transparent
+     :overlay-color :transparent}
     [rn/view {:style {:padding 2}} left]
     [rn/view {:style {:padding 4 :flex 1}}
      (when title

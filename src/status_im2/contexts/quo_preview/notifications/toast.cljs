@@ -22,7 +22,7 @@
   []
   [toast-button
    "Toast: basic"
-   {:icon :placeholder :icon-color "green" :text "This is an example toast"}])
+   {:icon :placeholder :icon-color "white" :text "This is an example toast"}])
 
 (defn toast-button-with-undo-action
   []
@@ -35,8 +35,8 @@
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:icon       :placeholder
-                                     :icon-color "green"
+                                    {:icon       :correct
+                                     :icon-color colors/success-50-opa-40
                                      :text       "Undo pressed"}])
                       (rf/dispatch [:toasts/close
                                     "Toast: with undo action"]))}])
@@ -45,8 +45,8 @@
   []
   [toast-button
    "Toast: multiline"
-   {:icon :placeholder
-    :icon-color "green"
+   {:icon :correct
+    :icon-color colors/success-50-opa-40
     :text
     "This is an example multiline toast This is an example multiline toast This is an example multiline toast"
     :undo-duration 4
@@ -54,15 +54,15 @@
     #(do
        (rf/dispatch
         [:toasts/upsert
-         {:icon :placeholder :icon-color "green" :text "Undo pressed"}])
+         {:icon :correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
 (defn toast-button-30s-duration
   []
   [toast-button
    "Toast: 30s duration"
-   {:icon       :placeholder
-    :icon-color "green"
+   {:icon       :correct
+    :icon-color colors/success-50-opa-40
     :text       "This is an example toast"
     :duration   30000}])
 
@@ -79,8 +79,8 @@
              #(rf/dispatch
                [:toasts/upsert
                 {:id         "Toast: 30s duration"
-                 :icon       :placeholder
-                 :icon-color "red"
+                 :icon       :info
+                 :icon-color colors/danger-50-opa-40
                  :text       (str "This is an updated example toast" " - " (swap! suffix inc))
                  :duration   3000}])}
             "update above toast"]])))))
