@@ -44,6 +44,7 @@
     quo2.components.notifications.info-count
     quo2.components.notifications.notification-dot
     quo2.components.notifications.toast
+    quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
     quo2.components.reactions.reaction
     quo2.components.selectors.disclaimer.view
@@ -145,6 +146,9 @@
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
+
+;;;; PASSWORD
+(def tips quo2.components.password.tips.view/view)
 
 ;;;; PROFILE
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
