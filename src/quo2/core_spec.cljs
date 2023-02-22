@@ -12,5 +12,6 @@
             [quo2.components.password.tips.component-spec]
             [quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec]
             [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]
+            [quo2.components.profile.select-profile.component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]
             [quo2.components.selectors.filter.component-spec]))

@@ -46,6 +46,7 @@
     quo2.components.notifications.toast
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
+    quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
@@ -152,6 +153,7 @@
 
 ;;;; PROFILE
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
+(def select-profile quo2.components.profile.select-profile.view/view)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
