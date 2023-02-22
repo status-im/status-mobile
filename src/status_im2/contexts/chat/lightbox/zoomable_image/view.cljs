@@ -137,7 +137,9 @@
            (set-val pinch-y-start (get-val pinch-y-max))
            (set-val pinch-y-max js/Infinity)
            (set-val scale (timing max-scale))
-           (set-val saved-scale max-scale))
+           (set-val saved-scale max-scale)
+           (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
+           (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale)))
          :else
          (do
            (set-val saved-scale (get-val scale))
@@ -251,6 +253,11 @@
       (rf/dispatch [:navigate-back]))
     (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
 
+(defn handle-zoom-out-signal
+  [zoom-out-signal index scale rescale]
+  (when (and (= zoom-out-signal index) (> scale min-scale))
+    (rescale min-scale true)))
+
 ;;;; Finally, the component
 (defn zoomable-image
   [{:keys [image-width image-height content message-id]} index border-value on-tap]
@@ -258,6 +265,7 @@
    (fn []
      (let [shared-element-id    (rf/sub [:shared-element-id])
            exit-lightbox-signal (rf/sub [:lightbox/exit-signal])
+           zoom-out-signal      (rf/sub [:lightbox/zoom-out-signal])
            width                (:width (rn/get-window))
            height               (* image-height (/ (:width (rn/get-window)) image-width))
            screen-height        (:height (rn/get-window))
@@ -285,6 +293,8 @@
            rescale              (fn [value exit?]
                                   (rescale-image value exit? animations props))]
        (handle-exit-lightbox-signal exit-lightbox-signal index (get-val (:scale animations)) rescale)
+       (handle-zoom-out-signal zoom-out-signal index (get-val (:scale animations)) rescale)
+       (println "ZZZ" zoom-out-signal)
        [:f>
         (fn []
           (let [tap               (tap-gesture on-tap)

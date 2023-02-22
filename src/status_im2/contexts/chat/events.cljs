@@ -340,3 +340,8 @@
   {:events [:chat.ui/exit-lightbox-signal]}
   [{:keys [db]} value]
   {:db (assoc db :lightbox/exit-signal value)})
+
+(rf/defn zoom-out-signal
+  {:events [:chat.ui/zoom-out-signal]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/zoom-out-signal value)})

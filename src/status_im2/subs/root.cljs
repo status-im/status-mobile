@@ -116,6 +116,7 @@
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
 (reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)
+(reg-root-key-sub :lightbox/zoom-out-signal :lightbox/zoom-out-signal)
 
 ;;messages
 (reg-root-key-sub :messages/messages :messages)

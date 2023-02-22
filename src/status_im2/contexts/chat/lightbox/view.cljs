@@ -52,7 +52,7 @@
   (let [changed (-> e (oget :changed) first)
         index   (oget changed :index)]
     (reset! scroll-index index)
-    (.scrollToIndex ^js @small-list-ref #js {:animated true :index index})
+    (when @small-list-ref (.scrollToIndex ^js @small-list-ref #js {:animated true :index index}))
     (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))])))
 
 (defn top-view
@@ -100,9 +100,13 @@
        [rn/touchable-opacity
         {:active-opacity 1
          :on-press       (fn []
-                           (reset! scroll-index index)
-                           (.scrollToIndex ^js @small-list-ref #js {:animated true :index index})
-                           (.scrollToIndex ^js @flat-list-ref #js {:animated true :index index}))}
+                           (rf/dispatch [:chat.ui/zoom-out-signal @scroll-index])
+                           (js/setTimeout
+                            (fn []
+                              (reset! scroll-index index)
+                              (.scrollToIndex ^js @small-list-ref #js {:animated true :index index})
+                              (.scrollToIndex ^js @flat-list-ref #js {:animated true :index index}))
+                            (if platform/ios? 50 150)))}
         [reanimated/fast-image
          {:source {:uri (:image (:content item))}
           :style  (reanimated/apply-animations-to-style {:width  size-value
