@@ -9,6 +9,7 @@
             [quo2.components.colors.color-picker.component-spec]
             [quo2.components.markdown.--tests--.text-component-spec]
             [quo2.components.onboarding.small-option-card.component-spec]
+            [quo2.components.password.tips.component-spec]
             [quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec]
             [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]

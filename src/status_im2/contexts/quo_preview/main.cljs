@@ -50,6 +50,7 @@
     [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
+    [status-im2.contexts.quo-preview.password.tips :as tips]
     [status-im2.contexts.quo-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
@@ -201,6 +202,9 @@
    :posts-and-attachments [{:name      :messages-skeleton
                             :insets    {:top false}
                             :component messages-skeleton/preview-messages-skeleton}]
+   :password              [{:name      :tips
+                            :insets    {:top false}
+                            :component tips/preview-tips}]
    :profile               [{:name      :profile-card
                             :insets    {:top false}
                             :component profile-card/preview-profile-card}
