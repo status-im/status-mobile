@@ -770,18 +770,17 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         channel_1_element.click()
         self.errors.verify_no_errors()
 
-
-
     @marks.testrail_id(702842)
     @marks.xfail(reason='blocked due to navigation issue 14906')
     def test_community_mark_all_messages_as_read(self):
         self.channel_2.send_message(self.text_message)
-        chan_1_element = self.community_1.get_chat('# %s' % self.channel_name)
-        if not chan_1_element.new_messages_public_chat.is_element_displayed():
+        chat_1_element = self.community_1.get_chat('# %s' % self.channel_name)
+        if not chat_1_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
-        chan_1_element.long_press_element()
-        self.community_1.mark_all_messages_as_read_button.click()
-        if chan_1_element.new_messages_public_chat.is_element_displayed():
+        mark_as_read_button = self.community_1.mark_all_messages_as_read_button
+        chat_1_element.long_press_until_element_is_shown(mark_as_read_button)
+        mark_as_read_button.click()
+        if chat_1_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
         self.community_1.click_system_back_button_until_element_is_shown()
         community_1_element = self.home_1.get_chat(self.community_name, community=True)

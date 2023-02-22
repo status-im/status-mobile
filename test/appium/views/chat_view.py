@@ -872,7 +872,7 @@ class ChatView(BaseView):
     def pin_message(self, message, action="pin"):
         self.driver.info("Looking for message '%s' pin" % message)
         element = self.element_by_translation_id(action)
-        self.element_by_text_part(message).long_press_until_element_is_shown(element)
+        self.chat_element_by_text(message).long_press_until_element_is_shown(element)
         element.click()
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
@@ -913,7 +913,7 @@ class ChatView(BaseView):
             if not emoji_message:
                 self.chat_element_by_text(message).long_press_until_element_is_shown(element)
             else:
-                self.element_by_text_part(message).long_press_element()
+                self.element_by_text_part(message).long_press_until_element_is_shown(element)
         # old UI
         # element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
         element.click()
