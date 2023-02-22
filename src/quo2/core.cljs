@@ -29,6 +29,7 @@
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box
+    quo2.components.input.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -136,6 +137,9 @@
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
+
+;;;; INPUTS
+(def input quo2.components.input.view/input)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
