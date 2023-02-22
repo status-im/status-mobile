@@ -19,6 +19,7 @@
     [status-im2.contexts.quo-preview.buttons.button :as button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-list-view :as community-list-view]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
@@ -110,6 +111,9 @@
    :code                  [{:name      :snippet
                             :insets    {:top false}
                             :component code-snippet/preview-code-snippet}]
+   :colors                [{:name      :color-picker
+                            :insets    {:top false}
+                            :component color-picker/preview-color-picker}]
    :community             [{:name      :community-card-view
                             :insets    {:top false}
                             :component community-card/preview-community-card}

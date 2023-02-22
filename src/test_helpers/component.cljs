@@ -34,6 +34,10 @@
   [label]
   (rtl/screen.getByLabelText (name label)))
 
+(defn get-all-by-label-text
+  [label]
+  (rtl/screen.getAllByLabelText (name label)))
+
 (defn expect [match] (js/expect match))
 
 (defn use-fake-timers [] (js/jest.useFakeTimers))

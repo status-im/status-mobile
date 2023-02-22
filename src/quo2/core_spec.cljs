@@ -6,6 +6,7 @@
             [quo2.components.drawers.action-drawers.component-spec]
             [quo2.components.drawers.drawer-buttons.component-spec]
             [quo2.components.drawers.permission-context.component-spec]
+            [quo2.components.colors.color-picker.component-spec]
             [quo2.components.markdown.--tests--.text-component-spec]
             [quo2.components.onboarding.small-option-card.component-spec]
             [quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec]
