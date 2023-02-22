@@ -49,7 +49,7 @@
 
 
 //TODO: properly import the framework
-extern NSString* StatusgoImageServerTLSCert();
+extern "C" NSString* StatusgoImageServerTLSCert();
 
 @interface StatusDownloaderOperation : SDWebImageDownloaderOperation
   + (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler;
@@ -94,8 +94,6 @@ static void InitializeFlipper(UIApplication *application) {
       _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:bridge contextContainer:_contextContainer];
       bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
   #endif
-
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"StatusIm", nil);
 
   #if DEBUG
     //InitializeFlipper(application);
