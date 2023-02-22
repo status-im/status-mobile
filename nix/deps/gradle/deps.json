@@ -4018,30 +4018,30 @@
   },
 
   {
-    "path": "com/github/status-im/status-keycard-java/android/3.0.4/android-3.0.4",
+    "path": "com/github/status-im/status-keycard-java/android/3.1.1/android-3.1.1",
     "host": "https://jitpack.io",
     "type": "jar",
     "pom": {
-      "sha1": "e6e1933d85ac05b51953effc21ab893679f5864b",
-      "sha256": "1y9kqp3qgx3kqaf6vm6iwphdj8caqd9x6kncjsnp6f0nirp5ijzq"
+      "sha1": "ac7e6699628e329dfc028345f32bc41c5d6c2f33",
+      "sha256": "12qh5qwncj2gbv6g1whz32rliap34mv2kxlyqv2ivg5jc6yfvyhj"
     },
     "jar": {
-      "sha1": "dca6e47e087a649643bbad1c1feb4b0b5e1aaf45",
-      "sha256": "0krxjj5h5zmap4645llscwkmyszm8qyngwg8vi8ds1mf2kp0jaz1"
+      "sha1": "26118061c0996fff357ae30cc360e5928c8dd455",
+      "sha256": "15m0h4ri0ny7jz4vvl25blw5s65iivlv5gchw0j5n0jblr1wr270"
     }
   },
 
   {
-    "path": "com/github/status-im/status-keycard-java/lib/3.0.4/lib-3.0.4",
+    "path": "com/github/status-im/status-keycard-java/lib/3.1.1/lib-3.1.1",
     "host": "https://jitpack.io",
     "type": "jar",
     "pom": {
-      "sha1": "718d3d286d53186552a84cee1a1283e0975da789",
-      "sha256": "0s2mbx1638qig4m802rf0ill9bghgga8w3ld0vpcz6x7h2kmvv6g"
+      "sha1": "63c7bbd55ddbf88d1b89941f78158aa07fb46873",
+      "sha256": "1x0n0xq6zgg5qj6s6j9sjpy3zbggfznr64pb6sjh2882y4d1j6qi"
     },
     "jar": {
-      "sha1": "b2afa2711a9898d9aeb188195edde53c00984543",
-      "sha256": "16c7r0667pbgljx1p8zmvahv1igcnway1qjqprbn0n4ny1vy2imm"
+      "sha1": "07f0374f17160c8731350316226ffe0de50f6f31",
+      "sha256": "1bfvb0ynxa0ws46cqmyx6d960pyg7hjxv3xwx7mg0xw03xk2bam1"
     }
   },
 
