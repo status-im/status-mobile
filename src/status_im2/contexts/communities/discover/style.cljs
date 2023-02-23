@@ -37,16 +37,24 @@
   [background-color]
   {:background-color background-color
    :position         :absolute
-   :top              (if platform/ios? 0 44)
+   :top              0
    :bottom           0
    :left             0
    :right            0})
+
+(def communities-header-container
+  {:align-items     :center
+   :justify-content :center})
+
+(def render-communities-container
+  {:padding-horizontal 20
+   :margin-top         100})
 
 (defn blur-tabs-header
   []
   {:padding-horizontal 20
    :position           :absolute
-   :top                (if platform/ios? 56 60)
+   :top                (if platform/ios? 100 104)
    :height             56
    :right              0
    :left               0

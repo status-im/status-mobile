@@ -73,8 +73,7 @@
      (i18n/label :t/featured)]
     [quo/counter {:type :grey} communities-count]]
    [quo/icon :i/info
-    {:container-style {:align-items     :center
-                       :justify-content :center}
+    {:container-style style/communities-header-container
      :resize-mode     :center
      :size            20
      :color           (colors/theme-colors
@@ -195,7 +194,8 @@
    featured-communities
    view-type]
   (fn []
-    [rn/view {:padding-horizontal 20}
+    [rn/view
+     {:style style/render-communities-container}
      [discover-communities-header
       {:selected-tab               selected-tab
        :view-type                  view-type
@@ -230,8 +230,8 @@
                               156
                               100)
                             (if (> @scroll-height 360)
-                              162
-                              106))}
+                              208
+                              148))}
        [render-sticky-header
         {:selected-tab  selected-tab
          :scroll-height scroll-height}]

@@ -46,9 +46,7 @@
   (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
         tab                     @selected-tab]
     [rn/view
-     {:style {:flex               1
-              :padding-horizontal 20
-              :padding-vertical   12}}
+     {:style style/render-segments-container}
      (case tab
        :joined
        [communities-list (:joined ids-by-user-involvement)]
@@ -67,7 +65,8 @@
 (defn communities-header
   [selected-tab padding-top]
   [:<>
-   [rn/view {:style {:padding-vertical 8}}
+   [rn/view
+    {:style style/communities-header-style}
     [quo/discover-card
      {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
       :title               (i18n/label :t/discover)

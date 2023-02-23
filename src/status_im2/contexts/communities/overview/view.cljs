@@ -4,6 +4,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
@@ -263,8 +264,11 @@
   [_]
   (fn [{:keys [:enabled :label]}]
     (when enabled
-      [rn/view
-       {:style style/blur-channel-header}
+      [blur/view
+       {:style         style/blur-channel-header
+        :blur-amount   20
+        :blur-type     :transparent
+        :overlay-color :transparent}
        [quo/divider-label
         {:label            (:label label)
          :chevron-position :left}]])))
@@ -297,12 +301,8 @@
                                          colors/white
                                          colors/neutral-90)
         :height                         (if platform/ios?
-                                          (if (> @scroll-height @first-channel-height)
-                                            134
-                                            100)
-                                          (if (> @scroll-height @first-channel-height)
-                                            140
-                                            106))}
+                                          100
+                                          148)}
 
        [sticky-category-header
         {:enabled (> @scroll-height @first-channel-height)

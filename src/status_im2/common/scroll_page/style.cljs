@@ -31,7 +31,7 @@
   [border-radius]
   {:flex          1
    :position      :absolute
-   :top           -48
+   :top           (if platform/ios? -48 0)
    :left          0
    :right         0
    :overflow      :scroll
@@ -44,7 +44,8 @@
    {:position       :absolute
     :flex-direction :row
     :left           64
-    :top            16}))
+    :top            16
+    :margin-top     44}))
 
 (def sticky-header-image
   {:border-radius 12
