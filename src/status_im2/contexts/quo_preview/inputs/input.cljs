@@ -14,16 +14,26 @@
    {:label   "Variant:"
     :key     :variant
     :type    :select
-    :options [{:key   :dark-blur
+    :options [{:key   :light
+               :value "Light"}
+              {:key   :dark
+               :value "Dark"}
+              {:key   :light-blur
+               :value "Light blur"}
+              {:key   :dark-blur
                :value "Dark blur"}]}
+   ;;
    {:label "Error:"
     :key   :error
-    :type  :boolean}])
+    :type  :boolean}
+   ;;
+   ]
+  )
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:type        :password
-                             :variant     :dark-blur
+                             :variant     :light-blur
                              :placeholder "Type something"
                              :error       false})]
     (fn []
@@ -35,7 +45,10 @@
          {:style {:flex             1
                   :align-items      :center
                   :padding-vertical 60
-                  :background-color colors/neutral-80-blur-opa-80}}
+                  :background-color (case (:variant @state)
+                                      :dark-blur colors/neutral-80-blur-opa-80
+                                      :dark colors/neutral-95
+                                      :transparent)}}
          [rn/view {:style {:width 288}}
           [quo2/input @state]]]]])))
 

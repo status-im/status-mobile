@@ -26,7 +26,7 @@
            [rn/touchable-opacity
             {:style    style/right-icon-touchable-area
              :on-press on-press}
-            [icon/icon icon-name style/icon]])]))))
+            [icon/icon icon-name (style/icon variant)]])]))))
 
 (defn- password-input
   [_]
