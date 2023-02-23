@@ -50,13 +50,14 @@
       :animate-landing? (or deleted-undoable-till deleted-for-me-undoable-till)}]))
 
 (defn deleted-message
-  [{:keys [deleted? deleted-by deleted-undoable-till timestamp-str deleted-for-me-undoable-till from]
+  [{:keys [deleted? deleted-by deleted-undoable-till timestamp-str
+           deleted-for-me-undoable-till from]
     :as   message}
    context]
   (let [pub-key          (rf/sub [:multiaccount/public-key])
         deleted-by-me?   (= (or deleted-by from) pub-key)
         on-long-press-fn (compute-on-long-press-fn message context)]
-    (if-not deleted-by-me?
+    (if (and deleted? (not deleted-by-me?))
       [deleted-by-message message on-long-press-fn]
       [quo/system-message
        {:type             :deleted
