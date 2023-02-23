@@ -1,9 +1,11 @@
 (ns react-native.navigation
   (:refer-clojure :exclude [pop])
-  (:require ["react-native-navigation" :refer (Navigation)]))
+  (:require ["react-native-navigation" :refer (Navigation)]
+            [taoensso.timbre :as log]))
 
 (defn set-default-options
   [opts]
+  (log/info "setDefaultOptions called")
   (.setDefaultOptions ^js Navigation (clj->js opts)))
 
 (defn register-component [arg1 arg2 arg3] (.registerComponent ^js Navigation arg1 arg2 arg3))
@@ -43,6 +45,7 @@
 
 (defn reg-app-launched-listener
   [handler]
+  (log/info "registerAppLaunchedListener called")
   (.registerAppLaunchedListener ^js (.events ^js Navigation) handler))
 
 (defn reg-button-pressed-listener
