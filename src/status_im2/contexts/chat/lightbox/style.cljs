@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.lightbox.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (def container-view
@@ -13,7 +12,7 @@
    {:opacity opacity}
    {:position       :absolute
     :left           20
-    :top            (if platform/ios? (+ 12 top-inset) 12)
+    :top            (+ 12 top-inset)
     :z-index        4
     :flex-direction :row
     :width          "100%"}))

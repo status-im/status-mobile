@@ -9,6 +9,7 @@
                              withDelay
                              withSpring
                              withRepeat
+                             withDecay
                              Easing
                              Keyframe
                              cancelAnimation
@@ -48,6 +49,7 @@
 (def with-timing withTiming)
 (def with-delay withDelay)
 (def with-spring withSpring)
+(def with-decay withDecay)
 (def key-frame Keyframe)
 (def with-repeat withRepeat)
 (def cancel-animation cancelAnimation)
@@ -137,3 +139,18 @@
                                  (js-obj "mass"      mass
                                          "damping"   damping
                                          "stiffness" stiffness))))
+
+(defn animate-shared-value-with-decay
+  [anim velocity clamp]
+  (set-shared-value anim
+                    (with-decay (clj->js {:velocity velocity
+                                          :clamp    clamp}))))
+
+(def in-out
+  (.-inOut Easing))
+
+(defn with-timing-duration
+  [val duration]
+  (with-timing val
+               (clj->js {:duration duration
+                         :easing   (in-out (.-quad ^js Easing))})))

@@ -335,3 +335,13 @@
   {:events [:chat.ui/update-shared-element-id]}
   [{:keys [db]} shared-element-id]
   {:db (assoc db :shared-element-id shared-element-id)})
+
+(rf/defn exit-lightbox-signal
+  {:events [:chat.ui/exit-lightbox-signal]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/exit-signal value)})
+
+(rf/defn zoom-out-signal
+  {:events [:chat.ui/zoom-out-signal]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/zoom-out-signal value)})
