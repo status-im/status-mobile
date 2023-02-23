@@ -56,14 +56,12 @@
 
 (defn- toast-container
   [{:keys [left title text right container-style override-theme]}]
-  [rn/view {:style (merge {:padding-left 12 :padding-right 12} container-style)}
+  [rn/view {:style (merge {:margin-left 12 :margin-right 12} container-style)}
    [blur/view
     {:style         (merge-theme-style :container
                                        (merge
                                         (:shadow-1 shadows/normal-scale)
                                         {:flex-direction   :row
-                                         :flex             1
-                                         :margin           :auto
                                          :justify-content  :space-between
                                          :padding-vertical 8
                                          :padding-left     10
