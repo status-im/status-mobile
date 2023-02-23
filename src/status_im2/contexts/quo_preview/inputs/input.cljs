@@ -27,15 +27,24 @@
     :key   :error
     :type  :boolean}
    ;;
+
+   {:label   "Icon:"
+    :key     :icon-name
+    :type    :select
+    :options [{:key   :i/placeholder
+               :value "Placeholder icon"}
+              {:key   :i/email
+               :value "Email icon"}]}
    ]
   )
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:type        :password
-                             :variant     :light-blur
+                             :variant     :dark
                              :placeholder "Type something"
-                             :error       false})]
+                             :error       false
+                             :icon-name   :i/placeholder})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:style {:padding-bottom 150}}
@@ -48,7 +57,8 @@
                   :background-color (case (:variant @state)
                                       :dark-blur colors/neutral-80-blur-opa-80
                                       :dark colors/neutral-95
-                                      :transparent)}}
+                                      :light-blur "#deef"
+                                      :white)}}
          [rn/view {:style {:width 288}}
           [quo2/input @state]]]]])))
 
