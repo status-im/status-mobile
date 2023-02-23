@@ -13,23 +13,18 @@ let
   default = callPackage ./shell.nix { };
 
   # Combines with many other shells
-  node-sh = mkShell {
-    shellHook = ''
-      export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
-      "$STATUS_MOBILE_HOME/nix/scripts/node_modules.sh" ${pkgs.deps.nodejs-patched}
-    '';
-  };
+  nodejs-sh = targets.mobile.ios.nodejs-sh;
 
   # An attrset for easier merging with default shell
   shells = {
     inherit default;
 
-    nodejs = node-sh;
+    nodejs = nodejs-sh;
 
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
       buildInputs = with pkgs; [ clojure flock maven openjdk ];
-      inputsFrom = [ node-sh ];
+      inputsFrom = [ nodejs-sh ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''
         export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
@@ -47,7 +42,7 @@ let
     # for running gradle by hand
     gradle = mkShell {
       buildInputs = with pkgs; [ gradle maven goMavenResolver ];
-      inputsFrom = [ node-sh ];
+      inputsFrom = [ nodejs-sh ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"
         export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"
@@ -61,8 +56,8 @@ let
       buildInputs = with pkgs; [ openjdk8 apksigner ];
     };
 
-    # for targets that need 'adb' and other SDK/NDK tools
-    android-env = pkgs.androidShell;
+    # for targets needing 'adb', 'apkanalyzer' and other SDK/NDK tools
+    android-sdk = pkgs.androidShell;
 
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;

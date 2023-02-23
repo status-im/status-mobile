@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.5'
+library 'status-jenkins-lib@v1.6.6'
 
 pipeline {
   agent { label 'linux' }
@@ -8,6 +8,8 @@ pipeline {
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
     timeout(time: 40, unit: 'MINUTES')
+    /* Allow copying of artifacts from this job. */
+    copyArtifactPermission('/status-mobile/e2e/*')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
@@ -105,7 +107,7 @@ pipeline {
         e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
           job: 'status-mobile/e2e/status-app-nightly',
-          parameters: [string(name: 'APK_NAME', value: e2eApk)],
+          parameters: [string(name: 'APK_URL', value: e2eApk)],
           wait: false
         )
       } }
