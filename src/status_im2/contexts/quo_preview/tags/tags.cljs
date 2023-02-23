@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im.ui.components.react :as react]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -69,7 +69,7 @@
              :height        100
              :border-radius 16}
             [react/image
-             {:source (resources/get-image :community-cover)
+             {:source (resources/get-mock-image :community-cover)
               :style  {:flex          1
                        :width         "100%"
                        :border-radius 16}}]

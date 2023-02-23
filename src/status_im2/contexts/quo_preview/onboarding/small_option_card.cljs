@@ -4,7 +4,7 @@
     [quo2.components.onboarding.small-option-card.view :as quo2]
     [quo2.foundations.colors :as colors]
     [reagent.core :as reagent]
-    [status-im.react-native.resources :as resources]
+    [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor

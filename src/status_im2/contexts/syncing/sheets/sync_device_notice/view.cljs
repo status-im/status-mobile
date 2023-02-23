@@ -4,14 +4,15 @@
             [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
             [status-im2.contexts.syncing.sheets.sync-device-notice.styles :as styles]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.resources :as resources]))
 
 (defn sheet
   []
   [:<>
    [rn/view {:style styles/sync-devices-header}
     [rn/image
-     {:source (js/require "../resources/images/ui/sync-new-device-cover-background.png")
+     {:source (resources/get-image :sync-device)
       :style  styles/sync-devices-header-image}]]
    [rn/view {:style styles/sync-devices-body-container}
     [quo/text

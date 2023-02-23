@@ -3,9 +3,10 @@
     [quo2.components.profile.collectible.view :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]))
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [status-im2.common.resources :as resources]))
 
-(defonce test-image (js/require "../resources/images/mock/collectible.png"))
+(defonce test-image (resources/get-mock-image :collectible))
 (def test-images (repeat 10 test-image))
 
 (def descriptor

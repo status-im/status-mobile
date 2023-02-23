@@ -5,7 +5,8 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im.utils.currency :as currencies]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.common.resources :as resources]))
 
 (def descriptor
   [{:label   "Token:"
@@ -33,8 +34,8 @@
               {:key   :eur
                :value "€"}]}])
 
-(def eth-token (js/require "../resources/images/tokens/mainnet/ETH.png"))
-(def snt-token (js/require "../resources/images/tokens/mainnet/SNT.png"))
+(def eth-token (resources/get-token :eth))
+(def snt-token (resources/get-token :snt))
 
 (defn cool-preview
   []

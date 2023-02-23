@@ -2,7 +2,7 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im.react-native.resources :as resources]))
+            [status-im2.common.resources :as resources]))
 
 (defn example-1
   []
@@ -12,11 +12,11 @@
     {:size             24
      :locked           false
      :tokens           [{:id    1
-                         :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                                 {:id 2 :token-icon (resources/get-image :status-logo)}
-                                 {:id 3 :token-icon (resources/get-image :status-logo)}
-                                 {:id 4 :token-icon (resources/get-image :status-logo)}
-                                 {:id 5 :token-icon (resources/get-image :status-logo)}]}]
+                         :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 5 :token-icon (resources/get-mock-image :status-logo)}]}]
      :background-color (colors/theme-colors
                         colors/neutral-10
                         colors/neutral-80)}]
@@ -27,11 +27,11 @@
     {:size             24
      :locked           false
      :tokens           [{:id    1
-                         :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                                 {:id 2 :token-icon (resources/get-image :status-logo)}
-                                 {:id 3 :token-icon (resources/get-image :status-logo)}
-                                 {:id 4 :token-icon (resources/get-image :status-logo)}
-                                 {:id 5 :token-icon (resources/get-image :status-logo)}]}]
+                         :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                                 {:id 5 :token-icon (resources/get-mock-image :status-logo)}]}]
      :background-color (colors/theme-colors
                         colors/neutral-10
                         colors/neutral-80)}]
@@ -43,7 +43,7 @@
    [quo/text {:style {:margin-right 4}} "Hold"]
    [quo/token-tag
     {:size          :small
-     :token-img-src (js/require "../resources/images/tokens/mainnet/ETH.png")} "ETH"]
+     :token-img-src (resources/get-token :eth)} "ETH"]
    [quo/text {:style {:margin-left 4}} "To post"]])
 
 (defn example-3

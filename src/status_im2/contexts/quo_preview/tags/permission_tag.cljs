@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -19,153 +19,153 @@
     :type  :boolean}])
 
 (def community-tokens
-  [{:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]}
+  [{:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
-             {:id 2 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
+             {:id 2 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 1 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}
    {:tokens [{:id    1
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
-             {:id 2 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
-             {:id 3 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
+             {:id 2 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
+             {:id 3 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    3
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
-             {:id 2 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
-             {:id 3 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]}
-   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
+             {:id 2 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
+             {:id 3 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]}
+   {:tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    2
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}]}
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}]}
              {:id    3
-              :group [{:id 1 :token-icon (resources/get-image :status-logo)}
-                      {:id 2 :token-icon (resources/get-image :status-logo)}
-                      {:id 3 :token-icon (resources/get-image :status-logo)}
-                      {:id 4 :token-icon (resources/get-image :status-logo)}
-                      {:id 5 :token-icon (resources/get-image :status-logo)}
-                      {:id 6 :token-icon (resources/get-image :status-logo)}]}]}])
+              :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 2 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 3 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 4 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 5 :token-icon (resources/get-mock-image :status-logo)}
+                      {:id 6 :token-icon (resources/get-mock-image :status-logo)}]}]}])
 
 (defn cool-preview
   []

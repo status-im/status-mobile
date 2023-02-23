@@ -4,7 +4,7 @@
     [quo2.core :as quo]
     [react-native.core :as rn]
     [react-native.clipboard :as clipboard]
-    [status-im.react-native.resources :as resources]
+    [status-im2.common.resources :as resources]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im2.contexts.add-new-contact.style :as style]
     [utils.debounce :as debounce]
