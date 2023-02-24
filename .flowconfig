@@ -40,8 +40,6 @@ node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow/
 
 [options]
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
 
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
@@ -90,4 +88,4 @@ suppress_type=$FlowFixMeState
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-^0.137.0
+^0.149.0
