@@ -28,7 +28,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-import com.facebook.react.ReactFragmentActivity;
 import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
