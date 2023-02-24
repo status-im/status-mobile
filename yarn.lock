@@ -1923,11 +1923,9 @@
     eventemitter3 "^1.2.0"
     lodash "^4.17.15"
 
-"@react-native-community/blur@git+https://github.com/Kureev/react-native-blur#refs/tags/v3.6.1":
-  version "3.6.1"
-  resolved "git+https://github.com/Kureev/react-native-blur#9d2d744a5171f3a77564a43f87c2cfb3fbcf597e"
-  dependencies:
-    prop-types "^15.5.10"
+"@react-native-community/blur@git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.1-status":
+  version "4.3.0"
+  resolved "git+https://github.com/status-im/react-native-blur#7317898ee7c824d2d5501aec72a509baced2b253"
 
 "@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
   version "4.0.4"
