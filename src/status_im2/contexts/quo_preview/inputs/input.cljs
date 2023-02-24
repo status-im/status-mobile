@@ -35,6 +35,10 @@
                :value "Placeholder icon"}
               {:key   :i/email
                :value "Email icon"}]}
+
+   {:label "Disabled:"
+    :key   :disabled
+    :type  :boolean}
    ]
   )
 
@@ -55,9 +59,9 @@
                   :align-items      :center
                   :padding-vertical 60
                   :background-color (case (:variant @state)
-                                      :dark-blur colors/neutral-80-blur-opa-80
+                                      :dark-blur "rgba(39, 61, 81, 1)"
                                       :dark colors/neutral-95
-                                      :light-blur "#deef"
+                                      :light-blur "#EBF8F8FF"
                                       :white)}}
          [rn/view {:style {:width 288}}
           [quo2/input @state]]]]])))
