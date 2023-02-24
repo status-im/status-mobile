@@ -4,7 +4,7 @@ import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 import android.content.Context;
 import android.webkit.WebView;
-import com.rndiffapp.newarchitecture.MainApplicationReactNativeHost;
+import im.status.ethereum.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.PackageList;
 
