@@ -44,6 +44,8 @@ node_modules/react-native/flow/
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 
+format.bracket_spacing=false
+
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
@@ -88,4 +90,4 @@ suppress_type=$FlowFixMeState
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-^0.149.0
+^0.158.0
