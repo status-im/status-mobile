@@ -1,9 +1,9 @@
 (ns react-native.orientation
-  (:require ["react-native-orientation-locker" :as orientation]
+  (:require ["react-native-orientation-locker" :refer (useDeviceOrientationChange)]
             ["react-native-navigation" :refer (Navigation)]))
 
 
-(def use-device-orientation-change orientation/useDeviceOrientationChange)
+(def use-device-orientation-change useDeviceOrientationChange)
 
 (defn lock-to-portrait
   []
