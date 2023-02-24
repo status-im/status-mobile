@@ -132,6 +132,11 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+/**
+ * Architectures to build native code for in debug.
+ */
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+
 def getCommitHash = { ->
     if (project.hasProperty("commitHash")) {
         return project.commitHash
@@ -266,6 +271,11 @@ android {
             versionNameSuffix   "-SNAPSHOT"
             resValue "string", "build_config_package", "im.status.ethereum"
             signingConfig signingConfigs.debug
+            if (nativeArchitectures) {
+                ndk {
+                    abiFilters nativeArchitectures.split(',')
+                }
+            }
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
