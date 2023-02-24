@@ -222,26 +222,6 @@ class ChatElementByText(Text):
         except NoSuchElementException:
             return ''
 
-    # Old UI
-    # def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
-    #     class EmojisNumber(Text):
-    #         def __init__(self, driver, parent_locator: str):
-    #             self.own = own
-    #             self.emoji = emoji
-    #             self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
-    #             super().__init__(driver, prefix=parent_locator, xpath="/../..//*[@content-desc='%s']" % self.emojis_id)
-    #
-    #         @property
-    #         def text(self):
-    #             try:
-    #                 text = self.find_element().text
-    #                 self.driver.info("%s is '%s' for '%s' where my reaction is set on message is '%s'" % (self.name, text, self.emoji, str(self.own)))
-    #                 return text
-    #             except NoSuchElementException:
-    #                 return 0
-    #
-    #     return int(EmojisNumber(self.driver, self.locator).text)
-
     def emojis_below_message(self, emoji: str = 'thumbs-up'):
         class EmojisNumber(Text):
             def __init__(self, driver, parent_locator: str):
@@ -321,6 +301,7 @@ class CommunityView(HomeView):
     def __init__(self, driver):
         super().__init__(driver)
 
+        #### OLD UI
         # Main community page (list with channels)
         self.add_channel_button = HomeView(self.driver).plus_button
         self.community_create_a_channel_button = Button(self.driver, accessibility_id="community-create-channel")
@@ -348,6 +329,15 @@ class CommunityView(HomeView):
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
         self.join_button = Button(self.driver, translation_id="join")
         self.follow_button = Button(self.driver, translation_id="follow")
+
+        #### NEW UI
+        # Communities initial page
+        self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
+
+    def get_channel(self, channel_name: str):
+        self.driver.info("Getting  %s channel element in community" % channel_name)
+        chat_element = self.get_chat(username=channel_name, community_channel=True, wait_time=30)
+        return chat_element
 
     def add_channel(self, name: str, description="Some new channel"):
         self.driver.info("Adding channel in community")
@@ -747,6 +737,7 @@ class ChatView(BaseView):
         self.pinned_messages_list = PinnedMessagesList(self.driver)
         self.pin_limit_popover = BaseElement(self.driver, translation_id="pin-limit-reached")
         self.view_pinned_messages_button = Button(self.driver, accessibility_id="pinned-banner")
+
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:

@@ -17,11 +17,16 @@ class ChatButton(Button):
 
 
 class ChatElement(SilentButton):
-    def __init__(self, driver, username_part, community=False):
+    def __init__(self, driver, username_part, community=False, community_channel=False):
         self.username = username_part
         self.community = community
-        super().__init__(driver,
-                         xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
+        self.community_channel = community_channel
+        if self.community_channel is True:
+            super().__init__(driver,
+                             xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
+        else:
+            super().__init__(driver,
+                    xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
@@ -34,7 +39,7 @@ class ChatElement(SilentButton):
     def click(self):
         if self.community:
             from views.chat_view import CommunityView
-            desired_element = CommunityView(self.driver).community_options_button
+            desired_element = CommunityView(self.driver).community_description_text
         else:
             from views.chat_view import ChatView
             desired_element = ChatView(self.driver).chat_message_input
@@ -122,102 +127,6 @@ class ActivityCenterElement(SilentButton):
             return ''
         if decline_element:
             decline_element.click()
-
-
-#    Old UI
-#     def __init__(self, driver, chat_name):
-#         self.chat_name = chat_name
-#         super().__init__(driver,
-#                          xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/../.." % chat_name)
-
-#     def navigate(self):
-#         from views.chat_view import ChatView
-#         return ChatView(self.driver)
-#
-#     def click(self):
-#         from views.chat_view import ChatView
-#         desired_element = ChatView(self.driver).chat_message_input
-#         self.click_until_presence_of_element(desired_element=desired_element)
-#
-#         return self.navigate()
-#
-#     @property
-#     def chat_image(self):
-#         class ChatImage(BaseElement):
-#             def __init__(self, driver, parent_locator: str):
-#                 super().__init__(driver, xpath="%s//*[@content-desc='current-account-photo']" % parent_locator)
-#
-#         return ChatImage(self.driver, self.locator)
-#
-#     @property
-#     def chat_message_preview(self):
-#         class ChatMessagePreview(BaseElement):
-#             def __init__(self, driver, parent_locator: str):
-#                 super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
-#
-#         return ChatMessagePreview(self.driver, self.locator).text
-#
-#     @property
-#     def chat_name_indicator_text(self):
-#         class ChatNameIndicatorText(BaseElement):
-#             def __init__(self, driver, parent_locator: str):
-#                 super().__init__(driver,
-#                                  xpath="(%s//*[@content-desc='chat-name-container']//android.widget.TextView)[last()]" % parent_locator)
-#
-#         try:
-#             return ChatNameIndicatorText(self.driver, self.locator).text
-#         except NoSuchElementException:
-#             return ''
-#
-#     def accept_contact_request(self):
-#         try:
-#             accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-cr"]').find_element()
-#         except NoSuchElementException:
-#             return ''
-#         if accept_element:
-#             accept_element.click()
-#
-#     def decline_contact_request(self):
-#         try:
-#             decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-cr"]').find_element()
-#         except NoSuchElementException:
-#             return ''
-#         if decline_element:
-#             decline_element.click()
-#
-#
-# class PushNotificationElement(SilentButton):
-#     def __init__(self, driver, pn_text):
-#         self.pn_text = pn_text
-#         super().__init__(driver, xpath="//*[@text='%s']" % pn_text)
-#
-#     @property
-#     def icon(self):
-#         class PnIconElement(BaseElement):
-#             def __init__(self, driver, parent_locator):
-#                 super().__init__(driver,
-#                                  xpath="%s/../../../../*/*[@resource-id='android:id/message_icon']" % parent_locator)
-#
-#         return PnIconElement(self.driver, self.locator)
-#
-#     @property
-#     def username(self):
-#         class PnUsername(BaseElement):
-#             def __init__(self, driver, parent_locator):
-#                 super().__init__(driver,
-#                                  xpath="%s/../../*[@resource-id='android:id/message_name']" % parent_locator)
-#
-#         return PnUsername(self.driver, self.locator).text
-#
-#     @property
-#     def group_chat_icon(self):
-#         class GroupChatIconElement(BaseElement):
-#             def __init__(self, driver, parent_locator):
-#                 super().__init__(driver,
-#                                  xpath="%s/../../../../*[@resource-id='android:id/right_icon_container']" % parent_locator)
-#
-#         return GroupChatIconElement(self.driver, self.locator)
-
 
 
 class PushNotificationElement(SilentButton):
@@ -334,10 +243,13 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username, community=False, wait_time=10):
-        self.driver.info("Looking for chat: '%s'" % username)
-        chat_element = ChatElement(self.driver, username[:25], community=community)
-        if not chat_element.is_element_displayed(wait_time):
+    def get_chat(self, username, community=False, community_channel=False, wait_time=10):
+        if community:
+            self.driver.info("Looking for community: '%s'" % username)
+        else:
+            self.driver.info("Looking for chat: '%s'" % username)
+        chat_element = ChatElement(self.driver, username[:25], community=community, community_channel=community_channel)
+        if not chat_element.is_element_displayed(wait_time) and community is False and community_channel is False:
             if self.notifications_unread_badge.is_element_displayed(30):
                 chat_in_ac = ActivityCenterElement(self.driver, username[:25])
                 self.open_activity_center_button.click_until_presence_of_element(chat_in_ac)

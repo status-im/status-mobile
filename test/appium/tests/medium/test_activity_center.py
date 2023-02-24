@@ -203,6 +203,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.profile_1.switch_push_notifications()
 
     @marks.testrail_id(702850)
+    @marks.xfail("blocked with 15180")
     def test_activity_center_decline_contact_request_no_pn(self):
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1')

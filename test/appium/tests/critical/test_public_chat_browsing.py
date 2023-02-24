@@ -15,219 +15,6 @@ from views.chat_view import ChatView
 from selenium.common.exceptions import NoSuchElementException
 
 
-@pytest.mark.xdist_group(name="one_2")
-@marks.critical
-class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
-
-    def prepare_devices(self):
-        self.drivers, self.loop = create_shared_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.home_1, self.home_2 = device_1.create_user(), device_2.create_user()
-        profile_1 = self.home_1.profile_button.click()
-        self.username_1 = profile_1.default_username_text.text
-        profile_1.home_button.click()
-        self.pub_chat_delete_long_press = 'pub-chat'
-        self.text_message = 'hello'
-        self.home_1.join_public_chat(self.pub_chat_delete_long_press)
-        [home.home_button.click() for home in (self.home_1, self.home_2)]
-        self.public_chat_name = self.home_1.get_random_chat_name()
-        self.chat_1 = self.home_1.join_public_chat(self.public_chat_name)
-        self.chat_2 = self.home_2.join_public_chat(self.public_chat_name)
-        self.chat_1.send_message(self.text_message)
-
-    @marks.testrail_id(5313)
-    def test_public_chat_message_send_check_timestamps_while_on_different_tab(self):
-        message = self.text_message
-        self.chat_2.dapp_tab_button.click()
-        sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
-        timestamp = self.chat_1.chat_element_by_text(message).timestamp_on_tap
-        if sent_time_variants and timestamp:
-            if timestamp not in sent_time_variants:
-                self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
-                                   (sent_time_variants.join(','), timestamp))
-        self.chat_2.home_button.click(desired_view='chat')
-        for chat in self.chat_1, self.chat_2:
-            chat.verify_message_is_under_today_text(message, self.errors)
-        if self.chat_2.chat_element_by_text(message).username.text != self.username_1:
-            self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(700734)
-    def test_public_chat_message_edit(self):
-        if not self.chat_2.chat_message_input.is_element_displayed():
-            self.chat_2.home_button.click(desired_view='chat')
-        message_before_edit, message_after_edit = self.text_message, "Message AFTER edit 2"
-        self.chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
-        for chat in (self.chat_1, self.chat_2):
-            if not chat.element_by_text_part("⌫ Edited").is_element_displayed(60):
-                self.errors.append('No mark in message bubble about this message was edited')
-        if not self.chat_2.element_by_text_part(message_after_edit).is_element_displayed(60):
-            self.errors.append('Message is not edited')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(700735)
-    def test_public_chat_message_delete(self):
-        message_to_delete = 'delete me, please'
-        self.chat_1.send_message(message_to_delete)
-        self.chat_1.delete_message_in_chat(message_to_delete)
-        for chat in (self.chat_1, self.chat_2):
-            if not chat.chat_element_by_text(message_to_delete).is_element_disappeared(30):
-                self.errors.append("Deleted message is shown in chat view for public chat")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(700719)
-    def test_public_chat_emoji_send_copy_paste_reply(self):
-        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
-        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
-        emoji_message = emoji.emojize(emoji_name)
-        self.chat_1.send_message(emoji_message)
-        for chat in self.chat_1, self.chat_2:
-            if not chat.chat_element_by_text(emoji_unicode).is_element_displayed(30):
-                self.errors.append('Message with emoji was not sent or received in public chat')
-
-        self.chat_1.just_fyi("Can copy and paste emojis")
-        self.chat_1.element_by_text_part(emoji_unicode).long_press_element()
-        self.chat_1.element_by_text('Copy').click()
-        self.chat_1.chat_message_input.paste_text_from_clipboard()
-        if self.chat_1.chat_message_input.text != emoji_unicode:
-            self.errors.append('Emoji message was not copied')
-
-        self.chat_1.just_fyi("Can reply to emojis")
-        self.chat_2.quote_message(emoji_unicode)
-        message_text = 'test message'
-        self.chat_2.chat_message_input.send_keys(message_text)
-        self.chat_2.send_message_button.click()
-        chat_element_1 = self.chat_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=10) or chat_element_1.replied_message_text != emoji_unicode:
-            self.errors.append('Reply message was not received by the sender')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5360)
-    def test_public_chat_unread_messages_counter(self):
-        self.chat_1.send_message('пиу')
-        home_1 = self.chat_1.home_button.click()
-        message = 'test message'
-        self.chat_2.send_message(message)
-        if not self.chat_1.home_button.public_unread_messages.is_element_displayed():
-            self.errors.append('New messages public chat badge is not shown on Home button')
-        chat_element = home_1.get_chat('#' + self.public_chat_name)
-        if not chat_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('New messages counter is not shown in public chat')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(700718)
-    def test_public_chat_unread_messages_counter_for_mention_relogin(self):
-        message = 'test message2'
-        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
-        chat_element = self.home_1.get_chat('#' + self.public_chat_name)
-        self.home_2.get_chat('#' + self.public_chat_name).click()
-        self.chat_2.select_mention_from_suggestion_list(self.username_1, self.username_1[:2])
-        self.chat_2.send_message_button.click()
-        chat_element.new_messages_counter.wait_for_element(30)
-        chat_element.new_messages_counter.wait_for_element_text("1", 60)
-        chat_element.click()
-        self.home_1.home_button.double_click()
-        if self.home_1.home_button.public_unread_messages.is_element_displayed():
-            self.errors.append('New messages public chat badge is shown on Home button')
-        if chat_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('Unread messages badge is shown in public chat while there are no unread messages')
-        [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
-        self.chat_1.send_message(message)
-        self.chat_2.chat_element_by_text(message).wait_for_element(20)
-        self.home_2.reopen_app()
-        chat_element = self.home_2.get_chat('#' + self.public_chat_name)
-        if chat_element.new_messages_public_chat.is_element_displayed():
-            self.drivers[0].fail('New messages counter is shown after relogin')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5319)
-    def test_public_chat_delete_chat_long_press(self):
-        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
-        self.home_1.delete_chat_long_press('#%s' % self.pub_chat_delete_long_press)
-        self.home_2.just_fyi("Send message to deleted chat")
-        self.deleted_chat_2 = self.home_2.join_public_chat(self.pub_chat_delete_long_press)
-        self.deleted_chat_2.send_message()
-        if self.home_1.get_chat_from_home_view('#%s' % self.pub_chat_delete_long_press).is_element_displayed():
-            self.drivers[0].fail('Deleted public chat reappears after sending message to it')
-        self.home_1.reopen_app()
-        if self.home_1.get_chat_from_home_view('#%s' % self.pub_chat_delete_long_press).is_element_displayed():
-            self.drivers[0].fail('Deleted public chat reappears after relogin')
-
-    @marks.testrail_id(700736)
-    def test_public_chat_link_send_open(self):
-        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
-        [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
-        url_message = 'http://status.im'
-        self.chat_2.send_message(url_message)
-        self.chat_1.element_starts_with_text(url_message, 'button').click()
-        web_view = self.chat_1.open_in_status_button.click()
-        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
-            self.drivers[0].fail('URL was not opened from public chat')
-
-    @marks.testrail_id(700737)
-    def test_public_chat_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
-        [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
-        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
-                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
-                                      'subtitle': 'GitHub'},
-                        'yotube': {
-                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                            'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'},
-                        'twitter': {
-                            'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
-                            'txt': "We've rethought how we translate content, allowing us to translate",
-                            'subtitle': 'Twitter'
-                        }}
-
-        self.home_1.just_fyi("Check enabling and sending first gif")
-        self.chat_2.send_message(giphy_url)
-        self.chat_2.element_by_translation_id("dont-ask").click()
-        self.chat_1.element_by_translation_id("enable").wait_and_click()
-        self.chat_1.element_by_translation_id("enable-all").wait_and_click()
-        self.chat_1.close_modal_view_from_chat_button.click()
-        if not self.chat_1.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("No preview is shown for %s" % giphy_url)
-        for key in preview_urls:
-            self.home_2.just_fyi("Checking %s preview case" % key)
-            data = preview_urls[key]
-            self.chat_2.send_message(data['url'])
-            message = self.chat_1.get_preview_message_by_text(data['url'])
-            if data['txt'] not in message.preview_title.text:
-                self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
-            if message.preview_subtitle.text != data['subtitle']:
-                self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
-
-        self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
-        if self.chat_2.element_by_translation_id("enable").is_element_displayed():
-            self.errors.append("Enable button is still shown after clicking on 'Den't ask again'")
-        if self.chat_2.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("Preview is shown for sender without permission")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6270)
-    def test_public_chat_mark_all_messages_as_read(self):
-        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
-        self.home_2.get_chat('#' + self.public_chat_name).click()
-        self.chat_2.send_message(self.text_message)
-        if not self.home_1.home_button.public_unread_messages.is_element_displayed():
-            self.errors.append('New messages public chat badge is not shown on Home button')
-        chat_element = self.home_1.get_chat('#' + self.public_chat_name)
-        if not chat_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('New messages counter is not shown in public chat')
-        chat_element.long_press_element()
-        self.home_1.mark_all_messages_as_read_button.click()
-        self.home_1.home_button.double_click()
-        if self.home_1.home_button.public_unread_messages.is_element_displayed():
-            self.errors.append('New messages public chat badge is shown on Home button after marking messages as read')
-        if chat_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
-
-        self.errors.verify_no_errors()
-
-
 @pytest.mark.xdist_group(name="three_1")
 @marks.critical
 class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
@@ -591,14 +378,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.profile_1.add_contact_via_contacts_list(self.public_key_2)
         self.profile_1.communities_tab.click()
         self.home_2.chats_tab.click()
-
         self.home_2.handle_contact_request(self.default_username_1)
-
-        self.community_leave = 'community_leave'
         self.text_message = 'hello'
+
+        self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.home_1.create_community(name=self.community_leave, description='community to be left', require_approval=False)
-        self.home_1.back_button.double_click()
         self.community_name = self.home_1.get_random_chat_name()
         self.channel_name = self.home_1.get_random_chat_name()
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
@@ -606,13 +390,19 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_1.send_invite_to_community(self.default_username_2)
         self.channel_1 = self.community_1.add_channel(self.channel_name)
         self.channel_1.send_message(self.text_message)
-
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.chat_2.element_by_text_part('View').click()
-
         self.community_2 = CommunityView(self.drivers[1])
         self.community_2.join_button.click()
-        self.channel_2 = self.community_2.get_chat(self.channel_name).click()
+
+        self.home_1.just_fyi("Reopen community view to use new interface")
+        for home in (self.home_1, self.home_2):
+            home.jump_to_communities_home()
+            home.get_chat(self.community_name, community=True).click()
+            community_view = home.get_community_view()
+            community_view.get_channel(self.channel_name).click()
+        self.channel_2 = self.home_2.get_chat_view()
+
 
     @marks.testrail_id(702838)
     @marks.xfail(reason="blocked by 14797")
@@ -633,9 +423,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702843)
     def test_community_message_edit(self):
         message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
-        if not self.channel_2.chat_message_input.is_element_displayed():
-            self.home_2.communities_tab.click()
-            self.community_2.get_chat(self.channel_name).click()
         self.channel_1.send_message(message_before_edit)
         self.channel_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for channel in (self.channel_1, self.channel_2):
@@ -704,12 +491,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         'yotube_short': {
                             'url': 'https://youtu.be/Je7yErjEVt4',
                             'txt': 'Status, your gateway to Ethereum',
+                            'subtitle': 'YouTube'},
+                        'yotube_full': {
+                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                            'txt': 'Status & Keycard – Hardware-Enforced Security',
                             'subtitle': 'YouTube'}
-                        # blocked by 14865
-                        # 'yotube_full': {
-                        #     'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                        #     'txt': 'Status & Keycard – Hardware-Enforced Security',
-                        #     'subtitle': 'YouTube'}
                         # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
                         # 'twitter': {
                         #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
@@ -752,7 +538,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702841)
     def test_community_unread_messages_badge(self):
-        self.channel_1.send_message('пиу')
         self.channel_1.jump_to_communities_home()
         message = 'test message'
         self.channel_2.send_message(message)
@@ -762,43 +547,45 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('New message community badge is not shown')
 
         community_1 = community_element_1.click()
-        channel_1_element = community_1.get_chat('# %s' % self.channel_name)
-        # blocked of 14906
-        # self.home_1.just_fyi('Check new messages badge is shown for community')
-        # if not channel_1_element.new_messages_public_chat.is_element_displayed():
-        #     self.errors.append('New messages channel badge is not shown on channel')
+        channel_1_element = community_1.get_channel(self.channel_name)
+
+        self.home_1.just_fyi('Check new messages badge is shown for community')
+        if not community_element_1.new_messages_community.is_element_displayed():
+            self.errors.append('New messages channel badge is not shown on channel')
         channel_1_element.click()
         self.errors.verify_no_errors()
 
-
-
-    @marks.testrail_id(702842)
-    @marks.xfail(reason='blocked due to navigation issue 14906')
-    def test_community_mark_all_messages_as_read(self):
-        self.channel_2.send_message(self.text_message)
-        chan_1_element = self.community_1.get_chat('# %s' % self.channel_name)
-        if not chan_1_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('New messages counter is not shown in public chat')
-        chan_1_element.long_press_element()
-        self.community_1.mark_all_messages_as_read_button.click()
-        if chan_1_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
-        self.community_1.click_system_back_button_until_element_is_shown()
-        community_1_element = self.home_1.get_chat(self.community_name, community=True)
-        if community_1_element.new_messages_community.is_element_displayed():
-            self.errors.append('New messages community badge is shown on community after marking messages as read')
-        self.errors.verify_no_errors()
+    # @marks.testrail_id(702842)
+    # Skipped until implemented in NEW UI
+    # def test_community_mark_all_messages_as_read(self):
+    #     self.channel_1.jump_to_communities_home()
+    #     self.home_1.get_chat(self.community_name, community=True).click()
+    #     self.channel_2.send_message(self.text_message)
+    #     #self.home_1.get_chat(self.community_name).click()
+    #     channel_1_element = self.community_1.get_channel(self.channel_name)
+    #     if not channel_1_element.new_messages_public_chat.is_element_displayed():
+    #         self.errors.append('New messages counter is not shown in public chat')
+    #     mark_as_read_button = self.community_1.mark_all_messages_as_read_button
+    #     channel_1_element.long_press_until_element_is_shown(mark_as_read_button)
+    #     mark_as_read_button.click()
+    #     if channel_1_element.new_messages_public_chat.is_element_displayed():
+    #         self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
+    #     self.community_1.click_system_back_button_until_element_is_shown()
+    #     community_1_element = self.home_1.get_chat(self.community_name, community=True)
+    #     if community_1_element.new_messages_community.is_element_displayed():
+    #         self.errors.append('New messages community badge is shown on community after marking messages as read')
+    #     self.errors.verify_no_errors()
 
     @marks.testrail_id(702845)
+    @marks.xfail("blocked by 15187")
     def test_community_leave(self):
-        if not self.home_1.communities_tab.is_element_displayed():
-            self.channel_1.click_system_back_button_until_element_is_shown()
-        comm_to_leave_element = self.home_1.get_chat(self.community_leave, community=True)
-        comm_to_leave_element.long_press_element()
-        community_to_leave = CommunityView(self.drivers[0])
+        self.home_2.jump_to_communities_home()
+        community = self.home_2.element_by_text(self.community_name)
+        community_to_leave = CommunityView(self.drivers[1])
+        community.long_press_until_element_is_shown(community_to_leave.leave_community_button)
         community_to_leave.leave_community_button.click()
         community_to_leave.leave_community_button.click()
-        if comm_to_leave_element.is_element_displayed():
+        if community.is_element_displayed():
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()
 

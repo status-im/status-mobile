@@ -530,6 +530,10 @@ class BaseView(object):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+    def get_community_view(self):
+        from views.chat_view import CommunityView
+        return CommunityView(self.driver)
+
     def get_sign_in_view(self):
         from views.sign_in_view import SignInView
         return SignInView(self.driver)
