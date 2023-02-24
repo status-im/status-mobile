@@ -280,6 +280,15 @@ class BaseElement(object):
         action = TouchAction(self.driver)
         action.long_press(element).release().perform()
 
+    def long_press_until_element_is_shown(self, expected_element):
+        element = self.find_element()
+        self.driver.info("Long press on `%s` until expected element is shown" % self.name)
+        action = TouchAction(self.driver)
+        for _ in range(3):
+            action.long_press(element).release().perform()
+            if expected_element.is_element_displayed():
+                return
+
     def measure_time_before_element_appears(self, max_wait_time=30):
         def wrapper():
             return self.wait_for_visibility_of_element(max_wait_time)

@@ -16,12 +16,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
 
-from tests.conftest import option, sauce_username, sauce_access_key
+from tests.conftest import option, sauce_username, sauce_access_key, apibase
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
 from tests import transl
-from tests.conftest import apibase
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
@@ -394,11 +393,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 driver.quit()
             except WebDriverException:
                 pass
-            if option.datacenter == 'eu-central-1':
-                url = 'https://eu-central-1.saucelabs.com/rest/v1/%s/jobs/%s/assets/%s' % (
-                    sauce_username, session_id, "log.json")
-            else:
-                url = sauce.jobs.get_job_asset_url(username=sauce_username, job_id=session_id, filename="log.json")
+            url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
             WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
             commands = requests_session.get(url).json()
             for command in commands:

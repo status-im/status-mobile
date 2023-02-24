@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import emojis
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
@@ -171,7 +171,8 @@ class ChatElementByText(Text):
     def username(self):
         class Username(Text):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/android.view.ViewGroup/android.widget.TextView[1]")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="/android.view.ViewGroup/android.widget.TextView[1]")
 
         return Username(self.driver, self.locator)
 
@@ -191,8 +192,33 @@ class ChatElementByText(Text):
 
     @property
     def status(self) -> str:
-        result = re.search('\[(.*) DEBUG\]', Text(self.driver, prefix=self.locator, xpath="//*[contains(@text, 'DEBUG')]").text)
-        return result.group(1) if result else ''
+        Text(self.driver, xpath=self.locator).click()
+        status_element = Text(self.driver, prefix=self.locator,
+                              xpath="//*[@content-desc='message-status']/android.widget.TextView")
+        status = ''
+        i = 1
+
+        while i < 5:
+            i += 1
+            if Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='message-sending']").is_element_displayed(2):
+                status = "Sending"
+                break
+            else:
+                Text(self.driver, xpath=self.locator).click()
+                if status_element.is_element_displayed(2):
+                    status = status_element.text
+                    break
+                time.sleep(2)
+        return status
+
+    def wait_for_status_to_be(self, expected_status: str, timeout: int = 30):
+        start_time = time.time()
+        while time.time() - start_time <= timeout:
+            if self.status == expected_status:
+                return
+            time.sleep(1)
+        raise TimeoutException("Message status was not changed to %s" % expected_status)
 
     @property
     def sent_status_checkmark(self) -> object:
@@ -221,26 +247,6 @@ class ChatElementByText(Text):
             return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
             return ''
-
-    # Old UI
-    # def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
-    #     class EmojisNumber(Text):
-    #         def __init__(self, driver, parent_locator: str):
-    #             self.own = own
-    #             self.emoji = emoji
-    #             self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
-    #             super().__init__(driver, prefix=parent_locator, xpath="/../..//*[@content-desc='%s']" % self.emojis_id)
-    #
-    #         @property
-    #         def text(self):
-    #             try:
-    #                 text = self.find_element().text
-    #                 self.driver.info("%s is '%s' for '%s' where my reaction is set on message is '%s'" % (self.name, text, self.emoji, str(self.own)))
-    #                 return text
-    #             except NoSuchElementException:
-    #                 return 0
-    #
-    #     return int(EmojisNumber(self.driver, self.locator).text)
 
     def emojis_below_message(self, emoji: str = 'thumbs-up'):
         class EmojisNumber(Text):
@@ -321,6 +327,7 @@ class CommunityView(HomeView):
     def __init__(self, driver):
         super().__init__(driver)
 
+        #### OLD UI
         # Main community page (list with channels)
         self.add_channel_button = HomeView(self.driver).plus_button
         self.community_create_a_channel_button = Button(self.driver, accessibility_id="community-create-channel")
@@ -348,6 +355,15 @@ class CommunityView(HomeView):
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
         self.join_button = Button(self.driver, translation_id="join")
         self.follow_button = Button(self.driver, translation_id="follow")
+
+        #### NEW UI
+        # Communities initial page
+        self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
+
+    def get_channel(self, channel_name: str):
+        self.driver.info("Getting  %s channel element in community" % channel_name)
+        chat_element = self.get_chat(username=channel_name, community_channel=True, wait_time=30)
+        return chat_element
 
     def add_channel(self, name: str, description="Some new channel"):
         self.driver.info("Adding channel in community")
@@ -397,6 +413,7 @@ class CommunityView(HomeView):
         self.share_invite_button.click_until_presence_of_element(self.invite_button)
         self.back_button.click_until_presence_of_element(self.plus_button)
 
+
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text: str):
         super().__init__(driver, text=text)
@@ -421,7 +438,8 @@ class PreviewMessage(ChatElementByText):
     def preview_title(self):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[2]")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[2]")
 
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
@@ -429,7 +447,8 @@ class PreviewMessage(ChatElementByText):
     def preview_subtitle(self):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[3]")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[3]")
 
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
@@ -592,13 +611,19 @@ class PinnedMessagesList(BaseElement):
     def __init__(self, driver):
         super().__init__(driver, xpath="//*[@content-desc='pinned-messages-list']")
 
+    def get_pinned_messages_number(self):
+        self.driver.info("Getting number of pinned messages inside pinned messages list element")
+        element = BaseElement(self.driver, prefix=self.locator, xpath="//*[@content-desc='message-sent']")
+        return len(element.find_elements())
+
     def message_element_by_text(self, text):
         message_element = Text(self.driver, prefix=self.locator, xpath="//*[starts-with(@text,'%s')]" % text)
         self.driver.info("Looking for a pinned message by text: %s" % message_element.exclude_emoji(text))
         return message_element
 
     def get_message_pinned_by_text(self, text):
-        xpath = "//*[starts-with(@text,'%s')]/../../../*[@content-desc='pinned-by']/android.widget.TextView" % text
+        xpath = "//*[starts-with(@text,'%s')]/ancestor::*[@content-desc='message-sent']/" % text + \
+                "preceding-sibling::*[@content-desc='pinned-by']/android.widget.TextView"
         pinned_by_element = Text(self.driver, prefix=self.locator, xpath=xpath)
         self.driver.info("Looking for a pinned by message with text: %s" % text)
         return pinned_by_element
@@ -716,6 +741,7 @@ class ChatView(BaseView):
         self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
         self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
         self.profile_add_to_contacts = Button(self.driver, accessibility_id="Add to contacts-item-button")
+        self.profile_remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")
         self.profile_nickname = Text(self.driver,
                                      xpath="//*[@content-desc='profile-nickname-item']/android.widget.TextView[2]")
@@ -747,6 +773,7 @@ class ChatView(BaseView):
         self.pinned_messages_list = PinnedMessagesList(self.driver)
         self.pin_limit_popover = BaseElement(self.driver, translation_id="pin-limit-reached")
         self.view_pinned_messages_button = Button(self.driver, accessibility_id="pinned-banner")
+
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
@@ -871,13 +898,15 @@ class ChatView(BaseView):
 
     def pin_message(self, message, action="pin"):
         self.driver.info("Looking for message '%s' pin" % message)
-        self.element_by_text_part(message).long_press_element()
-        self.element_by_translation_id(action).click()
+        element = self.element_by_translation_id(action)
+        self.chat_element_by_text(message).long_press_until_element_is_shown(element)
+        element.click_until_absense_of_element(element)
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
-        self.element_by_text_part(message_to_edit).long_press_element()
-        self.element_by_translation_id("edit-message").click()
+        element = self.element_by_translation_id("edit-message")
+        self.element_by_text_part(message_to_edit).long_press_until_element_is_shown(element)
+        element.click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
         self.send_message_button.click()
@@ -896,7 +925,7 @@ class ChatView(BaseView):
 
     def quote_message(self, message=str):
         self.driver.info("Quoting '%s' message" % message)
-        self.element_by_text_part(message).long_press_element()
+        self.element_by_text_part(message).long_press_until_element_is_shown(self.reply_message_button)
         self.reply_message_button.click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
@@ -904,16 +933,16 @@ class ChatView(BaseView):
         key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
         # so we tap on its below element as exception here (not the case for link/tag message!)
+        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         if message == 'audio':
             self.audio_message_in_chat_timer.long_press_element()
         else:
             if not emoji_message:
-                self.chat_element_by_text(message).long_press_element()
+                self.chat_element_by_text(message).long_press_until_element_is_shown(element)
             else:
-                self.element_by_text_part(message).long_press_element()
+                self.element_by_text_part(message).long_press_until_element_is_shown(element)
         # old UI
         # element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
-        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
 

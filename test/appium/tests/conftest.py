@@ -172,7 +172,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "testrail_id(name): empty")
     global apibase
     if config.getoption('datacenter') == 'us-west-1':
-        apibase = 'saucelabs.com'
+        apibase = 'us-west-1.saucelabs.com'
     elif config.getoption('datacenter') == 'eu-central-1':
         apibase = 'eu-central-1.saucelabs.com'
     else:

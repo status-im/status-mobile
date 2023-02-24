@@ -203,6 +203,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.profile_1.switch_push_notifications()
 
     @marks.testrail_id(702850)
+    @marks.xfail(reason="blocked with 15180")
     def test_activity_center_decline_contact_request_no_pn(self):
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1')
@@ -235,13 +236,21 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
-    @marks.xfail(reason='blocked by 14798')
     def test_activity_center_mentions_in_community_jump_to(self):
-        self.device_2.just_fyi('Device2 sends a contact request to Device1')
+        self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
         self.home_2.browser_tab.click()
         self.profile_2.click_system_back_button_until_element_is_shown(self.profile_2.contacts_button)
-        self.profile_2.add_contact_via_contacts_list(self.public_key_1)
-        self.profile_2.click_system_back_button_until_element_is_shown(self.profile_2.contacts_button)
+
+        self.profile_2.contacts_button.wait_and_click(30)
+        self.profile_2.add_new_contact_button.wait_and_click()
+        chat = self.profile_2.get_chat_view()
+        chat.public_key_edit_box.click()
+        chat.public_key_edit_box.send_keys(self.public_key_1)
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact)
+        if chat.profile_remove_from_contacts.is_element_displayed(20):
+            chat.profile_remove_from_contacts.click()
+        chat.profile_add_to_contacts.click()
+        self.profile_2.click_system_back_button_until_element_is_shown()
 
         self.device_1.just_fyi('Device1 accepts pending contact request and check contact list')
         self.home_1.chats_tab.click()
@@ -259,8 +268,6 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
         self.community_1 = CommunityView(self.drivers[0])
         self.community_1.send_invite_to_community(self.default_username_2)
-        self.channel_1 = self.community_1.add_channel(self.channel_name)
-        self.channel_1.send_message(self.text_message)
 
         self.home_2.chats_tab.click()
         self.home_2.recent_tab.click()
@@ -268,10 +275,11 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.chat_2.element_by_text_part('View').click()
         self.community_2 = CommunityView(self.drivers[1])
         self.community_2.join_button.click()
+        self.channel_1 = self.community_1.add_channel(self.channel_name)
+        self.channel_1.send_message(self.text_message)
         self.channel_2 = self.community_2.get_chat(self.channel_name).click()
 
         self.community_2.just_fyi("Check Jump to screen and redirect on tap")
-        self.channel_2.click_system_back_button()
         self.community_2.jump_to_button.click()
         for card in (self.community_name, self.default_username_1):
             if not self.community_2.element_by_text_part(card).is_element_displayed(20):
