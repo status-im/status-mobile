@@ -525,7 +525,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
 		};
 		0F876BD5356F61BF142A01A0 /* [CP] Check Pods Manifest.lock */ = {
@@ -546,7 +546,7 @@
 				"$(DERIVED_FILE_DIR)/Pods-Status-StatusIm-StatusImTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -568,7 +568,7 @@
 				"$(DERIVED_FILE_DIR)/Pods-Status-StatusIm-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -583,7 +583,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
 		};
 		3AAD2AD724A3A60E0075D594 /* Run Script */ = {
@@ -597,7 +597,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
 		};
 		3C1038075AE5E6FB86AC2319 /* [CP] Copy Pods Resources */ = {
@@ -618,7 +618,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -640,7 +640,7 @@
 				"$(DERIVED_FILE_DIR)/Pods-Status-StatusImPR-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -662,7 +662,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -677,7 +677,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
 		};
 		E732E3E1B024946173BF6D3D /* [CP] Copy Pods Resources */ = {
@@ -698,7 +698,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellpath = "/usr/bin/env sh";
+			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
