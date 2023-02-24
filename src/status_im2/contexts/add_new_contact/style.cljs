@@ -32,7 +32,7 @@
   {:style {:flex-direction  :row
            :justify-content :space-between}})
 
-(def container-error
+(def container-invalid
   {:style {:flex-direction :row
            :align-items    :center
            :margin-top     8}})
@@ -64,18 +64,18 @@
                             colors/neutral-50
                             colors/neutral-40)}})
 
-(def icon-error
+(def icon-invalid
   {:size  16
    :color colors/danger-50})
 
-(def text-error
+(def text-invalid
   {:size  :paragraph-2
    :align :left
    :style {:margin-left 4
            :color       colors/danger-50}})
 
 (defn text-input-container
-  [error?]
+  [invalid?]
   {:style {:padding-top      1
            :padding-left     12
            :padding-right    7
@@ -88,7 +88,7 @@
                               colors/neutral-95)
            :border-width     1
            :border-radius    12
-           :border-color     (if error?
+           :border-color     (if invalid?
                                colors/danger-50-opa-40
                                (colors/theme-colors
                                 colors/neutral-20
