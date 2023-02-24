@@ -12,6 +12,8 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]))
 
 ;;;; Some aliases for reanimated methods, as they are used 10s of times in this file
+;; TODO: Abstract Reanimated methods in a better way, issue:
+;; https://github.com/status-im/status-mobile/issues/15176
 (defn get-val
   [animation]
   (reanimated/get-shared-value animation))
