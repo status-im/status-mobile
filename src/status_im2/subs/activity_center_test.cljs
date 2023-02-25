@@ -1,11 +1,14 @@
 (ns status-im2.subs.activity-center-test
   (:require
     [cljs.test :refer [is testing]]
+    malli.generator
     [re-frame.db :as rf-db]
     [status-im2.contexts.shell.activity-center.notification-types :as types]
     status-im2.subs.activity-center
     [test-helpers.unit :as h]
-    [utils.re-frame :as rf]))
+    utils.collection
+    [utils.re-frame :as rf]
+    utils.schema))
 
 (h/deftest-sub :activity-center/filter-status-unread-enabled?
   [sub-name]
@@ -64,6 +67,19 @@
      types/admin                7})
 
   (is (= 28 (rf/sub [sub-name]))))
+
+(defn generate-contact-request
+  [m]
+  (let [notification (-> (malli.generator/generate :schema.shell/notification)
+                         (assoc :type types/contact-request)
+                         (assoc :contact-verification-status nil)
+                         (utils.collection/deep-merge m))]
+    (utils.schema/match :schema.shell/notification notification)))
+
+(comment
+  (generate-contact-request {})
+  (malli.generator/generate :schema.shell/notification)
+  (malli.generator/sample :schema.shell/notification {:size 20}))
 
 (h/deftest-sub :activity-center/unread-indicator
   [sub-name]

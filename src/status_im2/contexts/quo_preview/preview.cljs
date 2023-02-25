@@ -2,6 +2,8 @@
   (:require
     [camel-snake-kebab.core :as camel-snake-kebab]
     [clojure.string :as string]
+    [malli.core :as malli]
+    malli.util
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -268,6 +270,67 @@
          :select       [customizer-select descriptor]
          :multi-select [customizer-multi-select descriptor]
          nil)]))])
+
+(defn generate-descriptor
+  "Returns a descriptor vector, according to function schema `?schema`.
+
+  A useful (not implemented) improvement would be to allow the schema to specify
+  custom properties to affect the output descriptor. For example, for a map
+  schema, the developer may want to customize the field name:
+
+  [:map
+   [:amount [:int {:preview/name \"Total amount\"}]]]
+
+  With this sort of capability, we can start to consider generating preview
+  namespaces on-the-fly without any manual code."
+  [?schema]
+  (let [?args (rest (second (malli/form ?schema)))]
+    (->>
+      ?args
+      (mapcat
+       (fn [?arg]
+         (case (first ?arg)
+           :map
+           (->> (malli.util/keys ?arg)
+                (map
+                 (fn [schema-key]
+                   (let [?schema     (malli.util/get ?arg schema-key)
+                         schema-type (malli/type ?schema)]
+                     (cond
+                       (= schema-type :enum)
+                       (let [children (malli/children ?schema)]
+                         {:key     schema-key
+                          :type    :select
+                          :options (mapv (fn [child]
+                                           {:key child})
+                                         children)})
+
+                       (= schema-type :boolean)
+                       {:key  schema-key
+                        :type :boolean}
+
+                       (= schema-type :string)
+                       {:key  schema-key
+                        :type :text}
+
+                       (= schema-type :re)
+                       {:key  schema-key
+                        :type :text}
+
+                       (and (= schema-type ::malli/schema)
+                            (= schema-key :theme))
+                       {:key     schema-key
+                        :type    :select
+                        :options [{:key :light}
+                                  {:key :dark}]}
+
+                       :else
+                       (println "Unsupported type" schema-type schema-key)))))
+                (remove nil?))
+           (do
+             (println "Unsupported schema" (first ?arg))
+             nil))))
+      (into []))))
 
 (defn customization-color-option
   ([]

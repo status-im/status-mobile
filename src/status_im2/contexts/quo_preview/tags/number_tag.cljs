@@ -1,30 +1,9 @@
 (ns status-im2.contexts.quo-preview.tags.number-tag
   (:require
+    [quo.components.tags.number-tag.view :as number-tag]
     [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
-
-(def descriptor
-  [{:key     :type
-    :type    :select
-    :options [{:key :rounded}
-              {:key :squared}]}
-   {:key  :number
-    :type :text}
-   {:key     :size
-    :type    :select
-    :options [{:key   :size-32
-               :value "32"}
-              {:key   :size-24
-               :value "24"}
-              {:key   :size-20
-               :value "20"}
-              {:key   :size-16
-               :value "16"}
-              {:key   :size-14
-               :value "14"}]}
-   {:key  :blur?
-    :type :boolean}])
 
 (defn view
   []
@@ -35,7 +14,7 @@
     (fn []
       [preview/preview-container
        {:state                 state
-        :descriptor            descriptor
+        :descriptor            (preview/generate-descriptor number-tag/?schema)
         :blur?                 (:blur? @state)
         :show-blur-background? true}
        [quo/number-tag @state]])))

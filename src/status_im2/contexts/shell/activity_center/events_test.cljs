@@ -4,7 +4,8 @@
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.events :as events]
     [status-im2.contexts.shell.activity-center.notification-types :as types]
-    [test-helpers.unit :as h]))
+    [test-helpers.unit :as h]
+    utils.schema))
 
 (h/use-log-fixture)
 
@@ -42,17 +43,34 @@
 
 ;;;; Mark as read/unread
 
+(defn gen-cofx-with-notification
+  [notif-map]
+  (let [notification    (merge (utils.schema/gen :schema.shell/notification) notif-map)
+        activity-center (assoc (utils.schema/gen :schema.re-frame/db [:activity-center])
+                               :notifications
+                               [notification])]
+    (assoc-in (utils.schema/gen :schema.re-frame/cofx)
+     [:db :activity-center]
+     activity-center)))
+
 (deftest mark-as-read-test
   (testing "does nothing if the notification ID cannot be found in the app db"
-    (let [cofx {:db {:activity-center
-                     {:notifications [{:id   "0x1"
-                                       :read false
-                                       :type types/one-to-one-chat}]}}}]
+    (let [cofx (gen-cofx-with-notification {:id   "0x1"
+                                            :read false
+                                            :type types/one-to-one-chat})]
       (is (nil? (events/mark-as-read cofx "0x99")))))
 
   (testing "dispatches RPC call"
-    (let [notif {:id "0x1" :read false :type types/one-to-one-chat}
-          cofx  {:db {:activity-center {:notifications [notif]}}}]
+    (let [notif           (assoc (utils.schema/gen :schema.shell/notification)
+                                 :id   "0x1"
+                                 :read false
+                                 :type types/one-to-one-chat)
+          activity-center (assoc (utils.schema/gen :schema.re-frame/db [:activity-center])
+                                 :notifications
+                                 [notif])
+          cofx            (assoc-in (utils.schema/gen :schema.re-frame/cofx)
+                           [:db :activity-center]
+                           activity-center)]
       (is (= {:json-rpc/call
               [{:method     "wakuext_markActivityCenterNotificationsRead"
                 :params     [[(:id notif)]]

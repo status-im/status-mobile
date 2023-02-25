@@ -21,4 +21,4 @@
                              :type  :default})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
-       [quo/counter @state (:value @state)]])))
+       [quo/counter (select-keys @state [:value]) (:value @state)]])))

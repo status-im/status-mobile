@@ -1,5 +1,14 @@
 (ns utils.collection)
 
+(defn deep-merge
+  "Recursively merges maps."
+  [& maps]
+  (letfn [(m [& xs]
+            (if (some #(and (map? %) (not (record? %))) xs)
+              (apply merge-with m xs)
+              (last xs)))]
+    (reduce m maps)))
+
 (defn first-index
   "Returns first index in coll where predicate on coll element is truthy"
   [pred coll]

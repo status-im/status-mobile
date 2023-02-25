@@ -12,7 +12,8 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    utils.schema))
 
 (defn- f-slider
   [{:keys [disabled?]}]
@@ -97,18 +98,19 @@
               :size  20}]]]]]))))
 
 (defn- view-internal
-  "Options
-  - `on-complete`         Callback called when the sliding is complete
-  - `disabled?`           Boolean that disables the button
-                          (_and gestures_)
-  - `size`                :size/s-40`/`:size/s-48`
-  - `track-text`          Text that is shown on the track
-  - `track-icon`          Key of the icon shown on the track
-                          (e.g. `:face-id`)
-  - `customization-color` Customization color
-  - `on-reset`            A callback which can be used to reset the component and run required functionality
-  "
   [props]
   [:f> f-slider props])
 
-(def view (quo.theme/with-theme view-internal))
+(def ?schema
+  [:=>
+   [:cat
+    [:map {:closed true}
+     [:on-complete {:optional true} fn?]
+     [:disabled? {:optional true} :boolean]
+     [:size {:optional true} [:enum :small :large]]
+     [:track-text :string]
+     [:track-icon :schema.common/icon-name]
+     [:customization-color {:optional true} :schema.common/color]]]
+   :any])
+
+(def view (utils.schema/instrument ::slide-button ?schema (quo.theme/with-theme view-internal)))

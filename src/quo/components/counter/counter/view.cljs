@@ -1,11 +1,13 @@
 (ns quo.components.counter.counter.view
   (:require
+    malli.util
     [quo.components.counter.counter.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [utils.number]))
+    [utils.number]
+    utils.schema))
 
 (defn- view-internal
   [{:keys [type customization-color theme container-style accessibility-label max-value]
@@ -34,4 +36,18 @@
        :style  (when (= type :default) {:color colors/white})}
       label]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def ?schema
+  [:=>
+   [:cat
+    (malli.util/optional-keys
+     [:map {:closed true}
+      [:accessibility-label :keyword]
+      [:container-style :schema.common/style]
+      [:customization-color :schema.common/color]
+      [:max-value :int]
+      [:theme :schema.common/theme]
+      [:type [:enum :default :secondary :grey :outline]]])
+    [:maybe [:or :int :string]]]
+   :any])
+
+(def view (utils.schema/instrument ::counter ?schema (quo.theme/with-theme view-internal)))
