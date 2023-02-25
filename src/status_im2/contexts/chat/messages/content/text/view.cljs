@@ -122,10 +122,10 @@
 
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
-    (reduce (fn [acc e]
-              (render-block acc e chat-id edited-at))
-            [:<>]
-            (:parsed-text content)))
+  (reduce (fn [acc e]
+            (render-block acc e chat-id edited-at))
+          [:<>]
+          (:parsed-text content)))
 
 (defn text-content
   [message-data context]
