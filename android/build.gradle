@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 /**
@@ -30,6 +32,8 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("de.undercouch:gradle-download-task:4.1.2")
         // WARNING: Do not place your application dependencies here!
         //          They belong in the individual module build.gradle files.
     }
@@ -68,7 +72,7 @@ allprojects {
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         // Everything Else
         google()
-        jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
+//         jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
         mavenCentral()
         maven { url "https://www.jitpack.io" }
     }

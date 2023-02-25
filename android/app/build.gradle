@@ -3,6 +3,7 @@ apply plugin: "com.android.application"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
+import org.apache.tools.ant.taskdefs.condition.Os
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 
 /**
@@ -197,9 +198,15 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
+        }
+
+//     kotlin {
+//         jvmToolchain {
+//             languageVersion.set(JavaLanguageVersion.of("11"))
+//         }
+//     }
 
     defaultConfig {
         applicationId "im.status.ethereum"
