@@ -74,7 +74,7 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]} chat-id edited-at]
+  [blocks {:keys [type literal children]} chat-id edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
