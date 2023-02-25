@@ -5,4 +5,5 @@
 (defn unread-grey-dot
   []
   [rn/view
-   {:style style/unread-grey-dot}])
+   {:style               style/unread-grey-dot
+    :accessibility-label :unviewed-messages-public}])

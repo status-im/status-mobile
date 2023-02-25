@@ -225,9 +225,10 @@
                  (not pending?)
                  (= status :gated))
         [rn/view
-         {:position :absolute
-          :top      8
-          :right    8}
+         {:position            :absolute
+          :top                 8
+          :right               8
+          :accessibility-label :show-token-gating-details}
          [quo/permission-tag-container
           {:locked   locked
            :status   status
