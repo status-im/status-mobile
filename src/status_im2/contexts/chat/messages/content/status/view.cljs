@@ -19,6 +19,6 @@
    [quo/text
     {:size  :label
      :style (style/message-status-text)}
-    (if (= outgoing-status :delivered)
-      (i18n/label :t/delivered)
-      (i18n/label :t/sent))]])
+    (cond (= outgoing-status :delivered) (i18n/label :t/delivered)
+          (= outgoing-status :sent)      (i18n/label :t/sent)
+          (= outgoing-status :edited)    (i18n/label :t/edited))]])
