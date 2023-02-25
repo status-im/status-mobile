@@ -84,15 +84,16 @@
                                                          context)}]))
 
 (defn user-message-content
-  [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
+  [{:keys [content-type quoted-message content outgoing outgoing-status edited-at] :as message-data}
    {:keys [chat-id] :as context}]
   [:f>
    (let [show-delivery-state? (reagent/atom false)]
      (fn []
        (let [first-image     (first (:album message-data))
-             outgoing-status (if (= content-type constants/content-type-album)
-                               (:outgoing-status first-image)
-                               outgoing-status)
+             outgoing-status (cond edited-at                        :edited
+                                   (= content-type
+                                      constants/content-type-album) (:outgoing-status first-image)
+                                   :else                            outgoing-status)
              outgoing        (if (= content-type constants/content-type-album)
                                (:outgoing first-image)
                                outgoing)
