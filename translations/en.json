@@ -1018,6 +1018,8 @@
     "push-failed-transaction-body": "{{value}} {{currency}} to {{to}}",
     "allow-mention-notifications": "Show @ mentions",
     "server": "Server",
+    "read": "Read",
+    "unread": "Unread",
     "specify-server-public-key": "Enter server public key",
     "notify": "Notify",
     "off": "Off",

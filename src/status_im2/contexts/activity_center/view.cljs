@@ -1,5 +1,5 @@
 (ns status-im2.contexts.activity-center.view
-  (:require [quo.react :as react]
+  (:require [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -166,47 +166,59 @@
     [rn/view {:style style/filter-toggle-container}
      [filter-selector-read-toggle]]]])
 
-(defn render-notification
-  [{:keys [type] :as notification} index]
-  [rn/view {:style (style/notification-container index)}
-   (cond
-     (= type types/contact-verification)
-     [contact-verification/view notification {}]
+(defn notification-component
+  []
+  (let [height               (atom 0)
+        set-swipeable-height #(reset! height (oops/oget % "nativeEvent.layout.height"))]
+    (fn [{:keys [type] :as notification} index _ active-swipeable]
+      (let [swipeable-args {:height           height
+                            :active-swipeable active-swipeable
+                            :notification     notification}]
+        [rn/view {:style (style/notification-container index)}
+         (cond
+           (= type types/contact-verification)
+           [contact-verification/view notification {}]
 
-     (= type types/mention)
-     [mentions/view notification]
+           (= type types/contact-request)
+           [contact-requests/swipeable swipeable-args
+            [contact-requests/view notification set-swipeable-height]]
 
-     (= type types/reply)
-     [reply/view notification]
+           (= type types/mention)
+           [mentions/swipeable swipeable-args
+            [mentions/view notification set-swipeable-height]]
 
-     (= type types/contact-request)
-     [contact-requests/view notification]
+           (= type types/reply)
+           [reply/swipeable swipeable-args
+            [reply/view notification set-swipeable-height]]
 
-     (= type types/admin)
-     [admin/view notification]
+           (= type types/admin)
+           [admin/swipeable swipeable-args
+            [admin/view notification set-swipeable-height]]
 
-     (some types/membership [type])
-     [membership/view notification]
+           (some types/membership [type])
+           [membership/view notification]
 
-     :else
-     nil)])
+           :else
+           nil)]))))
 
 (defn view
   []
-  [:f>
-   (fn []
-     (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
-     [safe-area/consumer
-      (fn [{:keys [top bottom]}]
-        (let [notifications (rf/sub [:activity-center/filtered-notifications])
-              window-width  (rf/sub [:dimensions/window-width])]
-          [rn/view {:style (style/screen-container window-width top bottom)}
-           [header]
-           [rn/flat-list
-            {:data                      notifications
-             :content-container-style   {:flex-grow 1}
-             :empty-component           [empty-tab]
-             :key-fn                    :id
-             :on-scroll-to-index-failed identity
-             :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-             :render-fn                 render-notification}]]))])])
+  (let [active-swipeable (atom nil)]
+    [:f>
+     (fn []
+       (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
+       [safe-area/consumer
+        (fn [{:keys [top bottom]}]
+          (let [notifications (rf/sub [:activity-center/filtered-notifications])
+                window-width  (rf/sub [:dimensions/window-width])]
+            [rn/view {:style (style/screen-container window-width top bottom)}
+             [header]
+             [rn/flat-list
+              {:data                      notifications
+               :render-data               active-swipeable
+               :content-container-style   {:flex-grow 1}
+               :empty-component           [empty-tab]
+               :key-fn                    :id
+               :on-scroll-to-index-failed identity
+               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+               :render-fn                 notification-component}]]))])]))

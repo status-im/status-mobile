@@ -177,11 +177,12 @@
       :action          :notification/accept})))
 
 (deftest notification-dismissal-test
-  (testing "dismisses notification and removes from app db"
+  (testing "dismisses notification, but keep it in the app db"
     (h/run-test-sync
      (setup)
-     (let [notif-1 {:id "0x1" :type types/private-group-chat}
-           notif-2 {:id "0x2" :type types/admin}]
+     (let [notif-1           {:id "0x1" :type types/private-group-chat}
+           notif-2           {:id "0x2" :type types/admin}
+           dismissed-notif-1 (assoc notif-1 :dismissed true)]
        (h/stub-fx-with-callbacks :json-rpc/call :on-success (constantly notif-2))
        (rf/dispatch [:test/assoc-in [:activity-center]
                      {:notifications {types/no-type
@@ -195,12 +196,12 @@
        (rf/dispatch [:activity-center.notifications/dismiss (:id notif-1)])
 
        (is (= {types/no-type
-               {:all    {:cursor "" :data [notif-2]}
-                :unread {:data []}}
+               {:all    {:cursor "" :data [notif-2 dismissed-notif-1]}
+                :unread {:data [dismissed-notif-1]}}
 
                types/membership
-               {:all    {:data []}
-                :unread {:cursor "" :data []}}}
+               {:all    {:data [dismissed-notif-1]}
+                :unread {:cursor "" :data [dismissed-notif-1]}}}
               (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "logs on failure"
@@ -355,12 +356,12 @@
 
        (is (= notifications (get-in (h/db) [:activity-center :notifications]))))))
 
-  (testing "removes dismissed notifications"
+  (testing "removes deleted notifications"
     (h/run-test-sync
      (setup)
      (let [notif-1 {:id "0x1" :read true :type types/one-to-one-chat}
            notif-2 {:id "0x2" :read false :type types/one-to-one-chat}
-           notif-3 {:id "0x3" :read false :type types/system}
+           notif-3 {:id "0x3" :read false :type types/system :dismissed true}
            notif-4 {:id "0x4" :read true :type types/system}
            notif-5 {:id "0x5" :read false :type types/system :accepted true}]
        (rf/dispatch [:test/assoc-in [:activity-center :notifications]
@@ -372,8 +373,8 @@
                        :unread {:cursor "" :data [notif-3 notif-5]}}}])
 
        (rf/dispatch [:activity-center.notifications/reconcile
-                     [(assoc notif-1 :dismissed true)
-                      (assoc notif-4 :dismissed true)
+                     [(assoc notif-1 :deleted true)
+                      (assoc notif-4 :deleted true)
                       notif-5]])
 
        (is (= {types/no-type

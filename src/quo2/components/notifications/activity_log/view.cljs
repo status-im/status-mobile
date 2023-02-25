@@ -164,7 +164,8 @@
     :as   props}]
   [rn/view
    {:accessibility-label :activity
-    :style               style/container}
+    :style               style/container
+    :on-layout           (:on-layout props)}
    (when-not replying?
      [activity-icon icon])
    [rn/view

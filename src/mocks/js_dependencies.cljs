@@ -265,7 +265,15 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 
 (def react-native-gesture-handler
   #js
-   {:default                  #js {}
+   {:FlatList                 #js {}
+    :Gesture                  #js {:Pan nil}
+    :GestureDetector          #js {}
+    :LongPressGestureHandler  #js {}
+    :NativeViewGestureHandler #js {}
+    :PanGestureHandler        #js {}
+    :PureNativeButton         #js {}
+    :RectButton               #js {}
+    :ScrollView               #js {}
     :State                    #js
                                {:BEGAN        nil
                                 :ACTIVE       nil
@@ -273,19 +281,13 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
                                 :END          nil
                                 :FAILED       nil
                                 :UNDETERMINED nil}
-    :PureNativeButton         #js {}
+    :Swipeable                #js {}
     :TapGestureHandler        #js {}
-    :PanGestureHandler        #js {}
     :TouchableHighlight       #js {}
-    :LongPressGestureHandler  #js {}
-    :TouchableWithoutFeedback #js {}
-    :NativeViewGestureHandler #js {}
-    :FlatList                 #js {}
-    :ScrollView               #js {}
     :TouchableOpacity         #js {}
-    :GestureDetector          #js {}
-    :Gesture                  #js {:Pan nil}
-    :createNativeWrapper      identity})
+    :TouchableWithoutFeedback #js {}
+    :createNativeWrapper      identity
+    :default                  #js {}})
 
 (def react-native-redash #js {:clamp nil})
 

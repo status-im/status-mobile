@@ -10,6 +10,10 @@
 
 (def app-state ^js (.-AppState ^js react-native))
 
+;; Only use this component for exceptional cases, otherwise use Reanimated, e.g.
+;; when using interpolated values exposed by RN Gesture Handler > Swipeable.
+(def animated-view (reagent/adapt-react-class react-native/Animated.View))
+
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
 (def image (reagent/adapt-react-class (.-Image ^js react-native)))

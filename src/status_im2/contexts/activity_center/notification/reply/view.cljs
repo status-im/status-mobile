@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
@@ -37,18 +37,31 @@
 
     nil))
 
+(defn swipeable
+  [{:keys [height active-swipeable notification]} child]
+  [common/swipeable
+   {:left-button      common/left-swipe-button
+    :left-on-press    common/left-swipe-on-press
+    :right-button     common/right-swipe-button
+    :right-on-press   common/right-swipe-on-press
+    :active-swipeable active-swipeable
+    :extra-fn         (fn [] {:height @height :notification notification})}
+   child])
+
 (defn view
-  [{:keys [author chat-name community-id chat-id message read timestamp]}]
+  [{:keys [author chat-name community-id chat-id message read timestamp]}
+   set-swipeable-height]
   (let [community-chat? (not (string/blank? community-id))
         community       (rf/sub [:communities/community community-id])
         community-name  (:name community)
         community-image (get-in community [:images :thumbnail :uri])]
-    [rn/touchable-opacity
+    [gesture/touchable-without-feedback
      {:on-press (fn []
                   (rf/dispatch [:hide-popover])
                   (rf/dispatch [:chat/navigate-to-chat chat-id]))}
      [quo/activity-log
       {:title     (i18n/label :t/message-reply)
+       :on-layout set-swipeable-height
        :icon      :i/reply
        :timestamp (datetime/timestamp->relative timestamp)
        :unread?   (not read)

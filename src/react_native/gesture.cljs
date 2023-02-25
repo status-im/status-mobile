@@ -1,6 +1,11 @@
 (ns react-native.gesture
   (:require ["react-native-gesture-handler" :refer
-             (GestureDetector Gesture gestureHandlerRootHOC)]
+             (Gesture
+              GestureDetector
+              RectButton
+              Swipeable
+              TouchableWithoutFeedback
+              gestureHandlerRootHOC)]
             [reagent.core :as reagent]))
 
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
@@ -32,3 +37,27 @@
   ([g1 g2 g3] (.Simultaneous ^js Gesture g1 g2 g3)))
 
 (defn exclusive [g1 g2] (.Exclusive ^js Gesture g1 g2))
+
+;; RN Gesture Handler touchables are drop-in replacements for the RN ones. In
+;; some cases, it's the only touchable that works with Swipeable components.
+(def touchable-without-feedback (reagent/adapt-react-class TouchableWithoutFeedback))
+
+(def rect-button (reagent/adapt-react-class RectButton))
+
+(def ^:private swipeable-component
+  (reagent/adapt-react-class Swipeable))
+
+(defn swipeable
+  [{:keys [render-left-actions render-right-actions] :as props} & children]
+  (into [swipeable-component
+         (cond-> props
+           render-left-actions
+           (assoc :render-left-actions
+                  (fn [& args]
+                    (reagent/as-element (apply render-left-actions args))))
+
+           render-right-actions
+           (assoc :render-right-actions
+                  (fn [& args]
+                    (reagent/as-element (apply render-right-actions args)))))]
+        children))

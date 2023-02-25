@@ -1,18 +1,36 @@
 (ns status-im2.contexts.activity-center.notification.contact-requests.view
   (:require [quo2.core :as quo]
-            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn swipeable
+  [{:keys [height active-swipeable notification]} child]
+  (let [message (or (:message notification) (:last-message notification))]
+    (if (#{constants/contact-request-message-state-accepted
+           constants/contact-request-message-state-declined}
+         (:contact-request-state message))
+      [common/swipeable
+       {:left-button      common/left-swipe-button
+        :left-on-press    common/left-swipe-on-press
+        :right-button     common/right-swipe-button
+        :right-on-press   common/right-swipe-on-press
+        :active-swipeable active-swipeable
+        :extra-fn         (fn [] {:height @height :notification notification})}
+       child]
+      child)))
+
 (defn outgoing-contact-request-view
-  [{:keys [id chat-id message last-message] :as notification}]
+  [{:keys [id chat-id message last-message] :as notification}
+   set-swipeable-height]
   (let [{:keys [contact-request-state] :as message} (or message last-message)]
     (if (= contact-request-state constants/contact-request-message-state-accepted)
       [quo/activity-log
        {:title     (i18n/label :t/contact-request-was-accepted)
+        :on-layout set-swipeable-height
         :icon      :i/add-user
         :timestamp (datetime/timestamp->relative (:timestamp notification))
         :unread?   (not (:read notification))
@@ -22,6 +40,7 @@
        :items []]
       [quo/activity-log
        {:title     (i18n/label :t/contact-request)
+        :on-layout set-swipeable-height
         :icon      :i/add-user
         :timestamp (datetime/timestamp->relative (:timestamp notification))
         :unread?   (not (:read notification))
@@ -55,10 +74,12 @@
                      nil)}])))
 
 (defn incoming-contact-request-view
-  [{:keys [id author message last-message] :as notification}]
+  [{:keys [id author message last-message] :as notification}
+   set-swipeable-height]
   (let [message (or message last-message)]
     [quo/activity-log
      {:title (i18n/label :t/contact-request)
+      :on-layout set-swipeable-height
       :icon :i/add-user
       :timestamp (datetime/timestamp->relative (:timestamp notification))
       :unread? (not (:read notification))
@@ -79,7 +100,7 @@
           :key     :status-declined
           :label   (i18n/label :t/declined)}]
 
-        constants/contact-request-state-mutual
+        constants/contact-request-message-state-pending
         [{:type                :button
           :subtype             :danger
           :key                 :button-decline
@@ -101,19 +122,20 @@
         nil)}]))
 
 (defn view
-  [{:keys [author message last-message] :as notification}]
+  [{:keys [author message last-message] :as notification}
+   set-swipeable-height]
   (let [{:keys [public-key]}            (rf/sub [:multiaccount/contact])
         {:keys [contact-request-state]} (or message last-message)]
     (cond
       (= public-key author)
-      [outgoing-contact-request-view notification]
+      [outgoing-contact-request-view notification set-swipeable-height]
 
       (= contact-request-state constants/contact-request-message-state-accepted)
-      [rn/touchable-opacity
+      [gesture/touchable-without-feedback
        {:on-press (fn []
                     (rf/dispatch [:hide-popover])
                     (rf/dispatch [:chat.ui/start-chat {:public-key author}]))}
-       [incoming-contact-request-view notification]]
+       [incoming-contact-request-view notification set-swipeable-height]]
 
       :else
-      [incoming-contact-request-view notification])))
+      [incoming-contact-request-view notification set-swipeable-height])))

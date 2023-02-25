@@ -77,7 +77,7 @@
                 (update-in $ [types/no-type :all :data] remove-notification)
                 (update-in $ [filter-type :unread :data] remove-notification)
                 (update-in $ [types/no-type :unread :data] remove-notification)
-                (if (:dismissed notification)
+                (if (:deleted notification)
                   $
                   (cond-> (-> $
                               (update-in [filter-type :all :data] insert-and-sort)
@@ -159,7 +159,7 @@
                       remove-pending-contact-request
                       contact-id))})
 
-;;;; Mark notifications as read
+;;;; Status changes (read/dismissed/deleted)
 
 (defn- get-notification
   [db notification-id]
@@ -189,6 +189,24 @@
   {:events [:activity-center.notifications/mark-as-read-success]}
   [cofx notification]
   (notifications-reconcile cofx [(assoc notification :read true)]))
+
+(rf/defn mark-as-unread
+  {:events [:activity-center.notifications/mark-as-unread]}
+  [{:keys [db]} notification-id]
+  (when-let [notification (get-notification db notification-id)]
+    {:json-rpc/call [{:method     "wakuext_markActivityCenterNotificationsUnread"
+                      :params     [[notification-id]]
+                      :on-success #(rf/dispatch [:activity-center.notifications/mark-as-unread-success
+                                                 notification])
+                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                 notification-id
+                                                 :notification/mark-as-unread
+                                                 %])}]}))
+
+(rf/defn mark-as-unread-success
+  {:events [:activity-center.notifications/mark-as-unread-success]}
+  [cofx notification]
+  (notifications-reconcile cofx [(assoc notification :read false)]))
 
 (rf/defn mark-all-as-read
   {:events [:activity-center.notifications/mark-all-as-read]}
@@ -250,8 +268,6 @@
      :utils/dispatch-later [{:dispatch [:activity-center.notifications/mark-all-as-read]
                              :ms       undo-time-limit-ms}]}))
 
-;;;; Acceptance/dismissal
-
 (rf/defn accept-notification
   {:events [:activity-center.notifications/accept]}
   [{:keys [db]} notification-id]
@@ -289,6 +305,24 @@
   [{:keys [db] :as cofx} notification-id]
   (let [notification (get-notification db notification-id)]
     (notifications-reconcile cofx [(assoc notification :dismissed true)])))
+
+(rf/defn delete-notification
+  {:events [:activity-center.notifications/delete]}
+  [{:keys [db]} notification-id]
+  {:json-rpc/call [{:method     "wakuext_deleteActivityCenterNotifications"
+                    :params     [[notification-id]]
+                    :on-success #(rf/dispatch [:activity-center.notifications/delete-success
+                                               notification-id])
+                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                               notification-id
+                                               :notification/delete
+                                               %])}]})
+
+(rf/defn delete-notification-success
+  {:events [:activity-center.notifications/delete-success]}
+  [{:keys [db] :as cofx} notification-id]
+  (let [notification (get-notification db notification-id)]
+    (notifications-reconcile cofx [(assoc notification :deleted true)])))
 
 ;;;; Contact verification
 

@@ -51,13 +51,13 @@
    [quo/text (i18n/label :t/blank-contacts-text)]])
 
 (defn contacts
-  [contact-requests]
+  [pending-contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
-    (if (and (empty? items) (empty? contact-requests))
+    (if (and (empty? items) (empty? pending-contact-requests))
       [welcome-blank-contacts]
       [:<>
-       (when (seq contact-requests)
-         [contact-request/contact-requests contact-requests])
+       (when (seq pending-contact-requests)
+         [contact-request/contact-requests pending-contact-requests])
        (when (seq items)
          [contact-list/contact-list {:icon :options}])])))
 
@@ -65,7 +65,7 @@
   []
   (let [selected-tab (reagent/atom :recent)]
     (fn []
-      (let [contact-requests (rf/sub [:activity-center/pending-contact-requests])]
+      (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])]
         [:<>
          [quo/discover-card
           {:title       (i18n/label :t/invite-friends-to-status)
@@ -86,9 +86,9 @@
                             {:id                  :contacts
                              :label               (i18n/label :t/contacts)
                              :accessibility-label :tab-contacts
-                             :notification-dot?   (pos? (count contact-requests))}]}]
+                             :notification-dot?   (pos? (count pending-contact-requests))}]}]
          (if (= @selected-tab :contacts)
-           [contacts contact-requests]
+           [contacts pending-contact-requests]
            [chats @selected-tab])]))))
 
 (defn home
