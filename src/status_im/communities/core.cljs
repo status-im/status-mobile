@@ -742,7 +742,7 @@
   {:events [:communities/navigate-to-community]}
   [cofx community-id]
   (rf/merge cofx
-            (navigation/pop-to-root-tab :shell-stack)
+            (navigation/pop-to-root :shell-stack)
             (navigation/navigate-to-nav2 :community community-id true)))
 
 (rf/defn member-role-updated

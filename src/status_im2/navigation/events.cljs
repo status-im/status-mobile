@@ -27,10 +27,10 @@
   [_]
   {:navigate-back-fx nil})
 
-(rf/defn pop-to-root-tab
-  {:events [:pop-to-root-tab]}
+(rf/defn pop-to-root
+  {:events [:pop-to-root]}
   [_ tab]
-  {:pop-to-root-tab-fx tab})
+  {:pop-to-root-fx tab})
 
 (rf/defn set-stack-root
   {:events [:set-stack-root]}
@@ -39,9 +39,8 @@
 
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
-  [_ tab])
-  ;{:change-tab-fx tab} ; TODO: effect needs to be implemented (may not be possible:
-  ;https://github.com/wix/react-native-navigation/issues/4837)
+  [_ stack-id]
+  {:shell/change-tab-fx stack-id})
 
 (rf/defn navigate-replace
   {:events [:navigate-replace]}
@@ -63,16 +62,6 @@
   {:events [:init-root]}
   [_ root-id]
   {:init-root-fx root-id})
-
-(rf/defn init-root-with-component
-  {:events [:init-root-with-component]}
-  [_ root-id comp-id]
-  {:init-root-with-component-fx [root-id comp-id]})
-
-(rf/defn change-tab-count
-  {:events [:change-tab-count]}
-  [_ tab cnt]
-  {:change-tab-count-fx [tab cnt]})
 
 (rf/defn hide-signing-sheet
   {:events [:hide-signing-sheet]}

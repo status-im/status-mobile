@@ -175,7 +175,7 @@
 
 (defn bottom-tab-on-press
   [stack-id]
-  (when-not (= stack-id @selected-stack-id)
+  (when (and @shared-values-atom (not= stack-id @selected-stack-id))
     (let [stack-load-delay (if (home-stack-open?)
                              0
                              shell.constants/shell-animation-time)]

@@ -12,6 +12,12 @@
 ;; Effects
 
 (re-frame/reg-fx
+ :shell/change-tab-fx
+ (fn [stack-id]
+   (when (some #(= stack-id %) shell.constants/stacks-ids)
+     (animation/bottom-tab-on-press stack-id))))
+
+(re-frame/reg-fx
  :shell/navigate-to-jump-to-fx
  (fn []
    (animation/close-home-stack false)))
@@ -110,4 +116,4 @@
   (rf/merge
    cofx
    {:shell/navigate-to-jump-to-fx nil}
-   (navigation/pop-to-root-tab :shell-stack)))
+   (navigation/pop-to-root :shell-stack)))

@@ -52,7 +52,7 @@
   (log/debug "NAVIGATE" comp)
   (let [{:keys [options]} (get views/screens comp)]
     (navigation/push
-     (name @state/root-comp-id)
+     (name @state/root-id)
      {:component {:id      comp
                   :name    comp
                   :options (merge (status-bar-options)
@@ -181,7 +181,6 @@
           (= @state/root-id :multiaccounts-keycard))
     (re-frame/dispatch-sync [::set-multiaccount-root])
     (when @state/root-id
-      (reset! state/root-comp-id @state/root-id)
       (navigation/set-root (get (roots/roots) @state/root-id))
       (re-frame/dispatch [::login-core/check-last-chat])))
   (rn/hide-splash-screen))
@@ -192,17 +191,7 @@
  (fn [new-root-id]
    (log/debug :init-root-fx new-root-id)
    (dismiss-all-modals)
-   (reset! state/root-comp-id new-root-id)
-   (reset! state/root-id @state/root-comp-id)
-   (navigation/set-root (get (roots/roots) new-root-id))))
-
-(re-frame/reg-fx
- :init-root-with-component-fx
- (fn [[new-root-id new-root-comp-id]]
-   (log/debug :init-root-with-component-fx new-root-id new-root-comp-id)
-   (dismiss-all-modals)
-   (reset! state/root-comp-id new-root-comp-id)
-   (reset! state/root-id @state/root-comp-id)
+   (reset! state/root-id new-root-id)
    (navigation/set-root (get (roots/roots) new-root-id))))
 
 (rf/defn set-multiaccount-root
@@ -230,12 +219,17 @@
 (re-frame/reg-fx
  :set-stack-root-fx
  (fn [[stack comp]]
-   (log/debug :set-stack-root-fx stack comp)
-   (navigation/set-stack-root
-    (name stack)
-    (if (vector? comp)
-      (mapv get-screen-component comp)
-      (get-screen-component comp)))))
+   ;; We don't have bottom tabs as separate stacks anymore,
+   ;; So the old way of pushing screens in specific tabs will not work.
+   ;; Disabled set-stack-root for :shell-stack as it is not working and
+   ;; currently only being used for browser and some rare keycard flows after login
+   (when-not (= @state/root-id :shell-stack)
+     (log/debug :set-stack-root-fx stack comp)
+     (navigation/set-stack-root
+      (name stack)
+      (if (vector? comp)
+        (mapv get-screen-component comp)
+        (get-screen-component comp))))))
 
 ;; OVERLAY (Popover and bottom sheets)
 (def dissmiss-overlay navigation/dissmiss-overlay)
@@ -369,13 +363,13 @@
    (log/debug :navigate-back-fx)
    (if @state/curr-modal
      (dissmissModal)
-     (navigation/pop (name @state/root-comp-id)))))
+     (navigation/pop (name @state/root-id)))))
 
 (re-frame/reg-fx
  :navigate-replace-fx
  (fn [view-id]
    (log/debug :navigate-replace-fx view-id)
-   (navigation/pop (name @state/root-comp-id))
+   (navigation/pop (name @state/root-id))
    (navigate view-id)))
 
 ;; NAVIGATION 2
@@ -391,6 +385,6 @@
    (navigation/merge-options "shell-stack" {:navigationBar {:backgroundColor color}})))
 
 (re-frame/reg-fx
- :pop-to-root-tab-fx
+ :pop-to-root-fx
  (fn [tab]
    (navigation/pop-to-root tab)))
