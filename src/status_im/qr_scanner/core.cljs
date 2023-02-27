@@ -65,8 +65,8 @@
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      {:change-tab-fx      :profile
-       :pop-to-root-tab-fx :profile-stack}
+      {:shell/change-tab-fx :browser-stack ;; Profile tab -  Currently browser tab is used for profile
+       :pop-to-root-fx      :shell-stack}
 
       (and public-key (not own))
       (rf/merge cofx
@@ -76,14 +76,14 @@
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (i18n/label :t/ens-name-not-found)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
             {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
-            (navigation/change-tab :wallet)
-            (navigation/pop-to-root-tab :wallet-stack)))
+            (navigation/change-tab :wallet-stack)
+            (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-wallet-connect
   {:events [::handle-wallet-connect-uri]}
@@ -116,7 +116,7 @@
                  :event ::match-scanned-value})
       {:dispatch         [:navigate-back]
        :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn on-scan
   {:events [::on-scan-success]}

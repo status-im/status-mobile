@@ -643,7 +643,7 @@
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
-          {:init-root-with-component-fx [:multiaccounts-keycard :multiaccounts]}
+          {:init-root-fx :multiaccounts-keycard}
           {:init-root-fx :multiaccounts})
        #(when goto-key-storage?
           (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))
