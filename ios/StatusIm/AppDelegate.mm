@@ -84,9 +84,11 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
   RCTAppSetupPrepareApp(application);
+
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  [ReactNativeNavigation bootstrapWithBridge:bridge];
+
   #if RCT_NEW_ARCH_ENABLED
       _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
       _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
@@ -119,10 +121,9 @@ static void InitializeFlipper(UIApplication *application) {
   NSDictionary *appDefaults = [NSDictionary
       dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
   [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
-
-  [ReactNativeNavigation bootstrapWithDelegate:self launchOptions:launchOptions];
-
+  
   [RNSplashScreen show];
+
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;

@@ -13,6 +13,7 @@
 
 (defn set-root
   [root]
+  (log/info "[RNN] the root is set")
   (.setRoot ^js Navigation (clj->js root)))
 
 (defn set-stack-root
@@ -45,7 +46,6 @@
 
 (defn reg-app-launched-listener
   [handler]
-  (log/info "registerAppLaunchedListener called")
   (.registerAppLaunchedListener ^js (.events ^js Navigation) handler))
 
 (defn reg-button-pressed-listener
