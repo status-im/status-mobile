@@ -294,7 +294,6 @@
                                   (rescale-image value exit? animations props))]
        (handle-exit-lightbox-signal exit-lightbox-signal index (get-val (:scale animations)) rescale)
        (handle-zoom-out-signal zoom-out-signal index (get-val (:scale animations)) rescale)
-       (println "ZZZ" zoom-out-signal)
        [:f>
         (fn []
           (let [tap               (tap-gesture on-tap)

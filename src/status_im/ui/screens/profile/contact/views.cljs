@@ -72,7 +72,6 @@
 
 (defn nickname-settings
   [{:keys [nickname]}]
-  (println "NUCKNAME" nickname)
   [quo/list-item
    {:title               (i18n/label :t/nickname)
     :size                :small
