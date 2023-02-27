@@ -53,6 +53,7 @@
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "2.9.0",
     "react-native-haptic-feedback": "^1.9.0",
+    "react-native-hole-view": "git+https://github.com/siddarthkay/react-native-hole-view.git#refs/tags/v2.1.5-sid",
     "react-native-image-crop-picker": "git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0",
     "react-native-image-resizer": "^1.2.3",
     "react-native-image-viewing": "git+https://github.com/status-im/react-native-image-viewing.git#refs/tags/v0.2.1.status",

@@ -9044,9 +9044,9 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.1-status":
+"react-native-hole-view@git+https://github.com/siddarthkay/react-native-hole-view.git#refs/tags/v2.1.5-sid":
   version "2.1.1"
-  resolved "git+https://github.com/status-im/react-native-hole-view.git#c706a3264bfffa8e55a009bed411504dfcb3f7cb"
+  resolved "git+https://github.com/siddarthkay/react-native-hole-view.git#90deeee5df21282000925dee5170328c2faa2341"
 
 "react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
   version "0.36.2"
