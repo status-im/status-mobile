@@ -6,12 +6,11 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [utils.re-frame :as rf]))
 
-;;; Calculates all required dimensions
-;;; Dimensions calculations are different on iOS and Android because landscape mode is implemented
-;;; differently.
-;;; On Android, we just need to resize the content, and the OS takes care of the animations.
-;;; On iOS, we need to animate the content ourselves in code
+
 (defn get-dimensions
+  "Calculates all required dimensions. Dimensions calculations are different on iOS and Android because landscape
+   mode is implemented differently.On Android, we just need to resize the content, and the OS takes care of the
+   animations. On iOS, we need to animate the content ourselves in code"
   [pixels-width pixels-height curr-orientation]
   (let [window                (rf/sub [:dimensions/window])
         landscape?            (string/includes? curr-orientation orientation/landscape)
@@ -41,9 +40,9 @@
      :y-threshold-scale   (/ screen-height (min screen-height container-height))
      :landscape-scale-val (/ portrait-image-width portrait-image-height)}))
 
-;;; On ios, when attempting to navigate back while zoomed in, the shared-element transition
-;;; animation doesn't execute properly, so we need to zoom out first
 (defn handle-exit-lightbox-signal
+  "On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
+   doesn't execute properly, so we need to zoom out first"
   [exit-lightbox-signal index scale rescale]
   (when (= exit-lightbox-signal index)
     (if (> scale c/min-scale)
@@ -53,8 +52,8 @@
       (rf/dispatch [:navigate-back]))
     (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
 
-;;; Zooms out when pressing on another photo from the small bottom list
 (defn handle-zoom-out-signal
+  "Zooms out when pressing on another photo from the small bottom list"
   [zoom-out-signal index scale rescale]
   (when (and (= zoom-out-signal index) (> scale c/min-scale))
     (rescale c/min-scale true)))
@@ -83,4 +82,3 @@
 (defn get-pinch-position
   [scale-diff size focal]
   (* (- (/ size 2) focal) scale-diff))
-

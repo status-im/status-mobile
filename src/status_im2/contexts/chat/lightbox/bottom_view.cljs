@@ -15,7 +15,10 @@
 
 (defn get-small-item-layout
   [_ index]
-  #js {:length small-image-size :offset (* (+ small-image-size 8) index) :index index})
+  #js
+   {:length small-image-size
+    :offset (* (+ small-image-size 8) index)
+    :index  index})
 
 (defn small-image
   [item index _ {:keys [scroll-index]}]
@@ -69,7 +72,4 @@
           :get-item-layout         get-small-item-layout
           :separator               [rn/view {:style {:width 8}}]
           :initial-scroll-index    index
-          :content-container-style {:padding-vertical   12
-                                    :padding-horizontal padding-horizontal
-                                    :align-items        :center
-                                    :justify-content    :center}}]]))])
+          :content-container-style (style/content-container padding-horizontal)}]]))])

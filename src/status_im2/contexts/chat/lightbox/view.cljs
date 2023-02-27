@@ -163,4 +163,3 @@
              (when (and (not @transparent?) (not landscape?))
                [bottom-view/bottom-view messages index scroll-index insets animations
                 item-width])]))]))])
-

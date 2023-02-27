@@ -56,6 +56,13 @@
     :padding-bottom (:bottom insets)
     :z-index        3}))
 
+(defn content-container
+  [padding-horizontal]
+  {:padding-vertical   12
+   :padding-horizontal padding-horizontal
+   :align-items        :center
+   :justify-content    :center})
+
 (def text-style
   {:color             colors/white
    :align-self        :center
