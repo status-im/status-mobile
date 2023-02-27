@@ -61,6 +61,7 @@
     "react-native-languages": "^3.0.2",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-lottie-splash-screen": "^1.0.1",
+    "react-native-mail": "git+https://github.com/siddarthkay/react-native-mail.git#refs/tags/v1.0.1-sid",
     "react-native-navigation": "^7.27.1",
     "react-native-permissions": "^2.1.5",
     "react-native-randombytes": "^3.6.1",
