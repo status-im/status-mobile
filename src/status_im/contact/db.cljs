@@ -3,17 +3,17 @@
             [clojure.string :as string]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]))
 
 (defn public-key->new-contact
   [public-key]
   (let [alias (gfycat/generate-gfy public-key)]
-    {:alias      alias
-     :name       alias
-     :identicon  (identicon/identicon public-key)
-     :public-key public-key}))
+    {:alias        alias
+     :name         alias
+     :primary-name alias
+     :identicon    (identicon/identicon public-key)
+     :public-key   public-key}))
 
 (defn public-key-and-ens-name->new-contact
   [public-key ens-name]
@@ -43,20 +43,12 @@
 (defn sort-contacts
   [contacts]
   (sort (fn [c1 c2]
-          (let [name1 (first (:two-names c1))
-                name2 (first (:two-names c2))]
-            (compare (string/lower-case name1)
-                     (string/lower-case name2))))
+          (let [name1 (:primary-name c1)
+                name2 (:primary-name c2)]
+            (when (and name1 name2)
+              (compare (string/lower-case name1)
+                       (string/lower-case name2)))))
         (vals contacts)))
-
-(defn filter-dapps
-  [v dev-mode?]
-  (remove #(when-not dev-mode? (true? (:developer? %))) v))
-
-(defn filter-group-contacts
-  [group-contacts contacts]
-  (let [group-contacts' (into #{} group-contacts)]
-    (filter #(group-contacts' (:public-key %)) contacts)))
 
 (defn query-chat-contacts
   [{:keys [contacts]} all-contacts query-fn]
@@ -64,63 +56,32 @@
     (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members admins contacts {:keys [public-key] :as current-account}]
+  [members admins contacts {:keys [public-key preferred-name name] :as current-account}]
   (let [current-contact (some->
                           current-account
                           (select-keys [:name :preferred-name :public-key :identicon :images])
-                          (set/rename-keys {:name           :alias
-                                            :preferred-name :name}))
+                          (set/rename-keys {:name :alias :preferred-name :name})
+                          (assoc :primary-name (or preferred-name name)))
         all-contacts    (cond-> contacts
                           current-contact
                           (assoc public-key current-contact))]
     (->> members
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
-         (sort-by (comp string/lower-case #(or (:name %) (:alias %))))
+         (sort-by (comp string/lower-case #(or (:primary-name %) (:name %) (:alias %))))
          (map #(if (get admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))
 
-(defn contact-exists?
-  [db public-key]
-  (get-in db [:contacts/contacts public-key]))
-
-(defn added?
-  ([{:keys [contact-request-state]}]
-   (or (= constants/contact-request-state-mutual contact-request-state)
-       (= constants/contact-request-state-sent contact-request-state)))
-  ([db public-key]
-   (added? (get-in db [:contacts/contacts public-key]))))
-
-(defn blocked?
-  ([contact]
-   (:blocked contact))
-  ([db public-key]
-   (blocked? (get-in db [:contacts/contacts public-key]))))
-
-(defn active?
-  "Checks that we are mutual contacts"
-  ([contact]
-   (and (= constants/contact-request-state-mutual
-           (:contact-request-state contact))
-        (not (:blocked contact))))
-  ([db public-key]
-   (active? (get-in db [:contacts/contacts public-key]))))
-
 (defn enrich-contact
   ([contact] (enrich-contact contact nil nil))
   ([{:keys [public-key] :as contact} setting own-public-key]
-   (cond-> (-> contact
-               (dissoc :ens-verified-at :ens-verification-retries)
-               (assoc :blocked? (:blocked contact)
-                      :active?  (active? contact)
-                      :added?   (added? contact))
-               (multiaccounts/contact-with-names))
+   (cond-> contact
      (and setting
           (not= public-key own-public-key)
           (or (= setting constants/profile-pictures-visibility-none)
               (and (= setting constants/profile-pictures-visibility-contacts-only)
-                   (not (added? contact)))))
+                   (not (:added? contact)))))
      (dissoc :images))))
 
 (defn enrich-contacts
@@ -134,15 +95,8 @@
 (defn get-blocked-contacts
   [contacts]
   (reduce (fn [acc {:keys [public-key] :as contact}]
-            (if (:blocked contact)
+            (if (:blocked? contact)
               (conj acc public-key)
               acc))
           #{}
           contacts))
-
-(defn get-active-contacts
-  [contacts]
-  (->> contacts
-       (filter (fn [[_ contact]]
-                 (active? contact)))
-       sort-contacts))

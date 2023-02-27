@@ -12,10 +12,10 @@
 
 (defn contacts-list-item
   [{:keys [public-key] :as contact}]
-  (let [[first-name second-name] (multiaccounts/contact-two-names contact true)]
+  (let [{:keys [primary-name secondary-name]} contact]
     [quo/list-item
-     {:title    first-name
-      :subtitle second-name
+     {:title    primary-name
+      :subtitle secondary-name
       :icon     [chat-icon.screen/profile-photo-plus-dot-view
                  {:public-key public-key
                   :photo-path (multiaccounts/displayed-photo contact)}]

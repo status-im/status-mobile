@@ -70,14 +70,16 @@
  :contacts/active
  :<- [:contacts/contacts]
  (fn [contacts]
-   (contact.db/get-active-contacts contacts)))
+   (->> contacts
+        (filter (fn [[_ contact]] (:active? contact)))
+        contact.db/sort-contacts)))
 
 (re-frame/reg-sub
  :contacts/active-sections
  :<- [:contacts/active]
  (fn [contacts]
    (->> contacts
-        (group-by #(string/upper-case (ffirst (:two-names %))))
+        (group-by #(string/upper-case (first (:primary-name %))))
         sort
         (mapv (fn [[title items]] {:title title :data items})))))
 
@@ -117,7 +119,7 @@
                      :allow-new-users?
                      (< selected-contacts-count
                         (dec constants/max-group-chat-participants))))
-        (group-by (comp (fnil string/upper-case "") first :alias))
+        (group-by (comp (fnil string/upper-case "") first :primary-name))
         (sort-by first)
         (map (fn [[title data]]
                {:title title
@@ -135,8 +137,14 @@
  (fn [contacts]
    (->> contacts
         (filter (fn [[_ contact]]
-                  (:blocked contact)))
-        (contact.db/sort-contacts))))
+                  (:blocked? contact)))
+        contact.db/sort-contacts)))
+
+(re-frame/reg-sub
+ :contacts/blocked-set
+ :<- [:contacts/blocked]
+ (fn [contacts]
+   (into #{} (map :public-key contacts))))
 
 (re-frame/reg-sub
  :contacts/blocked-count
@@ -145,14 +153,12 @@
    (count blocked-contacts)))
 
 (defn filter-recipient-contacts
-  [search-filter {:keys [names]}]
-  (let [{:keys [nickname three-words-name ens-name]} names]
-    (or
-     (when ens-name
-       (string/includes? (string/lower-case (str ens-name)) search-filter))
-     (string/includes? (string/lower-case three-words-name) search-filter)
-     (when nickname
-       (string/includes? (string/lower-case nickname) search-filter)))))
+  [search-filter {:keys [primary-name secondary-name]}]
+  (or
+   (when primary-name
+     (string/includes? (string/lower-case (str primary-name)) search-filter))
+   (when secondary-name
+     (string/includes? (string/lower-case (str secondary-name)) search-filter))))
 
 (re-frame/reg-sub
  :contacts/active-with-ens-names
@@ -195,7 +201,7 @@
  (fn [[_ identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity identity])])
  (fn [[contact] _]
-   (:added contact)))
+   (:added? contact)))
 
 (re-frame/reg-sub
  :contacts/contact-blocked?
@@ -248,7 +254,7 @@
  :contacts/all-contacts-not-in-current-chat
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
-   (filter :added contacts)))
+   (filter :added? contacts)))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts

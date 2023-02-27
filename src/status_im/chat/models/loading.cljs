@@ -120,7 +120,7 @@
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
     (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
-          {:keys [all-messages new-messages senders contacts]}
+          {:keys [all-messages new-messages contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
                        {:keys [message-id from]
                         :as   message}]
@@ -143,25 +143,23 @@
                                        :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))
           new-messages (map mark-album new-messages)]
-      {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
-       :db       (-> db
-                     (update-in [:pagination-info chat-id :cursor-clock-value]
-                                #(if (and (seq cursor) (or (not %) (< clock-value %)))
-                                   clock-value
-                                   %))
-
-                     (update-in [:pagination-info chat-id :cursor]
-                                #(if (or (empty? cursor)
-                                         (not current-clock-value)
-                                         (< clock-value current-clock-value))
-                                   cursor
-                                   %))
-                     (assoc-in [:pagination-info chat-id :loading-messages?] false)
-                     (assoc-in [:messages chat-id] all-messages)
-                     (update-in [:message-lists chat-id] message-list/add-many new-messages)
-                     (assoc-in [:pagination-info chat-id :all-loaded?]
-                               (empty? cursor))
-                     (update :contacts/contacts merge contacts))})))
+      {:db (-> db
+               (update-in [:pagination-info chat-id :cursor-clock-value]
+                          #(if (and (seq cursor) (or (not %) (< clock-value %)))
+                             clock-value
+                             %))
+               (update-in [:pagination-info chat-id :cursor]
+                          #(if (or (empty? cursor)
+                                   (not current-clock-value)
+                                   (< clock-value current-clock-value))
+                             cursor
+                             %))
+               (assoc-in [:pagination-info chat-id :loading-messages?] false)
+               (assoc-in [:messages chat-id] all-messages)
+               (update-in [:message-lists chat-id] message-list/add-many new-messages)
+               (assoc-in [:pagination-info chat-id :all-loaded?]
+                         (empty? cursor))
+               (update :contacts/contacts merge contacts))})))
 
 (rf/defn load-more-messages
   {:events [:chat.ui/load-more-messages]}

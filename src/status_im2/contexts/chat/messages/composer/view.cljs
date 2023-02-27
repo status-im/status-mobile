@@ -9,9 +9,9 @@
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.composer.style :as style]
             [status-im2.contexts.chat.messages.composer.controls.view :as controls]
+            [status-im2.contexts.chat.messages.composer.mentions.view :as mentions]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [status-im.ui2.screens.chat.composer.input :as input]
-            [status-im.ui2.screens.chat.composer.mentions :as mentions]
             [status-im.ui2.screens.chat.composer.reply :as reply]))
 
 (def initial-content-height (atom nil))
@@ -97,25 +97,6 @@
             (swap! input/input-text-content-heights assoc chat-id @initial-content-height))
           (update-y params))
         (reset! initial-content-height new-height)))))
-
-(defn mentions
-  [{:keys [refs suggestions max-y]} insets]
-  [:f>
-   (fn []
-     (let [translate-y (reanimated/use-shared-value 0)]
-       (rn/use-effect
-        (fn []
-          (reanimated/set-shared-value translate-y
-                                       (reanimated/with-timing (if (seq suggestions) 0 200)))))
-       [reanimated/view
-        {:style (reanimated/apply-animations-to-style
-                 {:transform [{:translateY translate-y}]}
-                 {:bottom     (or (:bottom insets) 0)
-                  :position   :absolute
-                  :z-index    5
-                  :elevation  5
-                  :max-height (/ max-y 2)})}
-        [mentions/autocomplete-mentions suggestions (:text-input-ref refs)]]))])
 
 (defn effect!
   [{:keys [keyboard-shown reply edit suggestions images] :as params}]
@@ -241,7 +222,7 @@
                  :sending-image          (seq images)
                  :refs                   refs}]]]]
             (if suggestions?
-              [mentions params insets]
+              [mentions/mentions params insets]
               [controls/view send-ref params insets chat-id images #(clean-and-minimize params)])
             ;;;;black background
             [reanimated/view

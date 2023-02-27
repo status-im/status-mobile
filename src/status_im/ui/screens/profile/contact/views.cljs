@@ -12,8 +12,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.profile.components.sheets :as sheets])
-  (:require-macros [status-im.utils.views :as views]))
+            [status-im.ui.screens.profile.components.sheets :as sheets]
+            [utils.re-frame :as rf]))
 
 (defn actions
   [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
@@ -71,19 +71,21 @@
     :chevron             true}])
 
 (defn nickname-settings
-  [{:keys [names]}]
+  [{:keys [nickname]}]
+  (println "NUCKNAME" nickname)
   [quo/list-item
    {:title               (i18n/label :t/nickname)
     :size                :small
     :accessibility-label :profile-nickname-item
     :accessory           :text
-    :accessory-text      (or (:nickname names) (i18n/label :t/none))
+    :accessory-text      (or nickname (i18n/label :t/none))
     :on-press            #(re-frame/dispatch [:open-modal :nickname])
     :chevron             true}])
 
 (defn save-nickname
   [public-key nickname]
-  (re-frame/dispatch [:contacts/update-nickname public-key nickname]))
+  (re-frame/dispatch [:contacts/update-nickname public-key nickname])
+  (re-frame/dispatch [:navigate-back]))
 
 (defn valid-nickname?
   [nickname]
@@ -105,15 +107,16 @@
     :auto-correct        false}])
 
 (defn nickname-view
-  [public-key {:keys [nickname ens-name three-words-name]}]
-  (let [entered-nickname (reagent/atom nickname)]
+  []
+  (let [{:keys [public-key primary-name nickname]} (rf/sub [:contacts/current-contact])
+        entered-nickname                           (reagent/atom nickname)]
     (fn []
       [kb-presentation/keyboard-avoiding-view
        {:style         {:flex 1}
         :ignore-offset true}
        [topbar/topbar
         {:title    (i18n/label :t/nickname)
-         :subtitle (or ens-name three-words-name)
+         :subtitle primary-name
          :modal?   true}]
        [react/view {:flex 1 :padding 16}
         [react/text {:style {:color colors/gray :margin-bottom 16}}
@@ -131,11 +134,6 @@
           {:type     :secondary
            :on-press #(save-nickname public-key @entered-nickname)}
           (i18n/label :t/done)]}]])))
-
-(views/defview nickname
-  []
-  (views/letsubs [{:keys [public-key names]} [:contacts/current-contact]]
-    [nickname-view public-key names]))
 
 (defn button-item
   [{:keys [icon label action selected disabled negative]}]
@@ -180,7 +178,7 @@
           [:contacts/current-contact])
         muted? @(re-frame/subscribe [:chats/muted
                                      public-key])
-        [first-name second-name] (multiaccounts/contact-two-names contact true)
+        {:keys [primary-name secondary-name]} contact
         on-share #(re-frame/dispatch
                    [:show-popover
                     (merge
@@ -202,10 +200,10 @@
         [(profile-header/extended-header
           {:on-press         on-share
            :bottom-separator false
-           :title            first-name
+           :title            primary-name
            :photo            (multiaccounts/displayed-photo contact)
            :monospace        (not ens-verified)
-           :subtitle         second-name
+           :subtitle         secondary-name
            :compressed-key   compressed-key
            :public-key       public-key})]
         [react/view

@@ -18,13 +18,13 @@
   (rf/dispatch event))
 
 (defn member-sheet
-  [first-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users? admin?]
+  [primary-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users? admin?]
   [:<>
    [quo/list-item
     {:theme               :accent
      :icon                [chat-icon/contact-icon-contacts-tab
                            (multiaccounts/displayed-photo member)]
-     :title               first-name
+     :title               primary-name
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
@@ -60,11 +60,11 @@
            can-manage-users?
            can-kick-users?
            admin?]}]
-  (let [member                   (rf/sub [:contacts/contact-by-identity public-key])
-        [first-name second-name] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
+  (let [member                        (rf/sub [:contacts/contact-by-identity public-key])
+        [primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
     [quo/list-item
-     {:title               first-name
-      :subtitle            second-name
+     {:title               primary-name
+      :subtitle            secondary-name
       :accessibility-label :member-item
       :icon                [chat-icon/profile-photo-plus-dot-view
                             {:public-key public-key
@@ -74,7 +74,7 @@
                               {:on-press
                                #(rf/dispatch [:bottom-sheet/show-sheet
                                               {:content (fn []
-                                                          [member-sheet first-name member community-id
+                                                          [member-sheet primary-name member community-id
                                                            can-kick-users? can-manage-users? admin?])}])
                                :type :icon
                                :theme :icon

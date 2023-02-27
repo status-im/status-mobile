@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.data-store.contacts :as data-store.contacts]
+            [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
@@ -101,8 +101,9 @@
       {:db            (-> db
                           (assoc :contacts/identity identity)
                           (assoc :contacts/ens-name ens-name))
-       :json-rpc/call [{:method     "wakuext_buildContact"
-                        :params     [identity]
-                        :on-success #(rf/dispatch [:contacts/contact-built
-                                                   identity
-                                                   (data-store.contacts/<-rpc %)])}]})))
+       :json-rpc/call [{:method      "wakuext_buildContact"
+                        :params      [identity]
+                        :js-response true
+                        :on-success  #(rf/dispatch [:contacts/contact-built
+                                                    identity
+                                                    (data-store.contacts/<-rpc-js %)])}]})))

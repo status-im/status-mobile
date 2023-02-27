@@ -153,7 +153,6 @@
 (reg-root-key-sub :contacts/current-contact-ens-name :contacts/ens-name)
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
-(reg-root-key-sub :contacts/blocked-set :contacts/blocked)
 (reg-root-key-sub :contacts/search-query :contacts/search-query)
 
 ;;wallet

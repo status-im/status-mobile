@@ -20,45 +20,44 @@
 
 (defn member-sheet
   [chat-id member us-admin?]
-  (let [[first-name _] (multiaccounts/contact-two-names member false)]
-    [react/view
+  [react/view
+   [quo/list-item
+    {:theme               :accent
+     :icon                [chat-icon/contact-icon-contacts-tab
+                           (multiaccounts/displayed-photo member)]
+     :title               (:primary-name member)
+     :subtitle            (i18n/label :t/view-profile)
+     :accessibility-label :view-chat-details-button
+     :chevron             true
+     :on-press            #(chat.sheets/hide-sheet-and-dispatch
+                            [:chat.ui/show-profile
+                             (:public-key member)])}]
+   (when (and us-admin?
+              (not (:admin? member)))
      [quo/list-item
       {:theme               :accent
-       :icon                [chat-icon/contact-icon-contacts-tab
-                             (multiaccounts/displayed-photo member)]
-       :title               first-name
-       :subtitle            (i18n/label :t/view-profile)
-       :accessibility-label :view-chat-details-button
-       :chevron             true
+       :title               (i18n/label :t/make-admin)
+       :accessibility-label :make-admin
+       :icon                :main-icons/make-admin
+       :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed
+                                                                   chat-id (:public-key member)])}])
+   (when-not (:admin? member)
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/remove-from-chat)
+       :accessibility-label :remove-from-chat
+       :icon                :main-icons/remove-contact
        :on-press            #(chat.sheets/hide-sheet-and-dispatch
-                              [:chat.ui/show-profile
-                               (:public-key member)])}]
-     (when (and us-admin?
-                (not (:admin? member)))
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/make-admin)
-         :accessibility-label :make-admin
-         :icon                :main-icons/make-admin
-         :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed
-                                                                     chat-id (:public-key member)])}])
-     (when-not (:admin? member)
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/remove-from-chat)
-         :accessibility-label :remove-from-chat
-         :icon                :main-icons/remove-contact
-         :on-press            #(chat.sheets/hide-sheet-and-dispatch
-                                [:group-chats.ui/remove-member-pressed chat-id
-                                 (:public-key member)])}])]))
+                              [:group-chats.ui/remove-member-pressed chat-id
+                               (:public-key member)])}])])
 
 (defn render-member
   [{:keys [public-key] :as member} _ _ {:keys [chat-id admin? current-user-identity]}]
-  (let [[first-name second-name] (multiaccounts/contact-two-names member false)]
+  (let [{:keys [primary-name secondary-name]} member]
     [quo/list-item
      (merge
-      {:title               first-name
-       :subtitle            second-name
+      {:title               primary-name
+       :subtitle            secondary-name
        :accessibility-label :member-item
        :icon                [chat-icon/contact-icon-contacts-tab
                              (multiaccounts/displayed-photo member)]

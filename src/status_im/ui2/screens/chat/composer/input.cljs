@@ -76,7 +76,6 @@
 
 (defn on-text-change
   [val chat-id]
-  (println "on=text-change" val)
   (swap! input-texts assoc chat-id val)
   ;;we still store it in app-db for mentions, we don't have reactions in views
   (rf/dispatch [:chat.ui/set-chat-input-text val]))

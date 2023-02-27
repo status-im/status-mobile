@@ -11,8 +11,9 @@
                                         :mutual?               true
                                         :contactRequestClock   0
                                         :images                {}
-                                        :added                 true
+                                        :added?                true
                                         :name                  "slim.shady"
+                                        :primary-name          "rslim.shady"
                                         :Removed               false
                                         :trustStatus           0
                                         :alias                 "Real Slim Shady"
@@ -21,18 +22,20 @@
                                         :display-name          ""
                                         :ens-verified          true
                                         :socialLinks           nil
-                                        :blocked               false
+                                        :blocked?              false
+                                        :active?               true
                                         :verificationStatus    0
                                         :lastUpdatedLocally    1672582563204
                                         :public-key            "0xtest"
-                                        :has-added-us          true
+                                        :has-added-us?         true
                                         :contact-request-state 1}
                              "0xtest2" {:last-updated          1672582629695
                                         :mutual?               true
                                         :contactRequestClock   0
                                         :images                {}
-                                        :added                 true
+                                        :added?                true
                                         :name                  "slim.shady"
+                                        :primary-name          "fslim.shady"
                                         :Removed               false
                                         :trustStatus           0
                                         :alias                 "Fake Slim Shady"
@@ -41,18 +44,20 @@
                                         :display-name          ""
                                         :ens-verified          true
                                         :socialLinks           nil
-                                        :blocked               false
+                                        :blocked?              false
+                                        :active?               true
                                         :verificationStatus    0
                                         :lastUpdatedLocally    1672582563204
                                         :public-key            "0xtest"
-                                        :has-added-us          true
+                                        :has-added-us?         true
                                         :contact-request-state 1}
                              "0xtest3" {:last-updated          1672582629695
                                         :mutual?               true
                                         :contactRequestClock   0
                                         :images                {}
-                                        :added                 true
+                                        :added?                true
                                         :name                  "slim.shady"
+                                        :primary-name          "islim.shady"
                                         :Removed               false
                                         :trustStatus           0
                                         :alias                 "Instant noodles"
@@ -61,11 +66,12 @@
                                         :display-name          ""
                                         :ens-verified          true
                                         :socialLinks           nil
-                                        :blocked               false
+                                        :blocked?              false
+                                        :active?               true
                                         :verificationStatus    0
                                         :lastUpdatedLocally    1672582563204
                                         :public-key            "0xtest"
-                                        :has-added-us          true
+                                        :has-added-us?         true
                                         :contact-request-state 1}}})
 
 (def expected-sorted-contacts
@@ -76,9 +82,9 @@
              :blocked?              false
              :contactRequestClock   0
              :images                {}
-             :added                 true
-             :name                  "slim.shady"
              :added?                true
+             :name                  "slim.shady"
+             :primary-name          "fslim.shady"
              :Removed               false
              :trustStatus           0
              :alias                 "Fake Slim Shady"
@@ -87,17 +93,11 @@
              :display-name          ""
              :ens-verified          true
              :socialLinks           nil
-             :blocked               false
              :allow-new-users?      true
              :verificationStatus    0
              :lastUpdatedLocally    1672582563204
              :public-key            "0xtest"
-             :names                 {:nickname         nil
-                                     :display-name     ""
-                                     :three-words-name "Fake Slim Shady"
-                                     :ens-name         "slim.shady"}
-             :two-names             ["slim.shady" "Fake Slim Shady"]
-             :has-added-us          true
+             :has-added-us?         true
              :contact-request-state 1}]}
    {:title "I"
     :data  [{:active?               true
@@ -106,9 +106,9 @@
              :blocked?              false
              :contactRequestClock   0
              :images                {}
-             :added                 true
-             :name                  "slim.shady"
              :added?                true
+             :name                  "slim.shady"
+             :primary-name          "islim.shady"
              :Removed               false
              :trustStatus           0
              :alias                 "Instant noodles"
@@ -117,17 +117,11 @@
              :display-name          ""
              :ens-verified          true
              :socialLinks           nil
-             :blocked               false
              :allow-new-users?      true
              :verificationStatus    0
              :lastUpdatedLocally    1672582563204
              :public-key            "0xtest"
-             :names                 {:nickname         nil
-                                     :display-name     ""
-                                     :three-words-name "Instant noodles"
-                                     :ens-name         "slim.shady"}
-             :two-names             ["slim.shady" "Instant noodles"]
-             :has-added-us          true
+             :has-added-us?         true
              :contact-request-state 1}]}
    {:title "R"
     :data  [{:active?               true
@@ -136,9 +130,9 @@
              :blocked?              false
              :contactRequestClock   0
              :images                {}
-             :added                 true
-             :name                  "slim.shady"
              :added?                true
+             :name                  "slim.shady"
+             :primary-name          "rslim.shady"
              :Removed               false
              :trustStatus           0
              :alias                 "Real Slim Shady"
@@ -147,17 +141,11 @@
              :display-name          ""
              :ens-verified          true
              :socialLinks           nil
-             :blocked               false
              :allow-new-users?      true
              :verificationStatus    0
              :lastUpdatedLocally    1672582563204
              :public-key            "0xtest"
-             :names                 {:nickname         nil
-                                     :display-name     ""
-                                     :three-words-name "Real Slim Shady"
-                                     :ens-name         "slim.shady"}
-             :two-names             ["slim.shady" "Real Slim Shady"]
-             :has-added-us          true
+             :has-added-us?         true
              :contact-request-state 1}]}])
 
 (h/deftest-sub :contacts/sorted-and-grouped-by-first-letter
@@ -182,5 +170,4 @@
                                                                    (dissoc contact :identicon))
                                                                  %)))
                                                 (rf/sub [sub-name]))]
-
       (is (= expected-sorted-contacts contact-list-without-identicons)))))
