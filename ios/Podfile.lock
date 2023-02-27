@@ -345,13 +345,13 @@ PODS:
     - React-perflogger (= 0.68.5)
   - ReactNativeAudioToolkit (2.0.3):
     - React
-  - ReactNativeNavigation (7.27.1):
+  - ReactNativeNavigation (7.31.1):
     - HMSegmentedControl
     - React-Core
     - React-RCTImage
     - React-RCTText
-    - ReactNativeNavigation/Core (= 7.27.1)
-  - ReactNativeNavigation/Core (7.27.1):
+    - ReactNativeNavigation/Core (= 7.31.1)
+  - ReactNativeNavigation/Core (7.31.1):
     - HMSegmentedControl
     - React-Core
     - React-RCTImage
@@ -370,7 +370,7 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.5.0):
+  - RNGestureHandler (2.9.0):
     - React-Core
   - RNHoleView (2.1.1):
     - React-Core
@@ -391,7 +391,7 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
-  - RNReanimated (2.3.3):
+  - RNReanimated (2.12.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -399,7 +399,6 @@ PODS:
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
-    - React
     - React-callinvoker
     - React-Core
     - React-Core/DevSupport
@@ -748,21 +747,21 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: b1f1995089b90696dbc2a7ffe0059a80db5c8eb1
   ReactCommon: 149e2c0acab9bac61378da0db5b2880a1b5ff59b
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
-  ReactNativeNavigation: 94979dd1572a3f093fc85d4599360530a1bed8c8
+  ReactNativeNavigation: c3e1e813b46d4c7219949cfbb67feb90b8315058
   RNCAsyncStorage: b2489b49e38c85e10ed45a888d13a2a4c7b32ea1
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
   RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNHoleView: 07572d21c97fad71fdc47f7248a8513e15a38949
   RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: a38fe52f09762b2c14cb0164a5c084221e1c8621
+  RNReanimated: 0ff5e7f619a7524d237848ecb4c47650c4946f71
   RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
