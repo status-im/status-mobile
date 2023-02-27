@@ -115,8 +115,9 @@
    (reduce
     (fn [{:keys [messages albums]} message]
       (let [album-id  (:album-id message)
+            albumize? (or (:albumize? message) (some? album-id))
             ;; check if this image is the first image in an album (which is not albumized yet)
-            add-text? (when (and album-id (not (:albumize? message)) (> (count (get albums album-id)) 0))
+            add-text? (when (and album-id (not albumize?) (> (count (get albums album-id)) 0))
                         (not (some #(= false %)
                                    (mapv #(< (:timestamp message) (:timestamp %))
                                          (get albums album-id)))))
@@ -125,11 +126,11 @@
             message   (if (or add-text? (<= (count (get albums album-id)) 1))
                         message
                         (assoc-in message [:content :text] nil))
-            messages  (if (and (> (count (get albums album-id)) 1) (:albumize? message))
+            messages  (if (and (> (count (get albums album-id)) 1) albumize?)
                         (conj (filterv #(not= album-id (:album-id %)) messages)
                               {:album        (get albums album-id)
                                :album-id     album-id
-                               :albumize?    (:albumize? message)
+                               :albumize?    albumize?
                                :messages-ids (mapv :message-id (get albums album-id))
                                :message-id   album-id
                                :content-type constants/content-type-album})
