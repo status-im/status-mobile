@@ -216,7 +216,6 @@
                       ;;  iPhone 11 Pro's height in Figma divided by Component height 56/1125
                       :align-items        :center
                       :padding-horizontal 20
-                      :margin-top         44
                       :height             56
                       :justify-content    :space-between}
                page-nav-background-uri (assoc :background-color page-nav-color)
