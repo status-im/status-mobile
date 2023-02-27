@@ -79,8 +79,9 @@
 (defn handle-orientation-change
   [curr-orientation
    focused?
-   {:keys [landscape-scale-val]}
-   {:keys [rotate rotate-scale] :as animations}]
+   {:keys [landscape-scale-val x-threshold-scale y-threshold-scale]}
+   {:keys [rotate rotate-scale scale] :as animations}
+   {:keys [pan-x-enabled? pan-y-enabled?]}]
   (let [duration (when focused? c/default-duration)]
     (cond
       (= curr-orientation orientation/landscape-left)
@@ -96,7 +97,9 @@
         (set-val rotate (timing c/init-rotation duration))
         (set-val rotate-scale (timing c/min-scale duration))))
     (center-x animations false)
-    (center-y animations false)))
+    (center-y animations false)
+    (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
+    (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))))
 
 
 ;;;; Gestures
@@ -305,7 +308,7 @@
 =======
                                   (rescale-image value exit? dimensions animations props))]
        (when platform/ios?
-         (handle-orientation-change curr-orientation focused? dimensions animations)
+         (handle-orientation-change curr-orientation focused? dimensions animations props)
          (utils/handle-exit-lightbox-signal exit-lightbox-signal
                                             index
                                             (get-val (:scale animations))
