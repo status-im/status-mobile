@@ -555,7 +555,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         channel_1_element.click()
         self.errors.verify_no_errors()
 
-
     # @marks.testrail_id(702842)
     # Skipped until implemented in NEW UI
     # def test_community_mark_all_messages_as_read(self):
@@ -578,10 +577,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     #     self.errors.verify_no_errors()
 
     @marks.testrail_id(702845)
-    @marks.xfail(reason="blocked by 15187")
     def test_community_leave(self):
         self.home_2.jump_to_communities_home()
-        community = self.home_2.element_by_text(self.community_name)
+        community = self.home_2.get_chat(self.community_name, community=True)
         community_to_leave = CommunityView(self.drivers[1])
         community.long_press_until_element_is_shown(community_to_leave.leave_community_button)
         community_to_leave.leave_community_button.click()

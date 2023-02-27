@@ -617,7 +617,7 @@ class PinnedMessagesList(BaseElement):
         return len(element.find_elements())
 
     def message_element_by_text(self, text):
-        message_element = Text(self.driver, prefix=self.locator, xpath="//*[starts-with(@text,'%s')]" % text)
+        message_element = Button(self.driver, prefix=self.locator, xpath="//*[starts-with(@text,'%s')]" % text)
         self.driver.info("Looking for a pinned message by text: %s" % message_element.exclude_emoji(text))
         return message_element
 

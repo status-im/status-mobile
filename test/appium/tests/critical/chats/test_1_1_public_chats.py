@@ -1138,7 +1138,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
         self.chat_2.tap_by_coordinates(500, 100)
 
-        self.chat_1.pin_message(self.message_4, action="unpin-from-chat")
+        self.chat_1.view_pinned_messages_button.click_until_presence_of_element(self.chat_1.pinned_messages_list)
+        pinned_message = self.chat_1.pinned_messages_list.message_element_by_text(self.message_4)
+
+        element = self.chat_1.element_by_translation_id("unpin-from-chat")
+        pinned_message.long_press_until_element_is_shown(element)
+        element.click_until_absense_of_element(element)
         try:
             self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
         except TimeoutException:
