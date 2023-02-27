@@ -8,7 +8,7 @@
 
 (def ^:const init-offset 0)
 
-(def ^:const init-rotation 0)
+(def ^:const init-rotation "0deg")
 
 (def ^:const velocity-factor 0.5)
 

@@ -86,11 +86,11 @@
     (cond
       (= curr-orientation orientation/landscape-left)
       (do
-        (set-val rotate (timing 90 duration))
+        (set-val rotate (timing "90deg" duration))
         (set-val rotate-scale (timing landscape-scale-val duration)))
       (= curr-orientation orientation/landscape-right)
       (do
-        (set-val rotate (timing -90 duration))
+        (set-val rotate (timing "-90deg" duration))
         (set-val rotate-scale (timing landscape-scale-val duration)))
       (= curr-orientation orientation/portrait)
       (do

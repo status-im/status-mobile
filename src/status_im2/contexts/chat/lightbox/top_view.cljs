@@ -18,21 +18,21 @@
     (cond
       (= result orientation/landscape-left)
       (do
-        (common/set-val-timing rotate 90)
+        (common/set-val-timing rotate "90deg")
         (common/set-val-timing top-view-y 60)
         (common/set-val-timing top-view-x (- (/ screen-height 2) top-x))
         (common/set-val-timing top-view-width screen-height)
         (common/set-val-timing top-view-bg colors/neutral-100-opa-70))
       (= result orientation/landscape-right)
       (do
-        (common/set-val-timing rotate -90)
+        (common/set-val-timing rotate "-90deg")
         (common/set-val-timing top-view-y (- (- screen-width) 4))
         (common/set-val-timing top-view-x (+ (/ screen-height -2) top-x))
         (common/set-val-timing top-view-width screen-height)
         (common/set-val-timing top-view-bg colors/neutral-100-opa-70))
       (= result orientation/portrait)
       (do
-        (common/set-val-timing rotate 0)
+        (common/set-val-timing rotate "0deg")
         (common/set-val-timing top-view-y 0)
         (common/set-val-timing top-view-x 0)
         (common/set-val-timing top-view-width screen-width)
