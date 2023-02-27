@@ -80,7 +80,7 @@
   [curr-orientation
    focused?
    {:keys [landscape-scale-val]}
-   {:keys [rotate rotate-scale]}]
+   {:keys [rotate rotate-scale] :as animations}]
   (let [duration (when focused? c/default-duration)]
     (cond
       (= curr-orientation orientation/landscape-left)
@@ -94,7 +94,9 @@
       (= curr-orientation orientation/portrait)
       (do
         (set-val rotate (timing c/init-rotation duration))
-        (set-val rotate-scale (timing c/min-scale duration))))))
+        (set-val rotate-scale (timing c/min-scale duration))))
+    (center-x animations false)
+    (center-y animations false)))
 
 
 ;;;; Gestures
