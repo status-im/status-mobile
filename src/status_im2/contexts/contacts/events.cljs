@@ -51,7 +51,8 @@
         chats-js      (.-chatsForContacts response-js)
         events        (reduce
                        (prepare-events-for-contact db chats-js)
-                       [[:activity-center.notifications/fetch-unread-count]]
+                       [[:activity-center.notifications/fetch-unread-count]
+                        [:activity-center.notifications/fetch-pending-contact-requests]]
                        contacts-cljs)]
     (js-delete response-js "contacts")
     (js-delete response-js "chatsForContacts")

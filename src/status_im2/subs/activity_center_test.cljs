@@ -1,7 +1,6 @@
 (ns status-im2.subs.activity-center-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
-            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification-types :as types]
             status-im2.subs.activity-center
             [test-helpers.unit :as h]
@@ -64,27 +63,3 @@
      types/admin                7})
 
   (is (= 28 (rf/sub [sub-name]))))
-
-(h/deftest-sub :activity-center/pending-contact-requests
-  [sub-name]
-  (testing "returns only contact request notifications in the pending state"
-    (let [pending {:id      "0x2"
-                   :type    types/contact-request
-                   :message {:contact-request-state
-                             constants/contact-request-message-state-pending}}]
-      (swap! rf-db/app-db assoc-in
-        [:activity-center :notifications types/contact-request :unread :data]
-        [{:id      "0x1"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-none}}
-         pending
-         {:id      "0x3"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-accepted}}
-         {:id      "0x4"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-declined}}
-         {:id   "0x5"
-          :type types/mention}])
-
-      (is (= [pending] (rf/sub [sub-name]))))))

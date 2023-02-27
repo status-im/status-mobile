@@ -209,7 +209,7 @@
        (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
        [safe-area/consumer
         (fn [{:keys [top bottom]}]
-          (let [notifications (rf/sub [:activity-center/filtered-notifications])
+          (let [notifications (rf/sub [:activity-center/notifications])
                 window-width  (rf/sub [:dimensions/window-width])]
             [rn/view {:style (style/screen-container window-width top bottom)}
              [header request-close]

@@ -1,15 +1,16 @@
 (ns status-im2.contexts.activity-center.events
-  (:require [status-im.data-store.activities :as data-store.activities]
+  (:require [quo2.foundations.colors :as colors]
+            [status-im.data-store.activities :as activities]
             [status-im.data-store.chats :as data-store.chats]
-            [status-im2.contexts.activity-center.notification-types :as types]
-            [status-im2.contexts.chat.events :as chat.events]
             [status-im2.common.toasts.events :as toasts]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.activity-center.notification-types :as types]
             status-im2.contexts.activity-center.notification.contact-requests.events
+            [status-im2.contexts.chat.events :as chat.events]
             [taoensso.timbre :as log]
-            [utils.re-frame :as rf]
+            [utils.collection :as collection]
             [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constants]))
+            [utils.re-frame :as rf]))
 
 (def defaults
   {:filter-status          :unread
@@ -48,127 +49,59 @@
 
 ;;;; Notification reconciliation
 
-(defn- notification-type->filter-type
-  [type]
-  (if (some types/membership [type])
-    types/membership
-    type))
-
 (defn- update-notifications
-  "Insert `new-notifications` in `db-notifications`.
-
-  Although correct, this is a naive implementation for reconciling notifications
-  because for every notification in `new-notifications`, linear scans will be
-  performed to remove it and sorting will be performed for every new insertion.
-  If the number of existing notifications cached in the app db becomes
-  ~excessively~ big, this implementation will probably need to be revisited."
-  [db-notifications new-notifications]
-  (reduce (fn [acc {:keys [id read] :as notification}]
-            (let [filter-type         (notification-type->filter-type (:type notification))
-                  remove-notification (fn [data]
-                                        (remove #(= id (:id %)) data))
-                  insert-and-sort     (fn [data]
-                                        (->> notification
-                                             (conj data)
-                                             (sort-by (juxt :timestamp :id))
-                                             reverse))]
-              (as-> acc $
-                (update-in $ [filter-type :all :data] remove-notification)
-                (update-in $ [types/no-type :all :data] remove-notification)
-                (update-in $ [filter-type :unread :data] remove-notification)
-                (update-in $ [types/no-type :unread :data] remove-notification)
-                (if (:deleted notification)
-                  $
-                  (cond-> (-> $
-                              (update-in [filter-type :all :data] insert-and-sort)
-                              (update-in [types/no-type :all :data] insert-and-sort))
-                    (not read) (update-in [filter-type :unread :data] insert-and-sort)
-                    (not read) (update-in [types/no-type :unread :data] insert-and-sort))))))
-          db-notifications
-          new-notifications))
+  [db-notifications new-notifications {filter-type :type filter-status :status}]
+  (->> new-notifications
+       (reduce (fn [acc {:keys [id type] :as notification}]
+                 (if (or (:deleted notification)
+                         (and (= :unread filter-status)
+                              (:read notification))
+                         (and (set? filter-type)
+                              (not (contains? filter-type type)))
+                         (and (not (set? filter-type))
+                              (not= filter-type types/no-type)
+                              (not= filter-type type)))
+                   (dissoc acc id)
+                   (assoc acc id notification)))
+               (collection/index-by :id db-notifications))
+       (vals)
+       (sort-by (juxt :timestamp :id))
+       (reverse)))
 
 (rf/defn notifications-reconcile
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
   (when (seq new-notifications)
-    {:db       (update-in db
-                          [:activity-center :notifications]
-                          update-notifications
-                          new-notifications)
-     :dispatch [:activity-center.notifications/fetch-unread-count]}))
-
-(rf/defn show-toasts
-  {:events [:activity-center.notifications/show-toasts]}
-  [{:keys [db]} new-notifications]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
-    (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
-              (cond
-                (and (not= author my-public-key)
-                     (= type types/contact-request)
-                     (not accepted)
-                     (not dismissed))
-                (toasts/upsert cofx
-                               {:icon       :placeholder
-                                :icon-color colors/primary-50-opa-40
-                                :title      (i18n/label :t/contact-request-sent-toast
-                                                        {:name name})
-                                :text       (get-in message [:content :text])})
-
-                (and (= author my-public-key) ;; we show it for user who sent the request
-                     (= type types/contact-request)
-                     accepted
-                     (not dismissed))
-                (toasts/upsert cofx
-                               {:icon       :placeholder
-                                :icon-color colors/primary-50-opa-40
-                                :title      (i18n/label :t/contact-request-accepted-toast
-                                                        {:name (:alias message)})})
-
-                :else
-                cofx))
-            {:db db}
-            new-notifications)))
+    {:db         (update-in db
+                            [:activity-center :notifications]
+                            update-notifications
+                            new-notifications
+                            (get-in db [:activity-center :filter]))
+     :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                  [:activity-center.notifications/fetch-pending-contact-requests]]}))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
   [cofx response]
   (->> response
        :activityCenterNotifications
-       (map data-store.activities/<-rpc)
+       (map activities/<-rpc)
        (notifications-reconcile cofx)))
-
-(defn- remove-pending-contact-request
-  [notifications contact-id]
-  (remove #(= contact-id (:author %))
-          notifications))
 
 (rf/defn notifications-remove-pending-contact-request
   {:events [:activity-center/remove-pending-contact-request]}
   [{:keys [db]} contact-id]
-  {:db (-> db
-           (update-in [:activity-center :notifications types/no-type :all :data]
-                      remove-pending-contact-request
-                      contact-id)
-           (update-in [:activity-center :notifications types/no-type :unread :data]
-                      remove-pending-contact-request
-                      contact-id)
-           (update-in [:activity-center :notifications types/contact-request :all :data]
-                      remove-pending-contact-request
-                      contact-id)
-           (update-in [:activity-center :notifications types/contact-request :unread :data]
-                      remove-pending-contact-request
-                      contact-id))})
+  {:db (update-in db
+                  [:activity-center :notifications]
+                  (fn [notifications]
+                    (remove #(activities/pending-contact-request? contact-id %)
+                            notifications)))})
 
 ;;;; Status changes (read/dismissed/deleted)
 
 (defn- get-notification
   [db notification-id]
-  (->> (get-in db
-               [:activity-center
-                :notifications
-                (get-in db [:activity-center :filter :type])
-                (get-in db [:activity-center :filter :status])
-                :data])
+  (->> (get-in db [:activity-center :notifications])
        (filter #(= notification-id (:id %)))
        first))
 
@@ -237,20 +170,23 @@
   {:db (-> db
            (update-in [:activity-center :notifications]
                       update-notifications
-                      notifications)
+                      notifications
+                      (get-in db [:activity-center :filter]))
            (update :activity-center dissoc :mark-all-as-read-undoable-till))})
 
 (rf/defn mark-all-as-read-locally
   {:events [:activity-center.notifications/mark-all-as-read-locally]}
   [{:keys [db now]} get-toast-ui-props]
-  (let [unread-notifications (get-in db [:activity-center :notifications types/no-type :unread :data])
+  (let [unread-notifications (filter #(not (:read %))
+                                     (get-in db [:activity-center :notifications]))
         undo-time-limit-ms   constants/activity-center-mark-all-as-read-undo-time-limit-ms
         undoable-till        (+ now undo-time-limit-ms)]
     {:db                   (-> db
                                (update-in [:activity-center :notifications]
                                           update-notifications
-                                          (data-store.activities/mark-notifications-as-read
-                                           unread-notifications))
+                                          (activities/mark-notifications-as-read
+                                           unread-notifications)
+                                          (get-in db [:activity-center :filter]))
                                (assoc-in [:activity-center :mark-all-as-read-undoable-till]
                                          undoable-till))
      :dispatch             [:toasts/upsert
@@ -411,12 +347,10 @@
 
 (rf/defn notifications-fetch
   [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
-  (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
+  (when-not (get-in db [:activity-center :loading?])
     (let [per-page  (or per-page (defaults :notifications-per-page))
           accepted? true]
-      {:db            (assoc-in db
-                       [:activity-center :notifications filter-type filter-status :loading?]
-                       true)
+      {:db            (assoc-in db [:activity-center :loading?] true)
        :json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
                         :params     [cursor
                                      per-page
@@ -424,7 +358,7 @@
                                      (status filter-status)
                                      accepted?]
                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
-                                                   filter-type filter-status reset-data? %])
+                                                   reset-data? %])
                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
                                                    filter-type filter-status %])}]})))
 
@@ -452,7 +386,7 @@
   {:events [:activity-center.notifications/fetch-next-page]}
   [{:keys [db] :as cofx}]
   (let [{:keys [type status]} (get-in db [:activity-center :filter])
-        {:keys [cursor]}      (get-in db [:activity-center :notifications type status])]
+        cursor                (get-in db [:activity-center :cursor])]
     (when (valid-cursor? cursor)
       (notifications-fetch cofx
                            {:cursor        cursor
@@ -462,36 +396,59 @@
 
 (rf/defn notifications-fetch-success
   {:events [:activity-center.notifications/fetch-success]}
-  [{:keys [db]}
-   filter-type
-   filter-status
-   reset-data?
-   {:keys [cursor notifications]}]
-  (let [processed (map data-store.activities/<-rpc notifications)]
+  [{:keys [db]} reset-data? {:keys [cursor notifications]}]
+  (let [processed (map activities/<-rpc notifications)]
     {:db (-> db
-             (assoc-in [:activity-center :notifications filter-type filter-status :cursor] cursor)
-             (update-in [:activity-center :notifications filter-type filter-status] dissoc :loading?)
-             (update-in [:activity-center :notifications filter-type filter-status :data]
+             (assoc-in [:activity-center :cursor] cursor)
+             (update :activity-center dissoc :loading?)
+             (update-in [:activity-center :notifications]
                         (if reset-data?
                           (constantly processed)
-                          #(concat %1 processed))))}))
+                          #(concat % processed))))}))
 
-(rf/defn notifications-fetch-unread-contact-requests
+(rf/defn notifications-fetch-pending-contact-requests
   "Unread contact requests are, in practical terms, the same as pending contact
-  requests in the new Activity Center, because pending contact requests are
-  always marked as unread, and once the user declines/accepts the request, they
-  are marked as read.
+  requests in the Activity Center, because pending contact requests are always
+  marked as unread in status-go, and once the user declines/accepts the request,
+  they are marked as read.
 
   If this relationship ever changes, we will probably need to change the backend
   to explicitly support fetching notifications for 'pending' contact requests."
-  {:events [:activity-center.notifications/fetch-unread-contact-requests]}
-  [cofx]
-  (notifications-fetch cofx
-                       {:cursor        start-or-end-cursor
-                        :filter-status :unread
-                        :filter-type   types/contact-request
-                        :per-page      20
-                        :reset-data?   true}))
+  {:events [:activity-center.notifications/fetch-pending-contact-requests]}
+  [{:keys [db]}]
+  (let [accepted? true]
+    {:db (assoc-in db [:activity-center :loading?] true)
+     :json-rpc/call
+     [{:method     "wakuext_activityCenterNotificationsBy"
+       :params     [start-or-end-cursor
+                    20
+                    [types/contact-request]
+                    (status :unread)
+                    accepted?]
+       :on-success #(rf/dispatch [:activity-center.notifications/fetch-pending-contact-requests-success
+                                  %])
+       :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
+                                  types/contact-request :unread %])}]}))
+
+(rf/defn notifications-fetch-pending-contact-requests-success
+  {:events [:activity-center.notifications/fetch-pending-contact-requests-success]}
+  [{:keys [db]} {:keys [notifications]}]
+  {:db (-> db
+           (update :activity-center dissoc :loading?)
+           (assoc-in [:activity-center :contact-requests]
+                     (->> notifications
+                          (map activities/<-rpc)
+                          (filter (fn [notification]
+                                    (= constants/contact-request-message-state-pending
+                                       (get-in notification [:message :contact-request-state])))))))})
+
+(rf/defn notifications-fetch-error
+  {:events [:activity-center.notifications/fetch-error]}
+  [{:keys [db]} error]
+  (log/warn "Failed to load Activity Center notifications" error)
+  {:db (update db :activity-center dissoc :loading?)})
+
+;;;; Unread counters
 
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
@@ -521,8 +478,36 @@
   (log/error "Failed to fetch count of notifications" {:error error})
   nil)
 
-(rf/defn notifications-fetch-error
-  {:events [:activity-center.notifications/fetch-error]}
-  [{:keys [db]} filter-type filter-status error]
-  (log/warn "Failed to load Activity Center notifications" error)
-  {:db (update-in db [:activity-center :notifications filter-type filter-status] dissoc :loading?)})
+;;;; Toasts
+
+(rf/defn show-toasts
+  {:events [:activity-center.notifications/show-toasts]}
+  [{:keys [db]} new-notifications]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
+              (cond
+                (and (not= author my-public-key)
+                     (= type types/contact-request)
+                     (not accepted)
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-sent-toast
+                                                        {:name name})
+                                :text       (get-in message [:content :text])})
+
+                (and (= author my-public-key) ;; we show it for user who sent the request
+                     (= type types/contact-request)
+                     accepted
+                     (not dismissed))
+                (toasts/upsert cofx
+                               {:icon       :placeholder
+                                :icon-color colors/primary-50-opa-40
+                                :title      (i18n/label :t/contact-request-accepted-toast
+                                                        {:name (:alias message)})})
+
+                :else
+                cofx))
+            {:db db}
+            new-notifications)))
