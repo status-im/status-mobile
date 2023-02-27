@@ -61,14 +61,16 @@
                           current-account
                           (select-keys [:name :preferred-name :public-key :identicon :images])
                           (set/rename-keys {:name           :alias
-                                            :preferred-name :name}))
+                                            :preferred-name :name})
+                          :always
+                          (assoc :primary-name (:preferred-name current-account)))
         all-contacts    (cond-> contacts
                           current-contact
                           (assoc public-key current-contact))]
     (->> members
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
-         (sort-by (comp string/lower-case #(or (:name %) (:alias %))))
+         (sort-by (comp string/lower-case #(or (:primary-name %) (:name %) (:alias %))))
          (map #(if (get admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))

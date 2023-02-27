@@ -153,14 +153,12 @@
    (count blocked-contacts)))
 
 (defn filter-recipient-contacts
-  [search-filter {:keys [names]}]
-  (let [{:keys [nickname three-words-name ens-name]} names]
-    (or
-     (when ens-name
-       (string/includes? (string/lower-case (str ens-name)) search-filter))
-     (string/includes? (string/lower-case three-words-name) search-filter)
-     (when nickname
-       (string/includes? (string/lower-case nickname) search-filter)))))
+  [search-filter {:keys [primary-name secondary-name]}]
+  (or
+   (when primary-name
+     (string/includes? (string/lower-case (str primary-name)) search-filter))
+   (when secondary-name
+     (string/includes? (string/lower-case (str secondary-name)) search-filter))))
 
 (re-frame/reg-sub
  :contacts/active-with-ens-names
