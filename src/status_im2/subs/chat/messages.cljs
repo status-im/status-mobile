@@ -109,43 +109,64 @@
             %)
          message-list)))
 
+;(defn albumize-messages
+;  [messages]
+;  (get
+;   (reduce
+;    (fn [{:keys [messages albums]} message]
+;      (let [album-id  (:album-id message)
+;            ;; check if this image is the first image in an album (which is not albumized yet)
+;            add-text? (when (and album-id (not (:albumize? message)) (> (count (get albums album-id)) 0))
+;                        (not (some #(= false %)
+;                                   (mapv #(< (:timestamp message) (:timestamp %))
+;                                         (get albums album-id)))))
+;            albums    (cond-> albums album-id (update album-id conj message))
+;            ;; keep text of the first album image only
+;            message   (if (or add-text? (<= (count (get albums album-id)) 1))
+;                        message
+;                        (assoc-in message [:content :text] nil))
+;            messages  (if (and (> (count (get albums album-id)) 1) (:albumize? message))
+;                        (conj (filterv #(not= album-id (:album-id %)) messages)
+;                              {:album        (get albums album-id)
+;                               :album-id     album-id
+;                               :albumize?    (:albumize? message)
+;                               :messages-ids (mapv :message-id (get albums album-id))
+;                               :message-id   album-id
+;                               :content-type constants/content-type-album})
+;                        ;; remove text of other images in an album
+;                        (if add-text?
+;                          (conj (mapv #(when (= (:album-id %) album-id)
+;                                         (assoc-in % [:content :text] nil))
+;                                      messages)
+;                                message)
+;                          (conj messages message)))]
+;        {:messages messages
+;         :albums   albums}))
+;    {:messages []
+;     :albums   {}}
+;    messages)
+;   :messages))
+
 (defn albumize-messages
   [messages]
   (get
-   (reduce
-    (fn [{:keys [messages albums]} message]
-      (let [album-id  (:album-id message)
-            ;; check if this image is the first image in an album (which is not albumized yet)
-            add-text? (when (and album-id (not (:albumize? message)) (> (count (get albums album-id)) 0))
-                        (not (some #(= false %)
-                                   (mapv #(< (:timestamp message) (:timestamp %))
-                                         (get albums album-id)))))
-            albums    (cond-> albums album-id (update album-id conj message))
-            ;; keep text of the first album image only
-            message   (if (or add-text? (<= (count (get albums album-id)) 1))
-                        message
-                        (assoc-in message [:content :text] nil))
-            messages  (if (and (> (count (get albums album-id)) 1) (:albumize? message))
-                        (conj (filterv #(not= album-id (:album-id %)) messages)
-                              {:album        (get albums album-id)
-                               :album-id     album-id
-                               :albumize?    (:albumize? message)
-                               :messages-ids (mapv :message-id (get albums album-id))
-                               :message-id   album-id
-                               :content-type constants/content-type-album})
-                        ;; remove text of other images in an album
-                        (if add-text?
-                          (conj (mapv #(when (= (:album-id %) album-id)
-                                         (assoc-in % [:content :text] nil))
-                                      messages)
-                                message)
-                          (conj messages message)))]
-        {:messages messages
-         :albums   albums}))
-    {:messages []
-     :albums   {}}
-    messages)
-   :messages))
+    (reduce (fn [{:keys [messages albums]} message]
+              (let [album-id (:album-id message)
+                    albums   (cond-> albums album-id (update album-id conj message))
+                    messages (if album-id
+                               (conj (filterv #(not= album-id (:album-id %)) messages)
+                                     {:album        (get albums album-id)
+                                      :album-id     album-id
+                                      :albumize?    (:albumize? message)
+                                      :message-id   album-id
+                                      :content-type constants/content-type-album})
+                               (conj messages message))]
+                {:messages messages
+                 :albums   albums}))
+            {:messages []
+             :albums   {}}
+            messages)
+    :messages))
 
 (re-frame/reg-sub
  :chats/chat-messages

@@ -76,12 +76,6 @@
       constants/content-type-contact-request [not-implemented/not-implemented
                                               [old-message/system-contact-request message-data]])))
 
-(defn message-on-long-press
-  [message-data context]
-  (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content (drawers/reactions-and-actions message-data context)}]))
-
 (defn on-long-press
   [message-data context]
   (rf/dispatch [:dismiss-keyboard])
@@ -102,7 +96,7 @@
              outgoing        (if (= content-type constants/content-type-album)
                                (:outgoing first-image)
                                outgoing)
-             context         (assoc context :on-long-press #(message-on-long-press message-data context))
+             context         (assoc context :on-long-press #(on-long-press message-data context))
              response-to     (:response-to content)]
          [rn/touchable-highlight
           {:accessibility-label (if (and outgoing (= outgoing-status :sending))
