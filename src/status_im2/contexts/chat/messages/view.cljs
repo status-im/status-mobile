@@ -11,6 +11,10 @@
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
+            [status-im.ui.components.fast-image :as fast-image]
+            [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]
+            [quo2.components.animated-header-flatlist.view :as animated-header-list]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]))
 
@@ -61,12 +65,64 @@
                                :icon                :i/options
                                :accessibility-label :options-button}]}]))
 
+(def theme-color (colors/theme-alpha "#5BCC95" 0.2 0.2))
+
+(defn display-picture-comp
+  [animation]
+  [quo2]
+  [reanimated/fast-image
+   {:style {:border-radius 72
+            :width  72
+            :height 72}
+    :source
+    {:uri
+     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])
+
+(defn header-comp
+  []
+  [rn/view
+   {:style {:flex-direction  :row
+            :justify-content :center
+            :align-items     :center}}
+   [fast-image/fast-image
+    {:source {:uri
+              "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}
+     :style  {:width         32
+              :height        32
+              :border-radius 16
+              :margin-right  8}}]
+   [quo/text {:weight :semi-bold} "Alecia Keys"]])
+
+(defn title-comp
+  []
+  [quo/text
+   {:weight :semi-bold
+    :size   :heading-1
+    :style  {:margin-top  56
+             :margin-left 20}} "Alicia Keys"])
+
+(def data [0 1 2 3 4 5 6 7 8 9 10])
+
+(defn main-comp
+  []
+  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
+        {:keys [chat-id contact-request-state show-input?] :as chat}
+        (rf/sub [:chats/current-chat-chat-view])]
+    [messages.list/messages-list {:chat chat :show-input? show-input?}]))
+
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id contact-request-state show-input?] :as chat}
         (rf/sub [:chats/current-chat-chat-view])]
-    [safe-area/consumer
+    [animated-header-list/animated-header-list
+     {:theme-color          theme-color
+      :cover-bg-color       "#2A799B33"
+      :display-picture-comp display-picture-comp
+      :header-comp          header-comp
+      :title-comp           title-comp
+      :main-comp            main-comp}]
+    #_[safe-area/consumer
      (fn [insets]
        [rn/keyboard-avoiding-view
         {:style                  {:position :relative :flex 1}

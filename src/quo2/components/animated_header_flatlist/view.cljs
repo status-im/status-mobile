@@ -31,7 +31,7 @@
     (reanimated/set-shared-value scroll-y current-y)))
 
 (defn header
-  [{:keys [theme-color display-picture-comp cover-uri title-comp]} top-inset scroll-y]
+  [{:keys [theme-color display-picture-comp cover-uri cover-bg-color title-comp]} top-inset scroll-y]
   (let [input-range        [0 (* threshold 0.33)]
         picture-scale-down 0.4
         size-animation     (interpolate scroll-y input-range [80 (* 80 picture-scale-down)])
@@ -46,6 +46,11 @@
         {:style  {:width  "100%"
                   :height cover-height}
          :source {:uri cover-uri}}])
+     (when cover-bg-color
+       [rn/view
+        {:style  {:width  "100%"
+                  :height cover-height
+                  :background-color cover-bg-color}}])
      [reanimated/view {:style (style/header-bottom-part border-animation)}
       [title-comp]]
      [reanimated/view {:style (style/entity-picture size-animation)}
@@ -87,7 +92,7 @@
               {:blurAmount   32
                :blurType     :light
                :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
-               :style        (style/blur-view opacity-animation)}
+               :style        (style/blur-view scroll-y)}
               [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
                [header-comp]]]
              [reanimated/flat-list
