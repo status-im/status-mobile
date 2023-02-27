@@ -6,6 +6,7 @@
             [reagent.core :as reagent]
             [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.constants :as constants]
+            [quo2.components.avatars.user-avatar :as user-avatar]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
@@ -69,14 +70,17 @@
 
 (defn display-picture-comp
   [animation]
-  [quo2]
-  [reanimated/fast-image
-   {:style {:border-radius 72
-            :width  72
-            :height 72}
-    :source
-    {:uri
-     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])
+  (let [{:keys [group-chat chat-id chat-name emoji chat-type]} (rf/sub [:chats/current-chat])
+        display-name        (if (= chat-type constants/one-to-one-chat-type)
+                              (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                              (str emoji " " chat-name))
+        online?             (rf/sub [:visibility-status-updates/online? chat-id])
+        contact             (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
+    [user-avatar/user-avatar {:full-name       display-name
+                              :online?         online?
+                              :profile-picture photo-path
+                              :size            :big}]))
 
 (defn header-comp
   []
@@ -101,8 +105,6 @@
     :style  {:margin-top  56
              :margin-left 20}} "Alicia Keys"])
 
-(def data [0 1 2 3 4 5 6 7 8 9 10])
-
 (defn main-comp
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
@@ -113,14 +115,37 @@
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id contact-request-state show-input?] :as chat}
-        (rf/sub [:chats/current-chat-chat-view])]
+        {:keys [chat-id contact-request-state show-input? group-chat chat-id chat-name emoji chat-type chat-type] :as chat} (rf/sub [:chats/current-chat-chat-view])
+        display-name        (if (= chat-type constants/one-to-one-chat-type)
+                              (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                              (str emoji " " chat-name))
+        online?             (rf/sub [:visibility-status-updates/online? chat-id])
+        contact             (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [animated-header-list/animated-header-list
      {:theme-color          theme-color
       :cover-bg-color       "#2A799B33"
-      :display-picture-comp display-picture-comp
-      :header-comp          header-comp
-      :title-comp           title-comp
+      :display-picture-comp (fn []
+                              [user-avatar/user-avatar {:full-name       display-name
+                                                        :online?         online?
+                                                        :profile-picture photo-path
+                                                        :size            :big}])
+      :header-comp          (fn []
+                              [rn/view
+                               {:style {:flex-direction  :row
+                                        :justify-content :center
+                                        :align-items     :center}}
+                               [user-avatar/user-avatar {:full-name       display-name
+                                                         :online?         online?
+                                                         :profile-picture photo-path
+                                                         :size            :small}]
+                               [quo/text {:weight :semi-bold} display-name]])
+      :title-comp           (fn []
+                              [quo/text
+                               {:weight :semi-bold
+                                :size   :heading-1
+                                :style  {:margin-top  56
+                                         :margin-left 20}} display-name])
       :main-comp            main-comp}]
     #_[safe-area/consumer
      (fn [insets]
