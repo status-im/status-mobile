@@ -48,9 +48,9 @@
       (rf/dispatch [:chat.ui/orientation-change result]))
     (cond
       landscape?
-      (orientation/lock-to-landscape)
+      (orientation/lock-to-landscape "lightbox")
       (= result orientation/portrait)
-      (orientation/lock-to-portrait))
+      (orientation/lock-to-portrait "lightbox"))
     (js/setTimeout #(when @common/flat-list-ref
                       (.scrollToOffset
                        ^js @common/flat-list-ref

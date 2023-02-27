@@ -1,7 +1,6 @@
 (ns react-native.orientation
   (:require ["react-native-orientation-locker" :refer (useDeviceOrientationChange)]
-            ["react-native-navigation" :refer (Navigation)]))
-
+            [react-native.navigation :as navigation]))
 
 (def use-device-orientation-change useDeviceOrientationChange)
 
@@ -13,14 +12,14 @@
 (def landscape-option-2 (clj->js {:statusBar {:visible false}}))
 
 (defn lock-to-portrait
-  []
-  (.mergeOptions Navigation "lightbox" portrait-options))
+  [id]
+  (navigation/merge-options id portrait-options))
 
 (defn lock-to-landscape
-  []
-  (.mergeOptions Navigation "lightbox" landscape-option-1)
+  [id]
+  (navigation/merge-options id landscape-option-1)
   ;; On Android, hiding the status-bar while changing orientation causes a flicker, so we enqueue it
-  (js/setTimeout #(.mergeOptions Navigation "lightbox" landscape-option-2) 0))
+  (js/setTimeout #(navigation/merge-options id landscape-option-2) 0))
 
 (def portrait "PORTRAIT")
 
