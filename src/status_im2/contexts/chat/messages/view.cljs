@@ -117,11 +117,9 @@
       :main-comp      (fn []
                         [messages.list/messages-list {:chat chat :show-input? show-input?}])
       :footer-comp (fn [insets]
-                     [composer/composer chat-id insets])}]
-
-    #_(if-not show-input?
-      [contact-requests.bottom-drawer/view chat-id contact-request-state]
-      [composer/composer chat-id insets])))
+                     #_(if-not show-input?
+                       [contact-requests.bottom-drawer/view chat-id contact-request-state]
+                       [composer/composer chat-id insets]))}]))
 
 (defn chat
   []

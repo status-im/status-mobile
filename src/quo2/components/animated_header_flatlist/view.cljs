@@ -69,7 +69,7 @@
         (fn []
           (let [scroll-y                (reanimated/use-shared-value initial-y)
                 opacity-animation       (interpolate scroll-y
-                                                     [(* threshold 0.3) (* threshold 0.33)]
+                                                     [(* threshold 0.33) (* threshold 0.66)]
                                                      [0 1])
                 translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [50 0])
                 title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
@@ -85,6 +85,7 @@
                                :top      56
                                :left     0
                                :right    0
+                               :padding-bottom 12
                                :width "100%"
                                :display :flex
                                :flex-direction :row
@@ -95,9 +96,8 @@
                 :on-press       #(rf/dispatch [:navigate-back])
                 :style          (style/button-container {:margin-left 20})}
                [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-              [rn/view {:style {:flex 1 :flex-direction :row}}
-               [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
-                [header-comp]]]
+              [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
+               [header-comp]]
               [rn/touchable-opacity
                {:active-opacity 1
                 :style          (style/button-container {:margin-right 20})}
@@ -112,4 +112,5 @@
                :scroll-event-throttle 8
                :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]
 
-             (footer-comp insets)]))]))])
+             (when footer-comp
+               (footer-comp insets))]))]))])
