@@ -31,7 +31,9 @@
         (fn [^js resized-image]
           (let [path (.-path resized-image)
                 path (if (string/starts-with? path "file") path (str "file://" path))]
-            (cb path)))
+            (cb {:resized-uri path
+                 :width       width
+                 :height      height})))
         #(log/error "could not resize image" %))))))
 
 (defn result->id
@@ -238,13 +240,15 @@
 
 (rf/defn image-selected
   {:events [:chat.ui/image-selected]}
-  [{:keys [db]} current-chat-id original uri]
+  [{:keys [db]} current-chat-id original {:keys [resized-uri width height]}]
   {:db
    (update-in db
               [:chat/inputs current-chat-id :metadata :sending-image (:uri original)]
               merge
               original
-              {:resized-uri uri})})
+              {:resized-uri resized-uri
+               :width       width
+               :height      height})})
 
 (rf/defn image-unselected
   {:events [:chat.ui/image-unselected]}
