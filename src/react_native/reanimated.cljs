@@ -57,9 +57,13 @@
 ;; Easings
 (def bezier (.-bezier ^js Easing))
 
+(def in-out
+  (.-inOut ^js Easing))
+
 (def easings
-  {:linear  (bezier 0 0 1 1)
-   :easing1 (bezier 0.25 0.1 0.25 1) ;; TODO(parvesh) - rename easing functions, (design team input)
+  {:default (in-out (.-quad ^js Easing)) ; Reanimated default easing
+   :linear  (bezier 0 0 1 1)
+   :easing1 (bezier 0.25 0.1 0.25 1) ; TODO(parvesh) - rename easing functions, (design team input)
    :easing2 (bezier 0 0.3 0.6 0.9)
    :easing3 (bezier 0.3 0.3 0.3 0.9)})
 
@@ -145,9 +149,6 @@
   (set-shared-value anim
                     (with-decay (clj->js {:velocity velocity
                                           :clamp    clamp}))))
-
-(def in-out
-  (.-inOut Easing))
 
 (defn with-timing-duration
   [val duration]

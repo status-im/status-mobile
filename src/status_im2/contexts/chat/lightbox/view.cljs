@@ -19,7 +19,7 @@
 (def seperator-width 16)
 
 (defn toggle-opacity
-  [opacity-value border-value transparent? index]
+  [opacity-value border-value transparent? index {:keys [small-list-ref]}]
   (let [opacity (reanimated/get-shared-value opacity-value)]
     (if (= opacity 1)
       (do
@@ -27,14 +27,14 @@
         (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
       (do
         (reset! transparent? (not @transparent?))
-        (js/setTimeout #(common/set-val-timing opacity-value 1) 50)
-        (js/setTimeout #(when @common/small-list-ref
-                          (.scrollToIndex ^js @common/small-list-ref #js {:animated false :index index}))
+        (reanimated/animate-shared-value-with-delay opacity-value 1 300 :default 50)
+        (js/setTimeout #(when @small-list-ref
+                          (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
                        100)))
     (common/set-val-timing border-value (if (= opacity 1) 0 12))))
 
 (defn handle-orientation
-  [result index window animations]
+  [result index window animations {:keys [flat-list-ref insets-atom]}]
   (let [screen-width  (if (or platform/ios? (= result orientation/portrait))
                         (:width window)
                         (:height window))
@@ -51,30 +51,30 @@
       (orientation/lock-to-landscape "lightbox")
       (= result orientation/portrait)
       (orientation/lock-to-portrait "lightbox"))
-    (js/setTimeout #(when @common/flat-list-ref
+    (js/setTimeout #(when @flat-list-ref
                       (.scrollToOffset
-                       ^js @common/flat-list-ref
+                       ^js @flat-list-ref
                        #js {:animated false :offset (* (+ item-width seperator-width) @index)}))
                    timeout)
     (when platform/ios?
-      (top-view/animate-rotation result screen-width screen-height animations))))
+      (top-view/animate-rotation result screen-width screen-height animations @insets-atom))))
 
 (defn get-item-layout
   [_ index item-width]
   #js {:length item-width :offset (* (+ item-width seperator-width) index) :index index})
 
 (defn on-viewable-items-changed
-  [e scroll-index]
-  (when-not @common/scroll-index-lock?
+  [e scroll-index {:keys [scroll-index-lock? small-list-ref]}]
+  (when-not @scroll-index-lock?
     (let [changed (-> e (oget :changed) first)
           index   (oget changed :index)]
       (reset! scroll-index index)
-      (when @common/small-list-ref
-        (.scrollToIndex ^js @common/small-list-ref #js {:animated true :index index}))
+      (when @small-list-ref
+        (.scrollToIndex ^js @small-list-ref #js {:animated true :index index}))
       (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))]))))
 
 (defn image
-  [message index _ {:keys [opacity-value border-value transparent? width height]}]
+  [message index _ {:keys [opacity-value border-value transparent? width height atoms]}]
   [:f>
    (fn []
      [rn/view
@@ -84,7 +84,7 @@
                :align-items     :center
                :justify-content :center}}
       [zoomable-image/zoomable-image message index border-value
-       #(toggle-opacity opacity-value border-value transparent? index)]
+       #(toggle-opacity opacity-value border-value transparent? index atoms)]
       [rn/view {:style {:width seperator-width}}]])])
 
 (defn lightbox
@@ -92,6 +92,10 @@
   [:f>
    (fn []
      (let [{:keys [messages index]} (rf/sub [:get-screen-params])
+           atoms                    {:flat-list-ref      (atom nil)
+                                     :small-list-ref     (atom nil)
+                                     :scroll-index-lock? (atom false)
+                                     :insets-atom        (atom nil)}
            ;; The initial value of data is the image that was pressed (and not the whole album) in order
            ;; for the transition animation to execute properly, otherwise it would animate towards
            ;; outside the screen (even if we have `initialScrollIndex` set).
@@ -108,16 +112,16 @@
                                      :top-view-bg    (common/use-val colors/neutral-100-opa-0)}
 
            callback                 (fn [e]
-                                      (on-viewable-items-changed e scroll-index))]
+                                      (on-viewable-items-changed e scroll-index atoms))]
        (reset! data messages)
        (orientation/use-device-orientation-change
         (fn [result]
           ;; RNN does not support landscape-right
           (when (or platform/ios? (not= result orientation/landscape-right))
-            (handle-orientation result scroll-index window animations))))
+            (handle-orientation result scroll-index window animations atoms))))
        (rn/use-effect-once (fn []
-                             (when @common/flat-list-ref
-                               (.scrollToIndex ^js @common/flat-list-ref
+                             (when @(:flat-list-ref atoms)
+                               (.scrollToIndex ^js @(:flat-list-ref atoms)
                                                #js {:animated false :index index}))
                              js/undefined))
        [safe-area/consumer
@@ -133,13 +137,13 @@
                                    (:height window)
                                    (:width window))
                 item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
-            (reset! common/insets-atom insets)
+            (reset! (:insets-atom atoms) insets)
             [rn/view {:style style/container-view}
              (when-not @transparent?
                [top-view/top-view (first messages) insets scroll-index animations landscape?
                 screen-width])
              [rn/flat-list
-              {:ref                               #(reset! common/flat-list-ref %)
+              {:ref                               #(reset! (:flat-list-ref atoms) %)
                :key-fn                            :message-id
                :style                             {:width (+ screen-width seperator-width)}
                :data                              @data
@@ -148,7 +152,8 @@
                                                    :border-value  (:border animations)
                                                    :transparent?  transparent?
                                                    :height        screen-height
-                                                   :width         screen-width}
+                                                   :width         screen-width
+                                                   :atoms         atoms}
                :horizontal                        horizontal?
                :inverted                          inverted?
                :paging-enabled                    true
@@ -162,4 +167,4 @@
                                                    :align-items     :center}}]
              (when (and (not @transparent?) (not landscape?))
                [bottom-view/bottom-view messages index scroll-index insets animations
-                item-width])]))]))])
+                item-width atoms])]))]))])

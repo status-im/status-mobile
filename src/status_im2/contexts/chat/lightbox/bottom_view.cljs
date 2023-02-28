@@ -21,24 +21,26 @@
     :index  index})
 
 (defn small-image
-  [item index _ {:keys [scroll-index]}]
+  [item index _ {:keys [scroll-index atoms]}]
   [:f>
    (fn []
-     (let [size       (if (= @scroll-index index) focused-image-size small-image-size)
-           size-value (common/use-val size)]
+     (let [size                    (if (= @scroll-index index) focused-image-size small-image-size)
+           size-value              (common/use-val size)
+           {:keys [scroll-index-lock? small-list-ref
+                   flat-list-ref]} atoms]
        (common/set-val-timing size-value size)
        [rn/touchable-opacity
         {:active-opacity 1
          :on-press       (fn []
                            (rf/dispatch [:chat.ui/zoom-out-signal @scroll-index])
-                           (reset! common/scroll-index-lock? true)
-                           (js/setTimeout #(reset! common/scroll-index-lock? false) 500)
+                           (reset! scroll-index-lock? true)
+                           (js/setTimeout #(reset! scroll-index-lock? false) 500)
                            (js/setTimeout
                             (fn []
                               (reset! scroll-index index)
-                              (.scrollToIndex ^js @common/small-list-ref
+                              (.scrollToIndex ^js @small-list-ref
                                               #js {:animated true :index index})
-                              (.scrollToIndex ^js @common/flat-list-ref
+                              (.scrollToIndex ^js @flat-list-ref
                                               #js {:animated true :index index}))
                             (if platform/ios? 50 150))
                            (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)]))}
@@ -49,7 +51,7 @@
                                                         {:border-radius 10})}]]))])
 
 (defn bottom-view
-  [messages index scroll-index insets animations item-width]
+  [messages index scroll-index insets animations item-width atoms]
   [:f>
    (fn []
      (let [text               (get-in (first messages) [:content :text])
@@ -62,12 +64,13 @@
         [rn/text
          {:style style/text-style} text]
         [rn/flat-list
-         {:ref                     #(reset! common/small-list-ref %)
+         {:ref                     #(reset! (:small-list-ref atoms) %)
           :key-fn                  :message-id
           :style                   {:height small-list-height}
           :data                    messages
           :render-fn               small-image
-          :render-data             {:scroll-index scroll-index}
+          :render-data             {:scroll-index scroll-index
+                                    :atoms        atoms}
           :horizontal              true
           :get-item-layout         get-small-item-layout
           :separator               [rn/view {:style {:width 8}}]

@@ -12,9 +12,9 @@
     [utils.re-frame :as rf]))
 
 (defn animate-rotation
-  [result screen-width screen-height
+  [result screen-width screen-height insets-atom
    {:keys [rotate top-view-y top-view-x top-view-width top-view-bg]}]
-  (let [top-x (+ (/ common/top-view-height 2) (:top @common/insets-atom))]
+  (let [top-x (+ (/ common/top-view-height 2) (:top insets-atom))]
     (cond
       (= result orientation/landscape-left)
       (do

@@ -21,10 +21,10 @@
   ;; On Android, hiding the status-bar while changing orientation causes a flicker, so we enqueue it
   (js/setTimeout #(navigation/merge-options id landscape-option-2) 0))
 
-(def portrait "PORTRAIT")
+(def ^:const portrait "PORTRAIT")
 
-(def landscape "LANDSCAPE")
+(def ^:const landscape "LANDSCAPE")
 
-(def landscape-left "LANDSCAPE-LEFT")
+(def ^:const landscape-left "LANDSCAPE-LEFT")
 
-(def landscape-right "LANDSCAPE-RIGHT")
+(def ^:const landscape-right "LANDSCAPE-RIGHT")
