@@ -149,10 +149,10 @@
          {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))])
 
 (defn view
-  [{:keys [on-start-recording on-send on-cancel on-reviewing-audio
+  [{:keys [on-start-recording on-send on-cancel on-reviewing-audio record-audio-permission-granted
            on-request-record-audio-permission on-check-audio-permissions]}]
   [:f>
-   (fn [{:keys [record-audio-permission-granted]}]
+   (fn []
      (let [recording? (reagent/atom false)
            locked? (reagent/atom false)
            ready-to-send? (reagent/atom false)
@@ -444,7 +444,7 @@
                (reset! reached-max-duration? false)))]
        (fn []
          (use-effect (fn []
-                       (on-check-audio-permissions)
+                       (some-> on-check-audio-permissions)
                        (reload-recorder)))
          [rn/view
           {:style style/bar-container}
