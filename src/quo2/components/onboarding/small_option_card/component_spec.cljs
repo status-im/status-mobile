@@ -39,4 +39,14 @@
       (h/test "`:icon` variant"
         (h/render (testing-small-option-card :icon component-props))
         (h/fire-event :press (h/get-by-label-text :small-option-card))
-        (-> on-press-fn js/expect .toHaveBeenCalled)))))
+        (-> on-press-fn js/expect .toHaveBeenCalled))))
+
+  (h/describe "Image rendered"
+    (let [component-props {:image nil}]
+      (h/test "`:main` variant"
+        (h/render (testing-small-option-card :main component-props))
+        (-> (h/get-by-label-text :small-option-card-main-image) h/expect .-not .toBeNull))
+
+      (h/test "`:icon` variant"
+        (h/render (testing-small-option-card :icon component-props))
+        (-> (h/get-by-label-text :small-option-card-icon-image) h/expect .-not .toBeNull)))))
