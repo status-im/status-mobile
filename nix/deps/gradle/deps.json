@@ -5778,6 +5778,10 @@
     "jar": {
       "sha1": "de8c77583e97bbbd3cdbe5f406b583e9b081ff56",
       "sha256": "0435ff3qzmcxprsm93x3aw9clgfpa871zl41izhijwm3bwib9yfy"
+    },
+    "nodeps": {
+      "sha1": "273cc1869ddf7ebbac8176402e29f41b1c83d7df",
+      "sha256": "1w4a2ak60r46wiy8yl00yy8v397qa2zja5jmsd7wsk1p2sjyqn9z"
     }
   },
 
