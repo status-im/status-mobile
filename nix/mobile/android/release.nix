@@ -132,8 +132,11 @@ in stdenv.mkDerivation rec {
     ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
       ${toString gradleOpts} \
       --console=plain \
-      --offline --stacktrace \
-      -Dorg.gradle.daemon=false \
+      --offline \
+      --no-daemon \
+      --no-scan \
+      --no-watch-fs \
+      --no-build-cache \
       -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
       -PcommitHash=${commitHash} \

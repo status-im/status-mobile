@@ -8783,15 +8783,6 @@ qrcode@^1.4.1:
     pngjs "^3.3.0"
     yargs "^13.2.4"
 
-query-string@6.13.5:
-  version "6.13.5"
-  resolved "https://registry.yarnpkg.com/query-string/-/query-string-6.13.5.tgz#99e95e2fb7021db90a6f373f990c0c814b3812d8"
-  integrity sha512-svk3xg9qHR39P3JlHuD7g3nRnyay5mHbrPctEBDUxUkHRifPHXJDhBUycdCC0NBjXoDf44Gb+IsOZL1Uwn8M/Q==
-  dependencies:
-    decode-uri-component "^0.2.0"
-    split-on-first "^1.0.0"
-    strict-uri-encode "^2.0.0"
-
 query-string@^6.13.5:
   version "6.14.1"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-6.14.1.tgz#7ac2dca46da7f309449ba0f86b1fd28255b0c86a"
@@ -9006,9 +8997,9 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-"react-native-hole-view@git+https://github.com/siddarthkay/react-native-hole-view.git#refs/tags/v2.1.5-sid":
+"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.3-status":
   version "2.1.1"
-  resolved "git+https://github.com/siddarthkay/react-native-hole-view.git#90deeee5df21282000925dee5170328c2faa2341"
+  resolved "git+https://github.com/status-im/react-native-hole-view.git#f056393e06f18b3af54c736d470f9e29d23120a4"
 
 "react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
   version "0.36.2"
@@ -9045,14 +9036,14 @@ react-native-lottie-splash-screen@^1.0.1:
     lottie-ios "3.2.3"
     lottie-react-native "^5.1.3"
 
-"react-native-mail@git+https://github.com/siddarthkay/react-native-mail.git#refs/tags/v1.0.1-sid":
+"react-native-mail@git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status":
   version "6.1.1"
-  resolved "git+https://github.com/siddarthkay/react-native-mail.git#cbdd532f33b94d3c285ffe33659acda0a1bc2413"
+  resolved "git+https://github.com/status-im/react-native-mail.git#6d28780dfe156dfed87d8a4ceba520cc7db019c5"
 
-react-native-navigation@7.31.1:
-  version "7.31.1"
-  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.31.1.tgz#915f1bd3af083137a904feea6207984d7f8d5b70"
-  integrity sha512-thChSqaoi/QHGGofG/4CEyO2v6ko41RsbjQrJzAnHkp7iw1K8pjxkW3KX0qx2rlR/A69kA31VskOLj8kl+7sQw==
+react-native-navigation@^7.27.1:
+  version "7.32.1"
+  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.32.1.tgz#29dd95dae6f4afb6dcbc756dae1849dbbdab2a54"
+  integrity sha512-qqpccWh6MqTG0hn/XeggKonSYg+h64kOsYBot/+g2EUC/Usp8TZsKi1B2gzsUrDQy8EmsF9iTBoZMIgjxFG/WQ==
   dependencies:
     hoist-non-react-statics "3.x.x"
     lodash "4.17.x"
@@ -11116,11 +11107,6 @@ write-file-atomic@^3.0.0:
     is-typedarray "^1.0.0"
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
-
-ws@7.5.3:
-  version "7.5.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
-  integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
 
 ws@^3.0.0:
   version "3.3.3"
