@@ -4,7 +4,8 @@
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [status-im2.constants :as constants]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.contexts.chat.messages.content.text.view :as text]))
 
 (defn calculate-dimensions
   [width height]
@@ -13,7 +14,7 @@
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} _ on-long-press]
+  [index {:keys [content image-width image-height message-id] :as message} context on-long-press]
   (let [dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))
         text       (:text content)]
     (fn []
@@ -28,9 +29,8 @@
                             (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
                                                           {:messages [message] :index 0}])
                                            100))}
-         ;; This text comp is temporary. Should later use
-         ;; `status-im2.contexts.chat.messages.content.text.view`
-         (when (and (not= text "placeholder") (= index 0)) [quo/text {:style {:margin-bottom 10}} text])
+         (when (and (not= text "placeholder") (= index 0))
+           [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
          [fast-image/fast-image
           {:source    {:uri (:image content)}
            :style     (merge dimensions {:border-radius 12})

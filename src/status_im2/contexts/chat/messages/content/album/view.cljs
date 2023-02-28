@@ -6,6 +6,7 @@
             [status-im2.contexts.chat.messages.content.album.style :as style]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.image.view :as image]
+            [status-im2.contexts.chat.messages.content.text.view :as text]
             [utils.re-frame :as rf]))
 
 (def rectangular-style-count 3)
@@ -30,9 +31,8 @@
         text              (:text (:content first-image))]
     (if (and albumize? (> images-count 1))
       [:<>
-       ;; This text comp is temporary. Should later use
-       ;; `status-im2.contexts.chat.messages.content.text.view`
-       (when (not= text "placeholder") [quo/text {:style {:margin-bottom 10}} text])
+       (when (not= text "placeholder")
+         [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]])
        [rn/view
         {:style (style/album-container portrait?)}
         (map-indexed
