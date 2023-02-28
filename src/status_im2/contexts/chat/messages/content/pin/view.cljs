@@ -59,5 +59,4 @@
                                (old-style/message-timestamp-text))
          :accessibility-label :message-timestamp}
         timestamp-str]]
-      [old-message/quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message)
-       true]]]))
+      [old-message/quoted-message {:message-id response-to :chat-id chat-id} true]]]))
