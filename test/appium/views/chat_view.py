@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import emojis
@@ -629,6 +630,18 @@ class PinnedMessagesList(BaseElement):
         return pinned_by_element
 
 
+class ChatMessageInput(EditBox):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="chat-message-input")
+
+    def paste_text_from_clipboard(self):
+        action = TouchAction(self.driver)
+        location = self.find_element().location
+        x, y = location['x'], location['y']
+        action.long_press(x=x + 250, y=y).release().perform()  # long press
+        action.tap(x=x + 50, y=y - 50).release().perform()  # tap Paste
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -657,7 +670,7 @@ class ChatView(BaseView):
                                                         xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
         # Chat input
-        self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")
+        self.chat_message_input = ChatMessageInput(self.driver)
         self.cancel_reply_button = Button(self.driver, accessibility_id="reply-cancel-button")
         self.quote_username_in_message_input = EditBox(self.driver,
                                                        xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
@@ -773,7 +786,6 @@ class ChatView(BaseView):
         self.pinned_messages_list = PinnedMessagesList(self.driver)
         self.pin_limit_popover = BaseElement(self.driver, translation_id="pin-limit-reached")
         self.view_pinned_messages_button = Button(self.driver, accessibility_id="pinned-banner")
-
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
