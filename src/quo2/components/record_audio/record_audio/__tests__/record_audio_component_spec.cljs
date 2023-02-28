@@ -1,6 +1,6 @@
 (ns quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec
   (:require [quo2.components.record-audio.record-audio.view :as record-audio]
-            [status-im.audio.core :as audio]
+            [react-native.audio-toolkit :as audio]
             [test-helpers.component :as h]))
 
 (h/describe "record audio component"

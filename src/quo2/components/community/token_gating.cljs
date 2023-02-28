@@ -6,7 +6,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.token-tag :as token-tag]
             [quo2.foundations.colors :as colors]
-            [utils.i18n :as i18n]
+            [quo2.i18n :as i18n]
             [react-native.fast-image :as fast-image]
             [react-native.core :as rn]))
 

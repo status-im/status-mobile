@@ -21,7 +21,8 @@
     status-im.events
     status-im2.events
     status-im2.navigation.core
-    status-im2.subs.root))
+    status-im2.subs.root
+    quo2.i18n))
 
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)
@@ -35,6 +36,7 @@
     (status/set-soft-input-mode status/adjust-resize))
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
+  (quo2.i18n/init i18n/label)
   (react-native-languages/add-change-listener #(fn [lang]
                                                  (i18n/set-language lang)
                                                  (i18n-resources/load-language lang)))

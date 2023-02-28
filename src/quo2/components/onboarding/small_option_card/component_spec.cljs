@@ -1,6 +1,5 @@
 (ns quo2.components.onboarding.small-option-card.component-spec
   (:require [quo2.components.onboarding.small-option-card.view :as small-option-card]
-            [status-im.react-native.resources :as resources]
             [test-helpers.component :as h]))
 
 (defn- testing-small-option-card
@@ -40,15 +39,4 @@
       (h/test "`:icon` variant"
         (h/render (testing-small-option-card :icon component-props))
         (h/fire-event :press (h/get-by-label-text :small-option-card))
-        (-> on-press-fn js/expect .toHaveBeenCalled))))
-
-  (h/describe "Image rendered"
-    (let [image           (resources/get-mock-image :small-opt-card-main)
-          component-props {:image image}]
-      (h/test "`:main` variant"
-        (h/render (testing-small-option-card :main component-props))
-        (-> (h/get-by-label-text :small-option-card-main-image) h/expect .-not .toBeNull))
-
-      (h/test "`:icon` variant"
-        (h/render (testing-small-option-card :icon component-props))
-        (-> (h/get-by-label-text :small-option-card-icon-image) h/expect .-not .toBeNull)))))
+        (-> on-press-fn js/expect .toHaveBeenCalled)))))

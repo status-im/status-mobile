@@ -1,4 +1,4 @@
-(ns status-im.audio.core
+(ns react-native.audio-toolkit
   (:require ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]))
 
 ;; get mediastates from react module

@@ -7,13 +7,9 @@
             [quo2.components.record-audio.soundtrack.view :as soundtrack]
             [react-native.core :as rn :refer [use-effect]]
             [reagent.core :as reagent]
-            [status-im.utils.utils :as utils]
             [quo2.components.markdown.text :as text]
             [goog.string :as gstring]
-            [status-im.audio.core :as audio]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]
-            [react-native.permissions :as permissions]
+            [react-native.audio-toolkit :as audio]
             [taoensso.timbre :as log]
             [quo2.components.record-audio.record-audio.buttons.record-button-big :as record-button-big]
             [quo2.components.record-audio.record-audio.buttons.send-button :as send-button]
@@ -154,9 +150,10 @@
          {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))])
 
 (defn view
-  [{:keys [on-start-recording on-send on-cancel on-reviewing-audio]}]
+  [{:keys [on-start-recording on-send on-cancel on-reviewing-audio
+           on-request-record-audio-permission on-check-audio-permission]}]
   [:f>
-   (fn []
+   (fn [{:keys [record-audio-permission-granted]}]
      (let [recording? (reagent/atom false)
            locked? (reagent/atom false)
            ready-to-send? (reagent/atom false)
@@ -176,29 +173,8 @@
            playing-timer (atom nil)
            recorder-ref (atom nil)
            player-ref (atom nil)
-           record-audio-permission-granted (atom true)
            output-file (atom nil)
            reached-max-duration? (atom false)
-           check-audio-permission
-           (fn []
-             (permissions/permission-granted?
-              :record-audio
-              #(reset! record-audio-permission-granted %)
-              #(reset! record-audio-permission-granted false)))
-           request-record-audio-permission
-           (fn []
-             (rf/dispatch
-              [:request-permissions
-               {:permissions [:record-audio]
-                :on-allowed
-                #(reset! record-audio-permission-granted true)
-                :on-denied
-                #(js/setTimeout
-                  (fn []
-                    (utils/show-popup
-                     (i18n/label :t/audio-recorder-error)
-                     (i18n/label :t/audio-recorder-permissions-error)))
-                  50)}]))
            destroy-player
            (fn []
              (audio/destroy-player @player-ref)
@@ -247,7 +223,7 @@
                                               :ignore-max-x? false}
                                              record-button-area)]
                  (when-not @reviewing-audio?
-                   (if @record-audio-permission-granted
+                   (if record-audio-permission-granted
                      (do
                        (when (not @idle?)
                          (reset! recording? pressed-record-button?))
@@ -294,8 +270,8 @@
                           #(log/error "[record-audio] start recording - error: " %))
                          (when on-start-recording
                            (on-start-recording))))
-                     (request-record-audio-permission)))
-                 (when @record-audio-permission-granted
+                     (some-> on-request-record-audio-permission)))
+                 (when record-audio-permission-granted
                    (reset! touch-active? true))))
              (not @idle?))
            on-responder-move
@@ -469,7 +445,7 @@
                (reset! reached-max-duration? false)))]
        (fn []
          (use-effect (fn []
-                       (check-audio-permission)
+                       (on-check-audio-permission)
                        (reload-recorder)))
          [rn/view
           {:style style/bar-container}
@@ -519,10 +495,14 @@
   (reagent/adapt-react-class
    (rn/memo
     (fn [props]
-      (let [{:keys [onStartRecording onReviewingAudio onSend onCancel]} (bean/bean props)]
+      (let [{:keys [onStartRecording onReviewingAudio
+                    onSend onCancel onCheckAudioPermissions
+                    onRequestRecordAudioPermission]} (bean/bean props)]
         (reagent/as-element
          [view
-          {:on-start-recording onStartRecording
-           :on-reviewing-audio onReviewingAudio
-           :on-send            onSend
-           :on-cancel          onCancel}]))))))
+          {:on-start-recording                 onStartRecording
+           :on-reviewing-audio                 onReviewingAudio
+           :on-send                            onSend
+           :on-cancel                          onCancel
+           :on-check-audio-permissions         onCheckAudioPermissions
+           :on-request-record-audio-permission onRequestRecordAudioPermission}]))))))
