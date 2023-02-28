@@ -5,9 +5,9 @@
             [quo2.foundations.colors :as colors]
             [quo2.foundations.shadows :as shadows]
             [quo2.theme :as theme]
+            [utils.i18n :as i18n]
             [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]))
+            [react-native.core :as rn]))
 
 (def ^:private themes
   {:container        {:dark  {:background-color colors/white-opa-70}

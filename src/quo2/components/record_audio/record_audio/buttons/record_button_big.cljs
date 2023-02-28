@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn :refer [use-effect]]
             [react-native.reanimated :as reanimated]
-            [status-im.audio.core :as audio]
+            [react-native.audio-toolkit :as audio]
             [taoensso.timbre :as log]
             [cljs-bean.core :as bean]
             [reagent.core :as reagent]

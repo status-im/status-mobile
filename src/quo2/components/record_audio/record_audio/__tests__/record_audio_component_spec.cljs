@@ -1,6 +1,6 @@
 (ns quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec
   (:require [quo2.components.record-audio.record-audio.view :as record-audio]
-            [status-im.audio.core :as audio]
+            [react-native.audio-toolkit :as audio]
             [test-helpers.component :as h]))
 
 (h/describe "record audio component"
@@ -20,7 +20,9 @@
 
   (h/test "record-audio on-start-recording works"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-start-recording event}])
+      (h/render [record-audio/record-audio
+                 {:on-start-recording              event
+                  :record-audio-permission-granted true}])
       (h/fire-event
        :on-start-should-set-responder
        (h/get-by-test-id "record-audio")
@@ -31,7 +33,9 @@
 
   (h/test "record-audio on-reviewing-audio works"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-reviewing-audio event}])
+      (h/render [record-audio/record-audio
+                 {:on-reviewing-audio              event
+                  :record-audio-permission-granted true}])
       (with-redefs [audio/start-recording (fn [_ on-start _]
                                             (on-start))]
         (h/fire-event
@@ -50,7 +54,9 @@
 
   (h/test "record-audio on-send works after reviewing audio"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-send event}])
+      (h/render [record-audio/record-audio
+                 {:on-send                         event
+                  :record-audio-permission-granted true}])
       (with-redefs [audio/start-recording        (fn [_ on-start _]
                                                    (on-start))
                     audio/get-recorder-file-path (fn [] "audio-file-path")]
@@ -77,7 +83,9 @@
 
   (h/test "record-audio on-send works after sliding to the send button"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-send event}])
+      (h/render [record-audio/record-audio
+                 {:on-send                         event
+                  :record-audio-permission-granted true}])
       (with-redefs [audio/start-recording        (fn [_ on-start _]
                                                    (on-start))
                     audio/stop-recording         (fn [_ on-stop _]
@@ -108,7 +116,9 @@
 
   (h/test "record-audio on-cancel works after reviewing audio"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-cancel event}])
+      (h/render [record-audio/record-audio
+                 {:on-cancel                       event
+                  :record-audio-permission-granted true}])
       (with-redefs [audio/start-recording (fn [_ on-start _]
                                             (on-start))]
         (h/fire-event
@@ -132,7 +142,9 @@
 
   (h/test "cord-audio on-cancel works after sliding to the cancel button"
     (let [event (js/jest.fn)]
-      (h/render [record-audio/record-audio {:on-cancel event}])
+      (h/render [record-audio/record-audio
+                 {:on-cancel                       event
+                  :record-audio-permission-granted true}])
       (with-redefs [audio/start-recording (fn [_ on-start _]
                                             (on-start))
                     audio/stop-recording  (fn [_ on-stop _]

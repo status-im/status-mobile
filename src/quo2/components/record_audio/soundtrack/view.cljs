@@ -1,7 +1,7 @@
 (ns quo2.components.record-audio.soundtrack.view
   (:require [quo2.components.record-audio.soundtrack.style :as style]
             [quo2.foundations.colors :as colors]
-            [status-im.audio.core :as audio]
+            [react-native.audio-toolkit :as audio]
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
             [react-native.slider :as slider]))

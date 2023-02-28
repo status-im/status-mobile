@@ -1,11 +1,9 @@
 #!/usr/bin/env sh
 
-CHANGES=$(git diff --no-ext-diff --diff-filter=d --cached --unified=0 --no-prefix --minimal --exit-code src/quo src/quo2 | grep '^+' || echo '')
-
-INVALID_CHANGES=$(echo "$CHANGES" | grep -E '(re-frame/dispatch|rf/dispatch|re-frame/subscribe|rf/subscribe|rf/sub|<sub|>evt|status-im)')
+INVALID_CHANGES=$(grep -E -r '(re-frame/dispatch|rf/dispatch|re-frame/subscribe|rf/subscribe|rf/sub|<sub|>evt|status-im\.|status-im2\.)' './src/quo2')
 
 if test -n "$INVALID_CHANGES"; then
-    echo "re-frame dispatch/subscribe and status-im are not allowed in quo/quo2 components"
+    echo "WARNING: re-frame, status-im are not allowed in quo2 components"
     echo ''
     echo "$INVALID_CHANGES"
     exit 1
