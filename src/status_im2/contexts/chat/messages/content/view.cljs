@@ -143,6 +143,7 @@
               [album/album-message message-data context on-long-press]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
               [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
             (when @show-delivery-state?
               [status/status outgoing-status])]]]]))))
@@ -151,6 +152,11 @@
              (when @show-delivery-state?
                [status/status outgoing-status])]]]])))
 >>>>>>> 20ce067c6 (Remove f>)
+=======
+              [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
+            (when @show-delivery-state?
+              [status/status outgoing-status])]]]]))))
+>>>>>>> 3fb46c43b (Formatting)
 
 (defn message-with-reactions
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
