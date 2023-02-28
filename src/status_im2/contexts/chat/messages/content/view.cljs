@@ -86,9 +86,7 @@
 (defn user-message-content
   [{:keys [content-type quoted-message content outgoing outgoing-status edited-at] :as message-data}
    {:keys [chat-id] :as context}]
-  [:f>
    (let [show-delivery-state? (reagent/atom false)]
-     (fn []
        (let [first-image     (first (:album message-data))
              outgoing-status (cond edited-at                        :edited
                                    (= content-type
@@ -146,7 +144,7 @@
 
                [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
              (when @show-delivery-state?
-               [status/status outgoing-status])]]]])))])
+               [status/status outgoing-status])]]]])))
 
 (defn message-with-reactions
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
