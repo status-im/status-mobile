@@ -54,10 +54,10 @@ public class MainApplication extends NavigationApplication {
             return "index";
         }
 
-        @Override
-        protected JSIModulePackage getJSIModulePackage() {
-            return new ReanimatedJSIModulePackage();
-        }
+	@Override
+	protected JSIModulePackage getJSIModulePackage() {
+	    return new ReanimatedJSIModulePackage();
+	}
     };
 
     @Override
@@ -82,7 +82,7 @@ public class MainApplication extends NavigationApplication {
      * @param reactInstanceManager
      */
     private static void initializeFlipper(
-            Context context, ReactInstanceManager reactInstanceManager) {
+          Context context, ReactInstanceManager reactInstanceManager) {
         if (BuildConfig.DEBUG) {
             try {
                 /*
@@ -91,8 +91,8 @@ public class MainApplication extends NavigationApplication {
                 */
                 Class<?> aClass = Class.forName("im.status.ethereum.ReactNativeFlipper");
                 aClass
-                        .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-                        .invoke(null, context, reactInstanceManager);
+                    .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
+                    .invoke(null, context, reactInstanceManager);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (NoSuchMethodException e) {
