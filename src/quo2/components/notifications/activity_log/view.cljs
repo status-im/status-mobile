@@ -7,7 +7,7 @@
             [quo2.components.notifications.activity-log.style :as style]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.foundations.colors :as colors]
-            [quo2.i18n :as i18n]
+            [utils.i18n :as i18n]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
