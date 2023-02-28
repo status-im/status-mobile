@@ -321,17 +321,14 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].just_fyi("Check that a user can not pin more than 3 messages")
         self.chats[0].send_message(self.message_4)
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
-        if self.chats[0].pin_limit_popover.is_element_displayed(30):
-            self.chats[0].view_pinned_messages_button.click_until_presence_of_element(self.chats[0].pinned_messages_list)
-            self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).click_inside_element_by_coordinate()
-            self.chats[0].element_by_translation_id('unpin-from-chat').double_click()
-            self.chats[0].chat_element_by_text(self.message_4).click()
-            self.chats[0].pin_message(self.message_4, 'pin-to-chat')
-            if not (self.chats[0].chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-                    self.chats[1].chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-                self.errors.append("Message 4 is not pinned in group chat after unpinning previous one")
-        else:
-            self.errors.append("Can pin more than 3 messages in group chat")
+        self.chats[0].view_pinned_messages_button.click_until_presence_of_element(self.chats[0].pinned_messages_list)
+        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).click_inside_element_by_coordinate()
+        self.chats[0].element_by_translation_id('unpin-from-chat').double_click()
+        self.chats[0].chat_element_by_text(self.message_4).click()
+        self.chats[0].pin_message(self.message_4, 'pin-to-chat')
+        if not (self.chats[0].chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
+                self.chats[1].chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
+            self.errors.append("Message 4 is not pinned in group chat after unpinning previous one")
 
         self.chats[0].just_fyi("Check pinned messages count and content")
         for chat_number, group_chat in enumerate([self.chats[0], self.chats[1]]):

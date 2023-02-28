@@ -7,7 +7,6 @@
     [quo2.theme :as theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
@@ -74,7 +73,8 @@
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
+    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+    [status-im2.contexts.quo-preview.list-items.user-list :as user-list]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -166,7 +166,10 @@
                             :component channel/preview-channel}
                            {:name      :preview-lists
                             :insets    {:top false}
-                            :component preview-lists/preview-preview-lists}]
+                            :component preview-lists/preview-preview-lists}
+                           {:name      :user-list
+                            :insets    {:top false}
+                            :component user-list/preview-user-list}]
    :markdown              [{:name      :texts
                             :insets    {:top false}
                             :component text/preview-text}]
@@ -289,32 +292,29 @@
 (defn main-screen
   []
   (fn []
-    [safe-area/consumer
-     (fn [insets]
-       [rn/scroll-view
-        {:flex               1
-         :padding-top        (:top insets)
-         :padding-bottom     8
-         :padding-horizontal 16
-         :background-color   (colors/theme-colors colors/white colors/neutral-90)}
-        [theme-switcher]
-        [quo2-text/text {:size :heading-1} "Preview Quo2 Components"]
-        [rn/view
-         (map (fn [category]
-                ^{:key (get category 0)}
-                [rn/view {:style {:margin-vertical 8}}
-                 [quo2-text/text
-                  {:weight :semi-bold
-                   :size   :heading-2}
-                  (clojure.core/name (key category))]
-                 (for [{:keys [name]} (val category)]
-                   ^{:key name}
-                   [quo2-button/button
-                    {:test-ID  (str "quo2-" name)
-                     :style    {:margin-vertical 8}
-                     :on-press #(re-frame/dispatch [:navigate-to name])}
-                    (clojure.core/name name)])])
-              (sort screens-categories))]])]))
+    [rn/scroll-view
+     {:flex               1
+      :padding-bottom     8
+      :padding-horizontal 16
+      :background-color   (colors/theme-colors colors/white colors/neutral-90)}
+     [theme-switcher]
+     [quo2-text/text {:size :heading-1} "Preview Quo2 Components"]
+     [rn/view
+      (map (fn [category]
+             ^{:key (get category 0)}
+             [rn/view {:style {:margin-vertical 8}}
+              [quo2-text/text
+               {:weight :semi-bold
+                :size   :heading-2}
+               (clojure.core/name (key category))]
+              (for [{:keys [name]} (val category)]
+                ^{:key name}
+                [quo2-button/button
+                 {:test-ID  (str "quo2-" name)
+                  :style    {:margin-vertical 8}
+                  :on-press #(re-frame/dispatch [:navigate-to name])}
+                 (clojure.core/name name)])])
+           (sort screens-categories))]]))
 
 (def main-screens
   [{:name      :quo2-preview

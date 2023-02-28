@@ -311,7 +311,7 @@
                :db            (-> db
                                   (assoc :multiaccount/accounts new-accounts)
                                   (update-in [:wallet :accounts] dissoc deleted-address))}
-              (navigation/pop-to-root-tab :wallet-stack))))
+              (navigation/pop-to-root :shell-stack))))
 
 (rf/defn delete-account-key
   {:events [:wallet.accounts/delete-key]}

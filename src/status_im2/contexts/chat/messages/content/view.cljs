@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
             [status-im2.constants :as constants]
@@ -18,7 +17,8 @@
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
             [utils.datetime :as datetime]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [utils.address :as address]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -52,12 +52,12 @@
            from
            timestamp]}]
   (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
-    (let [display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+    (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
-       {:profile-name   display-name
-        :short-chat-key (utils/get-shortened-address (or compressed-key
-                                                         from))
+       {:primary-name   primary-name
+        :secondary-name secondary-name
+        :short-chat-key (address/get-shortened-key (or compressed-key from))
         :time-str       (datetime/timestamp->time timestamp)
         :contact?       added?
         :verified?      ens-verified}])))

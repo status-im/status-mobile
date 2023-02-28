@@ -9,6 +9,7 @@
     "@helpinghand.eth"]
    [:text
     " "]])
+
 (def ->info-expected
   {:at-sign-idx   2
    :mention-end   19
@@ -75,17 +76,16 @@
 
 (test/deftest test-replace-mentions
   (let [users {"User Number One"
-               {:name       "User Number One"
-                :alias      "User Number One"
-                :public-key "0xpk1"}
+               {:primary-name "User Number One"
+                :public-key   "0xpk1"}
                "User Number Two"
-               {:name       "user2"
-                :alias      "User Number Two"
-                :public-key "0xpk2"}
+               {:primary-name   "user2"
+                :secondary-name "User Number Two"
+                :public-key     "0xpk2"}
                "User Number Three"
-               {:name       "user3"
-                :alias      "User Number Three"
-                :public-key "0xpk3"}}]
+               {:primary-name   "user3"
+                :secondary-name "User Number Three"
+                :public-key     "0xpk3"}}]
     (test/testing "empty string"
       (let [text   ""
             result (mentions/replace-mentions text users)]

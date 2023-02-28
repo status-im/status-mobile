@@ -338,7 +338,7 @@
 
 (defn filter-selected-contacts
   [selected-contacts contacts]
-  (filter #(:added (contacts %)) selected-contacts))
+  (filter #(:added? (contacts %)) selected-contacts))
 
 (re-frame/reg-sub
  :selected-contacts-count
@@ -399,10 +399,14 @@
  :<- [:contacts/blocked-set]
  :<- [:contacts/contacts]
  :<- [:multiaccount]
- (fn [[{:keys [users community-id] :as chat} blocked all-contacts
-       {:keys [public-key] :as current-multiaccount}]]
-   (let [community-members @(re-frame/subscribe [:communities/community-members community-id])
-         mentionable-users (mentions/get-mentionable-users chat
+ :<- [:communities/current-community-members]
+ (fn
+   [[{:keys [users] :as chat}
+     blocked
+     all-contacts
+     {:keys [public-key] :as current-multiaccount}
+     community-members]]
+   (let [mentionable-users (mentions/get-mentionable-users chat
                                                            all-contacts
                                                            current-multiaccount
                                                            community-members)

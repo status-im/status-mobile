@@ -427,7 +427,7 @@
             (navigation/navigate-to :community-create nil)))
 
 (rf/defn open-edit-community
-  {:events [::open-edit-community]}
+  {:events [::open-edit-community :communities/open-edit-community]}
   [{:keys [db] :as cofx} id]
   (let [{:keys [name description images permissions color]} (get-in db [:communities id])
         {:keys [access]}                                    permissions]
@@ -742,7 +742,7 @@
   {:events [:communities/navigate-to-community]}
   [cofx community-id]
   (rf/merge cofx
-            (navigation/pop-to-root-tab :shell-stack)
+            (navigation/pop-to-root :shell-stack)
             (navigation/navigate-to-nav2 :community community-id true)))
 
 (rf/defn member-role-updated

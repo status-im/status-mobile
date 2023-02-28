@@ -150,22 +150,11 @@
     [rn/view style/not-sent-icon
      [icons/icon :i/warning {:color quo.colors/red}]]]])
 
-(defn message-delivery-status
-  [{:keys [chat-id message-id outgoing-status message-type]}]
-  (when (and (not= constants/message-type-private-group-system-message message-type)
-             (= outgoing-status :not-sent))
-    [message-not-sent-text chat-id message-id]))
-
 ;; TODO (Omar): a reminder to clean these defviews
 (defview message-author-name
   [from opts max-length]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
     (chat.utils/format-author contact-with-names opts max-length)))
-
-(defview message-my-name
-  [opts]
-  (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts nil)))
 
 (defn display-name-view
   [display-name contact timestamp show-key?]

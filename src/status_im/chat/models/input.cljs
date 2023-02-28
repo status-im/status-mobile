@@ -41,11 +41,11 @@
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
-  [{:keys [db] :as cofx} text-input-ref {:keys [alias name searched-text match] :as user}]
+  [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match] :as user}]
   (let [chat-id     (:current-chat-id db)
         new-text    (mentions/new-input-text-with-mention cofx user)
         at-sign-idx (get-in db [:chats/mentions chat-id :mentions :at-sign-idx])
-        cursor      (+ at-sign-idx (count name) 2)]
+        cursor      (+ at-sign-idx (count primary-name) 2)]
     (rf/merge
      cofx
      {:db                   (-> db
@@ -63,15 +63,14 @@
      ;; NOTE(roman): on-text-input event is not dispatched when we change input
      ;; programmatically, so we have to call `on-text-input` manually
      (mentions/on-text-input
-      (let [match-len         (count match)
-            searched-text-len (count searched-text)
-            start             (inc at-sign-idx)
-            end               (+ start match-len)]
+      (let [match-len (count match)
+            start     (inc at-sign-idx)
+            end       (+ start match-len)]
         {:new-text      match
          :previous-text searched-text
          :start         start
          :end           end}))
-     (mentions/recheck-at-idxs {alias user}))))
+     (mentions/recheck-at-idxs {primary-name user}))))
 
 (rf/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

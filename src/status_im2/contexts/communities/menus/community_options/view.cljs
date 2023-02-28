@@ -101,7 +101,8 @@
   {:icon                :i/edit
    :label               (i18n/label :t/edit-community)
    :accessibility-label :edit-community
-   :on-press            #(js/alert (str "implement action" id))})
+   :on-press            #(rf/dispatch [:communities/open-edit-community id]
+                                      (rf/dispatch [:bottom-sheet/hide]))})
 
 (defn not-joined-options
   [id token-gated?]
@@ -149,18 +150,14 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [community     (rf/sub [:communities/community id])
-        token-gated?  (:token-gated? community)
-        joined?       (:joined community)
-        admin?        (:admin community)
-        request-sent? (pos? (:requested-to-join-at community))
-        muted?        (:muted community)
-        banned?       (:banList community)]
+  (let [{:keys [token-gated? admin joined requested-to-join-at
+                muted banList]} (rf/sub [:communities/community id])
+        request-sent?           (pos? requested-to-join-at)]
     (cond
-      joined?       (joined-options id token-gated? muted?)
-      admin?        (owner-options id token-gated? muted?)
+      admin         (owner-options id token-gated? muted)
+      joined        (joined-options id token-gated? muted)
       request-sent? (join-request-sent-options id token-gated?)
-      banned?       (banned-options id token-gated?)
+      banList       (banned-options id token-gated?)
       :else         (not-joined-options id token-gated?))))
 
 (defn community-options-bottom-sheet

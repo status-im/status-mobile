@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
             [status-im2.contexts.chat.events :as chat]
-            [status-im.contact.core :as contact]
+            [status-im2.contexts.contacts.events :as contact]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
@@ -91,7 +91,7 @@
                                         (i18n/label :t/use-valid-contact-code)
                                         :yourself
                                         (i18n/label :t/can-not-add-yourself))
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn qr-code-scanned
   {:events [:contact/qr-code-scanned]}

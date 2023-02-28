@@ -109,8 +109,8 @@
   (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    {:change-tab-fx      :profile
-     :pop-to-root-tab-fx :profile-stack}
+    {:shell/change-tab-fx :browser-stack ;; Profile tab - Currently browser tab is used for profile
+     :pop-to-root-fx      :shell-stack}
 
     public-key
     {:dispatch [:chat.ui/show-profile public-key ens-name]}))

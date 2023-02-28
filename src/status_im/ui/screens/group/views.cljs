@@ -20,10 +20,10 @@
 
 (defn- render-contact
   [row]
-  (let [[first-name second-name] (multiaccounts/contact-two-names row false)]
+  (let [{:keys [primary-name secondary-name]} row]
     [quo/list-item
-     {:title    first-name
-      :subtitle second-name
+     {:title    primary-name
+      :subtitle secondary-name
       :icon     [chat-icon/contact-icon-contacts-tab
                  (multiaccounts/displayed-photo row)]}]))
 
@@ -54,11 +54,11 @@
 (defn- toggle-item
   []
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
-    (let [contact-selected?        @(re-frame/subscribe [subs-name public-key])
-          [first-name second-name] (multiaccounts/contact-two-names contact true)]
+    (let [contact-selected?                     @(re-frame/subscribe [subs-name public-key])
+          {:keys [primary-name secondary-name]} contact]
       [quo/list-item
-       {:title     first-name
-        :subtitle  second-name
+       {:title     primary-name
+        :subtitle  secondary-name
         :icon      [chat-icon/contact-icon-contacts-tab
                     (multiaccounts/displayed-photo contact)]
         :on-press  #(on-toggle allow-new-users? contact-selected? public-key)

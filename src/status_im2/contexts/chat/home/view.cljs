@@ -8,7 +8,9 @@
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
+            [status-im2.common.home.actions.view :as actions]))
 
 (defn get-item-layout
   [_ index]
@@ -50,6 +52,29 @@
    [quo/text {:weight :semi-bold} (i18n/label :t/no-contacts)]
    [quo/text (i18n/label :t/blank-contacts-text)]])
 
+(defn contact-item-render
+  [{:keys [public-key] :as item}]
+  (let [current-pk           (rf/sub [:multiaccount/public-key])
+        show-profile-actions #(rf/dispatch [:bottom-sheet/show-sheet
+                                            {:content (fn [] [actions/contact-actions item])}])]
+    [contact-list-item/contact-list-item
+     (when (not= public-key current-pk)
+       {:on-press      #(rf/dispatch [:chat.ui/show-profile public-key])
+        :on-long-press show-profile-actions
+        :accessory     {:type     :options
+                        :on-press show-profile-actions}})
+     item]))
+
+(defn contacts-section-list
+  [sections]
+  [rn/section-list
+   {:key-fn                         :title
+    :sticky-section-headers-enabled false
+    :sections                       sections
+    :render-section-header-fn       contact-list/contacts-section-header
+    :content-container-style        {:padding-bottom 20}
+    :render-fn                      contact-item-render}])
+
 (defn contacts
   [pending-contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
@@ -59,7 +84,7 @@
        (when (seq pending-contact-requests)
          [contact-request/contact-requests pending-contact-requests])
        (when (seq items)
-         [contact-list/contact-list {:icon :options}])])))
+         [contacts-section-list items])])))
 
 (defn tabs
   []

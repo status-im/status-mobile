@@ -91,16 +91,15 @@
 
 (defn contacts-list-item
   [{:keys [name] :as contact}]
-  (let [[first-name second-name] (multiaccounts/contact-two-names contact true)]
-    [quo/list-item
-     {:title    first-name
-      :subtitle second-name
-      :on-press #(do
-                   (some-> ^js @scroll-view-ref
-                           (.scrollTo #js {:x 0 :animated true}))
-                   (re-frame/dispatch [:wallet.recipient/address-changed name]))
-      :icon     [chat-icon/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo contact)]}]))
+  [quo/list-item
+   {:title    (:primary-name contact)
+    :subtitle (:secondary-name contact)
+    :on-press #(do
+                 (some-> ^js @scroll-view-ref
+                         (.scrollTo #js {:x 0 :animated true}))
+                 (re-frame/dispatch [:wallet.recipient/address-changed name]))
+    :icon     [chat-icon/contact-icon-contacts-tab
+               (multiaccounts/displayed-photo contact)]}])
 
 (defn empty-items
   [icon title]

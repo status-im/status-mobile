@@ -1,6 +1,5 @@
 (ns status-im2.navigation.state)
 
-(defonce root-comp-id (atom nil))
 (defonce root-id (atom nil))
 (defonce pushed-screen-id (atom nil))
 (defonce curr-modal (atom nil))

@@ -62,7 +62,8 @@
     quo2.components.tags.permission-tag
     quo2.components.tags.tag
     quo2.components.tags.tags
-    quo2.components.tags.token-tag))
+    quo2.components.tags.token-tag
+    quo2.components.list-items.user-list))
 
 (def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
@@ -93,7 +94,6 @@
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
-(def display-name quo2.components.messages.author.view/display-name)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
@@ -141,6 +141,7 @@
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
+(def user-list quo2.components.list-items.user-list/user-list)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)

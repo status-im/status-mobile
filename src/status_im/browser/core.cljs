@@ -306,8 +306,8 @@
                 {:db (assoc db
                             :browser/options
                             {:browser-id (:browser-id browser)})}
-                (navigation/change-tab :browser)
-                (navigation/set-stack-root :browser-stack :browser)
+                (navigation/change-tab :browser-stack)
+                (navigation/pop-to-root :shell-stack)
                 (update-browser browser)
                 (resolve-url nil)))))
 

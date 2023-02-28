@@ -5,7 +5,6 @@
             [quo2.foundations.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.contexts.activity-center.notification.common.style :as style]
-            [status-im2.contexts.activity-center.utils :as activity-center.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -18,7 +17,7 @@
       :size           :small
       :style          style/user-avatar-tag
       :text-style     style/user-avatar-tag-text}
-     (activity-center.utils/contact-name contact)
+     (:primary-name contact)
      (multiaccounts/displayed-photo contact)]))
 
 (defn- render-swipe-action

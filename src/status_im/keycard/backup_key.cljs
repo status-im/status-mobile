@@ -18,7 +18,8 @@
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
             (when (:multiaccount db)
-              (navigation/change-tab :profile))
+              (navigation/change-tab :browser-stack)) ;; Profile tab - Currently browser tab is used for
+                                                      ;; profile
             (navigation/navigate-to-cofx :seed-phrase nil)))
 
 (rf/defn recovery-card-pressed

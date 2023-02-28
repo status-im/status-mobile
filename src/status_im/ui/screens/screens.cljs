@@ -565,7 +565,7 @@
     :insets    {:bottom true}
     ;;TODO dyn subtitle
     :options   {:topBar {:visible false}}
-    :component contact/nickname}
+    :component contact/nickname-view}
 
    {:name      :new-chat-aio
     :on-focus  [:contacts/new-chat-focus]

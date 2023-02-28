@@ -56,22 +56,34 @@
 
 (defn- toast-container
   [{:keys [left title text right container-style override-theme]}]
-  [rn/view {:style (merge {:margin-left 12 :margin-right 12} container-style)}
+  [rn/view
+   {:style (merge {:margin-horizontal 12
+                   :border-radius     12
+                   :overflow          :hidden}
+                  container-style)}
    [blur/view
-    {:style         (merge-theme-style :container
-                                       (merge
-                                        (:shadow-1 shadows/normal-scale)
-                                        {:flex-direction   :row
-                                         :justify-content  :space-between
-                                         :padding-vertical 8
-                                         :padding-left     10
-                                         :padding-right    8
-                                         :border-radius    12})
-                                       override-theme)
+    {:style         {:height           "100%"
+                     :width            "100%"
+                     :position         :absolute
+                     :padding-vertical 8
+                     :padding-left     10
+                     :padding-right    8
+                     :background-color :transparent}
      :blur-amount   13
      :blur-radius   10
      :blur-type     :transparent
-     :overlay-color :transparent}
+     :overlay-color :transparent}]
+   [rn/view
+    {:style (merge-theme-style :container
+                               (merge
+                                (:shadow-1 shadows/normal-scale)
+                                {:flex-direction   :row
+                                 :justify-content  :space-between
+                                 :padding-vertical 8
+                                 :padding-left     10
+                                 :padding-right    8
+                                 :border-radius    12})
+                               override-theme)}
     [rn/view {:style {:padding 2}} left]
     [rn/view {:style {:padding 4 :flex 1}}
      (when title
