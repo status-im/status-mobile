@@ -7,33 +7,44 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- get-header-and-body-text
-  [membership-status]
-  (case membership-status
-    constants/activity-center-membership-status-pending
-    {:header-text (i18n/label :t/community-request-pending)
-     :body-text   (i18n/label :t/community-request-pending-body-text)}
+(defn- get-header-text-and-context
+  [community membership-status timestamp]
+  (let [community-name           (:name community)
+        community-image          (get-in community [:images :thumbnail :uri])
+        community-context-tag    [quo/context-tag common/tag-params {:uri community-image}
+                                  community-name]
+        requested-within-a-week? (datetime/within-last-n-days? (datetime/to-date timestamp) 7)]
+    (cond
+      (= membership-status constants/activity-center-membership-status-pending)
+      (if requested-within-a-week?
+        {:header-text (i18n/label :t/community-request-pending)
+         :context     [[quo/text {:style common-style/tag-text}
+                        (i18n/label :t/community-request-pending-body-text)]
+                       community-context-tag]}
+        {:header-text (i18n/label :t/community-request-not-accepted)
+         :context     [[quo/text {:style common-style/tag-text}
+                        (i18n/label :t/community-request-not-accepted-body-text-prefix)]
+                       community-context-tag
+                       [quo/text {:style common-style/tag-text}
+                        (i18n/label :t/community-request-not-accepted-body-text-suffix)]]})
 
-    constants/activity-center-membership-status-accepted
-    {:header-text (i18n/label :t/community-request-accepted)
-     :body-text   (i18n/label :t/community-request-accepted-body-text)}
+      (= membership-status constants/activity-center-membership-status-accepted)
+      {:header-text (i18n/label :t/community-request-accepted)
+       :context     [[quo/text {:style common-style/tag-text}
+                      (i18n/label :t/community-request-accepted-body-text)]
+                     community-context-tag]}
 
-    constants/activity-center-membership-status-declined
-    {:header-text (i18n/label :t/community-request-declined)
-     :body-text   (i18n/label :t/community-request-declined=body-text)}
-
-    nil))
+      :else nil)))
 
 (defn view
   [{:keys [community-id membership-status read timestamp]}]
-  (let [{:keys [header-text body-text]} (get-header-and-body-text membership-status)
-        community                       (rf/sub [:communities/community community-id])
-        community-name                  (:name community)
-        community-image                 (get-in community [:images :thumbnail :uri])]
+  (let [community                     (rf/sub [:communities/community community-id])
+        {:keys [header-text context]} (get-header-text-and-context community
+                                                                   membership-status
+                                                                   timestamp)]
     [quo/activity-log
      {:title     header-text
       :icon      :i/communities
       :timestamp (datetime/timestamp->relative timestamp)
       :unread?   (not read)
-      :context   [[quo/text {:style common-style/tag-text} body-text]
-                  [quo/context-tag common/tag-params {:uri community-image} community-name]]}]))
+      :context   context}]))

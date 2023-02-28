@@ -1979,7 +1979,8 @@
     "community-request-accepted": "Request accepted",
     "community-request-accepted-body-text": "Now you are a member of",
     "community-request-not-accepted": "Request hasn't been accepted",
-    "community-request-not-accepted-body-text": "Your request to join {{community-name}} hasn't been accepted",
+    "community-request-not-accepted-body-text-prefix": "Your request to join",
+    "community-request-not-accepted-body-text-suffix": "hasn't been accepted",
     "community-request-pending": "Request pending",
     "community-request-pending-body-text": "You requested to join"
 }

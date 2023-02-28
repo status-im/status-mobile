@@ -1,7 +1,7 @@
 (ns utils.requests
   (:require [utils.datetime :as datetime]))
 
-(def request-cooldown-ms (* 24 60 60 1000))
+(def request-cooldown-ms (* 7 24 60 60 1000))
 
 (defn can-request-access-again?
   [requested-at]
