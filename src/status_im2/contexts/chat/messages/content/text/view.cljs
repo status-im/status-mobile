@@ -48,9 +48,6 @@
        {:weight :medium
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:messages/resolve-mention literal])]])
-    
-    :edited
-    (conj units [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
 
     :edited
     (conj units
