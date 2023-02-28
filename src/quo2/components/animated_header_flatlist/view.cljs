@@ -74,27 +74,31 @@
         (fn []
           (let [scroll-y                (reanimated/use-shared-value initial-y)
                 opacity-animation       (interpolate scroll-y
-                                                     [(* threshold 0.33) (* threshold 0.66)]
+                                                     [(* threshold 0.05) (* threshold 0.33)]
                                                      [0 1])
-                translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [100 56])
+                translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [50 0])
                 title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
             [rn/view {:style (style/container-view view-height)}
-             [rn/touchable-opacity
-              {:active-opacity 1
-               :on-press       #(rf/dispatch [:navigate-back])
-               :style          (style/button-container {:left 20})}
-              [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-             [rn/touchable-opacity
-              {:active-opacity 1
-               :style          (style/button-container {:right 20})}
-              [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
              [reanimated/blur-view
               {:blurAmount   32
                :blurType     :light
                :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
                :style        (style/blur-view scroll-y)}
-              [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
-               [header-comp]]]
+              [rn/view {:style {:top 56
+                                :width "100%"
+                                :flex-direction :row}}
+               [rn/touchable-opacity
+                {:active-opacity 1
+                 :on-press       #(rf/dispatch [:navigate-back])
+                 :style          (style/button-container {:margin-left 20})}
+                [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+               [rn/view {:style {:flex 1 :flex-direction :row}}
+                [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
+                 [header-comp]]]
+               [rn/touchable-opacity
+                {:active-opacity 1
+                 :style          (style/button-container {:margin-right 20})}
+                [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]]
              [reanimated/flat-list
               {:data                  [nil]
                :render-fn             main-comp

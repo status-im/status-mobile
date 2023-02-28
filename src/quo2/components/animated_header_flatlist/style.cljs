@@ -19,10 +19,7 @@
     :border-radius    10
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
-    :position         :absolute
-    :top              56
-    :z-index          3}
+    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
    position))
 
 (defn blur-view
@@ -34,6 +31,9 @@
     :left     0
     :right    0
     :height   100
+    :width "100%"
+    :display :flex
+    :flex-direction :row
     :z-index  2
     :overflow :hidden}))
 
@@ -68,7 +68,6 @@
   [y-animation opacity-animation]
   (reanimated/apply-animations-to-style
    ;; here using `left` won't work on Android, so we are using `translateX`
-   {:transform [{:translateX (reanimated/use-shared-value 64)} {:translateY y-animation}]
+   {:transform [{:translateY y-animation}]
     :opacity   opacity-animation}
-   {:position :absolute
-    :z-index  3}))
+   {:flex 1}))
