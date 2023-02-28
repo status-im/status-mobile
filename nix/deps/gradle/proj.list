@@ -26,6 +26,7 @@ react-native-lottie-splash-screen
 react-native-mail
 react-native-navigation
 react-native-nfc-manager
+react-native-orientation-locker
 react-native-permissions
 react-native-randombytes
 react-native-reanimated

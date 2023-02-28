@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-set -Eeu
+# This script allows for adding a package by providing a Maven full name.
+# Such name consists of 3 sections separated by the colon character.
+# Example: com.android.tools.build:gradle:3.5.3
+
+set -Eeuo pipefail
 
 if [[ $# -ne 1 ]]; then
     echo "Usage: add_package.sh <package>" >&2
@@ -18,12 +22,15 @@ source "${GIT_ROOT}/scripts/colors.sh"
 echo "${1}" | go-maven-resolver >> nix/deps/gradle/deps.urls
 
 # Remove duplicates and sort.
-sort -uo nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
+sort -uVo nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
+
+echo -e "${GRN}Changes made:${RST}" >&2
+git diff --stat nix/deps/gradle/deps.urls
+echo
 
 # Re-generate dependencies JSON.
 "${GIT_ROOT}/nix/deps/gradle/generate.sh" gen_deps_json
 
-# Re-generate dependencies list.
-"${GIT_ROOT}/nix/deps/gradle/generate.sh" gen_deps_list
-
 echo -e "${GRN}Successfully added:${RST} ${BLD}${1}${RST}" >&2
+echo
+echo -e "${YLW}NOTICE:${RST} Running '${BLD}make nix-update-gradle${RST}' in a new shell is recommended."
