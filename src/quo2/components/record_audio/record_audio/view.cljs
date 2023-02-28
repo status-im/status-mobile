@@ -1,6 +1,5 @@
 (ns quo2.components.record-audio.record-audio.view
-  (:require [cljs-bean.core :as bean]
-            [oops.core :as oops]
+  (:require [oops.core :as oops]
             [quo2.components.icon :as icons]
             [quo2.components.record-audio.record-audio.style :as style]
             [quo2.foundations.colors :as colors]
@@ -151,7 +150,7 @@
 
 (defn view
   [{:keys [on-start-recording on-send on-cancel on-reviewing-audio
-           on-request-record-audio-permission on-check-audio-permission]}]
+           on-request-record-audio-permission on-check-audio-permissions]}]
   [:f>
    (fn [{:keys [record-audio-permission-granted]}]
      (let [recording? (reagent/atom false)
@@ -445,7 +444,7 @@
                (reset! reached-max-duration? false)))]
        (fn []
          (use-effect (fn []
-                       (on-check-audio-permission)
+                       (on-check-audio-permissions)
                        (reload-recorder)))
          [rn/view
           {:style style/bar-container}
@@ -491,18 +490,4 @@
             on-cancel]
            [record-button/record-button recording? reviewing-audio?]]])))])
 
-(def record-audio
-  (reagent/adapt-react-class
-   (rn/memo
-    (fn [props]
-      (let [{:keys [onStartRecording onReviewingAudio
-                    onSend onCancel onCheckAudioPermissions
-                    onRequestRecordAudioPermission]} (bean/bean props)]
-        (reagent/as-element
-         [view
-          {:on-start-recording                 onStartRecording
-           :on-reviewing-audio                 onReviewingAudio
-           :on-send                            onSend
-           :on-cancel                          onCancel
-           :on-check-audio-permissions         onCheckAudioPermissions
-           :on-request-record-audio-permission onRequestRecordAudioPermission}]))))))
+(def record-audio view)
