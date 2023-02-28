@@ -6,10 +6,8 @@
             [status-im2.contexts.chat.messages.drawers.view :as drawers]))
 
 (defn message-reactions-row
-  [chat-id message-id messages-ids]
-  (let [reactions (if messages-ids
-                    (mapcat #(rf/sub [:chats/message-reactions % chat-id]) messages-ids)
-                    (rf/sub [:chats/message-reactions message-id chat-id]))]
+  [chat-id message-id]
+  (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     (when (seq reactions)
       [rn/view {:margin-left 52 :margin-bottom 12 :flex-direction :row}
        (for [{:keys [own emoji-id quantity emoji-reaction-id] :as emoji-reaction} reactions]
@@ -30,12 +28,9 @@
             :accessibility-label (str "emoji-reaction-" emoji-id)}]])
        [quo/add-reaction
         {:on-press (fn []
-                     ;; issue: https://github.com/status-im/status-mobile/issues/14995
-                     (if messages-ids
-                       (js/alert "Reactions for albums is not yet supported")
-                       (do
-                         (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch
-                          [:bottom-sheet/show-sheet
-                           {:content (fn [] [drawers/reactions
-                                             {:chat-id chat-id :message-id message-id}])}]))))}]])))
+                     (do
+                       (rf/dispatch [:dismiss-keyboard])
+                       (rf/dispatch
+                        [:bottom-sheet/show-sheet
+                         {:content (fn [] [drawers/reactions
+                                           {:chat-id chat-id :message-id message-id}])}])))}]])))

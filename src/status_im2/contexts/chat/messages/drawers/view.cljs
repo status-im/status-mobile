@@ -129,7 +129,10 @@
   [{:keys [message-id outgoing-status deleted? deleted-for-me?] :as message-data}
    {:keys [chat-id] :as context}]
   (fn []
-    (let [actions        (get-actions message-data context)
+    (let [data           (if (contains? message-data :album-id)
+                           (first (:album message-data))
+                           message-data)
+          actions        (get-actions data context)
           main-actions   (filter #(= (:type %) :main) actions)
           danger-actions (filter #(= (:type %) :danger) actions)
           admin-actions  (filter #(= (:type %) :admin) actions)]

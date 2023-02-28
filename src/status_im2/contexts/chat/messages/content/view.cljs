@@ -148,9 +148,7 @@
                [status/status outgoing-status])]]]])))])
 
 (defn message-with-reactions
-  [{:keys [pinned-by mentioned in-pinned-view? content-type
-           last-in-group? message-id messages-ids]
-    :as   message-data}
+  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
    {:keys [chat-id] :as context}]
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
@@ -162,4 +160,4 @@
         content-type)
      [system-message-content message-data]
      [user-message-content message-data context])
-   [reactions/message-reactions-row chat-id message-id messages-ids]])
+   [reactions/message-reactions-row chat-id message-id]])
