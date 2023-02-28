@@ -54,7 +54,7 @@
       [title-comp]]]))
 
 (defn animated-header-list
-  [{:keys [header-comp main-comp] :as parameters}]
+  [{:keys [header-comp main-comp footer-comp] :as parameters}]
   [safe-area/consumer
    (fn [insets]
      (let [window-height     (:height (rn/get-window))
@@ -110,4 +110,6 @@
                :header                (reagent/as-element (header parameters (:top insets) scroll-y))
                ;; TODO: https://github.com/status-im/status-mobile/issues/14924
                :scroll-event-throttle 8
-               :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))]))])
+               :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]
+
+             (footer-comp insets)]))]))])

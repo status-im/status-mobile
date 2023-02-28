@@ -80,51 +80,48 @@
         photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
 
     [animated-header-list/animated-header-list
-     {:theme-color          theme-color
-      :cover-bg-color       "#2A799B33"
-      :header-comp          (fn []
-                              [rn/view
-                               {:style {:flex-direction :row
-                                        :align-items    :center
-                                        :margin-left    8
-                                        :margin-right   8}}
-                               [user-avatar/user-avatar {:full-name       display-name
-                                                         :online?         online?
-                                                         :profile-picture photo-path
-                                                         :size            :small}]
-                               [quo/text {:weight          :semi-bold
-                                          :number-of-lines 1
-                                          :style           {:margin-left 8
-                                                            :flex        1}}
-                                display-name]])
-      :title-comp           (fn []
-                              [rn/view {:style {:margin-top -36
-                                                :margin-left   20
-                                                :margin-right  20
-                                                :margin-bottom 20}}
-                               [user-avatar/user-avatar {:full-name       display-name
-                                                         :online?         online?
-                                                         :profile-picture photo-path
-                                                         :size            :big}]
-                               [quo/text
-                                {:weight          :semi-bold
-                                 :size            :heading-1
-                                 :style {:margin-top 12}
-                                 :number-of-lines 1}
-                                display-name]
-                               [quo/text {:style {:margin-top 8}}
-                                "Web 3.0 Designer @ethstatus • DJ • Producer • Dad • YouTuber."]])
-      :main-comp            (fn []
-                              [safe-area/consumer
-                               (fn [insets]
-                                 [rn/keyboard-avoiding-view
-                                  {:style                  {:position :relative :flex 1}
-                                   :keyboardVerticalOffset (- (:bottom insets))}
-                                  [pin.banner/banner chat-id]
-                                  [messages.list/messages-list {:chat chat :show-input? show-input?}]
-                                  #_(if-not show-input?
-                                    [contact-requests.bottom-drawer/view chat-id contact-request-state]
-                                    [composer/composer chat-id insets])])])}]))
+     {:theme-color    theme-color
+      :cover-bg-color "#2A799B33"
+      :header-comp    (fn []
+                        [rn/view
+                         {:style {:flex-direction :row
+                                  :align-items    :center
+                                  :margin-left    8
+                                  :margin-right   8}}
+                         [user-avatar/user-avatar {:full-name       display-name
+                                                   :online?         online?
+                                                   :profile-picture photo-path
+                                                   :size            :small}]
+                         [quo/text {:weight          :semi-bold
+                                    :number-of-lines 1
+                                    :style           {:margin-left 8
+                                                      :flex        1}}
+                          display-name]])
+      :title-comp     (fn []
+                        [rn/view {:style {:margin-top    -36
+                                          :margin-left   20
+                                          :margin-right  20
+                                          :margin-bottom 20}}
+                         [user-avatar/user-avatar {:full-name       display-name
+                                                   :online?         online?
+                                                   :profile-picture photo-path
+                                                   :size            :big}]
+                         [quo/text
+                          {:weight          :semi-bold
+                           :size            :heading-1
+                           :style           {:margin-top 12}
+                           :number-of-lines 1}
+                          display-name]
+                         [quo/text {:style {:margin-top 8}}
+                          "Web 3.0 Designer @ethstatus • DJ • Producer • Dad • YouTuber."]])
+      :main-comp      (fn []
+                        [messages.list/messages-list {:chat chat :show-input? show-input?}])
+      :footer-comp (fn [insets]
+                     [composer/composer chat-id insets])}]
+
+    #_(if-not show-input?
+      [contact-requests.bottom-drawer/view chat-id contact-request-state]
+      [composer/composer chat-id insets])))
 
 (defn chat
   []
