@@ -1,12 +1,12 @@
 (ns status-im2.contexts.chat.messages.content.text.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [status-im2.contexts.chat.messages.content.text.style :as style]
-    [status-im2.contexts.chat.messages.link-preview.view :as link-preview]
-    [utils.re-frame :as rf]
-    [utils.i18n :as i18n]))
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im2.contexts.chat.messages.content.text.style :as style]
+   [status-im2.contexts.chat.messages.link-preview.view :as link-preview]
+   [utils.re-frame :as rf]
+   [utils.i18n :as i18n]))
 
 
 (defn render-inline
@@ -48,6 +48,9 @@
        {:weight :medium
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:messages/resolve-mention literal])]])
+    
+    :edited
+    (conj units [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
 
     :edited
     (conj units
@@ -71,7 +74,9 @@
           (reduce
            render-inline
            [quo/text]
-           children))
+           (conj children
+                 (when edited-at
+                   {:type :edited}))))
 
     :blockquote
     (conj blocks
