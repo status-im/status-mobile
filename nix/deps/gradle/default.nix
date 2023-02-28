@@ -60,7 +60,7 @@ let
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
         ''}
         ${optionalString (nodeps-download != "") ''
-        ln -s "${nodeps-download}" "${dep.path}.${dep.type}"
+        ln -s "${nodeps-download}" "${dep.path}-nodeps.jar"
         ''}
         ${optionalString (nodeps.sha1 != "") ''
         echo "${nodeps.sha1}" > "${dep.path}.${dep.type}.sha1"
