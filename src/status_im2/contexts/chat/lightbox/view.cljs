@@ -101,7 +101,7 @@
            window                   (rf/sub [:dimensions/window])
            animations               {:border         (common/use-val 12)
                                      :opacity        (common/use-val 1)
-                                     :rotate         (common/use-val 0)
+                                     :rotate         (common/use-val "0deg")
                                      :top-view-y     (common/use-val 0)
                                      :top-view-x     (common/use-val 0)
                                      :top-view-width (common/use-val (:width window))
