@@ -126,7 +126,6 @@
                                      :deleted-by      (:deleted-by message)
                                      :from            (:from message)
                                      :timestamp-str   (:timestamp-str message)
-                                     :messages-ids    (mapv :message-id (get albums album-id))
                                      :content-type    constants/content-type-album})
                               (conj messages message))]
                {:messages messages

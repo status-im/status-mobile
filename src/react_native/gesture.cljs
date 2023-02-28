@@ -5,8 +5,6 @@
               RectButton
               Swipeable
               TouchableWithoutFeedback
-              TouchableOpacity
-              TouchableHighlight
               gestureHandlerRootHOC)]
             [reagent.core :as reagent]))
 
@@ -43,10 +41,6 @@
 ;; RN Gesture Handler touchables are drop-in replacements for the RN ones. In
 ;; some cases, it's the only touchable that works with Swipeable components.
 (def touchable-without-feedback (reagent/adapt-react-class TouchableWithoutFeedback))
-
-(def touchable-opacity (reagent/adapt-react-class TouchableOpacity))
-
-(def touchable-highlight (reagent/adapt-react-class TouchableHighlight))
 
 (def rect-button (reagent/adapt-react-class RectButton))
 
