@@ -31,15 +31,14 @@
     (reanimated/set-shared-value scroll-y current-y)))
 
 (defn header
-  [{:keys [theme-color display-picture-comp cover-uri cover-bg-color title-comp]} top-inset scroll-y]
+  [{:keys [theme-color cover-uri cover-bg-color title-comp]} top-inset scroll-y]
   (let [input-range        [0 (* threshold 0.33)]
         picture-scale-down 0.4
         size-animation     (interpolate scroll-y input-range [80 (* 80 picture-scale-down)])
         image-animation    (interpolate scroll-y input-range [72 (* 72 picture-scale-down)])
         border-animation   (interpolate scroll-y input-range [12 0])]
     [rn/view
-     {:style {:height           header-height
-              :background-color (or theme-color (colors/theme-colors colors/white colors/neutral-95))
+     {:style {:background-color (or theme-color (colors/theme-colors colors/white colors/neutral-95))
               :margin-top       (when platform/ios? (- top-inset))}}
      (when cover-uri
        [fast-image/fast-image
@@ -52,11 +51,7 @@
                   :height cover-height
                   :background-color cover-bg-color}}])
      [reanimated/view {:style (style/header-bottom-part border-animation)}
-      [title-comp]]
-     [reanimated/view {:style (style/entity-picture size-animation)}
-      [display-picture-comp image-animation]]]))
-
-
+      [title-comp]]]))
 
 (defn animated-header-list
   [{:keys [header-comp main-comp] :as parameters}]

@@ -40,16 +40,13 @@
 (defn entity-picture
   [animation]
   (reanimated/apply-animations-to-style
-   {:width  animation
-    :height animation}
+   {}
    {:transform        [{:scale 1}]
-    :border-radius    40
     :position         :absolute
-    :bottom           42
+    :bottom           72
     :left             20
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/white colors/neutral-100)
     :overflow         :hidden}))
 
 (defn header-bottom-part
@@ -57,12 +54,7 @@
   (reanimated/apply-animations-to-style
    {:border-top-right-radius animation
     :border-top-left-radius  animation}
-   {:position         :absolute
-    :bottom           0
-    :height           86
-    :left             0
-    :right            0
-    :background-color (colors/theme-colors colors/white colors/neutral-100)}))
+   {:background-color (colors/theme-colors colors/white colors/neutral-100)}))
 
 (defn header-comp
   [y-animation opacity-animation]
