@@ -144,19 +144,19 @@
 
               [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
             (when @show-delivery-state?
-              [status/status outgoing-status])]]]]))))
+              [status/status outgoing-status])]]]]))
 
-(defn message-with-reactions
-  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
-   {:keys [chat-id] :as context}]
-  [rn/view
-   {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
-    :accessibility-label :chat-item}
-   (when pinned-by
-     [pin/pinned-by-view pinned-by])
-   (if (#{constants/content-type-system-text constants/content-type-community
-          constants/content-type-contact-request}
-        content-type)
-     [system-message-content message-data]
-     [user-message-content message-data context])
-   [reactions/message-reactions-row chat-id message-id]])
+    (defn message-with-reactions
+      [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
+       {:keys [chat-id] :as context}]
+      [rn/view
+       {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
+        :accessibility-label :chat-item}
+       (when pinned-by
+         [pin/pinned-by-view pinned-by])
+       (if (#{constants/content-type-system-text constants/content-type-community
+              constants/content-type-contact-request}
+            content-type)
+         [system-message-content message-data]
+         [user-message-content message-data context])
+       [reactions/message-reactions-row chat-id message-id]])))
