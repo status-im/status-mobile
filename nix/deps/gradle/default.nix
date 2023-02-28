@@ -16,6 +16,7 @@ let
     mkdir -p $out
     cd $out
   '' +
+  # TODO: Generalize this section to not repeat the same code.
   (concatMapStrings (dep: 
     let
       url = "${dep.host}/${dep.path}";
@@ -32,6 +33,13 @@ let
       };
       jar-download = optionalString (jar.sha256 != "") (
         fetchurl { url = "${url}.${dep.type}"; inherit (jar) sha256; }
+      );
+      nodeps = {
+        sha1 = attrByPath [ "nodeps" "sha1" ] "" dep;
+        sha256 = attrByPath [ "nodeps" "sha256" ] "" dep;
+      };
+      nodeps-download = optionalString (nodeps.sha256 != "") (
+        fetchurl { url = "${url}-nodeps.jar"; inherit (nodeps) sha256; }
       );
       fileName = last (splitString "/" dep.path);
       directory = removeSuffix fileName dep.path;
@@ -50,6 +58,12 @@ let
         ''}
         ${optionalString (jar.sha1 != "") ''
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
+        ''}
+        ${optionalString (nodeps-download != "") ''
+        ln -s "${nodeps-download}" "${dep.path}.${dep.type}"
+        ''}
+        ${optionalString (nodeps.sha1 != "") ''
+        echo "${nodeps.sha1}" > "${dep.path}.${dep.type}.sha1"
         ''}
       '')
     deps));
