@@ -307,6 +307,7 @@
                             :browser/options
                             {:browser-id (:browser-id browser)}
                             :browser/screen-id :browser)}
+                (navigation/pop-to-root :shell-stack)
                 (navigation/change-tab :browser-stack)
                 (update-browser browser)
                 (resolve-url nil)))))
