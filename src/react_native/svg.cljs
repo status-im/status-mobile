@@ -7,3 +7,5 @@
 (def rect (reagent/adapt-react-class Svg/Rect))
 (def clippath (reagent/adapt-react-class Svg/ClipPath))
 (def defs (reagent/adapt-react-class Svg/Defs))
+(def circle (reagent/adapt-react-class Svg/Circle))
+
