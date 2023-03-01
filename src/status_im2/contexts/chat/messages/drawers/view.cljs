@@ -37,7 +37,7 @@
        :label    (i18n/label :t/message-reply)
        :icon     :i/reply
        :id       :reply}])
-   (when-not (or deleted? deleted-for-me?)
+   (when (and (not (or deleted? deleted-for-me?)) (not= (get content :text) "placeholder"))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
                    (components.reply/get-quoted-text-with-mentions
@@ -128,17 +128,18 @@
             icon]])))]))
 
 (defn reactions-and-actions
-  [{:keys [message-id deleted? deleted-for-me?] :as message-data}
+  [message-data
    {:keys [chat-id] :as context}]
   (fn []
-    (let [data            (if (contains? message-data :album-id)
-                            (first (:album message-data))
-                            message-data)
-          outgoing-status (:outgoing-status data)
-          actions         (get-actions data context)
-          main-actions    (filter #(= (:type %) :main) actions)
-          danger-actions  (filter #(= (:type %) :danger) actions)
-          admin-actions   (filter #(= (:type %) :admin) actions)]
+    (let [data                                          (if (contains? message-data :album-id)
+                                                          (first (:album message-data))
+                                                          message-data)
+          {:keys [message-id deleted? deleted-for-me?]} data
+          outgoing-status                               (:outgoing-status data)
+          actions                                       (get-actions data context)
+          main-actions                                  (filter #(= (:type %) :main) actions)
+          danger-actions                                (filter #(= (:type %) :danger) actions)
+          admin-actions                                 (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
        (when (and (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
