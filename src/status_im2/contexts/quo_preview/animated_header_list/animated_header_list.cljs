@@ -81,7 +81,8 @@
    :display-picture-comp display-picture-comp
    :header-comp header-comp
    :title-comp title-comp
-   :main-comp main-comp})
+   :main-comp main-comp
+   :back-button-on-press #()})
 
 (defn mock-screen
   []

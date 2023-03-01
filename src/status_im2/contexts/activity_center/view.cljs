@@ -134,7 +134,7 @@
                                                     (contains? types-with-unread types/system))}]}]))
 
 (defn header
-  []
+  [request-close]
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
@@ -143,7 +143,7 @@
       :size                32
       :accessibility-label :close-activity-center
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:hide-popover])}
+      :on-press            request-close}
      :i/close]
     [quo/button
      {:icon                true
@@ -202,7 +202,7 @@
            nil)]))))
 
 (defn view
-  []
+  [request-close]
   (let [active-swipeable (atom nil)]
     [:f>
      (fn []
@@ -212,7 +212,7 @@
           (let [notifications (rf/sub [:activity-center/filtered-notifications])
                 window-width  (rf/sub [:dimensions/window-width])]
             [rn/view {:style (style/screen-container window-width top bottom)}
-             [header]
+             [header request-close]
              [rn/flat-list
               {:data                      notifications
                :render-data               active-swipeable

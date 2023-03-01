@@ -5,12 +5,11 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
+    [react-native.fast-image :as fast-image]
     [reagent.core :as reagent]
     [quo2.foundations.colors :as colors]
-    [status-im.ui.components.fast-image :as fast-image]
     [quo2.components.animated-header-flatlist.style :as style]
-    [oops.core :as oops]
-    [utils.re-frame :as rf]))
+    [oops.core :as oops]))
 
 (def header-height 234)
 (def cover-height 192)
@@ -51,10 +50,8 @@
      [reanimated/view {:style (style/entity-picture size-animation)}
       [display-picture-comp image-animation]]]))
 
-
-
 (defn animated-header-list
-  [{:keys [header-comp main-comp] :as parameters}]
+  [{:keys [header-comp main-comp back-button-on-press] :as parameters}]
   [safe-area/consumer
    (fn [insets]
      (let [window-height     (:height (rn/get-window))
@@ -76,7 +73,7 @@
             [rn/view {:style (style/container-view view-height)}
              [rn/touchable-opacity
               {:active-opacity 1
-               :on-press       #(rf/dispatch [:navigate-back])
+               :on-press       back-button-on-press
                :style          (style/button-container {:left 20})}
               [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
              [rn/touchable-opacity

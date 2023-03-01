@@ -4,7 +4,7 @@ from tests import marks, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.sign_in_view import SignInView
 from views.chat_view import CommunityView
-
+from selenium.common.exceptions import TimeoutException
 
 @pytest.mark.xdist_group(name="four_2")
 @marks.medium
@@ -21,115 +21,6 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.message_from_sender = "Message sender"
         self.home_2.home_button.double_click()
         self.device_2_one_to_one_chat = self.home_2.add_contact(self.public_key_user_1)
-
-    @marks.testrail_id(702183)
-    def test_activity_center_reject_chats_no_pn(self):
-        self.device_2.just_fyi('Device2 sends a message in 1-1 chat to Device1')
-        self.device_2_one_to_one_chat.send_message(self.message_from_sender)
-
-        self.device_1.just_fyi("Device 2: check there is no PN when receiving new message to activity centre")
-        self.device_1.put_app_to_background()
-        self.device_1.open_notification_bar()
-        if self.home_1.element_by_text(self.message_from_sender).is_element_displayed():
-            self.errors.append("Push notification with text was received for new message in activity centre")
-        self.device_1.click_system_back_button(2)
-
-        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
-
-        self.device_1.just_fyi('Device1 rejects chat and verifies it disappeared and not in Chats too')
-        self.home_1.notifications_unread_badge.wait_and_click(20)
-        self.home_1.notifications_select_button.click()
-        self.home_1.element_by_text_part(self.username_2[:10]).click()
-        self.home_1.element_by_text_part("Please add me to your contacts").click()
-        self.home_1.notifications_reject_and_delete_button.click()
-        if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat is on Activity Center view after action made on it")
-        if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat is added on home after rejection")
-
-        self.home_1.just_fyi("Verify there is still no chat after relogin")
-        self.home_1.reopen_app()
-        if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat appears on Chats view after relogin")
-        self.home_1.notifications_button.click()
-        if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat request reappears back in Activity Center view after relogin")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702184)
-    def test_activity_center_accept_chats(self):
-        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
-
-        self.device_2.just_fyi('Device2 sends a message in 1-1')
-        self.home_2.get_chat_from_home_view(self.username_1).click()
-        self.device_2_one_to_one_chat.send_message(self.message_from_sender)
-        self.device_2_one_to_one_chat.home_button.double_click()
-
-        self.device_1.just_fyi('Device1 accepts chat (via Select All button) and verifies it disappeared '
-                               'from activity center view but present on Chats view')
-        self.home_1.notifications_unread_badge.wait_and_click(20)
-        self.home_1.notifications_select_button.click()
-        self.home_1.notifications_select_all.click()
-        self.home_1.notifications_accept_and_add_button.click()
-        if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat request stays on Activity Center view after it was accepted")
-
-        self.home_1.home_button.double_click()
-        if not self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
-            self.errors.append("1-1 chat is not added on home after accepted from Activity Center")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702187)
-    def test_activity_center_accept_chats_only_from_contacts(self):
-        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
-
-        if self.home_1.get_chat_from_home_view(self.username_2).is_element_displayed():
-            self.home_1.delete_chat_long_press(self.username_2)
-
-        self.device_1.just_fyi('Device1 sets permissions to accept chat requests only from trusted contacts')
-        profile_1 = self.home_1.profile_button.click()
-        profile_1.privacy_and_security_button.click()
-        profile_1.accept_new_chats_from.click()
-        profile_1.accept_new_chats_from_contacts_only.click()
-        profile_1.profile_button.click()
-
-        self.device_1.just_fyi('Device2 creates 1-1 chat')
-        self.home_2.home_button.double_click()
-        self.home_2.get_chat(self.username_1).click()
-        self.device_2_one_to_one_chat.send_message(self.message_from_sender)
-        self.device_2_one_to_one_chat.home_button.double_click()
-
-        self.device_1.just_fyi('Device1 check there are no any chats in Activity Center nor Chats view')
-        self.home_1.home_button.double_click()
-
-        if self.home_1.element_by_text_part(self.username_2).is_element_displayed():
-            self.errors.append("Chats are present on Chats view despite they created by non-contact")
-        self.home_1.notifications_button.click()
-
-        if self.home_1.element_by_text_part(self.username_2).is_element_displayed():
-            self.errors.append("Chat is present in Activity Center view despite they created by non-contact")
-
-        self.device_1.just_fyi('Device1 adds Device2 in Contacts so chat requests should be visible now')
-        self.home_1.home_button.double_click()
-        self.home_1.add_contact(self.public_key_user_2)
-
-        self.device_1.just_fyi('Device2 creates 1-1 chat Group chats once again')
-        self.home_2.home_button.double_click()
-        self.home_2.get_chat_from_home_view(self.username_1).click()
-        self.device_2_one_to_one_chat.send_message(self.message_from_sender)
-        self.device_2_one_to_one_chat.home_button.double_click()
-        self.home_2.create_group_chat([self.username_1], group_chat_name=self.group_chat_name_2)
-
-        self.device_1.just_fyi('Device1 verifies 1-1 chat Group chats are visible')
-        self.home_1.home_button.double_click()
-        if not self.home_1.element_by_text_part(
-                self.username_2).is_element_displayed() or not self.home_1.element_by_text_part(
-            self.group_chat_name_2).is_element_displayed():
-            self.errors.append("Chats are not present on Chats view while they have to!")
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(702185)
     def test_activity_center_notifications_on_mentions_in_groups_and_empty_state(self):
@@ -202,14 +93,12 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.profile_1.just_fyi("Enabling PNs")
         self.profile_1.switch_push_notifications()
 
-    @marks.testrail_id(702850)
-    @marks.xfail(reason="blocked with 15180")
-    def test_activity_center_decline_contact_request_no_pn(self):
+    @marks.testrail_id(702871)
+    def test_activity_center_cancel_outgoing_contact_request_no_pn(self):
+        [home.chats_tab.click() for home in [self.home_1, self.home_2]]
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1')
-        self.profile_2.click_system_back_button_until_element_is_shown(self.profile_2.contacts_button)
-        self.profile_2.add_contact_via_contacts_list(self.public_key_1)
-        self.profile_2.click_system_back_button_until_element_is_shown(self.profile_2.contacts_button)
+        self.home_2.add_contact(self.public_key_1)
 
         self.device_1.just_fyi("Device 2: check there is no PN when receiving new message to activity centre")
         self.device_1.open_notification_bar()
@@ -217,18 +106,46 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
             self.errors.append("Push notification with text was received for new message in activity centre")
         self.device_1.click_system_back_button(2)
 
-        [home.chats_tab.double_click() for home in [self.home_1, self.home_2]]
+        self.profile_2.just_fyi("Check outgoing contact request and cancel it")
+        for indicator in (self.home_2.notifications_unread_badge, self.home_2.contact_new_badge):
+            if not indicator.is_element_displayed():
+                self.errors.append("Unread indicator on contacts tab or on activity center is not shown for outgoing CR!")
+        self.home_2.contacts_tab.click()
+        if self.home_2.pending_contact_request_text.text != '1':
+            self.errors.append("The amount of contact requests is not shown for outgoing CR!")
+        self.home_2.pending_contact_request_button.click()
+        outgoing_cr = self.home_2.get_chat_from_activity_center_view(self.default_username_1)
+        outgoing_cr.cancel_contact_request()
+        self.home_2.close_activity_centre.click()
+
+        self.profile_1.just_fyi("Check there is no unread indicator and pending CR")
+        self.device_1.chats_tab.click()
+        try:
+            self.home_1.pending_contact_request_button.wait_for_invisibility_of_element(30)
+            self.home_1.notifications_unread_badge.wait_for_invisibility_of_element(30)
+        except TimeoutException:
+            self.errors.append("Cancelled request is not disappeared!")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702850)
+    def test_activity_center_decline_contact_request(self):
+        [home.chats_tab.click() for home in [self.home_1, self.home_2]]
+
+        self.home_2.just_fyi("Device2 sends pending contact request after cancelling")
+        # self.home_2.browser_tab.click() # temp
+        self.home_2.add_contact(self.public_key_1)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')
         self.home_1.contacts_tab.click()
         for indicator in (self.home_1.notifications_unread_badge, self.home_1.contact_new_badge):
             if not indicator.is_element_displayed():
-                self.errors.append("Unread indicator on contacts tab or on activity center is not shown!")
+                self.errors.append("Unread indicator on contacts tab or on activity center is not shown for incoming CR!")
         if self.home_1.pending_contact_request_text.text != '1':
-            self.errors.append("The amount of contact requests is not shown!")
+            self.errors.append("The amount of contact requests is not shown for incoming CR!")
 
         self.device_1.just_fyi('Device1 declines pending contact request')
-        self.home_1.handle_contact_request(username=self.default_username_2, accept=False)
+        self.home_1.handle_contact_request(username=self.default_username_2, action='decline')
         for indicator in (self.home_1.notifications_unread_badge, self.home_1.contact_new_badge, self.home_1.pending_contact_request_text):
             if indicator.is_element_displayed():
                 self.errors.append("Unread indicator on contacts tab or on activity center is shown after declining contact request!")
@@ -238,19 +155,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702851)
     def test_activity_center_mentions_in_community_jump_to(self):
         self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
-        self.home_2.browser_tab.click()
-        self.profile_2.click_system_back_button_until_element_is_shown(self.profile_2.contacts_button)
-
-        self.profile_2.contacts_button.wait_and_click(30)
-        self.profile_2.add_new_contact_button.wait_and_click()
-        chat = self.profile_2.get_chat_view()
-        chat.public_key_edit_box.click()
-        chat.public_key_edit_box.send_keys(self.public_key_1)
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact)
-        if chat.profile_remove_from_contacts.is_element_displayed(20):
-            chat.profile_remove_from_contacts.click()
-        chat.profile_add_to_contacts.click()
-        self.profile_2.click_system_back_button_until_element_is_shown()
+        self.home_2.add_contact(self.public_key_1, remove_from_contacts=True)
 
         self.device_1.just_fyi('Device1 accepts pending contact request and check contact list')
         self.home_1.chats_tab.click()

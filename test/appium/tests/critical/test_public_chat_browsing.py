@@ -1,18 +1,15 @@
 import random
-import time
 from datetime import timedelta
 
 import emoji
 import pytest
 from dateutil import parser
+from selenium.common.exceptions import NoSuchElementException
 
 from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from views.sign_in_view import SignInView
 from views.chat_view import CommunityView
-from views.base_view import BaseView
-from views.chat_view import ChatView
-from selenium.common.exceptions import NoSuchElementException
+from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="three_1")
@@ -313,7 +310,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_button)
         self.community_name = self.home.get_random_chat_name()
         self.channel_name = self.home.get_random_chat_name()
-        self.community = self.home.create_community(name=self.community_name, description='test description', require_approval=False)
+        self.community = self.home.create_community(name=self.community_name, description='test description',
+                                                    require_approval=False)
         self.channel = self.community.add_channel(name=self.channel_name)
 
     @marks.testrail_id(702846)
@@ -328,39 +326,27 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
-    # @marks.testrail_id(702847)
-    # # TODO long press and assertion of text in input field is currently not working on e2e builds. needs to be investigated
-    # @marks.skip('needs to be refactored')
-    # def test_community_copy_and_paste_message_in_chat_input(self):
-    #     message_text = {'text_message': 'mmmeowesage_text'}
-    #     formatted_message = {'message_with_link': 'https://status.im'
-    #                          }
-    #     message_input = self.channel.chat_message_input
-    #     if not message_input.is_element_displayed():
-    #         self.home.communities_tab.double_click()
-    #         self.home.get_chat(self.community_name, community=True).click()
-    #         self.community.get_chat(self.channel_name).click()
-    #     message_input.send_keys(message_text['text_message'])
-    #     self.channel.send_message_button.click()
-    #
-    #     self.channel.copy_message_text(message_text['text_message'])
-    #
-    #     message_input.paste_text_from_clipboard()
-    #     if message_input.text != message_text['text_message']:
-    #         self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
-    #     message_input.clear()
-    #
-    #     for message in formatted_message:
-    #         message_input.send_keys(formatted_message[message])
-    #         self.channel.send_message_button.click()
-    #
-    #         self.channel.copy_message_text(formatted_message[message])
-    #         message_input.paste_text_from_clipboard()
-    #         if message_input.text != formatted_message[message]:
-    #             self.errors.append('Message %s text was not copied in community channel' % formatted_message[message])
-    #         message_input.clear()
-    #
-    #     self.errors.verify_no_errors()
+    @marks.testrail_id(702742)
+    def test_community_copy_and_paste_message_in_chat_input(self):
+        message_texts = ['mmmeowesage_text', 'https://status.im']
+
+        message_input = self.channel.chat_message_input
+        if not message_input.is_element_displayed():
+            self.home.communities_tab.double_click()
+            self.home.get_chat(self.community_name, community=True).click()
+            self.community.get_chat(self.channel_name).click()
+
+        for message in message_texts:
+            message_input.send_keys(message)
+            self.channel.send_message_button.click()
+
+            self.channel.copy_message_text(message)
+            message_input.paste_text_from_clipboard()
+            if message_input.text != message:
+                self.errors.append('Message %s text was not copied in community channel' % message)
+            message_input.clear()
+
+        self.errors.verify_no_errors()
 
 
 @pytest.mark.xdist_group(name="two_2")
@@ -375,9 +361,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1 = self.home_1.get_profile_view()
-        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
-        self.profile_1.communities_tab.click()
-        self.home_2.chats_tab.click()
+        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
+        self.home_1.add_contact(self.public_key_2)
         self.home_2.handle_contact_request(self.default_username_1)
         self.text_message = 'hello'
 
@@ -402,7 +387,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             community_view = home.get_community_view()
             community_view.get_channel(self.channel_name).click()
         self.channel_2 = self.home_2.get_chat_view()
-
 
     @marks.testrail_id(702838)
     @marks.xfail(reason="blocked by 14797")
@@ -443,7 +427,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.channel_2.element_by_translation_id('message-deleted-for-everyone').is_element_displayed(30):
             self.errors.append("System message about deletion for everyone is not displayed")
 
-        self.home_2.just_fyi('Deleting message for me. Checking that message is deleted only for the author of the message')
+        self.home_2.just_fyi(
+            'Deleting message for me. Checking that message is deleted only for the author of the message')
         self.channel_2.send_message(message_to_delete_for_me)
         self.channel_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         if not self.channel_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(30):
@@ -464,13 +449,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if not channel.chat_element_by_text(emoji_unicode).is_element_displayed(30):
                 self.errors.append('Message with emoji was not sent or received in community channel')
 
-        # Commented as paste_text_from_clipboard() method doesn't work any more for some reason. Needs to be investigated
-        # self.channel_1.just_fyi("Can copy and paste emojis")
-        # self.channel_1.copy_message_text(emoji_unicode)
-        # self.channel_1.chat_message_input.click()
-        # self.channel_1.chat_message_input.paste_text_from_clipboard()
-        # if self.channel_1.chat_message_input.text != emoji_unicode:
-        #     self.errors.append('Emoji message was not copied')
+        self.channel_1.just_fyi("Can copy and paste emojis")
+        self.channel_1.copy_message_text(emoji_unicode)
+        self.channel_1.chat_message_input.paste_text_from_clipboard()
+        if self.channel_1.chat_message_input.text != emoji_unicode:
+            self.errors.append('Emoji message was not copied')
 
         self.channel_1.just_fyi("Can reply to emojis")
         self.channel_2.quote_message(emoji_unicode)
@@ -587,4 +570,3 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if community.is_element_displayed():
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()
-

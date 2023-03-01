@@ -36,6 +36,11 @@ function match_repo_url() {
     exit 1
 }
 
+function pom_has_nodeps_jar() {
+    grep '<shadedClassifierName>nodeps</shadedClassifierName>' $1 \
+        2>&1 >/dev/null
+}
+
 if [[ -z "${1}" ]]; then
     echo "Required argument not given!" >&2
     exit 1
@@ -96,6 +101,16 @@ if [[ "${OBJ_TYPE}" != "pom" ]]; then
     fi
 fi
 
+# Some deps include nodeps JARs which include.
+if pom_has_nodeps_jar "${POM_PATH}"; then
+    NODEPS_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}-nodeps.jar")
+    if [[ ${?} -eq 0 ]]; then
+        NODEPS_PATH=$(get_nix_path "${NODEPS_NIX_FETCH_OUT}")
+        NODEPS_SHA256=$(get_nix_sha "${NODEPS_NIX_FETCH_OUT}")
+        NODEPS_SHA1=$(get_sha1 "${NODEPS_PATH}")
+    fi
+fi
+
 # Format into a Nix attrset entry
 echo -ne "
   {
@@ -114,6 +129,13 @@ if [[ -n "${OBJ_SHA256}" ]]; then
     \"jar\": {
       \"sha1\": \"${OBJ_SHA1}\",
       \"sha256\": \"${OBJ_SHA256}\"
+    }";[[ -n "${NODEPS_SHA256}" ]] && echo -n ","
+fi
+if [[ -n "${NODEPS_SHA256}" ]]; then
+    echo -n "
+    \"nodeps\": {
+      \"sha1\": \"${NODEPS_SHA1}\",
+      \"sha256\": \"${NODEPS_SHA256}\"
     }"
 fi
 echo -e "\n  },"
