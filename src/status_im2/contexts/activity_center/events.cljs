@@ -33,6 +33,7 @@
    :dispatch [:show-popover
               {:view                       :activity-center
                :style                      {:margin 0}
+               :delay-ms                   30
                :disable-touchable-overlay? true
                :blur-view?                 true
                :blur-view-props            {:blur-amount 20
