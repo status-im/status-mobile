@@ -64,16 +64,14 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]} edited-at]
+  [blocks {:keys [type ^js literal children]}]
   (case (keyword type)
     :paragraph
-    (conj blocks
-          (reduce
-           render-inline
-           [quo/text]
-           (conj children
-                 (when edited-at
-                   {:type :edited}))))
+    (conj (conj blocks
+                (reduce
+                 render-inline
+                 [quo/text]
+                 children)))
 
     :blockquote
     (conj blocks
