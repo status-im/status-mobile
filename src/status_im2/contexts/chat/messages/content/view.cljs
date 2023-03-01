@@ -84,6 +84,7 @@
                                                          context)}]))
 
 (defn user-message-content
+<<<<<<< HEAD
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
@@ -160,3 +161,83 @@
          [system-message-content message-data]
          [user-message-content message-data context])
        [reactions/message-reactions-row chat-id message-id]])))
+=======
+  [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
+   {:keys [chat-id] :as context}
+   show-delivery-state?]
+  (let [first-image     (first (:album message-data))
+        outgoing-status (if (= content-type constants/content-type-album)
+                          (:outgoing-status first-image)
+                          outgoing-status)
+        outgoing        (if (= content-type constants/content-type-album)
+                          (:outgoing first-image)
+                          outgoing)
+        context         (assoc context :on-long-press #(message-on-long-press message-data context))
+        response-to     (:response-to content)]
+    [rn/touchable-highlight
+     {:accessibility-label (if (and outgoing (= outgoing-status :sending))
+                             :message-sending
+                             :message-sent)
+      :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
+      :style               {:border-radius 16
+                            :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
+      :on-press            (fn []
+                             (when (and outgoing
+                                        (not (= outgoing-status :sending))
+                                        (not @show-delivery-state?))
+                               (reset! show-delivery-state? true)
+                               (js/setTimeout #(reset! show-delivery-state? false)
+                                              delivery-state-showing-time-ms)))
+      :on-long-press       #(on-long-press message-data context)}
+     [rn/view {:style {:padding-vertical 8}}
+      (when (and (seq response-to) quoted-message)
+        [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
+      [rn/view
+       {:style {:padding-horizontal 12
+                :flex-direction     :row}}
+       [avatar message-data]
+       [rn/view
+        {:style {:margin-left 8
+                 :flex        1}}
+        [author message-data]
+        (case content-type
+
+          constants/content-type-text [content.text/text-content message-data context]
+
+          constants/content-type-emoji
+          [not-implemented/not-implemented [old-message/emoji message-data]]
+
+          constants/content-type-sticker
+          [not-implemented/not-implemented [old-message/sticker message-data]]
+
+          constants/content-type-audio
+          [not-implemented/not-implemented [old-message/audio message-data]]
+
+          constants/content-type-image
+          [image/image-message 0 message-data context on-long-press]
+
+          constants/content-type-album
+          [album/album-message message-data context on-long-press]
+
+          [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
+        (when @show-delivery-state?
+          [status/status outgoing-status])]]]]))
+
+(defn message-with-reactions
+  [{:keys [pinned-by mentioned in-pinned-view? content-type
+           last-in-group? message-id messages-ids]
+    :as   message-data}
+   {:keys [chat-id] :as context}]
+  (let [show-delivery-state? (reagent/atom false)]
+    [rn/view
+     {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
+      :accessibility-label :chat-item}
+     (when pinned-by
+       [pin/pinned-by-view pinned-by])
+     (if (#{constants/content-type-system-text constants/content-type-community
+            constants/content-type-contact-request}
+          content-type)
+       [system-message-content message-data]
+       [user-message-content message-data context show-delivery-state?])
+     [reactions/message-reactions-row chat-id message-id messages-ids]]))
+>>>>>>> 0a7970c17 (Fix message status not showing)
