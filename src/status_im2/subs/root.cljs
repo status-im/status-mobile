@@ -132,6 +132,7 @@
 (reg-root-key-sub :browser/options :browser/options)
 (reg-root-key-sub :dapps/permissions :dapps/permissions)
 (reg-root-key-sub :bookmarks :bookmarks/bookmarks)
+(reg-root-key-sub :browser/screen-id :browser/screen-id)
 
 ;;stickers
 (reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)

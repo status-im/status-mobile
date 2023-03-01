@@ -46,7 +46,7 @@
    :style                  override-style
    :avatar                 user-avatar}
   "
-  [{:keys [type open-profile style avatar hide-search]}]
+  [{:keys [type style avatar hide-search]}]
   (let [button-common-props    (get-button-common-props type)
         notif-count            (rf/sub [:activity-center/unread-count])
         new-notifications?     (pos? notif-count)
@@ -57,7 +57,7 @@
               {:height 56}
               style)}
      ;; Left Section
-     [rn/touchable-without-feedback {:on-press open-profile}
+     [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
       [rn/view
        {:style {:position :absolute
                 :left     20

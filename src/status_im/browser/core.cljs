@@ -305,9 +305,9 @@
       (rf/merge cofx
                 {:db (assoc db
                             :browser/options
-                            {:browser-id (:browser-id browser)})}
+                            {:browser-id (:browser-id browser)}
+                            :browser/screen-id :browser)}
                 (navigation/change-tab :browser-stack)
-                (navigation/pop-to-root :shell-stack)
                 (update-browser browser)
                 (resolve-url nil)))))
 
@@ -319,10 +319,18 @@
     (rf/merge cofx
               {:db (assoc db
                           :browser/options
-                          {:browser-id browser-id})}
+                          {:browser-id browser-id}
+                          :browser/screen-id :browser)}
               (update-browser browser)
-              (navigation/set-stack-root :browser-stack :browser)
+              (navigation/change-tab :browser-stack)
               (resolve-url nil))))
+
+(rf/defn open-browser-tabs
+  {:events [:browser.ui/open-browser-tabs]}
+  [{:keys [db] :as cofx}]
+  (rf/merge cofx
+            {:db (assoc db :browser/screen-id :browser-tabs)}
+            (navigation/change-tab :browser-stack)))
 
 (rf/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}
@@ -573,9 +581,9 @@
 
 (rf/defn open-empty-tab
   {:events [:browser.ui/open-empty-tab]}
-  [cofx]
+  [{:keys [db]}]
   (debounce/clear :browser/navigation-state-changed)
-  (navigation/set-stack-root cofx :browser-stack :empty-tab))
+  {:db (assoc db :browser/screen-id :empty-tab)})
 
 (rf/defn url-input-pressed
   {:events [:browser.ui/url-input-pressed]}

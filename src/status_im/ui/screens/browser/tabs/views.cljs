@@ -55,7 +55,7 @@
 (views/defview tabs
   []
   (views/letsubs [browsers [:browser/browsers-vals]]
-    [react/view {:flex 1}
+    [react/view {:flex 1 :margin-bottom 50}
      [topbar/topbar
       {:modal? true
        :border-bottom false
