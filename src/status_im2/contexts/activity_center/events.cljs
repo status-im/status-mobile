@@ -64,8 +64,8 @@
                    (assoc acc id notification)))
                (collection/index-by :id db-notifications))
        (vals)
-       (sort-by (juxt :timestamp :id))
-       (reverse)))
+       (sort-by (juxt :timestamp :id)
+                #(compare %2 %1))))
 
 (rf/defn notifications-reconcile
   {:events [:activity-center.notifications/reconcile]}
