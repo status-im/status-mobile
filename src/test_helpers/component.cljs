@@ -34,6 +34,10 @@
   [label]
   (rtl/screen.getByLabelText (name label)))
 
+(defn get-by-translation-text
+  [keyword]
+  (get-by-text (str "tx:" (name keyword))))
+
 (defn get-all-by-label-text
   [label]
   (rtl/screen.getAllByLabelText (name label)))

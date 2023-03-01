@@ -60,6 +60,11 @@ jest.mock('@react-native-community/audio-toolkit', () => ({
     },
 }));
 
+jest.mock("i18n-js", () => ({
+    ...jest.requireActual("i18n-js"),
+    t: (label) => `tx:${label}`
+}));
+
 NativeModules.ReactLocalization = {
     language: 'en',
     locale: 'en',

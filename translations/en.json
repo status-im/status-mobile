@@ -1970,5 +1970,10 @@
     "only-6-images": "You can only add 6 images to your message",
     "delivered": "Delivered",
     "mark-all-notifications-as-read": "Mark all notifications as read",
-    "notifications-marked-as-read": "{{count}} notifications marked as read"
+    "notifications-marked-as-read": "{{count}} notifications marked as read",
+    "strength-divider-very-weak-label": "Very weak",
+    "strength-divider-weak-label": "Weak",
+    "strength-divider-okay-label": "Okay",
+    "strength-divider-strong-label": "Strong",
+    "strength-divider-very-strong-label": "Very strong"
 }
