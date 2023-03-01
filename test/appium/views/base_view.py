@@ -139,13 +139,16 @@ class WalletButton(TabButton):
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//*[contains(@content-desc,'5 out of 5')]")
+        # @content-desc="user-avatar"
+        super().__init__(driver,  accessibility_id="user-avatar")
 
     def navigate(self):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
     def click(self, desired_element_text='privacy'):
+        if not self.is_element_displayed():
+            ChatsTab(self.driver).click()
         from views.profile_view import ProfileView
         if desired_element_text == 'privacy':
             self.click_until_presence_of_element(ProfileView(self.driver).privacy_and_security_button)
@@ -621,9 +624,9 @@ class BaseView(object):
 
     def get_public_key_and_username(self, return_username=False):
         self.driver.info("Get public key and username")
-        # profile_view = self.profile_button.click()
-        self.browser_tab.click()  # temp, until profile is on browser tab
-        profile_view = self.get_profile_view()
+        profile_view = self.profile_button.click()
+       #  self.browser_tab.click()  # temp, until profile is on browser tab
+        #profile_view = self.get_profile_view()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element(20)
