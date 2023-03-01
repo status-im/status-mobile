@@ -1163,6 +1163,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.click_system_back_button_until_element_is_shown()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.click_system_back_button_until_element_is_shown()
         self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")

@@ -365,7 +365,7 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
         deep_link = 'status-im://u/%s' % self.public_key
         self.sign_in.open_weblink_and_login(deep_link)
         profile = self.home.get_profile_view()
-        self.home.browser_tab.click()
+        self.home.profile_button.click()
         if profile.default_username_text.text != self.default_username:
             self.errors.append("Can't navigate to profile from deep link with own public key")
         self.errors.verify_no_errors()
