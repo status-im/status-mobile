@@ -49,23 +49,18 @@
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:messages/resolve-mention literal])]])
 
-    :edited
-    (conj units [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
-
     (conj units literal)))
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]} edited-at]
+  [blocks {:keys [type ^js literal children]}]
   (case (keyword type)
     :paragraph
-    (conj blocks
-          (reduce
-           render-inline
-           [quo/text]
-           (conj children
-                 (when edited-at
-                   {:type :edited}))))
+    (conj (conj blocks
+                (reduce
+                 render-inline
+                 [quo/text]
+                 children)))
 
     :blockquote
     (conj blocks
@@ -80,10 +75,24 @@
 
 (defn render-parsed-text
   [{:keys [content edited-at]}]
-  (reduce (fn [acc e]
-            (render-block acc e edited-at))
-          [:<>]
-          (:parsed-text content)))
+  (let [parsed-text-count           (when edited-at
+                                      (count (:parsed-text content)))
+        parsed-text-with-edited-tag (when edited-at
+                                      (update (:parsed-text content)
+                                              (- parsed-text-count 1)
+                                              (fn [last-literal]
+                                                (update last-literal
+                                                        :children
+                                                        conj
+                                                        {:literal [rn/text (style/edited-style)
+                                                                   (str " (" (i18n/label :t/edited) ")")]
+                                                         :type    :edited}))))]
+    (conj (reduce (fn [acc e]
+                    (render-block acc e))
+                  [:<>]
+                  (if edited-at
+                    parsed-text-with-edited-tag
+                    (:parsed-text content))))))
 
 (defn text-content
   [message-data context]
