@@ -33,9 +33,6 @@
 (defn header
   [{:keys [theme-color cover-uri cover-bg-color title-comp]} top-inset scroll-y]
   (let [input-range        [0 (* threshold 0.33)]
-        picture-scale-down 0.4
-        size-animation     (interpolate scroll-y input-range [80 (* 80 picture-scale-down)])
-        image-animation    (interpolate scroll-y input-range [72 (* 72 picture-scale-down)])
         border-animation   (interpolate scroll-y input-range [12 0])]
     [rn/view
      {:style {:background-color (or theme-color (colors/theme-colors colors/white colors/neutral-95))
@@ -60,10 +57,6 @@
      (let [window-height     (:height (rn/get-window))
            status-bar-height (rn/status-bar-height)
            bottom-inset      (:bottom insets)
-           ;; view height calculation is different because window height is different on iOS and Android:
-           view-height       (if platform/ios?
-                               (- window-height bottom-inset)
-                               (+ window-height status-bar-height))
            initial-y         (if platform/ios? (- (:top insets)) 0)]
        [:f>
         (fn []
@@ -73,7 +66,11 @@
                                                      [0 1])
                 translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [50 0])
                 title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
-            [rn/view {:style (style/container-view view-height)}
+            [rn/keyboard-avoiding-view
+             {:style                  {:position :relative
+                                       :flex 1
+                                       :top initial-y}
+              :keyboardVerticalOffset (- bottom-inset)}
 
              [reanimated/blur-view
               {:blurAmount   32

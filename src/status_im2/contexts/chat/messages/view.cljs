@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [re-frame.db]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.constants :as constants]
@@ -12,9 +11,6 @@
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
-            [status-im.ui.components.fast-image :as fast-image]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
             [quo2.components.animated-header-flatlist.view :as animated-header-list]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]))
@@ -66,8 +62,6 @@
                                :icon                :i/options
                                :accessibility-label :options-button}]}]))
 
-(def theme-color (colors/theme-alpha "#5BCC95" 0.2 0.2))
-
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
@@ -80,8 +74,7 @@
         photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
 
     [animated-header-list/animated-header-list
-     {:theme-color    theme-color
-      :cover-bg-color "#2A799B33"
+     {:cover-bg-color "#2A799B33"
       :header-comp    (fn []
                         [rn/view
                          {:style {:flex-direction :row
@@ -116,10 +109,22 @@
                           "Web 3.0 Designer @ethstatus • DJ • Producer • Dad • YouTuber."]])
       :main-comp      (fn []
                         [messages.list/messages-list {:chat chat :show-input? show-input?}])
-      :footer-comp (fn [insets]
-                     #_(if-not show-input?
-                       [contact-requests.bottom-drawer/view chat-id contact-request-state]
-                       [composer/composer chat-id insets]))}]))
+      :footer-comp    (fn [insets]
+                        [:<>
+                         [pin.banner/banner chat-id]]
+                        (if-not show-input?
+                          [contact-requests.bottom-drawer/view chat-id contact-request-state]
+                          [composer/composer chat-id insets]))}]))
+
+#_[rn/keyboard-avoiding-view
+   {:style                  {:position :relative :flex 1}
+    :keyboardVerticalOffset (- (:bottom insets))}
+   [page-nav]
+   [pin.banner/banner chat-id]
+   [messages.list/messages-list {:chat chat :show-input? show-input?}]
+   (if-not show-input?
+     [contact-requests.bottom-drawer/view chat-id contact-request-state]
+     [composer/composer chat-id insets])]
 
 (defn chat
   []
