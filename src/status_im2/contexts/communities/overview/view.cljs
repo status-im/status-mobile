@@ -16,7 +16,6 @@
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.re-frame :as rf]))
 
-
 (defn preview-user-list
   [user-list]
   [rn/view style/preview-user
