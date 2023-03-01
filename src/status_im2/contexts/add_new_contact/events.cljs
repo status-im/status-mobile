@@ -90,21 +90,25 @@
 (rf/defn set-new-identity-success
   {:events [:contacts/set-new-identity-success]}
   [{:keys [db]} input ens-name pubkey]
-  {:db (assoc db
-              :contacts/new-identity
-              {:input      input
-               :public-key pubkey
-               :ens-name   ens-name
-               :state      :valid})})
+  (let [current-input (get-in db [:contacts/new-identity :input])]
+    (when (= current-input input)
+      {:db (assoc db
+                  :contacts/new-identity
+                  {:input      input
+                   :public-key pubkey
+                   :ens-name   ens-name
+                   :state      :valid})})))
 
 (rf/defn set-new-identity-error
   {:events [:contacts/set-new-identity-error]}
   [{:keys [db]} error input]
-  {:db (assoc db
-              :contacts/new-identity
-              {:input input
-               :state :error
-               :error :invalid})})
+  (let [current-input (get-in db [:contacts/new-identity :input])]
+    (when (= current-input input)
+      {:db (assoc db
+                  :contacts/new-identity
+                  {:input input
+                   :state :error
+                   :error :invalid})})))
 
 (rf/defn clear-new-identity
   {:events [:contacts/clear-new-identity :contacts/new-chat-focus]}

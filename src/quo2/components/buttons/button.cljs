@@ -254,7 +254,7 @@
                    (shape-style-container type icon size)
                    {:background-color
                     (if (= state :pressed)
-                      (colors/theme-colors colors/neutral-100 colors/white)
+                      (colors/theme-colors colors/white colors/neutral-100)
                       :transparent)
                     :width width}
                    style)}
