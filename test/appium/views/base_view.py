@@ -139,8 +139,7 @@ class WalletButton(TabButton):
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
-        # @content-desc="user-avatar"
-        super().__init__(driver,  accessibility_id="user-avatar")
+        super().__init__(driver,  accessibility_id="open-profile")
 
     def navigate(self):
         from views.profile_view import ProfileView
