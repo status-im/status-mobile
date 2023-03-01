@@ -112,21 +112,23 @@ class ActivityCenterElement(SilentButton):
         super().__init__(driver,
                          xpath="//*[contains(@text, '%s')]/ancestor::*[@content-desc='activity']" % username)
 
-    def accept_contact_request(self):
+    def handle_cr(self, element_accessibility: str):
         try:
-            accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-contact-request"]').find_element()
+            accept_element = Button(self.driver,
+                                    xpath=self.locator + '/*[@content-desc="%s"]' % element_accessibility).find_element()
         except NoSuchElementException:
             return ''
         if accept_element:
             accept_element.click()
 
+    def accept_contact_request(self):
+        self.handle_cr("accept-contact-request")
+
     def decline_contact_request(self):
-        try:
-            decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-contact-request"]').find_element()
-        except NoSuchElementException:
-            return ''
-        if decline_element:
-            decline_element.click()
+        self.handle_cr("decline-contact-request")
+
+    def cancel_contact_request(self):
+        self.handle_cr("cancel-contact-request")
 
 
 class PushNotificationElement(SilentButton):
@@ -197,6 +199,7 @@ class HomeView(BaseView):
         self.groups_tab = Button(self.driver, accessibility_id="tab-groups")
         self.contacts_tab = Button(self.driver, accessibility_id="tab-contacts")
         self.contact_new_badge = Button(self.driver, accessibility_id="notification-dot")
+        self.pending_contact_request_button = Button(self.driver, accessibility_id="open-activity-center-contact-requests")
         self.pending_contact_request_text = Text(self.driver, xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
 
 
@@ -232,7 +235,7 @@ class HomeView(BaseView):
         # New UI bottom sheet
         self.start_a_new_chat_bottom_sheet_button = Button(self.driver, accessibility_id="start-a-new-chat")
         self.add_a_contact_chat_bottom_sheet_button = Button(self.driver, accessibility_id="add-a-contact")
-
+        self.setup_chat_button = Button(self.driver, accessibility_id="next-button")
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
@@ -267,16 +270,21 @@ class HomeView(BaseView):
         chat_element = ActivityCenterElement(self.driver, chat_name[:25])
         return chat_element
 
-    def handle_contact_request(self, username: str, accept=True):
+    def handle_contact_request(self, username: str, action='accept'):
         if self.notifications_unread_badge.is_element_displayed(30):
             self.open_activity_center_button.click()
         chat_element = ActivityCenterElement(self.driver, username[:25])
-        if accept:
-            self.driver.info("Accepting contact request for %s" % username)
+        if action == 'accept':
+            self.driver.info("Accepting incoming CR for %s" % username)
             chat_element.accept_contact_request()
-        else:
-            self.driver.info("Rejecting contact request for %s" % username)
+        elif action == 'decline':
+            self.driver.info("Rejecting incoming CR for %s" % username)
             chat_element.decline_contact_request()
+        elif action == 'cancel':
+            self.driver.info("Canceling outgoing CR for %s" % username)
+            chat_element.cancel_contact_request()
+        else:
+            self.driver.fail("Illegal option for CR!")
         self.close_activity_centre.click()
         self.chats_tab.wait_for_visibility_of_element()
 
@@ -284,46 +292,46 @@ class HomeView(BaseView):
         return Text(self.driver,
                     xpath="//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % username_part)
 
-    def add_contact(self, public_key, add_in_contacts=True, nickname=''):
-        self.driver.info("## Starting 1-1 chat, add in contacts:%s" % str(add_in_contacts), device=False)
-        self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
-        chat = self.start_new_chat_button.click()
+    def add_contact(self, public_key, nickname='', remove_from_contacts=False):
+        self.driver.info("Adding user to Contacts via chats > add new contact")
+        self.new_chat_button.click_until_presence_of_element(self.add_a_contact_chat_bottom_sheet_button)
+        self.add_a_contact_chat_bottom_sheet_button.click()
+
+        chat = self.get_chat_view()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(public_key)
-        one_to_one_chat = self.get_chat_view()
-        chat.confirm()
-        # chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
-        if add_in_contacts and one_to_one_chat.add_to_contacts.is_element_displayed():
-            one_to_one_chat.add_to_contacts.click()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact)
+        if remove_from_contacts and chat.profile_remove_from_contacts.is_element_displayed():
+            chat.profile_remove_from_contacts.click()
+        chat.profile_add_to_contacts.click()
         if nickname:
-            one_to_one_chat.chat_options.click()
-            one_to_one_chat.view_profile_button.click()
-            one_to_one_chat.set_nickname(nickname)
-        self.driver.info("## 1-1 chat is created successfully!", device=False)
-        return one_to_one_chat
+            chat.set_nickname(nickname)
+        self.click_system_back_button_until_element_is_shown()
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat', new_ui=False):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
         self.new_chat_button.click()
-        chat_view = self.get_chat_view()
+        chat = self.get_chat_view()
         if new_ui:
             self.start_a_new_chat_bottom_sheet_button.click()
-            [chat_view.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
+            [chat.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
+            self.setup_chat_button.click()
+
         else:
-            chat_view = self.new_group_chat_button.click()
+            chat = self.new_group_chat_button.click()
             if user_names_to_add:
                 for user_name in user_names_to_add:
                     if len(user_names_to_add) > 5:
-                        chat_view.search_by_keyword(user_name[:5])
-                        chat_view.get_username_checkbox(user_name).click()
-                        chat_view.search_input.clear()
+                        chat.search_by_keyword(user_name[:5])
+                        chat.get_username_checkbox(user_name).click()
+                        chat.search_input.clear()
                     else:
-                        chat_view.get_username_checkbox(user_name).click()
-        chat_view.next_button.click()
-        chat_view.chat_name_editbox.send_keys(group_chat_name)
-        chat_view.create_button.click()
+                        chat.get_username_checkbox(user_name).click()
+                    chat.next_button.click()
+        chat.chat_name_editbox.send_keys(group_chat_name)
+        chat.create_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
-        return chat_view
+        return chat
 
     def send_contact_request_via_bottom_sheet(self, key:str):
         chat = self.get_chat_view()

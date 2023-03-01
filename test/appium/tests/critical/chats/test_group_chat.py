@@ -184,9 +184,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         for i in range(3):
             self.public_keys[i], self.usernames[i] = users[i]
 
+        self.homes[0].chats_tab.click()
         for i in range(1, 3):
-            self.homes[0].browser_tab.click()
-            self.profiles[0].add_contact_via_contacts_list(self.public_keys[i])
+
+            self.homes[0].add_contact(self.public_keys[i])
 
         for i in range(3):
             self.homes[i].chats_tab.click()
@@ -205,11 +206,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.homes[0].just_fyi('Admin creates group chat')
         self.chat_name = self.homes[0].get_random_chat_name()
-        # workaround for issue with checkboxes in bottom sheet
-        self.homes[0].communities_tab.click()
-        # self.homes[0].chats_tab.click()
+        self.homes[0].chats_tab.click()
         self.chats[0] = self.homes[0].create_group_chat(user_names_to_add=[self.usernames[1], self.usernames[2]],
-                                                        group_chat_name=self.chat_name)
+                                                        group_chat_name=self.chat_name,
+                                                        new_ui=True)
         for i in range(1, 3):
             self.chats[i] = ChatView(self.drivers[i])
 
@@ -234,10 +234,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.homes[0].get_chat(self.chat_name).click()
 
         self.chats[1].just_fyi('Check message status and message delivery')
-        # Not available yet
-        # message_status = self.chats[1].chat_element_by_text(message_to_admin).status
-        # if message_status != 'delivered':
-        #     self.errors.append('Message status is not delivered, it is %s!' % message_status)
+        self.chats[1].chat_element_by_text(message_to_admin).wait_for_status_to_be('Delivered', timeout=120)
         if not self.chats[0].chat_element_by_text(message_to_admin).is_element_displayed(30):
             self.errors.append('Message %s was not received by admin' % message_to_admin)
         self.errors.verify_no_errors()

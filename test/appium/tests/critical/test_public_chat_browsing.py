@@ -361,9 +361,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1 = self.home_1.get_profile_view()
-        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
-        self.profile_1.communities_tab.click()
-        self.home_2.chats_tab.click()
+        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
+        self.home_1.add_contact(self.public_key_2)
         self.home_2.handle_contact_request(self.default_username_1)
         self.text_message = 'hello'
 
