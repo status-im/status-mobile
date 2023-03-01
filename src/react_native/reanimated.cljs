@@ -61,8 +61,7 @@
   (.-inOut ^js Easing))
 
 (def easings
-  {:default (in-out (.-quad ^js Easing)) ; Reanimated default easing
-   :linear  (bezier 0 0 1 1)
+  {:linear  (bezier 0 0 1 1)
    :easing1 (bezier 0.25 0.1 0.25 1) ; TODO(parvesh) - rename easing functions, (design team input)
    :easing2 (bezier 0 0.3 0.6 0.9)
    :easing3 (bezier 0.3 0.3 0.3 0.9)})
@@ -112,6 +111,14 @@
                                 (with-timing val
                                              (js-obj "duration" duration
                                                      "easing"   (get easings easing))))))
+
+(defn animate-shared-value-with-delay-default-easing
+  [anim val duration delay]
+  (set-shared-value anim
+                    (with-delay delay
+                                (with-timing val
+                                             (js-obj "duration" duration
+                                                     "easing"   (in-out (.-quad ^js Easing)))))))
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]

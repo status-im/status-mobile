@@ -27,7 +27,7 @@
         (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
       (do
         (reset! transparent? (not @transparent?))
-        (reanimated/animate-shared-value-with-delay opacity-value 1 300 :default 50)
+        (reanimated/animate-shared-value-with-delay-default-easing opacity-value 1 300 50)
         (js/setTimeout #(when @small-list-ref
                           (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
                        100)))
