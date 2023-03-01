@@ -9,9 +9,9 @@
   (map #(assoc % :read true) notifications))
 
 (defn pending-contact-request?
-  [contact-id notification]
-  (and (= (:type notification) notification-types/contact-request)
-       (= contact-id (:author notification))))
+  [contact-id {:keys [type author]}]
+  (and (= type notification-types/contact-request)
+       (= contact-id author)))
 
 (defn- rpc->type
   [{:keys [type name] :as chat}]

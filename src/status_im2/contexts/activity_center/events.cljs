@@ -52,10 +52,9 @@
 (defn- update-notifications
   [db-notifications new-notifications {filter-type :type filter-status :status}]
   (->> new-notifications
-       (reduce (fn [acc {:keys [id type] :as notification}]
-                 (if (or (:deleted notification)
-                         (and (= :unread filter-status)
-                              (:read notification))
+       (reduce (fn [acc {:keys [id type deleted read] :as notification}]
+                 (if (or deleted
+                         (and (= :unread filter-status) read)
                          (and (set? filter-type)
                               (not (contains? filter-type type)))
                          (and (not (set? filter-type))
