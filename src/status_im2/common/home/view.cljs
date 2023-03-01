@@ -59,9 +59,10 @@
      ;; Left Section
      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
       [rn/view
-       {:style {:position :absolute
-                :left     20
-                :top      12}}
+       {:style {:accessibility-label :open-profile
+                :position            :absolute
+                :left                20
+                :top                 12}}
        [quo/user-avatar
         (merge
          {:ring?             true
