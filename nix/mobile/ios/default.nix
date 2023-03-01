@@ -20,6 +20,7 @@ in {
     ];
 
     # WARNING: Executes shellHook in reverse order.
+    # WARNING: Only some variables are merged.
     inputsFrom = [
       fastlane.shell
       cocoapods-sh
