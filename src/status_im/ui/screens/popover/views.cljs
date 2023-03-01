@@ -25,24 +25,26 @@
   [bottom-anim-value alpha-value window-height]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value
+    [(anim/timing bottom-anim-value
                   {:toValue         (- window-height)
+                   :duration        300
                    :useNativeDriver true})
      (anim/timing alpha-value
                   {:toValue         0
-                   :duration        500
+                   :duration        300
                    :useNativeDriver true})])))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
   (anim/start
    (anim/parallel
-    [(anim/spring bottom-anim-value
+    [(anim/timing bottom-anim-value
                   {:toValue         0
+                   :duration        300
                    :useNativeDriver true})
      (anim/timing alpha-value
                   {:toValue         0.4
-                   :duration        500
+                   :duration        300
                    :useNativeDriver true})])))
 
 (defn popover-view
@@ -58,7 +60,7 @@
                                 (js/setTimeout
                                  #(do (reset! current-popover nil)
                                       (re-frame/dispatch [:hide-popover]))
-                                 200))
+                                 300))
                               (hide-panel-anim
                                bottom-anim-value
                                alpha-value
@@ -184,7 +186,7 @@
                   [signing-sheets/fees-warning]
 
                   (= :activity-center view)
-                  [activity-center/view]
+                  [activity-center/view request-close]
 
                   :else
                   [view])]]]])))})))
