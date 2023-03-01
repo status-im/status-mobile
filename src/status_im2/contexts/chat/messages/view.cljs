@@ -32,19 +32,22 @@
                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                               (str emoji " " chat-name))
         online?             (rf/sub [:visibility-status-updates/online? chat-id])
-        contact             (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
+        contact             (when-not group-chat
+                              (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path          (rf/sub [:chats/photo-path chat-id])
+        avatar-image-key    (if (seq (:images contact))
+                              :profile-picture
+                              :ring-background)]
     [quo/page-nav
      {:align-mid?            true
-
       :mid-section           (if group-chat
                                {:type      :text-only
                                 :main-text display-name}
                                {:type      :user-avatar
                                 :avatar    {:full-name       display-name
                                             :online?         online?
-                                            :profile-picture photo-path
-                                            :size            :medium}
+                                            :size            :medium
+                                            avatar-image-key photo-path}
                                 :main-text display-name
                                 :on-press  #(debounce/dispatch-and-chill [:chat.ui/show-profile chat-id]
                                                                          1000)})

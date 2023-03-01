@@ -25,8 +25,7 @@
       :profile-picture   profile-picture
       :override-theme    :dark
       :size              :medium
-      :status-indicator? false
-      :ring?             true}]
+      :status-indicator? false}]
     [button/button
      {:size           32
       :type           :blur-bg

@@ -24,29 +24,31 @@
   (let [internal-selected? (reagent/atom (or default-selected? false))]
     (fn [{:keys [selected?
                  profile-picture
+                 ring-background
                  name
                  customization-color
                  on-change]
           :or   {customization-color :turquoise}}]
-      (when (and (not (nil? selected?)) (not= @internal-selected? selected?))
-        (reset! internal-selected? selected?))
-      [rn/touchable-opacity
-       {:style               (style/container customization-color @internal-selected?)
-        :on-press            #(on-change-handler internal-selected? on-change)
-        :active-opacity      1
-        :accessibility-label :select-profile}
-       [rn/view {:style style/header}
-        [user-avatar/user-avatar
-         {:full-name         name
-          :profile-picture   profile-picture
-          :status-indicator? false
-          :ring?             true
-          :size              :medium}]
-        [rn/view {:style (style/select-radio @internal-selected?)}
-         (when @internal-selected? [rn/view {:style style/select-radio-inner}])]]
-       [text/text
-        {:size   :heading-2
-         :weight :semi-bold
-         :style  style/profile-name
-        } name]])))
+      (let [avatar-image-key (if profile-picture :profile-picture :ring-background)
+            picture          (or profile-picture ring-background)]
+        (when (and (not (nil? selected?)) (not= @internal-selected? selected?))
+          (reset! internal-selected? selected?))
+        [rn/touchable-opacity
+         {:style               (style/container customization-color @internal-selected?)
+          :on-press            #(on-change-handler internal-selected? on-change)
+          :active-opacity      1
+          :accessibility-label :select-profile}
+         [rn/view {:style style/header}
+          [user-avatar/user-avatar
+           {:full-name         name
+            :status-indicator? false
+            :size              :medium
+            avatar-image-key   picture}]
+          [rn/view {:style (style/select-radio @internal-selected?)}
+           (when @internal-selected? [rn/view {:style style/select-radio-inner}])]]
+         [text/text
+          {:size   :heading-2
+           :weight :semi-bold
+           :style  style/profile-name}
+          name]]))))
 

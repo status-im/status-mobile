@@ -52,10 +52,7 @@
         new-notifications?     (pos? notif-count)
         notification-indicator :unread-dot
         counter-label          "0"]
-    [rn/view
-     {:style (merge
-              {:height 56}
-              style)}
+    [rn/view {:style (assoc style :height 56)}
      ;; Left Section
      [rn/touchable-without-feedback {:on-press open-profile}
       [rn/view
@@ -64,8 +61,7 @@
                 :top      12}}
        [quo/user-avatar
         (merge
-         {:ring?             true
-          :status-indicator? true
+         {:status-indicator? true
           :size              :small}
          avatar)]]]
      ;; Right Section

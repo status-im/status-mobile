@@ -39,8 +39,7 @@
           :profile-picture   photo-path
           :status-indicator? true
           :online?           online?
-          :size              :small
-          :ring?             false}]]])
+          :size              :small}]]])
     [rn/view {:padding-top 2 :width 32}]))
 
 (defn author
