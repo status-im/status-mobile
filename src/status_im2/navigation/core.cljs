@@ -189,10 +189,11 @@
 (re-frame/reg-fx
  :init-root-fx
  (fn [new-root-id]
-   (log/debug :init-root-fx new-root-id)
-   (dismiss-all-modals)
-   (reset! state/root-id new-root-id)
-   (navigation/set-root (get (roots/roots) new-root-id))))
+   (let [root (get (roots/roots) new-root-id)]
+     (log/debug :init-root-fx new-root-id)
+     (dismiss-all-modals)
+     (reset! state/root-id (or (get-in root [:root :stack :id]) new-root-id))
+     (navigation/set-root root))))
 
 (rf/defn set-multiaccount-root
   {:events [::set-multiaccount-root]}
