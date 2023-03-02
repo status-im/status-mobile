@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.menus.community-options.view :as options]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.components.react :as react]
@@ -18,10 +18,10 @@
   {:data {:community-color "#0052FF"
           :status          :gated
           :locked?         true
-          :cover           (resources/get-image :community-cover)
+          :cover           (resources/get-mock-image :community-cover)
           :tokens          [{:id    1
                              :group [{:id         1
-                                      :token-icon (resources/get-image :status-logo)}]}]
+                                      :token-icon (resources/get-mock-image :status-logo)}]}]
           :tags            [{:id        1
                              :tag-label (i18n/label :t/music)
                              :resource  (resources/get-image :music)}

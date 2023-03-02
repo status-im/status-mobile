@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.contexts.shell.cards.view :as switcher-cards]
             [status-im2.contexts.shell.constants :as shell.constants]))

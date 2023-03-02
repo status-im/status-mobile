@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [quo2.core :as quo]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
