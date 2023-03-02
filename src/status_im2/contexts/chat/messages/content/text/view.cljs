@@ -73,22 +73,22 @@
            [quo/text (subs literal 0 (dec (count literal)))]])
     blocks))
 
+(defn add-edited-tag [content]
+  (update (:parsed-text content)
+          (dec (count (:parsed-text content)))
+          (fn [last-literal]
+            (update last-literal
+                    :children
+                    conj
+                    {:literal [rn/text (style/edited-style)
+                               (str " (" (i18n/label :t/edited) ")")]
+                     :type    :edited}))))
+
 (defn render-parsed-text
   [{:keys [content edited-at]}]
-  (let [parsed-text-count           (when edited-at
-                                      (count (:parsed-text content)))
-        parsed-text-with-edited-tag (when edited-at
-                                      (update (:parsed-text content)
-                                              (dec parsed-text-count)
-                                              (fn [last-literal]
-                                                (update last-literal
-                                                        :children
-                                                        conj
-                                                        {:literal [rn/text (style/edited-style)
-                                                                   (str " (" (i18n/label :t/edited) ")")]
-                                                         :type    :edited}))))]
-    (reduce (fn [acc e]
-              (render-block acc e))
+  (let [parsed-text-with-edited-tag (when edited-at
+                                      (add-edited-tag content))]
+    (reduce render-block
             [:<>]
             (if edited-at
               parsed-text-with-edited-tag
