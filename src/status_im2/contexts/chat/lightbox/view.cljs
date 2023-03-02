@@ -57,7 +57,7 @@
                        #js {:animated false :offset (* (+ item-width seperator-width) @index)}))
                    timeout)
     (when platform/ios?
-      (top-view/animate-rotation result screen-width screen-height animations @insets-atom))))
+      (top-view/animate-rotation result screen-width screen-height @insets-atom animations))))
 
 (defn get-item-layout
   [_ index item-width]
