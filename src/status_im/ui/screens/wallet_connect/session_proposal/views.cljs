@@ -6,7 +6,6 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.ui.components.icons.icons :as icons]
@@ -77,36 +76,19 @@
        :on-press         on-press}]]))
 
 (defview success-sheet-view
-  [{:keys [wc-version] :as session-data}]
+  [{:keys [topic]}]
   (letsubs [visible-accounts [:visible-accounts-without-watch-only]
             dapps-account    [:dapps-account]
             sessions         [:wallet-connect/sessions]
-            sessions-legacy  [:wallet-connect-legacy/sessions]
             managed-session  [:wallet-connect/session-managed]]
-    (let [{:keys [topic]}                  (when-not (= wc-version constants/wallet-connect-version-1)
-                                             session-data)
-          peerId                           (when (= wc-version constants/wallet-connect-version-1)
-                                             (get-in session-data [:params 0 :peerId]))
-          session-legacy                   (when (= wc-version constants/wallet-connect-version-1)
-                                             (first (filter #(= (get-in % [:params 0 :peerId]) peerId)
-                                                            sessions-legacy)))
-          {:keys [peer state] :as session} (first (filter #(= (:topic %) topic) sessions))
-          {:keys [params]}                 (when (= wc-version constants/wallet-connect-version-1)
-                                             session-legacy)
+    (let [{:keys [peer state] :as session} (first (filter #(= (:topic %) topic) sessions))
           {:keys [metadata]}               peer
-          {:keys [peerMeta]}               (first params)
-          {:keys [accounts]}               (if (= wc-version constants/wallet-connect-version-1)
-                                             (first params)
-                                             state)
-          {:keys [name icons]}             (if (= wc-version constants/wallet-connect-version-1)
-                                             peerMeta
-                                             metadata)
+          {:keys [accounts]}               state
+          {:keys [name icons]}             metadata
           filtered-icons                   (status.utils/exclude-svg-resources icons)
           icon-uri                         (when (and filtered-icons (pos? (count filtered-icons)))
                                              (first filtered-icons))
-          address                          (if (= wc-version constants/wallet-connect-version-1)
-                                             (first accounts)
-                                             (last (string/split (first accounts) #":")))
+          address                          (last (string/split (first accounts) #":"))
           account                          (first (filter #(= (:address %) address) visible-accounts))
           selected-account-atom            (reagent/atom account)]
       [react/view (styles/proposal-sheet-container)
@@ -131,11 +113,9 @@
        [account-picker
         (vector dapps-account)
         selected-account-atom
-        {:on-press #(do
-                      (re-frame/dispatch (if (= wc-version constants/wallet-connect-version-1)
-                                           [:wallet-connect-legacy/manage-app session-data]
-                                           [:wallet-connect/manage-app session]))
-                      (reset! show-account-selector? true))}]
+        {:on-press (fn []
+                     (re-frame/dispatch [:wallet-connect/manage-app session])
+                     (reset! show-account-selector? true))}]
        [quo/text
         {:weight :regular
          :color  :secondary
@@ -157,33 +137,17 @@
            [react/view (styles/blur-view)]))])))
 
 (defview app-management-sheet-view
-  [{:keys [wc-version] :as session}]
+  [{:keys [topic]}]
   (letsubs [sessions         [:wallet-connect/sessions]
-            sessions-legacy  [:wallet-connect-legacy/sessions]
             visible-accounts [:visible-accounts-without-watch-only]]
-    (let [peerId                   (when (= wc-version constants/wallet-connect-version-1)
-                                     (get-in session [:params 0 :peerId]))
-          session-legacy           (when (= wc-version constants/wallet-connect-version-1)
-                                     (first (filter #(= (get-in % [:params 0 :peerId]) peerId)
-                                                    sessions-legacy)))
-          {:keys [topic]}          (when-not (= wc-version constants/wallet-connect-version-1) session)
-          {:keys [peer state]}     (first (filter #(= (:topic %) topic) sessions))
-          {:keys [params]}         (when (= wc-version constants/wallet-connect-version-1)
-                                     session-legacy)
+    (let [{:keys [peer state]}     (first (filter #(= (:topic %) topic) sessions))
           {:keys [metadata]}       peer
-          {:keys [peerMeta]}       (first params)
-          {:keys [accounts]}       (if (= wc-version constants/wallet-connect-version-1)
-                                     (first params)
-                                     state)
-          {:keys [name icons url]} (if (= wc-version constants/wallet-connect-version-1)
-                                     peerMeta
-                                     metadata)
+          {:keys [accounts]}       state
+          {:keys [name icons url]} metadata
           filtered-icons           (status-im.utils.utils/exclude-svg-resources icons)
           icon-uri                 (when (and filtered-icons (pos? (count filtered-icons)))
                                      (first filtered-icons))
-          address                  (if (= wc-version constants/wallet-connect-version-1)
-                                     (first accounts)
-                                     (last (string/split (first accounts) #":")))
+          address                  (last (string/split (first accounts) #":"))
           account                  (first (filter #(= (:address %) address) visible-accounts))
           selected-account-atom    (reagent/atom account)]
       [react/view {:style (merge (styles/acc-sheet) {:background-color "rgba(0,0,0,0)"})}
@@ -206,20 +170,16 @@
          [quo/button
           {:type     :secondary
            :theme    :secondary
-           :on-press #(re-frame/dispatch (if (= wc-version constants/wallet-connect-version-1)
-                                           [:wallet-connect-legacy/disconnect session-legacy]
-                                           [:wallet-connect/disconnect topic]))}
+           :on-press #(re-frame/dispatch [:wallet-connect/disconnect topic])}
           (i18n/label :t/disconnect)]]
         [account-selector
          visible-accounts
          selected-account-atom
          #(re-frame/dispatch
-           (if (= wc-version constants/wallet-connect-version-1)
-             [:wallet-connect-legacy/change-session-account session-legacy @selected-account-atom]
-             [:wallet-connect/change-session-account topic @selected-account-atom]))]]])))
+           [:wallet-connect/change-session-account topic @selected-account-atom])]]])))
 
 (defview session-proposal-sheet
-  [{:keys [name icons wc-version]}]
+  [{:keys [name icons]}]
   (letsubs [visible-accounts [:visible-accounts-without-watch-only]
             dapps-account    [:dapps-account]]
     (let [filtered-icons        (status-im.utils.utils/exclude-svg-resources icons)
@@ -251,16 +211,11 @@
                (when (= (count visible-accounts) 1) {:margin-top 12}))
         [quo/button
          {:type     :secondary
-          :on-press #(if (= wc-version constants/wallet-connect-version-1)
-                       (re-frame/dispatch [:wallet-connect-legacy/reject-proposal])
-                       (re-frame/dispatch [:wallet-connect/reject-proposal]))}
+          :on-press #(re-frame/dispatch [:wallet-connect/reject-proposal])}
          (i18n/label :t/reject)]
         [quo/button
          {:theme    :accent
-          :on-press #(if (= wc-version constants/wallet-connect-version-1)
-                       (re-frame/dispatch [:wallet-connect-legacy/approve-proposal
-                                           @selected-account-atom])
-                       (re-frame/dispatch [:wallet-connect/approve-proposal @selected-account-atom]))}
+          :on-press #(re-frame/dispatch [:wallet-connect/approve-proposal @selected-account-atom])}
          (i18n/label :t/connect)]]])))
 
 (defview wallet-connect-proposal-sheet
