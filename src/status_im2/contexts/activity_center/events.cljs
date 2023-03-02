@@ -314,7 +314,7 @@
 (def start-or-end-cursor
   "")
 
-(defn- valid-cursor?
+(defn- fetch-more?
   [cursor]
   (and (some? cursor)
        (not= cursor start-or-end-cursor)))
@@ -386,7 +386,7 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [type status]} (get-in db [:activity-center :filter])
         cursor                (get-in db [:activity-center :cursor])]
-    (when (valid-cursor? cursor)
+    (when (fetch-more? cursor)
       (notifications-fetch cofx
                            {:cursor        cursor
                             :filter-type   type
