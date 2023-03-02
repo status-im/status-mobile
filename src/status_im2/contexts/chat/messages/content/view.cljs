@@ -121,7 +121,7 @@
            :on-long-press       #(on-long-press message-data context)}
           [rn/view {:style {:padding-vertical 8}}
            (when (and (seq response-to) quoted-message)
-             [old-message/quoted-message {:message-id response-to :chat-id chat-id} quoted-message])
+             [old-message/quoted-message {:message-id response-to :chat-id chat-id}])
            [rn/view
             {:style {:padding-horizontal 12
                      :flex-direction     :row}}

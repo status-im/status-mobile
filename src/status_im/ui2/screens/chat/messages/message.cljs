@@ -128,15 +128,11 @@
           (:parsed-text content)))
 
 (defn quoted-message
-  [{:keys [message-id chat-id]} reply pin?]
-  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id])
-                                                message-id)
-        reply                              (assoc reply
-                                                  :deleted?        deleted?
-                                                  :deleted-for-me? deleted-for-me?
-                                                  :chat-id         chat-id)]
+  [{:keys [message-id chat-id]} pin?]
+  (let [quoted-message (get @(re-frame/subscribe [:chats/chat-messages chat-id])
+                            message-id)]
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
-     [components.reply/reply-message reply false pin?]]))
+     [components.reply/reply-message quoted-message false pin?]]))
 
 (defn message-not-sent-text
   [chat-id message-id]
