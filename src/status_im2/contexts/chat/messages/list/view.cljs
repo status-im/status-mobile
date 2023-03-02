@@ -172,7 +172,7 @@
         :inverted                     (when platform/ios? true)
         :style                        (when platform/android? {:scaleY -1})
         :on-layout                    on-messages-view-layout})]
-     [quo/floating-shell-button
+     #_[quo/floating-shell-button
       (merge {:jump-to
               {:on-press #(do
                             (rf/dispatch [:chat/close true])

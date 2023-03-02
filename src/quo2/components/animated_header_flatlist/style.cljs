@@ -23,7 +23,7 @@
    position))
 
 (defn blur-view
-  [animation scroll-y]
+  [animation]
   (reanimated/apply-animations-to-style
     {:opacity animation}
    {:position :absolute

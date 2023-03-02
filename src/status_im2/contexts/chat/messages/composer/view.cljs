@@ -184,7 +184,6 @@
 
                {window-height :height} (rn/use-window-dimensions)
                {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-               _ (js/console.log "ALWX" (clj->js insets) keyboard-height)
                translate-y (reanimated/use-shared-value 0)
                bg-opacity (reanimated/use-shared-value 0)
                bg-bottom (reanimated/use-shared-value (- window-height))
@@ -224,7 +223,9 @@
            [reanimated/view
             {:style (reanimated/apply-animations-to-style
                      {:height parent-height}
-                     {})}
+                     {:position :absolute
+                      :bottom 0
+                      :width "100%"})}
             ;;;;input
             [gesture/gesture-detector {:gesture bottom-sheet-gesture}
              [reanimated/view
