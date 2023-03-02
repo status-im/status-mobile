@@ -106,7 +106,7 @@
                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
           :on-press            (fn []
                                  (when (and outgoing
-                                            (not (= outgoing-status :sending))
+                                            (not= outgoing-status :sending)
                                             (not @show-delivery-state?))
                                    (reset! show-delivery-state? true)
                                    (js/setTimeout #(reset! show-delivery-state? false)
