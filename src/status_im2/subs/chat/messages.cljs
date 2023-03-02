@@ -19,7 +19,7 @@
   so we bucket both in 1999-12-31"
   [{:keys [acc last-timestamp last-datemark]} {:keys [whisper-timestamp datemark] :as msg}]
   (cond
-    (empty? acc)                       ; initial element
+    (empty? acc) ; initial element
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc msg)}
@@ -112,39 +112,27 @@
 (defn albumize-messages
   [messages]
   (get
-   (reduce
-    (fn [{:keys [messages albums]} message]
-      (let [album-id  (:album-id message)
-            ;; check if this image is the first image in an album (which is not albumized yet)
-            add-text? (when (and album-id (not (:albumize? message)) (> (count (get albums album-id)) 0))
-                        (not (some #(= false %)
-                                   (mapv #(< (:timestamp message) (:timestamp %))
-                                         (get albums album-id)))))
-            albums    (cond-> albums album-id (update album-id conj message))
-            ;; keep text of the first album image only
-            message   (if (or add-text? (<= (count (get albums album-id)) 1))
-                        message
-                        (assoc-in message [:content :text] nil))
-            messages  (if (and (> (count (get albums album-id)) 1) (:albumize? message))
-                        (conj (filterv #(not= album-id (:album-id %)) messages)
-                              {:album        (get albums album-id)
-                               :album-id     album-id
-                               :albumize?    (:albumize? message)
-                               :messages-ids (mapv :message-id (get albums album-id))
-                               :message-id   album-id
-                               :content-type constants/content-type-album})
-                        ;; remove text of other images in an album
-                        (if add-text?
-                          (conj (mapv #(when (= (:album-id %) album-id)
-                                         (assoc-in % [:content :text] nil))
-                                      messages)
-                                message)
-                          (conj messages message)))]
-        {:messages messages
-         :albums   albums}))
-    {:messages []
-     :albums   {}}
-    messages)
+   (reduce (fn [{:keys [messages albums]} message]
+             (let [album-id (:album-id message)
+                   albums   (cond-> albums album-id (update album-id conj message))
+                   messages (if album-id
+                              (conj (filterv #(not= album-id (:album-id %)) messages)
+                                    {:album           (get albums album-id)
+                                     :album-id        album-id
+                                     :albumize?       (:albumize? message)
+                                     :message-id      (:message-id message)
+                                     :deleted?        (:deleted? message)
+                                     :deleted-for-me? (:deleted-for-me? message)
+                                     :deleted-by      (:deleted-by message)
+                                     :from            (:from message)
+                                     :timestamp-str   (:timestamp-str message)
+                                     :content-type    constants/content-type-album})
+                              (conj messages message))]
+               {:messages messages
+                :albums   albums}))
+           {:messages []
+            :albums   {}}
+           messages)
    :messages))
 
 (re-frame/reg-sub

@@ -76,12 +76,6 @@
       constants/content-type-contact-request [not-implemented/not-implemented
                                               [old-message/system-contact-request message-data]])))
 
-(defn message-on-long-press
-  [message-data context]
-  (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content (drawers/reactions-and-actions message-data context)}]))
-
 (defn on-long-press
   [message-data context]
   (rf/dispatch [:dismiss-keyboard])
@@ -102,7 +96,7 @@
              outgoing        (if (= content-type constants/content-type-album)
                                (:outgoing first-image)
                                outgoing)
-             context         (assoc context :on-long-press #(message-on-long-press message-data context))
+             context         (assoc context :on-long-press #(on-long-press message-data context))
              response-to     (:response-to content)]
          [rn/touchable-highlight
           {:accessibility-label (if (and outgoing (= outgoing-status :sending))
@@ -154,9 +148,7 @@
                [status/status outgoing-status])]]]])))])
 
 (defn message-with-reactions
-  [{:keys [pinned-by mentioned in-pinned-view? content-type
-           last-in-group? message-id messages-ids]
-    :as   message-data}
+  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
    {:keys [chat-id] :as context}]
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
@@ -168,4 +160,4 @@
         content-type)
      [system-message-content message-data]
      [user-message-content message-data context])
-   [reactions/message-reactions-row chat-id message-id messages-ids]])
+   [reactions/message-reactions-row chat-id message-id]])

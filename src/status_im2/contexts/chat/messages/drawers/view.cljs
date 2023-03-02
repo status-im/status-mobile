@@ -20,7 +20,8 @@
                     (assoc message-data :pinned message-not-pinned?)]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned outgoing-status deleted? deleted-for-me?] :as message-data}
+  [{:keys [outgoing content pinned outgoing-status deleted? deleted-for-me? content-type]
+    :as   message-data}
    {:keys [edit-enabled show-input? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
@@ -36,7 +37,7 @@
        :label    (i18n/label :t/message-reply)
        :icon     :i/reply
        :id       :reply}])
-   (when-not (or deleted? deleted-for-me?)
+   (when (and (not (or deleted? deleted-for-me?)) (not= (get content :text) "placeholder"))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
                    (components.reply/get-quoted-text-with-mentions
@@ -44,7 +45,8 @@
        :label    (i18n/label :t/copy-text)
        :icon     :i/copy
        :id       :copy}])
-   (when message-pin-enabled
+   ;; pinning images are temporarily disabled
+   (when (and message-pin-enabled (not= content-type constants/content-type-image))
      [{:type     :main
        :on-press #(pin-message message-data)
        :label    (i18n/label (if pinned
@@ -126,18 +128,22 @@
             icon]])))]))
 
 (defn reactions-and-actions
-  [{:keys [message-id outgoing-status deleted? deleted-for-me?] :as message-data}
+  [message-data
    {:keys [chat-id] :as context}]
   (fn []
-    (let [actions        (get-actions message-data context)
-          main-actions   (filter #(= (:type %) :main) actions)
-          danger-actions (filter #(= (:type %) :danger) actions)
-          admin-actions  (filter #(= (:type %) :admin) actions)]
+    (let [data                                          (if (contains? message-data :album-id)
+                                                          (first (:album message-data))
+                                                          message-data)
+          {:keys [message-id deleted? deleted-for-me?]} data
+          outgoing-status                               (:outgoing-status data)
+          actions                                       (get-actions data context)
+          main-actions                                  (filter #(= (:type %) :main) actions)
+          danger-actions                                (filter #(= (:type %) :danger) actions)
+          admin-actions                                 (filter #(= (:type %) :admin) actions)]
       [:<>
        ;; REACTIONS
        (when (and (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
          [reactions {:chat-id chat-id :message-id message-id}])
-
        ;; MAIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}
         (for [action main-actions]
