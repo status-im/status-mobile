@@ -3,8 +3,8 @@
             [status-im.chat.models.reactions :as models.reactions]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.list.events :as models.message-list]
-            [utils.i18n :as i18n]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -192,7 +192,6 @@
 
      (sort-by :pinned-at sort-pinned pin-messages-vals))))
 
-
 (re-frame/reg-sub
  :chats/pin-modal
  :<- [:messages/pin-modal]
@@ -221,30 +220,10 @@
    (get-in pagination-info [chat-id :loading-messages?])))
 
 (re-frame/reg-sub
- :chats/loading-pin-messages?
- :<- [:messages/pagination-info]
- (fn [pagination-info [_ chat-id]]
-   (get-in pagination-info [chat-id :loading-pin-messages?])))
-
-(re-frame/reg-sub
  :chats/message-list
  :<- [:messages/message-lists]
  (fn [message-lists [_ chat-id]]
    (get message-lists chat-id)))
-
-(re-frame/reg-sub
- :chats/pin-message-list
- :<- [:messages/pin-message-lists]
- (fn [pin-message-lists [_ chat-id]]
-   (get pin-message-lists chat-id)))
-
-(re-frame/reg-sub
- :chats/chat-no-messages?
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chats/chat-messages chat-id]))
- (fn [messages]
-   (empty? messages)))
-
 
 (re-frame/reg-sub
  :chats/raw-chat-messages-stream

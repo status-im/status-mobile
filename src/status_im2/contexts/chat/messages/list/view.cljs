@@ -72,16 +72,20 @@
   "compute data used to render message list, including pinned message list and message list in chats"
   [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled
            in-pinned-view?]}]
-  (let [current-public-key                                       (rf/sub [:multiaccount/public-key])
-        {:keys [can-delete-message-for-everyone?] :as community} (rf/sub [:communities/community
-                                                                          community-id])
-        group-admin?                                             (get admins current-public-key)
-        community-admin?                                         (when community (community :admin))
-        message-pin-enabled                                      (and (not public?)
-                                                                      (or (not group-chat)
-                                                                          (and group-chat
-                                                                               (or group-admin?
-                                                                                   community-admin?))))]
+  (let [current-public-key                         (rf/sub [:multiaccount/public-key])
+        {:keys [can-delete-message-for-everyone?
+                admin-settings]
+         :as   community}                          (rf/sub [:communities/community
+                                                            community-id])
+        {:keys [pin-message-all-members-enabled?]} admin-settings
+        group-admin?                               (get admins current-public-key)
+        community-admin?                           (when community (community :admin))
+        message-pin-enabled                        (and (not public?)
+                                                        (or (not group-chat)
+                                                            (and group-chat
+                                                                 (or group-admin?
+                                                                     pin-message-all-members-enabled?
+                                                                     community-admin?))))]
     {:group-chat                       group-chat
      :group-admin?                     group-admin?
      :public?                          public?

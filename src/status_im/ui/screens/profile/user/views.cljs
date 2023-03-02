@@ -204,6 +204,9 @@
         {:right-accessories [{:accessibility-label :share-header-button
                               :icon                :main-icons/share
                               :on-press            on-share}]
+         :left-accessories  [{:accessibility-label :close-header-button
+                              :icon                :main-icons/close
+                              :on-press            #(re-frame/dispatch [:navigate-back])}]
          :use-insets        true
          :extended-header   (profile-header/extended-header
                              {:on-press  on-share

@@ -2,13 +2,13 @@
   (:require [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im2.contexts.chat.home.view :as chat] ;; TODO move to status-im2
             [status-im2.contexts.communities.home.view :as communities]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.style :as styles]))
+            [status-im2.contexts.shell.style :as styles]
+            [status-im.ui.screens.browser.stack :as browser.stack]))
 
 (defn load-stack?
   [stack-id]
@@ -39,7 +39,7 @@
           :communities-stack [communities/home]
           :chats-stack       [chat/home]
           :wallet-stack      [wallet.accounts/accounts-overview]
-          :browser-stack     [profile.user/my-profile])])]))
+          :browser-stack     [browser.stack/browser-stack])])]))
 
 (defn home-stack
   []

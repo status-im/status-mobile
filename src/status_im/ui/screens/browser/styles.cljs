@@ -6,13 +6,14 @@
 (defn navbar
   []
   {:background-color   colors/white
-   :height             51
+   :height             100
    :flex-direction     :row
    :align-items        :center
    :justify-content    :space-between
    :border-top-color   colors/gray-lighter
    :border-top-width   1
-   :padding-horizontal 24})
+   :padding-horizontal 24
+   :padding-bottom     50})
 
 (def disabled-button
   {:opacity 0.4})

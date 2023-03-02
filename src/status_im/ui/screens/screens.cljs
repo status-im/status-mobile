@@ -12,9 +12,6 @@
     [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
     [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
-    [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
-    [status-im.ui.screens.browser.tabs.views :as browser.tabs]
-    [status-im.ui.screens.browser.views :as browser]
     [status-im.ui.screens.bug-report :as bug-report]
     [status-im.ui.screens.communities.channel-details :as communities.channel-details]
     [status-im.ui.screens.communities.community :as community]
@@ -285,25 +282,6 @@
    {:name      :community-membership
     :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}}
     :component membership/membership}
-
-   ;;BROWSER
-
-   {:name      :empty-tab
-    :insets    {:top true}
-    :options   {:topBar             {:visible false}
-                :hardwareBackButton {:popStackOnPress false}}
-    :component empty-tab/empty-tab}
-   {:name      :browser
-    :options   {:topBar             {:visible false}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
-    :component browser/browser}
-   {:name      :browser-tabs
-    :insets    {:top true}
-    :options   {:topBar             {:visible false}
-                :hardwareBackButton {:popStackOnPress false}}
-    :component browser.tabs/tabs}
 
    ;;WALLET
 

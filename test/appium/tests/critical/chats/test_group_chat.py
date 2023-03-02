@@ -184,13 +184,12 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         for i in range(3):
             self.public_keys[i], self.usernames[i] = users[i]
 
-        self.homes[0].chats_tab.click()
-        for i in range(1, 3):
-
-            self.homes[0].add_contact(self.public_keys[i])
-
         for i in range(3):
+            self.homes[i].click_system_back_button_until_element_is_shown()
             self.homes[i].chats_tab.click()
+
+        for i in range(1, 3):
+            self.homes[0].add_contact(self.public_keys[i])
 
         self.homes[0].just_fyi('Members add admin to contacts to see PNs and put app in background')
         self.loop.run_until_complete(

@@ -99,7 +99,7 @@
       [chat-icon/custom-icon-view-list (:name dapps-account) (:color dapps-account) 32]]
 
      [react/touchable-highlight
-      {:on-press            #(re-frame/dispatch [:set-stack-root :browser-stack :browser-tabs])
+      {:on-press            #(re-frame/dispatch [:browser.ui/open-browser-tabs])
        :accessibility-label :browser-open-tabs}
       [icons/icon :main-icons/tabs {:color colors/black}]]
 
