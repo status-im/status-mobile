@@ -31,4 +31,4 @@
   []
   (-> (default-text-style)
       (update :style assoc :color (colors/theme-colors colors/neutral-40 colors/neutral-50))
-      (update :style merge typography/paragraph-2)))
+      (update :style merge typography/label)))
