@@ -29,6 +29,7 @@
     [status-im2.contexts.quo-preview.dividers.date :as divider-date]
     [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
+    [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
@@ -142,7 +143,10 @@
                             :component new-messages/preview-new-messages}
                            {:name      :divider-date
                             :insets    {:top false}
-                            :component divider-date/preview-divider-date}]
+                            :component divider-date/preview-divider-date}
+                           {:name      :strength-divider
+                            :insets    {:top false}
+                            :component strength-divider/preview-strength-divider}]
    :drawers               [{:name      :action-drawers
                             :insets    {:top false}
                             :component action-drawers/preview-action-drawers}

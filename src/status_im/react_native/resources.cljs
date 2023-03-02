@@ -69,7 +69,8 @@
    :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")
    :coinbase             (js/require "../resources/images/mock/coinbase.png")
    :small-opt-card-icon  (js/require "../resources/images/mock/small_opt_card_icon.png")
-   :small-opt-card-main  (js/require "../resources/images/mock/small_opt_card_main.png")})
+   :small-opt-card-main  (js/require "../resources/images/mock/small_opt_card_main.png")
+   :ring                 (js/require "../resources/images/mock/ring.png")})
 
 (defn get-theme-image
   [k]

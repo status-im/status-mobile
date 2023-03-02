@@ -49,8 +49,7 @@
      :profile-picture   photo-path
      :status-indicator? true
      :online?           online?
-     :size              :small
-     :ring?             false}]
+     :size              :small}]
    [rn/view {:style {:margin-left 8}}
     [author/author
      {:primary-name   primary-name

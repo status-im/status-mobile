@@ -28,7 +28,7 @@
    {:label "Status Indicator"
     :key   :status-indicator?
     :type  :boolean}
-   {:label "Identicon Ring"
+   {:label "Identicon Ring (applies only when there's no profile picture)"
     :key   :ring?
     :type  :boolean}
    {:label "Full name separated by space"
@@ -49,8 +49,7 @@
   (let [state (reagent/atom {:full-name         "A Y"
                              :status-indicator? true
                              :online?           true
-                             :size              :medium
-                             :ring?             true})]
+                             :size              :medium})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -60,7 +59,12 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo2/user-avatar @state]]]])))
+         (let [{:keys [profile-picture ring?]} @state
+               ring-bg                         (resources/get-mock-image :ring)
+               params                          (cond-> @state
+                                                 (and (not profile-picture) ring?)
+                                                 (assoc :ring-background ring-bg))]
+           [quo2/user-avatar params])]]])))
 
 (defn preview-user-avatar
   []
