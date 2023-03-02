@@ -92,6 +92,8 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.profile_1.just_fyi("Enabling PNs")
         self.profile_1.switch_push_notifications()
+        [home.click_system_back_button_until_element_is_shown() for home in [self.home_1, self.home_2]]
+
 
     @marks.testrail_id(702871)
     def test_activity_center_cancel_outgoing_contact_request_no_pn(self):
@@ -133,7 +135,6 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         [home.chats_tab.click() for home in [self.home_1, self.home_2]]
 
         self.home_2.just_fyi("Device2 sends pending contact request after cancelling")
-        # self.home_2.browser_tab.click() # temp
         self.home_2.add_contact(self.public_key_1)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')

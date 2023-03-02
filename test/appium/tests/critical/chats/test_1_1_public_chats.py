@@ -982,12 +982,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_2.switch_push_notifications()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
-        self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.chats_tab)
-        self.home_1.chats_tab.click()
+        for home in (self.home_1, self.home_2):
+            home.click_system_back_button_until_element_is_shown()
+            home.chats_tab.click()
         self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
-        self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
@@ -1161,8 +1161,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.click_system_back_button_until_element_is_shown()
-        self.home_1.browser_tab.click()  # temp, until profile is on browser tab
+        self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.click_system_back_button_until_element_is_shown()
         self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
@@ -1204,7 +1205,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         [device.click_system_back_button_until_element_is_shown() for device in
          (self.device_1, self.device_2)]
-        self.home_2.browser_tab.click()  # temp, until profile is on browser tab
+        self.home_2.profile_button.click()
         self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
@@ -1214,7 +1215,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
         self.device_1.click_system_back_button_until_element_is_shown()
-        self.device_1.browser_tab.click()  # temp, until profile is on browser tab
+        self.device_1.profile_button.click()
         self.device_1.click_system_home_button()
 
         self.device_2.just_fyi("Check text push notification and tap it")
