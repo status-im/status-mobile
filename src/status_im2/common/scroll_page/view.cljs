@@ -77,21 +77,22 @@
            :style  {:line-height 21}}
           name]])
       (if top-nav
-        [rn/view {:margin-top (if platform/ios? 44 0)}
+        [rn/view {:style {:margin-top (if platform/ios? 44 0)}}
          top-nav]
-        [quo/page-nav
-         (merge {:horizontal-description? true
-                 :one-icon-align-left?    true
-                 :align-mid?              false
-                 :page-nav-color          :transparent
-                 :mid-section             {:type            :text-with-description
-                                           :main-text       nil
-                                           :description-img nil}
-                 :right-section-buttons   page-nav}
-                (when navigate-back?
-                  {:left-section {:icon                  :i/close
-                                  :icon-background-color (icon-color)
-                                  :on-press              #(rf/dispatch [:navigate-back])}}))])
+        [rn/view {:style {:margin-top 44}}
+         [quo/page-nav
+          (merge {:horizontal-description? true
+                  :one-icon-align-left?    true
+                  :align-mid?              false
+                  :page-nav-color          :transparent
+                  :mid-section             {:type            :text-with-description
+                                            :main-text       nil
+                                            :description-img nil}
+                  :right-section-buttons   page-nav}
+                 (when navigate-back?
+                   {:left-section {:icon                  :i/close
+                                   :icon-background-color (icon-color)
+                                   :on-press              #(rf/dispatch [:navigate-back])}}))]])
       (when title-colum
         title-colum)
       sticky-header]]))
