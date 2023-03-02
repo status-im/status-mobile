@@ -86,13 +86,11 @@
 
 (defn render-parsed-text
   [{:keys [content edited-at]}]
-  (let [parsed-text-with-edited-tag (when edited-at
-                                      (add-edited-tag content))]
-    (reduce render-block
-            [:<>]
-            (if edited-at
-              parsed-text-with-edited-tag
-              (:parsed-text content)))))
+  (reduce render-block
+          [:<>]
+          (if edited-at
+            (add-edited-tag content)
+            (:parsed-text content))))
 
 (defn text-content
   [message-data context]
