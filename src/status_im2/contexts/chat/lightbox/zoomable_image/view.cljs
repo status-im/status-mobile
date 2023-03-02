@@ -75,7 +75,6 @@
   (reset! pan-x-enabled? (> value x-threshold-scale))
   (reset! pan-y-enabled? (> value y-threshold-scale)))
 
-
 (defn handle-orientation-change
   [curr-orientation
    focused?
@@ -100,7 +99,6 @@
     (center-y animations false)
     (reset! pan-x-enabled? (> (get-val scale) x-threshold-scale))
     (reset! pan-y-enabled? (> (get-val scale) y-threshold-scale))))
-
 
 ;;;; Gestures
 (defn tap-gesture

@@ -35,7 +35,6 @@
      ;; screen width and height used in calculations, and depends on platform
      :screen-width        screen-width
      :screen-height       screen-height
-
      :x-threshold-scale   (/ screen-width (min screen-width container-width))
      :y-threshold-scale   (/ screen-height (min screen-height container-height))
      :landscape-scale-val (/ portrait-image-width portrait-image-height)}))

@@ -62,7 +62,7 @@
 
 (def easings
   {:linear  (bezier 0 0 1 1)
-   :easing1 (bezier 0.25 0.1 0.25 1) ; TODO(parvesh) - rename easing functions, (design team input)
+   :easing1 (bezier 0.25 0.1 0.25 1)
    :easing2 (bezier 0 0.3 0.6 0.9)
    :easing3 (bezier 0.3 0.3 0.3 0.9)})
 
