@@ -19,7 +19,7 @@
             {:message-id "0x111" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}]
     :album-id "abc"
     :albumize? true
-    :message-id "abc"
+    :message-id "0x444"
     :deleted? nil
     :deleted-for-me? nil
     :deleted-by nil
