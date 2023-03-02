@@ -73,9 +73,9 @@
            [quo/text (subs literal 0 (dec (count literal)))]])
     blocks))
 
-(defn add-edited-tag [content]
-  (update (:parsed-text content)
-          (dec (count (:parsed-text content)))
+(defn add-edited-tag [parsed-text]
+  (update parsed-text
+          (dec (count parsed-text))
           (fn [last-literal]
             (update last-literal
                     :children
