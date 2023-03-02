@@ -50,9 +50,6 @@
        (rf/sub [:messages/resolve-mention literal])]])
 
     :edited
-    (conj units [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
-
-    :edited
     (conj units
 
           [quo/text
@@ -67,7 +64,7 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]}]
+  [blocks {:keys [type ^js literal children]} edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
