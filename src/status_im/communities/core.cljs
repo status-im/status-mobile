@@ -71,7 +71,11 @@
                         :canDeleteMessageForEveryone :can-delete-message-for-everyone?
                         :canJoin                     :can-join?
                         :requestedToJoinAt           :requested-to-join-at
-                        :isMember                    :is-member?})
+                        :isMember                    :is-member?
+                        :adminSettings               :admin-settings})
+      (update :admin-settings
+              set/rename-keys
+              {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
       (update :members walk/stringify-keys)
       (update :chats <-chats-rpc)
       (update :categories <-categories-rpc)))
