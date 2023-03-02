@@ -92,7 +92,7 @@
             (update last-literal
                     :children
                     conj
-                    {:literal [rn/text (style/edited-style)
+                    {:literal [quo/text (style/edited-style)
                                (str " (" (i18n/label :t/edited) ")")]
                      :type    :edited}))))
 
