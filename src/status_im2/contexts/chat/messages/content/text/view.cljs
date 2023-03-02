@@ -67,11 +67,11 @@
   [blocks {:keys [type ^js literal children]}]
   (case (keyword type)
     :paragraph
-    (conj (conj blocks
-                (reduce
-                 render-inline
-                 [quo/text]
-                 children)))
+    (conj blocks
+          (reduce
+           render-inline
+           [quo/text]
+           children))
 
     :blockquote
     (conj blocks
