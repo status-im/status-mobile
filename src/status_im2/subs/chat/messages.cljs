@@ -120,7 +120,7 @@
                                     {:album           (get albums album-id)
                                      :album-id        album-id
                                      :albumize?       (:albumize? message)
-                                     :message-id      album-id
+                                     :message-id      (:message-id message)
                                      :deleted?        (:deleted? message)
                                      :deleted-for-me? (:deleted-for-me? message)
                                      :deleted-by      (:deleted-by message)
