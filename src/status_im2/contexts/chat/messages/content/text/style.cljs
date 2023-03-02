@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.text.style
   (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]
-            [status-im.ui.components.react :as react]))
+            [quo2.foundations.typography :as typography]))
 
 (def block
   {:border-radius      6
@@ -25,7 +24,7 @@
 
 (defn default-text-style
   []
-  {:max-font-size-multiplier react/max-font-size-multiplier
+  {:max-font-size-multiplier 1.25
    :style                    (message-default-style)})
 
 (defn edited-style
