@@ -53,7 +53,7 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]}]
+  [blocks {:keys [type ^js literal children]} edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
@@ -98,7 +98,8 @@
 
 (defn render-parsed-text
   [{:keys [content edited-at]}]
-  (reduce render-block
+  (reduce (fn [acc e]
+            (render-block acc e edited-at))
           [:<>]
           (cond-> (:parsed-text content)
             edited-at add-edited-tag)))
