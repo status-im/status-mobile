@@ -21,11 +21,7 @@
 
 (defn message-default-style
   []
-  {:font-family    "Inter-Regular"
-   :color          (colors/theme-colors colors/neutral-100 colors/white)
-   :font-size      15
-   :line-height    21.75
-   :letter-spacing -0.135})
+  (assoc typography/paragraph-1 :color (colors/theme-colors colors/neutral-100 colors/white)))
 
 (defn default-text-style
   []
@@ -34,11 +30,6 @@
 
 (defn edited-style
   []
-  (cond->
-    (update (default-text-style)
-            :style
-            assoc
-            :color (colors/theme-colors colors/neutral-40 colors/neutral-50)
-            :font-size 13
-            :line-height 18.2
-            :letter-spacing (typography/tracking 13))))
+  (-> (default-text-style)
+      (update :style assoc :color (colors/theme-colors colors/neutral-40 colors/neutral-50))
+      (update :style merge typography/paragraph-2)))
