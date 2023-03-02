@@ -64,7 +64,7 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]}]
+  [blocks {:keys [type ^js literal children]} edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
