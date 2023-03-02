@@ -53,7 +53,7 @@
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]}]
+  [blocks {:keys [type ^js literal children]} edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
@@ -65,12 +65,18 @@
     :blockquote
     (conj blocks
           [rn/view {:style style/quote}
-           [quo/text literal]])
+           [quo/text literal]]
+          (when edited-at
+            [quo/text (style/edited-style)
+             (str " (" (i18n/label :t/edited) ")")]))
 
     :codeblock
     (conj blocks
           [rn/view {:style (merge style/block (style/code))}
-           [quo/text (subs literal 0 (dec (count literal)))]])
+           [quo/text (subs literal 0 (dec (count literal)))]]
+          (when edited-at
+            [quo/text (style/edited-style)
+             (str " (" (i18n/label :t/edited) ")")]))
     blocks))
 
 (defn add-edited-tag [parsed-text]
@@ -86,7 +92,8 @@
 
 (defn render-parsed-text
   [{:keys [content edited-at]}]
-  (reduce render-block
+  (reduce (fn [acc e]
+            (render-block acc e edited-at))
           [:<>]
           (cond-> (:parsed-text content)
             edited-at add-edited-tag)))
