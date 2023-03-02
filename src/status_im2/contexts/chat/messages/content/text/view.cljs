@@ -56,11 +56,11 @@
   [blocks {:keys [type ^js literal children]}]
   (case (keyword type)
     :paragraph
-    (conj (conj blocks
-                (reduce
-                 render-inline
-                 [quo/text]
-                 children)))
+    (conj blocks
+          (reduce
+           render-inline
+           [quo/text]
+           children))
 
     :blockquote
     (conj blocks
@@ -79,7 +79,7 @@
                                       (count (:parsed-text content)))
         parsed-text-with-edited-tag (when edited-at
                                       (update (:parsed-text content)
-                                              (- parsed-text-count 1)
+                                              (dec parsed-text-count)
                                               (fn [last-literal]
                                                 (update last-literal
                                                         :children
@@ -87,12 +87,12 @@
                                                         {:literal [rn/text (style/edited-style)
                                                                    (str " (" (i18n/label :t/edited) ")")]
                                                          :type    :edited}))))]
-    (conj (reduce (fn [acc e]
-                    (render-block acc e))
-                  [:<>]
-                  (if edited-at
-                    parsed-text-with-edited-tag
-                    (:parsed-text content))))))
+    (reduce (fn [acc e]
+              (render-block acc e))
+            [:<>]
+            (if edited-at
+              parsed-text-with-edited-tag
+              (:parsed-text content)))))
 
 (defn text-content
   [message-data context]
