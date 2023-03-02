@@ -88,9 +88,8 @@
   [{:keys [content edited-at]}]
   (reduce render-block
           [:<>]
-          (if edited-at
-            (add-edited-tag content)
-            (:parsed-text content))))
+          (cond-> (:parsed-text content)
+            edited-at add-edited-tag)))
 
 (defn text-content
   [message-data context]
