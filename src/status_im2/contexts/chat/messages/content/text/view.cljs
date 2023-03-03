@@ -85,14 +85,19 @@
              (str " (" (i18n/label :t/edited) ")")]))
     blocks))
 
-(defn add-edited-tag [parsed-text]
+(defn add-edited-tag
+  [parsed-text]
   (update parsed-text
           (dec (count parsed-text))
           (fn [last-literal]
             (update last-literal
                     :children
                     conj
-                    {:literal [quo/text (style/edited-style)
+                    {:literal [quo/text
+                               {:weight :medium
+                                :size   :label
+                                :style  {:color (colors/theme-colors colors/neutral-40
+                                                                     colors/neutral-50)}}
                                (str " (" (i18n/label :t/edited) ")")]
                      :type    :edited}))))
 
