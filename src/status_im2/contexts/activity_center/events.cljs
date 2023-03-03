@@ -25,19 +25,25 @@
 (rf/defn open-activity-center
   {:events [:activity-center/open]}
   [{:keys [db]} {:keys [filter-type filter-status]}]
-  {:db       (cond-> db
-               filter-status
-               (assoc-in [:activity-center :filter :status] filter-status)
+  ;; It's essential to clean-up the popover state and delay the dispatch of the
+  ;; `:show-popover` event, otherwise the popover won't be displayed under
+  ;; certain conditions. See issue
+  ;; https://github.com/status-im/status-mobile/issues/15230
+  {:db             (cond-> (dissoc db :popover/popover)
+                     filter-status
+                     (assoc-in [:activity-center :filter :status] filter-status)
 
-               filter-type
-               (assoc-in [:activity-center :filter :type] filter-type))
-   :dispatch [:show-popover
-              {:view                       :activity-center
-               :style                      {:margin 0}
-               :disable-touchable-overlay? true
-               :blur-view?                 true
-               :blur-view-props            {:blur-amount 20
-                                            :blur-type   :dark}}]})
+                     filter-type
+                     (assoc-in [:activity-center :filter :type] filter-type))
+   :dispatch-later [{:ms       25
+                     :dispatch [:show-popover
+                                {:view                       :activity-center
+                                 :style                      {:margin 0}
+                                 :disable-touchable-overlay? true
+                                 :delay-ms                   225
+                                 :blur-view?                 true
+                                 :blur-view-props            {:blur-amount 20
+                                                              :blur-type   :dark}}]}]})
 
 ;;;; Misc
 
