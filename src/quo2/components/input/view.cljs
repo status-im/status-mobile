@@ -1,5 +1,6 @@
 (ns quo2.components.input.view
-  (:require [quo2.components.icon :as icon]
+  (:require [oops.core :as oops]
+            [quo2.components.icon :as icon]
             [quo2.components.input.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
@@ -54,7 +55,7 @@
         on-focus!           #(reset! status :focus)
         on-blur!            #(reset! status :default)
         multiple-lines?     (reagent/atom false)
-        set-multiple-lines! #(let [height (.. % -nativeEvent -contentSize -height)]
+        set-multiple-lines! #(let [height (oops/oget % "nativeEvent.contentSize.height")]
                                (if (> height 57)
                                  (reset! multiple-lines? true)
                                  (reset! multiple-lines? false)))
