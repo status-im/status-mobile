@@ -18,7 +18,8 @@
   [{:keys [full-name size draw-ring?]}]
   (let [font-size       (get-in style/sizes [size :font-size])
         amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
-    [rn/view {:style (style/initials-avatar size draw-ring?)}
+    [rn/view {:accessibility-label :initials-avatar
+              :style               (style/initials-avatar size draw-ring?)}
      [text/text
       {:style  style/initials-avatar-text
        :size   font-size
@@ -42,12 +43,14 @@
      ;; The `profile-picture` already has the ring in it
      (when-let [image (or profile-picture ring-background)]
        [fast-image/fast-image
-        {:style  outer-styles
-         :source image}])
+        {:accessibility-label (if draw-ring? :ring-background :profile-picture)
+         :style               outer-styles
+         :source              image}])
      (when-not profile-picture
        [initials-avatar
         {:full-name  full-name
          :size       size
          :draw-ring? draw-ring?}])
      (when status-indicator?
-       [rn/view {:style (style/dot size online? draw-ring?)}])]))
+       [rn/view {:accessibility-label :status-indicator
+                 :style               (style/dot size online? draw-ring?)}])]))
