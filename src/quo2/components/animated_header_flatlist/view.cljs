@@ -21,7 +21,7 @@
   [event initial-y scroll-y]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y (- (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
+        current-y (+ (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn header
@@ -47,7 +47,7 @@
       [title-comp]]]))
 
 (defn animated-header-list
-  [{:keys [header-comp main-comp footer-comp] :as parameters}]
+  [{:keys [header-comp main-comp footer-comp title-comp] :as parameters}]
   [safe-area/consumer
    (fn [insets]
      (let [window-height (:height (rn/get-window))
@@ -106,7 +106,10 @@
                 :style          (style/button-container {:margin-right 20})}
                [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
 
-             [reanimated/flat-list
+             (when main-comp
+               [main-comp])
+
+             #_[reanimated/flat-list
               {:data                         [nil]
                :render-fn                    main-comp
                :key-fn                       str

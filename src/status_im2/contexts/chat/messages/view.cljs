@@ -73,8 +73,34 @@
         contact             (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path          (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
 
-    [animated-header-list/animated-header-list
+    [messages.list/messages-list-with-animated-header
      {:cover-bg-color "#2A799B33"
+      :chat        chat
+      :show-input? show-input?
+      :header-comp (fn []
+                     [rn/view
+                      {:style {:flex-direction :row
+                               :align-items    :center
+                               :margin-left    8
+                               :margin-right   8}}
+                      [user-avatar/user-avatar {:full-name       display-name
+                                                :online?         online?
+                                                :profile-picture photo-path
+                                                :size            :small}]
+                      [quo/text {:weight          :semi-bold
+                                 :number-of-lines 1
+                                 :style           {:margin-left 8
+                                                   :flex        1}}
+                       display-name]])
+      :footer-comp (fn [insets]
+                     (if-not show-input?
+                         [contact-requests.bottom-drawer/view chat-id contact-request-state]
+                         [composer/composer chat-id insets]))}]
+
+    #_[animated-header-list/animated-header-list
+     {:cover-bg-color "#2A799B33"
+      :chat        chat
+      :show-input? show-input?
       :header-comp    (fn []
                         [rn/view
                          {:style {:flex-direction :row
@@ -108,11 +134,13 @@
                          [quo/text {:style {:margin-top 8}}
                           "Web 3.0 Designer @ethstatus • DJ • Producer • Dad • YouTuber."]])
       :main-comp      (fn []
-                        [messages.list/messages-list {:chat chat :show-input? show-input?}])
+                        [messages.list/messages-list
+                         {:chat        chat
+                          :show-input? show-input?}])
       :footer-comp    (fn [insets]
                         (if-not show-input?
-                          [contact-requests.bottom-drawer/view chat-id contact-request-state]
-                          [composer/composer chat-id insets]))}]))
+                            [contact-requests.bottom-drawer/view chat-id contact-request-state]
+                            [composer/composer chat-id insets]))}]))
 
 #_[rn/keyboard-avoiding-view
    {:style                  {:position :relative :flex 1}
