@@ -262,6 +262,13 @@
       {:position :absolute
        :bottom   6}]]))
 
+(defn scroll-handler
+  [event initial-y scroll-y]
+  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
+                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
+        current-y (+ (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
+    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
+
 (defn messages-list-with-animated-header
   [{:keys [chat show-input? cover-bg-color header-comp footer-comp]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
@@ -276,7 +283,6 @@
          [:f>
           (fn []
             (let [scroll-y (reanimated/use-shared-value initial-y)
-                  _ (js/console.log "ALWX scroll-y" scroll-y)
                   opacity-animation (reanimated/interpolate scroll-y
                                                             [(* threshold 0.33) (* threshold 0.66)]
                                                             [0 1]
@@ -352,7 +358,10 @@
                  :onMomentumScrollBegin        state/start-scrolling
                  :onMomentumScrollEnd          state/stop-scrolling
                  :scrollEventThrottle          16
-                 :on-scroll                    on-scroll
+                 :on-scroll                    (fn [event]
+                                                 (scroll-handler event initial-y scroll-y)
+                                                 (when on-scroll
+                                                   (on-scroll event)))
                  ;;TODO https://github.com/facebook/react-native/issues/30034
                  :inverted                     (when platform/ios? true)
                  :style                        (when platform/android? {:scaleY -1})
