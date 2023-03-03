@@ -334,6 +334,10 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def react-native-camera-roll
   (clj->js {:default #js {}}))
 
+(def react-native-orientation-locker
+  (clj->js {:default                    #js {}
+            :useDeviceOrientationChange #js {}}))
+
 (def wallet-connect-client
   #js
    {:default       #js {}
@@ -399,6 +403,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-share"                            react-native-share
     "@react-native-async-storage/async-storage"     async-storage
     "react-native-svg"                              react-native-svg
+    "react-native-orientation-locker"               react-native-orientation-locker
     "../src/js/worklet_factory.js"                  worklet-factory
     "../src/js/shell_worklets.js"                   shell-worklets
     "../src/js/bottom_sheet.js"                     bottom-sheet

@@ -347,3 +347,9 @@
   {:events [:chat.ui/zoom-out-signal]}
   [{:keys [db]} value]
   {:db (assoc db :lightbox/zoom-out-signal value)})
+
+(rf/defn orientation-change
+  {:events [:chat.ui/orientation-change]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/orientation value)})
+
