@@ -6,19 +6,19 @@
   "Colors that keep the same across input's status change"
   {:light      {:label         colors/neutral-50
                 :icon          colors/neutral-50
-                :cursor        (get-in colors/customization [:blue 50])
+                :cursor        (colors/custom-color :blue 50)
                 :button-border colors/neutral-30
                 :clear-icon    colors/neutral-40
                 :password-icon colors/neutral-50}
    :light-blur {:label         colors/neutral-80-opa-40
                 :icon          colors/neutral-80-opa-70
-                :cursor        (get-in colors/customization [:blue 50])
+                :cursor        (colors/custom-color :blue 50)
                 :button-border colors/neutral-80-opa-30
                 :password-icon colors/neutral-100
                 :clear-icon    colors/neutral-80-opa-30}
    :dark       {:label         colors/neutral-40
                 :icon          colors/neutral-40
-                :cursor        (get-in colors/customization [:blue 60])
+                :cursor        (colors/custom-color :blue 60)
                 :button-border colors/neutral-70
                 :password-icon colors/white
                 :clear-icon    colors/neutral-60}
