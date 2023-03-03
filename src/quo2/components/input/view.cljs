@@ -53,8 +53,8 @@
 (defn- base-input
   [{:keys [on-change-text on-char-limit-reach]}]
   (let [status              (reagent/atom :default)
-        on-focus!           #(reset! status :focus)
-        on-blur!            #(reset! status :default)
+        on-focus            #(reset! status :focus)
+        on-blur             #(reset! status :default)
         multiple-lines?     (reagent/atom false)
         set-multiple-lines! #(let [height (oops/oget % "nativeEvent.contentSize.height")]
                                (if (> height 57)
@@ -96,8 +96,8 @@
                     :placeholder-text-color (:placeholder colors-by-status)
                     :cursor-color           (:cursor variant-colors)
                     :editable               (not disabled)
-                    :on-focus               on-focus!
-                    :on-blur                on-blur!}
+                    :on-focus               on-focus
+                    :on-blur                on-blur}
              :always    (merge clean-props)
              multiline  (assoc :on-content-size-change set-multiple-lines!)
              char-limit (assoc :on-change-text #(update-char-limit! char-limit %)))]
