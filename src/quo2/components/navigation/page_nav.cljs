@@ -163,12 +163,12 @@
      :align-mid?              true/false
      :page-nav-color          color
      :page-nav-background-uri image-uri
-     :mid-section
+     :mid-section 
      {:type                  one-of :text-only :text-with-two-icons :text-with-one-icon :text-with-description :user-avatar
       :icon                  icon
       :main-text             string
-      :left-icon             icon
-      :right-icon            icon
+      :left-icon             icon       
+      :right-icon            icon 
       :description           string
       :description-color     color
       :description-icon      icon
@@ -176,18 +176,18 @@
       :description-img a render prop which will be used in place of :description-user-icon
       :main-text-icon-color  color
      }
-     :left-section
+     :left-section 
      {:type                  button-type
       :on-press              event
-      :icon                  icon
+      :icon                  icon 
       :icon-color            color
       :icon-background-color color
      }
-     :right-section-buttons vector of
+     :right-section-buttons vector of 
       {:type                  button-type
        :on-press              event
        :icon                  icon
-       :icon-color            color
+       :icon-color            color 
        :icon-background-color color
       }
    }
