@@ -60,6 +60,7 @@
 
 ;;Blur
 (def neutral-5-opa-70 (alpha neutral-5 0.7))
+(def neutral-80-blur-opa-80 "rgba(25,36,56,0.8)")
 (def neutral-90-opa-70 (alpha neutral-90 0.7))
 
 ;;80 with transparency
@@ -152,6 +153,10 @@
 (def success-60-opa-40 (alpha success-60 0.4))
 
 ;;;;Danger
+(def danger "#E95460")
+
+;; Danger with transparency
+(def danger-opa-40 (alpha danger 0.4))
 
 ;;Solid
 (def danger-50 "#E65F5C")
