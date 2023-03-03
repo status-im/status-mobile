@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feat-3232-activitycenter-endpoints-refactor",
-    "commit-sha1": "52eddfacec7433697dd24b0155e40fca0ec365c2",
-    "src-sha256": "1fa2gsy234rp0sy0790pcfc4l60h5yjzlwd0lszkqnxd6v1vd9sl"
+    "version": "v0.136.0",
+    "commit-sha1": "ebc1fc337c07b10c9c4a5caab8dae2c540ef54a1",
+    "src-sha256": "1fcv61k24zpp1cx6d9m7hn2zi5vbzqmfqz6r8l1dn5b09h3323a0"
 }
