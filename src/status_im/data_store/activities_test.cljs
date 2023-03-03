@@ -107,3 +107,23 @@
                "contact-id"
                {:type   notification-types/contact-request
                 :author "contactzzzz"}))))
+
+(deftest parse-notification-counts-response-test
+  (is
+   (= {notification-types/one-to-one-chat      15
+       notification-types/private-group-chat   16
+       notification-types/mention              17
+       notification-types/reply                18
+       notification-types/contact-request      19
+       notification-types/admin                20
+       notification-types/contact-verification 21}
+      (store/parse-notification-counts-response
+       {(keyword (str notification-types/one-to-one-chat))      15
+        (keyword (str notification-types/private-group-chat))   16
+        (keyword (str notification-types/mention))              17
+        (keyword (str notification-types/reply))                18
+        (keyword (str notification-types/contact-request))      19
+        (keyword (str notification-types/admin))                20
+        (keyword (str notification-types/contact-verification)) 21
+        ;; Unsupported type in the response is ignored
+        :999                                                    100}))))

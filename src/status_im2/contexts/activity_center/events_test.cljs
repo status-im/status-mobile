@@ -461,7 +461,7 @@
                      {:filter-type types/one-to-one-chat}])
 
        (is (= :unread (get-in (h/db) [:activity-center :filter :status])))
-       (is (= "" (get-in @spy-queue [0 :args 0 :params 0]))
+       (is (= "" (get-in @spy-queue [0 :args 0 :params 0 :cursor]))
            "Should be called with empty cursor when fetching first page")
        (is (= "10" (get-in (h/db) [:activity-center :cursor])))
        (is (= [{:chat-id       "0x9"
@@ -506,8 +506,7 @@
 
        (rf/dispatch [:activity-center.notifications/fetch-next-page])
 
-       (is (= "wakuext_activityCenterNotificationsBy" (get-in @spy-queue [0 :args 0 :method])))
-       (is (= "10" (get-in @spy-queue [0 :args 0 :params 0]))
+       (is (= "10" (get-in @spy-queue [0 :args 0 :params 0 :cursor]))
            "Should be called with current cursor")
        (is (= "" (get-in (h/db) [:activity-center :cursor])))
        (is (= [{:chat-id       "0x9"
@@ -540,32 +539,3 @@
                :unread
                :fake-error]
               (:args (last @spy-queue))))))))
-
-(deftest notifications-fetch-unread-count-test
-  (testing "fetches total notification count and store in db"
-    (h/run-test-sync
-     (setup)
-     (let [spy-queue (atom [])]
-       (h/stub-fx-with-callbacks :json-rpc/call
-                                 :on-success
-                                 (fn [{:keys [params]}]
-                                   (if (= types/mention (ffirst params))
-                                     9
-                                     0)))
-       (h/spy-fx spy-queue :json-rpc/call)
-
-       (rf/dispatch [:activity-center.notifications/fetch-unread-count])
-
-       (is (= "wakuext_unreadAndAcceptedActivityCenterNotificationsCount"
-              (get-in @spy-queue [0 :args 0 :method])))
-
-       (let [actual (get-in (h/db) [:activity-center :unread-counts-by-type])]
-         (is (= {types/one-to-one-chat      0
-                 types/private-group-chat   0
-                 types/contact-verification 0
-                 types/contact-request      0
-                 types/mention              9
-                 types/reply                0
-                 types/admin                0}
-                actual))
-         (is (= types/all-supported (set (keys actual)))))))))

@@ -13,6 +13,16 @@
   (and (= type notification-types/contact-request)
        (= contact-id author)))
 
+(defn parse-notification-counts-response
+  [response]
+  (reduce-kv (fn [acc k count-number]
+               (let [maybe-type (js/parseInt (name k) 10)]
+                 (if (notification-types/all-supported maybe-type)
+                   (assoc acc maybe-type count-number)
+                   acc)))
+             {}
+             response))
+
 (defn- rpc->type
   [{:keys [type name] :as chat}]
   (case type
