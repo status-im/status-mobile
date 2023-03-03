@@ -17,7 +17,6 @@
    :shadow-color     colors/shadow
    :border-radius    radius
    :justify-content  :space-between
-   :elevation        2
    :background-color (colors/theme-colors
                       colors/white
                       colors/neutral-90)})

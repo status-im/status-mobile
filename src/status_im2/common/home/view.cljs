@@ -46,7 +46,7 @@
    :style                  override-style
    :avatar                 user-avatar}
   "
-  [{:keys [type style avatar hide-search]}]
+  [{:keys [type style avatar search?] :or {type :default}}]
   (let [button-common-props    (get-button-common-props type)
         notif-count            (rf/sub [:activity-center/unread-count])
         new-notifications?     (pos? notif-count)
@@ -71,7 +71,7 @@
                :right          20
                :top            12
                :flex-direction :row}}
-      (when-not hide-search
+      (when search?
         [base-button :i/search #() :open-search-button button-common-props])
       [base-button :i/scan #() :open-scanner-button button-common-props]
       [base-button :i/qr-code #() :show-qr-button button-common-props]

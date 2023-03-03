@@ -18,7 +18,8 @@
                              LinearTransition)]
             [reagent.core :as reagent]
             [react-native.flat-list :as rn-flat-list]
-            [utils.collection]))
+            [utils.collection]
+            [utils.worklets.core :as worklets.core]))
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
@@ -29,14 +30,14 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
+(def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
-(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
+(def reanimated-flat-list (create-animated-component (.-FlatList ^js rn)))
 (defn flat-list
   [props]
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
 
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
-
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))
@@ -77,24 +78,20 @@
   (when (and anim (some? val))
     (set! (.-value anim) val)))
 
-;; Worklets
-(def worklet-factory (js/require "../src/js/worklet_factory.js"))
-
 (defn interpolate
   ([shared-value input-range output-range]
    (interpolate shared-value input-range output-range nil))
   ([shared-value input-range output-range extrapolation]
-   (.interpolateValue ^js worklet-factory
-                      shared-value
-                      (clj->js input-range)
-                      (clj->js output-range)
-                      (clj->js extrapolation))))
+   (worklets.core/interpolate-value
+    shared-value
+    (clj->js input-range)
+    (clj->js output-range)
+    (clj->js extrapolation))))
 
-;;;; Component Animations
 (defn apply-animations-to-style
   [animations style]
   (use-animated-style
-   (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style))))
+   (worklets.core/apply-animations-to-style (clj->js animations) (clj->js style))))
 
 ;; Animators
 (defn animate-shared-value-with-timing

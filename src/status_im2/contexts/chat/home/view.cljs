@@ -10,7 +10,10 @@
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
             [utils.re-frame :as rf]
             [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.common.home.actions.view :as actions]))
+            [status-im2.common.home.actions.view :as actions]
+            [react-native.reanimated :as reanimated]
+            [status-im2.common.sticky-scroll-view.view :as sticky-scroll-view]
+            [react-native.safe-area :as safe-area]))
 
 (defn get-item-layout
   [_ index]
@@ -86,42 +89,67 @@
        (when (seq items)
          [contacts-section-list items])])))
 
-(defn tabs
+(defn home
   []
   (let [selected-tab (reagent/atom :recent)]
     (fn []
-      (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])]
-        [:<>
-         [quo/discover-card
-          {:title       (i18n/label :t/invite-friends-to-status)
-           :description (i18n/label :t/share-invite-link)}]
-         [quo/tabs
-          {:style          {:margin-left   20
-                            :margin-bottom 20
-                            :margin-top    24}
-           :size           32
-           :on-change      #(reset! selected-tab %)
-           :default-active @selected-tab
-           :data           [{:id                  :recent
-                             :label               (i18n/label :t/recent)
-                             :accessibility-label :tab-recent}
-                            {:id                  :groups
-                             :label               (i18n/label :t/groups)
-                             :accessibility-label :tab-groups}
-                            {:id                  :contacts
-                             :label               (i18n/label :t/contacts)
-                             :accessibility-label :tab-contacts
-                             :notification-dot?   (pos? (count pending-contact-requests))}]}]
-         (if (= @selected-tab :contacts)
-           [contacts pending-contact-requests]
-           [chats @selected-tab])]))))
-
-(defn home
-  []
-  [:<>
-   [common.home/top-nav {:type :default :hide-search true}]
-   [common.home/title-column
-    {:label               (i18n/label :t/messages)
-     :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet {}])
-     :accessibility-label :new-chat-button}]
-   [tabs]])
+      [:f>
+       (fn []
+         (let [header-height            112
+               sticky-item-height       60
+               card-height              72
+               scroll-ref               (rn/create-ref)
+               scroll-y                 (reanimated/use-shared-value 0)
+               tabs-translation-y       (reanimated/interpolate scroll-y
+                                                                [card-height
+                                                                 (+ card-height sticky-item-height)]
+                                                                [0 sticky-item-height]
+                                                                {:extrapolateLeft  "clamp"
+                                                                 :extrapolateRight "extend"})
+               pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])]
+           [safe-area/consumer
+            (fn [{:keys [top]}]
+              [:<>
+               [rn/view {:position :absolute :top top :left 0 :right 0 :height header-height :z-index 1}
+                [common.home/top-nav]
+                [common.home/title-column
+                 {:label               (i18n/label :t/messages)
+                  :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet
+                                                      {}])
+                  :accessibility-label :new-chat-button}]]
+               [sticky-scroll-view/scroll-view
+                {:ref      scroll-ref
+                 :scroll-y scroll-y
+                 :blur     {:height (+ top header-height sticky-item-height)
+                            :delta  sticky-item-height}}
+                [rn/view {:height (+ header-height top)}]
+                [quo/discover-card
+                 {:title       (i18n/label :t/invite-friends-to-status)
+                  :description (i18n/label :t/share-invite-link)}]
+                [sticky-scroll-view/sticky-item
+                 {:translation-y tabs-translation-y
+                  :height        sticky-item-height}
+                 [quo/tabs
+                  {:style          {:padding-horizontal 20
+                                    :padding-top        16
+                                    :padding-bottom     12}
+                   :size           32
+                   :on-change      (fn [val]
+                                     (js/setTimeout #(reanimated/set-shared-value scroll-y 0) 300)
+                                     (some-> ^js (rn/current-ref scroll-ref)
+                                             (.scrollTo #js {:x 0 :animated true}))
+                                     (reset! selected-tab val))
+                   :default-active @selected-tab
+                   :data           [{:id                  :recent
+                                     :label               (i18n/label :t/recent)
+                                     :accessibility-label :tab-recent}
+                                    {:id                  :groups
+                                     :label               (i18n/label :t/groups)
+                                     :accessibility-label :tab-groups}
+                                    {:id                  :contacts
+                                     :label               (i18n/label :t/contacts)
+                                     :accessibility-label :tab-contacts
+                                     :notification-dot?   (pos? (count pending-contact-requests))}]}]]
+                (if (= @selected-tab :contacts)
+                  [contacts pending-contact-requests]
+                  [chats @selected-tab])]])]))])))

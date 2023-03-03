@@ -109,10 +109,9 @@
         [jump-to-list switcher-cards shell-margin]
         [top-nav-blur-overlay (:top insets)]
         [common.home/top-nav
-         {:type        :shell
-          :hide-search true
-          :style       {:margin-top (:top insets)
-                        :z-index    2}}]])]))
+         {:type  :shell
+          :style {:margin-top (:top insets)
+                  :z-index    2}}]])]))
 
 (defn on-layout
   [evt]
