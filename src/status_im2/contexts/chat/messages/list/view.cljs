@@ -137,7 +137,7 @@
       [title-comp]]]))
 
 (defn list-footer
-  [{:keys [chat-id chat-name emoji chat-type group-chat]} top-inset scroll-y cover-bg-color cover-uri theme-color]
+  [{:keys [chat-id chat-name emoji chat-type group-chat]} top-inset scroll-y cover-bg-color]
   (let [display-name        (if (= chat-type constants/one-to-one-chat-type)
                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                               (str emoji " " chat-name))
@@ -148,14 +148,15 @@
         photo-path        (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [:f>
      (fn []
-       (let [border-animation (reanimated/interpolate scroll-y [0 (* threshold 0.33)] [12 0]
+       (let [_ (js/console.log "ALWX scroll-y" scroll-y)
+             border-animation (reanimated/interpolate scroll-y [0 (* threshold 0.33)] [12 0]
                                                       {:extrapolateLeft  "clamp"
                                                        :extrapolateRight "clamp"})]
          [:<>
           [rn/view
-           {:style {:background-color (or theme-color (colors/theme-colors colors/white colors/neutral-95))
-                    :margin-top       (when platform/ios? (- top-inset))}}
-           (when cover-uri
+           {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
+                    :margin-top (when platform/ios? (- top-inset))}}
+           #_(when cover-uri
              [fast-image/fast-image
               {:style  {:width  "100%"
                         :height cover-height}
@@ -262,9 +263,8 @@
        :bottom   6}]]))
 
 (defn messages-list-with-animated-header
-  [{:keys [chat show-input?  cover-bg-color header-comp main-comp footer-comp]}]
+  [{:keys [chat show-input? cover-bg-color header-comp footer-comp]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-
         messages (rf/sub [:chats/raw-chat-messages-stream chat-id])
         bottom-space 15]
     [safe-area/consumer
@@ -276,6 +276,7 @@
          [:f>
           (fn []
             (let [scroll-y (reanimated/use-shared-value initial-y)
+                  _ (js/console.log "ALWX scroll-y" scroll-y)
                   opacity-animation (reanimated/interpolate scroll-y
                                                             [(* threshold 0.33) (* threshold 0.66)]
                                                             [0 1]
@@ -329,7 +330,7 @@
                 {:key-fn                       list-key-fn
                  :ref                          list-ref
                  :header                       [list-header chat]
-                 :footer                       [list-footer chat (:top insets) scroll-y cover-bg-color]
+                 :footer                       (reagent/as-element (list-footer chat (:top insets) scroll-y cover-bg-color))
                  :data                         messages
                  :render-data                  (get-render-data {:group-chat      group-chat
                                                                  :chat-id         chat-id
@@ -357,9 +358,6 @@
                  :style                        (when platform/android? {:scaleY -1})
                  :on-layout                    on-messages-view-layout}]
 
-               (when main-comp
-                 [main-comp])
-
                #_[reanimated/flat-list
                   {:data                         [nil]
                    :render-fn                    main-comp
@@ -374,5 +372,4 @@
                    :on-scroll                    (fn [event] (scroll-handler event initial-y scroll-y))}]
 
                (when footer-comp
-                 (footer-comp insets))]))]))]
-    ))
+                 (footer-comp insets))]))]))]))
