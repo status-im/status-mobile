@@ -60,13 +60,12 @@
                                  (reset! multiple-lines? true)
                                  (reset! multiple-lines? false)))
         char-count          (reagent/atom 0)
-        update-char-limit!  (fn [char-limit]
-                              (fn [new-text]
-                                (when on-change-text (on-change-text new-text))
-                                (let [amount-chars (count new-text)]
-                                  (reset! char-count amount-chars)
-                                  (when (>= amount-chars char-limit)
-                                    (on-char-limit-reach amount-chars)))))]
+        update-char-limit!  (fn [new-text char-limit]
+                              (when on-change-text (on-change-text new-text))
+                              (let [amount-chars (count new-text)]
+                                (reset! char-count amount-chars)
+                                (when (>= amount-chars char-limit)
+                                  (on-char-limit-reach amount-chars))))]
     (fn [{:keys [variant error right-icon left-icon disabled small button label char-limit
                  multiline clearable]
           :or   {variant :light}
@@ -100,7 +99,7 @@
                     :on-blur                on-blur!}
              :always    (merge clean-props)
              multiline  (assoc :on-content-size-change set-multiple-lines!)
-             char-limit (assoc :on-change-text (update-char-limit! char-limit)))]
+             char-limit (assoc :on-change-text #(update-char-limit! char-limit %)))]
           (when-let [{:keys [on-press icon-name style-fn]} right-icon]
             [right-accessory
              {:variant-colors variant-colors
