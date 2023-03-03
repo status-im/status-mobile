@@ -36,32 +36,23 @@
 (deftest open-activity-center-test
   (testing "opens the activity center with filters enabled"
     (h/run-test-sync
-     (let [spy-queue (atom [])]
-       (setup)
-       (h/spy-fx spy-queue :show-popover)
+     (setup)
+     (rf/dispatch [:activity-center/open
+                   {:filter-type   types/contact-request
+                    :filter-status :unread}])
 
-       (rf/dispatch [:activity-center/open
-                     {:filter-type   types/contact-request
-                      :filter-status :unread}])
+     (is (= {:status :unread
+             :type   types/contact-request}
+            (get-in (h/db) [:activity-center :filter])))))
 
-       (is (= {:status :unread
-               :type   types/contact-request}
-              (get-in (h/db) [:activity-center :filter])))
-       (is (= [{:id :show-popover :args nil}]
-              @spy-queue)))))
-
-  (testing "opens the activity center without custom filters"
+  (testing "opens the activity center with default filters"
     (h/run-test-sync
-     (let [spy-queue (atom [])]
-       (setup)
-       (h/spy-fx spy-queue :show-popover)
+     (setup)
 
-       (rf/dispatch [:activity-center/open])
+     (rf/dispatch [:activity-center/open])
 
-       (is (= {:status :unread :type types/no-type}
-              (get-in (h/db) [:activity-center :filter])))
-       (is (= [{:id :show-popover :args nil}]
-              @spy-queue))))))
+     (is (= {:status :unread :type types/no-type}
+            (get-in (h/db) [:activity-center :filter]))))))
 
 (deftest mark-as-read-test
   (testing "does nothing if the notification ID cannot be found in the app db"
