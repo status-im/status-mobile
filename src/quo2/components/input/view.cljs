@@ -46,6 +46,7 @@
     text]])
 
 (def ^:private custom-props
+  "Custom properties that must be removed from properties map passed to InputText."
   [:type :variant :error :right-icon :left-icon :disabled :small :button :label
    :char-limit :on-char-limit-reach :icon-name])
 
