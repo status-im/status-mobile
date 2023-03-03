@@ -1,8 +1,10 @@
 (ns react-native.orientation
-  (:require ["react-native-orientation-locker" :refer (useDeviceOrientationChange)]
+  (:require ["react-native-orientation-locker" :default orientation :refer (useDeviceOrientationChange)]
             [react-native.navigation :as navigation]))
 
 (def use-device-orientation-change useDeviceOrientationChange)
+
+(def get-auto-rotate-state (.-getAutoRotateState orientation))
 
 (def portrait-options
   (clj->js {:layout    {:orientation ["portrait"]}

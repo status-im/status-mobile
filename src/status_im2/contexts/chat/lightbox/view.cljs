@@ -116,9 +116,14 @@
        (reset! data messages)
        (orientation/use-device-orientation-change
         (fn [result]
-          ;; RNN does not support landscape-right
-          (when (or platform/ios? (not= result orientation/landscape-right))
-            (handle-orientation result scroll-index window animations atoms))))
+          (if platform/ios?
+            (handle-orientation result scroll-index window animations atoms)
+            ;; `use-device-orientation-change` will always be called on Android, so need to check
+            (orientation/get-auto-rotate-state
+             (fn [enabled?]
+               ;; RNN does not support landscape-right
+               (when (and enabled? (not= result orientation/landscape-right))
+                 (handle-orientation result scroll-index window animations atoms)))))))
        (rn/use-effect-once (fn []
                              (when @(:flat-list-ref atoms)
                                (.scrollToIndex ^js @(:flat-list-ref atoms)
