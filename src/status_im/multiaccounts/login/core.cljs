@@ -1,6 +1,7 @@
 (ns status-im.multiaccounts.login.core
   (:require
     [clojure.string :as string]
+    [clojure.set :as set]
     [re-frame.core :as re-frame]
     [status-im.async-storage.core :as async-storage]
     [status-im.communities.core :as communities]
@@ -43,8 +44,7 @@
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]
-    [status-im2.contexts.emoji-hash.events :as emoji-hash]))
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -388,7 +388,10 @@
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
-        multiaccount (dissoc settings :networks/current-network :networks/networks)
+        multiaccount (-> settings
+                         (dissoc :networks/current-network :networks/networks)
+                         (set/rename-keys {:compressedKey :compressed-key
+                                           :emojiHash     :emoji-hash}))
         ;;for some reason we save default networks in db, in case when we want to modify default-networks
         ;;for
         ;; existing accounts we have to merge them again into networks
@@ -472,7 +475,6 @@
               (get-group-chat-invitations)
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (emoji-hash/fetch-for-current-public-key)
               (link-preview/request-link-preview-whitelist)
               (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
               (switcher-cards-store/fetch-switcher-cards-rpc))))
