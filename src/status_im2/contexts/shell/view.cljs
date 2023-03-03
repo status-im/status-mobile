@@ -110,7 +110,6 @@
         [top-nav-blur-overlay (:top insets)]
         [common.home/top-nav
          {:type        :shell
-          :hide-search true
           :style       {:margin-top (:top insets)
                         :z-index    2}}]])]))
 

@@ -10,9 +10,8 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]))
-
-(def bottom-sheet-js (js/require "../src/js/bottom_sheet.js"))
+            [reagent.core :as reagent]
+            worklets.bottom-sheet))
 
 (def animation-delay 450)
 
@@ -129,9 +128,9 @@
                 bg-height (max (min @content-height bg-height-expanded) 109)
                 bottom-sheet-dy (reanimated/use-shared-value 0)
                 pan-y (reanimated/use-shared-value 0)
-                translate-y (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y)
+                translate-y (worklets.bottom-sheet/use-translate-y window-height bottom-sheet-dy pan-y)
                 bg-opacity
-                (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height)
+                (worklets.bottom-sheet/use-background-opacity translate-y bg-height window-height)
                 on-content-layout (fn [evt]
                                     (let [height (oget evt "nativeEvent" "layout" "height")]
                                       (reset! content-height height)))

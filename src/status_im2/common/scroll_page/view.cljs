@@ -11,9 +11,7 @@
 
 (defn icon-color
   []
-  (colors/theme-colors
-   colors/white-opa-40
-   colors/neutral-80-opa-40))
+  (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40))
 
 (def negative-scroll-position-0 (if platform/ios? -44 0))
 (def scroll-position-0 (if platform/ios? 44 0))
@@ -27,15 +25,7 @@
     (min maximum)))
 
 (defn scroll-page-header
-  [scroll-height
-   height
-   name
-   page-nav
-   cover
-   sticky-header
-   top-nav
-   title-colum
-   navigate-back?]
+  [scroll-height height name page-nav cover sticky-header top-nav title-colum navigate-back?]
   (let [input-range         (if platform/ios? [-47 10] [0 10])
         output-range        (if platform/ios? [-208 0] [-208 -45])
         y                   (reanimated/use-shared-value scroll-height)
@@ -120,18 +110,10 @@
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn
-      [{:keys [cover-image
-               page-nav-right-section-buttons
-               name
-               on-scroll
-               height
-               top-nav
-               title-colum
-               background-color
-               navigate-back?]}
-       sticky-header
-       children]
+    (fn [{:keys [name cover-image page-nav-right-section-buttons on-scroll
+                 height top-nav title-colum background-color navigate-back?]}
+         sticky-header
+         children]
       [:<>
        [:f> scroll-page-header @scroll-height height name page-nav-right-section-buttons
         cover-image sticky-header top-nav title-colum navigate-back?]
