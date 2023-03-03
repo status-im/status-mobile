@@ -134,7 +134,7 @@
       [gesture/touchable-without-feedback
        {:on-press (fn []
                     (rf/dispatch [:hide-popover])
-                    (rf/dispatch [:chat.ui/start-chat {:public-key author}]))}
+                    (rf/dispatch [:chat.ui/start-chat author]))}
        [incoming-contact-request-view notification set-swipeable-height]]
 
       :else

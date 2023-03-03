@@ -97,3 +97,13 @@
                (assoc :type notification-types/one-to-one-chat)
                store/<-rpc
                (select-keys [:name :chat-type :chat-name :public? :group-chat]))))))
+
+(deftest remove-pending-contact-request-test
+  (is (true? (store/pending-contact-request?
+              "contact-id"
+              {:type   notification-types/contact-request
+               :author "contact-id"})))
+  (is (false? (store/pending-contact-request?
+               "contact-id"
+               {:type   notification-types/contact-request
+                :author "contactzzzz"}))))

@@ -1,12 +1,17 @@
 (ns status-im.data-store.activities
   (:require [clojure.set :as set]
-            [status-im2.constants :as constants]
             [status-im.data-store.messages :as messages]
+            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification-types :as notification-types]))
 
 (defn mark-notifications-as-read
   [notifications]
   (map #(assoc % :read true) notifications))
+
+(defn pending-contact-request?
+  [contact-id {:keys [type author]}]
+  (and (= type notification-types/contact-request)
+       (= contact-id author)))
 
 (defn- rpc->type
   [{:keys [type name] :as chat}]

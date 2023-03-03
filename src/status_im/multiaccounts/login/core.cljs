@@ -409,7 +409,7 @@
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
-              (activity-center/notifications-fetch-unread-contact-requests)
+              (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/notifications-fetch-unread-count))))
 
 (re-frame/reg-fx
