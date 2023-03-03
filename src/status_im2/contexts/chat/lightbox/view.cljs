@@ -176,7 +176,7 @@
                :paging-enabled                    true
                :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
                :viewability-config                {:view-area-coverage-percent-threshold 50
-                                                   :wait-for-interaction                 false}
+                                                   :wait-for-interaction                 true}
                :shows-vertical-scroll-indicator   false
                :shows-horizontal-scroll-indicator false
                :on-viewable-items-changed         callback
