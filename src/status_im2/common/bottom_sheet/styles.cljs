@@ -51,6 +51,7 @@
 (defn background
   [override-theme]
   {:background-color        (colors/theme-colors colors/white colors/neutral-95 override-theme)
+   ;:background-color        :transparent
    :flex                    1
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius})

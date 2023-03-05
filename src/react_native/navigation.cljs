@@ -1,6 +1,7 @@
 (ns react-native.navigation
   (:refer-clojure :exclude [pop])
-  (:require ["react-native-navigation" :refer (Navigation)]))
+  (:require ["react-native-navigation" :refer (Navigation)]
+            ["react-native-navigation-bar-color" :default changeNavigationBarColor]))
 
 (defn set-default-options
   [opts]
@@ -73,3 +74,5 @@
 (defn merge-options
   [id opts]
   (.mergeOptions Navigation id (clj->js opts)))
+
+(def change-navigation-bar-color changeNavigationBarColor)

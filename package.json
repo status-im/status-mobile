@@ -61,6 +61,7 @@
     "react-native-lottie-splash-screen": "^1.0.1",
     "react-native-mail": "^6.1.1",
     "react-native-navigation": "^7.27.1",
+    "react-native-navigation-bar-color": "^2.0.2",
     "react-native-orientation-locker": "^1.5.0",
     "react-native-permissions": "^2.1.5",
     "react-native-randombytes": "^3.6.1",
