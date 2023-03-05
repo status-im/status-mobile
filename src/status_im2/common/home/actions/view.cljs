@@ -41,7 +41,7 @@
 
 (defn mute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true]))
+  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true 5]))
 
 (defn unmute-chat-action
   [chat-id]

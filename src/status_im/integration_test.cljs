@@ -295,7 +295,7 @@
            (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/mute chat-id true])
+           (rf/dispatch-sync [:chat.ui/mute chat-id true 5])
            (rf-test/wait-for
              [:chat/mute-successfully]
              (is @(rf/subscribe [:chats/muted chat-id]))

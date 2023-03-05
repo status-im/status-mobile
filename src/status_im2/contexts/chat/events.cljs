@@ -14,7 +14,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.types :as types]
-            [reagent.core :as reagent]))
+            [utils.datetime :as datetime]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -297,11 +297,12 @@
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
-  [{:keys [db]} chat-id muted?]
-  (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")]
+  [{:keys [db]} chat-id muted? mute-type]
+  (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")
+        params (if muted? [chat-id] [chat-id (datetime/timestamp) mute-type])]
     {:db            (assoc-in db [:chats chat-id :muted] muted?)
      :json-rpc/call [{:method     method
-                      :params     [chat-id]
+                      :params     params
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
                       :on-success #(rf/dispatch [:chat/mute-successfully chat-id])}]}))
 
