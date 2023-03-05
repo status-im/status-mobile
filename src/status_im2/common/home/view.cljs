@@ -3,8 +3,12 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
+            [react-native.navigation :as navigation]
+            [reagent.core :as reagent]
             [status-im2.common.home.style :as style]
             [status-im2.common.plus-button.view :as components.plus-button]
+            [status-im2.contexts.activity-center.view :as ac]
+            [status-im2.contexts.shell.animation :as shell]
             [utils.re-frame :as rf]))
 
 (defn title-column
@@ -39,6 +43,29 @@
     button-common-props)
    icon])
 
+
+(defn ac-modal
+  [visible? view-id]
+  (let [status-bar-style (if (or (colors/dark?)
+                                 (not (shell/home-stack-open?)))
+                           :light
+                           :dark)
+        close-modal      (fn []
+                           (reset! visible? false)
+                           (navigation/merge-options (clj->js view-id)
+                                                     (clj->js {:statusBar {:style status-bar-style}})))]
+    [rn/modal
+     {:is-visible             @visible?
+      :cover-screen           true
+      :transparent            true
+      :status-bar-translucent true
+      :hardware-accelerated   true
+      :animation-type         :slide
+      :style                  {:margin 0
+                               :width  "100%"}
+      :on-back-button-press   close-modal}
+     [ac/view close-modal]]))
+
 (defn top-nav
   "[top-nav opts]
   opts
@@ -51,8 +78,18 @@
         notif-count            (rf/sub [:activity-center/unread-count])
         new-notifications?     (pos? notif-count)
         notification-indicator :unread-dot
-        counter-label          "0"]
+        counter-label          "0"
+        visible?               (reagent/atom false)
+        view-id                (rf/sub [:view-id])
+        open-ac                (fn []
+                                 ;; delaying status-bar style update looks nicer
+                                 (js/setTimeout
+                                  #(navigation/merge-options (clj->js view-id)
+                                                             (clj->js {:statusBar {:style :light}}))
+                                  20)
+                                 (reset! visible? (not @visible?)))]
     [rn/view {:style (assoc style :height 56)}
+     [ac-modal visible? view-id]
      ;; Left Section
      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
       [rn/view
@@ -75,7 +112,7 @@
         [base-button :i/search #() :open-search-button button-common-props])
       [base-button :i/scan #() :open-scanner-button button-common-props]
       [base-button :i/qr-code #() :show-qr-button button-common-props]
-      [rn/view                     ;; Keep view instead of "[:<>" to make sure relative
+      [rn/view ;; Keep view instead of "[:<>" to make sure relative
        ;; position is calculated from this view instead of its parent
        [hole-view/hole-view
         {:key   new-notifications? ;; Key is required to force removal of holes
@@ -88,8 +125,7 @@
 
                   :else
                   [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
-        [base-button :i/activity-center #(rf/dispatch [:activity-center/open])
-         :open-activity-center-button button-common-props]]
+        [base-button :i/activity-center open-ac :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
            [quo/counter

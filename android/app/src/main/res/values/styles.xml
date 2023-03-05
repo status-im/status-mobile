@@ -28,4 +28,12 @@
         <item name="android:textColorPrimary">@color/alert_text</item>
         <item name="android:background">@color/alert_background</item>
     </style>
+
+    <style name="Theme.FullScreenDialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 </resources>

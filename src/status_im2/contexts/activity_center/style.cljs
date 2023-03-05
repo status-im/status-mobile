@@ -1,5 +1,6 @@
 (ns status-im2.contexts.activity-center.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (def screen-padding 20)
 
@@ -60,3 +61,24 @@
    :height           120
    :background-color colors/danger-50
    :margin-bottom    20})
+
+(def blur-background
+  {:position :absolute
+   :top      0
+   :bottom   0
+   :left     0
+   :right    0})
+
+(defn options-content-container
+  [bottom-inset]
+  {:background-color        colors/neutral-100
+   :padding-bottom          (if platform/ios? bottom-inset 20)
+   :padding-top             20
+   :border-top-left-radius  20
+   :border-top-right-radius 20})
+
+(def options-modal-container
+  {:justify-content :flex-end
+   :margin          0
+   :width           "100%"
+   :align-self      :center})

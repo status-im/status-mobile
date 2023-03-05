@@ -3,7 +3,9 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
             [status-im2.contexts.activity-center.notification.contact-requests.view :as contact-requests]
@@ -14,6 +16,7 @@
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
+            [react-native.blur :as blur]
             [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
@@ -28,27 +31,44 @@
                                                        :all
                                                        :unread)}])}]))
 
-(defn options-bottom-sheet-content
-  []
+
+(defn options-content
+  [bottom-inset]
   (let [unread-count (rf/sub [:activity-center/unread-count])]
-    [quo/action-drawer
-     [[{:icon           :i/check
-        :override-theme :dark
-        :label          (i18n/label :t/mark-all-notifications-as-read)
-        :on-press       (fn []
-                          (if (pos? unread-count)
-                            (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
-                                          (fn []
-                                            {:icon           :up-to-date
-                                             :icon-color     colors/success-50
-                                             :text           (i18n/label :t/notifications-marked-as-read
-                                                                         {:count unread-count})
-                                             :override-theme :dark})])
-                            ;; Need design improvements if there is NO unread
-                            ;; notifications to mark as read
-                            ;; https://github.com/status-im/status-mobile/issues/14983
-                            (js/alert "No unread notifications to mark as read"))
-                          (rf/dispatch [:bottom-sheet/hide]))}]]]))
+    [rn/view
+     {:style (style/options-content-container bottom-inset)}
+     [quo/action-drawer
+      [[{:icon           :i/check
+         :override-theme :dark
+         :label          (i18n/label :t/mark-all-notifications-as-read)
+         :on-press       (fn []
+                           (if (pos? unread-count)
+                             (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
+                                           (fn []
+                                             {:icon           :up-to-date
+                                              :icon-color     colors/success-50
+                                              :text           (i18n/label :t/notifications-marked-as-read
+                                                                          {:count unread-count})
+                                              :override-theme :dark})])
+                             ;; Need design improvements if there is NO unread
+                             ;; notifications to mark as read
+                             ;; https://github.com/status-im/status-mobile/issues/14983
+                             (js/alert "No unread notifications to mark as read"))
+                           (rf/dispatch [:bottom-sheet/hide]))}]]]]))
+
+(defn options-bottom-sheet
+  [visible? bottom-inset]
+  ;; not using the `bottom-sheet` component as it renders behind the full screen `Modal` component on
+  ;; Android
+  [rn/modal
+   {:is-visible                         @visible?
+    :use-native-driver                  true
+    :use-native-driver-for-backdrop     true
+    :hide-modal-content-while-animating true
+    :backdrop-opacity                   0.5
+    :on-backdrop-press                  #(reset! visible? false)
+    :style                              style/options-modal-container}
+   [options-content bottom-inset]])
 
 (defn empty-tab
   []
@@ -134,7 +154,7 @@
                                                     (contains? types-with-unread types/system))}]}]))
 
 (defn header
-  [request-close]
+  [request-close open-options]
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
@@ -151,9 +171,7 @@
       :size                32
       :accessibility-label :activity-center-open-more
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                          {:content        options-bottom-sheet-content
-                                           :override-theme :dark}])}
+      :on-press            open-options}
      :i/options]]
    [quo/text
     {:size   :heading-1
@@ -203,7 +221,8 @@
 
 (defn view
   [request-close]
-  (let [active-swipeable (atom nil)]
+  (let [active-swipeable (atom nil)
+        visible?         (reagent/atom false)]
     [:f>
      (fn []
        (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
@@ -212,7 +231,11 @@
           (let [notifications (rf/sub [:activity-center/notifications])
                 window-width  (rf/sub [:dimensions/window-width])]
             [rn/view {:style (style/screen-container window-width top bottom)}
-             [header request-close]
+             [blur/view
+              {:blurAmount 32
+               :style      style/blur-background}]
+             [options-bottom-sheet visible? bottom]
+             [header request-close #(reset! visible? true)]
              [rn/flat-list
               {:data                      notifications
                :render-data               active-swipeable
