@@ -9,6 +9,7 @@
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.activity-center.view :as ac]
             [status-im2.navigation.state :as state]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn title-column
@@ -38,21 +39,29 @@
   [icon on-press accessibility-label button-common-props]
   [quo/button
    (merge
-    {:on-press            on-press
-     :accessibility-label accessibility-label}
-    button-common-props)
+     {:on-press            on-press
+      :accessibility-label accessibility-label}
+     button-common-props)
    icon])
 
+
 (defn ac-modal
-  [visible? view-id]
-    [rn/modal {:visible @visible?
-               :transparent true
-               :animation-type :slide
-               :hardware-accelerated true
-               :status-bar-translucent true}
-     [ac/view (fn []
-                (reset! visible? false)
-                (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))]])
+  [visible? is-visible? view-id]
+  [rn/modal {:visible                @visible?
+             :transparent            true
+             :style                  {:margin 0
+                                      :width  "100%"}
+             :on-back-button-press   (fn []
+                                       (reset! visible? false)
+                                       (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))
+             :cover-screen           true
+             :animation-type         :slide
+             :hardware-accelerated   true
+             :status-bar-translucent true}
+   [ac/view (fn []
+              (reset! visible? false)
+              (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))
+    #(reset! is-visible? true)]])
 
 (defn top-nav
   "[top-nav opts]
@@ -67,10 +76,11 @@
         new-notifications?     (pos? notif-count)
         notification-indicator :unread-dot
         counter-label          "0"
-        visible? (reagent/atom false)
-        view-id (rf/sub [:view-id])]
+        visible?               (reagent/atom false)
+        is-visible?            (reagent/atom false)
+        view-id                (rf/sub [:view-id])]
     [rn/view {:style (assoc style :height 56)}
-     [ac-modal visible? view-id]
+     [ac-modal visible? is-visible? view-id]
      ;; Left Section
      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
       [rn/view
@@ -80,9 +90,9 @@
                               :top      12}}
        [quo/user-avatar
         (merge
-         {:status-indicator? true
-          :size              :small}
-         avatar)]]]
+          {:status-indicator? true
+           :size              :small}
+          avatar)]]]
      ;; Right Section
      [rn/view
       {:style {:position       :absolute
@@ -93,7 +103,7 @@
         [base-button :i/search #() :open-search-button button-common-props])
       [base-button :i/scan #() :open-scanner-button button-common-props]
       [base-button :i/qr-code #() :show-qr-button button-common-props]
-      [rn/view                     ;; Keep view instead of "[:<>" to make sure relative
+      [rn/view ;; Keep view instead of "[:<>" to make sure relative
        ;; position is calculated from this view instead of its parent
        [hole-view/hole-view
         {:key   new-notifications? ;; Key is required to force removal of holes
@@ -109,18 +119,8 @@
         ;[base-button :i/activity-center #(rf/dispatch [:activity-center/open])
         ; :open-activity-center-button button-common-props]
         [base-button :i/activity-center (fn []
-
-                                          ;(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:visible false}}))
-                                          ;(reset! state/ac-modal true)
-                                          (reset! visible? (not @visible?))
-                                          ;(js/setTimeout #(navigation/change-navigation-bar-color "green" false true) 1000)
-                                          ;(println "kkk" view-id)
-                                          ;(rf/dispatch [:change-root-status-bar-style :light])
-                                          ;(navigation/merge-options "shell-stack" (clj->js {:statusBar {:visible false}}))
-
-                                          ;(js/setTimeout #(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:backgroundColor "red"}})) 1000)
-
-                                          )
+                                          (js/setTimeout #(navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :light}})) 20)
+                                          (reset! visible? (not @visible?)))
          :open-activity-center-button button-common-props]
         ]
        (when new-notifications?

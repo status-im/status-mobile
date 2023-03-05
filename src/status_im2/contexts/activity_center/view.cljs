@@ -5,6 +5,7 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
             [status-im2.contexts.activity-center.notification.contact-requests.view :as contact-requests]
@@ -22,44 +23,69 @@
   []
   (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
     [rn/view]
-    ;[quo/filter
-    ; {:pressed?       unread-filter-enabled?
-    ;  :blur?          true
-    ;  :override-theme :dark
-    ;  :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
-    ;                                 {:filter-status (if unread-filter-enabled?
-    ;                                                   :all
-    ;                                                   :unread)}])}]
-    ))
+    [quo/filter
+     {:pressed?       unread-filter-enabled?
+      :blur?          true
+      :override-theme :dark
+      :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
+                                     {:filter-status (if unread-filter-enabled?
+                                                       :all
+                                                       :unread)}])}]))
+
+;(defn options-bottom-sheet-content
+;  []
+;  (let [unread-count (rf/sub [:activity-center/unread-count])]
+;    [quo/action-drawer
+;     [[{:icon           :i/check
+;        :override-theme :dark
+;        :label          (i18n/label :t/mark-all-notifications-as-read)
+;        :on-press       (fn []
+;                          (if (pos? unread-count)
+;                            (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
+;                                          (fn []
+;                                            {:icon           :up-to-date
+;                                             :icon-color     colors/success-50
+;                                             :text           (i18n/label :t/notifications-marked-as-read
+;                                                                         {:count unread-count})
+;                                             :override-theme :dark})])
+;                            ;; Need design improvements if there is NO unread
+;                            ;; notifications to mark as read
+;                            ;; https://github.com/status-im/status-mobile/issues/14983
+;                            (js/alert "No unread notifications to mark as read"))
+;                          (rf/dispatch [:bottom-sheet/hide]))}]]]))
 
 (defn options-bottom-sheet-content
   []
   (let [unread-count (rf/sub [:activity-center/unread-count])]
-    [quo/action-drawer
-     [[{:icon           :i/check
-        :override-theme :dark
-        :label          (i18n/label :t/mark-all-notifications-as-read)
-        :on-press       (fn []
-                          (if (pos? unread-count)
-                            (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
-                                          (fn []
-                                            {:icon           :up-to-date
-                                             :icon-color     colors/success-50
-                                             :text           (i18n/label :t/notifications-marked-as-read
-                                                                         {:count unread-count})
-                                             :override-theme :dark})])
-                            ;; Need design improvements if there is NO unread
-                            ;; notifications to mark as read
-                            ;; https://github.com/status-im/status-mobile/issues/14983
-                            (js/alert "No unread notifications to mark as read"))
-                          (rf/dispatch [:bottom-sheet/hide]))}]]]))
+    [rn/view {:style {:background-color        colors/neutral-100
+                      :height                  100
+                      :border-top-left-radius  20
+                      :border-top-right-radius 20
+                      :width                   "100%"}}
+     [quo/action-drawer
+      [[{:icon           :i/check
+         :override-theme :dark
+         :label          (i18n/label :t/mark-all-notifications-as-read)
+         :on-press       (fn []
+                           (if (pos? unread-count)
+                             (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
+                                           (fn []
+                                             {:icon           :up-to-date
+                                              :icon-color     colors/success-50
+                                              :text           (i18n/label :t/notifications-marked-as-read
+                                                                          {:count unread-count})
+                                              :override-theme :dark})])
+                             ;; Need design improvements if there is NO unread
+                             ;; notifications to mark as read
+                             ;; https://github.com/status-im/status-mobile/issues/14983
+                             (js/alert "No unread notifications to mark as read"))
+                           (rf/dispatch [:bottom-sheet/hide]))}]]]]))
 
 (defn empty-tab
-  [close]
+  []
   (let [filter-status (rf/sub [:activity-center/filter-status])]
-    [rn/touchable-opacity
+    [rn/view
      {:style               style/empty-container
-      :on-press close
       :accessibility-label :empty-notifications}
      [rn/view {:style style/empty-rectangle-placeholder}]
      [quo/text
@@ -139,8 +165,8 @@
                                                     (contains? types-with-unread types/system))}]}]))
 
 (defn header
-  [request-close]
-  [rn/touchable-opacity
+  [request-close open-sheet]
+  [rn/view
    [rn/view {:style style/header-container}
     [quo/button
      {:icon                true
@@ -156,9 +182,11 @@
       :size                32
       :accessibility-label :activity-center-open-more
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                          {:content        options-bottom-sheet-content
-                                           :override-theme :dark}])}
+      :on-press            open-sheet
+      ;:on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+      ;                                    {:content        options-bottom-sheet-content
+      ;                                     :override-theme :dark}])
+      }
      :i/options]]
    [quo/text
     {:size   :heading-1
@@ -208,7 +236,8 @@
 
 (defn view
   [request-close]
-  (let [active-swipeable (atom nil)]
+  (let [active-swipeable (atom nil)
+        visible?         (reagent/atom false)]
     [:f>
      (fn []
        (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
@@ -216,21 +245,33 @@
         (fn [{:keys [top bottom]}]
           (let [notifications (rf/sub [:activity-center/notifications])
                 window-width  (rf/sub [:dimensions/window-width])
-                window-height  (rf/sub [:dimensions/window-height])]
-            [blur/view {:style        {:flex 1}
-                        :blurAmount   32
-                        ;:blurType     :light
-                        ;:overlayColor colors/neutral-100
-                        }
-             [rn/view {:style (style/screen-container window-width window-height top bottom)}
-              ;[rn/view {:style {:flex 1}}
-              [header request-close]
-              [rn/flat-list
-               {:data                      notifications
-                :render-data               active-swipeable
-                :content-container-style   {:flex-grow 1}
-                :empty-component           [empty-tab request-close]
-                :key-fn                    :id
-                :on-scroll-to-index-failed identity
-                :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-                :render-fn                 notification-component}]]]))])]))
+                window-height (rf/sub [:dimensions/window-height])]
+            [rn/view {:style (style/screen-container window-width window-height top bottom)}
+             [rn/modal {:is-visible                         @visible?
+                        :use-native-driver                  true
+                        :hide-modal-content-while-animating true
+                        :backdrop-opacity                   0.5
+                        :use-native-driver-for-backdrop     true
+                        :on-backdrop-press                  #(reset! visible? false)
+                        :style                              {:justify-content :flex-end
+                                                             :margin          0
+                                                             :width           "100%"
+                                                             :align-self      :center}}
+              [options-bottom-sheet-content]]
+             [blur/view {:blurAmount 32
+                         :style      {:position :absolute
+                                      :top      0
+                                      :bottom   0
+                                      :left     0
+                                      :right    0}}]
+             [header request-close #(reset! visible? true)]
+             [rn/flat-list
+              {:data                      notifications
+               :render-data               active-swipeable
+               :content-container-style   {:flex-grow 1}
+               :empty-component           [empty-tab]
+               :key-fn                    :id
+               :on-scroll-to-index-failed identity
+               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+               :render-fn                 notification-component}]]
+            ))])]))
