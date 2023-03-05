@@ -8,6 +8,7 @@
             [status-im2.common.home.style :as style]
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.activity-center.view :as ac]
+            [status-im2.navigation.state :as state]
             [utils.re-frame :as rf]))
 
 (defn title-column
@@ -110,11 +111,13 @@
         [base-button :i/activity-center (fn []
 
                                           ;(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:visible false}}))
+                                          ;(reset! state/ac-modal true)
                                           ;(reset! visible? (not @visible?))
                                           ;(js/setTimeout #(navigation/change-navigation-bar-color "green" false true) 1000)
                                           ;(println "kkk" view-id)
                                           ;(rf/dispatch [:change-root-status-bar-style :light])
-                                          (navigation/merge-options "shell-stack" (clj->js {:statusBar {:style :light}}))
+                                          (navigation/merge-options "shell-stack" (clj->js {:statusBar {:visible false}}))
+
                                           ;(js/setTimeout #(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:backgroundColor "red"}})) 1000)
 
                                           )
