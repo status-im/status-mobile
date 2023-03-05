@@ -3,8 +3,11 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
+            [react-native.navigation :as navigation]
+            [reagent.core :as reagent]
             [status-im2.common.home.style :as style]
             [status-im2.common.plus-button.view :as components.plus-button]
+            [status-im2.contexts.activity-center.view :as ac]
             [utils.re-frame :as rf]))
 
 (defn title-column
@@ -39,6 +42,17 @@
     button-common-props)
    icon])
 
+(defn ac-modal
+  [visible? view-id]
+    [rn/modal {:visible @visible?
+               :transparent true
+               :animation-type :slide
+               :hardware-accelerated true
+               :status-bar-translucent true}
+     [ac/view (fn []
+                (reset! visible? false)
+                (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))]])
+
 (defn top-nav
   "[top-nav opts]
   opts
@@ -51,8 +65,11 @@
         notif-count            (rf/sub [:activity-center/unread-count])
         new-notifications?     (pos? notif-count)
         notification-indicator :unread-dot
-        counter-label          "0"]
+        counter-label          "0"
+        visible? (reagent/atom false)
+        view-id (rf/sub [:view-id])]
     [rn/view {:style (assoc style :height 56)}
+     [ac-modal visible? view-id]
      ;; Left Section
      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
       [rn/view
@@ -88,8 +105,21 @@
 
                   :else
                   [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
-        [base-button :i/activity-center #(rf/dispatch [:activity-center/open])
-         :open-activity-center-button button-common-props]]
+        ;[base-button :i/activity-center #(rf/dispatch [:activity-center/open])
+        ; :open-activity-center-button button-common-props]
+        [base-button :i/activity-center (fn []
+
+                                          ;(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:visible false}}))
+                                          ;(reset! visible? (not @visible?))
+                                          ;(js/setTimeout #(navigation/change-navigation-bar-color "green" false true) 1000)
+                                          ;(println "kkk" view-id)
+                                          ;(rf/dispatch [:change-root-status-bar-style :light])
+                                          (navigation/merge-options "shell-stack" (clj->js {:statusBar {:style :light}}))
+                                          ;(js/setTimeout #(navigation/merge-options (clj->js view-id) (clj->js {:navigationBar {:backgroundColor "red"}})) 1000)
+
+                                          )
+         :open-activity-center-button button-common-props]
+        ]
        (when new-notifications?
          (if (= notification-indicator :counter)
            [quo/counter

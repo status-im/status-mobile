@@ -3,6 +3,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
@@ -14,19 +15,22 @@
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
+            [react-native.blur :as blur]
             [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
   []
   (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
-    [quo/filter
-     {:pressed?       unread-filter-enabled?
-      :blur?          true
-      :override-theme :dark
-      :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
-                                     {:filter-status (if unread-filter-enabled?
-                                                       :all
-                                                       :unread)}])}]))
+    [rn/view]
+    ;[quo/filter
+    ; {:pressed?       unread-filter-enabled?
+    ;  :blur?          true
+    ;  :override-theme :dark
+    ;  :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
+    ;                                 {:filter-status (if unread-filter-enabled?
+    ;                                                   :all
+    ;                                                   :unread)}])}]
+    ))
 
 (defn options-bottom-sheet-content
   []
@@ -51,10 +55,11 @@
                           (rf/dispatch [:bottom-sheet/hide]))}]]]))
 
 (defn empty-tab
-  []
+  [close]
   (let [filter-status (rf/sub [:activity-center/filter-status])]
-    [rn/view
+    [rn/touchable-opacity
      {:style               style/empty-container
+      :on-press close
       :accessibility-label :empty-notifications}
      [rn/view {:style style/empty-rectangle-placeholder}]
      [quo/text
@@ -76,7 +81,7 @@
   (let [filter-type                   (rf/sub [:activity-center/filter-type])
         types-with-unread             (rf/sub [:activity-center/notification-types-with-unread])
         is-mark-all-as-read-undoable? (boolean (rf/sub
-                                                [:activity-center/mark-all-as-read-undoable-till]))]
+                                                 [:activity-center/mark-all-as-read-undoable-till]))]
     [quo/tabs
      {:size                32
       :scrollable?         true
@@ -135,7 +140,7 @@
 
 (defn header
   [request-close]
-  [rn/view
+  [rn/touchable-opacity
    [rn/view {:style style/header-container}
     [quo/button
      {:icon                true
@@ -210,15 +215,22 @@
        [safe-area/consumer
         (fn [{:keys [top bottom]}]
           (let [notifications (rf/sub [:activity-center/notifications])
-                window-width  (rf/sub [:dimensions/window-width])]
-            [rn/view {:style (style/screen-container window-width top bottom)}
-             [header request-close]
-             [rn/flat-list
-              {:data                      notifications
-               :render-data               active-swipeable
-               :content-container-style   {:flex-grow 1}
-               :empty-component           [empty-tab]
-               :key-fn                    :id
-               :on-scroll-to-index-failed identity
-               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-               :render-fn                 notification-component}]]))])]))
+                window-width  (rf/sub [:dimensions/window-width])
+                window-height  (rf/sub [:dimensions/window-height])]
+            [blur/view {:style        {:flex 1}
+                        :blurAmount   32
+                        ;:blurType     :light
+                        ;:overlayColor colors/neutral-100
+                        }
+             [rn/view {:style (style/screen-container window-width window-height top bottom)}
+              ;[rn/view {:style {:flex 1}}
+              [header request-close]
+              [rn/flat-list
+               {:data                      notifications
+                :render-data               active-swipeable
+                :content-container-style   {:flex-grow 1}
+                :empty-component           [empty-tab request-close]
+                :key-fn                    :id
+                :on-scroll-to-index-failed identity
+                :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+                :render-fn                 notification-component}]]]))])]))

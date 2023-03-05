@@ -15,9 +15,11 @@
    :color              colors/white})
 
 (defn screen-container
-  [window-width top bottom]
+  [window-width window-height top bottom]
   {:flex           1
    :width          window-width
+   ;:background-color :red
+   ;:height        window-height
    :padding-top    (if (pos? top) (+ top 12) 12)
    :padding-bottom bottom})
 
