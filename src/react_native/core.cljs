@@ -1,6 +1,7 @@
 (ns react-native.core
   (:require ["react" :as react]
             ["react-native" :as react-native]
+            ["react-native-modal" :default Modal]
             [cljs-bean.core :as bean]
             [oops.core :as oops]
             [react-native.flat-list :as flat-list]
@@ -31,7 +32,8 @@
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))
 
-(def modal (reagent/adapt-react-class (.-Modal ^js react-native)))
+;; "react-native-modal" is a superset to the Modal component from RN, no need to define it separately
+(def modal (reagent/adapt-react-class Modal))
 
 (def keyboard ^js (.-Keyboard ^js react-native))
 
