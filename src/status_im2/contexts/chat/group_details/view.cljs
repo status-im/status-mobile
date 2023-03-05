@@ -3,12 +3,13 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.chat.group-details.style :as style]
-            [status-im2.common.contact-list.view :as contact-list]
+            [reagent.core :as reagent]
             [status-im2.common.contact-list-item.view :as contact-list-item]
+            [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.actions.view :as actions]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]))
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.group-details.style :as style]
+            [utils.re-frame :as rf]))
 
 (defn back-button
   []
@@ -191,7 +192,7 @@
       [rn/touchable-opacity
        {:style               (style/action-container color)
         :accessibility-label :toggle-mute
-        :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted) (when-not muted 5)])}
+        :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted) (when-not muted constants/mute-till-unmuted)])}
        [quo/icon (if muted :i/muted :i/activity-center)
         {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}

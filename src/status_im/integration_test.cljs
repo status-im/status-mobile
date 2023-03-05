@@ -12,7 +12,8 @@
             status-im2.navigation.core
             status-im2.subs.root ; so integration tests can run independently
             [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [status-im2.constants :as constants]))
 
 (def password "testabc")
 
@@ -295,7 +296,7 @@
            (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
            (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
            (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/mute chat-id true 5])
+           (rf/dispatch-sync [:chat.ui/mute chat-id true constants/mute-till-unmuted])
            (rf-test/wait-for
              [:chat/mute-successfully]
              (is @(rf/subscribe [:chats/muted chat-id]))
