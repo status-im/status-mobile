@@ -7,14 +7,20 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Show: Sign in to this profile?"
-    :key   :show-sign-profile?
-    :type  :boolean}
-   {:label "Show: Is from key card?"
+  [{:label "Show: Is from key card?"
     :key   :key-card?
     :type  :boolean}
    {:label "Show: Emoji hash?"
     :key   :show-emoji-hash?
+    :type  :boolean}
+   {:label "Show: User hash?"
+    :key   :show-user-hash?
+    :type  :boolean}
+   {:label "Show: Options Button?"
+    :key   :show-options-button?
+    :type  :boolean}
+   {:label "Show: Logged In?"
+    :key   :show-logged-in?
     :type  :boolean}
    {:label   "Customization Color"
     :key     :customization-color
@@ -51,22 +57,21 @@
     :type  :text}
    {:label "Emoji hash"
     :key   :emoji-hash
-    :type  :text}
-   {:label "Sign button label"
-    :key   :sign-label
     :type  :text}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:show-sign-profile? true
-                             :key-card? true
+  (let [state (reagent/atom {:key-card? false
                              :name "Matt Grote"
-                             :sign-label "Sign in to this profile"
-                             :on-press-dots nil
+                             :on-options-press nil
+                             :on-card-press nil
+                             :show-options-button? true
+                             :show-logged-in? true
+                             :show-user-hash? false
                              :on-press-sign nil
                              :customization-color :turquoise
                              :profile-picture (resources/get-mock-image :user-picture-male5)
-                             :show-emoji-hash? true
+                             :show-emoji-hash? false
                              :hash "zQ3k83euenmcikw7474hfu73t5N"
                              :emoji-hash "😄😂🫣🍑😇🤢😻🥷🏻🦸🏻‍♀️🦸🏻🦸🏻‍♂️🦹🏻‍♀️🧑🏻‍🎄🎅🏻"})]
     (fn []
