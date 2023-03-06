@@ -141,8 +141,8 @@
     (i18n/label :t/dont-ask)]])
 
 (defn link-preview
-  [{:keys [content]} context]
-  (let [links         (:links content)
+  [{:keys [message-id chat-id]} context]
+  (let [links         (get-in (rf/sub [:chats/chat-messages chat-id]) [message-id :content :links])
         ask-user?     (rf/sub [:link-preview/link-preview-request-enabled])
         enabled-sites (rf/sub [:link-preview/enabled-sites])
         whitelist     (rf/sub [:link-previews-whitelist])]

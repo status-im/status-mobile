@@ -11,6 +11,7 @@
 
 (defn render-inline
   [units {:keys [type literal destination]}]
+  (prn destination)
   (case (keyword type)
     :code
     (conj units [rn/view {:style (merge style/block (style/code))} [quo/text {:weight :code} literal]])
@@ -80,8 +81,9 @@
           (when edited-at
             [quo/text
              {:weight :medium
-              :style  {:font-size 11
-                       :color     (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+              :style  {:font-size  11
+                       :margin-top 4
+                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
              (str " (" (i18n/label :t/edited) ")")]))
 
     :codeblock
@@ -91,8 +93,9 @@
           (when edited-at
             [quo/text
              {:weight :medium
-              :style  {:font-size 11
-                       :color     (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+              :style  {:font-size  11
+                       :margin-top 4
+                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
              (str " (" (i18n/label :t/edited) ")")]))
     blocks))
 
