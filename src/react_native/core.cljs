@@ -70,6 +70,7 @@
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
+(def sbc (.-backgroundColor ^js status-bar))
 
 (def style-sheet (.-StyleSheet ^js react-native))
 

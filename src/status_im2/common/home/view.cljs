@@ -8,8 +8,7 @@
             [status-im2.common.home.style :as style]
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.activity-center.view :as ac]
-            [status-im2.navigation.state :as state]
-            [utils.i18n :as i18n]
+            [status-im2.contexts.shell.animation :as shell]
             [utils.re-frame :as rf]))
 
 (defn title-column
@@ -39,28 +38,35 @@
   [icon on-press accessibility-label button-common-props]
   [quo/button
    (merge
-     {:on-press            on-press
-      :accessibility-label accessibility-label}
-     button-common-props)
+    {:on-press            on-press
+     :accessibility-label accessibility-label}
+    button-common-props)
    icon])
 
 
 (defn ac-modal
   [visible? is-visible? view-id]
-  [rn/modal {:visible                @visible?
-             :transparent            true
-             :style                  {:margin 0
-                                      :width  "100%"}
-             :on-back-button-press   (fn []
-                                       (reset! visible? false)
-                                       (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))
-             :cover-screen           true
-             :animation-type         :slide
-             :hardware-accelerated   true
-             :status-bar-translucent true}
-   [ac/view (fn []
-              (reset! visible? false)
-              (navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :dark}})))
+  [rn/modal
+   {:visible                @visible?
+    :transparent            true
+    :style                  {:margin 0
+                             :width  "100%"}
+    :on-back-button-press   (fn []
+                              (reset! visible? false)
+                              (navigation/merge-options (clj->js view-id)
+                                                        (clj->js {:statusBar {:style :dark}})))
+    :cover-screen           true
+    :animation-type         :slide
+    :hardware-accelerated   true
+    :status-bar-translucent true}
+   [ac/view
+    (fn []
+      (reset! visible? false)
+      (navigation/merge-options (clj->js view-id)
+                                (clj->js {:statusBar {:style (if (or (colors/dark?)
+                                                                     (not (shell/home-stack-open?)))
+                                                               :light
+                                                               :dark)}})))
     #(reset! is-visible? true)]])
 
 (defn top-nav
@@ -90,9 +96,9 @@
                               :top      12}}
        [quo/user-avatar
         (merge
-          {:status-indicator? true
-           :size              :small}
-          avatar)]]]
+         {:status-indicator? true
+          :size              :small}
+         avatar)]]]
      ;; Right Section
      [rn/view
       {:style {:position       :absolute
@@ -118,11 +124,13 @@
                   [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
         ;[base-button :i/activity-center #(rf/dispatch [:activity-center/open])
         ; :open-activity-center-button button-common-props]
-        [base-button :i/activity-center (fn []
-                                          (js/setTimeout #(navigation/merge-options (clj->js view-id) (clj->js {:statusBar {:style :light}})) 20)
-                                          (reset! visible? (not @visible?)))
-         :open-activity-center-button button-common-props]
-        ]
+        [base-button :i/activity-center
+         (fn []
+           (js/setTimeout #(navigation/merge-options (clj->js view-id)
+                                                     (clj->js {:statusBar {:style :light}}))
+                          20)
+           (reset! visible? (not @visible?)))
+         :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
            [quo/counter

@@ -32,36 +32,18 @@
                                                        :all
                                                        :unread)}])}]))
 
-;(defn options-bottom-sheet-content
-;  []
-;  (let [unread-count (rf/sub [:activity-center/unread-count])]
-;    [quo/action-drawer
-;     [[{:icon           :i/check
-;        :override-theme :dark
-;        :label          (i18n/label :t/mark-all-notifications-as-read)
-;        :on-press       (fn []
-;                          (if (pos? unread-count)
-;                            (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
-;                                          (fn []
-;                                            {:icon           :up-to-date
-;                                             :icon-color     colors/success-50
-;                                             :text           (i18n/label :t/notifications-marked-as-read
-;                                                                         {:count unread-count})
-;                                             :override-theme :dark})])
-;                            ;; Need design improvements if there is NO unread
-;                            ;; notifications to mark as read
-;                            ;; https://github.com/status-im/status-mobile/issues/14983
-;                            (js/alert "No unread notifications to mark as read"))
-;                          (rf/dispatch [:bottom-sheet/hide]))}]]]))
 
 (defn options-bottom-sheet-content
-  []
+  [bottom-inset]
   (let [unread-count (rf/sub [:activity-center/unread-count])]
-    [rn/view {:style {:background-color        colors/neutral-100
-                      :height                  100
-                      :border-top-left-radius  20
-                      :border-top-right-radius 20
-                      :width                   "100%"}}
+    [rn/view
+     {:style {:background-color        colors/neutral-100
+              :padding-bottom          (if platform/ios? bottom-inset 20)
+              :padding-top             20
+              ;:height                  100
+              :border-top-left-radius  20
+              :border-top-right-radius 20
+              :width                   "100%"}}
      [quo/action-drawer
       [[{:icon           :i/check
          :override-theme :dark
@@ -107,7 +89,7 @@
   (let [filter-type                   (rf/sub [:activity-center/filter-type])
         types-with-unread             (rf/sub [:activity-center/notification-types-with-unread])
         is-mark-all-as-read-undoable? (boolean (rf/sub
-                                                 [:activity-center/mark-all-as-read-undoable-till]))]
+                                                [:activity-center/mark-all-as-read-undoable-till]))]
     [quo/tabs
      {:size                32
       :scrollable?         true
@@ -186,7 +168,7 @@
       ;:on-press            #(rf/dispatch [:bottom-sheet/show-sheet
       ;                                    {:content        options-bottom-sheet-content
       ;                                     :override-theme :dark}])
-      }
+     }
      :i/options]]
    [quo/text
     {:size   :heading-1
@@ -237,7 +219,8 @@
 (defn view
   [request-close]
   (let [active-swipeable (atom nil)
-        visible?         (reagent/atom false)]
+        visible?         (reagent/atom false)
+        view-id          (rf/sub [:view-id])]
     [:f>
      (fn []
        (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
@@ -247,23 +230,25 @@
                 window-width  (rf/sub [:dimensions/window-width])
                 window-height (rf/sub [:dimensions/window-height])]
             [rn/view {:style (style/screen-container window-width window-height top bottom)}
-             [rn/modal {:is-visible                         @visible?
-                        :use-native-driver                  true
-                        :hide-modal-content-while-animating true
-                        :backdrop-opacity                   0.5
-                        :use-native-driver-for-backdrop     true
-                        :on-backdrop-press                  #(reset! visible? false)
-                        :style                              {:justify-content :flex-end
-                                                             :margin          0
-                                                             :width           "100%"
-                                                             :align-self      :center}}
-              [options-bottom-sheet-content]]
-             [blur/view {:blurAmount 32
-                         :style      {:position :absolute
-                                      :top      0
-                                      :bottom   0
-                                      :left     0
-                                      :right    0}}]
+             [rn/modal
+              {:is-visible                         @visible?
+               :use-native-driver                  true
+               :use-native-driver-for-backdrop     true
+               :hide-modal-content-while-animating true
+               :backdrop-opacity                   0.5
+               :on-backdrop-press                  #(reset! visible? false)
+               :style                              {:justify-content :flex-end
+                                                    :margin          0
+                                                    :width           "100%"
+                                                    :align-self      :center}}
+              [options-bottom-sheet-content bottom]]
+             [blur/view
+              {:blurAmount 32
+               :style      {:position :absolute
+                            :top      0
+                            :bottom   0
+                            :left     0
+                            :right    0}}]
              [header request-close #(reset! visible? true)]
              [rn/flat-list
               {:data                      notifications
