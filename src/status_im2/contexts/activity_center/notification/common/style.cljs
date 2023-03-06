@@ -30,23 +30,29 @@
             :outputRange [0 swipe-action-width]
             :extrapolate :clamp}))
 
-(defn left-swipe-container
-  [style-props]
-  (merge {:background-color colors/primary-60
-          :align-items      :center
-          :justify-content  :center
-          :border-radius    swipe-button-border-radius
-          :width            swipe-action-width}
-         style-props))
+(def swipe-base
+  {:align-items     :center
+   :justify-content :center
+   :border-radius   swipe-button-border-radius
+   :width           swipe-action-width})
 
-(defn right-swipe-container
-  [style-props]
-  (merge {:background-color colors/danger-60
-          :align-items      :center
-          :justify-content  :center
-          :border-radius    swipe-button-border-radius
-          :width            swipe-action-width}
-         style-props))
+(defn swipe-success-container
+  [style]
+  (merge swipe-base
+         {:background-color colors/success-60}
+         style))
+
+(defn swipe-danger-container
+  [style]
+  (merge swipe-base
+         {:background-color colors/danger-60}
+         style))
+
+(defn swipe-primary-container
+  [style]
+  (merge swipe-base
+         {:background-color colors/primary-60}
+         style))
 
 (def swipe-text
   {:margin-top 5
