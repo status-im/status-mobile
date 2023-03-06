@@ -62,16 +62,7 @@
 (defn old-roots
   []
   ;;TABS
-  {;;INTRO (onboarding carousel)
-   :intro
-   {:root {:stack {:children [{:component {:name    :intro
-                                           :id      :intro
-                                           :options (status-bar-options)}}]
-                   :options  (merge (default-root)
-                                    (status-bar-options)
-                                    {:topBar (assoc (topbar-options) :visible false)})}}}
-
-   ;; ONBOARDING
+  {;; ONBOARDING
    :onboarding
    {:root {:stack {:id       :onboarding
                    :children [{:component {:name    :get-your-keys
@@ -148,6 +139,16 @@
   []
   ;;TABS
   (merge (old-roots)
+         ;;INTRO (onboarding carousel)
+         {:intro-stack
+          {:root {:stack {:id       :intro
+                          :children [{:component {:name :intro
+                                                  :id :intro
+                                                  :options
+                                                  {:statusBar (merge
+                                                               (status-bar-options)
+                                                               {:style :light})
+                                                   :topBar    {:visible false}}}}]}}}}
          {:shell-stack
           {:root
            {:stack {:id       :shell-stack

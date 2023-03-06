@@ -60,7 +60,6 @@
     [status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
-    [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
     [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
     [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
     [status-im.ui.screens.onboarding.password.views :as onboarding.password]
@@ -129,11 +128,6 @@
 
    {:name      :progress
     :component progress/progress}
-
-   ;[Onboarding]
-   {:name      :intro
-    :insets    {:bottom true}
-    :component onboarding.intro/intro}
 
    ;[Onboarding]
    {:name      :get-your-keys
