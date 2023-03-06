@@ -18,8 +18,9 @@
   [{:keys [full-name size draw-ring?]}]
   (let [font-size       (get-in style/sizes [size :font-size])
         amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
-    [rn/view {:accessibility-label :initials-avatar
-              :style               (style/initials-avatar size draw-ring?)}
+    [rn/view
+     {:accessibility-label :initials-avatar
+      :style               (style/initials-avatar size draw-ring?)}
      [text/text
       {:style  style/initials-avatar-text
        :size   font-size
@@ -52,5 +53,6 @@
          :size       size
          :draw-ring? draw-ring?}])
      (when status-indicator?
-       [rn/view {:accessibility-label :status-indicator
-                 :style               (style/dot size online? draw-ring?)}])]))
+       [rn/view
+        {:accessibility-label :status-indicator
+         :style               (style/dot size online? draw-ring?)}])]))

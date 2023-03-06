@@ -4,10 +4,12 @@
 
 (defonce mock-picture (js/require "../resources/images/mock2/user_picture_male4.png"))
 
-(defn- test-truthy [element]
+(defn- test-truthy
+  [element]
   (.toBeTruthy (js/expect element)))
 
-(defn- test-null [element]
+(defn- test-null
+  [element]
   (.toBeNull (js/expect element)))
 
 (h/describe "user avatar"
@@ -24,31 +26,35 @@
 
     (h/test "Renders even if `:full-name` is passed"
       (h/render
-       [user-avatar/user-avatar {:profile-picture mock-picture
-                                 :full-name       "New User1"}])
+       [user-avatar/user-avatar
+        {:profile-picture mock-picture
+         :full-name       "New User1"}])
       (test-truthy (h/get-by-label-text :profile-picture))
       (test-null (h/query-by-label-text :initials-avatar)))
 
     (h/describe "Status indicator"
       (h/test "Render"
         (h/render
-         [user-avatar/user-avatar {:profile-picture   mock-picture
-                                   :status-indicator? true}])
+         [user-avatar/user-avatar
+          {:profile-picture   mock-picture
+           :status-indicator? true}])
         (test-truthy (h/get-by-label-text :profile-picture))
         (test-truthy (h/get-by-label-text :status-indicator)))
 
       (h/test "Do not render"
         (h/render
-         [user-avatar/user-avatar {:profile-picture   mock-picture
-                                   :status-indicator? false}])
+         [user-avatar/user-avatar
+          {:profile-picture   mock-picture
+           :status-indicator? false}])
         (test-truthy (h/get-by-label-text :profile-picture))
         (test-null (h/query-by-label-text :status-indicator)))))
 
   (h/describe "Initials Avatar"
     (h/describe "Render initials"
       (letfn [(user-avatar-component [size]
-                [user-avatar/user-avatar {:full-name "New User"
-                                          :size      size}])]
+                [user-avatar/user-avatar
+                 {:full-name "New User"
+                  :size      size}])]
         (h/describe "Two letters"
           (h/test "Size :big"
             (h/render (user-avatar-component :big))
@@ -77,9 +83,10 @@
 
     (h/describe "Render ring"
       (letfn [(user-avatar-component [size]
-                [user-avatar/user-avatar {:full-name       "New User"
-                                          :ring-background mock-picture
-                                          :size            size}])]
+                [user-avatar/user-avatar
+                 {:full-name       "New User"
+                  :ring-background mock-picture
+                  :size            size}])]
         (h/describe "Passed and drawn"
           (h/test "Size :big"
             (h/render (user-avatar-component :big))
@@ -115,14 +122,16 @@
     (h/describe "Status indicator"
       (h/test "Render"
         (h/render
-         [user-avatar/user-avatar {:full-name         "Test User"
-                                   :status-indicator? true}])
+         [user-avatar/user-avatar
+          {:full-name         "Test User"
+           :status-indicator? true}])
         (test-truthy (h/get-by-label-text :initials-avatar))
         (test-truthy (h/get-by-label-text :status-indicator)))
 
       (h/test "Do not render"
         (h/render
-         [user-avatar/user-avatar {:full-name         "Test User"
-                                   :status-indicator? false}])
+         [user-avatar/user-avatar
+          {:full-name         "Test User"
+           :status-indicator? false}])
         (test-truthy (h/get-by-label-text :initials-avatar))
         (test-null (h/query-by-label-text :status-indicator))))))
