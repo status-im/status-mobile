@@ -129,6 +129,7 @@ class SignInView(BaseView):
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.sign_in_button = SignInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
+        self.new_ui_sign_in_button = Button(self.driver, accessibility_id="already-use-status-button")
         self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
         self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
@@ -177,8 +178,7 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)),
                          device=False)
         if not second_user:
-            self.accept_tos_checkbox.enable()
-            self.get_started_button.click_until_presence_of_element(self.generate_key_button)
+            new_ui_sign_in_button.click()
             self.generate_key_button.click()
 
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))

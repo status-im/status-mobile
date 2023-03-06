@@ -49,7 +49,7 @@
                                                    multiaccount
                                                    [:key-uid :name :public-key :identicon :images]))
                   (keychain/get-auth-method (:key-uid multiaccount))))
-      (navigation/init-root cofx :intro))))
+      (navigation/init-root cofx :intro-stack))))
 
 (rf/defn initialize-multiaccounts
   {:events [:setup/initialize-multiaccounts]}
