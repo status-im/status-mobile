@@ -138,7 +138,9 @@
                               :blurred?   blurred?
                               :icon-color icon-color
                               :disabled?  disabled?
-                              :label      label
+                              :label      (if labelled?
+                                            label
+                                            (when (= type :label) label))
                               :type       type
                               :labelled?  labelled?
                               :on-press   (fn [id]
@@ -150,17 +152,18 @@
                                                                 :index        index
                                                                 :viewPosition 0.5}))
                                             (when on-change
-                                              (on-change id)))}
-                             label]])})])
+                                              (on-change id)))}]])})])
           [rn/view {:style {:flex-direction :row}}
-           (for [{:keys [label id resource]} data]
+           (for [{:keys [id label resource]} data]
              ^{:key id}
              [rn/view {:style {:margin-right 8}}
               [tag/tag
                (merge {:id         id
                        :size       size
                        :type       type
-                       :label      (if labelled? label (when (= type :label) label))
+                       :label      (if labelled?
+                                     label
+                                     (when (= type :label) label))
                        :active     (= id active-tab-id)
                        :disabled?  disabled?
                        :blurred?   blurred?

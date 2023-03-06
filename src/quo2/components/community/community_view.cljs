@@ -42,16 +42,15 @@
 (defn community-tags
   [tags]
   [rn/view (style/community-tags-container)
-   (for [{:keys [id tag-label resource]} tags]
-     ^{:key id}
+   (for [{:keys [name emoji]} tags]
+     ^{:key name}
      [rn/view {:margin-right 8}
       [tag/tag
-       {:id        id
-        :size      24
-        :label     tag-label
+       {:size      24
+        :label     name
         :type      :emoji
         :labelled? true
-        :resource  resource}]])])
+        :resource  emoji}]])])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]
@@ -82,6 +81,5 @@
                        colors/neutral-80)
     :locked?          locked?
     :tokens           tokens
-
     :size             24
     :on-press         on-press}])

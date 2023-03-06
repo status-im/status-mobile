@@ -288,10 +288,12 @@
   (let [categories-heights   (reagent/atom [])
         first-channel-height (reagent/atom 0)
         scroll-height        (reagent/atom 0)
-        cover                {:uri (get-in images [:large :uri])}]
+        cover                {:uri (get-in images [:banner :uri])}
+        logo                 {:uri (get-in images [:thumbnail :uri])}]
     (fn [community]
       [scroll-page/scroll-page
        {:cover-image                    cover
+        :logo                           logo
         :page-nav-right-section-buttons (page-nav-right-section-buttons id)
         :name                           name
         :on-scroll                      #(reset! scroll-height %)

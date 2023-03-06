@@ -57,14 +57,18 @@
 
 (defn card-view-content-container
   [padding-horizontal]
-  {:flex             1
-   :height           20
-   :padding-left     padding-horizontal
-   :padding-right    padding-horizontal
-   :border-radius    16
-   :background-color (colors/theme-colors
-                      colors/white
-                      colors/neutral-90)})
+  {:position                :absolute
+   :top                     40
+   :bottom                  0
+   :left                    0
+   :right                   0
+   :height                  20
+   :padding-horizontal      padding-horizontal
+   :border-top-right-radius 16
+   :border-top-left-radius  16
+   :background-color        (colors/theme-colors
+                             colors/white
+                             colors/neutral-90)})
 
 (defn card-view-chat-icon
   [icon-size]

@@ -18,26 +18,17 @@
   {:data {:community-color "#0052FF"
           :status          :gated
           :locked?         true
-          :cover           (resources/get-mock-image :community-cover)
           :tokens          [{:id    1
                              :group [{:id         1
-                                      :token-icon (resources/get-mock-image :status-logo)}]}]
-          :tags            [{:id        1
-                             :tag-label (i18n/label :t/music)
-                             :resource  (resources/get-image :music)}
-                            {:id        2
-                             :tag-label (i18n/label :t/lifestyle)
-                             :resource  (resources/get-image :lifestyle)}
-                            {:id        3
-                             :tag-label (i18n/label :t/podcasts)
-                             :resource  (resources/get-image :podcasts)}]}})
+                                      :token-icon (resources/get-mock-image :status-logo)}]}]}})
 
 (defn render-fn
   [community-item _ _ {:keys [width view-type]}]
-  (let [item (merge community-item
-                    (get mock-community-item-data :data))]
+  (let [item  (merge community-item
+                     (get mock-community-item-data :data))
+        cover {:uri (get-in (:images item) [:banner :uri])}]
     (if (= view-type :card-view)
-      [quo/community-card-view-item (assoc item :width width)
+      [quo/community-card-view-item (assoc item :width width :cover cover)
        #(rf/dispatch [:navigate-to :community-overview (:id item)])]
       [quo/communities-list-view-item
        {:on-press      (fn []
@@ -134,7 +125,7 @@
 
 (defn other-communities-list
   [{:keys [communities communities-ids view-type]}]
-  [rn/view {:flex 1}
+  [rn/view {:style style/other-communities-container}
    (map-indexed
     (fn [inner-index item]
       (let [community-id (when communities-ids item)
