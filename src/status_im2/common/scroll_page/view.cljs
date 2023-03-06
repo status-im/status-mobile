@@ -31,7 +31,7 @@
    height
    name
    page-nav
-   cover
+   logo
    sticky-header
    top-nav
    title-colum
@@ -65,11 +65,11 @@
                :top      0
                :left     0
                :right    0}}
-      (when cover
+      (when logo
         [reanimated/view
          {:style (style/sticky-header-title opacity-animation)}
          [rn/image
-          {:source cover
+          {:source logo
            :style  style/sticky-header-image}]
          [quo/text
           {:size   :paragraph-1
@@ -122,6 +122,7 @@
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn
       [{:keys [cover-image
+               logo
                page-nav-right-section-buttons
                name
                on-scroll
@@ -134,7 +135,7 @@
        children]
       [:<>
        [:f> scroll-page-header @scroll-height height name page-nav-right-section-buttons
-        cover-image sticky-header top-nav title-colum navigate-back?]
+        logo sticky-header top-nav title-colum navigate-back?]
        [rn/scroll-view
         {:content-container-style         (style/scroll-view-container
                                            (diff-with-max-min @scroll-height 16 0))
@@ -162,5 +163,5 @@
             :border-radius    (diff-with-max-min @scroll-height 16 0)
             :background-color background-color}
            (when cover-image
-             [:f> display-picture @scroll-height cover-image])
+             [:f> display-picture @scroll-height logo])
            children])]])))

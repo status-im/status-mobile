@@ -2,9 +2,10 @@
   (:require [react-native.platform :as platform]))
 
 (def screen-title-container
-  {:height           56
-   :padding-vertical 12
-   :justify-content  :center})
+  {:height            56
+   :padding-vertical  12
+   :justify-content   :center
+   :margin-horizontal 20})
 
 (def featured-communities-header
   {:flex-direction  :row
@@ -12,6 +13,7 @@
    :padding-top     8
    :margin-bottom   8
    :padding-right   20
+   :margin-left     20
    :justify-content :space-between})
 
 (def featured-communities-title-container
@@ -21,7 +23,13 @@
 (def featured-list-container
   {:flex-direction :row
    :overflow       :hidden
-   :margin-bottom  24})
+   :margin-bottom  24
+   :margin-left    20
+   :padding-right  20})
+
+(def other-communities-container
+  {:flex              1
+   :margin-horizontal 20})
 
 (defn discover-communities-segments
   [fixed?]
@@ -30,8 +38,9 @@
     :height           56
     :background-color :transparent}
    (when-not fixed?
-     {:margin-top    12
-      :margin-bottom 4})))
+     {:margin-top        12
+      :margin-horizontal 20
+      :margin-bottom     4})))
 
 (defn discover-screen-container
   [background-color]
@@ -47,8 +56,7 @@
    :justify-content :center})
 
 (def render-communities-container
-  {:padding-horizontal 20
-   :margin-top         100})
+  {:margin-top 100})
 
 (defn blur-tabs-header
   []

@@ -92,9 +92,7 @@
             @state
             {:default-active 1
              :component      :tags
-             :labelled?      (if (= :label type) true (:labelled? @state))
-             :resource       (when (= type :icon)
-                               :main-icons2/placeholder)
+             :labelled?      (if (= :label (:type @state)) true (:labelled? @state))
              :data           [{:id 1 :label "Music" :resource (resources/get-image :music)}
                               {:id 2 :label "Lifestyle" :resource (resources/get-image :lifestyle)}
                               {:id 2 :label "Podcasts" :resource (resources/get-image :podcasts)}
