@@ -11,7 +11,6 @@
 
 (defn render-inline
   [units {:keys [type literal destination]}]
-  (prn destination)
   (case (keyword type)
     :code
     (conj units [rn/view {:style (merge style/block (style/code))} [quo/text {:weight :code} literal]])
