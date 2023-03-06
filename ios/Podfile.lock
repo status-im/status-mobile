@@ -228,6 +228,8 @@ PODS:
     - React-Core
   - react-native-netinfo (4.7.0):
     - React
+  - react-native-orientation-locker (1.5.0):
+    - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (2.0.0):
@@ -238,7 +240,7 @@ PODS:
     - React
   - react-native-status (1.0.0):
     - React
-  - react-native-status-keycard (2.5.38):
+  - react-native-status-keycard (2.5.39):
     - Keycard
     - React
   - react-native-webview (11.16.0):
@@ -390,6 +392,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - secp256k1 (0.1.6)
+  - ShowTime (2.5.3)
   - SQLCipher (3.4.2):
     - SQLCipher/standard (= 3.4.2)
   - SQLCipher/common (3.4.2)
@@ -433,6 +436,7 @@ DEPENDENCIES:
   - react-native-lottie-splash-screen (from `../node_modules/react-native-lottie-splash-screen`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
@@ -469,6 +473,7 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
+  - ShowTime
   - SQLCipher (~> 3.0)
   - SSZipArchive (= 2.4.3)
   - TouchID (from `../node_modules/react-native-touch-id`)
@@ -482,6 +487,7 @@ SPEC REPOS:
     - libwebp
     - SDWebImage
     - SDWebImageWebPCoder
+    - ShowTime
     - SQLCipher
     - SSZipArchive
     - TOCropViewController
@@ -545,6 +551,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-orientation-locker:
+    :path: "../node_modules/react-native-orientation-locker"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
@@ -640,7 +648,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 352a8ca9bbc8e2f097d680747a8c97ecef12d469
   FBReactNativeSpec: 7dfb84f624136a45727c813ed21d130cd3e61beb
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 997518ea2aa2d8cd5df9797b641b758d52ecf2bc
+  glog: 36ce0530c6d2c3a5a4326885ef4069564887a1db
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
@@ -666,12 +674,13 @@ SPEC CHECKSUMS:
   react-native-lottie-splash-screen: 068688c15dd478301fda00f8d87d7fb7d5b9a93e
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
+  react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
-  react-native-status-keycard: f60ca57d789aad6875c64ece81ab06ef0609e0d3
+  react-native-status-keycard: f1c1227b2d5984c10fb44db68e4bfd2937f31e98
   react-native-webview: 28a8636d97ee641f2ee8f20492d7a6c269c1d703
   React-RCTActionSheet: e911b99f0d6fa7711ffc2f62d236b12a32771835
   React-RCTAnimation: ad8b853170a059faf31d6add34f67d22391bbe01
@@ -704,12 +713,13 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   secp256k1: f61d67e6fdcb85fd727acf1bf35ace6036db540c
+  ShowTime: 06cc9dc79886274b21041fe19b79c9eff59b9714
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 0276e9f20976c8568e107cfc1163a8629051adc0
 
-PODFILE CHECKSUM: ca5d07911eadc1267649ecc15379e5127a0cc839
+PODFILE CHECKSUM: 06348d9065f85ab25a2c9560c69af5425c37e29e
 
 COCOAPODS: 1.11.3

@@ -273,5 +273,4 @@
                :key-fn                    :id
                :on-scroll-to-index-failed identity
                :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-               :render-fn                 notification-component}]]
-            ))])]))
+               :render-fn                 notification-component}]]))])]))
