@@ -215,9 +215,9 @@
 (def album-image-sizes ; sometimes we subtract 1 or 0.5 for padding
   {2        {0 image-size
              1 image-size}
-   3        {0 [(* image-size 2) (* image-size 1.5)]
-             1 [(- image-size 0.5) (- (* image-size 0.67) 1)]
-             2 [(- image-size 0.5) (- (* image-size 0.67) 1)]}
+   3        {0 [(* image-size 2) (* image-size 1.25)]
+             1 [(- image-size 0.5) (- (* image-size 0.75) 1)]
+             2 [(- image-size 0.5) (- (* image-size 0.75) 1)]}
    4        {0 image-size
              1 image-size
              2 image-size

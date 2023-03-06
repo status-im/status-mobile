@@ -50,9 +50,11 @@
          {:style {:flex-direction :row
                   :align-items    :center}}
          [rn/touchable-opacity
-          {:on-press #(rf/dispatch (if platform/ios?
-                                     [:chat.ui/exit-lightbox-signal @index]
-                                     [:navigate-back]))
+          {:on-press (fn []
+                       (common/set-val-timing (:opacity animations) 0)
+                       (rf/dispatch (if platform/ios?
+                                      [:chat.ui/exit-lightbox-signal @index]
+                                      [:navigate-back])))
            :style    style/close-container}
           [quo/icon :close {:size 20 :color colors/white}]]
          [rn/view {:style {:margin-left 12}}

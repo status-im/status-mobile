@@ -45,7 +45,6 @@
              [rn/touchable-opacity
               {:key            (:message-id item)
                :active-opacity 1
-               ;; issue: https://github.com/status-im/status-mobile/issues/14995
                :on-long-press  #(on-long-press message context)
                :on-press       (fn []
                                  (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])

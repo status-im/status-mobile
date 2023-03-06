@@ -42,8 +42,9 @@
 (defn handle-exit-lightbox-signal
   "On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
    doesn't execute properly, so we need to zoom out first"
-  [exit-lightbox-signal index scale rescale]
+  [exit-lightbox-signal index scale rescale set-full-height?]
   (when (= exit-lightbox-signal index)
+    (reset! set-full-height? false)
     (if (> scale c/min-scale)
       (do
         (rescale c/min-scale true)
@@ -81,3 +82,11 @@
 (defn get-pinch-position
   [scale-diff size focal]
   (* (- (/ size 2) focal) scale-diff))
+
+(defn get-focal
+  [focal size screen-size]
+  (let [min (/ (- screen-size size) 2)
+        max (+ min size)]
+    (if (or (> focal max) (< focal min))
+      (/ screen-size 2)
+      focal)))
