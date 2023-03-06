@@ -1,6 +1,7 @@
 (ns status-im2.navigation.screens
   (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]
+            [status-im2.contexts.onboarding.common.intro.view :as intro]
             [status-im2.contexts.activity-center.view :as activity-center]
             [status-im2.contexts.chat.messages.view :as chat]
             [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -24,7 +25,12 @@
   []
   (concat
    (old-screens/screens)
-   [{:name      :activity-center
+   [{:name      :intro
+     :options   {:topBar {:visible false}}
+     :insets    {:top false}
+     :component intro/view}
+
+    {:name      :activity-center
      :options   {:topBar {:visible false}}
      :component activity-center/view}
 

@@ -39,13 +39,14 @@
     children))
 
 (defn card
-  [{:keys [on-press style heading gap top?]} children]
+  [{:keys [on-press style heading gap accessibility-label top?]} children]
   [rn/touchable-highlight
-   {:on-press       on-press
-    :border-radius  20
-    :style          style
-    :underlay-color (:background-color style)}
-   [rn/view {}
+   {:accessibility-label accessibility-label
+    :on-press            on-press
+    :border-radius       20
+    :style               style
+    :underlay-color      (:background-color style)}
+   [rn/view
     [text/text
      {:size   :heading-1
       :style  (style/heading-text gap)
@@ -60,9 +61,11 @@
    opts
    {:container-style  style-object
     :top-card         { :on-press event
-                        :heading  string}
+                        :heading  string
+                        :accessibility-label keyword}
     :bottom-card      { :on-press event
-                        :heading  string}}
+                        :heading  string
+                        :accessibility-label keyword}}
     child-1           string, keyword or hiccup
     child-2           string, keyword or hiccup
    "

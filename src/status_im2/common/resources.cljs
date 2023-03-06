@@ -2,6 +2,10 @@
 
 (def ui
   {:add-new-contact (js/require "../resources/images/ui2/add-contact.png")
+   :intro-1         (js/require "../resources/images/ui2/intro-1.png")
+   :intro-2         (js/require "../resources/images/ui2/intro-2.png")
+   :intro-3         (js/require "../resources/images/ui2/intro-3.png")
+   :intro-4         (js/require "../resources/images/ui2/intro-4.png")
    :lifestyle       (js/require "../resources/images/ui2/lifestyle.png")
    :music           (js/require "../resources/images/ui2/music.png")
    :podcasts        (js/require "../resources/images/ui2/podcasts.png")
