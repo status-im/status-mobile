@@ -49,6 +49,17 @@
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:messages/resolve-mention literal])]])
 
+    :edited
+    (conj units
+
+          [quo/text
+           {:weight :medium
+            :style  {:font-size 11 ; Font-size must be used instead of props or the
+                                   ; styles will clash with original message text
+                     :color     (colors/theme-colors colors/neutral-40
+                                                     colors/neutral-50)}}
+           literal])
+
     (conj units literal)))
 
 
@@ -93,12 +104,7 @@
             (update last-literal
                     :children
                     conj
-                    {:literal [quo/text
-                               {:weight :medium
-                                :size   :label
-                                :style  {:color (colors/theme-colors colors/neutral-40
-                                                                     colors/neutral-50)}}
-                               (str " (" (i18n/label :t/edited) ")")]
+                    {:literal (str " (" (i18n/label :t/edited) ")")
                      :type    :edited}))))
 
 (defn render-parsed-text
