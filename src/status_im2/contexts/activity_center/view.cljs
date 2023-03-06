@@ -3,7 +3,6 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.activity-center.notification-types :as types]
