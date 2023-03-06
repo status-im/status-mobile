@@ -5,7 +5,8 @@
    :lifestyle       (js/require "../resources/images/ui2/lifestyle.png")
    :music           (js/require "../resources/images/ui2/music.png")
    :podcasts        (js/require "../resources/images/ui2/podcasts.png")
-   :sync-device     (js/require "../resources/images/ui2/sync-new-device-cover-background.png")})
+   :sync-device     (js/require "../resources/images/ui2/sync-new-device-cover-background.png")
+   :onboarding-bg-1 (js/require "../resources/images/ui2/onboarding-bg-1.png")})
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")

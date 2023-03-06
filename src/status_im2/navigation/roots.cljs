@@ -154,4 +154,12 @@
                     :children [{:component {:name    :shell-stack
                                             :id      :shell-stack
                                             :options (merge (status-bar-options)
-                                                            {:topBar {:visible false}})}}]}}}}))
+                                                            {:topBar {:visible false}})}}]}}}
+          :profiles
+          {:root
+           {:stack {:id       :profiles
+                    :children [{:component {:name    :profiles
+                                            :id      :profiles
+                                            :options (merge
+                                                      (status-bar-options)
+                                                      {:topBar {:visible false}})}}]}}}}))

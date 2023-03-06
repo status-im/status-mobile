@@ -14,7 +14,8 @@
             [quo.design-system.colors :as colors]
             [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
             [react-native.platform :as platform]
-            [status-im2.contexts.chat.photo-selector.view :as photo-selector]))
+            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+            [status-im2.contexts.onboarding.profiles.view :as profiles]))
 
 (def components
   [])
@@ -76,7 +77,12 @@
     {:name      :settings-syncing
      :insets    {:bottom true}
      :options   {:topBar {:title {:text (i18n/label :t/syncing)}}}
-     :component settings-syncing/views}]
+     :component settings-syncing/views}
+
+    ;; Onboarding
+    {:name      :profiles
+     :insets    {:top false}
+     :component profiles/views}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
