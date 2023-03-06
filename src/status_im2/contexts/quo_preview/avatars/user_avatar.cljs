@@ -22,6 +22,13 @@
                :value "xx Small"}
               {:key   :xxxs
                :value "xxx Small"}]}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [[color-kw _]]
+                    {:key   color-kw
+                     :value (name color-kw)})
+                  colors/customization)}
    {:label "Online status"
     :key   :online?
     :type  :boolean}
@@ -46,10 +53,11 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:full-name         "A Y"
-                             :status-indicator? true
-                             :online?           true
-                             :size              :medium})]
+  (let [state (reagent/atom {:full-name           "A Y"
+                             :status-indicator?   true
+                             :online?             true
+                             :size                :medium
+                             :customization-color :blue})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

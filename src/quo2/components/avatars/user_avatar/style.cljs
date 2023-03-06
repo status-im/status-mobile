@@ -41,7 +41,7 @@
      :border-radius dimensions}))
 
 (defn initials-avatar
-  [size draw-ring?]
+  [size draw-ring? customization-color]
   (let [outer-dimensions (get-in sizes [size :outer])
         inner-dimensions (get-in sizes [size (if draw-ring? :inner :outer)])]
     {:position         :absolute
@@ -52,7 +52,7 @@
      :border-radius    inner-dimensions
      :justify-content  :center
      :align-items      :center
-     :background-color (colors/custom-color-by-theme :turquoise 50 60)}))
+     :background-color (colors/custom-color-by-theme customization-color 50 60)}))
 
 (def initials-avatar-text
   {:color colors/white-opa-70})
