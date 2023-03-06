@@ -81,7 +81,7 @@
             [quo/text
              {:weight :medium
               :style  {:font-size 11
-                       :color (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+                       :color     (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
              (str " (" (i18n/label :t/edited) ")")]))
 
     :codeblock
@@ -92,7 +92,7 @@
             [quo/text
              {:weight :medium
               :style  {:font-size 11
-                       :color (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+                       :color     (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
              (str " (" (i18n/label :t/edited) ")")]))
     blocks))
 
