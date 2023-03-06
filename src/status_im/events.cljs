@@ -55,6 +55,7 @@
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
     status-im2.contexts.activity-center.events
+    status-im2.contexts.activity-center.notification.contact-requests.events
     status-im2.contexts.shell.events
     status-im.chat.models.gaps
     [status-im2.navigation.events :as navigation]))

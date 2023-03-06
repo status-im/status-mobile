@@ -137,15 +137,16 @@
       :action          :notification/accept})))
 
 (deftest notification-dismissal-test
-  (testing "dismisses notification, but keep it in the app db"
+  (testing "dismisses & mark notification as read, and keep it in the app db"
     (h/run-test-sync
      (setup)
      (let [notif-1           {:id "0x1" :type types/private-group-chat}
            notif-2           {:id "0x2" :type types/admin}
-           dismissed-notif-1 (assoc notif-1 :dismissed true)]
+           dismissed-notif-1 (assoc notif-1 :dismissed true :read true)]
        (h/stub-fx-with-callbacks :json-rpc/call :on-success (constantly notif-2))
-       (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                     [notif-2 notif-1]])
+       (rf/dispatch [:test/assoc-in [:activity-center]
+                     {:filter        {:type types/no-type :status :all}
+                      :notifications [notif-2 notif-1]}])
 
        (rf/dispatch [:activity-center.notifications/dismiss (:id notif-1)])
 
@@ -520,7 +521,7 @@
                 :type          types/mention}]
               (get-in (h/db) [:activity-center :notifications]))))))
 
-  (testing "resets loading flag after an error"
+  (testing "resets loading state after error"
     (h/run-test-sync
      (setup)
      (let [spy-queue (atom [])]
