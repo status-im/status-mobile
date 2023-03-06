@@ -1,7 +1,8 @@
 (ns quo2.components.avatars.user-avatar.component-spec
   (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [status-im2.common.resources :as resources]
             [test-helpers.component :as h]))
+
+(defonce mock-picture (js/require "../resources/images/mock2/user_picture_male4.png"))
 
 (defn- test-truthy [element]
   (.toBeTruthy (js/expect element)))
@@ -18,12 +19,12 @@
   (h/describe "Profile picture"
     (h/test "Renders"
       (h/render
-       [user-avatar/user-avatar {:profile-picture (resources/get-mock-image :user-picture-male4)}])
+       [user-avatar/user-avatar {:profile-picture mock-picture}])
       (test-truthy (h/get-by-label-text :profile-picture)))
 
     (h/test "Renders even if `:full-name` is passed"
       (h/render
-       [user-avatar/user-avatar {:profile-picture (resources/get-mock-image :user-picture-male4)
+       [user-avatar/user-avatar {:profile-picture mock-picture
                                  :full-name       "New User1"}])
       (test-truthy (h/get-by-label-text :profile-picture))
       (test-null (h/query-by-label-text :initials-avatar)))
@@ -31,14 +32,14 @@
     (h/describe "Status indicator"
       (h/test "Render"
         (h/render
-         [user-avatar/user-avatar {:profile-picture   (resources/get-mock-image :user-picture-male4)
+         [user-avatar/user-avatar {:profile-picture   mock-picture
                                    :status-indicator? true}])
         (test-truthy (h/get-by-label-text :profile-picture))
         (test-truthy (h/get-by-label-text :status-indicator)))
 
       (h/test "Do not render"
         (h/render
-         [user-avatar/user-avatar {:profile-picture   (resources/get-mock-image :user-picture-male4)
+         [user-avatar/user-avatar {:profile-picture   mock-picture
                                    :status-indicator? false}])
         (test-truthy (h/get-by-label-text :profile-picture))
         (test-null (h/query-by-label-text :status-indicator)))))
@@ -77,7 +78,7 @@
     (h/describe "Render ring"
       (letfn [(user-avatar-component [size]
                 [user-avatar/user-avatar {:full-name       "New User"
-                                          :ring-background (resources/get-mock-image :ring)
+                                          :ring-background mock-picture
                                           :size            size}])]
         (h/describe "Passed and drawn"
           (h/test "Size :big"
