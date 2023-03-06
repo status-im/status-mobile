@@ -64,6 +64,7 @@
 
 (def blur-background
   {:position :absolute
+   :background-color colors/neutral-80-opa-80
    :top      0
    :bottom   0
    :left     0

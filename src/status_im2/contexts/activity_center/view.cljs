@@ -231,7 +231,7 @@
                 window-width  (rf/sub [:dimensions/window-width])]
             [rn/view {:style (style/screen-container window-width top bottom)}
              [blur/view
-              {:blurAmount 32
+              {:blurAmount 5
                :style      style/blur-background}]
              [options-bottom-sheet visible? bottom]
              [header request-close #(reset! visible? true)]
