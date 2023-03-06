@@ -55,7 +55,7 @@
                            (navigation/merge-options (clj->js view-id)
                                                      (clj->js {:statusBar {:style status-bar-style}})))]
     [rn/modal
-     {:is-visible             @visible?
+     {:visible             @visible?
       :cover-screen           true
       :transparent            true
       :status-bar-translucent true
