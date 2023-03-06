@@ -83,13 +83,13 @@
     - `labelled` boolean: is true if tag has label else false"
   [_ _]
   (fn [{:keys [id on-press disabled? size resource active accessibility-label
-               label type labelled? blurred? icon-color]
+               label type labelled? blurred? icon-color override-theme]
         :or   {size 32}}]
     (let [state (cond disabled? :disabled
                       active    :active
                       :else     :default)
           {:keys [border-color blurred-border-color text-color]}
-          (get-in themes [(theme/get-theme) state])]
+          (get-in themes [(or override-theme (theme/get-theme)) state])]
       [rn/view {:style {:align-items :center}}
        [base-tag/base-tag
         {:id                  id

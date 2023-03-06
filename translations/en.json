@@ -1975,5 +1975,6 @@
     "strength-divider-weak-label": "Weak",
     "strength-divider-okay-label": "Okay",
     "strength-divider-strong-label": "Strong",
-    "strength-divider-very-strong-label": "Very strong"
+    "strength-divider-very-strong-label": "Very strong",
+    "logged-in": "Logged in"
 }
