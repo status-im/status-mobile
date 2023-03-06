@@ -3,7 +3,6 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
             [status-im2.contexts.activity-center.notification.contact-requests.view :as contact-requests]
@@ -14,7 +13,9 @@
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [react-native.blur :as blur]
+            [react-native.navigation :as navigation]))
 
 (defn filter-selector-read-toggle
   []
@@ -134,7 +135,7 @@
                                                     (contains? types-with-unread types/system))}]}]))
 
 (defn header
-  [request-close]
+  []
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
@@ -143,7 +144,7 @@
       :size                32
       :accessibility-label :close-activity-center
       :override-theme      :dark
-      :on-press            request-close}
+      :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
      {:icon                true
@@ -202,23 +203,20 @@
            nil)]))))
 
 (defn view
-  [request-close]
+  []
   (let [active-swipeable (atom nil)]
-    [:f>
-     (fn []
-       (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
-       [safe-area/consumer
-        (fn [{:keys [top bottom]}]
-          (let [notifications (rf/sub [:activity-center/notifications])
-                window-width  (rf/sub [:dimensions/window-width])]
-            [rn/view {:style (style/screen-container window-width top bottom)}
-             [header request-close]
-             [rn/flat-list
-              {:data                      notifications
-               :render-data               active-swipeable
-               :content-container-style   {:flex-grow 1}
-               :empty-component           [empty-tab]
-               :key-fn                    :id
-               :on-scroll-to-index-failed identity
-               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-               :render-fn                 notification-component}]]))])]))
+    (rf/dispatch [:activity-center.notifications/fetch-first-page])
+    (fn []
+      (let [notifications (rf/sub [:activity-center/notifications])]
+        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
+         [blur/view style/blur]
+         [header]
+         [rn/flat-list
+          {:data                      notifications
+           :render-data               active-swipeable
+           :content-container-style   {:flex-grow 1}
+           :empty-component           [empty-tab]
+           :key-fn                    :id
+           :on-scroll-to-index-failed identity
+           :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+           :render-fn                 notification-component}]]))))

@@ -30,8 +30,7 @@
 (defn default-root
   []
   {:layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
-            :orientation              "portrait"
-            :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}})
+            :orientation              :portrait}})
 
 (defn merge-top-bar
   [root-options options]
