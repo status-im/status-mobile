@@ -7,7 +7,7 @@
     [status-im2.constants :as constants]))
 
 (defn view
-  [contact-id contact-request-state]
+  [contact-id contact-request-state group-chat]
   (let [names (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
     [permission-context/view
      [quo/button
@@ -15,6 +15,9 @@
        :on-press #(rf/dispatch [:chat.ui/show-profile contact-id])
        :before   :i/communities}
       (cond
+        group-chat
+        (i18n/label :t/group-chat-not-member)
+
         (or (not contact-request-state)
             (= contact-request-state
                constants/contact-request-state-none)

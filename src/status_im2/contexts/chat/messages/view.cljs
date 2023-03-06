@@ -67,7 +67,7 @@
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id contact-request-state show-input?] :as chat}
+        {:keys [chat-id contact-request-state group-chat show-input?] :as chat}
         (rf/sub [:chats/current-chat-chat-view])]
     [safe-area/consumer
      (fn [insets]
@@ -78,7 +78,7 @@
         [pin.banner/banner chat-id]
         [messages.list/messages-list {:chat chat :show-input? show-input?}]
         (if-not show-input?
-          [contact-requests.bottom-drawer/view chat-id contact-request-state]
+          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
           [composer/composer chat-id insets])])]))
 
 (defn chat
