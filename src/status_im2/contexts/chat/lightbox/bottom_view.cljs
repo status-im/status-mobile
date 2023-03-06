@@ -5,7 +5,6 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.re-frame :as rf]
-    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.common :as common]))
 
 (def small-image-size 40)
