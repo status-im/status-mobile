@@ -1,13 +1,14 @@
 (ns status-im2.contexts.chat.lightbox.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as reanimated]
+            [status-im2.contexts.chat.lightbox.constants :as c]))
 
 ;;;; TOP-VIEW
 (defn top-view-container
-  [top-inset {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg top-layout]}
-   window-width
-   bg-color]
+  [top-inset window-width bg-color landscape?
+   {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg]}
+   {:keys [top-layout]}]
   (reanimated/apply-animations-to-style
    (if platform/ios?
      {:transform        [{:translateY top-layout}
@@ -21,15 +22,22 @@
       :opacity   opacity})
    {:position           :absolute
     :padding-horizontal 20
-    :top                (if platform/ios? top-inset 0)
-    ;; height defined in top_view.cljs, but can't import due to circular dependency
-    :height             56
+    :top                (if (or platform/ios? (not landscape?)) top-inset 0)
+    :height             c/top-view-height
     :z-index            4
     :flex-direction     :row
     :justify-content    :space-between
     :width              (when platform/android? window-width)
     :background-color   (when platform/android? bg-color)
     :align-items        :center}))
+
+(defn top-gradient
+  [insets]
+  {:position :absolute
+   :height   (+ c/top-view-height (:top insets) 0)
+   :top      (- (:top insets))
+   :left     0
+   :right    0})
 
 (def close-container
   {:width            32
@@ -44,18 +52,20 @@
 
 ;;;; BOTTOM-VIEW
 (defn gradient-container
-  [insets {:keys [opacity bottom-layout]}]
+  [insets {:keys [opacity]} {:keys [bottom-layout]}]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY bottom-layout}]
     :opacity   opacity}
    {:position       :absolute
     :bottom         0
-    :padding-bottom (:bottom insets)
+    :padding-bottom (if platform/ios?
+                      (:bottom insets)
+                      (+ (:bottom insets) c/small-list-padding-vertical c/focused-extra-size))
     :z-index        3}))
 
 (defn content-container
   [padding-horizontal]
-  {:padding-vertical   12
+  {:padding-vertical   c/small-list-padding-vertical
    :padding-horizontal padding-horizontal
    :align-items        :center
    :justify-content    :center})

@@ -22,7 +22,9 @@
 (defn double-tap-gesture
   [{:keys [width height screen-width screen-height y-threshold-scale x-threshold-scale]}
    {:keys [scale pan-x pan-x-start pan-y pan-y-start]}
-   rescale]
+   rescale
+   transparent?
+   toggle-opacity]
   (->
     (gesture/gesture-tap)
     (gesture/number-of-taps 2)
@@ -37,8 +39,13 @@
            (when (> c/double-tap-scale y-threshold-scale)
              (anim/animate pan-y translate-y)
              (anim/set-val pan-y-start translate-y))
-           (rescale c/double-tap-scale))
-         (rescale c/min-scale))))))
+           (rescale c/double-tap-scale)
+           (when (not @transparent?)
+             (toggle-opacity)))
+         (do
+           (rescale c/min-scale)
+           (when @transparent?
+             (toggle-opacity))))))))
 
 ;; not using on-finalize because on-finalize gets called always regardless the gesture executed or not
 (defn finalize-pinch
@@ -74,7 +81,9 @@
    {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pinch-x-max pinch-y-max]
     :as   animations}
    {:keys [focal-x focal-y] :as props}
-   rescale]
+   rescale
+   transparent?
+   toggle-opacity]
   (->
     (gesture/gesture-pinch)
     (gesture/on-begin (fn [e]
@@ -82,6 +91,8 @@
                           (reset! focal-x (oget e "focalX"))
                           (reset! focal-y (utils/get-focal (oget e "focalY") height screen-height)))))
     (gesture/on-start (fn [e]
+                        (when (and (= (anim/get-val saved-scale) c/min-scale) (not @transparent?))
+                          (toggle-opacity))
                         (when platform/android?
                           (reset! focal-x (utils/get-focal (oget e "focalX") width screen-width))
                           (reset! focal-y (utils/get-focal (oget e "focalY") height screen-height)))))
@@ -101,7 +112,10 @@
      (fn []
        (cond
          (< (anim/get-val scale) c/min-scale)
-         (rescale c/min-scale)
+         (do
+           (when @transparent?
+             (toggle-opacity))
+           (rescale c/min-scale))
          (> (anim/get-val scale) c/max-scale)
          (do
            (anim/animate pinch-x (anim/get-val pinch-x-max))
@@ -191,36 +205,46 @@
              (anim/animate-decay pan-y-start velocity [lower-bound upper-bound]))))))))
 
 (defn zoomable-image
-  [{:keys [image-width image-height content message-id]} index border-radius on-tap]
-  (let [set-full-height? (reagent/atom false)]
+  [{:keys [image-width image-height content message-id]} index args on-tap]
+  (let []
     [:f>
      (fn []
-       (let [shared-element-id    (rf/sub [:shared-element-id])
-             exit-lightbox-signal (rf/sub [:lightbox/exit-signal])
-             zoom-out-signal      (rf/sub [:lightbox/zoom-out-signal])
-             focused?             (= shared-element-id message-id)
-             curr-orientation     (or (rf/sub [:lightbox/orientation]) orientation/portrait)
-             dimensions           (utils/get-dimensions image-width image-height curr-orientation)
-             animations           {:scale         (anim/use-val c/min-scale)
-                                   :saved-scale   (anim/use-val c/min-scale)
-                                   :pan-x-start   (anim/use-val c/init-offset)
-                                   :pan-x         (anim/use-val c/init-offset)
-                                   :pan-y-start   (anim/use-val c/init-offset)
-                                   :pan-y         (anim/use-val c/init-offset)
-                                   :pinch-x-start (anim/use-val c/init-offset)
-                                   :pinch-x       (anim/use-val c/init-offset)
-                                   :pinch-y-start (anim/use-val c/init-offset)
-                                   :pinch-y       (anim/use-val c/init-offset)
-                                   :pinch-x-max   (anim/use-val js/Infinity)
-                                   :pinch-y-max   (anim/use-val js/Infinity)
-                                   :rotate        (anim/use-val c/init-rotation)
-                                   :rotate-scale  (anim/use-val c/min-scale)}
-             props                {:pan-x-enabled? (reagent/atom false)
-                                   :pan-y-enabled? (reagent/atom false)
-                                   :focal-x        (reagent/atom nil)
-                                   :focal-y        (reagent/atom nil)}
-             rescale              (fn [value exit?]
-                                    (utils/rescale-image value exit? dimensions animations props))]
+       (let [{:keys [transparent? set-full-height?]} args
+             shared-element-id                       (rf/sub [:shared-element-id])
+             exit-lightbox-signal                    (rf/sub [:lightbox/exit-signal])
+             zoom-out-signal                         (rf/sub [:lightbox/zoom-out-signal])
+             focused?                                (= shared-element-id message-id)
+             curr-orientation                        (or (rf/sub [:lightbox/orientation])
+                                                         orientation/portrait)
+             portrait?                               (= curr-orientation orientation/portrait)
+             dimensions                              (utils/get-dimensions image-width
+                                                                           image-height
+                                                                           curr-orientation
+                                                                           args)
+             animations                              {:scale         (anim/use-val c/min-scale)
+                                                      :saved-scale   (anim/use-val c/min-scale)
+                                                      :pan-x-start   (anim/use-val c/init-offset)
+                                                      :pan-x         (anim/use-val c/init-offset)
+                                                      :pan-y-start   (anim/use-val c/init-offset)
+                                                      :pan-y         (anim/use-val c/init-offset)
+                                                      :pinch-x-start (anim/use-val c/init-offset)
+                                                      :pinch-x       (anim/use-val c/init-offset)
+                                                      :pinch-y-start (anim/use-val c/init-offset)
+                                                      :pinch-y       (anim/use-val c/init-offset)
+                                                      :pinch-x-max   (anim/use-val js/Infinity)
+                                                      :pinch-y-max   (anim/use-val js/Infinity)
+                                                      :rotate        (anim/use-val c/init-rotation)
+                                                      :rotate-scale  (anim/use-val c/min-scale)}
+             props                                   {:pan-x-enabled? (reagent/atom false)
+                                                      :pan-y-enabled? (reagent/atom false)
+                                                      :focal-x        (reagent/atom nil)
+                                                      :focal-y        (reagent/atom nil)}
+             rescale                                 (fn [value exit?]
+                                                       (utils/rescale-image value
+                                                                            exit?
+                                                                            dimensions
+                                                                            animations
+                                                                            props))]
          (rn/use-effect-once (fn []
                                (js/setTimeout #(reset! set-full-height? true) 500)
                                js/undefined))
@@ -234,11 +258,13 @@
          (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
          [:f>
           (fn []
-            (let [tap               (tap-gesture on-tap)
-                  double-tap        (double-tap-gesture dimensions animations rescale)
-                  pinch             (pinch-gesture dimensions animations props rescale)
-                  pan-x             (pan-x-gesture dimensions animations props rescale)
-                  pan-y             (pan-y-gesture dimensions animations props rescale)
+            (let [tap (tap-gesture #(on-tap portrait?))
+                  double-tap
+                  (double-tap-gesture dimensions animations rescale transparent? #(on-tap portrait?))
+                  pinch
+                  (pinch-gesture dimensions animations props rescale transparent? #(on-tap portrait?))
+                  pan-x (pan-x-gesture dimensions animations props rescale)
+                  pan-y (pan-y-gesture dimensions animations props rescale)
                   composed-gestures (gesture/exclusive
                                      (gesture/simultaneous pinch pan-x pan-y)
                                      (gesture/exclusive double-tap tap))]
@@ -251,4 +277,4 @@
                 [reanimated/fast-image
                  {:source    {:uri (:image content)}
                   :native-ID (when focused? :shared-element)
-                  :style     (style/image dimensions animations border-radius)}]]]))]))]))
+                  :style     (style/image dimensions animations (:border-value args))}]]]))]))]))
