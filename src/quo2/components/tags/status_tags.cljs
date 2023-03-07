@@ -81,7 +81,7 @@
 (defn- get-color-or-icon-name
   [{:keys [blur? theme dark-blur-variant light-variant dark-variant]}]
   (if blur?
-    ;; status tag suppport only dark blur variant
+    ;; status tag support only dark blur variant
     dark-blur-variant
     (if (= theme :light) light-variant dark-variant)))
 
