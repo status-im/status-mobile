@@ -298,8 +298,8 @@
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
   [{:keys [db]} chat-id muted? mute-type]
-  (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")
-        params (if muted? [chat-id] [chat-id (datetime/timestamp) mute-type])]
+  (let [method (if muted? "wakuext_muteChatV2" "wakuext_unmuteChat")
+        params (if muted? [chat-id (utils.datetime/timestamp-sec) mute-type] [chat-id])]
     {:db            (assoc-in db [:chats chat-id :muted] muted?)
      :json-rpc/call [{:method     method
                       :params     params
