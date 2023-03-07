@@ -87,7 +87,7 @@
           [community-preview cached-preview-data]))})))
 
 (defn link-preview-loader
-  [link {:keys [on-long-press]}]
+  [link _]
   (reagent/create-class
    {:component-did-mount
     (fn []
