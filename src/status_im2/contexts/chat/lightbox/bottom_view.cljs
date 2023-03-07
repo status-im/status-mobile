@@ -5,7 +5,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.common :as common]))
+    [status-im2.contexts.chat.lightbox.animations :as anim]))
 
 (def small-image-size 40)
 
@@ -25,10 +25,10 @@
   [:f>
    (fn []
      (let [size                    (if (= @scroll-index index) focused-image-size small-image-size)
-           size-value              (common/use-val size)
+           size-value              (anim/use-val size)
            {:keys [scroll-index-lock? small-list-ref
                    flat-list-ref]} atoms]
-       (common/set-val-timing size-value size)
+       (anim/animate size-value size)
        [rn/touchable-opacity
         {:active-opacity 1
          :on-press       (fn []

@@ -4,9 +4,92 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
+    [status-im2.contexts.chat.lightbox.animations :as anim]
     [utils.re-frame :as rf]))
 
+;;; Helpers
+(defn center-x
+  [{:keys [pinch-x pinch-x-start pan-x pan-x-start]} exit?]
+  (let [duration (if exit? 100 c/default-duration)]
+    (anim/animate pinch-x c/init-offset duration)
+    (anim/set-val pinch-x-start c/init-offset)
+    (anim/animate pan-x c/init-offset duration)
+    (anim/set-val pan-x-start c/init-offset)))
 
+(defn center-y
+  [{:keys [pinch-y pinch-y-start pan-y pan-y-start]} exit?]
+  (let [duration (if exit? 100 c/default-duration)]
+    (anim/animate pinch-y c/init-offset duration)
+    (anim/set-val pinch-y-start c/init-offset)
+    (anim/animate pan-y c/init-offset duration)
+    (anim/set-val pan-y-start c/init-offset)))
+
+(defn reset-values
+  [exit? animations {:keys [focal-x focal-y]}]
+  (center-x animations exit?)
+  (center-y animations exit?)
+  (reset! focal-x nil)
+  (reset! focal-y nil))
+
+(defn rescale-image
+  [value
+   exit?
+   {:keys [x-threshold-scale y-threshold-scale]}
+   {:keys [scale saved-scale] :as animations}
+   {:keys [pan-x-enabled? pan-y-enabled?] :as props}]
+  (anim/animate scale value (if exit? 100 c/default-duration))
+  (anim/set-val saved-scale value)
+  (when (= value c/min-scale)
+    (reset-values exit? animations props))
+  (reset! pan-x-enabled? (> value x-threshold-scale))
+  (reset! pan-y-enabled? (> value y-threshold-scale)))
+
+;;; Handlers
+(defn handle-orientation-change
+  [curr-orientation
+   focused?
+   {:keys [landscape-scale-val x-threshold-scale y-threshold-scale]}
+   {:keys [rotate rotate-scale scale] :as animations}
+   {:keys [pan-x-enabled? pan-y-enabled?]}]
+  (let [duration (when focused? c/default-duration)]
+    (cond
+      (= curr-orientation orientation/landscape-left)
+      (do
+        (anim/animate rotate "90deg" duration)
+        (anim/animate rotate-scale landscape-scale-val duration))
+      (= curr-orientation orientation/landscape-right)
+      (do
+        (anim/animate rotate "-90deg" duration)
+        (anim/animate rotate-scale landscape-scale-val duration))
+      (= curr-orientation orientation/portrait)
+      (do
+        (anim/animate rotate c/init-rotation duration)
+        (anim/animate rotate-scale c/min-scale duration)))
+    (center-x animations false)
+    (center-y animations false)
+    (reset! pan-x-enabled? (> (anim/get-val scale) x-threshold-scale))
+    (reset! pan-y-enabled? (> (anim/get-val scale) y-threshold-scale))))
+
+(defn handle-exit-lightbox-signal
+  "On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
+   doesn't execute properly, so we need to zoom out first"
+  [exit-lightbox-signal index scale rescale set-full-height?]
+  (when (= exit-lightbox-signal index)
+    (reset! set-full-height? false)
+    (if (> scale c/min-scale)
+      (do
+        (rescale c/min-scale true)
+        (js/setTimeout #(rf/dispatch [:navigate-back]) 70))
+      (rf/dispatch [:navigate-back]))
+    (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
+
+(defn handle-zoom-out-signal
+  "Zooms out when pressing on another photo from the small bottom list"
+  [zoom-out-signal index scale rescale]
+  (when (and (= zoom-out-signal index) (> scale c/min-scale))
+    (rescale c/min-scale true)))
+
+;;; Dimensions
 (defn get-dimensions
   "Calculates all required dimensions. Dimensions calculations are different on iOS and Android because landscape
    mode is implemented differently.On Android, we just need to resize the content, and the OS takes care of the
@@ -38,25 +121,6 @@
      :x-threshold-scale   (/ screen-width (min screen-width container-width))
      :y-threshold-scale   (/ screen-height (min screen-height container-height))
      :landscape-scale-val (/ portrait-image-width portrait-image-height)}))
-
-(defn handle-exit-lightbox-signal
-  "On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
-   doesn't execute properly, so we need to zoom out first"
-  [exit-lightbox-signal index scale rescale set-full-height?]
-  (when (= exit-lightbox-signal index)
-    (reset! set-full-height? false)
-    (if (> scale c/min-scale)
-      (do
-        (rescale c/min-scale true)
-        (js/setTimeout #(rf/dispatch [:navigate-back]) 70))
-      (rf/dispatch [:navigate-back]))
-    (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
-
-(defn handle-zoom-out-signal
-  "Zooms out when pressing on another photo from the small bottom list"
-  [zoom-out-signal index scale rescale]
-  (when (and (= zoom-out-signal index) (> scale c/min-scale))
-    (rescale c/min-scale true)))
 
 
 ;;; MATH
