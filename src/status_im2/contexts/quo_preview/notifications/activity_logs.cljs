@@ -47,8 +47,8 @@
                :key   :danger}
               {:value "Primary"
                :key   :primary}
-              {:value "Success"
-               :key   :success}]}
+              {:value "Positive"
+               :key   :positive}]}
    {:label "Button 1 label"
     :key   :button-1-label
     :type  :text}
@@ -59,8 +59,8 @@
                :key   :danger}
               {:value "Primary"
                :key   :primary}
-              {:value "Success"
-               :key   :success}]}
+              {:value "Positive"
+               :key   :positive}]}
    {:label "Button 2 label"
     :key   :button-2-label
     :type  :text}
@@ -122,25 +122,33 @@
                              :message        :with-title
                              :timestamp      "Today 00:00"
                              :title          "Activity Title"
-                             :unread?        true})]
+                             :unread?        true
+                             :items          []})]
     (fn []
       (let [{:keys [button-1-type
                     button-1-label
                     button-2-type
-                    button-2-label]}
+                    button-2-label
+                    status]}
             @state
             props (cond-> @state
                     (and (seq button-1-label)
                          button-1-type)
-                    (assoc :button-1
-                           {:label button-1-label
-                            :type  button-1-type})
+                    (update :items
+                            conj
+                            {:type     :button
+                             :label    button-1-label
+                             :subtype  button-1-type
+                             :on-press #(js/alert "Button 1 Clicked")})
 
                     (and (seq button-2-label)
                          button-2-type)
-                    (assoc :button-2
-                           {:label button-2-label
-                            :type  button-2-type})
+                    (update :items
+                            conj
+                            {:type     :button
+                             :label    button-2-label
+                             :subtype  button-2-type
+                             :on-press #(js/alert "Button 2 Clicked")})
 
                     (= (:message @state) :simple)
                     (assoc :message {:body "The quick brown fox forgot to jump."})
@@ -148,10 +156,13 @@
                     (= (:message @state) :with-mention)
                     (assoc :message message-with-mention)
 
-                    (some? (:status @state))
-                    (update :status
-                            (fn [status]
-                              {:label (name status) :type status}))
+                    (some? status)
+                    (update :items
+                            conj
+                            {:type    :status
+                             :subtype status
+                             :blur?   true
+                             :label   (name status)})
 
                     (= (:message @state) :with-title)
                     (assoc :message message-with-title)

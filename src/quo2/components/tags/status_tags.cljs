@@ -45,7 +45,7 @@
          [icon/icon
           icon
           {:no-color true
-           :size     12}]]
+           :size     (if (= :large size) 20 12)}]]
         [text/text
          {:size   paragraph-size
           :weight :medium
@@ -53,41 +53,66 @@
                    :color        text-color}} label]]])))
 
 (defn- positive
-  [size theme label]
+  [size theme label blur?]
   [base-tag
    {:size             size
-    :icon             :verified
+    :icon             :i/positive-state
     :background-color colors/success-50-opa-10
     :border-color     colors/success-50-opa-20
     :label            label
-    :text-color       (if (= theme :light)
-                        colors/success-50
-                        colors/success-60)}])
+    :text-color       (cond
+                        ;; The positive tag uses the same color for light themed and dark blur variant
+                        (or (= theme :light) blur?) colors/success-50
+                        (= theme :dark)             colors/success-60)}])
 
 (defn- negative
-  [size theme label]
+  [size theme label blur?]
   [base-tag
    {:size             size
-    :icon             :untrustworthy
+    :icon             :i/negative-state
     :background-color colors/danger-50-opa-10
     :border-color     colors/danger-50-opa-20
     :label            label
-    :text-color       (if (= theme :light)
-                        colors/danger-50
-                        colors/danger-60)}])
+    :text-color       (cond
+                        (= theme :light)           colors/danger-50
+                        ;; The negative tag uses the same color for dark themed and dark blur variant
+                        (or (= theme :dark) blur?) colors/danger-60)}])
+
+(defn- get-color-or-icon-name
+  [{:keys [blur? theme dark-blur-variant light-variant dark-variant]}]
+  (if blur?
+    ;; status tag suppport only dark blur variant
+    dark-blur-variant
+    (if (= theme :light) light-variant dark-variant)))
 
 (defn- pending
-  [size _ label]
+  [size theme label blur?]
   [base-tag
    {:size             size
-    :icon             :pending
     :label            label
-    :background-color colors/white-opa-5
-    :border-color     colors/white-opa-5
-    :text-color       colors/white-opa-70}])
+    :icon             (get-color-or-icon-name {:blur?             blur?
+                                               :theme             theme
+                                               :dark-blur-variant :i/pending-dark-blur
+                                               :light-variant     :i/pending-light
+                                               :dark-variant      :i/pending-dark})
+    :background-color (get-color-or-icon-name {:blur?             blur?
+                                               :theme             theme
+                                               :dark-blur-variant colors/white-opa-5
+                                               :light-variant     colors/neutral-10
+                                               :dark-variant      colors/neutral-80-opa-40})
+    :border-color     (get-color-or-icon-name {:blur?             blur?
+                                               :theme             theme
+                                               :dark-blur-variant colors/white-opa-5
+                                               :light-variant     colors/neutral-20
+                                               :dark-variant      colors/neutral-80})
+    :text-color       (get-color-or-icon-name {:blur?             blur?
+                                               :theme             theme
+                                               :dark-blur-variant colors/white-opa-70
+                                               :light-variant     colors/neutral-50
+                                               :dark-variant      colors/neutral-40})}])
 
 (defn status-tag
-  [{:keys [status size override-theme label]}]
+  [{:keys [status size override-theme label blur?]}]
   (when status
     (when-let [status-component (case (:type status)
                                   :positive positive
@@ -97,4 +122,5 @@
       [status-component
        size
        (or override-theme (quo2.theme/get-theme))
-       label])))
+       label
+       blur?])))
