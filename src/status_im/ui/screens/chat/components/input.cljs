@@ -217,11 +217,13 @@
         all-contacts         (:contacts/contacts db)
         chat                 (get-in db [:chats chat-id])
         current-multiaccount (:multiaccount db)
+        community-members    (when (= (:chat-type chat) chat.constants/community-chat-type)
+                               (get-in db [:communities (:community-id chat) :members]))
         mentionable-users    (mentions/get-mentionable-users
                               chat
                               all-contacts
                               current-multiaccount
-                              nil)
+                              community-members)
         hydrated-mentions    (map
                               (fn [[t mention :as e]]
                                 (if (= t :mention)
