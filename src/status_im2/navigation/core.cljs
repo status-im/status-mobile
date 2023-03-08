@@ -177,8 +177,7 @@
   []
   (reset! state/curr-modal false)
   (reset! state/dissmissing false)
-  (if (or (= @state/root-id :multiaccounts)
-          (= @state/root-id :multiaccounts-keycard))
+  (if (= @state/root-id :multiaccounts-stack)
     (re-frame/dispatch-sync [::set-multiaccount-root])
     (when @state/root-id
       (navigation/set-root (get (roots/roots) @state/root-id))
