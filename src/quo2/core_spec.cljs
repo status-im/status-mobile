@@ -16,4 +16,5 @@
             [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]
             [quo2.components.profile.select-profile.component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]
-            [quo2.components.selectors.filter.component-spec]))
+            [quo2.components.selectors.filter.component-spec]
+            [quo2.components.tags.--tests--.status-tags-component-spec]))

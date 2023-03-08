@@ -2,9 +2,7 @@
   (:require [quo2.components.tags.status-tags :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.blur :as blur]
             [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
             [utils.i18n :as i18n]))
 
@@ -52,34 +50,9 @@
          [rn/view {:padding-bottom 150}
           [rn/view {:flex 1}
            [preview/customizer state descriptor]]
-          [rn/view
-           {:style {:flex       1
-                    :margin-top 16}}
-           (when (:blur? @state)
-             [rn/view
-              {:style {:height        100
-                       :border-radius 16}}
-              [rn/image
-               {:source (resources/get-mock-image :community-cover)
-                :style  {:flex          1
-                         :width         "100%"
-                         :border-radius 16}}]
-              [blur/view
-               {:flex          1
-                :style         {:border-radius 16
-                                :height        100
-                                :position      :absolute
-                                :left          0
-                                :right         0}
-                :blur-amount   10
-                :overlay-color (colors/theme-colors
-                                colors/white-opa-70
-                                colors/neutral-80-opa-80)}]])
-           [rn/view
-            {:style {:position   :absolute
-                     :top        32
-                     :align-self :center}}
-            [quo2/status-tag props]]]]]))))
+          [preview/blur-view
+           {:show-blur-background? (:blur? @state)
+            :style                 {:align-self :center}} [quo2/status-tag props]]]]))))
 
 (defn preview-status-tags
   []

@@ -27,15 +27,17 @@
              background-color
              icon
              text-color
-             label]}]
+             label
+             test-ID]}]
     (let [paragraph-size (if (= size :small) :paragraph-2 :paragraph-1)]
       [rn/view
-       (assoc (if (= size :small)
-                small-container-style
-                large-container-style)
-              :border-width     1
-              :border-color     border-color
-              :background-color background-color)
+       {:test-ID test-ID
+        :style   (assoc (if (= size :small)
+                          small-container-style
+                          large-container-style)
+                        :border-width     1
+                        :border-color     border-color
+                        :background-color background-color)}
        [rn/view
         {:flex-direction :row
          :flex           1}
@@ -45,7 +47,7 @@
          [icon/icon
           icon
           {:no-color true
-           :size     (if (= :large size) 20 12)}]]
+           :size     (if (= size :large) 20 12)}]]
         [text/text
          {:size   paragraph-size
           :weight :medium
@@ -53,63 +55,48 @@
                    :color        text-color}} label]]])))
 
 (defn- positive
-  [size theme label blur?]
+  [size theme label _]
   [base-tag
-   {:size             size
+   {:test-ID          :status-tag-positive
+    :size             size
     :icon             :i/positive-state
     :background-color colors/success-50-opa-10
     :border-color     colors/success-50-opa-20
     :label            label
-    :text-color       (cond
-                        ;; The positive tag uses the same color for light themed and dark blur variant
-                        (or (= theme :light) blur?) colors/success-50
-                        (= theme :dark)             colors/success-60)}])
+    ;; The positive tag uses the same color for `light` and `dark blur` variant
+    :text-color       (if (= theme :dark) colors/success-60 colors/success-50)}])
 
 (defn- negative
-  [size theme label blur?]
+  [size theme label _]
   [base-tag
-   {:size             size
+   {:test-ID          :status-tag-negative
+    :size             size
     :icon             :i/negative-state
     :background-color colors/danger-50-opa-10
     :border-color     colors/danger-50-opa-20
     :label            label
-    :text-color       (cond
-                        (= theme :light)           colors/danger-50
-                        ;; The negative tag uses the same color for dark themed and dark blur variant
-                        (or (= theme :dark) blur?) colors/danger-60)}])
-
-(defn- get-color-or-icon-name
-  [{:keys [blur? theme dark-blur-variant light-variant dark-variant]}]
-  (if blur?
-    ;; status tag support only dark blur variant
-    dark-blur-variant
-    (if (= theme :light) light-variant dark-variant)))
+    ;; The negative tag uses the same color for `dark` and `dark blur` variant
+    :text-color       (if (= theme :light) colors/danger-50 colors/danger-60)}])
 
 (defn- pending
   [size theme label blur?]
   [base-tag
-   {:size             size
+   {:test-ID          :status-tag-pending
+    :size             size
     :label            label
-    :icon             (get-color-or-icon-name {:blur?             blur?
-                                               :theme             theme
-                                               :dark-blur-variant :i/pending-dark-blur
-                                               :light-variant     :i/pending-light
-                                               :dark-variant      :i/pending-dark})
-    :background-color (get-color-or-icon-name {:blur?             blur?
-                                               :theme             theme
-                                               :dark-blur-variant colors/white-opa-5
-                                               :light-variant     colors/neutral-10
-                                               :dark-variant      colors/neutral-80-opa-40})
-    :border-color     (get-color-or-icon-name {:blur?             blur?
-                                               :theme             theme
-                                               :dark-blur-variant colors/white-opa-5
-                                               :light-variant     colors/neutral-20
-                                               :dark-variant      colors/neutral-80})
-    :text-color       (get-color-or-icon-name {:blur?             blur?
-                                               :theme             theme
-                                               :dark-blur-variant colors/white-opa-70
-                                               :light-variant     colors/neutral-50
-                                               :dark-variant      colors/neutral-40})}])
+    :icon             (if blur?
+                        :i/pending-dark-blur
+                        (if (= theme :light) :i/pending-light :i/pending-dark))
+    :background-color (if blur?
+                        colors/white-opa-5
+                        (colors/theme-colors colors/neutral-10 colors/neutral-80-opa-40 theme))
+    :border-color     (if blur?
+                        colors/white-opa-5
+                        (colors/theme-colors colors/neutral-20 colors/neutral-80 theme))
+
+    :text-color       (if blur?
+                        colors/white-opa-70
+                        (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])
 
 (defn status-tag
   [{:keys [status size override-theme label blur?]}]
