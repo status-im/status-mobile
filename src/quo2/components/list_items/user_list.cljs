@@ -1,6 +1,6 @@
 (ns quo2.components.list-items.user-list
   (:require [react-native.core :as rn]
-            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.markdown.text :as text]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]

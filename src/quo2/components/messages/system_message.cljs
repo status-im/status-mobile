@@ -1,6 +1,6 @@
 (ns quo2.components.messages.system-message
   (:require [quo2.components.avatars.icon-avatar :as icon-avatar]
-            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]

@@ -3,7 +3,7 @@
     [quo2.components.profile.select-profile.style :as style]
     [react-native.core :as rn]
     [quo2.components.markdown.text :as text]
-    [quo2.components.avatars.user-avatar :as user-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
     [reagent.core :as reagent]))
 
 (defn- on-change-handler
