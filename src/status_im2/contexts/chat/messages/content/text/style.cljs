@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.content.text.style
-  (:require
-    [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def block
   {:border-radius      6

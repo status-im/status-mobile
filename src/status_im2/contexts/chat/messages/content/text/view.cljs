@@ -5,7 +5,8 @@
     [react-native.core :as rn]
     [status-im2.contexts.chat.messages.content.text.style :as style]
     [status-im2.contexts.chat.messages.link-preview.view :as link-preview]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.i18n :as i18n]))
 
 
 (defn render-inline
@@ -48,11 +49,22 @@
         :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
        (rf/sub [:messages/resolve-mention literal])]])
 
+    :edited
+    (conj units
+
+          [quo/text
+           {:weight :medium
+            :style  {:font-size 11 ; Font-size must be used instead of props or the
+                                   ; styles will clash with original message text
+                     :color     (colors/theme-colors colors/neutral-40
+                                                     colors/neutral-50)}}
+           literal])
+
     (conj units literal)))
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]}]
+  [blocks {:keys [type ^js literal children]} edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
@@ -64,19 +76,46 @@
     :blockquote
     (conj blocks
           [rn/view {:style style/quote}
-           [quo/text literal]])
+           [quo/text literal]]
+          (when edited-at
+            [quo/text
+             {:weight :medium
+              :style  {:font-size  11
+                       :margin-top 4
+                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+             (str " (" (i18n/label :t/edited) ")")]))
 
     :codeblock
     (conj blocks
           [rn/view {:style (merge style/block (style/code))}
-           [quo/text (subs literal 0 (dec (count literal)))]])
+           [quo/text (subs literal 0 (dec (count literal)))]]
+          (when edited-at
+            [quo/text
+             {:weight :medium
+              :style  {:font-size  11
+                       :margin-top 4
+                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+             (str " (" (i18n/label :t/edited) ")")]))
     blocks))
 
+(defn add-edited-tag
+  [parsed-text]
+  (update parsed-text
+          (dec (count parsed-text))
+          (fn [last-literal]
+            (update last-literal
+                    :children
+                    conj
+                    {:literal (str " (" (i18n/label :t/edited) ")")
+                     :type    :edited}))))
+
 (defn render-parsed-text
-  [{:keys [content]}]
-  (reduce render-block
+  [{:keys [content edited-at]}]
+  (reduce (fn [acc e]
+            (render-block acc e edited-at))
           [:<>]
-          (:parsed-text content)))
+          (cond-> (:parsed-text content)
+            edited-at add-edited-tag)))
 
 (defn text-content
   [message-data context]

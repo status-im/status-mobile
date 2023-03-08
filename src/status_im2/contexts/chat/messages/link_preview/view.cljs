@@ -87,13 +87,19 @@
           [community-preview cached-preview-data]))})))
 
 (defn link-preview-loader
-  [link {:keys [on-long-press]}]
+  [link _]
   (reagent/create-class
    {:component-did-mount
     (fn []
       (rf/dispatch [:chat.ui/load-link-preview-data link]))
+    :component-did-update
+    (fn [this [_ previous-props]]
+      (let [[_ props]      (.-argv (.-props ^js this))
+            refresh-photo? (not= previous-props props)]
+        (when refresh-photo?
+          (rf/dispatch [:chat.ui/load-link-preview-data props]))))
     :reagent-render
-    (fn []
+    (fn [link {:keys [on-long-press]}]
       (let [cached-preview-data (rf/sub [:link-preview/cache link])]
         (when-let [{:keys [site title thumbnail-url error] :as preview-data} cached-preview-data]
           (when (and (not error) site title)
@@ -141,8 +147,8 @@
     (i18n/label :t/dont-ask)]])
 
 (defn link-preview
-  [{:keys [content]} context]
-  (let [links         (:links content)
+  [{:keys [message-id chat-id]} context]
+  (let [links         (get-in (rf/sub [:chats/chat-messages chat-id]) [message-id :content :links])
         ask-user?     (rf/sub [:link-preview/link-preview-request-enabled])
         enabled-sites (rf/sub [:link-preview/enabled-sites])
         whitelist     (rf/sub [:link-previews-whitelist])]
