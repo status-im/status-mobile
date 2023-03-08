@@ -13,7 +13,8 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.profile.components.sheets :as sheets]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.constants :as constants]))
 
 (defn actions
   [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
@@ -43,7 +44,7 @@
             :selected            muted?
             :disabled            blocked?
             :action              (when-not blocked?
-                                   #(re-frame/dispatch [:chat.ui/mute public-key (not muted?) (when-not muted? 5)]))}]
+                                   #(re-frame/dispatch [:chat.ui/mute public-key (not muted?) (when-not muted? constants/mute-till-unmuted)]))}]
           [{:label               (i18n/label (if blocked? :t/unblock :t/block))
             :negative            true
             :selected            blocked?
