@@ -55,6 +55,6 @@
    :margin-bottom    20})
 
 (def blur
-  {:style       {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
-   :blur-amount 20
-   :blur-type   :dark})
+  {:style        {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
+   :overlayColor colors/neutral-80-opa-80
+   :blur-amount  20})
