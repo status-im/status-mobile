@@ -63,3 +63,11 @@
   (js/jest.advanceTimersByTime time-ms))
 
 (def mock-fn js/jest.fn)
+
+(defn is-truthy
+  [element]
+  (.toBeTruthy (js/expect element)))
+
+(defn is-null
+  [element]
+  (.toBeNull (js/expect element)))
