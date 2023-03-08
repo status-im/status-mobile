@@ -2057,5 +2057,12 @@
     "enable-biometrics": "Enable biometrics",
     "use-biometrics": "Use biometrics to fill in your password",
     "name-must-have-at-least-characters": "Name must have at least {{min-chars}} characters",
-    "name-is-not-valid": "Name is not valid"
+    "name-is-not-valid": "Name is not valid",
+    "mute-for-15-mins": "For 15 min",
+    "mute-for-1-hour": "For 1 hour",
+    "mute-for-8-hours": "For 8 hours",
+    "mute-for-1-week": "For 7 days",
+    "mute-till-unmute": "Until you turn it back on",
+    "mute-channel": "Mute channel",
+    "mute-for-1-min": "For 1 min"
 }
