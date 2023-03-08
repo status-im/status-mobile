@@ -110,15 +110,6 @@
                                     (status-bar-options)
                                     {:topBar (topbar-options)})}}}
 
-   ;;WELCOME
-   :welcome
-   {:root {:stack {:children [{:component {:name    :welcome
-                                           :id      :welcome
-                                           :options (status-bar-options)}}]
-                   :options  (merge (default-root)
-                                    (status-bar-options)
-                                    {:topBar (assoc (topbar-options) :visible false)})}}}
-
    ;;NOTIFICATIONS
    :onboarding-notification
    {:root {:stack {:children [{:component {:name    :onboarding-notification
@@ -173,12 +164,18 @@
                                             :id      :profiles
                                             :options (merge
                                                       (status-bar-options)
-                                                      {:topBar {:visible false}})}}]}}}
-          :enable-notifications
-          {:root
-           {:stack {:id       :enable-notifications
-                    :children [{:component {:name    :enable-notifications
-                                            :id      :enable-notifications
-                                            :options (merge
-                                                      (status-bar-options)
-                                                      {:topBar {:visible false}})}}]}}}}))
+                                                      {:topBar {:visible false}})}}]}}}}
+         {:enable-notifications
+          {:root {:stack {:children [{:component {:name    :enable-notifications
+                                                  :id      :enable-notifications
+                                                  :options (merge
+                                                            (status-bar-options)
+                                                            {:statusBar {:style :light}
+                                                             :topBar    {:visible false}})}}]}}}}
+         {:welcome
+          {:root {:stack {:children [{:component {:name    :welcome
+                                                  :id      :welcome
+                                                  :options (merge
+                                                            (status-bar-options)
+                                                            {:statusBar {:style :light}
+                                                             :topBar    {:visible false}})}}]}}}}))

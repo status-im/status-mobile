@@ -523,7 +523,7 @@
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)
-                                (assoc :tos/next-root :notifications-onboarding :chats/loading? false)
+                                (assoc :tos/next-root :enable-notifications :chats/loading? false)
                                 (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
                ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
@@ -534,7 +534,7 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-              (navigation/init-root :notifications-onboarding))))
+              (navigation/init-root :enable-notifications))))
 
 (defn- keycard-setup?
   [cofx]
