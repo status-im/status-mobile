@@ -610,6 +610,10 @@ class BaseView(object):
         self.jump_to_button.click()
         self.communities_tab.click()
 
+    def jump_to_card_by_text(self, text: str):
+        self.jump_to_button.click()
+        self.element_by_text(text).click()
+
     def reopen_app(self, password=common_password):
         self.driver.close_app()
         self.driver.launch_app()

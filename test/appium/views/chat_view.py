@@ -746,13 +746,13 @@ class ChatView(BaseView):
 
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
-        self.profile_send_message = ProfileSendMessageButton(self.driver)
-        self.profile_block_contact = ProfileBlockContactButton(self.driver)
+        self.profile_send_message_button = ProfileSendMessageButton(self.driver)
+        self.profile_block_contact_button = ProfileBlockContactButton(self.driver)
         self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
         self.unblock_contact_button = UnblockContactButton(self.driver)
         self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
         self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
-        self.profile_add_to_contacts = Button(self.driver, accessibility_id="Add to contacts-item-button")
+        self.profile_add_to_contacts_button = Button(self.driver, accessibility_id="Add to contacts-item-button")
         self.profile_remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")
         self.profile_nickname = Text(self.driver,
@@ -966,7 +966,7 @@ class ChatView(BaseView):
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()
         self.view_profile_by_avatar_button.wait_and_click()
-        self.profile_block_contact.wait_for_visibility_of_element(5)
+        self.profile_block_contact_button.wait_for_visibility_of_element(5)
 
     def wait_ens_name_resolved_in_chat(self, message=str, username_value=str):
         self.driver.info("Waiting ENS name '%s' is resolved in chat" % username_value)
@@ -1038,7 +1038,7 @@ class ChatView(BaseView):
 
     def block_contact(self):
         self.driver.info("Block contact from other user profile")
-        self.profile_block_contact.click()
+        self.profile_block_contact_button.click()
         self.confirm_block_contact_button.click()
 
     def open_user_profile_from_public_chat(self, message):

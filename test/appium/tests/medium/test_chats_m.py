@@ -788,7 +788,7 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         if not group_info_1.user_admin(self.usernames[0]).is_element_displayed():
             self.errors.append("Admin user is not marked as admin")
         group_info_1.get_user_from_group_info(self.usernames[0]).click()
-        if self.chats[0].profile_block_contact.is_element_displayed():
+        if self.chats[0].profile_block_contact_button.is_element_displayed():
             self.errors.append("Admin is redirected to own profile on tapping own username from group info")
 
         self.chats[0].just_fyi('Made admin another user and check system message')

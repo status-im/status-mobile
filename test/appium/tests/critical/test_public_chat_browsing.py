@@ -367,6 +367,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.handle_contact_request(self.default_username_1)
         self.text_message = 'hello'
 
+        self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
+        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1.send_message('hey')
+        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.send_message(self.text_message)
+        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
+
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
         self.community_name = self.home_1.get_random_chat_name()
@@ -537,6 +544,77 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if not community_element_1.new_messages_community.is_element_displayed():
             self.errors.append('New messages channel badge is not shown on channel')
         channel_1_element.click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702894)
+    def test_community_contact_block_unblock_offline(self):
+        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+
+        self.channel_2.just_fyi("Sending message before block")
+        message_to_disappear = "I should not be in chat"
+        self.channel_2.send_message(message_to_disappear)
+
+        self.chat_1.just_fyi('Block user')
+        self.channel_1.chat_element_by_text(message_to_disappear).wait_for_visibility_of_element(30)
+        chat_element = self.channel_1.chat_element_by_text(message_to_disappear)
+        chat_element.find_element()
+        chat_element.member_photo.click()
+        self.channel_1.block_contact()
+
+        self.chat_1.just_fyi('messages from blocked user are hidden in public chat and close app')
+        if self.chat_1.chat_element_by_text(message_to_disappear).is_element_displayed():
+            self.errors.append("Messages from blocked user is not cleared in public chat ")
+        self.chat_1.jump_to_messages_home()
+        if self.home_1.element_by_text(self.default_username_2).is_element_displayed():
+            self.errors.append("1-1 chat from blocked user is not removed!")
+        self.chat_1.toggle_airplane_mode()
+
+        self.home_2.just_fyi('send message to public chat while device 1 is offline')
+        message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
+        self.channel_2.send_message(message_blocked)
+
+        self.chat_1.just_fyi('check that new messages from blocked user are not delivered')
+        self.chat_1.toggle_airplane_mode()
+        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
+        for message in message_to_disappear, message_blocked:
+            if self.chat_1.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append(
+                    "'%s' from blocked user is fetched from offline in community channel" % message)
+
+        self.chat_2.just_fyi('Unblock user and check that can see further messages')
+        # TODO: still no blocked users in new UI
+        profile_1 = self.home_1.get_profile_view()
+        self.home_1.jump_to_messages_home()
+        self.chat_1.profile_button.click()
+        profile_1.contacts_button.wait_and_click()
+        profile_1.blocked_users_button.wait_and_click()
+        profile_1.element_by_text(self.default_username_2).click()
+        self.chat_1.unblock_contact_button.click()
+        self.chat_1.close_button.click()
+        self.chat_1.click_system_back_button_until_element_is_shown()
+
+        self.home_2.just_fyi("Check that can send message in community after unblock")
+        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        self.chat_2.send_message(message_unblocked)
+        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+            self.errors.append("Message was not received in public chat after user unblock!")
+
+        # TODO: 15279 - user is not removed from contacts mutually
+        # self.home_2.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
+        # chat_element = self.channel_1.chat_element_by_text(message_unblocked)
+        # chat_element.find_element()
+        # chat_element.member_photo.click()
+        # self.channel_1.profile_add_to_contacts_button.click()
+        # self.channel_1.profile_send_message_button.click()
+        # self.chat_1.send_message("piy")
+        #
+        # self.home_2.just_fyi("Check message in 1-1 chat after unblock")
+        # self.home_2.jump_to_messages_home()
+        # self.home_2.get_chat(self.default_username_1).click()
+        # self.chat_2.send_message(message_unblocked)
+        # # self.home_1.get_chat(self.default_username_2, wait_time=30).click()
+        # if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
+        #     self.errors.append("Message was not received in 1-1 chat after user unblock!")
         self.errors.verify_no_errors()
 
     # @marks.testrail_id(702842)

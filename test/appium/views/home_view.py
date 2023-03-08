@@ -300,10 +300,10 @@ class HomeView(BaseView):
         chat = self.get_chat_view()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(public_key)
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact)
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
         if remove_from_contacts and chat.profile_remove_from_contacts.is_element_displayed():
             chat.profile_remove_from_contacts.click()
-        chat.profile_add_to_contacts.click()
+        chat.profile_add_to_contacts_button.click()
         if nickname:
             chat.set_nickname(nickname)
         self.click_system_back_button_until_element_is_shown()
@@ -339,8 +339,8 @@ class HomeView(BaseView):
         self.add_a_contact_chat_bottom_sheet_button.click()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(key)
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts)
-        chat.profile_add_to_contacts.click()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts_button)
+        chat.profile_add_to_contacts_button.click()
         self.click_system_back_button_until_element_is_shown()
 
     def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
