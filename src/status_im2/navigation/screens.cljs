@@ -21,6 +21,20 @@
 (def components
   [])
 
+(def transparent-screen-options
+  (merge
+   {:topBar                 {:visible false}
+    :modalPresentationStyle :overCurrentContext
+    :layout                 {:componentBackgroundColor :transparent
+                             :orientation              :portrait
+                             :backgroundColor          :transparent}}
+   (if platform/android?
+     {:navigationBar {:backgroundColor colors/neutral-100}
+      :statusBar     {:backgroundColor :transparent
+                      :style           :light
+                      :drawBehind      true}}
+     {:statusBar {:style :light}})))
+
 (defn screens
   []
   (concat
@@ -30,22 +44,10 @@
      :insets    {:top false}
      :component intro/view}
 
-    {:name              :activity-center
-     :insets            {:top false}
-     :options           (merge
-                         {:topBar                 {:visible false}
-                          :modalPresentationStyle :overCurrentContext
-                          :layout                 {:componentBackgroundColor :transparent
-                                                   :orientation              :portrait
-                                                   :backgroundColor          :transparent}}
-                         (if platform/android?
-                           {:navigationBar {:backgroundColor colors/neutral-100}
-                            :statusBar     {:backgroundColor :transparent
-                                            :style           :light
-                                            :drawBehind      true}}
-                           {:statusBar {:style :light}}))
-     :component         activity-center/view
-     :component-options {:background-color :transparent}}
+    {:name      :activity-center
+     :insets    {:top false}
+     :options   transparent-screen-options
+     :component activity-center/view}
 
     {:name      :shell-stack
      :insets    {:top false}
