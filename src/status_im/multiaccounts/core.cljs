@@ -25,7 +25,7 @@
 
 (defn displayed-name
   "Use preferred name, display-name, name or alias in that order"
-  [{:keys [name display-name preferred-name alias public-key ens-verified]}]
+  [{:keys [name display-name preferred-name alias public-key ens-verified primary-name]}]
   (let [display-name (if (string/blank? display-name) nil display-name)
         ens-name     (or preferred-name
                          display-name
@@ -33,7 +33,7 @@
     ;; Preferred name is our own otherwise we make sure it's verified
     (if (or preferred-name (and ens-verified name))
       ens-name
-      (or display-name alias (gfycat/generate-gfy public-key)))))
+      (or display-name primary-name alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
   [contacts identity]
