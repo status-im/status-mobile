@@ -90,11 +90,10 @@
 
 (defn left-icon-container
   [small?]
-  {:margin-left  (if small? 0 4)
-   :margin-right (if small? 4 8)
-   :margin-top   (if small? 5 9)
-   :height       20
-   :width        20})
+  {:margin-left (if small? 0 4)
+   :margin-top  (if small? 5 9)
+   :height      20
+   :width       20})
 
 (defn icon
   [colors-by-variant]
@@ -106,7 +105,8 @@
   (merge (text/text-style {:size :paragraph-1 :weight :regular})
          {:flex                1
           :text-align-vertical :top
-          :padding-horizontal  0
+          :padding-right       0
+          :padding-left        (if small? 4 8)
           :padding-vertical    (if small? 4 8)
           :color               (:text colors-by-status)}
          (when-not multiple-lines?
