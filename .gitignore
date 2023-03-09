@@ -99,9 +99,8 @@ Statusgo.xcframework
 
 #ios
 /ios/Pods/
+/ios/logs/
 /ios/StatusIm.xcworkspace
-/ios/react-native-xcode.log
-/ios/set_xcode_version.log
 .ruby-version
 status-e2e/
 
@@ -175,3 +174,11 @@ test/appium/tests/users.py
 ##node bindings
 /bin/
 /lib/
+
+## visual tests
+/artifacts
+
+/.calva/
+
+## component-tests
+*.log
