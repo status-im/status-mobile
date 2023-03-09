@@ -96,7 +96,7 @@ end
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
 # `pr_build`:
 #    if true  - uses StatusImPR scheme and postfixed app id with `.pr` to build an app, which can be used in parallel with release
-#    if false - uses StatusIm scheme to build the release app 
+#    if false - uses StatusIm scheme to build the release app
 
 def build_ios_adhoc(readonly: false, pr_build: false)
   # PR builds should appear as a separate App on iOS
@@ -119,11 +119,13 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     scheme: scheme,
     workspace: 'ios/StatusIm.xcworkspace',
     configuration: 'Release',
+    verbose: true,
     clean: true,
     export_method: 'ad-hoc',
     output_name: 'StatusIm',
     output_directory: 'status-ios',
     buildlog_path: 'ios/logs',
+    xcargs: "-UseModernBuildSystem=N -verbose",
     export_options: {
       signingStyle: 'manual',
       provisioningProfiles: {
@@ -159,7 +161,7 @@ def build_ios_e2e
     destination: 'generic/platform=iOS Simulator',
     # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
     #    it looks like i386 isn't supported by React Native
-    xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO',
+    xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO -UseModernBuildSystem=N',
     # 3. directory where to up StatusIm.app
     derived_data_path: 'status-ios',
     output_name: 'StatusIm.app',
@@ -242,8 +244,10 @@ platform :ios do
       export_method: 'app-store',
       output_directory: 'status-ios',
       buildlog_path: 'ios/logs',
+      xcargs: "-UseModernBuildSystem=N",
       include_symbols: false,
       export_options: {
+        "UseModernBuildSystem": "N",
         "combileBitcode": true,
         "uploadBitcode": false,
         "ITSAppUsesNonExemptEncryption": false
