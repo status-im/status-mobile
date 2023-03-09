@@ -11,6 +11,7 @@ stdenv.mkDerivation {
     "patchGradlePhase"
     "patchBuildIdPhase"
     "patchHermesPhase"
+    "patchReactNativePhase"
     "patchJavaPhase"
     "installPhase"
   ];
@@ -69,6 +70,24 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
+  '';
+
+#  Fix glog configuration issue in react-native:
+#  https://github.com/facebook/react-native/issues/33966
+#  TODO: remove this patch when we reach react-native 0.71.4
+  patchReactNativePhase = ''
+    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
+      'sed -i' \
+      'sed -i.bak -e'
+
+    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
+       'src/glog/logging.h.in' \
+       'src/glog/logging.h.in && rm src/glog/logging.h.in.bak'
+
+     substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
+        'src/config.h.in' \
+        'src/config.h.in && rm src/config.h.in.bak'
+
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

@@ -51,6 +51,9 @@ pipeline {
           utils.doGitRebasePR()
           utils.symlinkEnv()
           println("Build Number: ${utils.genBuildNumber()}")
+          sh 'arch'
+          sh 'make xcode-clean-workspace'
+          sh 'make xcode-clean-derived-data'
         }
       }
     }
@@ -59,12 +62,19 @@ pipeline {
         script { ios.jsbundle() }
       }
     }
+    stage('PreBundle') {
+      steps {
+        script { sh 'xcodebuild -showBuildSettings -workspace ios/StatusIm.xcworkspace -scheme StatusImPR' }
+      }
+    }
     stage('Bundle') {
       steps {
         script { api = ios.bundle() }
       }
       post {
-        failure { archiveArtifacts 'ios/logs/*' }
+        failure { archiveArtifacts 'ios/logs/*'
+                  script { nix.shell('npx react-native info', attr: 'shells.ios') }
+                }
       }
     }
     stage('Parallel Upload') {
@@ -88,6 +98,7 @@ pipeline {
   post {
     success { script { github.notifyPR(true) } }
     failure { script { github.notifyPR(false) } }
+    /* cleanup { cleanWs() } */
     always  { sh 'make purge' }
   }
 }

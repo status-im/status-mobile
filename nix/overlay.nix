@@ -52,8 +52,8 @@ in {
 #    });
   gradle = super.gradle_7;
 #  gradle = gradle_7_3;
-  nodejs = super.nodejs-16_x;
-  yarn = super.yarn.override { nodejs = super.nodejs-16_x; };
+  nodejs = super.nodejs-18_x;
+  yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.openjdk11_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "13.3";

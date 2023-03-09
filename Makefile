@@ -151,7 +151,7 @@ watchman-clean: ##@prepare Delete repo directory from watchman
 
 pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
-	cd ios && pod install; cd --
+	cd ios && arch -x86_64 pod deintegrate && arch -x86_64 pod install; cd --
 
 update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
 	curl -s https://fleets.status.im/ \
@@ -186,10 +186,15 @@ ifndef APK
 endif
 	scripts/fdroid-pr.sh "$(APK)"
 
-xcode-clean: SHELL := /bin/sh
-xcode-clean: XCODE_HOME := $(HOME)/Library/Developer/Xcode
-xcode-clean: ##@prepare Clean XCode derived data and archives
-	rm -fr $(XCODE_HOME)/DerivedData/StatusIm-* $(XCODE_HOME)/Archives/*/StatusIm*
+
+xcode-clean-workspace: SHELL := /bin/sh
+xcode-clean-workspace: ##@prepare Use Xcode to clean workspace
+	xcodebuild clean -workspace ios/StatusIm.xcworkspace -scheme StatusImPR
+
+xcode-clean-derived-data: SHELL := /bin/sh
+xcode-clean-derived-data: XCODE_HOME := $(HOME)/Library/Developer/Xcode
+xcode-clean-derived-data: ##@prepare Clean XCode derived data and archives
+	rm -fr $(XCODE_HOME)/DerivedData $(XCODE_HOME)/Archives/*/StatusIm*
 
 #----------------
 # Release builds
@@ -222,6 +227,23 @@ release-ios: watchman-clean ##@build Build release for iOS release
 	@git clean -dxf -f target/ios && \
 	$(MAKE) jsbundle-ios && \
 	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
+
+release-ios-pr: export TARGET := ios
+release-ios-pr: export BUILD_ENV ?= prod
+release-ios-pr: watchman-clean ##@build Build release for iOS PR release
+	@git clean -dxf -f target/ios && \
+	$(MAKE) jsbundle-ios && \
+	arch -x86_64 xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusImPR -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
+
+build-ios-pr: export TARGET := ios
+build-ios-pr: export BUILD_ENV ?= prod
+build-ios-pr: watchman-clean ##@build Build IOS StatusImPR
+	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusImPR -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean build -verbose
+
+build-ios: export TARGET := ios
+build-ios: export BUILD_ENV ?= prod
+build-ios: watchman-clean ##@build Build IOS StatusIm
+	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean build -verbose
 
 jsbundle-android: SHELL := /bin/sh
 jsbundle-android: export TARGET := android
