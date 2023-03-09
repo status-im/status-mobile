@@ -1,11 +1,11 @@
 import asyncio
 import base64
 import logging
+import re
 import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
 from http.client import RemoteDisconnected
-import re
 
 import pytest
 import requests
@@ -15,12 +15,13 @@ from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
+from urllib3.exceptions import MaxRetryError
 
-from tests.conftest import option, sauce_username, sauce_access_key, apibase
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
 from tests import transl
+from tests.conftest import sauce_username, sauce_access_key, apibase
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
@@ -293,20 +294,24 @@ def create_shared_drivers(quantity):
             driver.implicitly_wait(implicit_wait)
             drivers[i] = driver
         loop = None
+        return drivers, loop
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         capabilities = {'maxDuration': 3600}
         print('SC Executor: %s' % executor_sauce_lab)
-        drivers = loop.run_until_complete(start_threads(quantity,
+        try:
+            drivers = loop.run_until_complete(start_threads(quantity,
                                                         Driver,
                                                         drivers,
                                                         executor_sauce_lab,
                                                         update_capabilities_sauce_lab(capabilities)))
-        for i in range(quantity):
-            test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
-            drivers[i].implicitly_wait(implicit_wait)
-    return drivers, loop
+            for i in range(quantity):
+                test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
+                drivers[i].implicitly_wait(implicit_wait)
+            return drivers, loop
+        except MaxRetryError as e:
+            test_suite_data.current_test.testruns[-1].error = e.reason
 
 
 class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
@@ -345,6 +350,8 @@ class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
 class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
+        if not self.drivers:
+            pytest.fail(test_suite_data.current_test.testruns[-1].error)
         for _, driver in self.drivers.items():
             driver.execute_script("sauce:context=Started %s" % method.__name__)
         jobs = test_suite_data.current_test.testruns[-1].jobs
