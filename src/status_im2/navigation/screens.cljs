@@ -12,7 +12,7 @@
             [status-im2.contexts.syncing.view :as settings-syncing]
             [status-im2.contexts.chat.lightbox.view :as lightbox]
             [status-im2.config :as config]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
             [react-native.platform :as platform]
             [status-im2.contexts.chat.photo-selector.view :as photo-selector]
@@ -20,6 +20,20 @@
 
 (def components
   [])
+
+(def transparent-screen-options
+  (merge
+   {:topBar                 {:visible false}
+    :modalPresentationStyle :overCurrentContext
+    :layout                 {:componentBackgroundColor :transparent
+                             :orientation              :portrait
+                             :backgroundColor          :transparent}}
+   (if platform/android?
+     {:navigationBar {:backgroundColor colors/neutral-100}
+      :statusBar     {:backgroundColor :transparent
+                      :style           :light
+                      :drawBehind      true}}
+     {:statusBar {:style :light}})))
 
 (defn screens
   []
@@ -31,7 +45,8 @@
      :component intro/view}
 
     {:name      :activity-center
-     :options   {:topBar {:visible false}}
+     :insets    {:top false}
+     :options   transparent-screen-options
      :component activity-center/view}
 
     {:name      :shell-stack
@@ -45,10 +60,10 @@
     {:name      :lightbox
      :insets    {:top false :bottom false}
      :options   {:topBar        {:visible false}
-                 :statusBar     {:backgroundColor colors/black-persist
+                 :statusBar     {:backgroundColor colors/black
                                  :style           :light
                                  :animate         true}
-                 :navigationBar {:backgroundColor colors/black-persist}
+                 :navigationBar {:backgroundColor colors/black}
                  :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                                     :toId          :shared-element
                                                                     :interpolation {:type   :decelerate

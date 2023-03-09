@@ -37,14 +37,14 @@
    (concat screens/components)))
 
 (defn wrapped-screen-style
-  [screen-insets safe-insets]
+  [insets-options insets background-color]
   (merge
    {:flex             1
-    :background-color (colors/theme-colors colors/white colors/neutral-100)}
-   (when (get screen-insets :bottom)
-     {:padding-bottom (:bottom safe-insets)})
-   (when (get screen-insets :top true)
-     {:padding-top (:top safe-insets)})))
+    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
+   (when (get insets-options :bottom)
+     {:padding-bottom (:bottom insets)})
+   (when (get insets-options :top true)
+     {:padding-top (:top insets)})))
 
 (defn inactive
   []
@@ -63,17 +63,15 @@
   [key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component insets]} (get
-                                       (if js/goog.DEBUG
-                                         (get-screens)
-                                         screens)
-                                       (keyword key))]
+     (let [{:keys [component insets options]}
+           (get (if js/goog.DEBUG (get-screens) screens) (keyword key))
+           background-color (get-in options [:layout :backgroundColor])]
        ^{:key (str "root" key @reloader/cnt)}
        [safe-area/provider
         [safe-area/consumer
          (fn [safe-insets]
            [rn/view
-            {:style (wrapped-screen-style insets safe-insets)}
+            {:style (wrapped-screen-style insets safe-insets background-color)}
             [inactive]
             [component]])]
         (when js/goog.DEBUG

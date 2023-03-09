@@ -90,14 +90,13 @@
         (reset! state/curr-modal true)
         (swap! state/modals conj comp)
         (navigation/show-modal
-         {:stack {:children
-                  [{:component
-                    {:name    comp
-                     :id      comp
-                     :options (update-modal-topbar-options
-                               (merge (roots/status-bar-options)
-                                      (roots/default-root)
-                                      options))}}]}})))))
+         {:component
+          {:name    comp
+           :id      comp
+           :options (update-modal-topbar-options
+                     (merge (roots/status-bar-options)
+                            (roots/default-root)
+                            options))}})))))
 
 (re-frame/reg-fx :open-modal-fx open-modal)
 
