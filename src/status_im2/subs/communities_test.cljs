@@ -3,25 +3,22 @@
             [re-frame.db :as rf-db]
             [test-helpers.unit :as h]
             status-im2.subs.communities
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]))
 
 (use-fixtures :each
-              {:before #(reset! rf-db/app-db {:communities/enabled? true})})
+              {:before #(reset! rf-db/app-db {})})
 
 (def community-id "0x1")
 
 (h/deftest-sub :communities
   [sub-name]
-  (testing "returns empty vector if flag is disabled"
-    (swap! rf-db/app-db assoc :communities/enabled? false)
-    (is (= [] (rf/sub [sub-name]))))
-
-  (testing "returns raw communities if flag is enabled"
+  (testing "returns raw communities"
     (let [raw-communities {"0x1" {:id "0x1"}}]
       (swap! rf-db/app-db assoc
-        :communities/enabled? true
-        :communities          raw-communities)
+        :communities
+        raw-communities)
       (is (= raw-communities (rf/sub [sub-name]))))))
 
 (h/deftest-sub :communities/section-list
@@ -85,13 +82,12 @@
   [sub-name]
   (testing "Empty communities list"
     (swap! rf-db/app-db assoc
-      :communities/enabled? true
-      :communities          {})
+      :communities
+      {})
     (is (= []
            (rf/sub [sub-name]))))
   (testing "communities sorted by name"
     (swap! rf-db/app-db assoc
-      :communities/enabled? true
       :communities
       {"0x1" {:id "0x1" :name "Civilized monkeys"}
        "0x2" {:id "0x2" :name "Civilized rats"}
@@ -105,56 +101,127 @@
   [sub-name]
   (testing "Channels with categories"
     (swap! rf-db/app-db assoc
-      :communities/enabled? true
       :communities
       {"0x1" {:id         "0x1"
-              :chats      {"0x1" {:id "0x1" :name "chat1" :categoryID 1 :can-post? true}
-                           "0x2" {:id "0x2" :name "chat2" :categoryID 1 :can-post? false}
-                           "0x3" {:id "0x3" :name "chat3" :categoryID 2 :can-post? true}}
-              :categories {1 {:id 1 :name "category1"}
-                           2 {:id 2 :name "category2"}}
+              :chats      {"0x1" {:id "0x1" :position 1 :name "chat1" :categoryID "1" :can-post? true}
+                           "0x2" {:id "0x2" :position 2 :name "chat2" :categoryID "1" :can-post? false}
+                           "0x3" {:id "0x3" :position 3 :name "chat3" :categoryID "2" :can-post? true}}
+              :categories {"1" {:id       "1"
+                                :position 2
+                                :name     "category1"}
+                           "2" {:id       "2"
+                                :position 1
+                                :name     "category2"}}
               :joined     true}})
     (is
-     (= {:category1
-         [{:name "chat1" :emoji nil :locked? false :id "0x1" :unread-messages? false :mentions-count 0}
-          {:name "chat2" :emoji nil :locked? true :id "0x2" :unread-messages? false :mentions-count 0}]
-         :category2
-         [{:name "chat3" :emoji nil :locked? false :id "0x3" :unread-messages? false :mentions-count 0}]}
+     (= [["2"
+          {:id         "2"
+           :name       "category2"
+           :collapsed? nil
+           :position   1
+           :chats      [{:name             "chat3"
+                         :position         3
+                         :emoji            nil
+                         :locked?          false
+                         :id               "0x3"
+                         :unread-messages? false
+                         :mentions-count   0}]}]
+         ["1"
+          {:id         "1"
+           :name       "category1"
+           :collapsed? nil
+           :position   2
+           :chats      [{:name             "chat1"
+                         :emoji            nil
+                         :position         1
+                         :locked?          false
+                         :id               "0x1"
+                         :unread-messages? false
+                         :mentions-count   0}
+                        {:name             "chat2"
+                         :emoji            nil
+                         :position         2
+                         :locked?          true
+                         :id               "0x2"
+                         :unread-messages? false
+                         :mentions-count   0}]}]]
         (rf/sub [sub-name "0x1"]))))
   (testing "Channels without categories"
     (swap! rf-db/app-db assoc
-      :communities/enabled? true
       :communities
       {"0x1" {:id         "0x1"
-              :chats      {"0x1" {:id "0x1" :name "chat1" :categoryID 1 :can-post? true}
-                           "0x2" {:id "0x2" :name "chat2" :categoryID 1 :can-post? false}
-                           "0x3" {:id "0x3" :name "chat3" :can-post? true}}
-              :categories {1 {:id 1 :name "category1"}
-                           2 {:id 2 :name "category2"}}
+              :chats      {"0x1" {:id "0x1" :position 1 :name "chat1" :categoryID "1" :can-post? true}
+                           "0x2" {:id "0x2" :position 2 :name "chat2" :categoryID "1" :can-post? false}
+                           "0x3" {:id "0x3" :position 3 :name "chat3" :can-post? true}}
+              :categories {"1" {:id       "1"
+                                :position 1
+                                :name     "category1"}
+                           "2" {:id       "2"
+                                :position 2
+                                :name     "category2"}}
               :joined     true}})
     (is
-     (= {:category1
-         [{:name "chat1" :emoji nil :locked? false :id "0x1" :unread-messages? false :mentions-count 0}
-          {:name "chat2" :emoji nil :locked? true :id "0x2" :unread-messages? false :mentions-count 0}]
-         (keyword (i18n/label :t/none))
-         [{:name "chat3" :emoji nil :locked? false :id "0x3" :unread-messages? false :mentions-count 0}]}
-        (rf/sub [sub-name "0x1"]))))
+     (=
+      [[constants/empty-category-id
+        {:name       (i18n/label :t/none)
+         :collapsed? nil
+         :chats      [{:name             "chat3"
+                       :emoji            nil
+                       :position         3
+                       :locked?          false
+                       :id               "0x3"
+                       :unread-messages? false
+                       :mentions-count   0}]}]
+       ["1"
+        {:name       "category1"
+         :id         "1"
+         :position   1
+         :collapsed? nil
+         :chats      [{:name             "chat1"
+                       :emoji            nil
+                       :position         1
+                       :locked?          false
+                       :id               "0x1"
+                       :unread-messages? false
+                       :mentions-count   0}
+                      {:name             "chat2"
+                       :emoji            nil
+                       :position         2
+                       :locked?          true
+                       :id               "0x2"
+                       :unread-messages? false
+                       :mentions-count   0}]}]]
+      (rf/sub [sub-name "0x1"]))))
   (testing "Unread messages"
     (swap! rf-db/app-db assoc
-      :communities/enabled? true
       :communities
       {"0x1" {:id         "0x1"
-              :chats      {"0x1" {:id "0x1" :name "chat1" :categoryID 1 :can-post? true}
-                           "0x2" {:id "0x2" :name "chat2" :categoryID 1 :can-post? false}}
-              :categories {1 {:id 1 :name "category1"}}
+              :chats      {"0x1" {:id "0x1" :position 1 :name "chat1" :categoryID "1" :can-post? true}
+                           "0x2" {:id "0x2" :position 2 :name "chat2" :categoryID "1" :can-post? false}}
+              :categories {"1" {:id "1" :name "category1"}}
               :joined     true}}
       :chats
       {"0x10x1" {:unviewed-messages-count 1 :unviewed-mentions-count 2}
        "0x10x2" {:unviewed-messages-count 0 :unviewed-mentions-count 0}})
     (is
-     (= {:category1
-         [{:name "chat1" :emoji nil :locked? false :id "0x1" :unread-messages? true :mentions-count 2}
-          {:name "chat2" :emoji nil :locked? true :id "0x2" :unread-messages? false :mentions-count 0}]}
+     (= [["1"
+          {:name       "category1"
+           :id         "1"
+           :collapsed? nil
+           :chats      [{:name             "chat1"
+                         :emoji            nil
+                         :position         1
+                         :locked?          false
+                         :id               "0x1"
+                         :unread-messages? true
+                         :mentions-count   2}
+                        {:name             "chat2"
+                         :emoji            nil
+                         :position         2
+                         :locked?          true
+                         :id               "0x2"
+                         :unread-messages? false
+                         :mentions-count   0}]}]]
         (rf/sub [sub-name "0x1"])))))
 
 (h/deftest-sub :communities/my-pending-requests-to-join

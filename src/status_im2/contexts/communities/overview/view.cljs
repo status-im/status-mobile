@@ -60,35 +60,45 @@
 (defn add-category-height
   [categories-heights category height]
   (swap! categories-heights
-    (fn []
-      (sort-by :height
-               (conj @categories-heights
-                     {:height height
-                      :label  category})))))
+    (fn [heights]
+      (assoc heights category height))))
+
+(defn collapse-category
+  [community-id category-id collapsed?]
+  (rf/dispatch [:communities/toggle-collapsed-category community-id category-id (not collapsed?)]))
 
 (defn channel-list-component
-  [{:keys [on-categories-heights-changed
+  [{:keys [on-category-layout
+           community-id
            on-first-channel-height-changed]}
    channels-list]
-  (let [categories-heights (reagent/atom [])]
-    [rn/view
-     {:on-layout #(on-first-channel-height-changed (+ (if platform/ios?
-                                                        0
-                                                        38)
-                                                      (int (Math/ceil (layout-y %)))))
-      :style     {:margin-top 20 :flex 1}}
-     (map-indexed
-      (fn [index [category channels-for-category]]
-        [rn/view
-         {:flex      1
-          :key       (str index category)
-          :on-layout #(do
-                        (add-category-height categories-heights category (int (layout-y %)))
-                        (on-categories-heights-changed @categories-heights))}
+  [rn/view
+   {:on-layout #(on-first-channel-height-changed (+ (if platform/ios?
+                                                      0
+                                                      38)
+                                                    (int (Math/ceil (layout-y %))))
+                                                 (into #{} (map (comp :name second) channels-list)))
+    :style     {:margin-top 20 :flex 1}}
+   (map
+    (fn [[category-id {:keys [chats name collapsed?]}]]
+      [rn/view
+       {:flex      1
+        :key       category-id
+        ;; on-layout fires only when the component re-renders, so
+        ;; in case the category hasn't changed, it will not be fired
+        :on-layout #(on-category-layout name (int (layout-y %)))}
 
+       (when-not (= constants/empty-category-id category-id)
          [quo/divider-label
-          {:label            category
-           :chevron-position :left}]
+          {:label            name
+           :on-press         #(collapse-category
+                               community-id
+                               category-id
+                               collapsed?)
+           :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
+           :padding-bottom   (if collapsed? 7 0)
+           :chevron-position :left}])
+       (when-not collapsed?
          [rn/view
           {:margin-left   8
            :margin-top    10
@@ -98,8 +108,8 @@
                   {:key        (:id channel)
                    :margin-top 4}
                   [quo/channel-list-item channel]])
-               channels-for-category)]])
-      channels-list)]))
+               chats)])])
+    channels-list)])
 
 (defn request-to-join-text
   [is-open?]
@@ -192,10 +202,10 @@
 
 (defn add-on-press-handler-to-categorized-chats
   [community-id categorized-chats]
-  (reduce-kv (fn [acc category chats]
-               (assoc acc category (add-on-press-handler-to-chats community-id chats)))
-             {}
-             categorized-chats))
+  (let [add-on-press (partial add-on-press-handler-to-chats community-id)]
+    (map (fn [[category v]]
+           [category (update v :chats add-on-press)])
+         categorized-chats)))
 
 (defn community-header
   [name]
@@ -221,8 +231,9 @@
 (defn community-content
   [{:keys [name description locked joined images
            status tokens tags id]
-    :as   community} pending?
-   {:keys [on-categories-heights-changed
+    :as   community}
+   pending?
+   {:keys [on-category-layout
            on-first-channel-height-changed]}]
   (let [thumbnail-image   (:thumbnail images)
         chats-by-category (rf/sub [:communities/categorized-channels id])
@@ -264,13 +275,14 @@
       [preview-user-list users]
       [join-community community pending?]]
      [channel-list-component
-      {:on-categories-heights-changed   #(on-categories-heights-changed %)
-       :on-first-channel-height-changed #(on-first-channel-height-changed %)}
+      {:on-category-layout              on-category-layout
+       :community-id                    id
+       :on-first-channel-height-changed on-first-channel-height-changed}
       (add-on-press-handler-to-categorized-chats id chats-by-category)]]))
 
 (defn sticky-category-header
   [_]
-  (fn [{:keys [:enabled :label]}]
+  (fn [{:keys [enabled label]}]
     (when enabled
       [blur/view
        {:style         style/blur-channel-header
@@ -278,7 +290,7 @@
         :blur-type     :transparent
         :overlay-color :transparent}
        [quo/divider-label
-        {:label            (:label label)
+        {:label            label
          :chevron-position :left}]])))
 
 (defn page-nav-right-section-buttons
@@ -292,9 +304,18 @@
                             [options/community-options-bottom-sheet
                              id])}])}])
 
+(defn pick-first-category-by-height
+  [scroll-height first-channel-height categories-heights]
+  (->> categories-heights
+       (sort-by (comp - second))
+       (some (fn [[category height]]
+               (and
+                (>= scroll-height (+ height first-channel-height))
+                category)))))
+
 (defn community-card-page-view
   [{:keys [name images id]}]
-  (let [categories-heights   (reagent/atom [])
+  (let [categories-heights   (reagent/atom {})
         first-channel-height (reagent/atom 0)
         scroll-height        (reagent/atom 0)
         cover                {:uri (get-in images [:banner :uri])}
@@ -316,14 +337,21 @@
 
        [sticky-category-header
         {:enabled (> @scroll-height @first-channel-height)
-         :label   (last (filter (fn [{:keys [height]}]
-                                  (>= @scroll-height (+ height @first-channel-height)))
-                                @categories-heights))}]
+         :label   (pick-first-category-by-height
+                   @scroll-height
+                   @first-channel-height
+                   @categories-heights)}]
+
        [community-content
         community
         pending?
-        {:on-categories-heights-changed   #(reset! categories-heights %)
-         :on-first-channel-height-changed #(reset! first-channel-height %)}]])))
+        {:on-category-layout              (partial add-category-height categories-heights)
+         :on-first-channel-height-changed
+         ;; Here we set the height of the component
+         ;; and we filter out the categories, as some might have been removed
+         (fn [height categories]
+           (swap! categories-heights select-keys categories)
+           (reset! first-channel-height height))}]])))
 
 (defn overview
   []
