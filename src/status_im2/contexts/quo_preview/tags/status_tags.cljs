@@ -52,7 +52,8 @@
            [preview/customizer state descriptor]]
           [preview/blur-view
            {:show-blur-background? (:blur? @state)
-            :blur-view-props       {:blur-type :dark}
+            :blur-view-props       {:blur-type     :dark
+                                    :overlay-color colors/neutral-80-opa-80}
             :style                 {:align-self :center}} [quo2/status-tag props]]]]))))
 
 (defn preview-status-tags
