@@ -9,10 +9,8 @@ stdenv.mkDerivation {
   phases = [
     "unpackPhase"
     "patchGradlePhase"
-    "patchBuildIdPhase"
     "patchHermesPhase"
     "patchReactNativePhase"
-    "patchJavaPhase"
     "installPhase"
   ];
 
@@ -48,6 +46,8 @@ stdenv.mkDerivation {
       ${patchMavenSources} $modBuildGradle
     done
   '';
+
+  # TODO : add to phases array on top after RNIOS upgrade is successful to 0.71.4
   # Do not add a BuildId to the generated libraries, for reproducibility
   patchBuildIdPhase = ''
     substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/Application.mk --replace \
@@ -63,6 +63,8 @@ stdenv.mkDerivation {
         'targetName.toLowerCase().contains("release")' \
         '!targetName.toLowerCase().contains("debug")'
   '';
+
+  # TODO : add to phases array on top after RNIOS upgrade is successful to 0.71.4
   # Patch Java files in modules which are not yet ported to AndroidX
   patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
