@@ -2,13 +2,13 @@
   (:require [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [re-frame.core :as re-frame]
-            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.native-module.core :as status]
             [status-im2.navigation.events :as navigation]
             [status-im2.utils.validators :as validators]
+            [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im.utils.utils :as utils]))
 
 (re-frame/reg-fx
