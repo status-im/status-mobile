@@ -549,6 +549,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702894)
     def test_community_contact_block_unblock_offline(self):
         [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        self.channel_1.send_message('message to get avatar of user 2 visible in next message')
 
         self.channel_2.just_fyi("Sending message before block")
         message_to_disappear = "I should not be in chat"

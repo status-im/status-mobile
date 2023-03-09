@@ -1188,7 +1188,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702855)
-    @marks.xfail(reason="blocked by 15166")
     def test_1_1_chat_edit_message(self):
         [device.click_system_back_button_until_element_is_shown() for device in
          (self.device_1, self.device_2)]
@@ -1203,14 +1202,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(message_before_edit_1_1)
         self.chat_2.chat_element_by_text(message_before_edit_1_1).wait_for_status_to_be("Delivered")
         self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        chat_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
+        chat_element = self.chat_1.chat_element_by_text('%s (Edited)' % message_after_edit_1_1)
         if not chat_element.is_element_displayed(30):
             self.errors.append('No edited message in 1-1 chat displayed')
-        try:
-            chat_element.wait_for_status_to_be('edited')
-        except TimeoutException:
-            self.errors.append('Edited message is shown for receiver with status %s but it should be "Edited"' %
-                               chat_element.status)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702733)
