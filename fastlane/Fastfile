@@ -123,6 +123,7 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     export_method: 'ad-hoc',
     output_name: 'StatusIm',
     output_directory: 'status-ios',
+    buildlog_path: 'ios/logs',
     export_options: {
       signingStyle: 'manual',
       provisioningProfiles: {
@@ -162,6 +163,7 @@ def build_ios_e2e
     # 3. directory where to up StatusIm.app
     derived_data_path: 'status-ios',
     output_name: 'StatusIm.app',
+    buildlog_path: 'ios/logs',
     # -------------------------------------
     # Normal stuff
     scheme: 'StatusIm',
@@ -239,6 +241,7 @@ platform :ios do
       clean: true,
       export_method: 'app-store',
       output_directory: 'status-ios',
+      buildlog_path: 'ios/logs',
       include_symbols: false,
       export_options: {
         "combileBitcode": true,
