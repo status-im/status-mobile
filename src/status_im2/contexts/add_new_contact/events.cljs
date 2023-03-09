@@ -2,6 +2,7 @@
   (:require [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [re-frame.core :as re-frame]
+            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
@@ -29,12 +30,9 @@
 (defn fx-callbacks
   [input ens-name]
   {:on-success (fn [pubkey]
-                 (rf/dispatch
-                  [:contacts/set-new-identity-success
-                   input ens-name pubkey]))
+                 (rf/dispatch [:contacts/set-new-identity-success input ens-name pubkey]))
    :on-error   (fn [err]
-                 (rf/dispatch
-                  [:contacts/set-new-identity-error err input]))})
+                 (rf/dispatch [:contacts/set-new-identity-error err input]))})
 
 (defn identify-type
   [input]
@@ -87,15 +85,35 @@
                                :ens-name ens-name}
                               (fx-callbacks id ens-name))})))
 
+(rf/defn build-contact
+  {:events [:contacts/build-contact]}
+  [_ pubkey open-profile-modal?]
+  {:json-rpc/call [{:method     "wakuext_buildContact"
+                    :params     [pubkey]
+                    :js-response true
+                    :on-success #(rf/dispatch [:contacts/contact-built
+                                               pubkey
+                                               open-profile-modal?
+                                               (data-store.contacts/<-rpc-js %)])}]})
+
+(rf/defn contact-built
+  {:events [:contacts/contact-built]}
+  [{:keys [db]} pubkey open-profile-modal? contact]
+  (merge {:db (assoc-in db [:contacts/contacts pubkey] contact)}
+         (when open-profile-modal?
+           {:dispatch [:open-modal :profile]})))
+
 (rf/defn set-new-identity-success
   {:events [:contacts/set-new-identity-success]}
-  [{:keys [db]} input ens-name pubkey]
-  {:db (assoc db
-              :contacts/new-identity
-              {:input      input
-               :public-key pubkey
-               :ens-name   ens-name
-               :state      :valid})})
+  [{:keys [db] :as cofx} input ens-name pubkey]
+  (rf/merge cofx
+            {:db (assoc db
+                        :contacts/new-identity
+                        {:input      input
+                         :public-key pubkey
+                         :ens-name   ens-name
+                         :state      :valid})}
+            (build-contact pubkey false)))
 
 (rf/defn set-new-identity-error
   {:events [:contacts/set-new-identity-error]}

@@ -6,10 +6,40 @@
     [react-native.clipboard :as clipboard]
     [status-im2.common.resources :as resources]
     [status-im.qr-scanner.core :as qr-scanner]
+    [status-im.utils.utils :as utils]
     [status-im2.contexts.add-new-contact.style :as style]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
+
+(defn found-contact
+  [public-key]
+  (let [{:keys [two-names compressed-key identicon
+                images]} (rf/sub [:contacts/contact-by-identity public-key])
+        display-name     (first two-names)
+        profile-picture  (-> (or (:thumbnail images) (:large images) (first images))
+                             (get :uri identicon))]
+    (when display-name
+      [rn/view style/found-user
+       [quo/text (style/text-description)
+        (i18n/label :t/user-found)]
+       [rn/view (style/found-user-container)
+        [quo/user-avatar
+         {:full-name         display-name
+          :profile-picture   profile-picture
+          :size              :small
+          :status-indicator? false}]
+        [rn/view style/found-user-text
+         [quo/text
+          {:weight :semi-bold
+           :size   :paragraph-1
+           :style  (style/found-user-display-name)}
+          display-name]
+         [quo/text
+          {:weight :regular
+           :size   :paragraph-2
+           :style  (style/found-user-key)}
+          (utils/get-shortened-address compressed-key)]]]])))
 
 (defn new-contact
   []
@@ -59,7 +89,9 @@
        (when error?
          [rn/view style/container-error
           [quo/icon :i/alert style/icon-error]
-          [quo/text style/text-error (i18n/label :t/not-a-chatkey)]])]
+          [quo/text style/text-error (i18n/label :t/not-a-chatkey)]])
+       (when (= state :valid)
+         [found-contact public-key])]
       [rn/view
        [quo/button
         (merge (style/button-view-profile state)

@@ -576,6 +576,7 @@
     "password-placeholder": "Password...",
     "confirm-password-placeholder": "Confirm your password...",
     "ens-or-chat-key": "ENS or Chat key",
+    "user-found": "User found",
     "enter-pin": "Enter 6-digit passcode",
     "enter-puk-code": "Enter PUK code",
     "enter-puk-code-description": "6-digit passcode has been blocked.\n Please enter PUK code to unblock passcode.",
