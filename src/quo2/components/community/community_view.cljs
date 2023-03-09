@@ -23,7 +23,7 @@
     members-count]])
 
 (defn community-stats-column
-  [type]
+  [{:keys [type]}]
   (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
     [rn/view
      (if (= type :card-view)
@@ -46,11 +46,12 @@
      ^{:key name}
      [rn/view {:margin-right 8}
       [tag/tag
-       {:size      24
-        :label     name
-        :type      :emoji
-        :labelled? true
-        :resource  emoji}]])])
+       {:size        24
+        :label       name
+        :type        :emoji
+        :labelled?   true
+        :scrollable? true
+        :resource    emoji}]])])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]

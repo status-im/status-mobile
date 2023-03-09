@@ -62,7 +62,7 @@
    :bottom                  0
    :left                    0
    :right                   0
-   :height                  20
+   :border-radius           20
    :padding-horizontal      padding-horizontal
    :border-top-right-radius 16
    :border-top-left-radius  16

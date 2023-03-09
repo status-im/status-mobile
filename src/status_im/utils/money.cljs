@@ -225,8 +225,12 @@
 
 (defn format-members
   [count]
-  (if (> count 1000000)
+  (cond
+    (> count 1000000)
     (str (with-precision (/ count 1000000) 1) (i18n/label :t/M))
-    (if (and (> count 999) (< count 1000000))
-      (str (with-precision (/ count 1000) 1) (i18n/label :t/K))
-      count)))
+
+    (< 999 count 1000000)
+    (str (with-precision (/ count 1000) 1) (i18n/label :t/K))
+
+    :else
+    count))

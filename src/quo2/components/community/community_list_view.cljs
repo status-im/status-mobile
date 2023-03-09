@@ -64,7 +64,8 @@
                                          colors/neutral-40
                                          colors/neutral-60))}}
         name]
-       [community-view/community-stats-column :list-view]]
+       [community-view/community-stats-column
+        {:type :list-view}]]
       (if (= status :gated)
         [community-view/permission-tag-container
          {:locked? locked?
