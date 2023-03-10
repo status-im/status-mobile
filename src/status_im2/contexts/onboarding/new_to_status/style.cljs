@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.new-to-status.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (def full-screen {:flex 1})
 
@@ -8,7 +9,8 @@
    :width  "100%"})
 
 (def layer-background
-  {:position         :absolute
+  {:padding-top      (if platform/ios? 44 0)
+   :position         :absolute
    :top              0
    :bottom           0
    :left             0

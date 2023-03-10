@@ -1,6 +1,6 @@
 (ns status-im2.navigation.screens
-  (:require [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors] ;; TODO remove when not used anymore
+  (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
+            [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [status-im.ui.screens.screens :as old-screens]
             [status-im2.config :as config]
@@ -110,8 +110,8 @@
     {:name      :new-to-status
      :options   {:statusBar     {:style :light}
                  :topBar        {:visible false}
-                 :navigationBar {:backgroundColor quo2.colors/black}}
-     :insets    {:bottom false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
      :component new-to-status/new-to-status}]
 
    (when config/quo-preview-enabled?
