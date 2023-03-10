@@ -30,6 +30,7 @@
   "list-comp"       :binding
   "defview"         :arg1-body
   "letsubs"         :binding
+  "with-let"        "let"
   "testing"         :arg1-body
   "deftest-sub"     :arg1-body
   "wait-for"        :arg1-body
