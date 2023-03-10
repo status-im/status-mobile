@@ -7,9 +7,9 @@
             [quo2.components.notifications.activity-log.style :as style]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.foundations.colors :as colors]
-            [utils.i18n :as i18n]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [utils.i18n :as i18n]))
 
 (defn- activity-reply-text-input
   [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input]
@@ -134,11 +134,12 @@
      label]))
 
 (defmethod footer-item-view :status
-  [{:keys [label subtype]} _ _]
+  [{:keys [label subtype blur?]} _ _]
   [status-tags/status-tag
    {:size   :small
     :label  label
-    :status {:type subtype}}])
+    :status {:type subtype}
+    :blur?  blur?}])
 
 (defn- footer
   [_ _]

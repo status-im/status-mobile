@@ -1,8 +1,10 @@
 (ns status-im2.contexts.quo-preview.preview
   (:require [clojure.string :as string]
             [quo2.foundations.colors :as colors]
+            [react-native.blur :as blur]
             [react-native.core :as rn]
-            [reagent.core :as reagent])
+            [reagent.core :as reagent]
+            [status-im2.common.resources :as resources])
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (def container
@@ -212,3 +214,36 @@
     :type    :select
     :options [{:key :primary :value "Primary"}
               {:key :secondary :value "Secondary"}]}])
+
+(defn blur-view
+  [{:keys [show-blur-background? image height blur-view-props style]} children]
+  [rn/view
+   {:style {:flex               1
+            :padding-horizontal 16
+            :padding-vertical   16}}
+   (when show-blur-background?
+     [rn/view
+      {:style {:height        (or height 100)
+               :border-radius 16
+               :overflow      :hidden}}
+      [rn/image
+       {:source (or image (resources/get-mock-image :community-cover))
+        :style  {:height "100%"
+                 :width  "100%"}}]
+      [blur/view
+       (merge {:style         {:position :absolute
+                               :top      0
+                               :bottom   0
+                               :left     0
+                               :right    0}
+               :blur-amount   10
+               :overlay-color (colors/theme-colors
+                               colors/white-opa-70
+                               colors/neutral-80-opa-80)}
+              blur-view-props)]])
+   [rn/view
+    {:style (merge {:position           :absolute
+                    :top                32
+                    :padding-horizontal 16}
+                   style)}
+    children]])

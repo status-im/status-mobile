@@ -139,8 +139,8 @@
 ;;;;Success
 
 ;;Solid
-(def success-50 "#26A69A")
-(def success-60 "#208B81")
+(def success-50 "#23ADA0")
+(def success-60 "#1C8A80")
 
 ;;50 with transparency
 (def success-50-opa-5 (alpha success-50 0.05))
@@ -162,8 +162,8 @@
 (def danger-opa-40 (alpha danger 0.4))
 
 ;;Solid
-(def danger-50 "#E65F5C")
-(def danger-60 "#C1504D")
+(def danger-50 "#E95460")
+(def danger-60 "#BA434D")
 
 ;;50 with transparency
 (def danger-50-opa-5 (alpha danger-50 0.05))
