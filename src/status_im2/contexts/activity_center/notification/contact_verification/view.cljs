@@ -81,12 +81,10 @@
   (rf/dispatch [:activity-center.notifications/mark-as-read id]))
 
 (defn- prepare-challenge-reply
-  [{:keys [notification set-swipeable-height]}]
+  [props]
   (rf/dispatch [:bottom-sheet/show-sheet
                 {:content view}
-                {:notification         notification
-                 :set-swipeable-height set-swipeable-height
-                 :replying?            true}]))
+                (assoc props :replying? true)]))
 
 (defn- send-challenge-reply
   [id reply]
