@@ -14,18 +14,19 @@
 
 (defn found-contact
   [public-key]
-  (let [{:keys [two-names compressed-key identicon
+  (let [{:keys [primary-name
+                compressed-key
+                identicon
                 images]} (rf/sub [:contacts/contact-by-identity public-key])
-        display-name     (first two-names)
         profile-picture  (-> (or (:thumbnail images) (:large images) (first images))
                              (get :uri identicon))]
-    (when display-name
+    (when primary-name
       [rn/view style/found-user
        [quo/text (style/text-description)
         (i18n/label :t/user-found)]
        [rn/view (style/found-user-container)
         [quo/user-avatar
-         {:full-name         display-name
+         {:full-name         primary-name
           :profile-picture   profile-picture
           :size              :small
           :status-indicator? false}]
@@ -34,7 +35,7 @@
           {:weight :semi-bold
            :size   :paragraph-1
            :style  (style/found-user-display-name)}
-          display-name]
+          primary-name]
          [quo/text
           {:weight :regular
            :size   :paragraph-2
