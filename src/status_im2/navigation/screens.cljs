@@ -106,7 +106,7 @@
      :insets    {:top false}
      :component profiles/views}
 
-    ;; Onborading - new to Status
+    ;; Onboarding - new to Status
     {:name      :new-to-status
      :options   {:statusBar     {:style :light}
                  :topBar        {:visible false}
