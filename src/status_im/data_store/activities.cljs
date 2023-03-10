@@ -66,3 +66,7 @@
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))
       (dissoc :chatId)))
+
+(defn <-rpc-seen-state
+  [item]
+  (:hasSeen item))

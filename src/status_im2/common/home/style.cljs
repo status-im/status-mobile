@@ -13,3 +13,28 @@
    :margin-right        6
    :weight              :semi-bold
    :size                :heading-1})
+
+(defn unread-indicator
+  [unread-count]
+  (let [right-offset (cond (> unread-count 99) -14
+                           (> unread-count 9)  -10
+                           :else               -6)]
+    {:position :absolute
+     :top      -6
+     :right    right-offset
+     :z-index  4}))
+
+(def left-section
+  {:position :absolute
+   :left     20
+   :top      12})
+
+(def right-section
+  {:position       :absolute
+   :right          20
+   :top            12
+   :flex-direction :row})
+
+(defn top-nav-container
+  [style]
+  (assoc style :height 56))

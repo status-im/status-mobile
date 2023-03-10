@@ -35,6 +35,23 @@
         (reduce + 0))))
 
 (re-frame/reg-sub
+ :activity-center/seen?
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:seen? activity-center)))
+
+(re-frame/reg-sub
+ :activity-center/unread-indicator
+ :<- [:activity-center/seen?]
+ :<- [:activity-center/unread-count]
+ (fn [[seen? unread-count]]
+   (if (zero? unread-count)
+     :unread-indicator/none
+     (if seen?
+       :unread-indicator/seen
+       :unread-indicator/new))))
+
+(re-frame/reg-sub
  :activity-center/mark-all-as-read-undoable-till
  :<- [:activity-center]
  (fn [activity-center]
