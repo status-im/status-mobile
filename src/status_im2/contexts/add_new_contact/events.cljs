@@ -88,13 +88,13 @@
 (rf/defn build-contact
   {:events [:contacts/build-contact]}
   [_ pubkey open-profile-modal?]
-  {:json-rpc/call [{:method     "wakuext_buildContact"
-                    :params     [pubkey]
+  {:json-rpc/call [{:method      "wakuext_buildContact"
+                    :params      [pubkey]
                     :js-response true
-                    :on-success #(rf/dispatch [:contacts/contact-built
-                                               pubkey
-                                               open-profile-modal?
-                                               (data-store.contacts/<-rpc-js %)])}]})
+                    :on-success  #(rf/dispatch [:contacts/contact-built
+                                                pubkey
+                                                open-profile-modal?
+                                                (data-store.contacts/<-rpc-js %)])}]})
 
 (rf/defn contact-built
   {:events [:contacts/contact-built]}
