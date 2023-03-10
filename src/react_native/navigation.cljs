@@ -73,3 +73,15 @@
 (defn merge-options
   [id opts]
   (.mergeOptions Navigation id (clj->js opts)))
+
+(def constants (atom nil))
+
+(defn status-bar-height
+  []
+  (:status-bar-height @constants))
+
+(.then (.constants Navigation)
+       (fn [^js consts]
+         (reset! constants {:top-bar-height     (.-topBarHeight consts)
+                            :bottom-tabs-height (.-bottomTabsHeight consts)
+                            :status-bar-height  (.-statusBarHeight consts)})))

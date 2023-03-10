@@ -75,7 +75,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="two_2")
 @marks.new_ui_critical
-class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
+class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
@@ -93,11 +93,10 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.profile_1.just_fyi("Enabling PNs")
         self.profile_1.switch_push_notifications()
         [home.click_system_back_button_until_element_is_shown() for home in [self.home_1, self.home_2]]
-
+        [home.chats_tab.click() for home in [self.home_1, self.home_2]]
 
     @marks.testrail_id(702871)
-    def test_activity_center_cancel_outgoing_contact_request_no_pn(self):
-        [home.chats_tab.click() for home in [self.home_1, self.home_2]]
+    def test_activity_center_contact_request_cancel_outgoing_no_pn(self):
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1')
         self.home_2.add_contact(self.public_key_1)
@@ -131,7 +130,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702850)
-    def test_activity_center_decline_contact_request(self):
+    def test_activity_center_contact_request_decline(self):
         [home.chats_tab.click() for home in [self.home_1, self.home_2]]
 
         self.home_2.just_fyi("Device2 sends pending contact request after cancelling")
@@ -154,7 +153,7 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
-    def test_activity_center_mentions_in_community_jump_to(self):
+    def test_activity_center_contact_request_accept(self):
         self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
         self.home_2.add_contact(self.public_key_1, remove_from_contacts=True)
 
@@ -163,40 +162,85 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.handle_contact_request(username=self.default_username_2)
         self.home_1.contacts_tab.click()
         if not self.home_1.contact_details(username=self.default_username_2).is_element_displayed(20):
-            self.errors.append("Contact was not added to contact list after accepting contact request")
-        self.home_1.recent_tab.click()
+            self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
 
-        self.device_1.just_fyi('Creating and join community from Device1 and Device2')
-        self.text_message = 'first message in community'
+        self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
+        self.home_2.chats_tab.click()
+        self.home_2.contacts_tab.click()
+        if not self.home_2.contact_details(username=self.default_username_1).is_element_displayed(20):
+            self.errors.append("Contact was not added to contact list after accepting contact request (as sender)")
+
+        self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="two_2")
+@marks.new_ui_critical
+class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.loop.run_until_complete(
+            run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
+        self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
+        users = self.loop.run_until_complete(run_in_parallel(
+            ((self.home_1.get_public_key_and_username, True),
+             (self.home_2.get_public_key_and_username, True))
+        ))
+        self.public_key_1, self.default_username_1 = users[0]
+        self.public_key_2, self.default_username_2 = users[1]
+        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
+        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
+
+        self.home_1.add_contact(self.public_key_2)
+        self.home_2.handle_contact_request(self.default_username_1)
+        self.text_message = 'hello'
+        self.one_to_one_message = 'one-t-one message'
+
+        self.home_2.just_fyi("Send message to contact (need for jump to) test")
+        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1.send_message(self.one_to_one_message)
+        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.send_message(self.text_message)
+        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
+
+        self.home_1.just_fyi("Open community to message")
+        self.home_1.communities_tab.click()
         self.community_name = self.home_1.get_random_chat_name()
         self.channel_name = self.home_1.get_random_chat_name()
-        self.home_1.communities_tab.click()
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
         self.community_1 = CommunityView(self.drivers[0])
         self.community_1.send_invite_to_community(self.default_username_2)
-
-        self.home_2.chats_tab.click()
-        self.home_2.recent_tab.click()
+        self.channel_1 = self.community_1.add_channel(self.channel_name)
+        self.channel_1.send_message(self.text_message)
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.chat_2.element_by_text_part('View').click()
         self.community_2 = CommunityView(self.drivers[1])
         self.community_2.join_button.click()
-        self.channel_1 = self.community_1.add_channel(self.channel_name)
-        self.channel_1.send_message(self.text_message)
-        self.channel_2 = self.community_2.get_chat(self.channel_name).click()
 
-        self.community_2.just_fyi("Check Jump to screen and redirect on tap")
-        self.community_2.jump_to_button.click()
-        for card in (self.community_name, self.default_username_1):
-            if not self.community_2.element_by_text_part(card).is_element_displayed(20):
+        self.home_1.just_fyi("Reopen community view to use new interface")
+        for home in (self.home_1, self.home_2):
+            home.jump_to_communities_home()
+            home.get_chat(self.community_name, community=True).click()
+            community_view = home.get_community_view()
+            community_view.get_channel(self.channel_name).click()
+        self.channel_2 = self.home_2.get_chat_view()
+
+    @marks.testrail_id(702936)
+    def test_navigation_jump_to(self):
+        self.community_1.just_fyi("Check Jump to screen and redirect on tap")
+        self.community_1.jump_to_button.click()
+        for card in (self.community_name, self.default_username_2):
+            if not self.community_1.element_by_text_part(card).is_element_displayed(20):
                 self.errors.append("Card %s is not shown on Jump to screen!" % card)
-        self.community_2.element_by_translation_id("community-channel").click()
-        if not self.channel_2.chat_element_by_text(self.text_message).is_element_displayed(20):
-            self.errors.append("User was not redirected to community channel after tappin on community channel card!")
-        self.channel_2.click_system_back_button()
-        self.community_2.jump_to_button.click()
-        self.community_2.element_by_text_part(self.default_username_1).click()
-        if not self.chat_2.element_by_text_part('View').is_element_displayed(20):
+        self.community_1.element_by_translation_id("community-channel").click()
+        if not self.channel_1.chat_element_by_text(self.text_message).is_element_displayed(20):
+            self.errors.append("User was not redirected to community channel after tapping on community channel card!")
+        self.channel_1.click_system_back_button()
+        self.community_1.jump_to_button.click()
+        self.community_1.element_by_text_part(self.default_username_2).click()
+        if not self.chat_1.chat_element_by_text(self.one_to_one_message).is_element_displayed(20):
             self.errors.append("User was not redirected to 1-1 chat after tapping card!")
 
         # Blocked because of 14648
@@ -225,5 +269,4 @@ class TestActivityCenterMultipleDevicePR(MultipleSharedDeviceTestCase):
         #     self.home_1.driver.fail("No PN for mention in community!")
         # if not self.channel_1.chat_element_by_text(group_chat_message).is_element_displayed(20):
         #     self.errors.append("No redirect to channel after tap on PN with mention!")
-
         self.errors.verify_no_errors()

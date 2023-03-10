@@ -63,6 +63,9 @@ pipeline {
       steps {
         script { api = ios.bundle() }
       }
+      post {
+        failure { archiveArtifacts 'ios/logs/*' }
+      }
     }
     stage('Parallel Upload') {
       parallel {

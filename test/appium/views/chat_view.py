@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
+from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
@@ -404,13 +405,15 @@ class CommunityView(HomeView):
         self.close_button.click()
 
     def send_invite_to_community(self, user_names_to_invite):
+        if isinstance(user_names_to_invite, str):
+            user_names_to_invite = [user_names_to_invite]
         self.driver.info("Send %s invite to community" % ', '.join(map(str, user_names_to_invite)))
         self.community_options_button.click()
         self.community_info_button.click()
         self.invite_button.click()
-        user_contact = self.element_by_text_part(user_names_to_invite)
-        user_contact.scroll_to_element()
-        user_contact.click()
+        for user_name in user_names_to_invite:
+            user_contact = self.element_by_text_part(user_name)
+            user_contact.scroll_and_click()
         self.share_invite_button.click_until_presence_of_element(self.invite_button)
         self.back_button.click_until_presence_of_element(self.plus_button)
 
@@ -640,6 +643,12 @@ class ChatMessageInput(EditBox):
         action.long_press(x=x + 250, y=y).release().perform()  # long press
         action.tap(x=x + 50, y=y - 50).release().perform()  # tap Paste
 
+    def click_inside(self):
+        action = TouchAction(self.driver)
+        location = self.find_element().location
+        x, y = location['x'], location['y']
+        action.tap(x=x + 250, y=y).release().perform()
+
 
 class ChatView(BaseView):
     def __init__(self, driver):
@@ -778,6 +787,7 @@ class ChatView(BaseView):
         self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',
                                                  suffix='/following-sibling::android.view.ViewGroup')
         self.confirm_create_in_community_button = Button(self.driver, translation_id="create")
+        self.mentions_list = BaseElement(self.driver, accessibility_id="mentions-list")
 
         # New UI
         self.pinned_messages_count = Button(self.driver,
@@ -1091,10 +1101,24 @@ class ChatView(BaseView):
         return transaction_message
 
     def get_community_by_name(self, community_name: str):
-        community_button = Button(self.driver,
-                                  xpath="//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name)
+        community_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name
+        )
         community_button.click()
         return CommunityView(self.driver)
+
+    def mention_user(self, user_name: str):
+        self.driver.info("Mention user %s in the chat" % user_name)
+        gboard = self.driver.available_ime_engines[0]
+        self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
+        self.chat_message_input.click_inside()
+        self.chat_message_input.send_keys("@")
+        try:
+            mentions_list = self.mentions_list.wait_for_element()
+            mentions_list.find_element(MobileBy.XPATH, "//*[@text='%s']" % user_name).click()
+        except TimeoutException:
+            self.driver.fail("Mentions list is not shown")
 
     @staticmethod
     def get_resolved_chat_key(username, chat_key):

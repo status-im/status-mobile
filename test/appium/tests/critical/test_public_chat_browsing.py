@@ -361,6 +361,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1 = self.home_1.get_profile_view()
+        self.profile_1.switch_push_notifications()
         [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
         [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         self.home_1.add_contact(self.public_key_2)
@@ -549,6 +550,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702894)
     def test_community_contact_block_unblock_offline(self):
         [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        self.channel_1.send_message('message to get avatar of user 2 visible in next message')
 
         self.channel_2.just_fyi("Sending message before block")
         message_to_disappear = "I should not be in chat"
@@ -637,6 +639,73 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     #     if community_1_element.new_messages_community.is_element_displayed():
     #         self.errors.append('New messages community badge is shown on community after marking messages as read')
     #     self.errors.verify_no_errors()
+
+    @marks.testrail_id(702786)
+    def test_community_mentions_push_notification(self):
+        self.home_1.click_system_back_button_until_element_is_shown()
+        if not self.channel_2.chat_message_input.is_element_displayed():
+            self.channel_2.click_system_back_button_until_element_is_shown()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.community_2.get_channel(self.channel_name).click()
+
+        self.device_2.just_fyi("Invited member sends a message with a mention")
+        self.channel_2.send_message("hi")
+        self.channel_2.mention_user(self.default_username_1)
+        self.channel_2.send_message_button.click()
+
+        self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
+        self.device_1.open_notification_bar()
+        if self.home_1.get_pn(self.default_username_1):
+            self.device_1.click_upon_push_notification_by_text(self.default_username_1)
+            if not self.channel_1.chat_element_by_text(self.default_username_1).is_element_displayed():
+                if self.channel_1.chat_message_input.is_element_displayed():
+                    self.errors.append("Message with the mention is not shown in the chat for the admin")
+                else:
+                    self.errors.append("Channel did not open by clicking on a notification with the mention for admin")
+        else:
+            self.errors.append("Push notification with the mention was not received by admin")
+
+        # ToDo: this part is skipped because of an issue - sent messages stuck without any status for a long time
+        # and can not be edited during that time
+        # self.device_2.just_fyi("Sender edits the message with a mention")
+        # self.channel_2.chat_element_by_text(self.default_username_1).long_press_element_by_coordinate(rel_y=0)
+        # try:
+        #     self.channel_2.element_by_translation_id("edit-message").click()
+        #     for i in range(29, 32):
+        #         self.channel_2.driver.press_keycode(i)
+        #     self.channel_2.send_message_button.click()
+        #     edited_message = self.default_username_1 + " abc"
+        #     if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
+        #         self.errors.append("Edited message is not shown correctly for the sender")
+        #     if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
+        #         self.errors.append("Edited message is not shown correctly for the (receiver) admin")
+        # except NoSuchElementException:
+        #     self.errors.append("Can not edit a message with a mention")
+
+        # ToDo: enable when https://github.com/status-im/status-mobile/issues/14956 is fixed
+        # self.home_2.click_system_back_button_until_element_is_shown()
+        # if not self.channel_1.chat_message_input.is_element_displayed():
+        #     self.channel_1.click_system_back_button_until_element_is_shown()
+        #     self.home_1.communities_tab.click()
+        #     self.home_1.get_chat(self.community_name, community=True).click()
+        #     self.community_1.get_channel(self.channel_name).click()
+        #
+        # self.device_1.just_fyi("Admin sends a message with a mention")
+        # self.channel_1.mention_user(self.default_username_2)
+        # self.channel_1.send_message_button.click()
+        # self.device_2.just_fyi("Invited member gets push notification with the mention and tap it")
+        # self.device_2.open_notification_bar()
+        # if not self.home_2.get_pn(self.default_username_2):
+        #     self.device_2.driver.fail("Push notification with the mention was not received by the invited member")
+        # self.device_2.click_upon_push_notification_by_text(self.default_username_2)
+        # if not self.channel_2.chat_element_by_text(self.default_username_2).is_element_displayed():
+        #     if self.channel_2.chat_message_input.is_element_displayed():
+        #         self.device_2.driver.fail("Message with the mention is not shown in the chat for the invited member")
+        #     else:
+        #         self.device_2.driver.fail(
+        #             "Channel did not open by clicking on a notification with the mention for the invited member")
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702845)
     def test_community_leave(self):

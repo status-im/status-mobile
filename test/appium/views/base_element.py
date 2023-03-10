@@ -1,18 +1,19 @@
 import base64
-from io import BytesIO
 import os
 import time
-import emoji
+from io import BytesIO
 from timeit import timeit
 
+import emoji
+import imagehash
 from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-import imagehash
+from selenium.webdriver.support.wait import WebDriverWait
+
 from tests import transl
 
 
@@ -288,6 +289,15 @@ class BaseElement(object):
             action.long_press(element).release().perform()
             if expected_element.is_element_displayed():
                 return
+
+    def long_press_element_by_coordinate(self, rel_x=0.8, rel_y=0.8):
+        element = self.find_element()
+        location = element.location
+        size = element.size
+        x = int(location['x'] + size['width'] * rel_x)
+        y = int(location['y'] + size['height'] * rel_y)
+        action = TouchAction(self.driver)
+        action.long_press(x=x, y=y).release().perform()
 
     def measure_time_before_element_appears(self, max_wait_time=30):
         def wrapper():
