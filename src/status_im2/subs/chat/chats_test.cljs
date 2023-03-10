@@ -1,8 +1,8 @@
 (ns status-im2.subs.chat.chats-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
-            [test-helpers.unit :as h]
             [status-im2.constants :as constants]
+            [test-helpers.unit :as h]
             [utils.re-frame :as rf]))
 
 (def public-key "0xpk")
@@ -31,14 +31,14 @@
         :multiaccount    multiaccount
         :current-chat-id chat-id
         :chats           chats)
-      (is (true? (:show-input? (rf/sub [sub-name]))))))
+      (is (true? (:able-to-send-message? (rf/sub [sub-name]))))))
   (testing "private group chat, user is not member"
     (let [chats {chat-id (dissoc private-group-chat :members)}]
       (swap! rf-db/app-db assoc
         :multiaccount    multiaccount
         :current-chat-id chat-id
         :chats           chats)
-      (is (not (:show-input? (rf/sub [sub-name]))))))
+      (is (not (:able-to-send-message? (rf/sub [sub-name]))))))
   (testing "one to one chat, mutual contacts"
     (let [chats {chat-id one-to-one-chat}]
       (swap! rf-db/app-db assoc
@@ -46,7 +46,7 @@
         :multiaccount      multiaccount
         :current-chat-id   chat-id
         :chats             chats)
-      (is (:show-input? (rf/sub [sub-name])))))
+      (is (:able-to-send-message? (rf/sub [sub-name])))))
   (testing "one to one chat, not a contact"
     (let [chats {chat-id one-to-one-chat}]
       (swap! rf-db/app-db assoc
@@ -54,4 +54,4 @@
         :multiaccount      multiaccount
         :current-chat-id   chat-id
         :chats             chats)
-      (is (not (:show-input? (rf/sub [sub-name])))))))
+      (is (not (:able-to-send-message? (rf/sub [sub-name])))))))

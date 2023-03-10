@@ -19,15 +19,11 @@
 
 (defn pinned-messages-list
   [chat-id]
-  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list
-                                 chat-id])
-        current-chat (rf/sub [:chat-by-id chat-id])
-
-        {:keys [group-chat chat-id public? community-id admins]}
-        current-chat
-
-        community (rf/sub [:communities/community
-                           community-id])]
+  (let [pinned-messages        (rf/sub [:chats/pinned-sorted-list chat-id])
+        render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
+        current-chat           (rf/sub [:chat-by-id chat-id])
+        {:keys [community-id]} current-chat
+        community              (rf/sub [:communities/community community-id])]
     [rn/view {:accessibility-label :pinned-messages-list}
      ;; TODO (flexsurfer) this should be a component in quo2
      ;; https://github.com/status-im/status-mobile/issues/14529
@@ -56,17 +52,10 @@
           {:style {:margin-left  4
                    :margin-right 8}}
           (str "# " (:chat-name current-chat))]])]
-     (if (> (count pinned-messages) 0)
+     (if (pos? (count pinned-messages))
        [rn/flat-list
         {:data        pinned-messages
-         :render-data (list.view/get-render-data {:group-chat      group-chat
-                                                  :chat-id         chat-id
-                                                  :public?         public?
-                                                  :community-id    community-id
-                                                  :show-input?     false
-                                                  :admins          admins
-                                                  :edit-enabled    true
-                                                  :in-pinned-view? true})
+         :render-data render-data
          :render-fn   message-render-fn
          :key-fn      list-key-fn
          :separator   quo/separator}]

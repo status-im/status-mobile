@@ -17,8 +17,8 @@
 
 (defonce messages-list-ref (atom nil))
 
-(defonce list-key-fn #(or (:message-id %) (:value %)))
-(defonce list-ref #(reset! messages-list-ref %))
+(defn list-key-fn [{:keys [message-id value]}] (or message-id value))
+(defn list-ref [ref] (reset! messages-list-ref ref))
 
 (defn scroll-to-bottom
   []
@@ -68,37 +68,6 @@
     (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat])
                                   (if platform/low-device? 700 200))))
 
-(defn get-render-data
-  "compute data used to render message list, including pinned message list and message list in chats"
-  [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled
-           in-pinned-view?]}]
-  (let [current-public-key                         (rf/sub [:multiaccount/public-key])
-        {:keys [can-delete-message-for-everyone?
-                admin-settings]
-         :as   community}                          (rf/sub [:communities/community
-                                                            community-id])
-        {:keys [pin-message-all-members-enabled?]} admin-settings
-        group-admin?                               (get admins current-public-key)
-        community-admin?                           (when community (community :admin))
-        message-pin-enabled                        (and (not public?)
-                                                        (or (not group-chat)
-                                                            (and group-chat
-                                                                 (or group-admin?
-                                                                     pin-message-all-members-enabled?
-                                                                     community-admin?))))]
-    {:group-chat                       group-chat
-     :group-admin?                     group-admin?
-     :public?                          public?
-     :community?                       (not (nil? community-id))
-     :current-public-key               current-public-key
-     :space-keeper                     space-keeper
-     :chat-id                          chat-id
-     :show-input?                      show-input?
-     :message-pin-enabled              message-pin-enabled
-     :edit-enabled                     edit-enabled
-     :in-pinned-view?                  in-pinned-view?
-     :can-delete-message-for-everyone? can-delete-message-for-everyone?}))
-
 (defonce messages-view-height (reagent/atom 0))
 
 (defn on-messages-view-layout
@@ -133,49 +102,37 @@
           [message/message-with-reactions message-data context])]))])
 
 (defn messages-list
-  [{:keys [chat
-           pan-responder
-           show-input?]}]
-  (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages                                                 (rf/sub [:chats/raw-chat-messages-stream
-                                                                          chat-id])
-        bottom-space                                             15]
+  [{:keys [chat-id] :as chat}]
+  (let [render-data  (rf/sub [:chats/current-chat-message-list-view-context])
+        messages     (rf/sub [:chats/raw-chat-messages-stream chat-id])
+        bottom-space 15]
     [rn/view
      {:style {:flex 1}}
-     ;;DO NOT use anonymous functions for handlers
+     ;; NOTE: DO NOT use anonymous functions for handlers
      [rn/flat-list
-      (merge
-       pan-responder
-       {:key-fn                       list-key-fn
-        :ref                          list-ref
-        :header                       [list-header chat]
-        :footer                       [list-footer chat]
-        :data                         messages
-        :render-data                  (get-render-data {:group-chat      group-chat
-                                                        :chat-id         chat-id
-                                                        :public?         public?
-                                                        :community-id    community-id
-                                                        :admins          admins
-                                                        :show-input?     show-input?
-                                                        :edit-enabled    true
-                                                        :in-pinned-view? false})
-        :render-fn                    render-fn
-        :on-viewable-items-changed    on-viewable-items-changed
-        :on-end-reached               list-on-end-reached
-        :on-scroll-to-index-failed    identity            ;;don't remove this
-        :content-container-style      {:padding-top    (+ bottom-space 32)
-                                       :padding-bottom 16}
-        :scroll-indicator-insets      {:top bottom-space} ;;ios only
-        :keyboard-dismiss-mode        :interactive
-        :keyboard-should-persist-taps :handled
-        :onMomentumScrollBegin        state/start-scrolling
-        :onMomentumScrollEnd          state/stop-scrolling
-        :scrollEventThrottle          16
-        :on-scroll                    on-scroll
-        ;;TODO https://github.com/facebook/react-native/issues/30034
-        :inverted                     (when platform/ios? true)
-        :style                        (when platform/android? {:scaleY -1})
-        :on-layout                    on-messages-view-layout})]
+      {:key-fn                       list-key-fn
+       :ref                          list-ref
+       :header                       [list-header chat]
+       :footer                       [list-footer chat]
+       :data                         messages
+       :render-data                  render-data
+       :render-fn                    render-fn
+       :on-viewable-items-changed    on-viewable-items-changed
+       :on-end-reached               list-on-end-reached
+       :on-scroll-to-index-failed    identity ; don't remove this
+       :content-container-style      {:padding-top    (+ bottom-space 32)
+                                      :padding-bottom 16}
+       :scroll-indicator-insets      {:top bottom-space} ; iOS only
+       :keyboard-dismiss-mode        :interactive
+       :keyboard-should-persist-taps :handled
+       :onMomentumScrollBegin        state/start-scrolling
+       :onMomentumScrollEnd          state/stop-scrolling
+       :scrollEventThrottle          16
+       :on-scroll                    on-scroll
+       ;; TODO https://github.com/facebook/react-native/issues/30034
+       :inverted                     (when platform/ios? true)
+       :style                        (when platform/android? {:scaleY -1})
+       :on-layout                    on-messages-view-layout}]
      [quo/floating-shell-button
       (merge {:jump-to
               {:on-press #(do

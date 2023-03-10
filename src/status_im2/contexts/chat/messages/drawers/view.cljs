@@ -22,11 +22,10 @@
 (defn get-actions
   [{:keys [outgoing content pinned outgoing-status deleted? deleted-for-me? content-type]
     :as   message-data}
-   {:keys [edit-enabled show-input? community? can-delete-message-for-everyone?
+   {:keys [able-to-send-message? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
    (when (and outgoing
-              edit-enabled
               (not (or deleted? deleted-for-me?))
               (not= content-type constants/content-type-audio))
      [{:type     :main
@@ -34,7 +33,7 @@
        :label    (i18n/label :t/edit-message)
        :icon     :i/edit
        :id       :edit}])
-   (when (and show-input? (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
+   (when (and able-to-send-message? (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/reply-to-message message-data])
        :label    (i18n/label :t/message-reply)
