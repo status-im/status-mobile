@@ -218,9 +218,8 @@
 (defn blur-view
   [{:keys [show-blur-background? image height blur-view-props style]} children]
   [rn/view
-   {:style {:flex               1
-            :padding-horizontal 16
-            :padding-vertical   16}}
+   {:style {:flex             1
+            :padding-vertical 16}}
    (when show-blur-background?
      [rn/view
       {:style {:height        (or height 100)

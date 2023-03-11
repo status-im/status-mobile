@@ -1,4 +1,4 @@
-(ns quo2.components.input.style
+(ns quo2.components.inputs.input.style
   (:require [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]))
 

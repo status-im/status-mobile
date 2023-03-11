@@ -37,6 +37,7 @@
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
+    [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.markdown.text :as text]
@@ -168,7 +169,10 @@
                             :component information-box/preview-information-box}]
    :inputs                [{:name      :input
                             :insets    {:top false}
-                            :component input/preview-input}]
+                            :component input/preview-input}
+                           {:name      :title-input
+                            :insets    {:top false}
+                            :component title-input/preview-title-input}]
    :list-items            [{:name      :channel
                             :insets    {:top false}
                             :component channel/preview-channel}
