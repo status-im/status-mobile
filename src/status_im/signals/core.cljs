@@ -126,7 +126,6 @@
                                                                            chatID
                                                                            messageID
                                                                            :delivered))
-      "chat.unmuted"            {:db (assoc-in db [:chats event-js :muted] false)}
       "mailserver.changed"      (mailserver/handle-mailserver-changed cofx (.-id event-js))
       "mailserver.available"    (mailserver/handle-mailserver-available cofx (.-id event-js))
       "mailserver.not.working"  (mailserver/handle-mailserver-not-working cofx)

@@ -3,13 +3,13 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.common.contact-list.view :as contact-list]
-            [status-im2.common.home.actions.view :as actions]
-            [status-im2.constants :as constants]
             [status-im2.contexts.chat.group-details.style :as style]
-            [utils.re-frame :as rf]))
+            [status-im2.common.contact-list.view :as contact-list]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
+            [status-im2.common.home.actions.view :as actions]
+            [utils.re-frame :as rf]
+            [reagent.core :as reagent]
+            [status-im2.constants :as constants]))
 
 (defn back-button
   []
