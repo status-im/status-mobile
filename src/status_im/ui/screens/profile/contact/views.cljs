@@ -44,7 +44,9 @@
             :selected            muted?
             :disabled            blocked?
             :action              (when-not blocked?
-                                   #(re-frame/dispatch [:chat.ui/mute public-key (not muted?) (when-not muted? constants/mute-till-unmuted)]))}]
+                                   #(re-frame/dispatch [:chat.ui/mute public-key (not muted?)
+                                                        (when-not muted?
+                                                          constants/mute-till-unmuted)]))}]
           [{:label               (i18n/label (if blocked? :t/unblock :t/block))
             :negative            true
             :selected            blocked?

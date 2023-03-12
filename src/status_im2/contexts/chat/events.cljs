@@ -299,7 +299,7 @@
   {:events [:chat.ui/mute]}
   [{:keys [db]} chat-id muted? mute-type]
   (let [method (if muted? "wakuext_muteChatV2" "wakuext_unmuteChat")
-        params (if muted? [{:chatId chat-id  :mutedType mute-type}] [chat-id])]
+        params (if muted? [{:chatId chat-id :mutedType mute-type}] [chat-id])]
     {:db            (assoc-in db [:chats chat-id :muted] muted?)
      :json-rpc/call [{:method     method
                       :params     params
