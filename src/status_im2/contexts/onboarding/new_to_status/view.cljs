@@ -1,7 +1,5 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.onboarding.small-option-card.view :as small-option-card]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.keycard.recovery :as keycard]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
@@ -35,13 +33,13 @@
 (defn sign-in-options
   []
   [rn/view {:style style/options-container}
-   [text/text
+   [quo/text
     {:style  style/title
      :size   :heading-1
      :weight :semi-bold}
     (i18n/label :t/new-to-status)]
 
-   [small-option-card/small-option-card
+   [quo/small-option-card
     {:variant  :main
      :title    (i18n/label :t/generate-keys)
      :subtitle (i18n/label :t/generate-keys-subtitle)
@@ -49,21 +47,21 @@
      :on-press #(rf/dispatch [:generate-and-derive-addresses])}]
 
    [rn/view {:style style/subtitle-container}
-    [text/text
+    [quo/text
      {:style  style/subtitle
       :size   :paragraph-2
       :weight :medium}
      (i18n/label :t/experienced-web3)]]
 
    [rn/view {:style style/suboptions}
-    [small-option-card/small-option-card
+    [quo/small-option-card
      {:variant  :icon
       :title    (i18n/label :t/use-recovery-phrase)
       :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
       :image    (resources/get-image :ethereum-address)
       :on-press #(rf/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
     [rn/view {:style style/space-between-suboptions}]
-    [small-option-card/small-option-card
+    [quo/small-option-card
      {:variant  :icon
       :title    (i18n/label :t/use-keycard)
       :subtitle (i18n/label :t/use-keycard-subtitle)
