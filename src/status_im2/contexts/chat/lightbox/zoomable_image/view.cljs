@@ -173,7 +173,7 @@
        (let [curr-offset (+ (anim/get-val pan-y) (anim/get-val pinch-y-start))
              max-offset  (utils/get-max-offset height screen-height (anim/get-val scale))
              max-offset  (if (neg? curr-offset) (- max-offset) max-offset)
-             velocity    (* (oget e "velocityX") c/velocity-factor)]
+             velocity    (* (oget e "velocityY") c/velocity-factor)]
          (cond
            (< (anim/get-val scale) y-threshold-scale)
            (rescale c/min-scale)
