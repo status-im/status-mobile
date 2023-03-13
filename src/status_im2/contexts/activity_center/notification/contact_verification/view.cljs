@@ -103,11 +103,14 @@
   (rf/dispatch [:activity-center.notifications/mark-as-read id]))
 
 (defn- swipeable
-  [{:keys [active-swipeable extra-fn notification] :as props} child]
+  [{:keys [active-swipeable extra-fn notification replying?] :as props} child]
   (let [{:keys [id message
                 contact-verification-status]} notification
         challenger?                           (:outgoing message)]
     (cond
+      replying?
+      child
+
       (and (not challenger?)
            (= contact-verification-status constants/contact-verification-status-pending))
       [common/swipeable
