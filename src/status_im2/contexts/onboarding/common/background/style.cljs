@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.common.style
+(ns status-im2.contexts.onboarding.common.background.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def background-container
