@@ -141,14 +141,12 @@
   (merge (old-roots)
          ;;INTRO (onboarding carousel)
          {:intro-stack
-          {:root {:stack {:id       :intro
-                          :children [{:component {:name :intro
-                                                  :id :intro
-                                                  :options
-                                                  {:statusBar (merge
-                                                               (status-bar-options)
-                                                               {:style :light})
-                                                   :topBar    {:visible false}}}}]}}}}
+          {:root
+           {:stack {:id       :intro
+                    :children [{:component {:name    :intro
+                                            :id      :intro
+                                            :options {:statusBar {:style :light}
+                                                      :topBar    {:visible false}}}}]}}}}
          {:shell-stack
           {:root
            {:stack {:id       :shell-stack

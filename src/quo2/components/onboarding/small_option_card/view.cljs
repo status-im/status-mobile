@@ -48,19 +48,22 @@
      :source              image}]])
 
 (defn small-option-card
+  "Variants: `:main` or `:icon`"
   [{:keys [variant title subtitle image on-press]
     :or   {variant :main}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)]
-    [rn/touchable-highlight
-     {:accessibility-label :small-option-card
-      :style               style/touchable-overlay
-      :active-opacity      1
-      :underlay-color      colors/white-opa-5
-      :on-press            on-press}
-     [rn/view {:style (style/card-container main-variant?)}
+    [rn/view
+     [rn/touchable-highlight
+      {:accessibility-label :small-option-card
+       :style               style/touchable-overlay
+       :active-opacity      1
+       :underlay-color      colors/white-opa-5
+       :on-press            on-press}
       [rn/view {:style (style/card main-variant?)}
        [card-component
         {:title    title
          :subtitle subtitle
-         :image    image}]]]]))
+         :image    image}]]]
+     (when main-variant?
+       [rn/view {:style style/main-variant-extra-space}])]))
