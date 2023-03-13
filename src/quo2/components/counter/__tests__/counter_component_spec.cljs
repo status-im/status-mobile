@@ -2,7 +2,6 @@
   (:require [quo2.components.counter.counter :as counter]
             [test-helpers.component :as h]))
 
-
 (h/describe "counter component"
   (h/test "default render of counter component"
     (h/render [counter/counter {} nil])
