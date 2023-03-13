@@ -202,7 +202,7 @@
 (defn words-count
   [s]
   (if (empty? s)
-    nil
+    0
     (-> s
         passphrase->words
         count)))

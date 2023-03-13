@@ -295,3 +295,5 @@
 (def ^:const everyone-mention-id "0x00001")
 
 (def ^:const empty-category-id :communities/not-categorized)
+
+(def ^:const seed-phrase-valid-length #{12 18 24})

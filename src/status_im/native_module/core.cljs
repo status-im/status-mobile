@@ -95,6 +95,10 @@
   [request]
   (.createAccountAndLogin ^js (status) (types/clj->json request)))
 
+(defn restore-account-and-login
+  [request]
+  (.restoreAccountAndLogin ^js (status) (types/clj->json request)))
+
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid account-data hashed-password callback]

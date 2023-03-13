@@ -52,16 +52,23 @@
                   (keychain/get-auth-method (:key-uid multiaccount))))
       (navigation/init-root cofx :intro))))
 
+(defn rpc->multiaccount
+  [{:keys [customizationColor keycard-pairing] :as multiaccount}]
+  (-> multiaccount
+      (dissoc :customizationColor)
+      (assoc :customization-color (keyword customizationColor))
+      (assoc :keycard-pairing
+             (when-not
+               (string/blank? keycard-pairing)
+               keycard-pairing))))
+
 (rf/defn initialize-multiaccounts
   {:events [:setup/initialize-multiaccounts]}
   [{:keys [db] :as cofx} all-multiaccounts {:keys [logout?]}]
   (let [multiaccounts (reduce (fn [acc
                                    {:keys [key-uid keycard-pairing]
                                     :as   multiaccount}]
-                                (-> (assoc acc key-uid multiaccount)
-                                    (assoc-in [key-uid :keycard-pairing]
-                                              (when-not (string/blank? keycard-pairing)
-                                                keycard-pairing))))
+                                (assoc acc key-uid (rpc->multiaccount multiaccount)))
                               {}
                               all-multiaccounts)]
     (rf/merge cofx
