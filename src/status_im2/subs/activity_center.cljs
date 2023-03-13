@@ -45,11 +45,10 @@
  :<- [:activity-center/seen?]
  :<- [:activity-center/unread-count]
  (fn [[seen? unread-count]]
-   (if (zero? unread-count)
-     :unread-indicator/none
-     (if seen?
-       :unread-indicator/seen
-       :unread-indicator/new))))
+   (cond
+     (zero? unread-count) :unread-indicator/none
+     seen?                :unread-indicator/seen
+     :else                :unread-indicator/new)))
 
 (re-frame/reg-sub
  :activity-center/mark-all-as-read-undoable-till
