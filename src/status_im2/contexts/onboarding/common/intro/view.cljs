@@ -38,10 +38,12 @@
    [quo/text
     {:style  style/carousel-text
      :weight :semi-bold
-     :size   :heading-2} (get-in carousels [index :text])]
+     :size   :heading-2}
+    (get-in carousels [index :text])]
    [quo/text
     {:style style/carousel-text
-     :size  :paragraph-1} (get-in carousels [index :sub-text])]])
+     :size  :paragraph-1}
+    (get-in carousels [index :sub-text])]])
 
 (defn set-index
   [old-index]
@@ -62,12 +64,12 @@
       :source (get-in carousels [@carousel-index :image])}]
     [quo/drawer-buttons
      {:top-card    {:on-press            (fn []
-                                           (rf/dispatch [:init-root :onboarding])
+                                           (rf/dispatch [:navigate-to :new-to-status])
                                            (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                     :heading             (i18n/label :t/sign-in)
                     :accessibility-label :already-use-status-button}
       :bottom-card {:on-press            (fn []
-                                           (rf/dispatch [:init-root :onboarding])
+                                           (rf/dispatch [:navigate-to :new-to-status])
                                            (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                     :heading             (i18n/label :t/im-new-to-status)
                     :accessibility-label :new-to-status-button}}
@@ -85,4 +87,5 @@
         :style    style/highlighted-text
         :weight   :semi-bold}
        (i18n/label :t/terms-of-service)]]]]
-   (finally (js/clearInterval interval-id))))
+   (finally
+    (js/clearInterval interval-id))))
