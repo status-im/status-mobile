@@ -21,11 +21,11 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
-  :community-id-by-chat-id
-  (fn [[_ chat-id]]
-    [(re-frame/subscribe [:chats/chat chat-id])])
-  (fn [[chat]]
-    (:community-id chat)))
+ :community-id-by-chat-id
+ (fn [[_ chat-id]]
+   [(re-frame/subscribe [:chats/chat chat-id])])
+ (fn [[chat]]
+   (:community-id chat)))
 
 (re-frame/reg-sub
  :chats/by-community-id
