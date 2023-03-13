@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [cljs-bean.core :as bean]
             [reagent.core :as reagent]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]))
+            [quo2.components.record-audio.record-audio.helpers :as helpers]
+            [utils.worklets.record-audio :as worklets.record-audio]))
 
 (def ^:private scale-to-each 1.8)
 (def ^:private scale-to-total 2.6)
@@ -17,14 +18,6 @@
 (def ^:private opacity-from-default 0.5)
 (def ^:private signal-anim-duration 3900)
 (def ^:private signal-anim-duration-2 1950)
-
-(def ^:private record-audio-worklets (js/require "../src/js/record_audio_worklets.js"))
-
-(defn- ring-scale
-  [scale substract]
-  (.ringScale ^js record-audio-worklets
-              scale
-              substract))
 
 (def ^:private animated-ring
   (reagent/adapt-react-class
@@ -45,7 +38,9 @@
            opacity-from (if @ready-to-lock? opacity-from-lock opacity-from-default)
            animations (map
                        (fn [index]
-                         (let [ring-scale (ring-scale scale (* scale-padding index))]
+                         (let [ring-scale (worklets.record-audio/ring-scale scale
+                                                                            (* scale-padding
+                                                                               index))]
                            {:scale   ring-scale
                             :opacity (reanimated/interpolate ring-scale
                                                              [1 scale-to-each]

@@ -92,6 +92,7 @@
                                  colors/neutral-90)}
              {:flex-direction    :row
               :margin-horizontal 20
+              :margin-vertical   8
               :height            56
               :padding-right     12})
       [card-title-and-description title description]

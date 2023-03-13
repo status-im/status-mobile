@@ -153,31 +153,24 @@
                    (get mock-community-item-data :data))])]))
     (if communities communities communities-ids))])
 
-
 (defn communities-lists
   [selected-tab view-type]
-  (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
-        all-communities         (rf/sub [:communities/sorted-communities])
-        tab                     @selected-tab]
-    [rn/view {:style {:flex 1}}
-     (case tab
-       :all
-       (other-communities-list {:communities all-communities
-                                :view-type   view-type})
+  [rn/view {:style {:flex 1}}
+   (case @selected-tab
+     :all
+     (other-communities-list {:communities (rf/sub [:communities/sorted-communities])
+                              :view-type   view-type})
 
-       :open
-       (other-communities-list {:communities-ids (:open ids-by-user-involvement)
-                                :view-type       view-type})
+     :open
+     [:<>]
 
-       :gated
-       (other-communities-list {:communities-ids (:gated ids-by-user-involvement)
-                                :view-type       view-type})
+     :gated
+     [:<>]
 
-       [quo/information-box
-        {:type :error
-         :icon :i/info}
-        (i18n/label :t/error)])]))
-
+     [quo/information-box
+      {:type :error
+       :icon :i/info}
+      (i18n/label :t/error)])])
 
 (defn render-communities
   [selected-tab
