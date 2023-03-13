@@ -2052,5 +2052,7 @@
     "ensure-qr-code-is-in-focus-to-scan":"Ensure that the QR code is in focus to scan",
     "error-this-is-not-a-sync-qr-code": "Oops! This is not a sync QR code",
     "error-syncing-connection-failed": "Oops! Connection failed. Try again",
-    "camera-permission-denied": "Permission denied"
+    "camera-permission-denied": "Permission denied",
+    "enable-biometrics": "Enable biometrics",
+    "use-biometrics": "Use biometrics to fill in your password"
 }

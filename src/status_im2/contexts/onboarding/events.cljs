@@ -7,7 +7,9 @@
     [clojure.string :as string]
     [utils.security.core :as security]
     [status-im.native-module.core :as status]
-    [status-im.ethereum.core :as ethereum]))
+    [status-im.ethereum.core :as ethereum]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]))
 
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
@@ -35,6 +37,29 @@
   [{:keys [db]} onboarding-data]
   {:db       (update db :onboarding-2/profile merge onboarding-data)
    :dispatch [:navigate-to :create-profile-password]})
+
+(rf/defn enable-biometrics
+  {:events [:onboarding-2/enable-biometrics]}
+  [_]
+  {:biometric-auth/authenticate [#(rf/dispatch [:onboarding-2/biometrics-done %]) {}]})
+
+(rf/defn show-biometrics-message
+  [cofx bioauth-message bioauth-code]
+  (let [content (or (when (get #{"NOT_AVAILABLE" "NOT_ENROLLED"} bioauth-code)
+                      (i18n/label :t/grant-face-id-permissions))
+                    bioauth-message)]
+    (when content
+      {:utils/show-popup
+       {:title   (i18n/label :t/biometric-auth-login-error-title)
+        :content content}})))
+
+(rf/defn biometrics-done
+  {:events [:onboarding-2/biometrics-done]}
+  [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
+  (if bioauth-success
+    {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
+     :dispatch [:onboarding-2/create-account-and-login]}
+    (show-biometrics-message cofx bioauth-message bioauth-code)))
 
 (defn strip-file-prefix
   [path]
@@ -87,7 +112,9 @@
 (rf/defn password-set
   {:events [:onboarding-2/password-set]}
   [{:keys [db]} password]
-  {:db       (assoc-in db [:onboarding-2/profile :password] password)
+  {:db       (-> db
+                 (assoc-in [:onboarding-2/profile :password] password)
+                 (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
    :dispatch [:navigate-to :enable-biometrics]})
 
 (rf/defn seed-phrase-entered
