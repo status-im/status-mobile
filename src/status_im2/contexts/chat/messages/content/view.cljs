@@ -14,6 +14,7 @@
             [status-im2.contexts.chat.messages.content.album.view :as album]
             [status-im2.contexts.chat.messages.avatar.view :as avatar]
             [status-im2.contexts.chat.messages.content.image.view :as image]
+            [status-im2.contexts.chat.messages.content.audio.view :as audio]
             [quo2.core :as quo]
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
@@ -128,7 +129,7 @@
               [not-implemented/not-implemented [old-message/sticker message-data]]
 
               constants/content-type-audio
-              [not-implemented/not-implemented [old-message/audio message-data]]
+              [audio/audio-message message-data context]
 
               constants/content-type-image
               [image/image-message 0 message-data context on-long-press]

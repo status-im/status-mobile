@@ -63,6 +63,11 @@
 
 (def within rtl/within)
 
+(defn wait-for
+  ([condition] (wait-for condition {}))
+  ([condition options]
+   (rtl/waitFor condition (clj->js options))))
+
 (defn fire-event
   ([event-name node]
    (fire-event event-name node nil))

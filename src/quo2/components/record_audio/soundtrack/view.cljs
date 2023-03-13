@@ -10,12 +10,14 @@
 (def ^:private thumb-dark (js/require "../resources/images/icons2/12x12/thumb-dark.png"))
 
 (defn f-soundtrack
-  [{:keys [audio-current-time-ms player-ref seeking-audio?]}]
-  (let [audio-duration-ms (audio/get-player-duration @player-ref)]
+  [{:keys [audio-current-time-ms player-ref style seeking-audio?]}]
+  (let [audio-duration-ms (audio/get-player-duration player-ref)]
     [:<>
      [slider/slider
       {:test-ID                  "soundtrack"
-       :style                    (style/player-slider-container)
+       :style                    (merge
+                                  (style/player-slider-container)
+                                  (or style {}))
        :minimum-value            0
        :maximum-value            audio-duration-ms
        :value                    @audio-current-time-ms
@@ -23,7 +25,7 @@
        :on-sliding-complete      (fn [seek-time]
                                    (reset! seeking-audio? false)
                                    (audio/seek-player
-                                    @player-ref
+                                    player-ref
                                     seek-time
                                     #(log/debug "[record-audio] on seek - seek time: " seek-time)
                                     #(log/error "[record-audio] on seek - error: " %)))

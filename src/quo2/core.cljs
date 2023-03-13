@@ -63,6 +63,7 @@
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
     quo2.components.record-audio.record-audio.view
+    quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
     quo2.components.selectors.selectors.view
@@ -186,6 +187,7 @@
 
 ;;;; RECORD AUDIO
 (def record-audio quo2.components.record-audio.record-audio.view/record-audio)
+(def soundtrack quo2.components.record-audio.soundtrack.view/f-soundtrack)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)

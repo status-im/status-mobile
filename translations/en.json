@@ -2087,5 +2087,6 @@
     "community-request-pending": "Request pending",
     "community-request-pending-body-text": "You requested to join",
     "community-kicked-heading": "Kicked from community",
-    "community-kicked-body": "You were kicked from"
+    "community-kicked-body": "You were kicked from",
+    "error-loading-audio": "Error while loading audio"
 }
