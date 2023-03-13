@@ -42,14 +42,14 @@
              (empty? search-filter))
       [welcome-blank-chats]
       [rn/flat-list
-       {:key-fn                         #(or (:chat-id %) (:public-key %) (:id %))
-        :contentInsetAdjustmentBehavior :never
-        :header                         [rn/view {:height (+ 245 top)}]
-        :get-item-layout                get-item-layout
-        :on-end-reached                 #(re-frame/dispatch [:chat/show-more-chats])
-        :keyboard-should-persist-taps   :always
-        :data                           items
-        :render-fn                      chat-list-item/chat-list-item}])))
+       {:key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
+        :content-inset-adjustment-behavior :never
+        :header                            [rn/view {:height (+ 245 top)}]
+        :get-item-layout                   get-item-layout
+        :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
+        :keyboard-should-persist-taps      :always
+        :data                              items
+        :render-fn                         chat-list-item/chat-list-item}])))
 
 (defn welcome-blank-contacts
   []
@@ -72,21 +72,23 @@
      item]))
 
 (defn contacts
-  [pending-contact-requests]
+  [pending-contact-requests top]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (and (empty? items) (empty? pending-contact-requests))
       [welcome-blank-contacts]
       [rn/section-list
-       {:key-fn                         :public-key
-        :get-item-layout                get-item-layout
-        :header                         [:<>
-                                         [rn/view {:height 245}]
-                                         (when (seq pending-contact-requests)
-                                           [contact-request/contact-requests pending-contact-requests])]
-        :sections                       items
-        :sticky-section-headers-enabled false
-        :render-section-header-fn       contact-list/contacts-section-header
-        :render-fn                      contact-item-render}])))
+       {:key-fn                            :public-key
+        :get-item-layout                   get-item-layout
+        :content-inset-adjustment-behavior :never
+        :header                            [:<>
+                                            [rn/view {:height (+ 245 top)}]
+                                            (when (seq pending-contact-requests)
+                                              [contact-request/contact-requests
+                                               pending-contact-requests])]
+        :sections                          items
+        :sticky-section-headers-enabled    false
+        :render-section-header-fn          contact-list/contacts-section-header
+        :render-fn                         contact-item-render}])))
 
 (defn get-tabs-data
   [dot?]
@@ -106,7 +108,7 @@
          (fn [{:keys [top]}]
            [:<>
             (if (= @selected-tab :contacts)
-              [contacts pending-contact-requests]
+              [contacts pending-contact-requests top]
               [chats @selected-tab top])
             [rn/view
              {:style (style/blur-container top)}

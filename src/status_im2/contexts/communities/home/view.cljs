@@ -45,10 +45,11 @@
          (fn [{:keys [top]}]
            [:<>
             [rn/flat-list
-             {:key-fn    :id
-              :header    [rn/view {:height 245}]
-              :render-fn item-render
-              :data      selected-items}]
+             {:key-fn                            :id
+              :content-inset-adjustment-behavior :never
+              :header                            [rn/view {:height (+ 245 top)}]
+              :render-fn                         item-render
+              :data                              selected-items}]
             [rn/view
              {:style (style/blur-container top)}
              [blur/view
