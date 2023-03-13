@@ -10,7 +10,7 @@
 
 
 (defn render-inline
-  [units {:keys [type literal destination]}]
+  [units {:keys [type literal destination]} chat-id]
   (case (keyword type)
     :code
     (conj units [rn/view {:style (merge style/block (style/code))} [quo/text {:weight :code} literal]])
@@ -59,17 +59,28 @@
                      :color     (colors/theme-colors colors/neutral-40
                                                      colors/neutral-50)}}
            literal])
+    :status-tag
+    (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
+      (conj units
+            [rn/text
+             (when community-id
+               {:style    {:color                :blue
+                           :text-decoration-line :underline}
+                :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
+             "#"
+             literal]))
 
     (conj units literal)))
 
 
 (defn render-block
-  [blocks {:keys [type ^js literal children]} edited-at]
+  [blocks {:keys [type literal children]} chat-id edited-at]
   (case (keyword type)
     :paragraph
     (conj blocks
           (reduce
-           render-inline
+           (fn [acc e]
+             (render-inline acc e chat-id))
            [quo/text]
            children))
 
@@ -110,9 +121,9 @@
                      :type    :edited}))))
 
 (defn render-parsed-text
-  [{:keys [content edited-at]}]
+  [{:keys [content chat-id edited-at]}]
   (reduce (fn [acc e]
-            (render-block acc e edited-at))
+            (render-block acc e chat-id edited-at))
           [:<>]
           (cond-> (:parsed-text content)
             edited-at add-edited-tag)))

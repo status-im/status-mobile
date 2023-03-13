@@ -38,7 +38,8 @@
   (rf/sub [:messages/resolve-mention from]))
 
 (defn render-inline
-  [_message-text content-type acc {:keys [type literal destination]}]
+  [_message-text content-type acc {:keys [type literal destination]}
+   community-id]
   (case type
     ""
     (conj acc literal)
@@ -80,9 +81,10 @@
     "status-tag"
     (conj acc
           [rn/text
-           {:style    {:color                :blue
-                       :text-decoration-line :underline}
-            :on-press #(rf/dispatch [:chat.ui/start-public-chat literal])}
+           (when community-id
+             {:style    {:color                :blue
+                         :text-decoration-line :underline}
+              :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
            "#"
            literal])
 
@@ -94,13 +96,20 @@
 ;; TEXT
 (defn render-block
   [{:keys [content content-type edited-at in-popover?]} acc
-   {:keys [type ^js literal children]}]
+   {:keys [type ^js literal children]}
+   community-id]
+
   (case type
 
     "paragraph"
     (conj acc
           (reduce
-           (fn [acc e] (render-inline (:text content) content-type acc e))
+           (fn [acc e]
+             (render-inline (:text content)
+                            content-type
+                            acc
+                            e
+                            community-id))
            [rn/text (style/text-style content-type in-popover?)]
            (conj
             children
@@ -121,11 +130,16 @@
     acc))
 
 (defn render-parsed-text
-  [{:keys [content] :as message-data}]
-  (reduce (fn [acc e]
-            (render-block message-data acc e))
-          [:<>]
-          (:parsed-text content)))
+  [{:keys [content chat-id]
+    :as   message-data}]
+  (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
+    (reduce (fn [acc e]
+              (render-block message-data
+                            acc
+                            e
+                            community-id))
+            [:<>]
+            (:parsed-text content))))
 
 (defn quoted-message
   [{:keys [message-id chat-id]} pin?]
@@ -219,7 +233,7 @@
   [rn/view style/status-container
    [rn/text {:style (style/status-text)}
     (reduce
-     (fn [acc e] (render-inline (:text content) content-type acc e))
+     (fn [acc e] (render-inline (:text content) content-type acc e nil))
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
