@@ -153,10 +153,8 @@
                        {:keys [icon on-press type style icon-override-theme]
                         :or   {type :grey}}]
                     ^{:key index}
-                    [rn/view
-                     {:style (merge
-                              {:margin-right (if (not= index last-icon-index) 8 0)}
-                              style)}
+                    [rn/view {:style (assoc style
+                                       :margin-right (if (= index last-icon-index) 0 8))}
                      [button/button
                       {:on-press       on-press
                        :icon           true
