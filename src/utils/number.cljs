@@ -15,9 +15,9 @@
        scale)))
 
 (defn parse-int
-  "Parses `n` as an integer. Defaults to nil instead of NaN."
+  "Parses `n` as an integer. Defaults to zero or `default` instead of NaN."
   ([n]
-   (parse-int n nil))
+   (parse-int n 0))
   ([n default]
    (let [maybe-int (js/parseInt n 10)]
      (if (integer? maybe-int)
