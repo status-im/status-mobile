@@ -60,23 +60,20 @@
     [rn/view {:style style/right-section}
      (when search?
        [quo/button
-        (merge {:accessibility-label :open-search-button}
-               button-common-props)
+        (assoc button-common-props :accessibility-label :open-search-button)
         :i/search])
      [quo/button
-      (merge {:accessibility-label :open-scanner-button}
-             button-common-props)
+      (assoc button-common-props :accessibility-label :open-scanner-button)
       :i/scan]
      [quo/button
-      (merge {:accessibility-label :show-qr-button}
-             button-common-props)
+      (assoc button-common-props :accessibility-label :show-qr-button)
       :i/qr-code]
      [rn/view
       [unread-indicator]
       [quo/button
-       (merge {:accessibility-label :open-activity-center-button
-               :on-press            #(rf/dispatch [:activity-center/open])}
-              button-common-props)
+       (merge button-common-props
+              {:accessibility-label :open-activity-center-button
+               :on-press            #(rf/dispatch [:activity-center/open])})
        :i/activity-center]]]))
 
 (defn top-nav
