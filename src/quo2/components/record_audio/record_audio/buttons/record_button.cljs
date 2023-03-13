@@ -5,15 +5,15 @@
             [react-native.core :as rn :refer [use-effect]]
             [react-native.reanimated :as reanimated]
             [quo2.components.buttons.button :as button]
-            [quo2.components.record-audio.record-audio.helpers :refer [set-value]]))
+            [quo2.components.record-audio.record-audio.helpers :as helpers]))
 
 (defn record-button
   [recording? reviewing-audio?]
   [:f>
    (fn []
      (let [opacity        (reanimated/use-shared-value 1)
-           show-animation #(set-value opacity 1)
-           hide-animation #(set-value opacity 0)]
+           show-animation #(helpers/set-value opacity 1)
+           hide-animation #(helpers/set-value opacity 0)]
        (use-effect (fn []
                      (if (or @recording? @reviewing-audio?)
                        (hide-animation)
@@ -25,4 +25,4 @@
           :size                32
           :width               32
           :accessibility-label :mic-button}
-         [icons/icon :i/audio {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))])
+         [icons/icon :i/audio {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))])

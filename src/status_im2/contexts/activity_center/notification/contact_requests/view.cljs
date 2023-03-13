@@ -63,12 +63,14 @@
                       {:type    :status
                        :subtype :pending
                        :key     :status-pending
+                       :blur?   true
                        :label   (i18n/label :t/pending)}]
 
                      constants/contact-request-message-state-declined
                      [{:type    :status
                        :subtype :pending
                        :key     :status-pending
+                       :blur?   true
                        :label   (i18n/label :t/pending)}]
 
                      nil)}])))
@@ -92,12 +94,14 @@
         [{:type    :status
           :subtype :positive
           :key     :status-accepted
+          :blur?   true
           :label   (i18n/label :t/accepted)}]
 
         constants/contact-request-message-state-declined
         [{:type    :status
           :subtype :negative
           :key     :status-declined
+          :blur?   true
           :label   (i18n/label :t/declined)}]
 
         constants/contact-request-message-state-pending

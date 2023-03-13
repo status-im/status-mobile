@@ -1,5 +1,6 @@
 (ns react-native.audio-toolkit
-  (:require ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]))
+  (:require ["@react-native-community/audio-toolkit" :refer
+             (Player Recorder MediaStates PlaybackCategories)]))
 
 ;; get mediastates from react module
 (def PLAYING (.-PLAYING ^js MediaStates))
@@ -11,13 +12,17 @@
 (def DESTROYED (.-DESTROYED ^js MediaStates))
 (def SEEKING (.-SEEKING ^js MediaStates))
 
+;; get PlaybackCategories from react module
+(def PLAYBACK (.-Playback ^js PlaybackCategories))
+
 (def default-recorder-options
   {:filename         "recording.aac"
    :bitrate          32000
    :channels         1
    :sampleRate       22050
    :quality          "medium" ; ios only
-   :meteringInterval 50})
+   :meteringInterval 50
+   :category         PLAYBACK})
 
 (defn get-state
   [player-recorder]

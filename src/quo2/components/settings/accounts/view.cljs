@@ -6,9 +6,9 @@
             [react-native.core :as rn]))
 
 (defn card-background
-  [{:keys [custom-color]}]
+  [{:keys [customization-color]}]
   [:<>
-   [rn/view {:style (style/background-top custom-color)}]
+   [rn/view {:style (style/background-top customization-color)}]
    [rn/view {:style (style/background-bottom)}]])
 
 (defn avatar
@@ -28,12 +28,12 @@
     :i/more]])
 
 (defn account
-  [{:keys [account-name account-address avatar-icon custom-color on-press-menu]}]
+  [{:keys [account-name account-address avatar-icon customization-color on-press-menu]}]
   [rn/view {:style style/card}
-   [card-background {:custom-color custom-color}]
+   [card-background {:customization-color customization-color}]
    [rn/view {:style style/card-top}
     [avatar
-     {:color custom-color
+     {:color customization-color
       :icon  avatar-icon}]
     [menu-button {:on-press on-press-menu}]]
    [rn/view {:style style/card-bottom}

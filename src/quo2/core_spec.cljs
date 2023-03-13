@@ -9,6 +9,7 @@
             [quo2.components.drawers.drawer-buttons.component-spec]
             [quo2.components.drawers.permission-context.component-spec]
             [quo2.components.colors.color-picker.component-spec]
+            [quo2.components.inputs.title-input.component-spec]
             [quo2.components.markdown.--tests--.text-component-spec]
             [quo2.components.onboarding.small-option-card.component-spec]
             [quo2.components.password.tips.component-spec]
@@ -16,4 +17,5 @@
             [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]
             [quo2.components.profile.select-profile.component-spec]
             [quo2.components.selectors.--tests--.selectors-component-spec]
-            [quo2.components.selectors.filter.component-spec]))
+            [quo2.components.selectors.filter.component-spec]
+            [quo2.components.tags.--tests--.status-tags-component-spec]))

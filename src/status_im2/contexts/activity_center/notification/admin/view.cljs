@@ -49,12 +49,14 @@
                    [{:type    :status
                      :subtype :positive
                      :key     :status-accepted
+                     :blur?   true
                      :label   (i18n/label :t/accepted)}]
 
                    constants/activity-center-membership-status-declined
                    [{:type    :status
                      :subtype :negative
                      :key     :status-declined
+                     :blur?   true
                      :label   (i18n/label :t/declined)}]
 
                    constants/activity-center-membership-status-pending

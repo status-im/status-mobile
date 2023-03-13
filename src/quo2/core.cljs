@@ -30,7 +30,8 @@
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box
-    quo2.components.input.view
+    quo2.components.inputs.input.view
+    quo2.components.inputs.title-input.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -50,6 +51,7 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
+    quo2.components.record-audio.record-audio.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
     quo2.components.selectors.selectors
@@ -141,7 +143,8 @@
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; INPUTS
-(def input quo2.components.input.view/input)
+(def input quo2.components.inputs.input.view/input)
+(def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
@@ -161,6 +164,9 @@
 ;;;; PROFILE
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
+
+;;;; RECORD AUDIO
+(def record-audio quo2.components.record-audio.record-audio.view/record-audio)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)

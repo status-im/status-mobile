@@ -195,15 +195,21 @@
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message
-  [cofx audio-path duration current-chat-id]
-  (when-not (string/blank? audio-path)
-    (chat.message/send-message
-     cofx
-     {:chat-id           current-chat-id
-      :content-type      constants/content-type-audio
-      :audio-path        audio-path
-      :audio-duration-ms duration
-      :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})})))
+  [{:keys [db] :as cofx} audio-path duration current-chat-id]
+  (let [{:keys [message-id]}
+        (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])]
+    (when-not (string/blank? audio-path)
+      (rf/merge
+       {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}
+       (chat.message/send-message
+        (merge
+         {:chat-id           current-chat-id
+          :content-type      constants/content-type-audio
+          :audio-path        audio-path
+          :audio-duration-ms duration
+          :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})}
+         (when message-id
+           {:response-to message-id})))))))
 
 (rf/defn send-sticker-message
   [cofx {:keys [hash packID pack]} current-chat-id]
@@ -293,5 +299,5 @@
 
 (rf/defn chat-send-audio
   {:events [:chat/send-audio]}
-  [{{:keys [current-chat-id]} :db :as cofx} audio-path duration]
+  [{{:keys [current-chat-id] :as db} :db :as cofx} audio-path duration]
   (send-audio-message cofx audio-path duration current-chat-id))

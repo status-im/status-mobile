@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.inputs.input
   (:require
     [clojure.string :as string]
-    [quo2.components.input.view :as quo2]
+    [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -94,7 +94,7 @@
                     :padding-vertical 60
                     :background-color background-color}}
            [rn/view {:style {:width 300}}
-            [quo2/input
+            [quo/input
              (cond-> @state
                :always          (assoc
                                  :on-clear       #(swap! state assoc :value "")

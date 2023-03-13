@@ -12,3 +12,18 @@
    :bottom             0
    :left               0
    :right              0})
+
+(def buttons-container
+  {:flex-direction :row
+   :margin-top     12
+   :min-height     32})
+
+(defn record-audio-container
+  [insets]
+  {:align-items      :center
+   :background-color :transparent
+   :flex-direction   :row
+   :position         :absolute
+   :left             0
+   :right            0
+   :bottom           (- (:bottom insets) 7)})
