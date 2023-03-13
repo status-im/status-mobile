@@ -1,10 +1,12 @@
 (ns status-im2.common.home.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.common.home.style :as style]
-            [status-im2.common.plus-button.view :as plus-button]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im2.common.home.style :as style]
+    [status-im2.common.plus-button.view :as plus-button]
+    [status-im2.constants :as constants]
+    [utils.re-frame :as rf]))
 
 (defn title-column
   [{:keys [label handler accessibility-label]}]
@@ -40,7 +42,7 @@
     (when (pos? unread-count)
       [quo/counter
        {:type  unread-type
-        :style (style/unread-indicator unread-count)}
+        :style (style/unread-indicator unread-count constants/activity-center-max-unread-count)}
        unread-count])))
 
 (defn- left-section

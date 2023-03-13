@@ -1,34 +1,30 @@
 (ns quo2.components.counter.--tests--.counter-component-spec
-  (:require ["@testing-library/react-native" :as rtl]
-            [quo2.components.counter.counter :as counter]
-            [reagent.core :as reagent]))
+  (:require [quo2.components.counter.counter :as counter]
+            [test-helpers.component :as h]))
 
-(defn render-counter
-  ([]
-   (render-counter {} nil))
-  ([opts value]
-   (rtl/render (reagent/as-element [counter/counter opts value]))))
 
-(js/global.test "default render of counter component"
-  (fn []
-    (render-counter)
-    (-> (js/expect (rtl/screen.getByTestId "counter-component"))
-        (.toBeTruthy))))
+(h/describe "counter component"
+  (h/test "default render of counter component"
+    (h/render [counter/counter {} nil])
+    (-> (h/expect (h/get-by-test-id :counter-component))
+        (h/is-truthy)))
 
-(js/global.test "renders counter with a string value"
-  (fn []
-    (render-counter {} "1")
-    (-> (js/expect (rtl/screen.getByText "1"))
-        (.toBeTruthy))))
+  (h/test "renders counter with a string value"
+    (h/render [counter/counter {} "1"])
+    (-> (h/expect (h/get-by-text "1"))
+        (h/is-truthy)))
 
-(js/global.test "renders counter with an integer value"
-  (fn []
-    (render-counter {} 1)
-    (-> (js/expect (rtl/screen.getByText "1"))
-        (.toBeTruthy))))
+  (h/test "renders counter with an integer value"
+    (h/render [counter/counter {} 1])
+    (-> (h/expect (h/get-by-text "1"))
+        (h/is-truthy)))
 
-(js/global.test "renders counter with value 99+ when the value is greater than 99"
-  (fn []
-    (render-counter {} "100")
-    (-> (js/expect (rtl/screen.getByText "99+"))
-        (.toBeTruthy))))
+  (h/test "renders counter with max value 99+ by default"
+    (h/render [counter/counter {} 100])
+    (-> (h/expect (h/get-by-text "99+"))
+        (h/is-truthy)))
+
+  (h/test "renders counter with custom max value when set to 150"
+    (h/render [counter/counter {:max-value 150} 151])
+    (-> (h/expect (h/get-by-text "150+"))
+        (h/is-truthy))))

@@ -6,8 +6,6 @@
     [react-native.core :as rn]
     [utils.number :as utils-number]))
 
-(def max-value 99)
-
 (def themes
   {:light {:default   colors/primary-50
            :secondary colors/neutral-80-opa-5
@@ -23,9 +21,9 @@
   (get-in themes [(theme/get-theme) key]))
 
 (defn counter
-  "type:    default, secondary, grey, outline
-   value:   integer"
-  [{:keys [type override-text-color override-bg-color style accessibility-label]} value]
+  [{:keys [type override-text-color override-bg-color style accessibility-label max-value]
+    :or   {max-value 99}}
+   value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or

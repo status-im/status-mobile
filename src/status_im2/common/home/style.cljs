@@ -15,10 +15,17 @@
    :size                :heading-1})
 
 (defn unread-indicator
-  [unread-count]
-  (let [right-offset (cond (> unread-count 99) -14
-                           (> unread-count 9)  -10
-                           :else               -6)]
+  [unread-count max-value]
+  (let [right-offset (cond
+                       (> unread-count max-value)
+                       -14
+
+                       ;; Greater than 9 means we'll need 2 digits to represent
+                       ;; the text.
+                       (> unread-count 9)
+                       -10
+
+                       :else -6)]
     {:position :absolute
      :top      -6
      :right    right-offset
