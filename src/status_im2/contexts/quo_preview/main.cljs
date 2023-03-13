@@ -37,6 +37,7 @@
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
+    [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
@@ -170,6 +171,9 @@
    :inputs                [{:name      :input
                             :insets    {:top false}
                             :component input/preview-input}
+                           {:name      :profile-input
+                            :insets    {:top false}
+                            :component profile-input/preview-profile-input}
                            {:name      :title-input
                             :insets    {:top false}
                             :component title-input/preview-title-input}]

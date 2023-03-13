@@ -32,6 +32,7 @@
     quo2.components.info.information-box
     quo2.components.inputs.input.view
     quo2.components.inputs.title-input.view
+    quo2.components.inputs.profile-input.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -144,6 +145,7 @@
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
+(def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; LIST ITEMS
