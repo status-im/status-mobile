@@ -4,7 +4,6 @@
             [react-native.core :as rn]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
-            [status-im2.contexts.chat.messages.list.view :as list.view]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
