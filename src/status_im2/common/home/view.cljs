@@ -86,6 +86,6 @@
   "
   [{:keys [type style avatar search?]
     :or   {type :default}}]
-  [rn/view {:style (style/top-nav-container style)}
+  [rn/view {:style (merge style/top-nav-container style)}
    [left-section {:avatar avatar}]
    [right-section {:button-type type :search? search?}]])

@@ -35,6 +35,5 @@
    :top            12
    :flex-direction :row})
 
-(defn top-nav-container
-  [style]
-  (assoc style :height 56))
+(def top-nav-container
+  {:height 56})
