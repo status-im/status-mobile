@@ -140,7 +140,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail('Deleted %s is present after relaunch app' % self.chat_name)
 
 
-@pytest.mark.xdist_group(name="one_3")
+@pytest.mark.xdist_group(name="new_one_3")
 @marks.new_ui_critical
 class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 

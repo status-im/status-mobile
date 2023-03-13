@@ -52,12 +52,12 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.notifications_unread_badge.click_until_absense_of_element(self.home_1.plus_button, 6)
 
         self.home_1.just_fyi("Check that notification from group is presented in Activity Center")
-        if not self.home_1.get_chat_from_activity_center_view(
+        if not self.home_1.get_element_from_activity_center_view(
                 self.username_2).chat_message_preview == group_chat_message:
             self.errors.append("No mention in Activity Center for Group Chat")
 
         self.home_1.just_fyi("Open group chat where user mentioned")
-        self.home_1.get_chat_from_activity_center_view(self.username_2).click()
+        self.home_1.get_element_from_activity_center_view(self.username_2).click()
         self.home_1.home_button.double_click()
 
         self.home_1.just_fyi("Check there are no unread messages counter on chats after message is read")
@@ -73,7 +73,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="two_2")
+@pytest.mark.xdist_group(name="new_two_2")
 @marks.new_ui_critical
 class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestCase):
 
@@ -115,7 +115,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         if self.home_2.pending_contact_request_text.text != '1':
             self.errors.append("The amount of contact requests is not shown for outgoing CR!")
         self.home_2.pending_contact_request_button.click()
-        outgoing_cr = self.home_2.get_chat_from_activity_center_view(self.default_username_1)
+        outgoing_cr = self.home_2.get_element_from_activity_center_view(self.default_username_1)
         outgoing_cr.cancel_contact_request()
         self.home_2.close_activity_centre.click()
 
@@ -173,7 +173,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="two_2")
+@pytest.mark.xdist_group(name="new_one_3")
 @marks.new_ui_critical
 class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
@@ -213,11 +213,11 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.community_1 = CommunityView(self.drivers[0])
         self.community_1.send_invite_to_community(self.default_username_2)
         self.channel_1 = self.community_1.add_channel(self.channel_name)
-        self.channel_1.send_message(self.text_message)
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.chat_2.element_by_text_part('View').click()
         self.community_2 = CommunityView(self.drivers[1])
         self.community_2.join_button.click()
+        self.channel_1.send_message(self.text_message)
 
         self.home_1.just_fyi("Reopen community view to use new interface")
         for home in (self.home_1, self.home_2):
@@ -243,30 +243,76 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not self.chat_1.chat_element_by_text(self.one_to_one_message).is_element_displayed(20):
             self.errors.append("User was not redirected to 1-1 chat after tapping card!")
 
-        # Blocked because of 14648
-        # self.device_2.just_fyi('Mention user1 and check activity centre')
-        # self.channel_2.select_mention_from_suggestion_list(self.default_username_1, self.default_username_1[:2])
-        # self.channel_2.send_as_keyevent("mention activity centre")
-        # ac_chat_message = self.default_username_1 + " mention activity centre"
-        # self.channel_2.send_message_button.click()
-        # self.home_1.click_system_back_button_until_element_is_shown()
-        # self.home_1.open_activity_center_button.click()
-        # for text in ('Mention', '@%s' % ac_chat_message):
-        #     if self.home_1.element_by_text(text).is_element_displayed(30):
-        #         self.errors.append("Mention is not shown in activity centre!")
-        # self.home_1.close_activity_centre.click()
-        #
-        # self.device_2.just_fyi('Mention user1 and check PN')
-        # self.device_1.put_app_to_background()
-        # self.channel_2.select_mention_from_suggestion_list(self.default_username_1, self.default_username_1[:2])
-        # self.channel_2.send_as_keyevent("group")
-        # group_chat_message = self.default_username_1 + " group"
-        # self.channel_2.send_message_button.click()
-        # self.device_1.open_notification_bar()
-        # if self.home_1.get_pn(group_chat_message):
-        #     self.home_1.get_pn(group_chat_message).click()
-        # else:
-        #     self.home_1.driver.fail("No PN for mention in community!")
-        # if not self.channel_1.chat_element_by_text(group_chat_message).is_element_displayed(20):
-        #     self.errors.append("No redirect to channel after tap on PN with mention!")
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(702947)
+    def test_activity_center_reply_read_unread_delete_filter(self):
+        message_to_reply, reply_to_message_from_sender = 'something to reply to', 'this is a reply'
+        self.home_1.jump_to_communities_home()
+        self.home_1.get_chat(self.community_name, community=True).click()
+        self.community_1.get_channel(self.channel_name).click()
+        self.channel_1.send_message(message_to_reply)
+
+        self.home_1.jump_to_communities_home()
+        self.channel_2.chat_element_by_text(message_to_reply).wait_for_visibility_of_element(60)
+        self.channel_2.quote_message(message_to_reply)
+        self.channel_2.send_message(reply_to_message_from_sender)
+
+        self.home_1.just_fyi("Checking unread indicators")
+        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
+        for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
+            if not unread_counter.is_element_displayed(60):
+                self.errors.append('New message counter badge is not shown!')
+            if unread_counter.text != '1':
+                self.errors.append('New message counter badge is not 1, it is %s!' % unread_counter.text)
+
+        self.home_1.just_fyi("Checking reply attributes in activity center")
+        self.home_1.open_activity_center_button.click()
+        reply_element = self.home_1.get_element_from_activity_center_view(reply_to_message_from_sender)
+        if reply_element.title.text != 'Reply':
+            self.errors.append("Expected title is not shown, '%s' is instead!" % reply_element.title)
+        if not reply_element.unread_indicator.is_element_displayed():
+            self.errors.append("No unread dot is shown on activity center element!")
+
+        self.home_1.just_fyi("Swiping to 'Replies' on activity center and check unread there")
+        self.home_1.mention_activity_tab_button.click()
+        if reply_element.is_element_displayed(2):
+            self.errors.append("Filter on mentions is not working in Activity centre!")
+        self.home_1.reply_activity_tab_button.click()
+        if not self.home_1.reply_activity_tab_button.counter.is_element_displayed(2):
+            self.errors.append("No unread dot is shown on activity center tab element!")
+        if not reply_element.is_element_displayed():
+            self.errors.append("Filter on replies tab is not working in Activity centre!")
+
+        self.home_1.just_fyi("Mark it as read and check filter")
+        reply_element.swipe_right_on_element()
+        self.home_1.activity_left_swipe_button.click()
+        if reply_element.is_element_displayed(2):
+            self.errors.append("Message is not marked as read!")
+        self.home_1.activity_unread_filter_button.click()
+        if not reply_element.is_element_displayed(2):
+            self.errors.append("Read filter is not displayed read message!")
+
+        self.home_1.just_fyi("Mark it as unread and check filter via right swipe")
+        reply_element.swipe_right_on_element()
+        self.home_1.activity_left_swipe_button.click()
+        if not reply_element.unread_indicator.is_element_displayed():
+            self.errors.append("No unread dot is shown on activity center element after marking it as unread!")
+
+        self.home_1.just_fyi("Tap on it and check it marked as read")
+        reply_element.click()
+        if not self.channel_1.chat_element_by_text(reply_to_message_from_sender).is_element_displayed():
+            self.errors.append("Was not redirected to chat after tapping on reply!")
+        self.home_1.jump_to_communities_home()
+        if self.home_1.notifications_unread_badge.is_element_displayed():
+            self.errors.append("Notification was not marked as read after opening it in community channel!")
+
+        self.home_1.just_fyi("Delete it from unread via left swipe")
+        self.home_1.open_activity_center_button.click()
+        reply_element.swipe_left_on_element()
+        self.home_1.activity_right_swipe_button.click()
+        if reply_element.is_element_displayed():
+            self.errors.append("Reply is still shown after removing from activity centre!")
+
+        self.errors.verify_no_errors()
+

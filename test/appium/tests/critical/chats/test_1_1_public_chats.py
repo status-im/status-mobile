@@ -900,7 +900,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_2")
+@pytest.mark.xdist_group(name="new_one_2")
 @marks.new_ui_critical
 class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 

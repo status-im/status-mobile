@@ -262,12 +262,25 @@ class BaseElement(object):
         element_image = imagehash.average_hash(self.image)
         return not bool(template - element_image)
 
-    def swipe_left_on_element(self):
+    def get_element_coordinates(self):
         element = self.find_element()
-        location, size = element.location, element.size
+        location = element.location
+        size = element.size
+        return location, size
+
+    def swipe_left_on_element(self):
+        self.driver.info("Swiping left on element %s" % self.name)
+        location, size = self.get_element_coordinates()
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
+
+    def swipe_right_on_element(self):
+        self.driver.info("Swiping right on element %s" % self.name)
+        location, size = self.get_element_coordinates()
+        x, y = location['x'], location['y']
+        width, height = size['width'], size['height']
+        self.driver.swipe(start_x=x, start_y=y + height / 2, end_x=x + width * 0.75, end_y=y + height / 2)
 
     def swipe_to_web_element(self, depth=700):
         element = self.find_element()
@@ -312,9 +325,7 @@ class BaseElement(object):
         return timeit(wrapper, number=1)
 
     def click_inside_element_by_coordinate(self, rel_x=0.8, rel_y=0.8, times_to_click=1):
-        element = self.find_element()
-        location = element.location
-        size = element.size
+        location, size = self.get_element_coordinates()
         x = int(location['x'] + size['width'] * rel_x)
         y = int(location['y'] + size['height'] * rel_y)
         [self.driver.tap([(x, y)], 150) for _ in range(times_to_click)]
