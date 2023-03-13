@@ -25,7 +25,7 @@
       :weight :semi-bold
       :style  {:color colors/white}} "Enable-notifications"]
     [quo/button
-     {:on-press       #(rf/dispatch [:navigate-to :shell-stack])
+     {:on-press       #(rf/dispatch [:init-root :shell-stack])
       :type           :grey
       :override-theme :dark
       :style          {}} (i18n/label :t/continue)]]])

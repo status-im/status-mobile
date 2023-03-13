@@ -16,7 +16,8 @@
            on-change-text
            placeholder
            max-length
-           default-value]
+           default-value
+           override-theme]
     :or   {max-length    0
            default-value ""}}]
   (let [focused?  (reagent/atom false)
@@ -34,7 +35,7 @@
           (text/text-style
            {:size   :heading-2
             :weight :semi-bold
-            :style  (style/title-text disabled? blur?)})
+            :style  (style/title-text disabled? blur? override-theme)})
           :default-value default-value
           :accessibility-label :profile-title-input
           :on-focus #(swap! focused? (fn [] true))

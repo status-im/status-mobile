@@ -857,6 +857,34 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
   return StatusgoGenerateAlias(publicKey);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+
+    NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+
+    return commonKeystoreDir.path;
+}
+
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    return rootUrl.path;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFilePath) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    return rootUrl.path;
+}
+
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -932,6 +960,13 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
 #endif
     NSString *result = StatusgoIdenticon(publicKey);
     callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(createAccountAndLogin:(NSString *)request) {
+#if DEBUG
+    NSLog(@"createAccountAndLogin() method called");
+#endif
+    StatusgoCreateAccountAndLogin(request);
 }
 
 RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey

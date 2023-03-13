@@ -90,6 +90,9 @@
 (def ^:const command-state-transaction-pending 6)
 (def ^:const command-state-transaction-sent 7)
 
+(def ^:const profile-default-color :blue)
+(def ^:const profile-name-max-length 24)
+
 (def ^:const profile-pictures-show-to-contacts-only 1)
 (def ^:const profile-pictures-show-to-everyone 2)
 (def ^:const profile-pictures-show-to-none 3)

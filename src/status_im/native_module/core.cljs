@@ -91,6 +91,10 @@
      key-uid
      #(.loginWithConfig ^js (status) account-data hashed-password config))))
 
+(defn create-account-and-login
+  [request]
+  (.createAccountAndLogin ^js (status) (types/clj->json request)))
+
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid account-data hashed-password callback]
@@ -611,3 +615,15 @@
                             current-password#
                             new-password
                             callback))
+
+(defn backup-disabled-data-dir
+  []
+  (.backupDisabledDataDir ^js (status)))
+
+(defn keystore-dir
+  []
+  (.keystoreDir ^js (status)))
+
+(defn log-file-path
+  []
+  (.logFilePath ^js (status)))

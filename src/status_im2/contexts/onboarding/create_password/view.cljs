@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [status-im2.contexts.onboarding.create-password.style :as style]
             [utils.i18n :as i18n]
+            [utils.security.core :as security]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [utils.re-frame :as rf]))
 
@@ -32,7 +33,9 @@
       :weight :semi-bold
       :style  {:color colors/white}} "Create profile password"]
     [quo/button
-     {:on-press #(rf/dispatch [:navigate-to :enable-biometrics])
+     {:on-press #(rf/dispatch
+                  [:onboarding-2/password-set
+                   (security/mask-data "test123")])
       :style    {}} (i18n/label :t/continue)]]])
 
 (defn create-password

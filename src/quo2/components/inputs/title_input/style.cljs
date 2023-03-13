@@ -34,9 +34,11 @@
 (def text-input-container {:flex 1})
 
 (defn title-text
-  [disabled? blur?]
+  [disabled? blur? override-theme]
   {:text-align-vertical :bottom
-   :color               (when disabled? (get-disabled-color blur?))})
+   :color               (if disabled?
+                          (get-disabled-color blur?)
+                          (colors/theme-colors colors/neutral-100 colors/white override-theme))})
 
 (defn char-count
   [blur?]

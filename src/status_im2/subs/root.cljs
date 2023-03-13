@@ -268,6 +268,10 @@
 ; media-server
 (reg-root-key-sub :mediaserver/port :mediaserver/port)
 
+; onboarding
+
+(reg-root-key-sub :onboarding-2/profile :onboarding-2/profile)
+
 ; Testing
 
 (reg-root-key-sub :messenger/started? :messenger/started?)

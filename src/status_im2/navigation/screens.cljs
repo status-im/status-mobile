@@ -21,6 +21,7 @@
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
+    [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
@@ -37,10 +38,9 @@
                              :orientation              :portrait
                              :backgroundColor          :transparent}}
    (if platform/android?
-     {:navigationBar {:backgroundColor colors/neutral-100}
-      :statusBar     {:backgroundColor :transparent
-                      :style           :light
-                      :drawBehind      true}}
+     {:statusBar {:backgroundColor :transparent
+                  :style           :light
+                  :drawBehind      true}}
      {:statusBar {:style :light}})))
 
 (def bottom-sheet-options
@@ -129,9 +129,14 @@
 
     ;; Onboarding - new to Status
     {:name      :new-to-status
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar {:style :light}
+                 :topBar    {:visible false}}
+     :insets    {:top false}
+     :component new-to-status/new-to-status}
+
+    {:name      :create-profile
+     :options   {:statusBar {:style :light}
+                 :topBar    {:visible false}}
      :insets    {:top false}
      :component new-to-status/new-to-status}
 
@@ -155,6 +160,14 @@
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
      :component enable-biometrics/enable-biometrics}
+
+    {:name      :generating-keys
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component generating-keys/generating-keys}
+
 
     {:name      :enable-notifications
      :options   {:statusBar     {:style :light}
