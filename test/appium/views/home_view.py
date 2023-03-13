@@ -15,6 +15,14 @@ class ChatButton(Button):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+class ActivityTabButton(Button):
+    def __init__(self, driver, **kwargs):
+        super().__init__(driver, **kwargs)
+
+    @property
+    def counter(self):
+        return BaseElement(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="notification-dot"]'% self.accessibility_id)
+
 
 class ChatElement(SilentButton):
     def __init__(self, driver, username_part, community=False, community_channel=False):
@@ -60,11 +68,9 @@ class ChatElement(SilentButton):
 
     @property
     def new_messages_counter(self):
-        class UnreadMessagesCountText(Text):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
-
-        return UnreadMessagesCountText(self.driver, self.locator)
+        from views.base_view import UnreadMessagesCountText
+        desired_counter = UnreadMessagesCountText(self.driver, self.locator)
+        return desired_counter
 
     @property
     def chat_preview(self):
@@ -111,6 +117,14 @@ class ActivityCenterElement(SilentButton):
         self.chat_name = username
         super().__init__(driver,
                          xpath="//*[contains(@text, '%s')]/ancestor::*[@content-desc='activity']" % username)
+
+    @property
+    def title(self):
+        return Button(self.driver, xpath=self.locator+'//*[@content-desc="activity-title"]')
+
+    @property
+    def unread_indicator(self):
+        return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-unread-indicator"]')
 
     def handle_cr(self, element_accessibility: str):
         try:
@@ -237,6 +251,14 @@ class HomeView(BaseView):
         self.add_a_contact_chat_bottom_sheet_button = Button(self.driver, accessibility_id="add-a-contact")
         self.setup_chat_button = Button(self.driver, accessibility_id="next-button")
 
+        # Activity centre
+        self.mention_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-mention")
+        self.reply_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-reply")
+        self.activity_right_swipe_button = Button(self.driver, accessibility_id="notification-right-swipe")
+        self.activity_left_swipe_button = Button(self.driver, accessibility_id="notification-left-swipe")
+        self.activity_unread_filter_button = Button(self.driver, accessibility_id="selector-filter")
+
+
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
         while True:
@@ -265,9 +287,9 @@ class HomeView(BaseView):
         chat_element = ChatElement(self.driver, username[:25])
         return chat_element
 
-    def get_chat_from_activity_center_view(self, chat_name):
-        self.driver.info("Looking for chat: '%s'" % chat_name)
-        chat_element = ActivityCenterElement(self.driver, chat_name[:25])
+    def get_element_from_activity_center_view(self, message_body):
+        self.driver.info("Looking for activity center element: '%s'" % message_body)
+        chat_element = ActivityCenterElement(self.driver, message_body)
         return chat_element
 
     def handle_contact_request(self, username: str, action='accept'):
