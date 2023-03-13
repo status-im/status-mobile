@@ -335,7 +335,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_1")
+@pytest.mark.xdist_group(name="new_one_1")
 @marks.new_ui_critical
 class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
 

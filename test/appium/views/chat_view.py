@@ -215,6 +215,7 @@ class ChatElementByText(Text):
         return status
 
     def wait_for_status_to_be(self, expected_status: str, timeout: int = 30):
+        self.driver.info("Waiting for message to be sent for %s sec" % timeout)
         start_time = time.time()
         while time.time() - start_time <= timeout:
             if self.status == expected_status:

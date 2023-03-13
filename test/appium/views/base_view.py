@@ -35,24 +35,15 @@ class AllowButton(Button):
             pass
 
 
-class TabButton(Button):
+class UnreadMessagesCountText(Text):
+    def __init__(self, driver, parent_locator: str):
+        super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
 
+
+class TabButton(Button):
     @property
     def counter(self):
-        class Counter(Text):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver,
-                                 xpath="%s/android.widget.TextView" % parent_locator)
-
-        return Counter(self.driver, self.locator)
-
-    @property
-    def public_unread_messages(self):
-        class PublicChatUnreadMessages(BaseElement):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver, xpath="%s/android.widget.TextView" % parent_locator)
-
-        return PublicChatUnreadMessages(self.driver, self.locator)
+        return UnreadMessagesCountText(self.driver, parent_locator='//*[@content-desc="%s"]' % self.accessibility_id)
 
 
 class HomeButton(TabButton):
