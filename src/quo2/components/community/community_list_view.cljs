@@ -78,21 +78,22 @@
   [props
    {:keys [name
            muted?
-           unread-messages?
-           unread-mentions-count
+           unviewed-messages-count
+           unviewed-mentions-count
            status
-           community-icon
+           images
            tokens
-           locked?]}]
+           locked?
+           style]}]
   [rn/touchable-highlight
    (merge {:underlay-color (colors/theme-colors
                             colors/neutral-5
                             colors/neutral-95)
            :style          {:border-radius 12}}
           props)
-   [rn/view (style/membership-info-container)
+   [rn/view (merge (style/membership-info-container) style)
     [community-icon/community-icon
-     {:images community-icon} 32]
+     {:images images} 32]
     [rn/view
      {:flex            1
       :margin-left     12
@@ -114,5 +115,5 @@
          :tokens  tokens}]
        [notification-view
         {:muted?                muted?
-         :unread-mentions-count unread-mentions-count
-         :unread-messages?      unread-messages?}])]]])
+         :unread-mentions-count unviewed-mentions-count
+         :unread-messages?      (pos? unviewed-messages-count)}])]]])

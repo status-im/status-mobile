@@ -39,8 +39,8 @@
            animations (map
                        (fn [index]
                          (let [ring-scale (worklets.record-audio/ring-scale scale
-                                                                             (* scale-padding
-                                                                                index))]
+                                                                            (* scale-padding
+                                                                               index))]
                            {:scale   ring-scale
                             :opacity (reanimated/interpolate ring-scale
                                                              [1 scale-to-each]

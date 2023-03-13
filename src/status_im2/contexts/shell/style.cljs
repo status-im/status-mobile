@@ -40,7 +40,7 @@
         height                 (or screen-height height)]
     {:border-bottom-left-radius  20
      :border-bottom-right-radius 20
-     :background-color           (colors/theme-colors colors/neutral-5 colors/neutral-95)
+     :background-color           (colors/theme-colors colors/white colors/neutral-95)
      :overflow                   :hidden
      :position                   :absolute
      :width                      width
