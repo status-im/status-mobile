@@ -133,7 +133,7 @@ class SignInView(BaseView):
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.sign_in_button = SignInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
-        self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
+        self.generate_key_button = Button(self.driver, accessibility_id="generate-old-key")
         self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
         self.create_password_input = EditBox(self.driver,
