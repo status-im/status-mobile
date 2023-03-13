@@ -125,7 +125,8 @@
   (reduce (fn [acc e]
             (render-block acc e chat-id edited-at))
           [:<>]
-          (:parsed-text content)))
+          (cond-> (:parsed-text content)
+            edited-at add-edited-tag)))
 
 (defn text-content
   [message-data context]
