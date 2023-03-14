@@ -121,6 +121,7 @@
 
 (def ^:const status-create-address "status_createaddress")
 
+(def ^:const community-unknown-membership-access 0)
 (def ^:const community-no-membership-access 1)
 (def ^:const community-invitation-only-access 2)
 (def ^:const community-on-request-access 3)
@@ -132,7 +133,12 @@
 (def ^:const community-channel-access-invitation-only 2)
 (def ^:const community-channel-access-on-request 3)
 
-; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
+(def ^:const community-request-to-join-state-pending 1)
+(def ^:const community-request-to-join-state-declined 2)
+(def ^:const community-request-to-join-state-accepted 3)
+(def ^:const community-request-to-join-state-cancelled 4)
+
+  ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
 (def ^:const path-eip1581 "m/43'/60'/1581'")

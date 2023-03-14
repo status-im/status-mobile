@@ -4,6 +4,7 @@
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
+            [status-im.utils.types :as types]
             [status-im.async-storage.core :as async-storage]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.universal-links.core :as universal-links]
@@ -36,9 +37,9 @@
                     :chatId      :chat-id}))
 
 (defn <-requests-to-join-community-rpc
-  [requests]
+  [requests key-fn]
   (reduce (fn [acc r]
-            (assoc acc (:id r) (<-request-to-join-community-rpc r)))
+            (assoc acc (key-fn r) (<-request-to-join-community-rpc r)))
           {}
           requests))
 
@@ -80,14 +81,28 @@
       (update :chats <-chats-rpc)
       (update :categories <-categories-rpc)))
 
-(defn fetch-community-id-input
+(defn- fetch-community-id-input
   [{:keys [db]}]
   (:communities/community-id-input db))
 
+(defn- handle-my-request
+  [db {:keys [community-id state] :as request}]
+  {:db (if (= constants/community-request-to-join-state-pending state)
+         (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
+         (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))})
+
+(defn handle-admin-request
+  [db {:keys [id community-id] :as request}]
+  {:db (assoc-in db [:communities/requests-to-join community-id id] request)})
+
 (rf/defn handle-request-to-join
   [{:keys [db]} r]
-  (let [{:keys [id community-id] :as request} (<-request-to-join-community-rpc r)]
-    {:db (assoc-in db [:communities/requests-to-join community-id id] request)}))
+  (let [my-public-key                                    (get-in db [:multiaccount :public-key])
+        {:keys [id community-id public-key] :as request} (<-request-to-join-community-rpc r)
+        my-request?                                      (= my-public-key public-key)]
+    (if my-request?
+      (handle-my-request db request)
+      (handle-admin-request db request))))
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
@@ -108,6 +123,14 @@
                  (assoc-in db [:communities id] (<-rpc community)))
                db
                communities)})
+
+(rf/defn handle-my-pending-requests-to-join
+  {:events [:communities/fetched-my-communities-requests-to-join]}
+  [{:keys [db]} my-requests]
+  {:db (assoc db
+              :communities/my-pending-requests-to-join
+              (<-requests-to-join-community-rpc (types/js->clj my-requests)
+                                                :communityId))})
 
 (rf/defn handle-response
   [_ response-js]
@@ -130,6 +153,7 @@
   [cofx response-js]
   (let [[event-name _] (:event cofx)
         community-name (aget response-js "communities" 0 "name")]
+    (js/console.log "event-name")
     (rf/merge cofx
               (handle-response cofx response-js)
               (toasts/upsert {:icon       :correct
@@ -139,9 +163,31 @@
                                                         :t/requested-to-join-community)
                                                       {:community community-name})}))))
 
+(rf/defn requested-to-join
+  {:events [:communities/requested-to-join]}
+  [cofx response-js]
+  (let [community-name (aget response-js "communities" 0 "name")]
+    (rf/merge cofx
+              (handle-response cofx response-js)
+              (toasts/upsert {:icon       :correct
+                              :icon-color (:positive-01 @colors/theme)
+                              :text       (i18n/label
+                                           :t/requested-to-join-community
+                                           {:community community-name})}))))
+
+(rf/defn cancelled-requested-to-join
+  {:events [:communities/cancelled-request-to-join]}
+  [cofx response-js]
+  (rf/merge cofx
+            (handle-response cofx response-js)
+            (toasts/upsert {:icon       :correct
+                            :icon-color (:positive-01 @colors/theme)
+                            :text       (i18n/label
+                                         :t/you-canceled-the-request)})))
+
 (rf/defn export
   {:events [::export-pressed]}
-  [cofx community-id]
+  [_ community-id]
   {:json-rpc/call [{:method     "wakuext_exportCommunity"
                     :params     [community-id]
                     :on-success #(re-frame/dispatch [:show-popover
@@ -175,14 +221,35 @@
 
 (rf/defn request-to-join
   {:events [:communities/request-to-join]}
-  [cofx community-id]
+  [_ community-id]
   {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
                     :params      [{:communityId community-id}]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [::requested-to-join %])
-                    :on-error    #(do
-                                    (log/error "failed to request to join community" community-id %)
-                                    (re-frame/dispatch [::failed-to-request-to-join %]))}]})
+                    :on-success  #(re-frame/dispatch [:communities/requested-to-join %])
+                    :on-error    (fn []
+                                   (log/error "failed to request to join community" community-id)
+                                   (re-frame/dispatch [::failed-to-request-to-join]))}]})
+
+(rf/defn get-user-requests-to-join
+  {:events [:communities/get-user-requests-to-join]}
+  [_]
+  {:json-rpc/call [{:method      "wakuext_myPendingRequestsToJoin"
+                    :params      []
+                    :js-response true
+                    :on-success  #(re-frame/dispatch
+                                   [:communities/fetched-my-communities-requests-to-join %])
+                    :on-error    #(log/error "failed to get requests to join community")}]})
+
+(rf/defn cancel-request-to-join
+  {:events [:communities/cancel-request-to-join]}
+  [_ request-to-join-id]
+  {:json-rpc/call [{:method      "wakuext_cancelRequestToJoinCommunity"
+                    :params      [{:id request-to-join-id}]
+                    :on-success  #(re-frame/dispatch [:communities/cancelled-request-to-join %])
+                    :js-response true
+                    :on-error    #(log/error "failed to cancel request to join community"
+                                             request-to-join-id
+                                             %)}]})
 
 (rf/defn leave
   {:events [:communities/leave]}
@@ -196,11 +263,10 @@
                                     :params      [community-id]
                                     :js-response true
                                     :on-success  #(re-frame/dispatch [::left %])
-                                    :on-error    #(do
-                                                    (log/error "failed to leave community"
-                                                               community-id
-                                                               %)
-                                                    (re-frame/dispatch [::failed-to-leave %]))}]}))
+                                    :on-error    (fn []
+                                                   (log/error "failed to leave community"
+                                                              community-id)
+                                                   (re-frame/dispatch [::failed-to-leave]))}]}))
 
 (rf/defn status-tag-pressed
   {:events [:communities/status-tag-pressed]}
@@ -555,7 +621,7 @@
   [{:keys [db]} community-id requests]
   {:db (assoc-in db
         [:communities/requests-to-join community-id]
-        (<-requests-to-join-community-rpc requests))})
+        (<-requests-to-join-community-rpc requests :id))})
 
 (rf/defn fetch-requests-to-join
   {:events [::fetch-requests-to-join]}
