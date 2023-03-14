@@ -41,8 +41,10 @@
                        nil)]
     (when (pos? unread-count)
       [quo/counter
-       {:type  unread-type
-        :style (style/unread-indicator unread-count constants/activity-center-max-unread-count)}
+       {:accessibility-label :activity-center-unread-count
+        :type                unread-type
+        :style               (style/unread-indicator unread-count
+                                                     constants/activity-center-max-unread-count)}
        unread-count])))
 
 (defn- left-section
