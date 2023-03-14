@@ -302,16 +302,17 @@ def create_shared_drivers(quantity):
         print('SC Executor: %s' % executor_sauce_lab)
         try:
             drivers = loop.run_until_complete(start_threads(quantity,
-                                                        Driver,
-                                                        drivers,
-                                                        executor_sauce_lab,
-                                                        update_capabilities_sauce_lab(capabilities)))
+                                                            Driver,
+                                                            drivers,
+                                                            executor_sauce_lab,
+                                                            update_capabilities_sauce_lab(capabilities)))
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
             return drivers, loop
         except MaxRetryError as e:
-            test_suite_data.current_test.testruns[-1].error = e.reason
+            loop.close()
+            raise Exception("%s %s" % (e.__class__.__name__, str(e.reason))) from None
 
 
 class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
@@ -390,28 +391,30 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         from tests.conftest import sauce
         requests_session = requests.Session()
         requests_session.auth = (sauce_username, sauce_access_key)
-        for _, driver in cls.drivers.items():
-            session_id = driver.session_id
-            try:
-                sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-            except (RemoteDisconnected, SauceException):
-                pass
-            try:
-                driver.quit()
-            except WebDriverException:
-                pass
-            url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
-            WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
-            commands = requests_session.get(url).json()
-            for command in commands:
+        if hasattr(cls, 'drivers'):
+            for _, driver in cls.drivers.items():
+                session_id = driver.session_id
                 try:
-                    if command['message'].startswith("Started "):
-                        for test in test_suite_data.tests:
-                            if command['message'] == "Started %s" % test.name:
-                                test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
-                except KeyError:
-                    continue
-        cls.loop.close()
+                    sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
+                except (RemoteDisconnected, SauceException):
+                    pass
+                try:
+                    driver.quit()
+                except WebDriverException:
+                    pass
+                url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
+                WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+                commands = requests_session.get(url).json()
+                for command in commands:
+                    try:
+                        if command['message'].startswith("Started "):
+                            for test in test_suite_data.tests:
+                                if command['message'] == "Started %s" % test.name:
+                                    test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
+                    except KeyError:
+                        continue
+        if hasattr(cls, 'loop'):
+            cls.loop.close()
         for test in test_suite_data.tests:
             cls.github_report.save_test(test)
 
