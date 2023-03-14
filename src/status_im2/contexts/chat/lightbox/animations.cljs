@@ -16,6 +16,6 @@
    (set-val animation
             (reanimated/with-timing value
                                     (clj->js {:duration duration
-                                              :easing   (get reanimated/easings :default)})))))
+                                              :easing   (reanimated/default-easing)})))))
 
 (def animate-decay reanimated/animate-shared-value-with-decay)
