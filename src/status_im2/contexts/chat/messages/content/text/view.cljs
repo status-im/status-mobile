@@ -80,19 +80,19 @@
     (conj blocks
           [rn/view {:style style/paragraph}
            (reduce
-             (fn [acc e]
-               (render-inline acc e chat-id))
-             [quo/text]
-             children)])
+            (fn [acc e]
+              (render-inline acc e chat-id))
+            [quo/text]
+            children)])
 
     :edited-block
     (conj blocks
           [rn/view {:style style/paragraph}
            (reduce
-             (fn [acc e]
-               (render-inline acc e chat-id))
-             [quo/text]
-             children)])
+            (fn [acc e]
+              (render-inline acc e chat-id))
+            [quo/text]
+            children)])
 
     :blockquote
     (conj blocks
