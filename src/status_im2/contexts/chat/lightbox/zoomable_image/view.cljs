@@ -9,7 +9,7 @@
     [oops.core :refer [oget]]
     [react-native.orientation :as orientation]
     [status-im2.contexts.chat.lightbox.animations :as anim]
-    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as constants]
+    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
     [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]))
 
@@ -28,17 +28,17 @@
     (gesture/number-of-taps 2)
     (gesture/on-start
      (fn [e]
-       (if (= (anim/get-val scale) constants/min-scale)
+       (if (= (anim/get-val scale) c/min-scale)
          (let [translate-x (utils/get-double-tap-offset width screen-width (oget e "x"))
                translate-y (utils/get-double-tap-offset height screen-height (oget e "y"))]
-           (when (> constants/double-tap-scale x-threshold-scale)
+           (when (> c/double-tap-scale x-threshold-scale)
              (anim/animate pan-x translate-x)
              (anim/set-val pan-x-start translate-x))
-           (when (> constants/double-tap-scale y-threshold-scale)
+           (when (> c/double-tap-scale y-threshold-scale)
              (anim/animate pan-y translate-y)
              (anim/set-val pan-y-start translate-y))
-           (rescale constants/double-tap-scale))
-         (rescale constants/min-scale))))))
+           (rescale c/double-tap-scale))
+         (rescale c/min-scale))))))
 
 ;; not using on-finalize because on-finalize gets called always regardless the gesture executed or not
 (defn finalize-pinch
@@ -53,17 +53,17 @@
         max-offset-x  (utils/get-max-offset width screen-width (anim/get-val scale))
         max-offset-x  (if (neg? curr-offset-x) (- max-offset-x) max-offset-x)]
     (when (and (> (anim/get-val scale) y-threshold-scale)
-               (< (anim/get-val scale) constants/max-scale)
+               (< (anim/get-val scale) c/max-scale)
                (> (Math/abs curr-offset-y) (Math/abs max-offset-y)))
-      (anim/animate pinch-y constants/init-offset)
-      (anim/set-val pinch-y-start constants/init-offset)
+      (anim/animate pinch-y c/init-offset)
+      (anim/set-val pinch-y-start c/init-offset)
       (anim/animate pan-y max-offset-y)
       (anim/set-val pan-y-start max-offset-y))
     (when (and (> (anim/get-val scale) x-threshold-scale)
-               (< (anim/get-val scale) constants/max-scale)
+               (< (anim/get-val scale) c/max-scale)
                (> (Math/abs curr-offset-x) (Math/abs max-offset-x)))
-      (anim/animate pinch-x constants/init-offset)
-      (anim/set-val pinch-x-start constants/init-offset)
+      (anim/animate pinch-x c/init-offset)
+      (anim/set-val pinch-x-start c/init-offset)
       (anim/animate pan-x max-offset-x)
       (anim/set-val pan-x-start max-offset-x))
     (reset! pan-x-enabled? (> (anim/get-val scale) x-threshold-scale))
@@ -90,7 +90,7 @@
                                scale-diff  (utils/get-scale-diff new-scale (anim/get-val saved-scale))
                                new-pinch-x (utils/get-pinch-position scale-diff screen-width @focal-x)
                                new-pinch-y (utils/get-pinch-position scale-diff screen-height @focal-y)]
-                           (when (and (>= new-scale constants/max-scale)
+                           (when (and (>= new-scale c/max-scale)
                                       (= (anim/get-val pinch-x-max) js/Infinity))
                              (anim/set-val pinch-x-max (anim/get-val pinch-x))
                              (anim/set-val pinch-y-max (anim/get-val pinch-y)))
@@ -100,9 +100,9 @@
     (gesture/on-end
      (fn []
        (cond
-         (< (anim/get-val scale) constants/min-scale)
-         (rescale constants/min-scale)
-         (> (anim/get-val scale) constants/max-scale)
+         (< (anim/get-val scale) c/min-scale)
+         (rescale c/min-scale)
+         (> (anim/get-val scale) c/max-scale)
          (do
            (anim/animate pinch-x (anim/get-val pinch-x-max))
            (anim/set-val pinch-x-start (anim/get-val pinch-x-max))
@@ -110,8 +110,8 @@
            (anim/animate pinch-y (anim/get-val pinch-y-max))
            (anim/set-val pinch-y-start (anim/get-val pinch-y-max))
            (anim/set-val pinch-y-max js/Infinity)
-           (anim/animate scale constants/max-scale)
-           (anim/set-val saved-scale constants/max-scale))
+           (anim/animate scale c/max-scale)
+           (anim/set-val saved-scale c/max-scale))
          :else
          (do
            (anim/set-val saved-scale (anim/get-val scale))
@@ -139,16 +139,16 @@
        (let [curr-offset (+ (anim/get-val pan-x) (anim/get-val pinch-x-start))
              max-offset  (utils/get-max-offset width screen-width (anim/get-val scale))
              max-offset  (if (neg? curr-offset) (- max-offset) max-offset)
-             velocity    (* (oget e "velocityX") constants/velocity-factor)]
+             velocity    (* (oget e "velocityX") c/velocity-factor)]
          (cond
            (< (anim/get-val scale) x-threshold-scale)
-           (rescale constants/min-scale)
+           (rescale c/min-scale)
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
              (anim/animate pan-x max-offset)
              (anim/set-val pan-x-start max-offset)
-             (anim/animate pinch-x constants/init-offset)
-             (anim/set-val pinch-x-start constants/init-offset))
+             (anim/animate pinch-x c/init-offset)
+             (anim/set-val pinch-x-start c/init-offset))
            :else
            (let [lower-bound (- (- (Math/abs max-offset)) (anim/get-val pinch-x-start))
                  upper-bound (- (Math/abs max-offset) (anim/get-val pinch-x-start))]
@@ -173,16 +173,16 @@
        (let [curr-offset (+ (anim/get-val pan-y) (anim/get-val pinch-y-start))
              max-offset  (utils/get-max-offset height screen-height (anim/get-val scale))
              max-offset  (if (neg? curr-offset) (- max-offset) max-offset)
-             velocity    (* (oget e "velocityY") constants/velocity-factor)]
+             velocity    (* (oget e "velocityY") c/velocity-factor)]
          (cond
            (< (anim/get-val scale) y-threshold-scale)
-           (rescale constants/min-scale)
+           (rescale c/min-scale)
            (> (Math/abs curr-offset) (Math/abs max-offset))
            (do
              (anim/animate pan-y max-offset)
              (anim/set-val pan-y-start max-offset)
-             (anim/animate pinch-y constants/init-offset)
-             (anim/set-val pinch-y-start constants/init-offset))
+             (anim/animate pinch-y c/init-offset)
+             (anim/set-val pinch-y-start c/init-offset))
            :else
            (let [lower-bound (- (- (Math/abs max-offset)) (anim/get-val pinch-y-start))
                  upper-bound (- (Math/abs max-offset) (anim/get-val pinch-y-start))]
@@ -201,20 +201,20 @@
              focused?             (= shared-element-id message-id)
              curr-orientation     (or (rf/sub [:lightbox/orientation]) orientation/portrait)
              dimensions           (utils/get-dimensions image-width image-height curr-orientation)
-             animations           {:scale         (anim/use-val constants/min-scale)
-                                   :saved-scale   (anim/use-val constants/min-scale)
-                                   :pan-x-start   (anim/use-val constants/init-offset)
-                                   :pan-x         (anim/use-val constants/init-offset)
-                                   :pan-y-start   (anim/use-val constants/init-offset)
-                                   :pan-y         (anim/use-val constants/init-offset)
-                                   :pinch-x-start (anim/use-val constants/init-offset)
-                                   :pinch-x       (anim/use-val constants/init-offset)
-                                   :pinch-y-start (anim/use-val constants/init-offset)
-                                   :pinch-y       (anim/use-val constants/init-offset)
+             animations           {:scale         (anim/use-val c/min-scale)
+                                   :saved-scale   (anim/use-val c/min-scale)
+                                   :pan-x-start   (anim/use-val c/init-offset)
+                                   :pan-x         (anim/use-val c/init-offset)
+                                   :pan-y-start   (anim/use-val c/init-offset)
+                                   :pan-y         (anim/use-val c/init-offset)
+                                   :pinch-x-start (anim/use-val c/init-offset)
+                                   :pinch-x       (anim/use-val c/init-offset)
+                                   :pinch-y-start (anim/use-val c/init-offset)
+                                   :pinch-y       (anim/use-val c/init-offset)
                                    :pinch-x-max   (anim/use-val js/Infinity)
                                    :pinch-y-max   (anim/use-val js/Infinity)
-                                   :rotate        (anim/use-val constants/init-rotation)
-                                   :rotate-scale  (anim/use-val constants/min-scale)}
+                                   :rotate        (anim/use-val c/init-rotation)
+                                   :rotate-scale  (anim/use-val c/min-scale)}
              props                {:pan-x-enabled? (reagent/atom false)
                                    :pan-y-enabled? (reagent/atom false)
                                    :focal-x        (reagent/atom nil)
