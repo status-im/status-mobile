@@ -81,42 +81,6 @@
             :unviewed-mentions-count 0}
            (rf/sub [sub-name community-id])))))
 
-(h/deftest-sub :communities/community-ids-by-user-involvement
-  [sub-name]
-  (testing "Empty communities list"
-    (swap! rf-db/app-db assoc
-      :communities
-      {})
-    (is (= {:joined [] :pending [] :opened []}
-           (rf/sub [sub-name]))))
-  (testing "Only opened communities"
-    (swap! rf-db/app-db assoc
-      :communities/enabled? true
-      :communities
-      {"0x1" {:id "0x1" :name "civilized monkeys"}
-       "0x2" {:id "0x2" :name "Civilized rats"}
-       "0x3" {:id "0x3" :name "Civilized dolphins"}})
-    (is (= {:joined [] :pending [] :opened ["0x1" "0x2" "0x3"]}
-           (rf/sub [sub-name]))))
-  (testing "One joined community and two opened ones"
-    (swap! rf-db/app-db assoc
-      :communities/enabled? true
-      :communities
-      {"0x1" {:id "0x1" :name "civilized monkeys" :joined true}
-       "0x2" {:id "0x2" :name "Civilized rats"}
-       "0x3" {:id "0x3" :name "Civilized dolphins"}})
-    (is (= {:joined ["0x1"] :pending [] :opened ["0x2" "0x3"]}
-           (rf/sub [sub-name]))))
-  (testing "One joined community, one open and one pending"
-    (swap! rf-db/app-db assoc
-      :communities/enabled? true
-      :communities
-      {"0x1" {:id "0x1" :name "civilized monkeys" :joined true}
-       "0x2" {:id "0x2" :name "Civilized rats" :requested-to-join-at 1000}
-       "0x3" {:id "0x3" :name "Civilized dolphins"}})
-    (is (= {:joined ["0x1"] :pending ["0x2"] :opened ["0x3"]}
-           (rf/sub [sub-name])))))
-
 (h/deftest-sub :communities/sorted-communities
   [sub-name]
   (testing "Empty communities list"

@@ -6,11 +6,10 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.common :as common]
+    [status-im2.contexts.chat.lightbox.animations :as anim]
     [utils.re-frame :as rf]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.chat.lightbox.style :as style]
     [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [status-im2.contexts.chat.lightbox.bottom-view :as bottom-view]
@@ -23,15 +22,15 @@
   (let [opacity (reanimated/get-shared-value opacity-value)]
     (if (= opacity 1)
       (do
-        (common/set-val-timing opacity-value 0)
+        (anim/animate opacity-value 0)
         (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
       (do
         (reset! transparent? (not @transparent?))
-        (reanimated/animate-shared-value-with-delay-default-easing opacity-value 1 300 50)
+        (js/setTimeout #(anim/animate opacity-value 1) 50)
         (js/setTimeout #(when @small-list-ref
                           (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
                        100)))
-    (common/set-val-timing border-value (if (= opacity 1) 0 12))))
+    (anim/animate border-value (if (= opacity 1) 0 12))))
 
 (defn handle-orientation
   [result index window animations {:keys [flat-list-ref insets-atom]}]
@@ -87,6 +86,14 @@
        #(toggle-opacity opacity-value border-value transparent? index atoms)]
       [rn/view {:style {:width seperator-width}}]])])
 
+;; using `safe-area/consumer` in this component in iOS causes unnecessary re-renders and weird behaviour
+;; using `use-safe-area` on Android crashes the app with error `rendered fewer hooks than expected`
+(defn container-view
+  [children]
+  (if platform/ios?
+    [:f> children]
+    [safe-area/consumer children]))
+
 (defn lightbox
   []
   [:f>
@@ -103,18 +110,21 @@
            scroll-index             (reagent/atom index)
            transparent?             (reagent/atom false)
            window                   (rf/sub [:dimensions/window])
-           animations               {:border         (common/use-val (if platform/ios? 0 12))
-                                     :opacity        (common/use-val 0)
-                                     :rotate         (common/use-val "0deg")
-                                     :top-layout     (common/use-val -10)
-                                     :bottom-layout  (common/use-val 10)
-                                     :top-view-y     (common/use-val 0)
-                                     :top-view-x     (common/use-val 0)
-                                     :top-view-width (common/use-val (:width window))
-                                     :top-view-bg    (common/use-val colors/neutral-100-opa-0)}
+           animations               {:background-color (anim/use-val "rgba(0,0,0,0)")
+                                     :border           (anim/use-val (if platform/ios? 0 12))
+                                     :opacity          (anim/use-val 0)
+                                     :rotate           (anim/use-val "0deg")
+                                     :top-layout       (anim/use-val -10)
+                                     :bottom-layout    (anim/use-val 10)
+                                     :top-view-y       (anim/use-val 0)
+                                     :top-view-x       (anim/use-val 0)
+                                     :top-view-width   (anim/use-val (:width window))
+                                     :top-view-bg      (anim/use-val colors/neutral-100-opa-0)}
 
            callback                 (fn [e]
-                                      (on-viewable-items-changed e scroll-index atoms))]
+                                      (on-viewable-items-changed e scroll-index atoms))
+           insets-ios               (when platform/ios? (safe-area/use-safe-area))]
+       (anim/animate (:background-color animations) "rgba(0,0,0,1)")
        (reset! data messages)
        (orientation/use-device-orientation-change
         (fn [result]
@@ -131,19 +141,20 @@
                           (.scrollToIndex ^js @(:flat-list-ref atoms)
                                           #js {:animated false :index index}))
                         (js/setTimeout (fn []
-                                         (common/set-val-timing (:opacity animations) 1)
-                                         (common/set-val-timing (:top-layout animations) 0)
-                                         (common/set-val-timing (:bottom-layout animations) 0)
-                                         (common/set-val-timing (:border animations) 12))
+                                         (anim/animate (:opacity animations) 1)
+                                         (anim/animate (:top-layout animations) 0)
+                                         (anim/animate (:bottom-layout animations) 0)
+                                         (anim/animate (:border animations) 12))
                                        (if platform/ios? 250 100))
                         (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
                         (fn []
                           (rf/dispatch [:chat.ui/zoom-out-signal nil])
                           (when platform/android?
                             (rf/dispatch [:chat.ui/lightbox-scale 1])))))
-       [safe-area/consumer
-        (fn [insets]
-          (let [curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
+       [container-view
+        (fn [insets-android]
+          (let [insets           (if platform/ios? insets-ios insets-android)
+                curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
                 landscape?       (string/includes? curr-orientation orientation/landscape)
                 horizontal?      (or platform/android? (not landscape?))
                 inverted?        (and platform/ios? (= curr-orientation orientation/landscape-right))
@@ -155,7 +166,12 @@
                                    (:width window))
                 item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
             (reset! (:insets-atom atoms) insets)
-            [rn/view {:style style/container-view}
+            [reanimated/view
+             {:style (if platform/ios?
+                       (reanimated/apply-animations-to-style {:background-color (:background-color
+                                                                                 animations)}
+                                                             {})
+                       {:background-color :black})}
              (when-not @transparent?
                [top-view/top-view (first messages) insets scroll-index animations landscape?
                 screen-width])

@@ -4,7 +4,8 @@
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.async-storage.core :as async-storage] ;;TODO remove when not used anymore
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.constants :as shell.constants]
+            [utils.worklets.shell :as worklets.shell]))
 
 ;; Atoms
 (def selected-stack-id (atom nil))
@@ -66,8 +67,6 @@
      :top   (+ top-empty-space (shell.constants/bottom-tabs-container-height))
      :scale minimize-scale}))
 
-(def shell-worklets (js/require "../src/js/shell_worklets.js"))
-
 ;; Shared Values
 (defn calculate-shared-values
   []
@@ -87,18 +86,11 @@
            (assoc
             acc
             stack-opacity-keyword
-            (.stackOpacity
-             ^js shell-worklets
-             (name id)
-             selected-stack-id-sv)
+            (worklets.shell/stack-opacity (name id) selected-stack-id-sv)
             stack-pointer-keyword
-            (.stackPointer
-             ^js shell-worklets
-             (name id)
-             selected-stack-id-sv)
+            (worklets.shell/stack-pointer (name id) selected-stack-id-sv)
             tabs-icon-color-keyword
-            (.bottomTabIconColor
-             ^js shell-worklets
+            (worklets.shell/bottom-tab-icon-color
              (name id)
              selected-stack-id-sv
              home-stack-state-sv
@@ -110,28 +102,19 @@
         :pass-through?           pass-through-sv
         :home-stack-state        home-stack-state-sv
         :animate-home-stack-left animate-home-stack-left
-        :home-stack-left         (.homeStackLeft
-                                  ^js shell-worklets
+        :home-stack-left         (worklets.shell/home-stack-left
                                   selected-stack-id-sv
                                   animate-home-stack-left
                                   home-stack-state-sv
                                   (clj->js (:left home-stack-position)))
-        :home-stack-top          (.homeStackTop
-                                  ^js shell-worklets
+        :home-stack-top          (worklets.shell/home-stack-top
                                   home-stack-state-sv
                                   (:top home-stack-position))
-        :home-stack-opacity      (.homeStackOpacity
-                                  ^js shell-worklets
-                                  home-stack-state-sv)
-        :home-stack-pointer      (.homeStackPointer
-                                  ^js shell-worklets
-                                  home-stack-state-sv)
-        :home-stack-scale        (.homeStackScale
-                                  ^js shell-worklets
-                                  home-stack-state-sv
-                                  (:scale home-stack-position))
-        :bottom-tabs-height      (.bottomTabsHeight
-                                  ^js shell-worklets
+        :home-stack-opacity      (worklets.shell/home-stack-opacity home-stack-state-sv)
+        :home-stack-pointer      (worklets.shell/home-stack-pointer home-stack-state-sv)
+        :home-stack-scale        (worklets.shell/home-stack-scale home-stack-state-sv
+                                                                  (:scale home-stack-position))
+        :bottom-tabs-height      (worklets.shell/bottom-tabs-height
                                   home-stack-state-sv
                                   (shell.constants/bottom-tabs-container-height)
                                   (shell.constants/bottom-tabs-extended-container-height))}

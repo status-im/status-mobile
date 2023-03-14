@@ -98,6 +98,10 @@
 
 (def use-ref react/useRef)
 
+(defn current-ref
+  [ref]
+  (oops/oget ref "current"))
+
 (defn use-effect
   ([effect-fn]
    (use-effect effect-fn []))

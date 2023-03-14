@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.home.style
+(ns status-im2.contexts.chat.home.style
   (:require [react-native.platform :as platform]))
 
 (def tabs
@@ -22,4 +22,3 @@
    :right       0
    :left        0
    :padding-top top})
-

@@ -1,12 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.lightbox.common :as common]))
-
-;;;; MAIN-VIEW
-(def container-view
-  {:background-color :black})
+            [react-native.reanimated :as reanimated]))
 
 ;;;; TOP-VIEW
 (defn top-view-container
@@ -27,7 +22,8 @@
    {:position           :absolute
     :padding-horizontal 20
     :top                (if platform/ios? top-inset 0)
-    :height             common/top-view-height
+    ;; height defined in top_view.cljs, but can't import due to circular dependency
+    :height             56
     :z-index            4
     :flex-direction     :row
     :justify-content    :space-between

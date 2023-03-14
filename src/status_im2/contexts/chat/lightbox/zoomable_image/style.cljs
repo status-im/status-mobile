@@ -6,7 +6,8 @@
 (defn container
   [{:keys [width height]}
    {:keys [pan-x pan-y pinch-x pinch-y scale]}
-   set-full-height?]
+   set-full-height?
+   portrait?]
   (reanimated/apply-animations-to-style
    {:transform [{:translateX pan-x}
                 {:translateY pan-y}
@@ -15,7 +16,7 @@
                 {:scale scale}]}
    {:justify-content :center
     :align-items     :center
-    :width           (if platform/ios? width "100%")
+    :width           (if (or platform/ios? portrait?) width "100%")
     :height          (if set-full-height? "100%" height)}))
 
 (defn image

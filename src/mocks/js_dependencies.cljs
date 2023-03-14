@@ -355,11 +355,6 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
-(def shell-worklets #js {})
-
-(def bottom-sheet #js {})
-(def record-audio-worklets #js {})
-
 ;; Update i18n_resources.cljs
 (defn mock
   [module]
@@ -407,10 +402,11 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "@react-native-async-storage/async-storage"     async-storage
     "react-native-svg"                              react-native-svg
     "react-native-orientation-locker"               react-native-orientation-locker
-    "../src/js/worklet_factory.js"                  worklet-factory
-    "../src/js/shell_worklets.js"                   shell-worklets
-    "../src/js/bottom_sheet.js"                     bottom-sheet
-    "../src/js/record_audio_worklets.js"            record-audio-worklets
+    "../src/js/worklets/core.js"                    worklet-factory
+    "../src/js/worklets/shell.js"                   #js {}
+    "../src/js/worklets/bottom_sheet.js"            #js {}
+    "../src/js/worklets/record_audio.js"            #js {}
+    "../src/js/worklets/scroll_view.js"             #js {}
     "./fleets.js"                                   default-fleets
     "@walletconnect/client"                         wallet-connect-client
     "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))

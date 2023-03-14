@@ -6,37 +6,39 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.common :as common]
+    [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]))
 
+(def ^:const top-view-height 56)
+
 (defn animate-rotation
   [result screen-width screen-height insets-atom
    {:keys [rotate top-view-y top-view-x top-view-width top-view-bg]}]
-  (let [top-x (+ (/ common/top-view-height 2) (:top insets-atom))]
+  (let [top-x (+ (/ top-view-height 2) (:top insets-atom))]
     (cond
       (= result orientation/landscape-left)
       (do
-        (common/set-val-timing rotate "90deg")
-        (common/set-val-timing top-view-y 60)
-        (common/set-val-timing top-view-x (- (/ screen-height 2) top-x))
-        (common/set-val-timing top-view-width screen-height)
-        (common/set-val-timing top-view-bg colors/neutral-100-opa-70))
+        (anim/animate rotate "90deg")
+        (anim/animate top-view-y 60)
+        (anim/animate top-view-x (- (/ screen-height 2) top-x))
+        (anim/animate top-view-width screen-height)
+        (anim/animate top-view-bg colors/neutral-100-opa-70))
       (= result orientation/landscape-right)
       (do
-        (common/set-val-timing rotate "-90deg")
-        (common/set-val-timing top-view-y (- (- screen-width) 4))
-        (common/set-val-timing top-view-x (+ (/ screen-height -2) top-x))
-        (common/set-val-timing top-view-width screen-height)
-        (common/set-val-timing top-view-bg colors/neutral-100-opa-70))
+        (anim/animate rotate "-90deg")
+        (anim/animate top-view-y (- (- screen-width) 4))
+        (anim/animate top-view-x (+ (/ screen-height -2) top-x))
+        (anim/animate top-view-width screen-height)
+        (anim/animate top-view-bg colors/neutral-100-opa-70))
       (= result orientation/portrait)
       (do
-        (common/set-val-timing rotate "0deg")
-        (common/set-val-timing top-view-y 0)
-        (common/set-val-timing top-view-x 0)
-        (common/set-val-timing top-view-width screen-width)
-        (common/set-val-timing top-view-bg colors/neutral-100-opa-0)))))
+        (anim/animate rotate "0deg")
+        (anim/animate top-view-y 0)
+        (anim/animate top-view-x 0)
+        (anim/animate top-view-width screen-width)
+        (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn top-view
   [{:keys [from timestamp]} insets index animations landscape? screen-width]
@@ -51,7 +53,10 @@
                   :align-items    :center}}
          [rn/touchable-opacity
           {:on-press (fn []
-                       (common/set-val-timing (:opacity animations) 0)
+                       (when platform/ios?
+                         (anim/animate (:background-color animations)
+                                       (reanimated/with-timing "rgba(0,0,0,0)")))
+                       (anim/animate (:opacity animations) 0)
                        (rf/dispatch (if platform/ios?
                                       [:chat.ui/exit-lightbox-signal @index]
                                       [:navigate-back])))
