@@ -62,7 +62,7 @@
     "link"
     (conj acc
           [rn/text
-           {:style    {:color                :blue
+           {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
                        :text-decoration-line :underline}
             :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
            destination])
@@ -82,7 +82,7 @@
     (conj acc
           [rn/text
            (when community-id
-             {:style    {:color                :blue
+             {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
                          :text-decoration-line :underline}
               :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
            "#"
