@@ -5,7 +5,6 @@
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification-types :as types]
-            status-im2.contexts.activity-center.notification.contact-requests.events
             [status-im2.contexts.chat.events :as chat.events]
             [taoensso.timbre :as log]
             [utils.collection :as collection]
@@ -42,6 +41,12 @@
   [_ notification-id action error]
   (log/warn (str "Failed to " action)
             {:notification-id notification-id :error error}))
+
+(defn get-notification
+  [db notification-id]
+  (->> (get-in db [:activity-center :notifications])
+       (filter #(= notification-id (:id %)))
+       first))
 
 ;;;; Notification reconciliation
 
@@ -93,12 +98,6 @@
                             notifications)))})
 
 ;;;; Status changes (read/dismissed/deleted)
-
-(defn- get-notification
-  [db notification-id]
-  (->> (get-in db [:activity-center :notifications])
-       (filter #(= notification-id (:id %)))
-       first))
 
 (rf/defn mark-as-read
   {:events [:activity-center.notifications/mark-as-read]}
@@ -235,7 +234,7 @@
   {:events [:activity-center.notifications/dismiss-success]}
   [{:keys [db] :as cofx} notification-id]
   (let [notification (get-notification db notification-id)]
-    (notifications-reconcile cofx [(assoc notification :dismissed true)])))
+    (notifications-reconcile cofx [(assoc notification :read true :dismissed true)])))
 
 (rf/defn delete-notification
   {:events [:activity-center.notifications/delete]}

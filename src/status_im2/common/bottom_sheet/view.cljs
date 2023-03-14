@@ -177,7 +177,7 @@
                                     (reset! expanded? true))
                                   (and @keyboard-was-shown? (not keyboard-shown))
                                   (reset! expanded? false))))
-                           [@show-bottom-sheet? @keyboard-was-shown?])
+                           [@show-bottom-sheet? @keyboard-was-shown? keyboard-shown])
             (react/effect! #(do
                               (when-not @gesture-running?
                                 (cond
