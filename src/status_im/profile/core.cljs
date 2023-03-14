@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
@@ -86,24 +85,12 @@
   [_ value]
   {:profile/share-profile-link value})
 
-
-(rf/defn contact-built
-  {:events [:contacts/contact-built]}
-  [{:keys [db]} identity contact]
-  {:db       (assoc-in db [:contacts/contacts identity] contact)
-   :dispatch [:open-modal :profile]})
-
 (rf/defn show-profile
   {:events [:chat.ui/show-profile]}
   [{:keys [db]} identity ens-name]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
     (when (not= my-public-key identity)
-      {:db            (-> db
-                          (assoc :contacts/identity identity)
-                          (assoc :contacts/ens-name ens-name))
-       :json-rpc/call [{:method      "wakuext_buildContact"
-                        :params      [identity]
-                        :js-response true
-                        :on-success  #(rf/dispatch [:contacts/contact-built
-                                                    identity
-                                                    (data-store.contacts/<-rpc-js %)])}]})))
+      {:db       (-> db
+                     (assoc :contacts/identity identity)
+                     (assoc :contacts/ens-name ens-name))
+       :dispatch [:contacts/build-contact identity true]})))
