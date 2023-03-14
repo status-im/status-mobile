@@ -32,11 +32,7 @@
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
-<<<<<<< HEAD
-(def reanimated-flat-list (create-animated-component (.-FlatList ^js rn)))
-=======
 (def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js reanimated)))
->>>>>>> 277f10de6 (fix)
 (defn flat-list
   [props]
   [reanimated-flat-list (rn-flat-list/base-list-props props)])

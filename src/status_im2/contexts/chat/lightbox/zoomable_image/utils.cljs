@@ -3,26 +3,26 @@
     [clojure.string :as string]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
+    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as constants]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [utils.re-frame :as rf]))
 
 ;;; Helpers
 (defn center-x
   [{:keys [pinch-x pinch-x-start pan-x pan-x-start]} exit?]
-  (let [duration (if exit? 100 c/default-duration)]
-    (anim/animate pinch-x c/init-offset duration)
-    (anim/set-val pinch-x-start c/init-offset)
-    (anim/animate pan-x c/init-offset duration)
-    (anim/set-val pan-x-start c/init-offset)))
+  (let [duration (if exit? 100 constants/default-duration)]
+    (anim/animate pinch-x constants/init-offset duration)
+    (anim/set-val pinch-x-start constants/init-offset)
+    (anim/animate pan-x constants/init-offset duration)
+    (anim/set-val pan-x-start constants/init-offset)))
 
 (defn center-y
   [{:keys [pinch-y pinch-y-start pan-y pan-y-start]} exit?]
-  (let [duration (if exit? 100 c/default-duration)]
-    (anim/animate pinch-y c/init-offset duration)
-    (anim/set-val pinch-y-start c/init-offset)
-    (anim/animate pan-y c/init-offset duration)
-    (anim/set-val pan-y-start c/init-offset)))
+  (let [duration (if exit? 100 constants/default-duration)]
+    (anim/animate pinch-y constants/init-offset duration)
+    (anim/set-val pinch-y-start constants/init-offset)
+    (anim/animate pan-y constants/init-offset duration)
+    (anim/set-val pan-y-start constants/init-offset)))
 
 (defn reset-values
   [exit? animations {:keys [focal-x focal-y]}]
@@ -37,9 +37,9 @@
    {:keys [x-threshold-scale y-threshold-scale]}
    {:keys [scale saved-scale] :as animations}
    {:keys [pan-x-enabled? pan-y-enabled?] :as props}]
-  (anim/animate scale value (if exit? 100 c/default-duration))
+  (anim/animate scale value (if exit? 100 constants/default-duration))
   (anim/set-val saved-scale value)
-  (when (= value c/min-scale)
+  (when (= value constants/min-scale)
     (reset-values exit? animations props))
   (reset! pan-x-enabled? (> value x-threshold-scale))
   (reset! pan-y-enabled? (> value y-threshold-scale)))
@@ -51,7 +51,7 @@
    {:keys [landscape-scale-val x-threshold-scale y-threshold-scale]}
    {:keys [rotate rotate-scale scale] :as animations}
    {:keys [pan-x-enabled? pan-y-enabled?]}]
-  (let [duration (when focused? c/default-duration)]
+  (let [duration (when focused? constants/default-duration)]
     (cond
       (= curr-orientation orientation/landscape-left)
       (do
@@ -63,22 +63,22 @@
         (anim/animate rotate-scale landscape-scale-val duration))
       (= curr-orientation orientation/portrait)
       (do
-        (anim/animate rotate c/init-rotation duration)
-        (anim/animate rotate-scale c/min-scale duration)))
+        (anim/animate rotate constants/init-rotation duration)
+        (anim/animate rotate-scale constants/min-scale duration)))
     (center-x animations false)
     (center-y animations false)
     (reset! pan-x-enabled? (> (anim/get-val scale) x-threshold-scale))
     (reset! pan-y-enabled? (> (anim/get-val scale) y-threshold-scale))))
 
+;; On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
+;; doesn't execute properly, so we need to zoom out first
 (defn handle-exit-lightbox-signal
-  "On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
-   doesn't execute properly, so we need to zoom out first"
   [exit-lightbox-signal index scale rescale set-full-height?]
   (when (= exit-lightbox-signal index)
     (reset! set-full-height? false)
-    (if (> scale c/min-scale)
+    (if (> scale constants/min-scale)
       (do
-        (rescale c/min-scale true)
+        (rescale constants/min-scale true)
         (js/setTimeout #(rf/dispatch [:navigate-back]) 70))
       (rf/dispatch [:navigate-back]))
     (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
@@ -86,8 +86,8 @@
 (defn handle-zoom-out-signal
   "Zooms out when pressing on another photo from the small bottom list"
   [zoom-out-signal index scale rescale]
-  (when (and (= zoom-out-signal index) (> scale c/min-scale))
-    (rescale c/min-scale true)))
+  (when (and (= zoom-out-signal index) (> scale constants/min-scale))
+    (rescale constants/min-scale true)))
 
 ;;; Dimensions
 (defn get-dimensions
@@ -126,7 +126,7 @@
 ;;; MATH
 (defn get-max-offset
   [size screen-size scale]
-  (/ (- (* size (min scale c/max-scale))
+  (/ (- (* size (min scale constants/max-scale))
         screen-size)
      2))
 
@@ -138,8 +138,8 @@
 (defn get-double-tap-offset
   [size screen-size focal]
   (let [center        (/ size 2)
-        target-point  (* (- center focal) c/double-tap-scale)
-        max-offset    (get-max-offset size screen-size c/double-tap-scale)
+        target-point  (* (- center focal) constants/double-tap-scale)
+        max-offset    (get-max-offset size screen-size constants/double-tap-scale)
         translate-val (min (Math/abs target-point) max-offset)]
     (if (neg? target-point) (- translate-val) translate-val)))
 

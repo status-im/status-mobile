@@ -16,8 +16,8 @@
 
 (defn use-safe-area
   []
-  (let [insets (useSafeAreaInsets)]
-    {:top    (.-top ^js insets)
-     :bottom (.-bottom ^js insets)
-     :left   (.-left ^js insets)
-     :right  (.-right ^js insets)}))
+  (let [insets ^js (useSafeAreaInsets)]
+    {:top    (.-top insets)
+     :bottom (.-bottom insets)
+     :left   (.-left insets)
+     :right  (.-right insets)}))

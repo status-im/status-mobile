@@ -3,17 +3,11 @@
 
 ;; TODO: Abstract Reanimated methods in a better way, issue:
 ;; https://github.com/status-im/status-mobile/issues/15176
-(defn get-val
-  [animation]
-  (reanimated/get-shared-value animation))
+(def get-val reanimated/get-shared-value)
 
-(defn set-val
-  [animation value]
-  (reanimated/set-shared-value animation value))
+(def set-val reanimated/set-shared-value)
 
-(defn use-val
-  [value]
-  (reanimated/use-shared-value value))
+(def use-val reanimated/use-shared-value)
 
 (defn animate
   ([animation value]
@@ -24,8 +18,4 @@
                                     (clj->js {:duration duration
                                               :easing   (get reanimated/easings :default)})))))
 
-(defn animate-decay
-  [animation velocity clamp]
-  (set-val animation
-           (reanimated/with-decay (clj->js {:velocity velocity
-                                            :clamp    clamp}))))
+(def animate-decay reanimated/animate-shared-value-with-decay)
