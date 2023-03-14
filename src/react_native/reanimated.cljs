@@ -36,7 +36,7 @@
 ;; TODO: This one should use FlatList from Reanimated.
 ;; Trying to use Flatlist from RA causes test to fail: "The first argument must be a component. Instead
 ;; received: object"
-(def flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
+(def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 (defn flat-list
   [props]
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
