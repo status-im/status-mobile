@@ -5,7 +5,9 @@
               RectButton
               Swipeable
               TouchableWithoutFeedback
-              gestureHandlerRootHOC)]
+              gestureHandlerRootHOC
+              FlatList)]
+            [react-native.flat-list :as rn-flat-list]
             [reagent.core :as reagent]))
 
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
@@ -27,6 +29,8 @@
 (defn on-end [gesture handler] (.onEnd ^js gesture handler))
 
 (defn on-finalize [gesture handler] (.onFinalize ^js gesture handler))
+
+(defn max-pointers [gesture count] (.maxPointers ^js gesture count))
 
 (defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
@@ -63,3 +67,8 @@
                   (fn [& args]
                     (reagent/as-element (apply render-right-actions args)))))]
         children))
+
+(def gesture-flat-list (reagent/adapt-react-class FlatList))
+(defn flat-list
+  [props]
+  [gesture-flat-list (rn-flat-list/base-list-props props)])

@@ -9,14 +9,13 @@
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]))
-
-(def ^:const top-view-height 56)
+    [utils.re-frame :as rf]
+    [status-im2.contexts.chat.lightbox.constants :as c]))
 
 (defn animate-rotation
-  [result screen-width screen-height insets-atom
+  [result screen-width screen-height insets
    {:keys [rotate top-view-y top-view-x top-view-width top-view-bg]}]
-  (let [top-x (+ (/ top-view-height 2) (:top insets-atom))]
+  (let [top-x (+ (/ c/top-view-height 2) (:top insets))]
     (cond
       (= result orientation/landscape-left)
       (do
@@ -41,22 +40,30 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn top-view
-  [{:keys [from timestamp]} insets index animations landscape? screen-width]
+  [{:keys [from timestamp]} insets index animations derived landscape? screen-width]
   [:f>
    (fn []
-     (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-           bg-color     (if landscape? colors/neutral-100-opa-70 colors/neutral-100-opa-0)]
+     (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                              from]))
+           bg-color                           (if landscape?
+                                                colors/neutral-100-opa-70
+                                                colors/neutral-100-opa-0)
+           {:keys [background-color opacity]} animations]
        [reanimated/view
-        {:style (style/top-view-container (:top insets) animations screen-width bg-color)}
+        {:style
+         (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
+        [reanimated/linear-gradient
+         {:colors [(colors/alpha "#000000" 0.8) :transparent]
+          :start  {:x 0 :y 0}
+          :end    {:x 0 :y 1}
+          :style  (style/top-gradient insets)}]
         [rn/view
          {:style {:flex-direction :row
                   :align-items    :center}}
          [rn/touchable-opacity
           {:on-press (fn []
-                       (when platform/ios?
-                         (anim/animate (:background-color animations)
-                                       (reanimated/with-timing "rgba(0,0,0,0)")))
-                       (anim/animate (:opacity animations) 0)
+                       (anim/animate background-color :transparent)
+                       (anim/animate opacity 0)
                        (rf/dispatch (if platform/ios?
                                       [:chat.ui/exit-lightbox-signal @index]
                                       [:navigate-back])))
