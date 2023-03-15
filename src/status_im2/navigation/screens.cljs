@@ -61,9 +61,11 @@
     {:name      :lightbox
      :insets    {:top false :bottom false}
      :options   {:topBar        {:visible false}
-                 :statusBar     {:backgroundColor colors/black
+                 :statusBar     {:backgroundColor :transparent
                                  :style           :light
-                                 :animate         true}
+                                 :animate         true
+                                 :drawBehind      true
+                                 :translucent     true}
                  :navigationBar {:backgroundColor colors/black}
                  :layout        {:componentBackgroundColor :transparent
                                  :backgroundColor          :transparent}

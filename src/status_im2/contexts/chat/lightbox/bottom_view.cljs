@@ -5,26 +5,21 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.animations :as anim]))
-
-(def small-image-size 40)
-
-(def focused-image-size 56)
-
-(def small-list-height 80)
+    [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.constants :as c]))
 
 (defn get-small-item-layout
   [_ index]
   #js
-   {:length small-image-size
-    :offset (* (+ small-image-size 8) index)
+   {:length c/small-image-size
+    :offset (* (+ c/small-image-size 8) index)
     :index  index})
 
 (defn small-image
   [item index _ {:keys [scroll-index atoms]}]
   [:f>
    (fn []
-     (let [size                    (if (= @scroll-index index) focused-image-size small-image-size)
+     (let [size                    (if (= @scroll-index index) c/focused-image-size c/small-image-size)
            size-value              (anim/use-val size)
            {:keys [scroll-index-lock? small-list-ref
                    flat-list-ref]} atoms]
@@ -51,22 +46,22 @@
                                                         {:border-radius 10})}]]))])
 
 (defn bottom-view
-  [messages index scroll-index insets animations item-width atoms]
+  [messages index scroll-index insets animations derived item-width atoms]
   [:f>
    (fn []
      (let [text               (get-in (first messages) [:content :text])
-           padding-horizontal (- (/ item-width 2) (/ focused-image-size 2))]
+           padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
        [reanimated/linear-gradient
         {:colors [:black :transparent]
          :start  {:x 0 :y 1}
          :end    {:x 0 :y 0}
-         :style  (style/gradient-container insets animations)}
+         :style  (style/gradient-container insets animations derived)}
         (when (not= text "placeholder")
           [rn/text {:style style/text-style} text])
         [rn/flat-list
          {:ref                               #(reset! (:small-list-ref atoms) %)
           :key-fn                            :message-id
-          :style                             {:height small-list-height}
+          :style                             {:height c/small-list-height}
           :data                              messages
           :render-fn                         small-image
           :render-data                       {:scroll-index scroll-index
