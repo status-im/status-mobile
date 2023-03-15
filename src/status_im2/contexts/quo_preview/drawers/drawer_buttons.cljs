@@ -53,7 +53,7 @@
   []
   (let [state (reagent/atom {:top-heading     "Sign in "
                              :top-sub-heading "You already use Status"
-                             :bottom-heading  "I'm new to status"})]
+                             :bottom-heading  "I’m new to Status"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 400}

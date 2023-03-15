@@ -1,6 +1,9 @@
 (ns quo2.components.onboarding.small-option-card.style
   (:require [quo2.foundations.colors :as colors]))
 
+(def main-variant-height 335)
+(def icon-variant-height 56)
+
 (def text-container {:flex 1})
 
 (def title
@@ -42,9 +45,9 @@
 (def touchable-overlay {:border-radius 16})
 
 (defn card
-  [main-variant?]
+  [height]
   {:background-color colors/white-opa-5
    :border-radius    16
-   :height           (if main-variant? 335 56)})
+   :height           height})
 
 (def main-variant-extra-space {:height 8})

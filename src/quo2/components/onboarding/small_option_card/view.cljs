@@ -35,7 +35,7 @@
      :subtitle subtitle}]])
 
 (defn- main-variant
-  [{:keys [title subtitle image]}]
+  [{:keys [title subtitle image max-height]}]
   [rn/view {:style style/main-variant}
    [rn/view {:style style/main-variant-text-container}
     [texts
@@ -43,16 +43,21 @@
       :subtitle subtitle}]]
    [fast-image/fast-image
     {:accessibility-label :small-option-card-main-image
-     :style               {:flex 1}
+     :style               {:flex 1 :max-height max-height}
      :resize-mode         :contain
      :source              image}]])
 
 (defn small-option-card
   "Variants: `:main` or `:icon`"
-  [{:keys [variant title subtitle image on-press]
+  [{:keys [variant title subtitle image max-height on-press]
     :or   {variant :main}}]
   (let [main-variant?  (= variant :main)
-        card-component (if main-variant? main-variant icon-variant)]
+        card-component (if main-variant? main-variant icon-variant)
+        card-height    (if main-variant?
+                         (if max-height
+                           (min max-height style/main-variant-height)
+                           style/main-variant-height)
+                         style/icon-variant-height)]
     [rn/view
      [rn/touchable-highlight
       {:accessibility-label :small-option-card
@@ -60,10 +65,11 @@
        :active-opacity      1
        :underlay-color      colors/white-opa-5
        :on-press            on-press}
-      [rn/view {:style (style/card main-variant?)}
+      [rn/view {:style (style/card card-height)}
        [card-component
-        {:title    title
-         :subtitle subtitle
-         :image    image}]]]
+        {:title      title
+         :subtitle   subtitle
+         :image      image
+         :max-height max-height}]]]
      (when main-variant?
        [rn/view {:style style/main-variant-extra-space}])]))
