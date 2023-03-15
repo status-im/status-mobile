@@ -53,7 +53,7 @@
         {:style
          (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
         [reanimated/linear-gradient
-         {:colors ["rgba(0, 0, 0, 0.8)" "rgba(0, 0, 0, 0)"]
+         {:colors [(colors/alpha "#000000" 0.8) :transparent]
           :start  {:x 0 :y 0}
           :end    {:x 0 :y 1}
           :style  (style/top-gradient insets)}]
@@ -62,7 +62,7 @@
                   :align-items    :center}}
          [rn/touchable-opacity
           {:on-press (fn []
-                       (anim/animate background-color "rgba(0,0,0,0)")
+                       (anim/animate background-color :transparent)
                        (anim/animate opacity 0)
                        (rf/dispatch (if platform/ios?
                                       [:chat.ui/exit-lightbox-signal @index]

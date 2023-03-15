@@ -244,9 +244,8 @@
                                                                           dimensions
                                                                           animations
                                                                           props))]
-       (rn/use-effect-once (fn []
-                             (js/setTimeout #(reset! set-full-height? true) 500)
-                             js/undefined))
+       (rn/use-effect (fn []
+                        (js/setTimeout #(reset! set-full-height? true) 500)))
        (when platform/ios?
          (utils/handle-orientation-change curr-orientation focused? dimensions animations props)
          (utils/handle-exit-lightbox-signal exit-lightbox-signal

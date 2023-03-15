@@ -54,11 +54,10 @@
                   :on-long-press  #(on-long-press message context)
                   :on-press       (fn []
                                     (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)])
-                                    (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
-                                                                  {:messages (:album message)
-                                                                   :index    index
-                                                                   :insets   insets}])
-                                                   100))}
+                                    (rf/dispatch [:navigate-to :lightbox
+                                                  {:messages (:album message)
+                                                   :index    index
+                                                   :insets   insets}]))}
                  [fast-image/fast-image
                   {:style     (style/image dimensions index portrait? images-count)
                    :source    {:uri (:image (:content item))}

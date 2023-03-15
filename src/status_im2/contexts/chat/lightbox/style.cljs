@@ -4,6 +4,15 @@
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.lightbox.constants :as c]))
 
+;;;; VIEW
+(defn image
+  [width height]
+  {:flex-direction  :row
+   :width           width
+   :height          height
+   :align-items     :center
+   :justify-content :center})
+
 ;;;; TOP-VIEW
 (defn top-view-container
   [top-inset window-width bg-color landscape?

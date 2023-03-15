@@ -8,6 +8,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.style :as style]
     [utils.re-frame :as rf]
     [reagent.core :as reagent]
     [react-native.gesture :as gesture]
@@ -85,11 +86,7 @@
 (defn image
   [message index _ {:keys [screen-width screen-height] :as args}]
   [rn/view
-   {:style {:flex-direction  :row
-            :width           (+ screen-width seperator-width)
-            :height          screen-height
-            :align-items     :center
-            :justify-content :center}}
+   {:style (style/image (+ screen-width seperator-width) screen-height)}
    [zoomable-image/zoomable-image message index args
     #(toggle-opacity index args %)]
    [rn/view {:style {:width seperator-width}}]])
@@ -137,8 +134,9 @@
            scroll-index                    (reagent/atom index)
            transparent?                    (reagent/atom false)
            set-full-height?                (reagent/atom false)
-           window-width                    (rf/sub [:dimensions/window-width])
-           window-height                   (rf/sub [:dimensions/window-height])
+           window                          (rf/sub [:dimensions/window])
+           window-width                    (:width window)
+           window-height                   (:height window)
            window-height                   (if platform/android?
                                              (+ window-height (:top insets))
                                              window-height)
@@ -241,9 +239,7 @@
                                                      :wait-for-interaction                 true}
                  :shows-vertical-scroll-indicator   false
                  :shows-horizontal-scroll-indicator false
-                 :on-viewable-items-changed         callback
-                 :content-container-style           {:justify-content :center
-                                                     :align-items     :center}}]]]
+                 :on-viewable-items-changed         callback}]]]
              (when (and (not @transparent?) (not landscape?))
                [bottom-view/bottom-view messages index scroll-index insets animations derived
                 item-width atoms])]))]))])
