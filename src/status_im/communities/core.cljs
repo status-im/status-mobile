@@ -206,8 +206,8 @@
 (rf/defn status-tag-pressed
   {:events [:communities/status-tag-pressed]}
   [{:keys [db] :as cofx} community-id literal]
-  (let [{:keys [id]}    (some #(when (= (:name %) literal) %)
-                              (vals (get-in db [:communities community-id :chats])))]
+  (let [{:keys [id]} (some #(when (= (:name %) literal) %)
+                           (vals (get-in db [:communities community-id :chats])))]
     (when (and id
                (not= (:current-chat-id db) (str community-id id)))
       (chat.events/navigate-to-chat cofx (str community-id id) nil))))
