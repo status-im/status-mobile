@@ -2,82 +2,63 @@
   (:require [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]))
 
-(def variants-colors
-  "Colors that keep the same across input's status change"
-  {:light      {:label         colors/neutral-50
-                :icon          colors/neutral-50
-                :cursor        (colors/custom-color :blue 50)
-                :button-border colors/neutral-30
-                :clear-icon    colors/neutral-40
-                :password-icon colors/neutral-50}
-   :light-blur {:label         colors/neutral-80-opa-40
-                :icon          colors/neutral-80-opa-70
-                :cursor        (colors/custom-color :blue 50)
-                :button-border colors/neutral-80-opa-30
-                :password-icon colors/neutral-100
-                :clear-icon    colors/neutral-80-opa-30}
-   :dark       {:label         colors/neutral-40
-                :icon          colors/neutral-40
-                :cursor        (colors/custom-color :blue 60)
-                :button-border colors/neutral-70
-                :password-icon colors/white
-                :clear-icon    colors/neutral-60}
-   :dark-blur  {:label         colors/white-opa-40
-                :icon          colors/white-opa-70
-                :cursor        colors/white
-                :button-border colors/white-opa-10
-                :password-icon colors/white
-                :clear-icon    colors/white-opa-10}})
+(defn variants-colors
+  [blur? override-theme]
+  (if blur?
+    {:label         (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 override-theme)
+     :icon          (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 override-theme)
+     :button-border (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
+     :password-icon (colors/theme-colors colors/neutral-100 colors/white override-theme)
+     :clear-icon    (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
+     :cursor        (colors/theme-colors (colors/custom-color :blue 50)
+                                         colors/white
+                                         override-theme)}
+    {:label         (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)
+     :icon          (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)
+     :button-border (colors/theme-colors colors/neutral-30 colors/neutral-70 override-theme)
+     :clear-icon    (colors/theme-colors colors/neutral-40 colors/white override-theme)
+     :password-icon (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)
+     :cursor        (colors/theme-colors (colors/custom-color :blue 50)
+                                         (colors/custom-color :blue 60)
+                                         override-theme)}))
 
-(def status-colors
-  {:light      {:default  {:border-color colors/neutral-20
-                           :placeholder  colors/neutral-40
-                           :text         colors/neutral-100}
-                :focus    {:border-color colors/neutral-40
-                           :placeholder  colors/neutral-30
-                           :text         colors/neutral-100}
-                :error    {:border-color colors/danger-opa-40
-                           :placeholder  colors/neutral-40
-                           :text         colors/neutral-100}
-                :disabled {:border-color colors/neutral-20
-                           :placeholder  colors/neutral-40
-                           :text         colors/neutral-40}}
-   :light-blur {:default  {:border-color colors/neutral-80-opa-10
-                           :placeholder  colors/neutral-80-opa-40
-                           :text         colors/neutral-100}
-                :focus    {:border-color colors/neutral-80-opa-20
-                           :placeholder  colors/neutral-80-opa-20
-                           :text         colors/neutral-100}
-                :error    {:border-color colors/danger-opa-40
-                           :placeholder  colors/neutral-80-opa-40
-                           :text         colors/neutral-100}
-                :disabled {:border-color colors/neutral-80-opa-10
-                           :placeholder  colors/neutral-80-opa-30
-                           :text         colors/neutral-80-opa-30}}
-   :dark       {:default  {:border-color colors/neutral-80
-                           :placeholder  colors/neutral-50
-                           :text         colors/white}
-                :focus    {:border-color colors/neutral-60
-                           :placeholder  colors/neutral-60
-                           :text         colors/white}
-                :error    {:border-color colors/danger-opa-40
-                           :placeholder  colors/white-opa-40
-                           :text         colors/white}
-                :disabled {:border-color colors/neutral-80
-                           :placeholder  colors/neutral-40
-                           :text         colors/neutral-40}}
-   :dark-blur  {:default  {:border-color colors/white-opa-10
-                           :placeholder  colors/white-opa-40
-                           :text         colors/white}
-                :focus    {:border-color colors/white-opa-40
-                           :placeholder  colors/white-opa-20
-                           :text         colors/white}
-                :error    {:border-color colors/danger-opa-40
-                           :placeholder  colors/white-opa-40
-                           :text         colors/white}
-                :disabled {:border-color colors/white-opa-10
-                           :placeholder  colors/white-opa-20
-                           :text         colors/white-opa-20}}})
+(defn status-colors
+  [status blur? override-theme]
+  (if blur?
+    (case status
+      :focus
+      {:border-color (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)}
+      :error
+      {:border-color (colors/theme-colors colors/danger-opa-40 colors/danger-opa-40 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)}
+      :disabled
+      {:border-color (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-20 override-theme)
+       :text         (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-20 override-theme)}
+      ;; :default
+      {:border-color (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)})
+    (case status
+      :focus
+      {:border-color (colors/theme-colors colors/neutral-40 colors/neutral-60 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-30 colors/neutral-60 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)}
+      :error
+      {:border-color (colors/theme-colors colors/danger-opa-40 colors/danger-opa-40 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-40 colors/white-opa-40 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)}
+      :disabled
+      {:border-color (colors/theme-colors colors/neutral-20 colors/neutral-80 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-40 colors/neutral-40 override-theme)
+       :text         (colors/theme-colors colors/neutral-40 colors/neutral-40 override-theme)}
+      ;; :default
+      {:border-color (colors/theme-colors colors/neutral-20 colors/neutral-80 override-theme)
+       :placeholder  (colors/theme-colors colors/neutral-40 colors/neutral-50 override-theme)
+       :text         (colors/theme-colors colors/neutral-100 colors/white override-theme)})))
 
 (defn input-container
   [colors-by-status small? disabled?]

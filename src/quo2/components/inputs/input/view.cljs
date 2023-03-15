@@ -47,8 +47,8 @@
 
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
-  [:type :variant :error :right-icon :left-icon :disabled :small :button :label
-   :char-limit :on-char-limit-reach :icon-name])
+  [:type :blur :override-theme :error :right-icon :left-icon :disabled :small :button
+   :label :char-limit :on-char-limit-reach :icon-name])
 
 (defn- base-input
   [{:keys [on-change-text on-char-limit-reach]}]
@@ -67,16 +67,15 @@
                                 (reset! char-count amount-chars)
                                 (when (>= amount-chars char-limit)
                                   (on-char-limit-reach amount-chars))))]
-    (fn [{:keys [variant error right-icon left-icon disabled small button label char-limit
-                 multiline clearable]
-          :or   {variant :light}
+    (fn [{:keys [blur override-theme error right-icon left-icon disabled small button
+                 label char-limit multiline clearable]
           :as   props}]
-      (let [status-path      (cond
+      (let [status-kw        (cond
                                disabled :disabled
                                error    :error
                                :else    @status)
-            colors-by-status (get-in style/status-colors [variant status-path])
-            variant-colors   (style/variants-colors variant)
+            colors-by-status (style/status-colors status-kw blur override-theme)
+            variant-colors   (style/variants-colors blur override-theme)
             clean-props      (apply dissoc props custom-props)]
         [rn/view
          (when (or label char-limit)
@@ -136,7 +135,8 @@
 (defn input
   "This input supports the following properties:
   - :type - Can be `:text`(default) or `:password`.
-  - :variant - :light(default), :light-blur, :dark or :dark-blur.
+  - :blur - Boolean to set the blur color variant.
+  - :override-theme - Can be `light` or `:dark`.
   - :small - Boolean to specify if this input is rendered in its small version.
   - :multiline - Boolean to specify if this input support multiple lines.
   - :icon-name - The name of an icon to display at the left of the input.
