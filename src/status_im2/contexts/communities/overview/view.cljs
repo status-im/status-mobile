@@ -107,15 +107,25 @@
     (i18n/label :t/join-open-community)
     (i18n/label :t/request-to-join-community)))
 
+(defn get-access-type
+  [access]
+  (case access
+    constants/community-no-membership-access   :open
+    constants/community-invitation-only-access :invite-only
+    constants/community-on-request-access      :request-access
+    :unknown-access))
+
 (defn join-community
-  [{:keys [joined can-join? requested-to-join-at
+  [{:keys [joined can-join?
            community-color permissions]
-    :as   community}]
-  (let [pending?      (pos? requested-to-join-at)
-        is-open?      (not= constants/community-channel-access-on-request (:access permissions))
-        node-offline? (and can-join? (not joined) (pos? requested-to-join-at))]
+    :as   community} pending?]
+  (let [access-type     (get-access-type (:access permissions))
+        unknown-access? (= access-type :unknown-access)
+        invite-only?    (= access-type :invite-only)
+        is-open?        (= access-type :open)
+        node-offline?   (and can-join? (not joined) pending?)]
     [:<>
-     (when-not (or joined pending?)
+     (when-not (or joined pending? invite-only? unknown-access?)
        [quo/button
         {:on-press                  #(rf/dispatch
                                       [:bottom-sheet/show-sheet
@@ -210,12 +220,11 @@
 
 (defn community-content
   [{:keys [name description locked joined images
-           status tokens tags requested-to-join-at id]
-    :as   community}
+           status tokens tags id]
+    :as   community} pending?
    {:keys [on-categories-heights-changed
            on-first-channel-height-changed]}]
-  (let [pending?          (pos? requested-to-join-at)
-        thumbnail-image   (get-in images [:thumbnail])
+  (let [thumbnail-image   (:thumbnail images)
         chats-by-category (rf/sub [:communities/categorized-channels id])
         users             (rf/sub [:communities/users id])]
     [rn/view
@@ -253,7 +262,7 @@
       [rn/view {:margin-top 12}]
       [quo/community-tags tags]
       [preview-user-list users]
-      [join-community community]]
+      [join-community community pending?]]
      [channel-list-component
       {:on-categories-heights-changed   #(on-categories-heights-changed %)
        :on-first-channel-height-changed #(on-first-channel-height-changed %)}
@@ -290,7 +299,7 @@
         scroll-height        (reagent/atom 0)
         cover                {:uri (get-in images [:banner :uri])}
         logo                 {:uri (get-in images [:thumbnail :uri])}]
-    (fn [community]
+    (fn [community pending?]
       [scroll-page/scroll-page
        {:cover-image                    cover
         :logo                           logo
@@ -312,16 +321,18 @@
                                 @categories-heights))}]
        [community-content
         community
+        pending?
         {:on-categories-heights-changed   #(reset! categories-heights %)
          :on-first-channel-height-changed #(reset! first-channel-height %)}]])))
 
 (defn overview
   []
   (let [id        (rf/sub [:get-screen-params :community-overview])
-        community (rf/sub [:communities/community id])]
+        community (rf/sub [:communities/community id])
+        pending?  (rf/sub [:communities/my-pending-request-to-join id])]
     [rn/view
      {:style style/community-overview-container}
-     [community-card-page-view community]
+     [community-card-page-view community pending?]
      [floating-shell-button/floating-shell-button
       {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
                  :label    (i18n/label :t/jump-to)}}

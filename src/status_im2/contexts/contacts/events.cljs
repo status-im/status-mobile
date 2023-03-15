@@ -12,7 +12,7 @@
    :compressed-key        (oops/oget js-contact "compressedKey")
    :primary-name          (oops/oget js-contact "primaryName")
    :secondary-name        (.-secondaryName js-contact)
-   :ens-name              (.-ensName js-contact)
+   :ens-name              (.-name js-contact)
    :nickname              (.-localNickname js-contact)
    :identicon             (oops/oget js-contact "identicon")
    :images                (types/js->clj (oops/oget js-contact "images"))

@@ -156,3 +156,36 @@
          [{:name "chat1" :emoji nil :locked? false :id "0x1" :unread-messages? true :mentions-count 2}
           {:name "chat2" :emoji nil :locked? true :id "0x2" :unread-messages? false :mentions-count 0}]}
         (rf/sub [sub-name "0x1"])))))
+
+(h/deftest-sub :communities/my-pending-requests-to-join
+  [sub-name]
+  (testing "no requests"
+    (swap! rf-db/app-db assoc
+      :communities/my-pending-requests-to-join
+      {})
+    (is (= {}
+           (rf/sub [sub-name]))))
+  (testing "users requests to join different communities"
+    (swap! rf-db/app-db assoc
+      :communities/my-pending-requests-to-join
+      {:community-id-1 {:id :request-id-1}
+       :community-id-2 {:id :request-id-2}})
+    (is (= {:community-id-1 {:id :request-id-1}
+            :community-id-2 {:id :request-id-2}}
+           (rf/sub [sub-name])))))
+
+(h/deftest-sub :communities/my-pending-request-to-join
+  [sub-name]
+  (testing "no request for community"
+    (swap! rf-db/app-db assoc
+      :communities/my-pending-requests-to-join
+      {})
+    (is (= nil
+           (rf/sub [sub-name :community-id-1]))))
+  (testing "users request to join a specific communities"
+    (swap! rf-db/app-db assoc
+      :communities/my-pending-requests-to-join
+      {:community-id-1 {:id :request-id-1}
+       :community-id-2 {:id :request-id-2}})
+    (is (= :request-id-1
+           (rf/sub [sub-name :community-id-1])))))
