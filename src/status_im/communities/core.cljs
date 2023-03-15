@@ -14,7 +14,8 @@
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.events :as chat.events]))
 
 (def crop-size 1000)
 
@@ -204,13 +205,13 @@
 
 (rf/defn status-tag-pressed
   {:events [:communities/status-tag-pressed]}
-  [{:keys [db]} community-id literal]
+  [{:keys [db] :as cofx} community-id literal]
   (let [current-chat-id (:current-chat-id db)
         {:keys [id]}    (some #(when (= (:name %) literal) %)
                               (vals (get-in db [:communities community-id :chats])))]
     (when (and id
                (not= current-chat-id (str community-id id)))
-      {:dispatch [:chat/navigate-to-chat (str community-id id)]})))
+      (chat.events/navigate-to-chat cofx (str community-id id) nil))))
 
 (rf/defn fetch
   [_]
