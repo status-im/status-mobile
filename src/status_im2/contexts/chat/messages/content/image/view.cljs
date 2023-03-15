@@ -29,10 +29,11 @@
              :on-long-press  on-long-press
              :on-press       (fn []
                                (rf/dispatch [:chat.ui/update-shared-element-id message-id])
-                               (rf/dispatch [:navigate-to :lightbox
-                                             {:messages [message]
-                                              :index    0
-                                              :insets   insets}]))}
+                               (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
+                                                             {:messages (:album message)
+                                                              :index    index
+                                                              :insets   insets}])
+                                              100))}
             (when (and (not= text "placeholder") (= index 0))
               [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
             [fast-image/fast-image
