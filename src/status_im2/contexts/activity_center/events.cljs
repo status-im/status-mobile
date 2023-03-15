@@ -9,8 +9,7 @@
             [taoensso.timbre :as log]
             [utils.collection :as collection]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]))
+            [utils.re-frame :as rf]))
 
 (def defaults
   {:filter-status          :unread
@@ -24,15 +23,18 @@
 
 (rf/defn open-activity-center
   {:events [:activity-center/open]}
-  [{:keys [db] :as cofx} {:keys [filter-type filter-status]}]
-  (rf/merge cofx
-            {:db (cond-> db
-                   filter-status
-                   (assoc-in [:activity-center :filter :status] filter-status)
+  [{:keys [db]} {:keys [filter-type filter-status]}]
+  {:db             (cond-> db
+                     filter-status
+                     (assoc-in [:activity-center :filter :status] filter-status)
 
-                   filter-type
-                   (assoc-in [:activity-center :filter :type] filter-type))}
-            (navigation/open-modal :activity-center {})))
+                     filter-type
+                     (assoc-in [:activity-center :filter :type] filter-type))
+   :dispatch       [:open-modal :activity-center {}]
+   ;; We delay marking as seen so that the user doesn't see the unread bell icon
+   ;; change while the Activity Center modal is opening.
+   :dispatch-later [{:ms       1000
+                     :dispatch [:activity-center/mark-as-seen]}]})
 
 ;;;; Misc
 
@@ -48,7 +50,7 @@
        (filter #(= notification-id (:id %)))
        first))
 
-;;;; Notification reconciliation
+;;;; Reconciliation
 
 (defn- update-notifications
   [db-notifications new-notifications {filter-type :type filter-status :status}]
@@ -96,6 +98,11 @@
                   (fn [notifications]
                     (remove #(activities/pending-contact-request? contact-id %)
                             notifications)))})
+
+(rf/defn reconcile-seen-state
+  {:events [:activity-center/reconcile-seen-state]}
+  [{:keys [db]} seen?]
+  {:db (assoc-in db [:activity-center :seen?] seen?)})
 
 ;;;; Status changes (read/dismissed/deleted)
 
@@ -450,6 +457,50 @@
   {:db (update db :activity-center dissoc :loading?)})
 
 ;;;; Unread counters
+
+(rf/defn update-seen-state
+  {:events [:activity-center/update-seen-state]}
+  [_]
+  {:json-rpc/call
+   [{:method     "wakuext_hasUnseenActivityCenterNotifications"
+     :params     []
+     :on-success #(rf/dispatch [:activity-center/update-seen-state-success %])
+     :on-error   #(rf/dispatch [:activity-center/update-seen-state-error %])}]})
+
+(rf/defn update-seen-state-success
+  {:events [:activity-center/update-seen-state-success]}
+  [{:keys [db]} unseen?]
+  {:db (assoc-in db [:activity-center :seen?] (not unseen?))})
+
+(rf/defn update-seen-state-error
+  {:events [:activity-center/update-seen-state-error]}
+  [_ error]
+  (log/error "Failed to update Activity Center seen state"
+             {:error error
+              :event :activity-center/update-seen-state}))
+
+(rf/defn mark-as-seen
+  {:events [:activity-center/mark-as-seen]}
+  [_]
+  {:json-rpc/call
+   [{:method     "wakuext_markAsSeenActivityCenterNotifications"
+     :params     []
+     :on-success #(rf/dispatch [:activity-center/mark-as-seen-success %])
+     :on-error   #(rf/dispatch [:activity-center/mark-as-seen-error %])}]})
+
+(rf/defn mark-as-seen-success
+  {:events [:activity-center/mark-as-seen-success]}
+  [{:keys [db]} response]
+  {:db (assoc-in db
+        [:activity-center :seen?]
+        (get-in response [:activityCenterState :hasSeen]))})
+
+(rf/defn mark-as-seen-error
+  {:events [:activity-center/mark-as-seen-error]}
+  [_ error]
+  (log/error "Failed to mark Activity Center as seen"
+             {:error error
+              :event :activity-center/mark-as-seen}))
 
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}

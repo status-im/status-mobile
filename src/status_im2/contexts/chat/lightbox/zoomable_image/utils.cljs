@@ -37,10 +37,10 @@
    {:keys [x-threshold-scale y-threshold-scale]}
    {:keys [scale saved-scale] :as animations}
    {:keys [pan-x-enabled? pan-y-enabled?] :as props}]
-  (anim/animate scale value (if exit? 100 c/default-duration))
-  (anim/set-val saved-scale value)
   (when (= value c/min-scale)
     (reset-values exit? animations props))
+  (anim/animate scale value (if exit? 100 c/default-duration))
+  (anim/set-val saved-scale value)
   (reset! pan-x-enabled? (> value x-threshold-scale))
   (reset! pan-y-enabled? (> value y-threshold-scale)))
 
@@ -51,24 +51,37 @@
    {:keys [landscape-scale-val x-threshold-scale y-threshold-scale]}
    {:keys [rotate rotate-scale scale] :as animations}
    {:keys [pan-x-enabled? pan-y-enabled?]}]
-  (let [duration (when focused? c/default-duration)]
+  (if focused?
     (cond
       (= curr-orientation orientation/landscape-left)
       (do
-        (anim/animate rotate "90deg" duration)
-        (anim/animate rotate-scale landscape-scale-val duration))
+        (anim/animate rotate "90deg")
+        (anim/animate rotate-scale landscape-scale-val))
       (= curr-orientation orientation/landscape-right)
       (do
-        (anim/animate rotate "-90deg" duration)
-        (anim/animate rotate-scale landscape-scale-val duration))
+        (anim/animate rotate "-90deg")
+        (anim/animate rotate-scale landscape-scale-val))
       (= curr-orientation orientation/portrait)
       (do
-        (anim/animate rotate c/init-rotation duration)
-        (anim/animate rotate-scale c/min-scale duration)))
-    (center-x animations false)
-    (center-y animations false)
-    (reset! pan-x-enabled? (> (anim/get-val scale) x-threshold-scale))
-    (reset! pan-y-enabled? (> (anim/get-val scale) y-threshold-scale))))
+        (anim/animate rotate c/init-rotation)
+        (anim/animate rotate-scale c/min-scale)))
+    (cond
+      (= curr-orientation orientation/landscape-left)
+      (do
+        (anim/set-val rotate "90deg")
+        (anim/set-val rotate-scale landscape-scale-val))
+      (= curr-orientation orientation/landscape-right)
+      (do
+        (anim/set-val rotate "-90deg")
+        (anim/set-val rotate-scale landscape-scale-val))
+      (= curr-orientation orientation/portrait)
+      (do
+        (anim/set-val rotate c/init-rotation)
+        (anim/set-val rotate-scale c/min-scale))))
+  (center-x animations false)
+  (center-y animations false)
+  (reset! pan-x-enabled? (> (anim/get-val scale) x-threshold-scale))
+  (reset! pan-y-enabled? (> (anim/get-val scale) y-threshold-scale)))
 
 ;; On ios, when attempting to navigate back while zoomed in, the shared-element transition animation
 ;; doesn't execute properly, so we need to zoom out first
@@ -94,14 +107,9 @@
   "Calculates all required dimensions. Dimensions calculations are different on iOS and Android because landscape
    mode is implemented differently.On Android, we just need to resize the content, and the OS takes care of the
    animations. On iOS, we need to animate the content ourselves in code"
-  [pixels-width pixels-height curr-orientation]
-  (let [window                (rf/sub [:dimensions/window])
-        landscape?            (string/includes? curr-orientation orientation/landscape)
-        portrait?             (= curr-orientation orientation/portrait)
-        window-width          (:width window)
-        window-height         (:height window)
-        screen-width          (if (or platform/ios? portrait?) window-width window-height)
-        screen-height         (if (or platform/ios? portrait?) window-height window-width)
+  [pixels-width pixels-height curr-orientation
+   {:keys [window-width screen-width screen-height]}]
+  (let [landscape?            (string/includes? curr-orientation orientation/landscape)
         portrait-image-width  window-width
         portrait-image-height (* pixels-height (/ window-width pixels-width))
         landscape-image-width (* pixels-width (/ window-width pixels-height))

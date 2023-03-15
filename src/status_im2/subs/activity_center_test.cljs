@@ -63,3 +63,25 @@
      types/admin                7})
 
   (is (= 28 (rf/sub [sub-name]))))
+
+(h/deftest-sub :activity-center/unread-indicator
+  [sub-name]
+  (testing "not seen and no unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 0})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] false)
+    (is (= :unread-indicator/none (rf/sub [sub-name]))))
+
+  (testing "not seen and one or more unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 1})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] false)
+    (is (= :unread-indicator/new (rf/sub [sub-name]))))
+
+  (testing "seen and no unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 0})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] true)
+    (is (= :unread-indicator/none (rf/sub [sub-name]))))
+
+  (testing "seen and one or more unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 1})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] true)
+    (is (= :unread-indicator/seen (rf/sub [sub-name])))))
