@@ -37,7 +37,7 @@
                                 (when on-update-reply
                                   (on-update-reply %)))
       :auto-capitalize     :none
-      :auto-focus          true
+      :auto-focus          false
       :accessibility-label :identity-verification-reply-text-input
       :placeholder         (i18n/label :t/type-something)
       :return-key-type     :none
@@ -129,7 +129,7 @@
      (-> button
          (assoc :size size)
          (assoc :type subtype)
-         (assoc :disabled (and replying? (disable-when @reply-input)))
+         (assoc :disabled (and replying? disable-when (disable-when @reply-input)))
          (update :style merge common-style {:margin-right 8}))
      label]))
 
@@ -142,7 +142,7 @@
     :blur?  blur?}])
 
 (defn- footer
-  [_ _]
+  [_]
   (let [reply-input (reagent/atom "")]
     (fn [{:keys [replying? items] :as props}]
       [:<>

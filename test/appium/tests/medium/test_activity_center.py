@@ -286,7 +286,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Mark it as read and check filter")
         reply_element.swipe_right_on_element()
-        self.home_1.activity_left_swipe_button.click()
+        self.home_1.activity_notification_swipe_button.click()
         if reply_element.is_element_displayed(2):
             self.errors.append("Message is not marked as read!")
         self.home_1.activity_unread_filter_button.click()
@@ -295,7 +295,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Mark it as unread and check filter via right swipe")
         reply_element.swipe_right_on_element()
-        self.home_1.activity_left_swipe_button.click()
+        self.home_1.activity_notification_swipe_button.click()
         if not reply_element.unread_indicator.is_element_displayed():
             self.errors.append("No unread dot is shown on activity center element after marking it as unread!")
 
@@ -310,7 +310,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Delete it from unread via left swipe")
         self.home_1.open_activity_center_button.click()
         reply_element.swipe_left_on_element()
-        self.home_1.activity_right_swipe_button.click()
+        self.home_1.activity_notification_swipe_button.click()
         if reply_element.is_element_displayed():
             self.errors.append("Reply is still shown after removing from activity centre!")
 

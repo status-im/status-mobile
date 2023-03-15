@@ -1,5 +1,6 @@
 (ns status-im2.contexts.activity-center.view
-  (:require [oops.core :as oops]
+  (:require [clojure.set :as set]
+            [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -127,7 +128,7 @@
                              :label               (i18n/label :t/membership)
                              :accessibility-label :tab-membership
                              :notification-dot?   (when-not is-mark-all-as-read-undoable?
-                                                    (contains? types-with-unread types/membership))}
+                                                    (set/subset? types/membership types-with-unread))}
                             {:id                  types/system
                              :label               (i18n/label :t/system)
                              :accessibility-label :tab-system
@@ -172,32 +173,30 @@
   (let [height               (atom 0)
         set-swipeable-height #(reset! height (oops/oget % "nativeEvent.layout.height"))]
     (fn [{:keys [type] :as notification} index _ active-swipeable]
-      (let [swipeable-args {:height           height
-                            :active-swipeable active-swipeable
-                            :notification     notification}]
+      (let [props {:height               height
+                   :active-swipeable     active-swipeable
+                   :set-swipeable-height set-swipeable-height
+                   :notification         notification
+                   :extra-fn             (fn [] {:height @height :notification notification})}]
         [rn/view {:style (style/notification-container index)}
          (cond
            (= type types/contact-verification)
-           [contact-verification/view notification {}]
+           [contact-verification/view props]
 
            (= type types/contact-request)
-           [contact-requests/swipeable swipeable-args
-            [contact-requests/view notification set-swipeable-height]]
+           [contact-requests/view props]
 
            (= type types/mention)
-           [mentions/swipeable swipeable-args
-            [mentions/view notification set-swipeable-height]]
+           [mentions/view props]
 
            (= type types/reply)
-           [reply/swipeable swipeable-args
-            [reply/view notification set-swipeable-height]]
+           [reply/view props]
 
            (= type types/admin)
-           [admin/swipeable swipeable-args
-            [admin/view notification set-swipeable-height]]
+           [admin/view props]
 
            (some types/membership [type])
-           [membership/view notification]
+           [membership/view props]
 
            :else
            nil)]))))

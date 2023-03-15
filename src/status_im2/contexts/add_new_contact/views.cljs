@@ -44,10 +44,9 @@
 
 (defn new-contact
   []
-  (let [{:keys [input public-key state error]} (rf/sub
-                                                [:contacts/new-identity])
-        error?                                 (and (= state :error)
-                                                    (= error :uncompressed-key))]
+  (let [{:keys [input public-key state error ens-name]} (rf/sub [:contacts/new-identity])
+        error?                                          (and (= state :error)
+                                                             (= error :uncompressed-key))]
     [rn/keyboard-avoiding-view (style/container-kbd)
      [rn/view style/container-image
       [rn/image
@@ -100,5 +99,5 @@
                 (fn []
                   (rf/dispatch [:contacts/clear-new-identity])
                   (rf/dispatch [:navigate-back])
-                  (rf/dispatch [:chat.ui/show-profile public-key]))})
+                  (rf/dispatch [:chat.ui/show-profile public-key ens-name]))})
         (i18n/label :t/view-profile)]]]]))

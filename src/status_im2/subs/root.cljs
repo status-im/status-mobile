@@ -245,6 +245,7 @@
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
 (reg-root-key-sub :communities/enabled? :communities/enabled?)
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
+(reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 
 (reg-root-key-sub :activity-center :activity-center)
 
