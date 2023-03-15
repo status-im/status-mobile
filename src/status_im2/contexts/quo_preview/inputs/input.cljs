@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.inputs.input
-  (:require
-    [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Type:"
@@ -15,17 +14,16 @@
                :value "Text"}
               {:key   :password
                :value "Password"}]}
-   {:label   "Variant:"
-    :key     :variant
+   {:label "Blur:"
+    :key   :blur
+    :type  :boolean}
+   {:label   "Override Theme:"
+    :key     :override-theme
     :type    :select
-    :options [{:key   :light
-               :value "Light"}
-              {:key   :dark
+    :options [{:key   :dark
                :value "Dark"}
-              {:key   :light-blur
-               :value "Light blur"}
-              {:key   :dark-blur
-               :value "Dark blur"}]}
+              {:key   :light
+               :value "Light"}]}
    {:label "Error:"
     :key   :error
     :type  :boolean}
@@ -66,7 +64,8 @@
 (defn cool-preview
   []
   (let [state (reagent/atom {:type                :text
-                             :variant             :light-blur
+                             :blur                false
+                             :override-theme      nil
                              :placeholder         "Type something"
                              :error               false
                              :icon-name           false
@@ -75,11 +74,13 @@
                              :on-char-limit-reach #(js/alert
                                                     (str "Char limit reached: " %))})]
     (fn []
-      (let [background-color (case (:variant @state)
-                               :dark-blur  "rgb(39, 61, 81)"
-                               :dark       colors/neutral-95
-                               :light-blur "rgb(233,247,247)"
-                               :white)
+      (let [background-color (if (:blur @state)
+                               (colors/theme-colors "rgb(233,247,247)"
+                                                    "rgb(39, 61, 81)"
+                                                    (:override-theme @state))
+                               (colors/theme-colors colors/white
+                                                    colors/neutral-95
+                                                    (:override-theme @state)))
             blank-label?     (string/blank? (:label @state))
             icon?            (boolean (:icon-name @state))
             button-props     {:on-press #(js/alert "Button pressed!")
