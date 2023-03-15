@@ -74,59 +74,61 @@
 
 
 (defn render-block
-  [blocks {:keys [type literal children]} chat-id edited-at]
+  [blocks {:keys [type literal children]} chat-id]
   (case (keyword type)
     :paragraph
     (conj blocks
-          (reduce
-           (fn [acc e]
-             (render-inline acc e chat-id))
-           [quo/text]
-           children))
+          [rn/view {:style style/paragraph}
+           (reduce
+            (fn [acc e]
+              (render-inline acc e chat-id))
+            [quo/text]
+            children)])
+
+    :edited-block
+    (conj blocks
+          [rn/view {:style style/paragraph}
+           (reduce
+            (fn [acc e]
+              (render-inline acc e chat-id))
+            [quo/text]
+            children)])
 
     :blockquote
     (conj blocks
           [rn/view {:style style/quote}
-           [quo/text literal]]
-          (when edited-at
-            [quo/text
-             {:weight :medium
-              :style  {:font-size  11
-                       :margin-top 4
-                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
-             (str " (" (i18n/label :t/edited) ")")]))
+           [quo/text literal]])
 
     :codeblock
     (conj blocks
           [rn/view {:style (merge style/block (style/code))}
-           [quo/text (subs literal 0 (dec (count literal)))]]
-          (when edited-at
-            [quo/text
-             {:weight :medium
-              :style  {:font-size  11
-                       :margin-top 4
-                       :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
-             (str " (" (i18n/label :t/edited) ")")]))
+           [quo/text (subs literal 0 (dec (count literal)))]])
     blocks))
+
+(def edited-tag
+  {:literal (str "(" (i18n/label :t/edited) ")")
+   :type    :edited})
 
 (defn add-edited-tag
   [parsed-text]
-  (update parsed-text
-          (dec (count parsed-text))
-          (fn [last-literal]
-            (update last-literal
-                    :children
-                    conj
-                    {:literal (str " (" (i18n/label :t/edited) ")")
-                     :type    :edited}))))
+  (let [items-count (count parsed-text)
+        last-item   (get parsed-text (dec items-count))]
+    (if (= (keyword (:type last-item)) :paragraph)
+      (update parsed-text
+              (dec items-count)
+              (fn [last-literal]
+                (update last-literal :children into [{:literal " "} edited-tag])))
+      (conj parsed-text {:type :edited-block :children [edited-tag]}))))
 
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
-  (reduce (fn [acc e]
-            (render-block acc e chat-id edited-at))
-          [:<>]
-          (cond-> (:parsed-text content)
-            edited-at add-edited-tag)))
+  [rn/view {:style style/parsed-text-block}
+   (reduce (fn [acc e]
+             (render-block acc e chat-id))
+           [:<>]
+           (cond-> (:parsed-text content)
+             edited-at
+             add-edited-tag))])
 
 (defn text-content
   [message-data context]
