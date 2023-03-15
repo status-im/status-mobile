@@ -197,7 +197,7 @@ class HomeView(BaseView):
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
-        self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="notifications-unread-badge") 
+        self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
         
@@ -321,6 +321,9 @@ class HomeView(BaseView):
         chat = self.get_chat_view()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(public_key)
+        chat.element_by_translation_id("user-found").wait_for_visibility_of_element()
+        if not chat.view_profile_new_contact_button.is_element_displayed():
+            chat.click_system_back_button()
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
         if remove_from_contacts and chat.profile_remove_from_contacts.is_element_displayed():
             chat.profile_remove_from_contacts.click()
@@ -360,6 +363,9 @@ class HomeView(BaseView):
         self.add_a_contact_chat_bottom_sheet_button.click()
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(key)
+        chat.element_by_translation_id("user-found").wait_for_visibility_of_element()
+        if not chat.view_profile_new_contact_button.is_element_displayed():
+            chat.click_system_back_button()
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts_button)
         chat.profile_add_to_contacts_button.click()
         self.click_system_back_button_until_element_is_shown()
