@@ -254,8 +254,7 @@ class HomeView(BaseView):
         # Activity centre
         self.mention_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-mention")
         self.reply_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-reply")
-        self.activity_right_swipe_button = Button(self.driver, accessibility_id="notification-right-swipe")
-        self.activity_left_swipe_button = Button(self.driver, accessibility_id="notification-left-swipe")
+        self.activity_notification_swipe_button = Button(self.driver, accessibility_id="notification-swipe")
         self.activity_unread_filter_button = Button(self.driver, accessibility_id="selector-filter")
 
 

@@ -87,9 +87,10 @@
 
 (rf/defn build-contact
   {:events [:contacts/build-contact]}
-  [_ pubkey open-profile-modal?]
+  [_ pubkey ens-name open-profile-modal?]
   {:json-rpc/call [{:method      "wakuext_buildContact"
-                    :params      [pubkey]
+                    :params      [{:publicKey pubkey
+                                   :ENSName   ens-name}]
                     :js-response true
                     :on-success  #(rf/dispatch [:contacts/contact-built
                                                 pubkey
@@ -113,7 +114,7 @@
                          :public-key pubkey
                          :ens-name   ens-name
                          :state      :valid})}
-            (build-contact pubkey false)))
+            (build-contact pubkey ens-name false)))
 
 (rf/defn set-new-identity-error
   {:events [:contacts/set-new-identity-error]}

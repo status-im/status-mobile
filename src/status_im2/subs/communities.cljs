@@ -123,14 +123,20 @@
 (re-frame/reg-sub
  :communities/grouped-by-status
  :<- [:communities/communities]
- (fn [communities]
+ :<- [:communities/my-pending-requests-to-join]
+ ;; Return communities splitted by level of user participation. Some communities user
+ ;; already joined, to some of them join request sent and others were opened one day
+ ;; and their data remained in app-db.
+ ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
+ (fn [[communities requests]]
    (reduce (fn [acc community]
-             (let [joined?    (:joined community)
-                   requested? (pos? (:requested-to-join-at community))] ;; this looks suspicious
+             (let [joined?      (:joined community)
+                   community-id (:id community)
+                   pending?     (boolean (get requests community-id))]
                (cond
-                 joined?    (update acc :joined conj community)
-                 requested? (update acc :pending conj community)
-                 :else      (update acc :opened conj community))))
+                 joined?  (update acc :joined conj community)
+                 pending? (update acc :pending conj community)
+                 :else    (update acc :opened conj community))))
            {:joined [] :pending [] :opened []}
            communities)))
 
@@ -151,6 +157,12 @@
    (community->home-item
     (get communities identity)
     counts)))
+
+(re-frame/reg-sub
+ :communities/my-pending-request-to-join
+ :<- [:communities/my-pending-requests-to-join]
+ (fn [requests [_ community-id]]
+   (:id (get requests community-id))))
 
 (re-frame/reg-sub
  :communities/edited-community

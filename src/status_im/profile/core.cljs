@@ -93,4 +93,4 @@
       {:db       (-> db
                      (assoc :contacts/identity identity)
                      (assoc :contacts/ens-name ens-name))
-       :dispatch [:contacts/build-contact identity true]})))
+       :dispatch [:contacts/build-contact identity ens-name true]})))
