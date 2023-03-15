@@ -61,7 +61,7 @@
        :source (get-in carousels [@carousel-index :image])}]
      [quo/drawer-buttons
       {:top-card    {:on-press            (fn []
-                                            (rf/dispatch [:navigate-to :new-to-status])
+                                            (rf/dispatch [:navigate-to :sign-in])
                                             (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                      :heading             (i18n/label :t/sign-in)
                      :accessibility-label :already-use-status-button}

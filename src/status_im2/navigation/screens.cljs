@@ -1,27 +1,30 @@
 (ns status-im2.navigation.screens
-  (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
-            [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im.ui.screens.screens :as old-screens]
-            [status-im2.config :as config]
-            [status-im2.contexts.activity-center.view :as activity-center]
-            [status-im2.contexts.add-new-contact.views :as add-new-contact]
-            [status-im2.contexts.chat.lightbox.view :as lightbox]
-            [status-im2.contexts.chat.messages.view :as chat]
-            [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
-            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
-            [status-im2.contexts.communities.discover.view :as communities.discover]
-            [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.onboarding.common.intro.view :as intro]
-            [status-im2.contexts.onboarding.create-password.view :as create-password]
-            [status-im2.contexts.onboarding.create-profile.view :as create-profile]
-            [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
-            [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
-            [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
-            [status-im2.contexts.onboarding.profiles.view :as profiles]
-            [status-im2.contexts.quo-preview.main :as quo.preview]
-            [status-im2.contexts.shell.view :as shell]
-            [status-im2.contexts.syncing.view :as settings-syncing]))
+  (:require
+    [utils.i18n :as i18n] ;; TODO remove when not used anymore
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [status-im.ui.screens.screens :as old-screens]
+    [status-im2.config :as config]
+    [status-im2.contexts.activity-center.view :as activity-center]
+    [status-im2.contexts.add-new-contact.views :as add-new-contact]
+    [status-im2.contexts.chat.lightbox.view :as lightbox]
+    [status-im2.contexts.chat.messages.view :as chat]
+    [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
+    [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.communities.discover.view :as communities.discover]
+    [status-im2.contexts.communities.overview.view :as communities.overview]
+    [status-im2.contexts.onboarding.common.intro.view :as intro]
+    [status-im2.contexts.onboarding.create-password.view :as create-password]
+    [status-im2.contexts.onboarding.create-profile.view :as create-profile]
+    [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
+    [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
+    [status-im2.contexts.onboarding.sign-in.view :as sign-in]
+    [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
+    [status-im2.contexts.onboarding.profiles.view :as profiles]
+    [status-im2.contexts.quo-preview.main :as quo.preview]
+    [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.syncing.view :as settings-syncing]))
 
 (def components
   [])
@@ -148,7 +151,21 @@
                  :topBar        {:visible false}
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
-     :component enable-notifications/enable-notifications}]
+     :component enable-notifications/enable-notifications}
+
+    {:name      :sign-in
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component sign-in/sign-in}
+
+    {:name      :syncing-devices
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component syncing-devices/syncing-devices}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
