@@ -259,11 +259,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(reply_to_message_from_sender)
 
         self.home_1.just_fyi("Checking unread indicators")
+        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
         for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
             if not unread_counter.is_element_displayed(60):
                 self.errors.append('New message counter badge is not shown!')
-            if unread_counter.text != '1':
+            if int(unread_counter.text) != 1:
                 self.errors.append('New message counter badge is not 1, it is %s!' % unread_counter.text)
 
         self.home_1.just_fyi("Checking reply attributes in activity center")
