@@ -1,7 +1,7 @@
 aiohttp==3.8.1
 allpairspy==2.5.0
 apipkg==1.5
-Appium-Python-Client==1.0.2
+Appium-Python-Client==1.3.0
 PyGithub==1.55
 async-timeout==4.0.1
 certifi==2020.11.8
