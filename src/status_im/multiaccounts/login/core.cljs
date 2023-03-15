@@ -414,6 +414,7 @@
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-pending-contact-requests)
+              (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count))))
 
 (re-frame/reg-fx

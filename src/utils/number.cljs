@@ -13,3 +13,13 @@
   (let [scale (Math/pow 10 decimal-places)]
     (/ (Math/round (* n scale))
        scale)))
+
+(defn parse-int
+  "Parses `n` as an integer. Defaults to zero or `default` instead of NaN."
+  ([n]
+   (parse-int n 0))
+  ([n default]
+   (let [maybe-int (js/parseInt n 10)]
+     (if (integer? maybe-int)
+       maybe-int
+       default))))

@@ -43,6 +43,7 @@
         ^js invitations                (.-invitations response-js)
         ^js removed-chats              (.-removedChats response-js)
         ^js activity-notifications     (.-activityCenterNotifications response-js)
+        ^js activity-center-state      (.-activityCenterState response-js)
         ^js pin-messages               (.-pinMessages response-js)
         ^js removed-messages           (.-removedMessages response-js)
         ^js visibility-status-updates  (.-statusUpdates response-js)
@@ -73,6 +74,15 @@
         (rf/merge cofx
                   (activity-center/notifications-reconcile notifications)
                   (activity-center/show-toasts notifications)
+                  (process-next response-js sync-handler)))
+
+      (some? activity-center-state)
+      (let [seen? (-> activity-center-state
+                      types/js->clj
+                      data-store.activities/<-rpc-seen-state)]
+        (js-delete response-js "activityCenterState")
+        (rf/merge cofx
+                  (activity-center/reconcile-seen-state seen?)
                   (process-next response-js sync-handler)))
 
       (seq installations)

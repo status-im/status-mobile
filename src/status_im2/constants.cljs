@@ -37,6 +37,7 @@
 (def ^:const activity-center-membership-status-declined 3)
 
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
+(def ^:const activity-center-max-unread-count 99)
 
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up 2)
