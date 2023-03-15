@@ -48,8 +48,7 @@
        :max-height (- (:height window)
                       (* 2 56) ;; two other list items
                       (* 2 16) ;; spacing between items
-                      220      ;; extra spacing (top bar)
-                   )
+                      220)     ;; extra spacing (top bar)
        :on-press   #(rf/dispatch [:generate-and-derive-addresses])}]
 
      [rn/view {:style style/subtitle-container}

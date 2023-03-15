@@ -53,11 +53,10 @@
     :or   {variant :main}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)
-        card-height    (if main-variant?
-                         (if max-height
-                           (min max-height style/main-variant-height)
-                           style/main-variant-height)
-                         style/icon-variant-height)]
+        card-height    (cond
+                         (not main-variant?) style/icon-variant-height
+                         max-height          (min max-height style/main-variant-height)
+                         :else               style/main-variant-height)]
     [rn/view
      [rn/touchable-highlight
       {:accessibility-label :small-option-card
