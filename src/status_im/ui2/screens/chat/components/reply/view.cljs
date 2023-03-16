@@ -64,6 +64,17 @@
                            :margin-top     2}}
     (i18n/label :t/message-deleted)]])
 
+(defn reply-from
+  [{:keys [from identicon contact-name current-public-key]}]
+  [rn/view {:style style/reply-from}
+   [photos/member-photo from identicon 16]
+   [quo2.text/text
+    {:weight          :semi-bold
+     :size            :paragraph-2
+     :number-of-lines 1
+     :style           style/message-author-text}
+    (format-reply-author from contact-name current-public-key)]])
+
 (defn reply-message
   [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]}
    in-chat-input? pin? recording-audio?]
@@ -84,13 +95,10 @@
         [rn/view {:style (style/quoted-message pin? in-chat-input?)}
          [reply-deleted-message]]
         [rn/view {:style (style/quoted-message pin? in-chat-input?)}
-         [photos/member-photo from identicon 16]
-         [quo2.text/text
-          {:weight          :semi-bold
-           :size            :paragraph-2
-           :number-of-lines 1
-           :style           {:margin-left 4}}
-          (format-reply-author from contact-name current-public-key)]
+         [reply-from {:from               from
+                      :identicon          identicon
+                      :contact-name       contact-name
+                      :current-public-key current-public-key}]
          [quo2.text/text
           {:number-of-lines     1
            :size                :label
@@ -98,9 +106,7 @@
            :accessibility-label :quoted-message
            :ellipsize-mode      :tail
            :style               (merge
-                                 {:text-transform :none
-                                  :margin-left    4
-                                  :margin-top     2}
+                                 style/message-text
                                  (when (or (= constants/content-type-image content-type)
                                            (= constants/content-type-sticker content-type)
                                            (= constants/content-type-audio content-type))
