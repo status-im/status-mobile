@@ -114,8 +114,8 @@
              bg-color        (reanimated/use-shared-value "rgba(0,0,0,0)")]
          (rn/use-effect
            (fn []
-             ;(reanimated/animate-shared-value-with-delay-default-easing bg-color "rgba(9, 16, 28, 0.7)" 300 0)
-             (reanimated/set-shared-value bg-color  (reanimated/with-timing "rgba(9, 16, 28, 0.7)"))
+             (reanimated/animate-shared-value-with-delay-default-easing bg-color "rgba(9, 16, 28, 0.7)" 300 50)
+             ;(js/setTimeout #(reanimated/set-shared-value bg-color  (reanimated/with-timing "rgba(9, 16, 28, 0.7)")) 300)
              (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
              (if (seq selected-images)
                (reset! selected (vec (vals selected-images)))
@@ -147,7 +147,7 @@
                    [rn/touchable-opacity
                     {:active-opacity 1
                      :on-press       (fn []
-                                       (reanimated/set-shared-value bg-color (reanimated/with-timing "transparent"))
+                                       (reanimated/set-shared-value bg-color (reanimated/with-timing "transparent" (clj->js {:duration 100})))
                                        (rf/dispatch [:navigate-back]))
                      :style          (style/close-button-container)}
                     [quo/icon :i/close
