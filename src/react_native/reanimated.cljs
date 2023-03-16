@@ -74,7 +74,11 @@
   (.-inOut ^js Easing))
 
 ;; trying to put default-easing inside easings map causes test to fail
+<<<<<<< HEAD
 (defn default-easing [] (in-out (.-quad ^js Easing)))
+=======
+(def default-easing (in-out (.-quad ^js Easing)))
+>>>>>>> 52b8d487a (feat: bottom sheet screen)
 
 (def easings
   {:linear  (bezier 0 0 1 1)
@@ -132,7 +136,11 @@
                      (with-delay delay
                                  (with-timing val
                                               (clj->js {:duration duration
+<<<<<<< HEAD
                                                         :easing   (default-easing)}))))))
+=======
+                                                        :easing   default-easing}))))))
+>>>>>>> 52b8d487a (feat: bottom sheet screen)
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
