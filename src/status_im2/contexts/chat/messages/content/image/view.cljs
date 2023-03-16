@@ -30,8 +30,8 @@
              :on-press       (fn []
                                (rf/dispatch [:chat.ui/update-shared-element-id message-id])
                                (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
-                                                             {:messages (:album message)
-                                                              :index    index
+                                                             {:messages [message]
+                                                              :index    0
                                                               :insets   insets}])
                                               100))}
             (when (and (not= text "placeholder") (= index 0))
