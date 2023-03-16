@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.inputs.input
-  (:require
-    [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Type:"
@@ -15,31 +14,30 @@
                :value "Text"}
               {:key   :password
                :value "Password"}]}
-   {:label   "Variant:"
-    :key     :variant
+   {:label "Blur:"
+    :key   :blur?
+    :type  :boolean}
+   {:label   "Override Theme:"
+    :key     :override-theme
     :type    :select
-    :options [{:key   :light
-               :value "Light"}
-              {:key   :dark
+    :options [{:key   :dark
                :value "Dark"}
-              {:key   :light-blur
-               :value "Light blur"}
-              {:key   :dark-blur
-               :value "Dark blur"}]}
+              {:key   :light
+               :value "Light"}]}
    {:label "Error:"
-    :key   :error
+    :key   :error?
     :type  :boolean}
    {:label "Icon:"
     :key   :icon-name
     :type  :boolean}
    {:label "Disabled:"
-    :key   :disabled
+    :key   :disabled?
     :type  :boolean}
    {:label "Clearable:"
-    :key   :clearable
+    :key   :clearable?
     :type  :boolean}
    {:label "Small:"
-    :key   :small
+    :key   :small?
     :type  :boolean}
    {:label "Multiline:"
     :key   :multiline
@@ -66,7 +64,8 @@
 (defn cool-preview
   []
   (let [state (reagent/atom {:type                :text
-                             :variant             :light-blur
+                             :blur                false
+                             :override-theme      nil
                              :placeholder         "Type something"
                              :error               false
                              :icon-name           false
@@ -75,29 +74,24 @@
                              :on-char-limit-reach #(js/alert
                                                     (str "Char limit reached: " %))})]
     (fn []
-      (let [background-color (case (:variant @state)
-                               :dark-blur  "rgb(39, 61, 81)"
-                               :dark       colors/neutral-95
-                               :light-blur "rgb(233,247,247)"
-                               :white)
-            blank-label?     (string/blank? (:label @state))
-            icon?            (boolean (:icon-name @state))
-            button-props     {:on-press #(js/alert "Button pressed!")
-                              :text     "My button"}]
+      (let [blank-label? (string/blank? (:label @state))
+            icon?        (boolean (:icon-name @state))
+            button-props {:on-press #(js/alert "Button pressed!")
+                          :text     "My button"}]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:padding-bottom 150}}
           [rn/view {:style {:flex 1}}
            [preview/customizer state descriptor]]
-          [rn/view
-           {:style {:flex             1
-                    :align-items      :center
-                    :padding-vertical 60
-                    :background-color background-color}}
+          [preview/blur-view
+           {:style                 {:flex            1
+                                    :align-items     :center
+                                    :margin-vertical 20}
+            :show-blur-background? (:blur? @state)}
            [rn/view {:style {:width 300}}
             [quo/input
              (cond-> @state
                :always          (assoc
-                                 :on-clear       #(swap! state assoc :value "")
+                                 :on-clear?      #(swap! state assoc :value "")
                                  :on-change-text #(swap! state assoc :value %))
                (:button @state) (assoc :button button-props)
                blank-label?     (dissoc :label)

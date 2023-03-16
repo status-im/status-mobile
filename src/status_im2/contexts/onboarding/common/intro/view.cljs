@@ -51,41 +51,38 @@
 
 (defn view
   []
-  (reagent/with-let
-   [carousel-index (reagent/atom 0)
-    interval-id
-    (js/setInterval
-     #(swap! carousel-index set-index)
-     1500)]
-   [rn/view {:style style/page-container}
-    [carousel @carousel-index]
-    [rn/image
-     {:style  style/page-image
-      :source (get-in carousels [@carousel-index :image])}]
-    [quo/drawer-buttons
-     {:top-card    {:on-press            (fn []
-                                           (rf/dispatch [:navigate-to :new-to-status])
-                                           (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
-                    :heading             (i18n/label :t/sign-in)
-                    :accessibility-label :already-use-status-button}
-      :bottom-card {:on-press            (fn []
-                                           (rf/dispatch [:navigate-to :new-to-status])
-                                           (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
-                    :heading             (i18n/label :t/new-to-status)
-                    :accessibility-label :new-to-status-button}}
-     (i18n/label :t/you-already-use-status)
-     [quo/text
-      {:style style/text-container}
+  (reagent/with-let [carousel-index (reagent/atom 0)
+                     interval-id    (js/setInterval #(swap! carousel-index set-index)
+                                                    1500)]
+    [rn/view {:style style/page-container}
+     [carousel @carousel-index]
+     [rn/image
+      {:style  style/page-image
+       :source (get-in carousels [@carousel-index :image])}]
+     [quo/drawer-buttons
+      {:top-card    {:on-press            (fn []
+                                            (rf/dispatch [:navigate-to :new-to-status])
+                                            (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
+                     :heading             (i18n/label :t/sign-in)
+                     :accessibility-label :already-use-status-button}
+       :bottom-card {:on-press            (fn []
+                                            (rf/dispatch [:navigate-to :new-to-status])
+                                            (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
+                     :heading             (i18n/label :t/new-to-status)
+                     :accessibility-label :new-to-status-button}}
+      (i18n/label :t/you-already-use-status)
       [quo/text
-       {:size   :paragraph-2
-        :style  style/plain-text
-        :weight :semi-bold}
-       (i18n/label :t/by-continuing-you-accept)]
-      [quo/text
-       {:on-press #(rf/dispatch [:open-modal :privacy-policy])
-        :size     :paragraph-2
-        :style    style/highlighted-text
-        :weight   :semi-bold}
-       (i18n/label :t/terms-of-service)]]]]
-   (finally
-    (js/clearInterval interval-id))))
+       {:style style/text-container}
+       [quo/text
+        {:size   :paragraph-2
+         :style  style/plain-text
+         :weight :semi-bold}
+        (i18n/label :t/by-continuing-you-accept)]
+       [quo/text
+        {:on-press #(rf/dispatch [:open-modal :privacy-policy])
+         :size     :paragraph-2
+         :style    style/highlighted-text
+         :weight   :semi-bold}
+        (i18n/label :t/terms-of-service)]]]]
+    (finally
+     (js/clearInterval interval-id))))
