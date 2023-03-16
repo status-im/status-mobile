@@ -4,11 +4,11 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.list.view :as messages.list]
+            [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
+            [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
@@ -67,7 +67,7 @@
 (defn chat-render
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id contact-request-state group-chat show-input?] :as chat}
+        {:keys [chat-id contact-request-state group-chat able-to-send-message?] :as chat}
         (rf/sub [:chats/current-chat-chat-view])]
     [safe-area/consumer
      (fn [insets]
@@ -76,8 +76,8 @@
          :keyboardVerticalOffset (- (:bottom insets))}
         [page-nav]
         [pin.banner/banner chat-id]
-        [messages.list/messages-list {:chat chat :show-input? show-input?}]
-        (if-not show-input?
+        [messages.list/messages-list chat]
+        (if-not able-to-send-message?
           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
           [composer/composer chat-id insets])])]))
 
