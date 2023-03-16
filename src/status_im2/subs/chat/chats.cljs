@@ -3,7 +3,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
-            [status-im.chat.models.mentions :as mentions]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
@@ -437,26 +436,6 @@
  :<- [:multiaccount/public-key]
  (fn [[current-chat pk]]
    (group-chat/member-removed? current-chat pk)))
-
-(re-frame/reg-sub
- :chats/mentionable-users
- :<- [:chats/current-chat]
- :<- [:contacts/blocked-set]
- :<- [:contacts/contacts]
- :<- [:multiaccount]
- :<- [:communities/current-community-members]
- (fn
-   [[{:keys [users] :as chat}
-     blocked
-     all-contacts
-     {:keys [public-key] :as current-multiaccount}
-     community-members]]
-   (let [mentionable-users (mentions/get-mentionable-users chat
-                                                           all-contacts
-                                                           current-multiaccount
-                                                           community-members)
-         members-left      (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))]
-     (apply dissoc mentionable-users (conj (concat blocked members-left) public-key)))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
