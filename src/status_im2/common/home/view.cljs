@@ -58,10 +58,35 @@
              :size              :small}
             avatar)]]])
 
+(defn connectivity-sheet
+  []
+  (let [peers-count  (rf/sub [:peers-count])
+        network-type (rf/sub [:network/type])]
+    [rn/view
+     [quo/text {:accessibility-label :peers-network-type-text} (str "NETWORK TYPE: " network-type)]
+     [quo/text {:accessibility-label :peers-count-text} (str "PEERS COUNT: " peers-count)]]))
+
 (defn- right-section
   [{:keys [button-type search?]}]
-  (let [button-common-props (get-button-common-props button-type)]
+  (let [button-common-props (get-button-common-props button-type)
+        network-type        (rf/sub [:network/type])]
     [rn/view {:style style/right-section}
+     (when (= network-type "cellular")
+       [quo/button
+        (merge button-common-props
+               {:icon                false
+                :accessibility-label :on-cellular-network
+                :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                                    {:content connectivity-sheet}])})
+        "🦄"])
+     (when (= network-type "none")
+       [quo/button
+        (merge button-common-props
+               {:icon                false
+                :accessibility-label :no-network-connection
+                :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                                    {:content connectivity-sheet}])})
+        "💀"])
      (when search?
        [quo/button
         (assoc button-common-props :accessibility-label :open-search-button)
