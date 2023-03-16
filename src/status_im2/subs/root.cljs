@@ -238,14 +238,14 @@
 
 ;; communities
 
-(reg-root-key-sub :raw-communities :communities)
+(reg-root-key-sub :communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
-(reg-root-key-sub :communities/enabled? :communities/enabled?)
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
+(reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 
 (reg-root-key-sub :activity-center :activity-center)
 
@@ -253,6 +253,7 @@
 (reg-root-key-sub :bug-report/details :bug-report/details)
 
 (reg-root-key-sub :backup/performing-backup :backup/performing-backup)
+
 
 ;; wallet connect
 (reg-root-key-sub :wallet-connect/proposal-metadata :wallet-connect/proposal-metadata)
