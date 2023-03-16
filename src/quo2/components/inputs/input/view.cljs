@@ -24,31 +24,31 @@
        count-text]]]))
 
 (defn- left-accessory
-  [{:keys [variant-colors small icon-name]}]
-  [rn/view {:style (style/left-icon-container small)}
+  [{:keys [variant-colors small? icon-name]}]
+  [rn/view {:style (style/left-icon-container small?)}
    [icon/icon icon-name (style/icon variant-colors)]])
 
 (defn- right-accessory
-  [{:keys [variant-colors small disabled on-press icon-style-fn icon-name]}]
+  [{:keys [variant-colors small? disabled? on-press icon-style-fn icon-name]}]
   [rn/touchable-opacity
-   {:style    (style/right-icon-touchable-area small)
-    :disabled disabled
+   {:style    (style/right-icon-touchable-area small?)
+    :disabled disabled?
     :on-press on-press}
    [icon/icon icon-name (icon-style-fn variant-colors)]])
 
 (defn- right-button
-  [{:keys [variant-colors colors-by-status small disabled on-press text]}]
+  [{:keys [variant-colors colors-by-status small? disabled? on-press text]}]
   [rn/touchable-opacity
-   {:style    (style/button variant-colors small)
-    :disabled disabled
+   {:style    (style/button variant-colors small?)
+    :disabled disabled?
     :on-press on-press}
    [rn/text {:style (style/button-text colors-by-status)}
     text]])
 
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
-  [:type :blur :override-theme :error :right-icon :left-icon :disabled :small :button
-   :label :char-limit :on-char-limit-reach :icon-name])
+  [:type :blur? :override-theme :error? :right-icon :left-icon :disabled? :small? :button
+   :label :char-limit :on-char-limit-reach :icon-name :multiline?])
 
 (defn- base-input
   [{:keys [on-change-text on-char-limit-reach]}]
@@ -67,15 +67,15 @@
                                 (reset! char-count amount-chars)
                                 (when (>= amount-chars char-limit)
                                   (on-char-limit-reach amount-chars))))]
-    (fn [{:keys [blur override-theme error right-icon left-icon disabled small button
-                 label char-limit multiline clearable]
+    (fn [{:keys [blur? override-theme error? right-icon left-icon disabled? small? button
+                 label char-limit multiline? clearable?]
           :as   props}]
       (let [status-kw        (cond
-                               disabled :disabled
-                               error    :error
-                               :else    @status)
-            colors-by-status (style/status-colors status-kw blur override-theme)
-            variant-colors   (style/variants-colors blur override-theme)
+                               disabled? :disabled
+                               error?    :error
+                               :else     @status)
+            colors-by-status (style/status-colors status-kw blur? override-theme)
+            variant-colors   (style/variants-colors blur? override-theme)
             clean-props      (apply dissoc props custom-props)]
         [rn/view
          (when (or label char-limit)
@@ -84,38 +84,39 @@
              :label          label
              :current-chars  @char-count
              :char-limit     char-limit}])
-         [rn/view {:style (style/input-container colors-by-status small disabled)}
+         [rn/view {:style (style/input-container colors-by-status small? disabled?)}
           (when-let [{:keys [icon-name]} left-icon]
             [left-accessory
              {:variant-colors variant-colors
-              :small          small
+              :small?         small?
               :icon-name      icon-name}])
           [rn/text-input
-           (cond-> {:style                  (style/input colors-by-status small @multiple-lines?)
+           (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
                     :placeholder-text-color (:placeholder colors-by-status)
                     :cursor-color           (:cursor variant-colors)
-                    :editable               (not disabled)
+                    :editable               (not disabled?)
                     :on-focus               on-focus
                     :on-blur                on-blur}
              :always    (merge clean-props)
-             multiline  (assoc :on-content-size-change set-multiple-lines!)
-             char-limit (assoc :on-change-text #(update-char-limit! char-limit %)))]
+             multiline? (assoc :multiline              true
+                               :on-content-size-change set-multiple-lines!)
+             char-limit (assoc :on-change-text #(update-char-limit! % char-limit)))]
           (when-let [{:keys [on-press icon-name style-fn]} right-icon]
             [right-accessory
              {:variant-colors variant-colors
-              :small          small
-              :disabled       disabled
+              :small?         small?
+              :disabled?      disabled?
               :icon-style-fn  style-fn
               :icon-name      icon-name
               :on-press       (fn []
-                                (when clearable (reset! char-count 0))
+                                (when clearable? (reset! char-count 0))
                                 (on-press))}])
           (when-let [{:keys [on-press text]} button]
             [right-button
              {:colors-by-status colors-by-status
               :variant-colors   variant-colors
-              :small            small
-              :disabled         disabled
+              :small?           small?
+              :disabled?        disabled?
               :on-press         on-press
               :text             text}])]]))))
 
@@ -135,14 +136,14 @@
 (defn input
   "This input supports the following properties:
   - :type - Can be `:text`(default) or `:password`.
-  - :blur - Boolean to set the blur color variant.
+  - :blur? - Boolean to set the blur color variant.
   - :override-theme - Can be `light` or `:dark`.
-  - :small - Boolean to specify if this input is rendered in its small version.
-  - :multiline - Boolean to specify if this input support multiple lines.
+  - :small? - Boolean to specify if this input is rendered in its small version.
+  - :multiline? - Boolean to specify if this input support multiple lines.
   - :icon-name - The name of an icon to display at the left of the input.
-  - :error - Boolean to specify it this input marks an error.
-  - :disabled - Boolean to specify if this input is disabled or not.
-  - :clearable - Booolean to specify if this input has a clear button at the end.
+  - :error? - Boolean to specify it this input marks an error.
+  - :disabled? - Boolean to specify if this input is disabled or not.
+  - :clearable? - Booolean to specify if this input has a clear button at the end.
   - :on-clear - Function executed when the clear button is pressed.
   - :button - Map containing `:on-press` & `:text` keys, if provided renders a button
   - :label - A label for this input.
@@ -155,12 +156,12 @@
   - :on-change-text
   ...
   "
-  [{:keys [type clearable on-clear on-change-text icon-name]
+  [{:keys [type clearable? on-clear on-change-text icon-name]
     :or   {type :text}
     :as   props}]
   (let [base-props (cond-> props
                      icon-name      (assoc-in [:left-icon :icon-name] icon-name)
-                     clearable      (assoc :right-icon
+                     clearable?     (assoc :right-icon
                                            {:style-fn  style/clear-icon
                                             :icon-name :i/clear
                                             :on-press  #(when on-clear (on-clear))})

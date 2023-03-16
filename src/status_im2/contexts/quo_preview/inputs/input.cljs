@@ -15,7 +15,7 @@
               {:key   :password
                :value "Password"}]}
    {:label "Blur:"
-    :key   :blur
+    :key   :blur?
     :type  :boolean}
    {:label   "Override Theme:"
     :key     :override-theme
@@ -25,19 +25,19 @@
               {:key   :light
                :value "Light"}]}
    {:label "Error:"
-    :key   :error
+    :key   :error?
     :type  :boolean}
    {:label "Icon:"
     :key   :icon-name
     :type  :boolean}
    {:label "Disabled:"
-    :key   :disabled
+    :key   :disabled?
     :type  :boolean}
    {:label "Clearable:"
-    :key   :clearable
+    :key   :clearable?
     :type  :boolean}
    {:label "Small:"
-    :key   :small
+    :key   :small?
     :type  :boolean}
    {:label "Multiline:"
     :key   :multiline
@@ -74,31 +74,24 @@
                              :on-char-limit-reach #(js/alert
                                                     (str "Char limit reached: " %))})]
     (fn []
-      (let [background-color (if (:blur @state)
-                               (colors/theme-colors "rgb(233,247,247)"
-                                                    "rgb(39, 61, 81)"
-                                                    (:override-theme @state))
-                               (colors/theme-colors colors/white
-                                                    colors/neutral-95
-                                                    (:override-theme @state)))
-            blank-label?     (string/blank? (:label @state))
-            icon?            (boolean (:icon-name @state))
-            button-props     {:on-press #(js/alert "Button pressed!")
-                              :text     "My button"}]
+      (let [blank-label? (string/blank? (:label @state))
+            icon?        (boolean (:icon-name @state))
+            button-props {:on-press #(js/alert "Button pressed!")
+                          :text     "My button"}]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:padding-bottom 150}}
           [rn/view {:style {:flex 1}}
            [preview/customizer state descriptor]]
-          [rn/view
-           {:style {:flex             1
-                    :align-items      :center
-                    :padding-vertical 60
-                    :background-color background-color}}
+          [preview/blur-view
+           {:style                 {:flex            1
+                                    :align-items     :center
+                                    :margin-vertical 20}
+            :show-blur-background? (:blur? @state)}
            [rn/view {:style {:width 300}}
             [quo/input
              (cond-> @state
                :always          (assoc
-                                 :on-clear       #(swap! state assoc :value "")
+                                 :on-clear?      #(swap! state assoc :value "")
                                  :on-change-text #(swap! state assoc :value %))
                (:button @state) (assoc :button button-props)
                blank-label?     (dissoc :label)
