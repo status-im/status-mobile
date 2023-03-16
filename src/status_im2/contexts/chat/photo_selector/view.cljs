@@ -138,7 +138,8 @@
                                                                                :right    0})}]
                [rn/view {:style {:margin-top              0 :background-color :white
                                  :border-top-left-radius  20
-                                 :border-top-right-radius 20}}
+                                 :border-top-right-radius 20
+                                 :overflow :hidden}}
                 [rn/view
                  {:style style/buttons-container}
                  (when true
