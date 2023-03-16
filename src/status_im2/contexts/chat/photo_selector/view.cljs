@@ -24,13 +24,13 @@
   (rf/dispatch [:navigate-back]))
 
 (defn bottom-gradient
-  [selected-images bottom-inset selected]
+  [selected-images insets selected]
   (when (or (seq @selected) (seq selected-images))
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
-      :style  (style/gradient-container bottom-inset)}
+      :style  (style/gradient-container (:bottom insets))}
      [quo/button
       {:style               {:align-self        :stretch
                              :margin-horizontal 20
@@ -109,11 +109,11 @@
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll]}]
   [:f>
-   (let [{:keys [bottom-inset]} (rf/sub [:screen-params]) ; TODO:
-                                                          ; https://github.com/status-im/status-mobile/issues/15535
-         temporary-selected     (reagent/atom [])] ; used when switching albums
+   (let [{:keys [insets]}   (rf/sub [:get-screen-params]) ; TODO:
+         ; https://github.com/status-im/status-mobile/issues/15535
+         temporary-selected (reagent/atom [])] ; used when switching albums
      (fn []
-       (let [selected        (reagent/atom [])     ; currently selected
+       (let [selected        (reagent/atom []) ; currently selected
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
@@ -142,11 +142,11 @@
                  :data                    camera-roll-photos
                  :num-columns             3
                  :content-container-style {:width          "100%"
-                                           :padding-bottom (+ (:bottom bottom-inset) 100)
+                                           :padding-bottom (+ (:bottom insets) 100)
                                            :padding-top    64}
                  :on-scroll               on-scroll
                  :scroll-enabled          scroll-enabled
                  :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                          selected-album loading?
                                                          has-next-page?])}]
-               [bottom-gradient selected-images bottom-inset selected]]))])))])
+               [bottom-gradient selected-images insets selected]]))])))])

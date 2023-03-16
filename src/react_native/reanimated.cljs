@@ -171,6 +171,15 @@
                     (with-decay (clj->js {:velocity velocity
                                           :clamp    clamp}))))
 
+(defn animate
+  ([animation value]
+   (animate animation value default-duration))
+  ([animation value duration]
+   (set-shared-value animation
+                     (with-timing value
+                                  (clj->js {:duration duration
+                                            :easing   (default-easing)})))))
+
 (defn with-timing-duration
   [val duration]
   (with-timing val

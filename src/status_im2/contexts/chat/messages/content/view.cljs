@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
             [status-im2.constants :as constants]
@@ -86,7 +87,8 @@
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
-         {:keys [chat-id] :as context}]
+         {:keys [chat-id] :as context}
+         keyboard-shown]
       (let [first-image     (first (:album message-data))
             outgoing-status (if (= content-type constants/content-type-album)
                               (:outgoing-status first-image)
@@ -104,12 +106,14 @@
           :style               {:border-radius 16
                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
           :on-press            (fn []
-                                 (when (and outgoing
-                                            (not= outgoing-status :sending)
-                                            (not @show-delivery-state?))
-                                   (reset! show-delivery-state? true)
-                                   (js/setTimeout #(reset! show-delivery-state? false)
-                                                  delivery-state-showing-time-ms)))
+                                 (if (and platform/ios? @keyboard-shown)
+                                   (rn/dismiss-keyboard!)
+                                   (when (and outgoing
+                                              (not= outgoing-status :sending)
+                                              (not @show-delivery-state?))
+                                     (reset! show-delivery-state? true)
+                                     (js/setTimeout #(reset! show-delivery-state? false)
+                                                    delivery-state-showing-time-ms))))
           :on-long-press       #(on-long-press message-data context)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
@@ -147,7 +151,8 @@
 
 (defn message-with-reactions
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
-   {:keys [chat-id] :as context}]
+   {:keys [chat-id] :as context}
+   keyboard-shown]
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
     :accessibility-label :chat-item}
@@ -157,5 +162,5 @@
           constants/content-type-contact-request}
         content-type)
      [system-message-content message-data]
-     [user-message-content message-data context])
+     [user-message-content message-data context keyboard-shown])
    [reactions/message-reactions-row chat-id message-id]])
