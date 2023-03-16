@@ -43,6 +43,15 @@
                       :drawBehind      true}}
      {:statusBar {:style :light}})))
 
+(def bottom-sheet-options
+  {:topBar                 {:visible false}
+   :layout                 {:componentBackgroundColor :transparent
+                            :backgroundColor          :transparent}
+   :modalPresentationStyle :overCurrentContext})
+
+(def bottom-sheet-insets
+  {:top false})
+
 (defn screens
   []
   (concat
@@ -87,7 +96,8 @@
                                                                                     :factor 1.5}}]}}}
      :component lightbox/lightbox}
     {:name      :photo-selector
-     :options   {:topBar {:visible false}}
+     :insets    bottom-sheet-insets
+     :options   bottom-sheet-options
      :component photo-selector/photo-selector}
 
     {:name      :album-selector

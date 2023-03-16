@@ -15,8 +15,7 @@
    :flex-direction  :row
    :left            0
    :right           0
-   :margin-top      20
-   :margin-bottom   12
+   :top             20
    :justify-content :center
    :z-index         1})
 
@@ -66,8 +65,8 @@
    :height                  (/ window-width 3)
    :margin-left             (when (not= (mod index 3) 0) 1)
    :margin-bottom           1
-   :border-top-left-radius  (when (= index 0) 10)
-   :border-top-right-radius (when (= index 2) 10)})
+   :border-top-left-radius  (when (= index 0) 20)
+   :border-top-right-radius (when (= index 2) 20)})
 
 (defn overlay
   [window-width]

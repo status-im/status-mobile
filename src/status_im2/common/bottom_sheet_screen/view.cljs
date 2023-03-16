@@ -1,0 +1,75 @@
+(ns status-im2.common.bottom-sheet-screen.view
+  (:require
+    [react-native.gesture :as gesture]
+    [react-native.navigation :as navigation]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [oops.core :refer [oget]]
+    [status-im2.common.bottom-sheet-screen.style :as style]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [quo.react]
+    [utils.re-frame :as rf]))
+
+(def ^:const drag-threshold 100)
+
+(defn drag-gesture
+  [translate-y opacity scroll-enabled curr-scroll]
+  (->
+    (gesture/gesture-pan)
+    (gesture/on-start (fn [e]
+                        (when (< (oget e "velocityY") 0)
+                          (reset! scroll-enabled true))))
+    (gesture/on-update (fn [e]
+                         (let [translation (oget e "translationY")
+                               progress    (Math/abs (/ translation drag-threshold))]
+                           (when (pos? translation)
+                             (reanimated/set-shared-value translate-y translation)
+                             (reanimated/set-shared-value opacity (- 1 (/ progress 5)))))))
+    (gesture/on-end (fn [e]
+                      (if (> (oget e "translationY") drag-threshold)
+                        (do
+                          (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
+                          (rf/dispatch [:navigate-back]))
+                        (do
+                          (reanimated/set-shared-value opacity (reanimated/with-timing 1))
+                          (reanimated/set-shared-value translate-y (reanimated/with-timing 0))
+                          (reset! scroll-enabled true)))))
+    (gesture/on-finalize (fn [e]
+                           (when (and (>= (oget e "velocityY") 0)
+                                      (<= @curr-scroll (if platform/ios? -1 0)))
+                             (reset! scroll-enabled false))))))
+
+(defn on-scroll
+  [e curr-scroll]
+  (let [y (oget e "nativeEvent.contentOffset.y")]
+    (reset! curr-scroll y)))
+
+(defn consumer
+  [children skip-background?]
+  [:f>
+   (let [scroll-enabled (reagent/atom true)
+         curr-scroll    (atom 0)
+         padding-top    (navigation/status-bar-height)
+         padding-top    (if platform/ios? padding-top (+ padding-top 20))]
+     (fn []
+       (let [opacity     (reanimated/use-shared-value 0)
+             translate-y (reanimated/use-shared-value 0)
+             close       (fn []
+                           (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
+                           (rf/dispatch [:navigate-back]))]
+         (rn/use-effect
+          (fn []
+            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))
+            (rn/hw-back-add-listener close)))
+         [rn/view
+          {:style {:flex        1
+                   :padding-top padding-top}}
+          (when-not skip-background?
+            [reanimated/view {:style (style/background opacity)}])
+          [gesture/gesture-detector
+           {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
+           [reanimated/view {:style (style/main-view translate-y)}
+            [rn/view {:style style/handle-container}
+             [rn/view {:style style/handle}]]
+            (children close @scroll-enabled #(on-scroll % curr-scroll))]]])))])

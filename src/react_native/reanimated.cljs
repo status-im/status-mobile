@@ -21,6 +21,8 @@
             [utils.collection]
             [utils.worklets.core :as worklets.core]))
 
+(def ^:const default-duration 300)
+
 ;; Animations
 (def slide-in-up-animation SlideInUp)
 (def slide-out-up-animation SlideOutUp)
@@ -65,7 +67,8 @@
 (def in-out
   (.-inOut ^js Easing))
 
-(defn default-easing [] (in-out (.-quad ^js Easing)))
+;; trying to put default-easing inside easings map causes test to fail
+(def default-easing (in-out (.-quad ^js Easing)))
 
 (def easings
   {:linear  (bezier 0 0 1 1)
@@ -115,13 +118,15 @@
                                              (js-obj "duration" duration
                                                      "easing"   (get easings easing))))))
 
-(defn animate-shared-value-with-delay-default-easing
-  [anim val duration delay]
-  (set-shared-value anim
-                    (with-delay delay
-                                (with-timing val
-                                             (js-obj "duration" duration
-                                                     "easing"   (in-out (.-quad ^js Easing)))))))
+(defn animate-delay
+  ([animation val delay]
+   (animate-delay animation val delay default-duration))
+  ([animation val delay duration]
+   (set-shared-value animation
+                     (with-delay delay
+                                 (with-timing val
+                                              (clj->js {:duration duration
+                                                        :easing   default-easing}))))))
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
