@@ -12,7 +12,7 @@
   []
   [quo/list-item
    {:theme               :accent
-    :on-press            #(hide-sheet-and-dispatch [:generate-and-derive-addresses])
+    :on-press            #(hide-sheet-and-dispatch [:navigate-to :intro])
     :icon                :main-icons/add
     :accessibility-label :generate-a-new-key
     :title               (i18n/label :t/generate-a-new-key)}])

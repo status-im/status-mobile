@@ -768,3 +768,32 @@
   [{:keys [db]}]
   {::async-storage/set! {:new-terms-of-service-accepted true}
    :db                  (assoc db :tos/accepted? true)})
+
+(rf/defn create-account-and-login
+  {:events [:create-account-and-login]}
+  [{:keys [db]}
+   {:keys [display-name
+           password
+           image-path
+           color]}]
+  (let [log-enabled? (boolean (not-empty config/log-level))
+        request      {:displayName              display-name
+                      :password                 password
+                      :imagePath                image-path
+                      :color                    color
+                      :backupDisabledDataDir    (status/backup-disabled-data-dir)
+                      :rootKeystoreDir          (status/keystore-dir)
+                      ;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is
+                      ;; resolved
+                      :wakuV2Nameserver         "1.1.1.1"
+                      :logLevel                 (when log-enabled? config/log-level)
+                      :logEnabled               log-enabled?
+                      :logFilePath              (status/log-file-path)
+                      :openseaAPIKey            config/opensea-api-key
+                      :verifyTransactionURL     config/verify-transaction-url
+                      :verifyENSURL             config/verify-ens-url
+                      :verifyENSContractAddress config/verify-ens-contract-address
+                      :verifyTransactionChainID config/verify-transaction-chain-id}]
+    (status/create-account-and-login request)))
+
+

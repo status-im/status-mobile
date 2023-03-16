@@ -32,7 +32,14 @@
       :weight :semi-bold
       :style  {:color colors/white}} "Create profile password"]
     [quo/button
-     {:on-press #(rf/dispatch [:navigate-to :enable-biometrics])
+     {;:on-press #(rf/dispatch [:navigate-to :enable-biometrics])
+      ;:on-press #(rf/dispatch [:generate-and-derive-addresses])
+      :on-press #(rf/dispatch
+                  [:create-account-and-login
+                   {:password     "password"
+                    :display-name "display-name"
+                    :image-path   "image-path"
+                    :color        "ffffff"}])
       :style    {}} (i18n/label :t/continue)]]])
 
 (defn create-password
