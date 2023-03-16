@@ -114,7 +114,7 @@
              bg-color        (reanimated/use-shared-value "rgba(0,0,0,0)")]
          (rn/use-effect
            (fn []
-             (reanimated/animate-shared-value-with-delay-default-easing bg-color "rgba(9, 16, 28, 0.7)" 300 50)
+             (reanimated/animate-shared-value-with-delay-default-easing bg-color "rgba(9, 16, 28, 0.7)" 300 100)
              ;(js/setTimeout #(reanimated/set-shared-value bg-color  (reanimated/with-timing "rgba(9, 16, 28, 0.7)")) 300)
              (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
              (if (seq selected-images)
