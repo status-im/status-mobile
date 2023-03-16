@@ -1,12 +1,12 @@
 (ns react-native.gesture
   (:require ["react-native-gesture-handler" :refer
              (Gesture
-              GestureDetector
-              RectButton
-              Swipeable
-              TouchableWithoutFeedback
-              gestureHandlerRootHOC
-              FlatList)]
+               GestureDetector
+               RectButton
+               Swipeable
+               TouchableWithoutFeedback
+               gestureHandlerRootHOC
+               FlatList)]
             [react-native.flat-list :as rn-flat-list]
             [reagent.core :as reagent]))
 
@@ -19,7 +19,7 @@
 (defn gesture-pan [] (.Pan ^js Gesture))
 
 (defn gesture-pinch [] (.Pinch ^js Gesture))
-
+(defn on-touches-down [gesture handler] (.onTouchesDown ^js gesture handler))
 (defn on-begin [gesture handler] (.onBegin ^js gesture handler))
 
 (defn on-start [gesture handler] (.onStart ^js gesture handler))
@@ -57,15 +57,15 @@
   [{:keys [render-left-actions render-right-actions] :as props} & children]
   (into [swipeable-component
          (cond-> props
-           render-left-actions
-           (assoc :render-left-actions
-                  (fn [& args]
-                    (reagent/as-element (apply render-left-actions args))))
+                 render-left-actions
+                 (assoc :render-left-actions
+                        (fn [& args]
+                          (reagent/as-element (apply render-left-actions args))))
 
-           render-right-actions
-           (assoc :render-right-actions
-                  (fn [& args]
-                    (reagent/as-element (apply render-right-actions args)))))]
+                 render-right-actions
+                 (assoc :render-right-actions
+                        (fn [& args]
+                          (reagent/as-element (apply render-right-actions args)))))]
         children))
 
 (def gesture-flat-list (reagent/adapt-react-class FlatList))

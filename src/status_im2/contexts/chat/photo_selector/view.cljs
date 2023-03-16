@@ -107,22 +107,31 @@
      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])
 
 (defn drag-gesture
-  [translate-y opacity]
+  [translate-y opacity scroll-enabled curr-scroll]
   (->
     (gesture/gesture-pan)
     (gesture/enabled true)
-    (gesture/max-pointers 1)
+    ;(gesture/max-pointers 1)
+    ;(gesture/on-touches-down (fn [e] (println "ONTOUCHDOWN " e)))
+    (gesture/on-begin (fn [e] (println "beging gesture" @scroll-enabled e)))
+    (gesture/on-start (fn [e] (println "lkk" (oget e "velocityY"))
+                        (when (< (oget e "velocityY") 0)
+                          (println "reset!00")
+                          (reset! scroll-enabled true))))
     (gesture/on-update (fn [e]
                          (let [translation (oget e "translationY")
                                progress    (Math/abs (/ translation drag-threshold))]
-                           (reanimated/set-shared-value translate-y translation)
-                           (reanimated/set-shared-value opacity (- 1 (/ progress 5)))
+                           (println "update gesture")
+                           (when (pos? translation)
+                             (reanimated/set-shared-value translate-y translation)
+                             (reanimated/set-shared-value opacity (- 1 (/ progress 5))))
                            ;(anim/set-val (if x? pan-x pan-y) translation)
                            ;(anim/set-val opacity (- 1 progress))
                            ;(anim/set-val layout (* progress -20))
                            )))
     (gesture/on-end (fn [e]
-                      (if (> (Math/abs (oget e "translationY")) drag-threshold)
+                      (println "endx")
+                      (if (> (oget e "translationY") drag-threshold)
                         (do
                           ;(anim/animate background-color "rgba(0,0,0,0)")
                           ;(anim/animate opacity 0)
@@ -132,22 +141,54 @@
                         (do
                           (reanimated/set-shared-value opacity (reanimated/with-timing 1))
                           (reanimated/set-shared-value translate-y (reanimated/with-timing 0))
+                          (reset! scroll-enabled true)
                           ;#(reset! set-full-height? true)
                           ;(anim/animate (if x? pan-x pan-y) 0)
                           ;(anim/animate opacity 1)
                           ;(anim/animate layout 0)
-                          ))))))
+                          ))))
+    (gesture/on-finalize (fn [e]
+                           (println "aaa" e)
+                           (when (and (>= (oget e "velocityY") 0) (<= @curr-scroll 0))
+                             (println "reset!111" @curr-scroll)
+                             (reset! scroll-enabled false))
+                           ))))
+
+(defn on-scroll
+  [e scroll-enabled curr-scroll flat-list-ref]
+  (let [y (oget e "nativeEvent.contentOffset.y")]
+    ;(println "yyy" y)
+    (reset! curr-scroll y)
+    ;(when platform/android?
+    ;  (when (<= y 0)
+    ;    (println "falsese")
+    ;    ;(reset! scroll-enabled false)
+    ;    ))
+    ))
+
+;(defn on-scroll-end-drag
+;  [e scroll-enabled curr-scroll flat-list-ref]
+;  (let [y (oget e "nativeEvent.contentOffset.y")]
+;    ;(println "yyykkk" y)
+;    (reset! curr-scroll y)
+;    (when (<= y 0)
+;      (println "falsese")
+;      ;(reset! scroll-enabled false)
+;      )))
 
 (defn photo-selector
   []
   [:f>
    (let [{:keys [insets]} (rf/sub [:get-screen-params])
-         temporary-selected (reagent/atom [])] ; used when switching albums
+         temporary-selected (reagent/atom [])
+         scroll-enabled     (reagent/atom true)
+         curr-scroll     (atom 0)
+         flat-list-ref   (atom nil)] ; used when switching albums
      (fn []
        (let [selected        (reagent/atom []) ; currently selected
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
-             opacity        (reanimated/use-shared-value 0)
+             opacity         (reanimated/use-shared-value 0)
              translate-y     (reanimated/use-shared-value 0)]
          (rn/use-effect
            (fn []
@@ -166,12 +207,12 @@
                              :padding-top (if platform/ios? (navigation/status-bar-height) (+ (navigation/status-bar-height) 20))}}
             [reanimated/view {:style (reanimated/apply-animations-to-style {:opacity opacity}
                                                                            {:background-color "rgba(9, 16, 28, 0.7)"
-                                                                            :position :absolute
-                                                                            :top      0
-                                                                            :bottom   0
-                                                                            :left     0
-                                                                            :right    0})}]
-            [gesture/gesture-detector {:gesture (drag-gesture translate-y opacity)}
+                                                                            :position         :absolute
+                                                                            :top              0
+                                                                            :bottom           0
+                                                                            :left             0
+                                                                            :right            0})}]
+            [gesture/gesture-detector {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
              [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:transform [{:translateY translate-y}]}
                                         {:margin-top              0 :background-color :white
@@ -191,15 +232,34 @@
                    {:size 20 :color (colors/theme-colors colors/black colors/white)}]])
                [album-title true selected-album selected temporary-selected]
                [clear-button selected]]
+              ;[rn/view {:style {:flex 1
+              ;                  :background-color :red
+              ;                  :position :absolute
+              ;                  :top 0
+              ;                  :left 0
+              ;                  :right 0
+              ;                  :bottom 0
+              ;                  :width          "100%"
+              ;                  :height "100%"
+              ;                  :z-index 10}}]
               [gesture/flat-list
                {:key-fn                  identity
+                :ref                     #(reset! flat-list-ref %)
+                ;:on-handler-state-change (fn [e] (println "ayo" (oget e "nativeEvent")))
+                ;:on-gesture-event        (fn [e] (println "ayo2" (oget e "nativeEvent")))
                 :render-fn               image
+                ;:scroll-event-throttle 8
                 :render-data             {:window-width window-width :selected selected}
                 :data                    camera-roll-photos
                 :num-columns             3
                 :content-container-style {:width          "100%"
                                           :padding-bottom (+ (:bottom insets) 100)
                                           :padding-top    80}
+                ;:onMomentumScrollEnd (fn [e] (println "kkk" (oget e "nativeEvent")))
+                :on-scroll (fn [e] (on-scroll e scroll-enabled curr-scroll flat-list-ref))
+                ;:on-scroll-end-drag (fn [e] (on-scroll-end-drag e scroll-enabled curr-scroll flat-list-ref))
+                ;:on-scroll-end-drag               (fn [e] (on-scroll e scroll-enabled curr-scroll flat-list-ref))
+                :scroll-enabled          @scroll-enabled
                 :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                         selected-album loading?
                                                         has-next-page?])}]

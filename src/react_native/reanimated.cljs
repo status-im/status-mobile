@@ -5,6 +5,7 @@
             ["@react-native-community/blur" :as blur]
             ["react-native-reanimated" :default reanimated :refer
              (useSharedValue useAnimatedStyle
+                             useAnimatedGestureHandler
                              withTiming
                              withDelay
                              withSpring
