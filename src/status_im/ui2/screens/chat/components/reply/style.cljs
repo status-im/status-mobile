@@ -8,26 +8,26 @@
 
 (defn quoted-message
   [pin? in-chat-input?]
-  (merge {:flex-direction   :row
-          :flex             1
-          :align-items      :center
-          :width            (if in-chat-input? "100%" "45%")}
+  (merge {:flex-direction :row
+          :flex           1
+          :align-items    :center
+          :width          (if in-chat-input? "100%" "45%")}
          (when-not pin?
-           {:left     22
+           {:left         22
             :margin-right 22})))
 
 (def reply-from
-  {:flex-direction   :row
-   :align-items      :center})
+  {:flex-direction :row
+   :align-items    :center})
 
 (def message-author-text
-  {:margin-left    4})
+  {:margin-left 4})
 
 (def message-text
   {:text-transform :none
    :margin-left    4
    :margin-top     2
-   :flex 1})
+   :flex           1})
 
 (def gradient
   {:position :absolute

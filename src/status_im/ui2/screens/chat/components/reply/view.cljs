@@ -95,10 +95,11 @@
         [rn/view {:style (style/quoted-message pin? in-chat-input?)}
          [reply-deleted-message]]
         [rn/view {:style (style/quoted-message pin? in-chat-input?)}
-         [reply-from {:from               from
-                      :identicon          identicon
-                      :contact-name       contact-name
-                      :current-public-key current-public-key}]
+         [reply-from
+          {:from               from
+           :identicon          identicon
+           :contact-name       contact-name
+           :current-public-key current-public-key}]
          [quo2.text/text
           {:number-of-lines     1
            :size                :label
