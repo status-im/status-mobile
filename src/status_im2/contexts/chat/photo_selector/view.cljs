@@ -107,13 +107,39 @@
        {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))
 
 (defn photo-selector
+<<<<<<< HEAD
   [{:keys [scroll-enabled on-scroll]}]
+<<<<<<< HEAD
   [:f>
    (let [{:keys [bottom-inset]} (rf/sub [:screen-params]) ; TODO:
                                                           ; https://github.com/status-im/status-mobile/issues/15535
          temporary-selected     (reagent/atom [])] ; used when switching albums
      (fn []
        (let [selected        (reagent/atom [])     ; currently selected
+=======
+  [safe-area/consumer
+   (fn [insets]
+     [:f>
+      (let [temporary-selected (reagent/atom [])] ; used when switching albums
+        (fn []
+          (let [selected        (reagent/atom []) ; currently selected
+                selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
+                selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+            (rn/use-effect
+             (fn []
+               (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+               (if (seq selected-images)
+                 (reset! selected (vec (vals selected-images)))
+                 (reset! selected @temporary-selected)))
+             [selected-album])
+=======
+  []
+  [:f>
+   (let [{:keys [insets]}   (rf/sub [:get-screen-params])
+         temporary-selected (reagent/atom [])] ; used when switching albums
+     (fn []
+       (let [selected        (reagent/atom []) ; currently selected
+>>>>>>> 7c3fd5384 (feat: bottom sheet screen)
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
@@ -123,8 +149,19 @@
               (reset! selected (vec (vals selected-images)))
               (reset! selected @temporary-selected)))
           [selected-album])
+<<<<<<< HEAD
          [:f>
           (fn []
+=======
+<<<<<<< HEAD
+         [bottom-sheet-screen/view
+          (fn [{:keys [scroll-enabled on-scroll]}]
+=======
+         [bottom-sheet-screen/consumer
+          (fn [close scroll-enabled on-scroll]
+>>>>>>> 52b8d487a (feat: bottom sheet screen)
+>>>>>>> fb1ba49a5 (feat: bottom sheet screen)
+>>>>>>> 7c3fd5384 (feat: bottom sheet screen)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
@@ -133,7 +170,20 @@
               [:<>
                [rn/view
                 {:style style/buttons-container}
+<<<<<<< HEAD
                 [album-title true selected-album selected temporary-selected]
+=======
+<<<<<<< HEAD
+=======
+                [rn/touchable-opacity
+                 {:active-opacity 1
+                  :on-press       close
+                  :style          (style/close-button-container)}
+                 [quo/icon :i/close
+                  {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+>>>>>>> 52b8d487a (feat: bottom sheet screen)
+                [album-title true selected-album selected temporary-selected insets]
+>>>>>>> 7c3fd5384 (feat: bottom sheet screen)
                 [clear-button selected]]
                [gesture/flat-list
                 {:key-fn                  identity
