@@ -290,3 +290,5 @@
 (def ^:const local-pair-action-sync-device 3)
 
 (def ^:const everyone-mention-id "0x00001")
+
+(def ^:const empty-category-id :communities/not-categorized)

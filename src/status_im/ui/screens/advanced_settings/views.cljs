@@ -2,15 +2,13 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im2.config :as config])
+            [status-im.ui.components.list.views :as list])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data
   [{:keys [network-name
            current-log-level
            waku-bloom-filter-mode
-           communities-enabled?
            transactions-management-enabled?
            wakuv2-flag
            current-fleet
@@ -76,17 +74,6 @@
      :on-press
      #(re-frame/dispatch [:navigate-to :peers-stats])
      :chevron true}
-    ;; If it's enabled in the config, we don't show the option
-    (when (not config/communities-enabled?)
-      {:size :small
-       :title (i18n/label :t/communities-enabled)
-       :accessibility-label :communities-enabled
-       :container-margin-bottom 8
-       :on-press
-       #(re-frame/dispatch
-         [:multiaccounts.ui/switch-communities-enabled (not communities-enabled?)])
-       :accessory :switch
-       :active communities-enabled?})
     {:size :small
      :title (i18n/label :t/transactions-management-enabled)
      :accessibility-label :transactions-management-enabled
@@ -132,7 +119,6 @@
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]
-                  communities-enabled?             [:communities/enabled?]
                   transactions-management-enabled? [:wallet/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
                   current-fleet                    [:fleets/current-fleet]]
@@ -140,7 +126,6 @@
      {:data      (flat-list-data
                   {:network-name                     network-name
                    :current-log-level                current-log-level
-                   :communities-enabled?             communities-enabled?
                    :transactions-management-enabled? transactions-management-enabled?
                    :current-fleet                    current-fleet
                    :dev-mode?                        false

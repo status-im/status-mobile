@@ -354,9 +354,8 @@
 
 (defview community-content
   [{:keys [community-id] :as message}]
-  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
-            communities-enabled?                              [:communities/enabled?]]
-    (when (and communities-enabled? community)
+  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]]
+    (when community
       [rn/view
        {:style (assoc (style/message-wrapper message)
                       :margin-vertical 10

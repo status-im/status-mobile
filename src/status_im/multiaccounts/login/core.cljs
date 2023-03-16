@@ -47,16 +47,6 @@
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
- ::initialize-communities-enabled
- (fn []
-   (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-communities-enabled %])]
-     (if config/communities-enabled?
-       (callback true)
-       (async-storage/get-item
-        :communities-enabled?
-        callback)))))
-
-(re-frame/reg-fx
  ::initialize-transactions-management-enabled
  (fn []
    (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-transactions-management-enabled %])]
@@ -358,10 +348,6 @@
    [{:method     "wakuext_getGroupChatInvitations"
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
-(rf/defn initialize-communities-enabled
-  [cofx]
-  {::initialize-communities-enabled nil})
-
 (rf/defn initialize-transactions-management-enabled
   [cofx]
   {::initialize-transactions-management-enabled nil})
@@ -408,10 +394,10 @@
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
               (initialize-appearance)
-              (initialize-communities-enabled)
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
+              (communities/fetch-collapsed-community-categories)
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
@@ -539,7 +525,6 @@
               (communities/fetch)
               (data-store.chats/fetch-chats-rpc
                {:on-success #(re-frame/dispatch [:chats-list/load-success %])})
-              (initialize-communities-enabled)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))

@@ -678,12 +678,6 @@
                                              community-id
                                              request-id)}]})
 
-(rf/defn switch-communities-enabled
-  {:events [:multiaccounts.ui/switch-communities-enabled]}
-  [{:keys [db]} enabled?]
-  {::async-storage/set! {:communities-enabled? enabled?}
-   :db                  (assoc db :communities/enabled? enabled?)})
-
 (rf/defn create-category
   {:events [::create-category-confirmation-pressed]}
   [_ community-id category-title chat-ids]
@@ -860,3 +854,47 @@
                                 :community-id community-id
                                 :public-key   public-key
                                 :role-id      role-id})]})
+
+(rf/defn fetched-collapsed-community-categories
+  {:events [:communities/fetched-collapsed-categories-success]}
+  [{:keys [db]} categories]
+  {:db (assoc db
+              :communities/collapsed-categories
+              (reduce
+               (fn [acc {:keys [communityId categoryId]}]
+                 (assoc-in acc [communityId categoryId] true))
+               {}
+               categories))})
+
+(rf/defn fetch-collapsed-community-categories
+  [_]
+  {:json-rpc/call [{:method     "wakuext_collapsedCommunityCategories"
+                    :params     []
+                    :on-success #(re-frame/dispatch
+                                  [:communities/fetched-collapsed-categories-success %])
+                    :on-error   #(log/error "failed to fetch collapsed community categories"
+                                            {:error :%})}]})
+
+(rf/defn toggled-collapsed-category
+  {:events [:communities/toggled-collapsed-category-success]}
+  [{:keys [db]} community-id category-id collapsed?]
+  {:db (assoc-in db [:communities/collapsed-categories community-id category-id] collapsed?)})
+
+(rf/defn toggle-collapsed-category
+  {:events [:communities/toggle-collapsed-category]}
+  [{:keys [db]} community-id category-id collapse?]
+  {:json-rpc/call [{:method     "wakuext_toggleCollapsedCommunityCategory"
+                    :params     [{:communityId community-id
+                                  :categoryId  category-id
+                                  :collapsed   collapse?}]
+                    :on-success #(re-frame/dispatch
+                                  [:communities/toggled-collapsed-category-success
+                                   community-id
+                                   category-id
+                                   collapse?])
+                    :on-error   #(log/error "failed to toggle collapse category"
+                                            {:error        %
+                                             :community-id community-id
+                                             :event        :communities/toggle-collapsed-category
+                                             :category-id  category-id
+                                             :collapse?    collapse?})}]})
