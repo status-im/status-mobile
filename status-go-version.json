@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feature/spiff-workflow-2",
-    "commit-sha1": "a9baba8b9d5d67eb233bd68ad573c48dd67433df",
-    "src-sha256": "0fl7xpiacf19jxpj48b4rqzlxr98ywjsbwc75vjplpxfq0srgmyh"
+    "version": "bug/fixes-to-create-account",
+    "commit-sha1": "4df0845d757f5047e902a10180dfbea9fdf93683",
+    "src-sha256": "0gp5schjvmg7vwhszg80ja8vr62zir6516775dfsma98af8pwa5j"
 }

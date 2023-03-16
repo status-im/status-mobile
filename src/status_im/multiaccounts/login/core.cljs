@@ -778,7 +778,7 @@
            color]}]
   (let [log-enabled? (boolean (not-empty config/log-level))
         request      {:displayName              display-name
-                      :password                 password
+                      :password                 (ethereum/sha3 (security/safe-unmask-data password))
                       :imagePath                image-path
                       :color                    color
                       :backupDisabledDataDir    (status/backup-disabled-data-dir)

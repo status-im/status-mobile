@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [status-im2.contexts.onboarding.create-password.style :as style]
             [utils.i18n :as i18n]
+            [utils.security.core :as security]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [utils.re-frame :as rf]))
 
@@ -36,7 +37,7 @@
       ;:on-press #(rf/dispatch [:generate-and-derive-addresses])
       :on-press #(rf/dispatch
                   [:create-account-and-login
-                   {:password     "password"
+                   {:password     (security/mask-data "test123")
                     :display-name "display-name"
                     :image-path   "image-path"
                     :color        "ffffff"}])
