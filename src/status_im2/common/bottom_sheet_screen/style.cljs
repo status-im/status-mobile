@@ -18,6 +18,7 @@
   [translate-y]
   (reanimated/apply-animations-to-style
 <<<<<<< HEAD
+<<<<<<< HEAD
    {:transform [{:translate-y translate-y}]}
    {:background-color        (colors/theme-colors colors/white colors/neutral-95)
 =======
@@ -25,6 +26,10 @@
    {:margin-top              0
     :background-color        (colors/theme-colors colors/white colors/neutral-100)
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+   {:transform [{:translate-y translate-y}]}
+   {:background-color        (colors/theme-colors colors/white colors/neutral-100)
+>>>>>>> 18f397b83 (review)
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
