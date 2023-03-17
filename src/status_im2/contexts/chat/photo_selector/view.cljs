@@ -134,12 +134,6 @@
               [:<>
                [rn/view
                 {:style style/buttons-container}
-                [rn/touchable-opacity
-                 {:active-opacity 1
-                  :on-press       close
-                  :style          (style/close-button-container)}
-                 [quo/icon :i/close
-                  {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
                 [album-title true selected-album selected temporary-selected insets]
                 [clear-button selected]]
                [gesture/flat-list
