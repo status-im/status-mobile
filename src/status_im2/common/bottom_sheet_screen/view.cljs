@@ -15,12 +15,15 @@
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [oops.core :refer [oget]]
+    [oops.core :as oops]
     [status-im2.common.bottom-sheet-screen.style :as style]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+<<<<<<< HEAD
     [quo.react]
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+>>>>>>> 18f397b83 (review)
     [utils.re-frame :as rf]))
 
 (def ^:const drag-threshold 100)
@@ -30,6 +33,7 @@
   (->
     (gesture/gesture-pan)
     (gesture/on-start (fn [e]
+<<<<<<< HEAD
 <<<<<<< HEAD
                         (when (< (oops/oget e "velocityY") 0)
                           (reset! scroll-enabled true))))
@@ -41,16 +45,26 @@
     (gesture/on-update (fn [e]
                          (let [translation (oget e "translationY")
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+                        (when (< (oops/oget e "velocityY") 0)
+                          (reset! scroll-enabled true))))
+    (gesture/on-update (fn [e]
+                         (let [translation (oops/oget e "translationY")
+>>>>>>> 18f397b83 (review)
                                progress    (Math/abs (/ translation drag-threshold))]
                            (when (pos? translation)
                              (reanimated/set-shared-value translate-y translation)
                              (reanimated/set-shared-value opacity (- 1 (/ progress 5)))))))
     (gesture/on-end (fn [e]
 <<<<<<< HEAD
+<<<<<<< HEAD
                       (if (> (oops/oget e "translationY") drag-threshold)
 =======
                       (if (> (oget e "translationY") drag-threshold)
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+                      (if (> (oops/oget e "translationY") drag-threshold)
+>>>>>>> 18f397b83 (review)
                         (do
                           (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
                           (rf/dispatch [:navigate-back]))
@@ -60,15 +74,20 @@
                           (reset! scroll-enabled true)))))
     (gesture/on-finalize (fn [e]
 <<<<<<< HEAD
+<<<<<<< HEAD
                            (when (and (>= (oops/oget e "velocityY") 0)
 =======
                            (when (and (>= (oget e "velocityY") 0)
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+                           (when (and (>= (oops/oget e "velocityY") 0)
+>>>>>>> 18f397b83 (review)
                                       (<= @curr-scroll (if platform/ios? -1 0)))
                              (reset! scroll-enabled false))))))
 
 (defn on-scroll
   [e curr-scroll]
+<<<<<<< HEAD
 <<<<<<< HEAD
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
     (reset! curr-scroll y)))
@@ -86,10 +105,13 @@
              opacity     (reanimated/use-shared-value 0)
 =======
   (let [y (oget e "nativeEvent.contentOffset.y")]
+=======
+  (let [y (oops/oget e "nativeEvent.contentOffset.y")]
+>>>>>>> 18f397b83 (review)
     (reset! curr-scroll y)))
 
-(defn consumer
-  [children skip-background?]
+(defn view
+  [content skip-background?]
   [:f>
    (let [scroll-enabled (reagent/atom true)
          curr-scroll    (atom 0)
@@ -137,6 +159,16 @@
               :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
 =======
              [rn/view {:style style/handle}]]
+<<<<<<< HEAD
             (children close @scroll-enabled #(on-scroll % curr-scroll))]]])))])
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+<<<<<<< HEAD
 >>>>>>> fb1ba49a5 (feat: bottom sheet screen)
+=======
+=======
+            [content
+             {:close          close
+              :scroll-enabled @scroll-enabled
+              :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
+>>>>>>> 18f397b83 (review)
+>>>>>>> e1051a659 (review)

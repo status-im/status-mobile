@@ -150,9 +150,12 @@
               (reset! selected @temporary-selected)))
           [selected-album])
 <<<<<<< HEAD
+<<<<<<< HEAD
          [:f>
           (fn []
 =======
+=======
+>>>>>>> 46b746724 (review)
 <<<<<<< HEAD
          [bottom-sheet-screen/view
           (fn [{:keys [scroll-enabled on-scroll]}]
@@ -160,8 +163,18 @@
          [bottom-sheet-screen/consumer
           (fn [close scroll-enabled on-scroll]
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+<<<<<<< HEAD
 >>>>>>> fb1ba49a5 (feat: bottom sheet screen)
+<<<<<<< HEAD
 >>>>>>> 7c3fd5384 (feat: bottom sheet screen)
+=======
+=======
+=======
+         [bottom-sheet-screen/view
+          (fn [{:keys [close scroll-enabled on-scroll]}]
+>>>>>>> 18f397b83 (review)
+>>>>>>> e1051a659 (review)
+>>>>>>> 46b746724 (review)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
