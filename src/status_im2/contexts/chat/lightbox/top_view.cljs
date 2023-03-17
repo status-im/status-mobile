@@ -8,7 +8,6 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]))
 
