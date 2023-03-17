@@ -77,7 +77,8 @@
           [quo/text
            {:weight :medium
             :size   :paragraph-2
-            ;; TODO: layout animation in release mode causes crash: https://github.com/status-im/status-mobile/issues/15395
+            ;; TODO: layout animation in release mode causes crash:
+            ;; https://github.com/status-im/status-mobile/issues/15395
             :style  {:color colors/neutral-40}} "9:41 AM"]]]
         [rn/view {:style style/top-right-buttons}
          [rn/touchable-opacity
