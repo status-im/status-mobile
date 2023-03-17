@@ -54,13 +54,13 @@
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
   [:type :blur? :override-theme :error? :right-icon :left-icon :disabled? :small? :button
-   :label :char-limit :on-char-limit-reach :icon-name :multiline?])
+   :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur])
 
 (defn- base-input
   [{:keys [on-change-text on-char-limit-reach]}]
   (let [status              (reagent/atom :default)
-        on-focus            #(reset! status :focus)
-        on-blur             #(reset! status :default)
+        internal-on-focus   #(reset! status :focus)
+        internal-on-blur    #(reset! status :default)
         multiple-lines?     (reagent/atom false)
         set-multiple-lines! #(let [height (oops/oget % "nativeEvent.contentSize.height")]
                                (if (> height 57)
@@ -74,7 +74,7 @@
                                 (when (>= amount-chars char-limit)
                                   (on-char-limit-reach amount-chars))))]
     (fn [{:keys [blur? override-theme error? right-icon left-icon disabled? small? button
-                 label char-limit multiline? clearable?]
+                 label char-limit multiline? clearable? on-focus on-blur]
           :as   props}]
       (let [status-kw        (cond
                                disabled? :disabled
@@ -102,8 +102,12 @@
                     :placeholder-text-color (:placeholder colors-by-status)
                     :cursor-color           (:cursor variant-colors)
                     :editable               (not disabled?)
-                    :on-focus               on-focus
-                    :on-blur                on-blur}
+                    :on-focus               (fn []
+                                              (when on-focus (on-focus))
+                                              (internal-on-focus))
+                    :on-blur                (fn []
+                                              (when on-blur (on-blur))
+                                              (internal-on-blur))}
              :always    (merge clean-props)
              multiline? (assoc :multiline              true
                                :on-content-size-change set-multiple-lines!)
