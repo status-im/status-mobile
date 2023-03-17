@@ -125,7 +125,7 @@
               (reset! selected @temporary-selected)))
           [selected-album])
          [bottom-sheet-screen/view
-          (fn [{:keys [close scroll-enabled on-scroll]}]
+          (fn [{:keys [scroll-enabled on-scroll]}]
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
