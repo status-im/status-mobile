@@ -17,9 +17,8 @@
 (defn main-view
   [translate-y]
   (reanimated/apply-animations-to-style
-   {:transform [{:translateY translate-y}]}
-   {:margin-top              0
-    :background-color        (colors/theme-colors colors/white colors/neutral-100)
+   {:transform [{:translate-y translate-y}]}
+   {:background-color        (colors/theme-colors colors/white colors/neutral-100)
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1

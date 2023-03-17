@@ -4,11 +4,10 @@
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [oops.core :refer [oget]]
+    [oops.core :as oops]
     [status-im2.common.bottom-sheet-screen.style :as style]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [quo.react]
     [utils.re-frame :as rf]))
 
 (def ^:const drag-threshold 100)
@@ -18,16 +17,16 @@
   (->
     (gesture/gesture-pan)
     (gesture/on-start (fn [e]
-                        (when (< (oget e "velocityY") 0)
+                        (when (< (oops/oget e "velocityY") 0)
                           (reset! scroll-enabled true))))
     (gesture/on-update (fn [e]
-                         (let [translation (oget e "translationY")
+                         (let [translation (oops/oget e "translationY")
                                progress    (Math/abs (/ translation drag-threshold))]
                            (when (pos? translation)
                              (reanimated/set-shared-value translate-y translation)
                              (reanimated/set-shared-value opacity (- 1 (/ progress 5)))))))
     (gesture/on-end (fn [e]
-                      (if (> (oget e "translationY") drag-threshold)
+                      (if (> (oops/oget e "translationY") drag-threshold)
                         (do
                           (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
                           (rf/dispatch [:navigate-back]))
@@ -36,17 +35,17 @@
                           (reanimated/set-shared-value translate-y (reanimated/with-timing 0))
                           (reset! scroll-enabled true)))))
     (gesture/on-finalize (fn [e]
-                           (when (and (>= (oget e "velocityY") 0)
+                           (when (and (>= (oops/oget e "velocityY") 0)
                                       (<= @curr-scroll (if platform/ios? -1 0)))
                              (reset! scroll-enabled false))))))
 
 (defn on-scroll
   [e curr-scroll]
-  (let [y (oget e "nativeEvent.contentOffset.y")]
+  (let [y (oops/oget e "nativeEvent.contentOffset.y")]
     (reset! curr-scroll y)))
 
-(defn consumer
-  [children skip-background?]
+(defn view
+  [content skip-background?]
   [:f>
    (let [scroll-enabled (reagent/atom true)
          curr-scroll    (atom 0)
@@ -72,4 +71,7 @@
            [reanimated/view {:style (style/main-view translate-y)}
             [rn/view {:style style/handle-container}
              [rn/view {:style style/handle}]]
-            (children close @scroll-enabled #(on-scroll % curr-scroll))]]])))])
+            [content
+             {:close          close
+              :scroll-enabled @scroll-enabled
+              :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
