@@ -171,10 +171,20 @@
 =======
 =======
          [bottom-sheet-screen/view
+<<<<<<< HEAD
           (fn [{:keys [close scroll-enabled on-scroll]}]
 >>>>>>> 18f397b83 (review)
+<<<<<<< HEAD
 >>>>>>> e1051a659 (review)
+<<<<<<< HEAD
 >>>>>>> 46b746724 (review)
+=======
+=======
+=======
+          (fn [{:keys [scroll-enabled on-scroll]}]
+>>>>>>> aaea14c93 (lint)
+>>>>>>> 8a983f7e0 (lint)
+>>>>>>> c430c406a (lint)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
