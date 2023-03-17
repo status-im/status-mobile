@@ -30,6 +30,7 @@ https://dl.google.com/dl/android/maven2/androidx/constraintlayout/constraintlayo
 https://dl.google.com/dl/android/maven2/androidx/coordinatorlayout/coordinatorlayout/1.0.0/coordinatorlayout-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/coordinatorlayout/coordinatorlayout/1.1.0/coordinatorlayout-1.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/core/core-ktx/1.6.0/core-ktx-1.6.0.pom
+https://dl.google.com/dl/android/maven2/androidx/core/core-splashscreen/1.0.0/core-splashscreen-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/core/core/1.0.0/core-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/core/core/1.0.1/core-1.0.1.pom
 https://dl.google.com/dl/android/maven2/androidx/core/core/1.1.0/core-1.1.0.pom
@@ -733,6 +734,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.10/kotlin-stdlib-common-1.5.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.30/kotlin-stdlib-common-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.21/kotlin-stdlib-common-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10/kotlin-stdlib-common-1.7.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.8.0/kotlin-stdlib-common-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.2.71/kotlin-stdlib-jdk7-1.2.71.pom
@@ -763,6 +765,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.4.31/k
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.10/kotlin-stdlib-1.5.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.30/kotlin-stdlib-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.20/kotlin-stdlib-1.6.20.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.21/kotlin-stdlib-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.10/kotlin-stdlib-1.7.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.0/kotlin-stdlib-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-util-io/1.3.50/kotlin-util-io-1.3.50.pom
