@@ -49,8 +49,8 @@
 
 (defn small-option-card
   "Variants: `:main` or `:icon`"
-  [{:keys [variant title subtitle image max-height on-press]
-    :or   {variant :main}}]
+  [{:keys [variant title subtitle image max-height on-press accessibility-label]
+    :or   {variant :main accessibility-label :small-option-card}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)
         card-height    (cond
@@ -59,7 +59,7 @@
                          :else               style/main-variant-height)]
     [rn/view
      [rn/touchable-highlight
-      {:accessibility-label :small-option-card
+      {:accessibility-label accessibility-label
        :style               style/touchable-overlay
        :active-opacity      1
        :underlay-color      colors/white-opa-5
