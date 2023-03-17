@@ -184,8 +184,11 @@
                [rn/view
                 {:style style/buttons-container}
 <<<<<<< HEAD
+<<<<<<< HEAD
                 [album-title true selected-album selected temporary-selected]
 =======
+=======
+>>>>>>> b8eb56525 (remove close button)
 <<<<<<< HEAD
 =======
                 [rn/touchable-opacity
@@ -195,6 +198,8 @@
                  [quo/icon :i/close
                   {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+>>>>>>> af6996923 (remove close button)
                 [album-title true selected-album selected temporary-selected insets]
 >>>>>>> 7c3fd5384 (feat: bottom sheet screen)
                 [clear-button selected]]
