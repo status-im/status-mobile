@@ -116,7 +116,7 @@
    (let [scroll-enabled (reagent/atom true)
          curr-scroll    (atom 0)
          padding-top    (navigation/status-bar-height)
-         padding-top    (if platform/ios? padding-top (+ padding-top 20))]
+         padding-top    (if platform/ios? padding-top (+ padding-top 10))]
      (fn []
        (let [opacity     (reanimated/use-shared-value 0)
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
