@@ -39,6 +39,7 @@
   (rtl/screen.getByLabelText (name label)))
 
 (defn query-by-label-text
+  "Returns `nil` when label is not found."
   [label]
   (rtl/screen.queryByLabelText (name label)))
 
@@ -71,3 +72,7 @@
 (defn is-null
   [element]
   (.toBeNull (js/expect element)))
+
+(defn was-called
+  [element]
+  (.toHaveBeenCalled (js/expect element)))
