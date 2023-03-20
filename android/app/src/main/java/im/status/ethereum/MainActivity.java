@@ -38,6 +38,9 @@ import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
 import im.status.ethereum.MainApplication;
 
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
+
 
 public class MainActivity extends NavigationActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{

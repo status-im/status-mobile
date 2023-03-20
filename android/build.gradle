@@ -16,13 +16,8 @@ ext {
     gradlePluginVersion = project.gradlePluginVersion
     kotlinPluginVersion = project.kotlinPluginVersion
 
-    if (System.properties['os.arch'] == "aarch64") {
-        // For M1 Users we need to use the NDK 24 which added support for aarch64
-        ndkVersion = "24.0.8215888"
-    } else {
-        // Otherwise we default to the side-by-side NDK version from AGP.
-        ndkVersion = "21.4.7075529"
-    }
+    // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+    ndkVersion = "23.1.7779620"
 }
 
 buildscript {
@@ -35,7 +30,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinPluginVersion}"
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("de.undercouch:gradle-download-task:4.1.2")
+
         // WARNING: Do not place your application dependencies here!
         //          They belong in the individual module build.gradle files.
     }
@@ -80,17 +75,12 @@ allprojects {
        }
 
         mavenLocal()
-        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        maven { url("$rootDir/../node_modules/react-native/android") }
-        // Android JSC is installed from npm
-        maven { url("$rootDir/../node_modules/jsc-android/dist") }
+
         // For geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         // Everything Else
-        google()
         jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
         mavenCentral()
-//         maven { url "https://www.jitpack.io" }
         maven { url 'https://mvnrepository.com/artifact/com.github.gundy/semver4j'}
     }
 }
