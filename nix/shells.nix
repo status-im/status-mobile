@@ -42,12 +42,19 @@ let
     # for running gradle by hand
     gradle = mkShell {
       buildInputs = with pkgs; [ gradle maven goMavenResolver ];
-      inputsFrom = [ nodejs-sh ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"
         export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"
         export ANDROID_SDK_ROOT="${pkgs.androidPkgs.sdk}"
         export ANDROID_NDK_ROOT="${pkgs.androidPkgs.ndk}"
+
+        export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
+        # WARNING: Unpatched Node.js deps allow Gradle to use remote repos.
+        "$STATUS_MOBILE_HOME/nix/scripts/node_modules.sh" ${pkgs.deps.nodejs}
+        function restore_patched_modules() {
+          "$STATUS_MOBILE_HOME/nix/scripts/node_modules.sh" ${pkgs.deps.nodejs-patched}
+        }
+        trap restore_patched_modules EXIT
       '';
     };
 
