@@ -39,7 +39,6 @@ abstract_target 'Status' do
   end
 
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
-  pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive', '2.4.3'

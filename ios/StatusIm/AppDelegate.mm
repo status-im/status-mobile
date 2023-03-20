@@ -11,7 +11,6 @@
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 
 #import <asl.h>
-#import "ReactNativeConfig.h"
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RNSplashScreen.h"
@@ -50,20 +49,28 @@ extern "C" NSString* StatusgoImageServerTLSCert();
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
 
-  /* Set logging level from React Native */
-  NSString *logLevel = [ReactNativeConfig envFor:@"LOG_LEVEL"];
-  if([logLevel isEqualToString:@"error"]){
-    RCTSetLogThreshold(RCTLogLevelError);
-  }
-  else if([logLevel isEqualToString:@"warn"]){
-    RCTSetLogThreshold(RCTLogLevelWarning);
-  }
-  else if([logLevel isEqualToString:@"info"]){
-    RCTSetLogThreshold(RCTLogLevelInfo);
-  }
-  else if([logLevel isEqualToString:@"debug"]){
-    RCTSetLogThreshold(RCTLogLevelTrace);
-  }
+/* Set logging level from React Native */
+// Todo : uncomment below section when project has been manually linked properly and below error has been fixed
+// Undefined symbols for architecture x86_64:
+//   "_OBJC_CLASS_$_RNCConfig", referenced from:
+//       objc-class-ref in AppDelegate.o
+// ld: symbol(s) not found for architecture x86_64
+// clang: error: linker command failed with exit code 1 (use -v to see invocation)
+// add #import "RNCConfig.h" at the top
+//
+//   NSString *logLevel = [RNCConfig envFor:@"LOG_LEVEL"];
+//   if([logLevel isEqualToString:@"error"]){
+//     RCTSetLogThreshold(RCTLogLevelError);
+//   }
+//   else if([logLevel isEqualToString:@"warn"]){
+//     RCTSetLogThreshold(RCTLogLevelWarning);
+//   }
+//   else if([logLevel isEqualToString:@"info"]){
+//     RCTSetLogThreshold(RCTLogLevelInfo);
+//   }
+//   else if([logLevel isEqualToString:@"debug"]){
+//     RCTSetLogThreshold(RCTLogLevelTrace);
+//   }
 
   NSDictionary *appDefaults = [NSDictionary
       dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
