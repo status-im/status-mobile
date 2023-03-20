@@ -1,6 +1,5 @@
 (ns status-im.qr-scanner.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.add-new.db :as new-chat.db]
             [status-im.chat.models :as chat]
             [status-im.ethereum.core :as ethereum]
@@ -65,8 +64,9 @@
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      {:change-tab-fx      :profile
-       :pop-to-root-tab-fx :profile-stack}
+      (rf/merge cofx
+                {:pop-to-root-fx :shell-stack}
+                (navigation/navigate-to-cofx :my-profile nil))
 
       (and public-key (not own))
       (rf/merge cofx
@@ -76,22 +76,19 @@
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (i18n/label :t/ens-name-not-found)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
             {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
-            (navigation/change-tab :wallet)
-            (navigation/pop-to-root-tab :wallet-stack)))
+            (navigation/change-tab :wallet-stack)
+            (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-wallet-connect
   {:events [::handle-wallet-connect-uri]}
   [cofx data]
-  (let [wc-version (last (string/split (first (string/split data "?")) "@"))]
-    (if (= wc-version "1")
-      {:dispatch [:wallet-connect-legacy/pair data]}
-      {:dispatch [:wallet-connect/pair data]})))
+  {:dispatch [:wallet-connect/pair data]})
 
 (rf/defn handle-local-pairing
   {:events [::handle-local-pairing-uri]}
@@ -102,21 +99,22 @@
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
   (case type
-    :public-chat    (handle-public-chat cofx data)
-    :group-chat     (handle-group-chat cofx data)
-    :private-chat   (handle-private-chat cofx data)
-    :contact        (handle-view-profile cofx data)
-    :browser        (handle-browse cofx data)
-    :eip681         (handle-eip681 cofx data)
-    :wallet-connect (handle-wallet-connect cofx data)
-    :localpairing   (handle-local-pairing cofx data)
+    :public-chat  (handle-public-chat cofx data)
+    :group-chat   (handle-group-chat cofx data)
+    :private-chat (handle-private-chat cofx data)
+    :contact      (handle-view-profile cofx data)
+    :browser      (handle-browse cofx data)
+    :eip681       (handle-eip681 cofx data)
+    ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
+    ;;:wallet-connect (handle-wallet-connect cofx data)
+    :localpairing (handle-local-pairing cofx data)
     (do
       (log/info "Unable to find matcher for scanned value"
                 {:type  type
                  :event ::match-scanned-value})
       {:dispatch         [:navigate-back]
        :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :shell-stack])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn on-scan
   {:events [::on-scan-success]}

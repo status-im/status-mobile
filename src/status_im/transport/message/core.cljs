@@ -7,10 +7,9 @@
     [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
     [status-im2.constants :as constants]
-    [status-im.contact.core :as models.contact]
+    [status-im2.contexts.contacts.events :as models.contact]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
-    [status-im.data-store.contacts :as data-store.contacts]
     [status-im.data-store.invitations :as data-store.invitations]
     [status-im.data-store.messages :as data-store.messages]
     [status-im.data-store.reactions :as data-store.reactions]
@@ -44,6 +43,7 @@
         ^js invitations                (.-invitations response-js)
         ^js removed-chats              (.-removedChats response-js)
         ^js activity-notifications     (.-activityCenterNotifications response-js)
+        ^js activity-center-state      (.-activityCenterState response-js)
         ^js pin-messages               (.-pinMessages response-js)
         ^js removed-messages           (.-removedMessages response-js)
         ^js visibility-status-updates  (.-statusUpdates response-js)
@@ -76,6 +76,15 @@
                   (activity-center/show-toasts notifications)
                   (process-next response-js sync-handler)))
 
+      (some? activity-center-state)
+      (let [seen? (-> activity-center-state
+                      types/js->clj
+                      data-store.activities/<-rpc-seen-state)]
+        (js-delete response-js "activityCenterState")
+        (rf/merge cofx
+                  (activity-center/reconcile-seen-state seen?)
+                  (process-next response-js sync-handler)))
+
       (seq installations)
       (let [installations-clj (types/js->clj installations)]
         (js-delete response-js "installations")
@@ -84,15 +93,7 @@
                   (models.pairing/handle-installations installations-clj)))
 
       (seq contacts)
-      (let [contacts-clj (types/js->clj contacts)
-            ^js chats    (.-chatsForContacts response-js)]
-        (js-delete response-js "contacts")
-        (js-delete response-js "chatsForContacts")
-        (rf/merge cofx
-                  (process-next response-js sync-handler)
-                  (models.contact/ensure-contacts
-                   (map data-store.contacts/<-rpc contacts-clj)
-                   chats)))
+      (models.contact/process-js-contacts cofx response-js)
 
       (seq communities)
       (let [communities-clj (types/js->clj communities)]

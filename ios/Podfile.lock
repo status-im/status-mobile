@@ -27,15 +27,15 @@ PODS:
     - CryptoSwift
     - secp256k1
     - SSZipArchive
-  - libwebp (1.2.3):
-    - libwebp/demux (= 1.2.3)
-    - libwebp/mux (= 1.2.3)
-    - libwebp/webp (= 1.2.3)
-  - libwebp/demux (1.2.3):
+  - libwebp (1.2.4):
+    - libwebp/demux (= 1.2.4)
+    - libwebp/mux (= 1.2.4)
+    - libwebp/webp (= 1.2.4)
+  - libwebp/demux (1.2.4):
     - libwebp/webp
-  - libwebp/mux (1.2.3):
+  - libwebp/mux (1.2.4):
     - libwebp/demux
-  - libwebp/webp (1.2.3)
+  - libwebp/webp (1.2.4)
   - Permission-Camera (2.1.5):
     - RNPermissions
   - Permission-Microphone (2.1.5):
@@ -228,6 +228,8 @@ PODS:
     - React-Core
   - react-native-netinfo (4.7.0):
     - React
+  - react-native-orientation-locker (1.5.0):
+    - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (2.0.0):
@@ -238,7 +240,7 @@ PODS:
     - React
   - react-native-status (1.0.0):
     - React
-  - react-native-status-keycard (2.5.38):
+  - react-native-status-keycard (2.5.39):
     - Keycard
     - React
   - react-native-webview (11.16.0):
@@ -433,6 +435,7 @@ DEPENDENCIES:
   - react-native-lottie-splash-screen (from `../node_modules/react-native-lottie-splash-screen`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
@@ -545,6 +548,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-orientation-locker:
+    :path: "../node_modules/react-native-orientation-locker"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
@@ -640,10 +645,10 @@ SPEC CHECKSUMS:
   FBLazyVector: 352a8ca9bbc8e2f097d680747a8c97ecef12d469
   FBReactNativeSpec: 7dfb84f624136a45727c813ed21d130cd3e61beb
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 997518ea2aa2d8cd5df9797b641b758d52ecf2bc
+  glog: 6934faae5afbec23475648c8aeb6047ce973af65
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
-  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
+  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
   Permission-Microphone: 0ffabc3fe1c75cfb260525ee3f529383c9f4368c
   RCTRequired: 5520387431beaa5f32aa8726bf746cd5353119fe
@@ -666,12 +671,13 @@ SPEC CHECKSUMS:
   react-native-lottie-splash-screen: 068688c15dd478301fda00f8d87d7fb7d5b9a93e
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
+  react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
-  react-native-status-keycard: f60ca57d789aad6875c64ece81ab06ef0609e0d3
+  react-native-status-keycard: f1c1227b2d5984c10fb44db68e4bfd2937f31e98
   react-native-webview: 28a8636d97ee641f2ee8f20492d7a6c269c1d703
   React-RCTActionSheet: e911b99f0d6fa7711ffc2f62d236b12a32771835
   React-RCTAnimation: ad8b853170a059faf31d6add34f67d22391bbe01
@@ -710,6 +716,6 @@ SPEC CHECKSUMS:
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 0276e9f20976c8568e107cfc1163a8629051adc0
 
-PODFILE CHECKSUM: ca5d07911eadc1267649ecc15379e5127a0cc839
+PODFILE CHECKSUM: dd4d6510a5580d20adac6c8a8dad97a0bc7d6508
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0

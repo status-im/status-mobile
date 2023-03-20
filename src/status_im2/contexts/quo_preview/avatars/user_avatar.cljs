@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.avatars.user-avatar
-  (:require [quo2.components.avatars.user-avatar :as quo2]
+  (:require [quo2.components.avatars.user-avatar.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -22,13 +22,20 @@
                :value "xx Small"}
               {:key   :xxxs
                :value "xxx Small"}]}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [[color-kw _]]
+                    {:key   color-kw
+                     :value (name color-kw)})
+                  colors/customization)}
    {:label "Online status"
     :key   :online?
     :type  :boolean}
    {:label "Status Indicator"
     :key   :status-indicator?
     :type  :boolean}
-   {:label "Identicon Ring"
+   {:label "Identicon Ring (applies only when there's no profile picture)"
     :key   :ring?
     :type  :boolean}
    {:label "Full name separated by space"
@@ -46,11 +53,11 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:full-name         "A Y"
-                             :status-indicator? true
-                             :online?           true
-                             :size              :medium
-                             :ring?             true})]
+  (let [state (reagent/atom {:full-name           "A Y"
+                             :status-indicator?   true
+                             :online?             true
+                             :size                :medium
+                             :customization-color :blue})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -60,7 +67,12 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo2/user-avatar @state]]]])))
+         (let [{:keys [profile-picture ring?]} @state
+               ring-bg                         (resources/get-mock-image :ring)
+               params                          (cond-> @state
+                                                 (and (not profile-picture) ring?)
+                                                 (assoc :ring-background ring-bg))]
+           [quo2/user-avatar params])]]])))
 
 (defn preview-user-avatar
   []

@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
+from appium.webdriver.common.mobileby import MobileBy
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import emojis
@@ -213,6 +215,7 @@ class ChatElementByText(Text):
         return status
 
     def wait_for_status_to_be(self, expected_status: str, timeout: int = 30):
+        self.driver.info("Waiting for message to be sent for %s sec" % timeout)
         start_time = time.time()
         while time.time() - start_time <= timeout:
             if self.status == expected_status:
@@ -403,13 +406,15 @@ class CommunityView(HomeView):
         self.close_button.click()
 
     def send_invite_to_community(self, user_names_to_invite):
+        if isinstance(user_names_to_invite, str):
+            user_names_to_invite = [user_names_to_invite]
         self.driver.info("Send %s invite to community" % ', '.join(map(str, user_names_to_invite)))
         self.community_options_button.click()
         self.community_info_button.click()
         self.invite_button.click()
-        user_contact = self.element_by_text_part(user_names_to_invite)
-        user_contact.scroll_to_element()
-        user_contact.click()
+        for user_name in user_names_to_invite:
+            user_contact = self.element_by_text_part(user_name)
+            user_contact.scroll_and_click()
         self.share_invite_button.click_until_presence_of_element(self.invite_button)
         self.back_button.click_until_presence_of_element(self.plus_button)
 
@@ -617,16 +622,33 @@ class PinnedMessagesList(BaseElement):
         return len(element.find_elements())
 
     def message_element_by_text(self, text):
-        message_element = Text(self.driver, prefix=self.locator, xpath="//*[starts-with(@text,'%s')]" % text)
+        message_element = Button(self.driver, prefix=self.locator, xpath="//*[starts-with(@text,'%s')]" % text)
         self.driver.info("Looking for a pinned message by text: %s" % message_element.exclude_emoji(text))
         return message_element
 
     def get_message_pinned_by_text(self, text):
-        xpath = "//*[starts-with(@text,'%s')]/ancestor::*[@content-desc='message-sent']/" % text + \
-                "preceding-sibling::*[@content-desc='pinned-by']/android.widget.TextView"
+        xpath = "//*[starts-with(@text,'%s')]/../../*[@content-desc='pinned-by']/android.widget.TextView" % text
         pinned_by_element = Text(self.driver, prefix=self.locator, xpath=xpath)
         self.driver.info("Looking for a pinned by message with text: %s" % text)
         return pinned_by_element
+
+
+class ChatMessageInput(EditBox):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="chat-message-input")
+
+    def paste_text_from_clipboard(self):
+        action = TouchAction(self.driver)
+        location = self.find_element().location
+        x, y = location['x'], location['y']
+        action.long_press(x=x + 250, y=y).release().perform()  # long press
+        action.tap(x=x + 50, y=y - 50).release().perform()  # tap Paste
+
+    def click_inside(self):
+        action = TouchAction(self.driver)
+        location = self.find_element().location
+        x, y = location['x'], location['y']
+        action.tap(x=x + 250, y=y).release().perform()
 
 
 class ChatView(BaseView):
@@ -657,7 +679,7 @@ class ChatView(BaseView):
                                                         xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
         # Chat input
-        self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")
+        self.chat_message_input = ChatMessageInput(self.driver)
         self.cancel_reply_button = Button(self.driver, accessibility_id="reply-cancel-button")
         self.quote_username_in_message_input = EditBox(self.driver,
                                                        xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
@@ -734,13 +756,13 @@ class ChatView(BaseView):
 
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
-        self.profile_send_message = ProfileSendMessageButton(self.driver)
-        self.profile_block_contact = ProfileBlockContactButton(self.driver)
+        self.profile_send_message_button = ProfileSendMessageButton(self.driver)
+        self.profile_block_contact_button = ProfileBlockContactButton(self.driver)
         self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
         self.unblock_contact_button = UnblockContactButton(self.driver)
         self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
         self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
-        self.profile_add_to_contacts = Button(self.driver, accessibility_id="Add to contacts-item-button")
+        self.profile_add_to_contacts_button = Button(self.driver, accessibility_id="Add to contacts-item-button")
         self.profile_remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")
         self.profile_nickname = Text(self.driver,
@@ -766,6 +788,7 @@ class ChatView(BaseView):
         self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',
                                                  suffix='/following-sibling::android.view.ViewGroup')
         self.confirm_create_in_community_button = Button(self.driver, translation_id="create")
+        self.mentions_list = BaseElement(self.driver, accessibility_id="mentions-list")
 
         # New UI
         self.pinned_messages_count = Button(self.driver,
@@ -773,7 +796,6 @@ class ChatView(BaseView):
         self.pinned_messages_list = PinnedMessagesList(self.driver)
         self.pin_limit_popover = BaseElement(self.driver, translation_id="pin-limit-reached")
         self.view_pinned_messages_button = Button(self.driver, accessibility_id="pinned-banner")
-
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
@@ -955,7 +977,7 @@ class ChatView(BaseView):
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()
         self.view_profile_by_avatar_button.wait_and_click()
-        self.profile_block_contact.wait_for_visibility_of_element(5)
+        self.profile_block_contact_button.wait_for_visibility_of_element(5)
 
     def wait_ens_name_resolved_in_chat(self, message=str, username_value=str):
         self.driver.info("Waiting ENS name '%s' is resolved in chat" % username_value)
@@ -1027,7 +1049,7 @@ class ChatView(BaseView):
 
     def block_contact(self):
         self.driver.info("Block contact from other user profile")
-        self.profile_block_contact.click()
+        self.profile_block_contact_button.click()
         self.confirm_block_contact_button.click()
 
     def open_user_profile_from_public_chat(self, message):
@@ -1080,10 +1102,24 @@ class ChatView(BaseView):
         return transaction_message
 
     def get_community_by_name(self, community_name: str):
-        community_button = Button(self.driver,
-                                  xpath="//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name)
+        community_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name
+        )
         community_button.click()
         return CommunityView(self.driver)
+
+    def mention_user(self, user_name: str):
+        self.driver.info("Mention user %s in the chat" % user_name)
+        gboard = self.driver.available_ime_engines[0]
+        self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
+        self.chat_message_input.click_inside()
+        self.chat_message_input.send_keys("@")
+        try:
+            mentions_list = self.mentions_list.wait_for_element()
+            mentions_list.find_element(MobileBy.XPATH, "//*[@text='%s']" % user_name).click()
+        except TimeoutException:
+            self.driver.fail("Mentions list is not shown")
 
     @staticmethod
     def get_resolved_chat_key(username, chat_key):

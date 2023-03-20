@@ -109,8 +109,9 @@
   (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    {:change-tab-fx      :profile
-     :pop-to-root-tab-fx :profile-stack}
+    (rf/merge cofx
+              {:pop-to-root-fx :shell-stack}
+              (navigation/navigate-to-cofx :my-profile nil))
 
     public-key
     {:dispatch [:chat.ui/show-profile public-key ens-name]}))

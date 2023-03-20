@@ -1,8 +1,10 @@
 (ns quo2.components.counter.counter
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [utils.number :as utils-number]))
 
 (def themes
   {:light {:default   colors/primary-50
@@ -19,9 +21,9 @@
   (get-in themes [(theme/get-theme) key]))
 
 (defn counter
-  "type:    default, secondary, grey, outline
-   value:   integer"
-  [{:keys [type override-text-color override-bg-color style accessibility-label]} value]
+  [{:keys [type override-text-color override-bg-color style accessibility-label max-value]
+    :or   {max-value 99}}
+   value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or
@@ -29,11 +31,9 @@
                             (= type :default))
                          colors/white
                          colors/neutral-100))
-        value      (if (integer? value)
-                     value
-                     (js/parseInt value))
-        label      (if (> value 99)
-                     "99+"
+        value      (utils-number/parse-int value)
+        label      (if (> value max-value)
+                     (str max-value "+")
                      (str value))
         width      (case (count label)
                      1 16
@@ -59,7 +59,7 @@
                                     (or override-bg-color
                                         (get-color type)))
 
-                             (> value 99)
+                             (> value max-value)
                              (assoc :padding-left 0.5))}
      [text/text
       {:weight :medium

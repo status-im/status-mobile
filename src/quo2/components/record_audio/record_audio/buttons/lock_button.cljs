@@ -4,11 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
             [react-native.core :refer [use-effect]]
-            [quo2.components.record-audio.record-audio.helpers :refer
-             [animate-linear-with-delay
-              animate-easing-with-delay
-              animate-linear
-              set-value]]))
+            [quo2.components.record-audio.record-audio.helpers :as helpers]))
 
 (defn lock-button
   [recording? ready-to-lock? locked?]
@@ -22,36 +18,36 @@
            border-radius-first-half  (reanimated/use-shared-value 8)
            border-radius-second-half (reanimated/use-shared-value 8)
            start-x-y-animation       (fn []
-                                       (animate-linear-with-delay translate-x-y 8 50 116.66)
-                                       (animate-easing-with-delay connector-opacity 1 0 80)
-                                       (animate-easing-with-delay width 56 83.33 63.33)
-                                       (animate-easing-with-delay height 56 83.33 63.33)
-                                       (animate-easing-with-delay border-radius-first-half
-                                                                  28
-                                                                  83.33
-                                                                  63.33)
-                                       (animate-easing-with-delay border-radius-second-half
-                                                                  28
-                                                                  83.33
-                                                                  63.33))
+                                       (helpers/animate-linear-with-delay translate-x-y 8 50 116.66)
+                                       (helpers/animate-easing-with-delay connector-opacity 1 0 80)
+                                       (helpers/animate-easing-with-delay width 56 83.33 63.33)
+                                       (helpers/animate-easing-with-delay height 56 83.33 63.33)
+                                       (helpers/animate-easing-with-delay border-radius-first-half
+                                                                          28
+                                                                          83.33
+                                                                          63.33)
+                                       (helpers/animate-easing-with-delay border-radius-second-half
+                                                                          28
+                                                                          83.33
+                                                                          63.33))
            reset-x-y-animation       (fn []
-                                       (animate-linear translate-x-y 0 100)
-                                       (set-value connector-opacity 0)
-                                       (set-value width 24)
-                                       (set-value height 12)
-                                       (set-value border-radius-first-half 8)
-                                       (set-value border-radius-second-half 16))
+                                       (helpers/animate-linear translate-x-y 0 100)
+                                       (helpers/set-value connector-opacity 0)
+                                       (helpers/set-value width 24)
+                                       (helpers/set-value height 12)
+                                       (helpers/set-value border-radius-first-half 8)
+                                       (helpers/set-value border-radius-second-half 16))
            fade-in-animation         (fn []
-                                       (animate-linear translate-x-y 0 220)
-                                       (animate-linear opacity 1 220))
+                                       (helpers/animate-linear translate-x-y 0 220)
+                                       (helpers/animate-linear opacity 1 220))
            fade-out-animation        (fn []
-                                       (animate-linear translate-x-y 20 200)
-                                       (animate-linear opacity 0 200)
-                                       (set-value connector-opacity 0)
-                                       (set-value width 24)
-                                       (set-value height 12)
-                                       (set-value border-radius-first-half 8)
-                                       (set-value border-radius-second-half 16))]
+                                       (helpers/animate-linear translate-x-y 20 200)
+                                       (helpers/animate-linear opacity 0 200)
+                                       (helpers/set-value connector-opacity 0)
+                                       (helpers/set-value width 24)
+                                       (helpers/set-value height 12)
+                                       (helpers/set-value border-radius-first-half 8)
+                                       (helpers/set-value border-radius-second-half 16))]
        (use-effect (fn []
                      (if @recording?
                        (fade-in-animation)

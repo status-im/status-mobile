@@ -35,7 +35,7 @@
      :subtitle subtitle}]])
 
 (defn- main-variant
-  [{:keys [title subtitle image]}]
+  [{:keys [title subtitle image max-height]}]
   [rn/view {:style style/main-variant}
    [rn/view {:style style/main-variant-text-container}
     [texts
@@ -43,24 +43,32 @@
       :subtitle subtitle}]]
    [fast-image/fast-image
     {:accessibility-label :small-option-card-main-image
-     :style               {:flex 1}
+     :style               {:flex 1 :max-height max-height}
      :resize-mode         :contain
      :source              image}]])
 
 (defn small-option-card
-  [{:keys [variant title subtitle image on-press]
-    :or   {variant :main}}]
+  "Variants: `:main` or `:icon`"
+  [{:keys [variant title subtitle image max-height on-press accessibility-label]
+    :or   {variant :main accessibility-label :small-option-card}}]
   (let [main-variant?  (= variant :main)
-        card-component (if main-variant? main-variant icon-variant)]
-    [rn/touchable-highlight
-     {:accessibility-label :small-option-card
-      :style               style/touchable-overlay
-      :active-opacity      1
-      :underlay-color      colors/white-opa-5
-      :on-press            on-press}
-     [rn/view {:style (style/card-container main-variant?)}
-      [rn/view {:style (style/card main-variant?)}
+        card-component (if main-variant? main-variant icon-variant)
+        card-height    (cond
+                         (not main-variant?) style/icon-variant-height
+                         max-height          (min max-height style/main-variant-height)
+                         :else               style/main-variant-height)]
+    [rn/view
+     [rn/touchable-highlight
+      {:accessibility-label accessibility-label
+       :style               style/touchable-overlay
+       :active-opacity      1
+       :underlay-color      colors/white-opa-5
+       :on-press            on-press}
+      [rn/view {:style (style/card card-height)}
        [card-component
-        {:title    title
-         :subtitle subtitle
-         :image    image}]]]]))
+        {:title      title
+         :subtitle   subtitle
+         :image      image
+         :max-height max-height}]]]
+     (when main-variant?
+       [rn/view {:style style/main-variant-extra-space}])]))

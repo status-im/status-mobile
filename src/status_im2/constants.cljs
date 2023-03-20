@@ -37,6 +37,7 @@
 (def ^:const activity-center-membership-status-declined 3)
 
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
+(def ^:const activity-center-max-unread-count 99)
 
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up 2)
@@ -121,6 +122,7 @@
 
 (def ^:const status-create-address "status_createaddress")
 
+(def ^:const community-unknown-membership-access 0)
 (def ^:const community-no-membership-access 1)
 (def ^:const community-invitation-only-access 2)
 (def ^:const community-on-request-access 3)
@@ -132,7 +134,12 @@
 (def ^:const community-channel-access-invitation-only 2)
 (def ^:const community-channel-access-on-request 3)
 
-; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
+(def ^:const community-request-to-join-state-pending 1)
+(def ^:const community-request-to-join-state-declined 2)
+(def ^:const community-request-to-join-state-accepted 3)
+(def ^:const community-request-to-join-state-cancelled 4)
+
+  ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
 (def ^:const path-eip1581 "m/43'/60'/1581'")
@@ -215,9 +222,9 @@
 (def album-image-sizes ; sometimes we subtract 1 or 0.5 for padding
   {2        {0 image-size
              1 image-size}
-   3        {0 [(* image-size 2) (* image-size 1.5)]
-             1 [(- image-size 0.5) (- (* image-size 0.67) 1)]
-             2 [(- image-size 0.5) (- (* image-size 0.67) 1)]}
+   3        {0 [(* image-size 2) (* image-size 1.25)]
+             1 [(- image-size 0.5) (- (* image-size 0.75) 1)]
+             2 [(- image-size 0.5) (- (* image-size 0.75) 1)]}
    4        {0 image-size
              1 image-size
              2 image-size
@@ -283,3 +290,5 @@
 (def ^:const local-pair-action-sync-device 3)
 
 (def ^:const everyone-mention-id "0x00001")
+
+(def ^:const empty-category-id :communities/not-categorized)

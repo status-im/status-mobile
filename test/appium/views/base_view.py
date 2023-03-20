@@ -35,24 +35,15 @@ class AllowButton(Button):
             pass
 
 
-class TabButton(Button):
+class UnreadMessagesCountText(Text):
+    def __init__(self, driver, parent_locator: str):
+        super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
 
+
+class TabButton(Button):
     @property
     def counter(self):
-        class Counter(Text):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver,
-                                 xpath="%s/android.widget.TextView" % parent_locator)
-
-        return Counter(self.driver, self.locator)
-
-    @property
-    def public_unread_messages(self):
-        class PublicChatUnreadMessages(BaseElement):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver, xpath="%s/android.widget.TextView" % parent_locator)
-
-        return PublicChatUnreadMessages(self.driver, self.locator)
+        return UnreadMessagesCountText(self.driver, parent_locator='//*[@content-desc="%s"]' % self.accessibility_id)
 
 
 class HomeButton(TabButton):
@@ -139,13 +130,15 @@ class WalletButton(TabButton):
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//*[contains(@content-desc,'5 out of 5')]")
+        super().__init__(driver,  accessibility_id="open-profile")
 
     def navigate(self):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
     def click(self, desired_element_text='privacy'):
+        if not self.is_element_displayed():
+            ChatsTab(self.driver).click()
         from views.profile_view import ProfileView
         if desired_element_text == 'privacy':
             self.click_until_presence_of_element(ProfileView(self.driver).privacy_and_security_button)
@@ -608,6 +601,10 @@ class BaseView(object):
         self.jump_to_button.click()
         self.communities_tab.click()
 
+    def jump_to_card_by_text(self, text: str):
+        self.jump_to_button.click()
+        self.element_by_text(text).click()
+
     def reopen_app(self, password=common_password):
         self.driver.close_app()
         self.driver.launch_app()
@@ -621,9 +618,7 @@ class BaseView(object):
 
     def get_public_key_and_username(self, return_username=False):
         self.driver.info("Get public key and username")
-        # profile_view = self.profile_button.click()
-        self.browser_tab.click()  # temp, until profile is on browser tab
-        profile_view = self.get_profile_view()
+        profile_view = self.profile_button.click()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element(20)

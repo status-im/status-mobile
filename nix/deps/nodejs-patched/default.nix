@@ -29,7 +29,14 @@ stdenv.mkDerivation {
   # maven and google central repositories with our own local directories.
   # This prevents the builder from downloading Maven artifacts
   patchGradlePhase = ''
-    for modBuildGradle in $(find -L ./node_modules -name build.gradle); do
+    gradleConfigs=$(
+      find -L ./node_modules \
+        -name build.gradle -or \
+        -name build.gradle.kts -or \
+        -name settings.gradle -or \
+        -name settings.gradle.kts
+    )
+    for modBuildGradle in $gradleConfigs; do
       relativeToNode=''${modBuildGradle#*node_modules/}
       moduleName=''${relativeToNode%%/*}
       if [[ -L ./node_modules/$moduleName ]]; then

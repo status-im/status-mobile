@@ -24,6 +24,7 @@ Generating scripts:
 - `get_deps.sh` - Calls Gradle to get all the dependencies of sub-projects.
 - `gradle_parser.awk` - An AWK script that parses above Gradle output.
 - `url2json.sh` - Converts the list of URLs into a format consumable by Nix.
+- `add_package.sh` - Allows for adding a missing package manually.
 
 Finally we have the Nix derivation in `default.nix` which produces a derivation with all of the Gradle project dependencies:
 ```
@@ -66,9 +67,14 @@ You can use the `add_package.sh` script to add missing Gradle dependencies:
  > make shell TARGET=gradle
 Configuring Nix shell for target 'gradle'...
 
-[nix-shell:~/status-mobile]$ nix/deps/gradle/add_package.sh com.android.tools.build:gradle:3.4.0
+[nix-shell:~/work/status-mobile]$ nix/deps/gradle/add_package.sh com.android.tools.build:gradle:3.5.3
+Changes made:
+ nix/deps/gradle/deps.urls | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
 Regenerating Nix files...
-Found 548 direct dependencies...
-Successfully added: com.android.tools.build:gradle:3.4.0
+Successfully added: com.android.tools.build:gradle:3.5.3
+
+NOTICE: Running 'make nix-update-gradle' in a new shell is recommended.
 ```
-This may take a bit longer than normal `make nix-update-gradle` but should add the missing package.
+Keep in mind that the changes made by this script do not affect the already spawned shell.

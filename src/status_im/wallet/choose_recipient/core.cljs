@@ -141,7 +141,9 @@
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})
       (if (wallet-connect/url? uri)
-        {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}
+        {:ui/show-error "Wallet Connect not implemented"}
+        ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
+        ;; {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}
         {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))))
 
 (rf/defn qr-scanner-result

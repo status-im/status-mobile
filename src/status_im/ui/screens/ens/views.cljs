@@ -11,7 +11,6 @@
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
     [utils.i18n :as i18n]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.checkbox.view :as checkbox]
@@ -20,7 +19,6 @@
     [status-im.ui.components.react :as react]
     [status-im.ui.components.toolbar :as toolbar]
     [status-im.ui.components.topbar :as topbar]
-    [status-im.ui.screens.chat.photos :as photos]
     [status-im.ui.screens.chat.utils :as chat.utils]
     [status-im.ui.screens.profile.components.views :as profile.components]
     [status-im.ui.screens.wallet.send.sheets :as sheets]
@@ -717,13 +715,13 @@
   []
   (views/letsubs [contact-name [:multiaccount/preferred-name]]
     (when-not (string/blank? contact-name)
-      (chat.utils/format-author-old {:names {:ens-name
-                                             (str "@"
-                                                  (or (stateofus/username contact-name)
-                                                      contact-name))}}))))
+      (chat.utils/format-author-old {:primary-name
+                                     (str "@"
+                                          (or (stateofus/username contact-name)
+                                              contact-name))}))))
 
 (views/defview registered
-  [names {:keys [preferred-name] :as account} _ registrations]
+  [names {:keys [preferred-name]} _ registrations]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
@@ -759,13 +757,7 @@
           :value     preferred-name
           :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content
-                                           (fn [] (name-list names preferred-name))}])}]])]
-    [react/view
-     [react/view {:padding-left 72}
-      [my-name]]
-     [react/view {:flex-direction :row}
-      [react/view {:padding-left 16 :padding-top 4}
-       [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]]]]])
+                                           (fn [] (name-list names preferred-name))}])}]])]]])
 
 (views/defview main
   []

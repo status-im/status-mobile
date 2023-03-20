@@ -5,7 +5,7 @@
     quo2.components.avatars.channel-avatar
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
-    quo2.components.avatars.user-avatar
+    quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
     quo2.components.buttons.button
@@ -21,6 +21,7 @@
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
     quo2.components.dividers.new-messages
+    quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
@@ -29,6 +30,9 @@
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box
+    quo2.components.inputs.input.view
+    quo2.components.inputs.title-input.view
+    quo2.components.inputs.profile-input.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -48,6 +52,7 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
+    quo2.components.record-audio.record-audio.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
     quo2.components.selectors.selectors
@@ -62,7 +67,8 @@
     quo2.components.tags.permission-tag
     quo2.components.tags.tag
     quo2.components.tags.tags
-    quo2.components.tags.token-tag))
+    quo2.components.tags.token-tag
+    quo2.components.list-items.user-list))
 
 (def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
@@ -93,14 +99,13 @@
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
-(def display-name quo2.components.messages.author.view/display-name)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
-(def user-avatar quo2.components.avatars.user-avatar/user-avatar)
+(def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
 
 ;;;; BANNER
@@ -131,16 +136,23 @@
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
+(def strength-divider quo2.components.dividers.strength-divider.view/view)
 
 ;;;; DRAWERS
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
+;;;; INPUTS
+(def input quo2.components.inputs.input.view/input)
+(def profile-input quo2.components.inputs.profile-input.view/profile-input)
+(def title-input quo2.components.inputs.title-input.view/title-input)
+
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
+(def user-list quo2.components.list-items.user-list/user-list)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
@@ -154,6 +166,9 @@
 ;;;; PROFILE
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
+
+;;;; RECORD AUDIO
+(def record-audio quo2.components.record-audio.record-audio.view/record-audio)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)

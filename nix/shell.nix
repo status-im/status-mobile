@@ -12,7 +12,7 @@ in mkShell {
 
   buildInputs = with pkgs; lib.unique ([
     # core utilities that should always be present in a shell
-    bash curl wget file unzip flock
+    bash curl wget file unzip flock procps
     git gnumake jq ncurses gnugrep parallel
     lsof # used in start-react-native.sh
     # build specific utilities
@@ -22,7 +22,7 @@ in mkShell {
     # other nice to have stuff
     yarn nodejs python27
   ] # and some special cases
-    ++ lib.optionals stdenv.isDarwin [ cocoapods clang ]
+    ++ lib.optionals stdenv.isDarwin [ cocoapods clang tcl ]
     ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
   );
 

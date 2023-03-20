@@ -10,9 +10,10 @@
             [status-im2.constants :as constants]
             [status-im.chat.models.loading :as loading]
             [status-im.data-store.chats :as chats-store]
-            [status-im.data-store.contacts :as contacts-store]
+            [status-im2.contexts.contacts.events :as contacts-store]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.clocks :as utils.clocks]))
+            [status-im.utils.clocks :as utils.clocks]
+            [status-im.utils.types :as types]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -204,7 +205,7 @@
   (rf/merge cofx
             {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
             (when-not (or (= (:view-id db) :community) (= (:view-id db) :community-overview))
-              (navigation/pop-to-root-tab :shell-stack))
+              (navigation/pop-to-root :shell-stack))
             (close-chat false)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -221,10 +222,10 @@
 
 (rf/defn handle-one-to-one-chat-created
   {:events [:chat/one-to-one-chat-created]}
-  [{:keys [db]} chat-id response]
-  (let [chat        (chats-store/<-rpc (first (:chats response)))
-        contact-rpc (first (:contacts response))
-        contact     (when contact-rpc (contacts-store/<-rpc contact-rpc))]
+  [{:keys [db]} chat-id response-js]
+  (let [chat       (chats-store/<-rpc (first (types/js->clj (.-chats ^js response-js))))
+        contact-js (first (.-contacts ^js response-js))
+        contact    (when contact-js (contacts-store/<-rpc-js contact-js))]
     {:db       (cond-> db
                  contact
                  (assoc-in [:contacts/contacts chat-id] contact)
@@ -253,10 +254,11 @@
   {:events [:chat.ui/start-chat]}
   [cofx chat-id ens-name]
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
-    {:json-rpc/call [{:method     "wakuext_createOneToOneChat"
-                      :params     [{:id chat-id :ensName ens-name}]
-                      :on-success #(rf/dispatch [:chat/one-to-one-chat-created chat-id %])
-                      :on-error   #(log/error "failed to create one-to-on chat" chat-id %)}]}))
+    {:json-rpc/call [{:method      "wakuext_createOneToOneChat"
+                      :params      [{:id chat-id :ensName ens-name}]
+                      :js-response true
+                      :on-success  #(rf/dispatch [:chat/one-to-one-chat-created chat-id %])
+                      :on-error    #(log/error "failed to create one-to-on chat" chat-id %)}]}))
 
 (rf/defn clear-history-handler
   "Clears history of the particular chat"
@@ -345,3 +347,14 @@
   {:events [:chat.ui/zoom-out-signal]}
   [{:keys [db]} value]
   {:db (assoc db :lightbox/zoom-out-signal value)})
+
+(rf/defn orientation-change
+  {:events [:chat.ui/orientation-change]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/orientation value)})
+
+(rf/defn lightbox-scale
+  {:events [:chat.ui/lightbox-scale]}
+  [{:keys [db]} value]
+  {:db (assoc db :lightbox/scale value)})
+

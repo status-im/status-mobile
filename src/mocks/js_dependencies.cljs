@@ -139,6 +139,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def react-native-svg
   #js
    {:ClipPath #js {:render identity}
+    :Circle   #js {:render identity}
     :Defs     #js {:render identity}
     :Path     #js {:render identity}
     :Rect     #js {:render identity}
@@ -146,7 +147,10 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     :SvgXml   #js {:render identity}
     :default  #js {:render identity}})
 (def react-native-webview #js {:default {}})
-(def react-native-audio-toolkit #js {:MediaStates {}})
+(def react-native-audio-toolkit
+  #js
+   {:MediaStates        {}
+    :PlaybackCategories {}})
 (def net-info #js {})
 (def touchid #js {})
 (def react-native-image-viewing #js {:default {}})
@@ -333,6 +337,10 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def react-native-camera-roll
   (clj->js {:default #js {}}))
 
+(def react-native-orientation-locker
+  (clj->js {:default                    #js {}
+            :useDeviceOrientationChange #js {}}))
+
 (def wallet-connect-client
   #js
    {:default       #js {}
@@ -346,11 +354,6 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
-
-(def shell-worklets #js {})
-
-(def bottom-sheet #js {})
-(def record-audio-worklets #js {})
 
 ;; Update i18n_resources.cljs
 (defn mock
@@ -398,10 +401,13 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-share"                            react-native-share
     "@react-native-async-storage/async-storage"     async-storage
     "react-native-svg"                              react-native-svg
-    "../src/js/worklet_factory.js"                  worklet-factory
-    "../src/js/shell_worklets.js"                   shell-worklets
-    "../src/js/bottom_sheet.js"                     bottom-sheet
-    "../src/js/record_audio_worklets.js"            record-audio-worklets
+    "react-native-orientation-locker"               react-native-orientation-locker
+    "../src/js/worklets/core.js"                    worklet-factory
+    "../src/js/worklets/shell.js"                   #js {}
+    "../src/js/worklets/bottom_sheet.js"            #js {}
+    "../src/js/worklets/record_audio.js"            #js {}
+    "../src/js/worklets/scroll_view.js"             #js {}
+    "../src/js/worklets/lightbox.js"                #js {}
     "./fleets.js"                                   default-fleets
     "@walletconnect/client"                         wallet-connect-client
     "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))

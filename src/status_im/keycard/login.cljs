@@ -17,7 +17,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db db}
-            (navigation/pop-to-root-tab :multiaccounts-stack)))
+            (navigation/pop-to-root :multiaccounts-stack)))
 
 (rf/defn login-pin-more-icon-pressed
   {:events [:keycard.login.pin.ui/more-icon-pressed]}
@@ -70,7 +70,7 @@
                                    :status     nil))
       :hide-popover nil})
    (when (:multiaccount db)
-     (navigation/change-tab :profile))
+     (navigation/navigate-to-cofx :my-profile nil))
    (when-not (:multiaccounts/login db)
      (if (:popover/popover db)
        (navigation/navigate-replace :keycard-pin nil)

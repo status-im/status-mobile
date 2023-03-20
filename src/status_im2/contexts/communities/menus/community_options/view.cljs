@@ -2,6 +2,7 @@
   (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
+            [status-im2.contexts.communities.menus.see-rules.view :as see-rules]
             [status-im2.contexts.communities.menus.leave.view :as leave-menu]))
 
 (defn hide-sheet-and-dispatch
@@ -22,7 +23,9 @@
   {:icon                :i/bullet-list
    :right-icon          :i/chevron-right
    :accessibility-label :view-community-rules
-   :on-press            #(js/alert (str "implement action" id))
+   :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                       {:content        (constantly [see-rules/view id])
+                                        :content-height 400}])
    :label               (i18n/label :t/view-community-rules)})
 
 (defn view-token-gating
@@ -82,26 +85,29 @@
   {:icon                :i/log-out
    :label               (i18n/label :t/leave-community)
    :accessibility-label :leave-community
-
    :danger?             true
    :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
                                        {:content        (constantly [leave-menu/leave-sheet id])
                                         :content-height 400}])})
 
 (defn cancel-request-to-join
-  [id]
+  [id request-id]
   {:icon                :i/block
    :label               (i18n/label :t/cancel-request-to-join)
    :accessibility-label :cancel-request-to-join
    :danger?             true
-   :on-press            #(js/alert (str "implement action" id))})
+   :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                       {:content        (constantly [leave-menu/cancel-request-sheet id
+                                                                     request-id])
+                                        :content-height 400}])})
 
 (defn edit-community
   [id]
   {:icon                :i/edit
    :label               (i18n/label :t/edit-community)
    :accessibility-label :edit-community
-   :on-press            #(js/alert (str "implement action" id))})
+   :on-press            #(rf/dispatch [:communities/open-edit-community id]
+                                      (rf/dispatch [:bottom-sheet/hide]))})
 
 (defn not-joined-options
   [id token-gated?]
@@ -113,9 +119,9 @@
     (share-community id)]])
 
 (defn join-request-sent-options
-  [id token-gated?]
+  [id token-gated? request-id]
   [(conj (first (not-joined-options id token-gated?))
-         (assoc (cancel-request-to-join id) :add-divider? true))])
+         (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
   [id token-gated?]
@@ -149,19 +155,15 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [community     (rf/sub [:communities/community id])
-        token-gated?  (:token-gated? community)
-        joined?       (:joined community)
-        admin?        (:admin community)
-        request-sent? (pos? (:requested-to-join-at community))
-        muted?        (:muted community)
-        banned?       (:banList community)]
+  (let [{:keys [token-gated? admin joined
+                muted banList]} (rf/sub [:communities/community id])
+        request-id              (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-      joined?       (joined-options id token-gated? muted?)
-      admin?        (owner-options id token-gated? muted?)
-      request-sent? (join-request-sent-options id token-gated?)
-      banned?       (banned-options id token-gated?)
-      :else         (not-joined-options id token-gated?))))
+      admin      (owner-options id token-gated? muted)
+      joined     (joined-options id token-gated? muted)
+      request-id (join-request-sent-options id token-gated? request-id)
+      banList    (banned-options id token-gated?)
+      :else      (not-joined-options id token-gated?))))
 
 (defn community-options-bottom-sheet
   [id]

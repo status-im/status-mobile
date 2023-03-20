@@ -335,7 +335,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_1")
+@pytest.mark.xdist_group(name="new_one_1")
 @marks.new_ui_critical
 class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
 
@@ -344,6 +344,7 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
         self.sign_in = SignInView(self.drivers[0])
         self.home = self.sign_in.create_user()
         self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
+        self.home.click_system_back_button_until_element_is_shown()
         self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
 
     @marks.testrail_id(702774)
@@ -364,7 +365,6 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
         deep_link = 'status-im://u/%s' % self.public_key
         self.sign_in.open_weblink_and_login(deep_link)
         profile = self.home.get_profile_view()
-        self.home.browser_tab.click()
         if profile.default_username_text.text != self.default_username:
             self.errors.append("Can't navigate to profile from deep link with own public key")
         self.errors.verify_no_errors()

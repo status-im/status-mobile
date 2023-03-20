@@ -3,8 +3,8 @@
             [status-im.chat.models.reactions :as models.reactions]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.list.events :as models.message-list]
-            [utils.i18n :as i18n]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -19,7 +19,7 @@
   so we bucket both in 1999-12-31"
   [{:keys [acc last-timestamp last-datemark]} {:keys [whisper-timestamp datemark] :as msg}]
   (cond
-    (empty? acc)                       ; initial element
+    (empty? acc) ; initial element
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc msg)}
@@ -112,39 +112,27 @@
 (defn albumize-messages
   [messages]
   (get
-   (reduce
-    (fn [{:keys [messages albums]} message]
-      (let [album-id  (:album-id message)
-            ;; check if this image is the first image in an album (which is not albumized yet)
-            add-text? (when (and album-id (not (:albumize? message)) (> (count (get albums album-id)) 0))
-                        (not (some #(= false %)
-                                   (mapv #(< (:timestamp message) (:timestamp %))
-                                         (get albums album-id)))))
-            albums    (cond-> albums album-id (update album-id conj message))
-            ;; keep text of the first album image only
-            message   (if (or add-text? (<= (count (get albums album-id)) 1))
-                        message
-                        (assoc-in message [:content :text] nil))
-            messages  (if (and (> (count (get albums album-id)) 1) (:albumize? message))
-                        (conj (filterv #(not= album-id (:album-id %)) messages)
-                              {:album        (get albums album-id)
-                               :album-id     album-id
-                               :albumize?    (:albumize? message)
-                               :messages-ids (mapv :message-id (get albums album-id))
-                               :message-id   album-id
-                               :content-type constants/content-type-album})
-                        ;; remove text of other images in an album
-                        (if add-text?
-                          (conj (mapv #(when (= (:album-id %) album-id)
-                                         (assoc-in % [:content :text] nil))
-                                      messages)
-                                message)
-                          (conj messages message)))]
-        {:messages messages
-         :albums   albums}))
-    {:messages []
-     :albums   {}}
-    messages)
+   (reduce (fn [{:keys [messages albums]} message]
+             (let [album-id (:album-id message)
+                   albums   (cond-> albums album-id (update album-id conj message))
+                   messages (if album-id
+                              (conj (filterv #(not= album-id (:album-id %)) messages)
+                                    {:album           (get albums album-id)
+                                     :album-id        album-id
+                                     :albumize?       (:albumize? message)
+                                     :message-id      (:message-id message)
+                                     :deleted?        (:deleted? message)
+                                     :deleted-for-me? (:deleted-for-me? message)
+                                     :deleted-by      (:deleted-by message)
+                                     :from            (:from message)
+                                     :timestamp-str   (:timestamp-str message)
+                                     :content-type    constants/content-type-album})
+                              (conj messages message))]
+               {:messages messages
+                :albums   albums}))
+           {:messages []
+            :albums   {}}
+           messages)
    :messages))
 
 (re-frame/reg-sub
@@ -192,7 +180,6 @@
 
      (sort-by :pinned-at sort-pinned pin-messages-vals))))
 
-
 (re-frame/reg-sub
  :chats/pin-modal
  :<- [:messages/pin-modal]
@@ -221,30 +208,10 @@
    (get-in pagination-info [chat-id :loading-messages?])))
 
 (re-frame/reg-sub
- :chats/loading-pin-messages?
- :<- [:messages/pagination-info]
- (fn [pagination-info [_ chat-id]]
-   (get-in pagination-info [chat-id :loading-pin-messages?])))
-
-(re-frame/reg-sub
  :chats/message-list
  :<- [:messages/message-lists]
  (fn [message-lists [_ chat-id]]
    (get message-lists chat-id)))
-
-(re-frame/reg-sub
- :chats/pin-message-list
- :<- [:messages/pin-message-lists]
- (fn [pin-message-lists [_ chat-id]]
-   (get pin-message-lists chat-id)))
-
-(re-frame/reg-sub
- :chats/chat-no-messages?
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chats/chat-messages chat-id]))
- (fn [messages]
-   (empty? messages)))
-
 
 (re-frame/reg-sub
  :chats/raw-chat-messages-stream

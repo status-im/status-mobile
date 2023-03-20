@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im.ui.components.react :as react]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -69,7 +69,7 @@
              :height        100
              :border-radius 16}
             [react/image
-             {:source (resources/get-image :community-cover)
+             {:source (resources/get-mock-image :community-cover)
               :style  {:flex          1
                        :width         "100%"
                        :border-radius 16}}]
@@ -92,9 +92,7 @@
             @state
             {:default-active 1
              :component      :tags
-             :labelled?      (if (= :label type) true (:labelled? @state))
-             :resource       (when (= type :icon)
-                               :main-icons2/placeholder)
+             :labelled?      (if (= :label (:type @state)) true (:labelled? @state))
              :data           [{:id 1 :label "Music" :resource (resources/get-image :music)}
                               {:id 2 :label "Lifestyle" :resource (resources/get-image :lifestyle)}
                               {:id 2 :label "Podcasts" :resource (resources/get-image :podcasts)}

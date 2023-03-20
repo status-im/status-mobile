@@ -27,7 +27,7 @@
                       :text-color           {:style {:color colors/white}}}}})
 
 (defn tag-resources
-  [size type resource icon-color label text-color labelled]
+  [size type resource icon-color label text-color labelled?]
   [rn/view
    {:style (merge {:flex-direction  :row
                    :align-items     :center
@@ -46,16 +46,14 @@
                           24 12)
        :color           icon-color}])
    (when (= type :emoji)
-     [rn/image
-      {:source resource
-       :style  (merge (case size
-                        32 {:height 20
-                            :width  20}
-                        24 {:height 12
-                            :width  12})
-                      (when label
-                        {:margin-right 4}))}])
-   (when labelled
+     [text/text
+      {:style {:margin-right 4}
+       :size  (case size
+                32 :paragraph-1
+                24 :paragraph-2
+                nil)}
+      resource])
+   (when labelled?
      [text/text
       (merge {:size            (case size
                                  32 :paragraph-1
@@ -70,6 +68,7 @@
 (defn tag
   "opts
    {:type         :icon/:emoji/:label
+    :label        string
     :size         32/24
     :on-press     fn
     :blurred?     true/false 
@@ -82,14 +81,26 @@
     - `type`     can be icon or emoji with or without a tag label
     - `labelled` boolean: is true if tag has label else false"
   [_ _]
-  (fn [{:keys [id on-press disabled? size resource active accessibility-label
-               label type labelled? blurred? icon-color]
-        :or   {size 32}}]
+  (fn
+    [{:keys [id
+             on-press
+             disabled?
+             size
+             active
+             accessibility-label
+             label
+             resource
+             type
+             labelled?
+             blurred?
+             icon-color
+             override-theme]
+      :or   {size 32}}]
     (let [state (cond disabled? :disabled
                       active    :active
                       :else     :default)
           {:keys [border-color blurred-border-color text-color]}
-          (get-in themes [(theme/get-theme) state])]
+          (get-in themes [(or override-theme (theme/get-theme)) state])]
       [rn/view {:style {:align-items :center}}
        [base-tag/base-tag
         {:id                  id

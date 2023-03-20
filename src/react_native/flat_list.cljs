@@ -19,8 +19,8 @@
 (defn- wrap-key-fn
   [f]
   (fn [data index]
-    {:post [(some? %)]}
-    (f data index)))
+    (when f
+      (f data index))))
 
 (defn base-list-props
   [{:keys [key-fn render-fn empty-component header footer separator data render-data on-drag-end-fn]

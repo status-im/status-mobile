@@ -55,7 +55,7 @@
     (if error
       {:utils/show-popup {:title      (i18n/label :t/multiaccount-exists-title)
                           :content    (i18n/label :t/multiaccount-exists-title)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :multiaccounts])}}
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
       (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
             keycard-multiaccount?              (boolean (get-in db
                                                                 [:multiaccounts/multiaccounts key-uid
@@ -123,10 +123,10 @@
     :content             (i18n/label :t/multiaccount-exists-content)
     :confirm-button-text (i18n/label :t/unlock)
     :on-accept           #(do
-                            (re-frame/dispatch [:pop-to-root-tab :multiaccounts])
+                            (re-frame/dispatch [:pop-to-root :multiaccounts])
                             (re-frame/dispatch
                              [:multiaccounts.login.ui/multiaccount-selected key-uid]))
-    :on-cancel           #(re-frame/dispatch [:pop-to-root-tab :multiaccounts])}})
+    :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}})
 
 (rf/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}

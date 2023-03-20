@@ -125,11 +125,15 @@ class SignInView(BaseView):
         super().__init__(driver)
         self.driver = driver
 
+        # intro screen
+        self.sign_in_intro_button = Button(self.driver, accessibility_id="already-use-status-button")
+        self.i_m_new_in_status_button = Button(self.driver, accessibility_id="new-to-status-button")
+
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.sign_in_button = SignInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
-        self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
+        self.generate_key_button = Button(self.driver, accessibility_id="generate-old-key")
         self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
         self.create_password_input = EditBox(self.driver,
@@ -177,8 +181,7 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)),
                          device=False)
         if not second_user:
-            self.accept_tos_checkbox.enable()
-            self.get_started_button.click_until_presence_of_element(self.generate_key_button)
+            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_key_button)
             self.generate_key_button.click()
 
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
@@ -192,14 +195,6 @@ class SignInView(BaseView):
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
 
-        # Old UI
-        # self.maybe_later_button.wait_for_visibility_of_element(30)
-        # if enable_notifications:
-        #     self.enable_notifications_button.click()
-        # else:
-        #     self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
-        # self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
-        # self.profile_button.wait_for_visibility_of_element(30)
 
         self.chats_tab.wait_for_visibility_of_element(30)
 

@@ -31,7 +31,6 @@
 (def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "1")))
 (def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
 (def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
-(def communities-enabled? (enabled? (get-config :COMMUNITIES_ENABLED "0")))
 (def database-management-enabled? (enabled? (get-config :DATABASE_MANAGEMENT_ENABLED "0")))
 (def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
 (def collectibles-enabled? (enabled? (get-config :COLLECTIBLES_ENABLED "1")))

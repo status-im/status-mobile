@@ -9,12 +9,9 @@
             [status-im.native-module.core :as status]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
 (def at-sign "@")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn re-pos
   [re s]
@@ -177,43 +174,25 @@
 
              :else (recur data (inc idx)))))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn add-searchable-phrases
-  [{:keys [alias name nickname] :as user}]
-  (reduce
-   (fn [user s]
-     (if (nil? s)
-       user
-       (let [new-words (concat
-                        [s]
-                        (rest (string/split s " ")))]
-         (update user :searchable-phrases (fnil concat []) new-words))))
-   user
-   [alias name nickname]))
-
 (defn add-searchable-phrases-to-contact
-  [{:keys [alias name added? blocked? identicon public-key nickname ens-verified]} community-chat?]
-  (when (and alias
-             (not (string/blank? alias))
-             (or name
-                 nickname
-                 added?
-                 community-chat?)
-             (not blocked?))
-    (add-searchable-phrases
-     {:alias        alias
-      :name         (or (and ens-verified (utils/safe-replace name ".stateofus.eth" "")) alias)
-      :identicon    identicon
-      :nickname     nickname
-      :ens-verified ens-verified
-      :public-key   public-key})))
+  [{:keys [primary-name secondary-name blocked?] :as contact}]
+  (when (not blocked?)
+    (reduce
+     (fn [user s]
+       (if (nil? s)
+         user
+         (let [new-words (concat
+                          [s]
+                          (rest (string/split s " ")))]
+           (update user :searchable-phrases (fnil concat []) new-words))))
+     contact
+     [primary-name secondary-name])))
 
 (defn mentionable-contacts
   [contacts]
   (reduce
    (fn [acc [key contact]]
-     (let [mentionable-contact (add-searchable-phrases-to-contact contact false)]
+     (let [mentionable-contact (add-searchable-phrases-to-contact contact)]
        (if (nil? mentionable-contact)
          acc
          (assoc acc key mentionable-contact))))
@@ -223,17 +202,8 @@
 (defn mentionable-contacts-from-identites
   [contacts my-public-key identities]
   (reduce (fn [acc identity]
-            (let [contact             (multiaccounts/contact-by-identity
-                                       contacts
-                                       identity)
-                  contact             (if (string/blank? (:alias contact))
-                                        (assoc contact
-                                               :alias
-                                               (get-in contact [:names :three-words-name]))
-                                        contact)
-                  mentionable-contact (add-searchable-phrases-to-contact
-                                       contact
-                                       true)]
+            (let [contact             (multiaccounts/contact-by-identity contacts identity)
+                  mentionable-contact (add-searchable-phrases-to-contact contact)]
               (if (nil? mentionable-contact)
                 acc
                 (assoc acc identity mentionable-contact))))
@@ -247,9 +217,9 @@
         mentionable-contacts                       (mentionable-contacts all-contacts)
         mentionable-users                          (assoc users
                                                           public-key
-                                                          {:alias      name
-                                                           :name       (or preferred-name name)
-                                                           :public-key public-key})]
+                                                          {:secondary-name name
+                                                           :primary-name   (or preferred-name name)
+                                                           :public-key     public-key})]
     (cond
       (= chat-type constants/private-group-chat-type)
       (merge mentionable-users
@@ -273,30 +243,31 @@
       (= chat-type constants/public-chat-type)
       (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
 
-      :else mentionable-users)))
+      :else
+      mentionable-users)))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
 (def word-regex (re-pattern (str "^[\\w\\d]*" ending-chars "|^[\\S]*$")))
 
 (defn mentioned?
-  [{:keys [alias name]} text]
-  (let [lcase-name  (string/lower-case name)
-        lcase-alias (string/lower-case alias)
+  [{:keys [primary-name secondary-name]} text]
+  (let [lcase-fname (string/lower-case primary-name)
+        lcase-sname (when secondary-name (string/lower-case secondary-name))
         regex       (re-pattern
                      (string/join
                       "|"
-                      [(str "^" lcase-name ending-chars)
-                       (str "^" lcase-name "$")
-                       (str "^" lcase-alias ending-chars)
-                       (str "^" lcase-alias "$")]))
+                      [(str "^" lcase-fname ending-chars)
+                       (str "^" lcase-fname "$")
+                       (str "^" lcase-sname ending-chars)
+                       (str "^" lcase-sname "$")]))
         lcase-text  (string/lower-case text)]
     (re-find regex lcase-text)))
 
 (defn get-user-suggestions
   [users searched-text]
   (reduce
-   (fn [acc [k {:keys [alias name nickname searchable-phrases] :as user}]]
+   (fn [acc [k {:keys [primary-name secondary-name searchable-phrases] :as user}]]
      (if-let [match
               (if (seq searchable-phrases)
                 (when (some
@@ -305,27 +276,23 @@
                           (string/lower-case s)
                           searched-text))
                        searchable-phrases)
-                  (or name alias))
+                  (or primary-name secondary-name))
                 (cond
-                  (and nickname
+                  (and primary-name
                        (string/starts-with?
-                        (string/lower-case nickname)
+                        (string/lower-case primary-name)
                         searched-text))
-                  (or name alias)
+                  (or primary-name secondary-name)
 
-                  (and alias
+                  (and secondary-name
                        (string/starts-with?
-                        (string/lower-case alias)
+                        (string/lower-case secondary-name)
                         searched-text))
-                  alias
-
-                  (string/starts-with?
-                   (string/lower-case name)
-                   searched-text)
-                  name))]
+                  secondary-name))]
        (assoc acc
               k
               (assoc user
+                     :key           k
                      :match         match
                      :searched-text searched-text))
        acc))
@@ -642,7 +609,7 @@
                  (assoc-in [:chats/mention-suggestions chat-id] mentions))}))))
 
 (defn new-input-text-with-mention
-  [{:keys [db]} {:keys [name]}]
+  [{:keys [db]} {:keys [primary-name]}]
   (let [chat-id (:current-chat-id db)
         text (get-in db [:chat/inputs chat-id :input-text])
         {:keys [mention-end at-sign-idx]}
@@ -652,7 +619,7 @@
                new-input-text-with-mention)
     (string/join
      [(subs text 0 (inc at-sign-idx))
-      name
+      primary-name
       (let [next-char (get text mention-end)]
         (when (or (not next-char)
                   (and next-char

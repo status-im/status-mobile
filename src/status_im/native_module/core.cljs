@@ -481,12 +481,6 @@
   (when (validators/valid-public-key? public-key)
     (.generateAliasAsync ^js (status) public-key callback)))
 
-(defn public-key->emoji-hash
-  "Generate an emoji hash from the multiaccount public key"
-  [public-key callback]
-  (when (validators/valid-public-key? public-key)
-    (.emojiHash ^js (status) public-key callback)))
-
 (defn identicon
   "Generate a icon based on a string, synchronously"
   [seed]

@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.messages.list.events
-  (:require [utils.red-black-tree :as red-black-tree]
+  (:require [status-im2.constants :as constants]
             [utils.datetime :as datetime]
             [utils.re-frame :as rf]
-            [status-im2.constants :as constants]))
+            [utils.red-black-tree :as red-black-tree]))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]

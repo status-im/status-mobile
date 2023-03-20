@@ -2,17 +2,15 @@
   (:require [re-frame.core :as re-frame]
             [utils.datetime :as datetime]
             [status-im2.constants :as constants]
-            [status-im.react-native.resources :as resources]))
+            [status-im2.common.resources :as resources]))
 
 (defn community-avatar
   [community]
   (let [images (:images community)]
-    (if (= (:id community) constants/status-community-id)
-      (resources/get-image :status-logo)
-      (when images
-        {:uri (:uri (or (:thumbnail images)
-                        (:large images)
-                        (first images)))}))))
+    (when images
+      {:uri (:uri (or (:thumbnail images)
+                      (:large images)
+                      (first images)))})))
 
 (defn get-card-content
   [chat communities]

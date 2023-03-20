@@ -1,6 +1,7 @@
 (ns status-im.multiaccounts.login.core
   (:require
     [clojure.string :as string]
+    [clojure.set :as set]
     [re-frame.core :as re-frame]
     [status-im.async-storage.core :as async-storage]
     [status-im.communities.core :as communities]
@@ -34,7 +35,6 @@
     [status-im.utils.types :as types]
     [status-im.utils.utils :as utils]
     [status-im.utils.wallet-connect :as wallet-connect]
-    [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]
     [status-im2.common.json-rpc.events :as json-rpc]
@@ -44,18 +44,7 @@
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]
-    [status-im2.contexts.emoji-hash.events :as emoji-hash]))
-
-(re-frame/reg-fx
- ::initialize-communities-enabled
- (fn []
-   (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-communities-enabled %])]
-     (if config/communities-enabled?
-       (callback true)
-       (async-storage/get-item
-        :communities-enabled?
-        callback)))))
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  ::initialize-transactions-management-enabled
@@ -173,8 +162,7 @@
      (transactions/get-fetched-transfers))
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
-   (prices/update-prices)
-   (wallet-connect-legacy/get-connector-session-from-db)))
+   (prices/update-prices)))
 
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -360,10 +348,6 @@
    [{:method     "wakuext_getGroupChatInvitations"
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
-(rf/defn initialize-communities-enabled
-  [cofx]
-  {::initialize-communities-enabled nil})
-
 (rf/defn initialize-transactions-management-enabled
   [cofx]
   {::initialize-transactions-management-enabled nil})
@@ -390,7 +374,10 @@
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
-        multiaccount (dissoc settings :networks/current-network :networks/networks)
+        multiaccount (-> settings
+                         (dissoc :networks/current-network :networks/networks)
+                         (set/rename-keys {:compressedKey :compressed-key
+                                           :emojiHash     :emoji-hash}))
         ;;for some reason we save default networks in db, in case when we want to modify default-networks
         ;;for
         ;; existing accounts we have to merge them again into networks
@@ -404,14 +391,16 @@
               (data-store.chats/fetch-chats-rpc
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
+                     (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
               (initialize-appearance)
-              (initialize-communities-enabled)
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
+              (communities/fetch-collapsed-community-categories)
               (logging/set-log-level (:log-level multiaccount))
-              (activity-center/notifications-fetch-unread-contact-requests)
+              (activity-center/notifications-fetch-pending-contact-requests)
+              (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count))))
 
 (re-frame/reg-fx
@@ -474,7 +463,6 @@
               (get-group-chat-invitations)
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (emoji-hash/fetch-for-current-public-key)
               (link-preview/request-link-preview-whitelist)
               (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
               (switcher-cards-store/fetch-switcher-cards-rpc))))
@@ -537,7 +525,6 @@
               (communities/fetch)
               (data-store.chats/fetch-chats-rpc
                {:on-success #(re-frame/dispatch [:chats-list/load-success %])})
-              (initialize-communities-enabled)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
@@ -643,7 +630,7 @@
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
-          {:init-root-with-component-fx [:multiaccounts-keycard :multiaccounts]}
+          {:init-root-fx :multiaccounts-keycard}
           {:init-root-fx :multiaccounts})
        #(when goto-key-storage?
           (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))

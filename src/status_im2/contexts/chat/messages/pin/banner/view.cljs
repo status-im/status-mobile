@@ -5,9 +5,9 @@
 
 (defn banner
   [chat-id]
-  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list
-                                 chat-id])
-        latest-pinned-message (last pinned-messages)
+  (let [pinned-messages (rf/sub [:chats/pinned-sorted-list chat-id])
+        latest-pinned-message-id (-> pinned-messages last :message-id)
+        latest-pinned-message (get (rf/sub [:chats/chat-messages chat-id]) latest-pinned-message-id)
         latest-pin-text (get-in latest-pinned-message [:content :text])
         {:keys [deleted? deleted-for-me?]} latest-pinned-message
         pins-count (count pinned-messages)

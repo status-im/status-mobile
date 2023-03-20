@@ -1,6 +1,5 @@
 (ns status-im2.subs.activity-center
   (:require [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification-types :as types]))
 
 (re-frame/reg-sub
@@ -36,6 +35,22 @@
         (reduce + 0))))
 
 (re-frame/reg-sub
+ :activity-center/seen?
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:seen? activity-center)))
+
+(re-frame/reg-sub
+ :activity-center/unread-indicator
+ :<- [:activity-center/seen?]
+ :<- [:activity-center/unread-count]
+ (fn [[seen? unread-count]]
+   (cond
+     (zero? unread-count) :unread-indicator/none
+     seen?                :unread-indicator/seen
+     :else                :unread-indicator/new)))
+
+(re-frame/reg-sub
  :activity-center/mark-all-as-read-undoable-till
  :<- [:activity-center]
  (fn [activity-center]
@@ -54,14 +69,6 @@
    (get-in activity-center [:filter :type] types/no-type)))
 
 (re-frame/reg-sub
- :activity-center/filtered-notifications
- :<- [:activity-center/filter-type]
- :<- [:activity-center/filter-status]
- :<- [:activity-center/notifications]
- (fn [[filter-type filter-status notifications]]
-   (get-in notifications [filter-type filter-status :data])))
-
-(re-frame/reg-sub
  :activity-center/filter-status-unread-enabled?
  :<- [:activity-center/filter-status]
  (fn [filter-status]
@@ -69,9 +76,6 @@
 
 (re-frame/reg-sub
  :activity-center/pending-contact-requests
- :<- [:activity-center/notifications]
- (fn [notifications]
-   (filter (fn [{:keys [message]}]
-             (= constants/contact-request-message-state-pending
-                (:contact-request-state message)))
-           (get-in notifications [types/contact-request :unread :data]))))
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:contact-requests activity-center)))

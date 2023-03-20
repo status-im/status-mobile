@@ -29,13 +29,12 @@
 
 (defn- render-row
   [row]
-  (let [first-name (first (multiaccounts/contact-two-names row false))]
-    [quo/list-item
-     {:title    first-name
-      :icon     [chat-icon/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo row)]
-      :on-press #(re-frame/dispatch [:chat.ui/start-chat
-                                     (:public-key row)])}]))
+  [quo/list-item
+   {:title    (:primary-name row)
+    :icon     [chat-icon/contact-icon-contacts-tab
+               (multiaccounts/displayed-photo row)]
+    :on-press #(re-frame/dispatch [:chat.ui/start-chat
+                                   (:public-key row)])}])
 
 (defn- icon-wrapper
   [color icon]

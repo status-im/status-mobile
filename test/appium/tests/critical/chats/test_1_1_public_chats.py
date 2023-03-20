@@ -463,7 +463,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
 
         self.chat_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
         chat_element.member_photo.click()
-        self.chat_1.profile_add_to_contacts.click()
+        self.chat_1.profile_add_to_contacts_button.click()
         if not self.chat_1.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
         self.chat_1.close_button.click()
@@ -528,66 +528,6 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
             self.errors.append('Contact is shown in Profile after removing user from contacts')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702176)
-    def test_contact_block_unblock_public_chat_offline(self):
-        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
-
-        self.chat_1.just_fyi('Block user')
-        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
-        chat_element = self.chat_1.chat_element_by_text(self.message)
-        chat_element.find_element()
-        chat_element.member_photo.click()
-        self.chat_1.block_contact()
-
-        self.chat_1.just_fyi('messages from blocked user are hidden in public chat and close app')
-        if self.chat_1.chat_element_by_text(self.message).is_element_displayed():
-            self.errors.append("Messages from blocked user is not cleared in public chat ")
-        self.chat_1.home_button.click()
-        if self.home_1.element_by_text(self.nick).is_element_displayed():
-            self.errors.append("1-1 chat from blocked user is not removed!")
-        self.chat_1.toggle_airplane_mode()
-
-        self.home_2.just_fyi('send message to public chat while device 1 is offline')
-        message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
-        self.home_2.get_chat("#%s" % self.pub_chat_name).click()
-        self.chat_2.send_message(message_blocked)
-
-        self.chat_1.just_fyi('check that new messages from blocked user are not delivered')
-        self.chat_1.toggle_airplane_mode()
-        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
-        for message in self.message, message_blocked:
-            if self.chat_1.chat_element_by_text(message).is_element_displayed():
-                self.errors.append(
-                    "'%s' from blocked user is fetched from offline in public chat" % message)
-
-        self.home_1.just_fyi('Verify input field is disabled in 1-1 chat with blocked user')
-        self.home_1.home_button.double_click()
-        chat_1_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
-        if chat_1_1.chat_message_input.is_element_displayed():
-            self.errors.append("Chat input field is displayed in chat with blocked user")
-        self.home_1.home_button.double_click()
-        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
-
-        self.chat_2.just_fyi('Unblock user and check that can see further messages')
-        profile_1 = self.home_1.get_profile_view()
-        self.chat_1.profile_button.double_click()
-        profile_1.contacts_button.wait_and_click()
-        profile_1.blocked_users_button.wait_and_click()
-        profile_1.element_by_text(self.nick).click()
-        self.chat_1.unblock_contact_button.click()
-        self.chat_1.close_button.click()
-        [home.home_button.click(desired_view='chat') for home in [self.home_1, self.home_2]]
-        self.chat_2.send_message(message_unblocked)
-        self.chat_2.home_button.double_click()
-        self.home_2.add_contact(self.sender['public_key'])
-        self.chat_2.send_message(message_unblocked)
-        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
-            self.errors.append("Message was not received in public chat after user unblock!")
-        self.chat_1.home_button.click()
-        self.home_1.get_chat(self.nick, wait_time=30).click()
-        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
-            self.errors.append("Message was not received in 1-1 chat after user unblock!")
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(702188)
     @marks.xfail(
@@ -806,11 +746,11 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi('Check redirect to user profile on mention by nickname tap')
         self.chat_1.chat_element_by_text(updated_message).click()
-        if not self.chat_1.profile_block_contact.is_element_displayed():
+        if not self.chat_1.profile_block_contact_button.is_element_displayed():
             self.errors.append(
                 'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
         else:
-            self.chat_1.profile_send_message.click()
+            self.chat_1.profile_send_message_button.click()
 
         self.chat_2.just_fyi("Check message with mention for ENS owner")
         self.home_2.get_chat(self.sender['username']).click()
@@ -911,7 +851,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         # self.chat_2.close_sticker_view_icon.click()
         self.chat_2.chat_item.long_press_element()
         self.chat_2.element_by_text('View Details').click()
-        self.chat_2.profile_send_message.wait_and_click()
+        self.chat_2.profile_send_message_button.wait_and_click()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702158)
@@ -960,7 +900,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_2")
+@pytest.mark.xdist_group(name="new_one_2")
 @marks.new_ui_critical
 class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
@@ -982,12 +922,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_2.switch_push_notifications()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
-        self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.chats_tab)
-        self.home_1.chats_tab.click()
+        for home in (self.home_1, self.home_2):
+            home.click_system_back_button_until_element_is_shown()
+            home.chats_tab.click()
         self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
-        self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
@@ -1138,7 +1078,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
         self.chat_2.tap_by_coordinates(500, 100)
 
-        self.chat_1.pin_message(self.message_4, action="unpin-from-chat")
+        self.chat_1.view_pinned_messages_button.click_until_presence_of_element(self.chat_1.pinned_messages_list)
+        pinned_message = self.chat_1.pinned_messages_list.message_element_by_text(self.message_4)
+
+        element = self.chat_1.element_by_translation_id("unpin-from-chat")
+        pinned_message.long_press_until_element_is_shown(element)
+        element.click_until_absense_of_element(element)
         try:
             self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
         except TimeoutException:
@@ -1156,8 +1101,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.click_system_back_button_until_element_is_shown()
-        self.home_1.browser_tab.click()  # temp, until profile is on browser tab
+        self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.click_system_back_button_until_element_is_shown()
         self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
@@ -1199,7 +1145,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         [device.click_system_back_button_until_element_is_shown() for device in
          (self.device_1, self.device_2)]
-        self.home_2.browser_tab.click()  # temp, until profile is on browser tab
+        self.home_2.profile_button.click()
         self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
@@ -1209,7 +1155,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
         self.device_1.click_system_back_button_until_element_is_shown()
-        self.device_1.browser_tab.click()  # temp, until profile is on browser tab
+        self.device_1.profile_button.click()
         self.device_1.click_system_home_button()
 
         self.device_2.just_fyi("Check text push notification and tap it")
@@ -1242,7 +1188,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702855)
-    @marks.xfail(reason="blocked by 15166")
     def test_1_1_chat_edit_message(self):
         [device.click_system_back_button_until_element_is_shown() for device in
          (self.device_1, self.device_2)]
@@ -1257,14 +1202,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(message_before_edit_1_1)
         self.chat_2.chat_element_by_text(message_before_edit_1_1).wait_for_status_to_be("Delivered")
         self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        chat_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
+        chat_element = self.chat_1.chat_element_by_text('%s (Edited)' % message_after_edit_1_1)
         if not chat_element.is_element_displayed(30):
             self.errors.append('No edited message in 1-1 chat displayed')
-        try:
-            chat_element.wait_for_status_to_be('edited')
-        except TimeoutException:
-            self.errors.append('Edited message is shown for receiver with status %s but it should be "Edited"' %
-                               chat_element.status)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702733)

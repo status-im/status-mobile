@@ -38,7 +38,8 @@
   (rf/sub [:messages/resolve-mention from]))
 
 (defn render-inline
-  [_message-text content-type acc {:keys [type literal destination]}]
+  [_message-text content-type acc {:keys [type literal destination]}
+   community-id]
   (case type
     ""
     (conj acc literal)
@@ -61,7 +62,7 @@
     "link"
     (conj acc
           [rn/text
-           {:style    {:color                :blue
+           {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
                        :text-decoration-line :underline}
             :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
            destination])
@@ -80,9 +81,10 @@
     "status-tag"
     (conj acc
           [rn/text
-           {:style    {:color                :blue
-                       :text-decoration-line :underline}
-            :on-press #(rf/dispatch [:chat.ui/start-public-chat literal])}
+           (when community-id
+             {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
+                         :text-decoration-line :underline}
+              :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
            "#"
            literal])
 
@@ -94,13 +96,20 @@
 ;; TEXT
 (defn render-block
   [{:keys [content content-type edited-at in-popover?]} acc
-   {:keys [type ^js literal children]}]
+   {:keys [type ^js literal children]}
+   community-id]
+
   (case type
 
     "paragraph"
     (conj acc
           (reduce
-           (fn [acc e] (render-inline (:text content) content-type acc e))
+           (fn [acc e]
+             (render-inline (:text content)
+                            content-type
+                            acc
+                            e
+                            community-id))
            [rn/text (style/text-style content-type in-popover?)]
            (conj
             children
@@ -121,22 +130,23 @@
     acc))
 
 (defn render-parsed-text
-  [{:keys [content] :as message-data}]
-  (reduce (fn [acc e]
-            (render-block message-data acc e))
-          [:<>]
-          (:parsed-text content)))
+  [{:keys [content chat-id]
+    :as   message-data}]
+  (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
+    (reduce (fn [acc e]
+              (render-block message-data
+                            acc
+                            e
+                            community-id))
+            [:<>]
+            (:parsed-text content))))
 
 (defn quoted-message
-  [{:keys [message-id chat-id]} reply pin?]
-  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id])
-                                                message-id)
-        reply                              (assoc reply
-                                                  :deleted?        deleted?
-                                                  :deleted-for-me? deleted-for-me?
-                                                  :chat-id         chat-id)]
+  [{:keys [message-id chat-id]} pin?]
+  (let [quoted-message (get @(re-frame/subscribe [:chats/chat-messages chat-id])
+                            message-id)]
     [rn/view {:style (when-not pin? (style/quoted-message-container))}
-     [components.reply/reply-message reply false pin?]]))
+     [components.reply/reply-message quoted-message false pin?]]))
 
 (defn message-not-sent-text
   [chat-id message-id]
@@ -154,22 +164,11 @@
     [rn/view style/not-sent-icon
      [icons/icon :i/warning {:color quo.colors/red}]]]])
 
-(defn message-delivery-status
-  [{:keys [chat-id message-id outgoing-status message-type]}]
-  (when (and (not= constants/message-type-private-group-system-message message-type)
-             (= outgoing-status :not-sent))
-    [message-not-sent-text chat-id message-id]))
-
 ;; TODO (Omar): a reminder to clean these defviews
 (defview message-author-name
   [from opts max-length]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
     (chat.utils/format-author contact-with-names opts max-length)))
-
-(defview message-my-name
-  [opts]
-  (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts nil)))
 
 (defn display-name-view
   [display-name contact timestamp show-key?]
@@ -234,7 +233,7 @@
   [rn/view style/status-container
    [rn/text {:style (style/status-text)}
     (reduce
-     (fn [acc e] (render-inline (:text content) content-type acc e))
+     (fn [acc e] (render-inline (:text content) content-type acc e nil))
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
@@ -355,9 +354,8 @@
 
 (defview community-content
   [{:keys [community-id] :as message}]
-  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
-            communities-enabled?                              [:communities/enabled?]]
-    (when (and communities-enabled? community)
+  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]]
+    (when community
       [rn/view
        {:style (assoc (style/message-wrapper message)
                       :margin-vertical 10

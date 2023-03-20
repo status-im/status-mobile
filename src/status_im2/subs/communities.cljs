@@ -7,15 +7,6 @@
             [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
- :communities
- :<- [:raw-communities]
- :<- [:communities/enabled?]
- (fn [[raw-communities communities-enabled?]]
-   (if communities-enabled?
-     raw-communities
-     [])))
-
-(re-frame/reg-sub
  :communities/fetching-community
  :<- [:communities/resolve-community-info]
  (fn [info [_ id]]
@@ -51,6 +42,13 @@
    (get-in communities [id :members])))
 
 (re-frame/reg-sub
+ :communities/current-community-members
+ :<- [:chats/current-chat]
+ :<- [:communities]
+ (fn [[{:keys [community-id]} communities]]
+   (get-in communities [community-id :members])))
+
+(re-frame/reg-sub
  :communities/sorted-community-members
  (fn [[_ community-id]]
    (let [contacts     (re-frame/subscribe [:contacts/contacts])
@@ -74,16 +72,13 @@
 
 (re-frame/reg-sub
  :communities/featured-communities
- :<- [:communities/enabled?]
  :<- [:search/home-filter]
  :<- [:communities]
- (fn [[communities-enabled? search-filter communities]]
+ (fn [[search-filter communities]]
    (filterv
-    (fn [{:keys [name id]}]
-      (and (or communities-enabled?
-               (= id constants/status-community-id))
-           (or (empty? search-filter)
-               (string/includes? (string/lower-case (str name)) search-filter))))
+    (fn [{:keys [name]}]
+      (or (empty? search-filter)
+          (string/includes? (string/lower-case (str name)) search-filter)))
     (vals communities))))
 
 (re-frame/reg-sub
@@ -94,17 +89,13 @@
 
 (re-frame/reg-sub
  :communities/communities
- :<- [:communities/enabled?]
  :<- [:search/home-filter]
  :<- [:communities]
- (fn [[communities-enabled? search-filter communities]]
+ (fn [[search-filter communities]]
    (filterv
-    (fn [{:keys [name id]}]
-      (and
-       (or communities-enabled?
-           (= id constants/status-community-id))
-       (or (empty? search-filter)
-           (string/includes? (string/lower-case (str name)) search-filter))))
+    (fn [{:keys [name]}]
+      (or (empty? search-filter)
+          (string/includes? (string/lower-case (str name)) search-filter)))
     (vals communities))))
 
 (re-frame/reg-sub
@@ -114,21 +105,22 @@
    (map :id communities)))
 
 (re-frame/reg-sub
- :communities/community-ids-by-user-involvement
+ :communities/grouped-by-status
  :<- [:communities/communities]
+ :<- [:communities/my-pending-requests-to-join]
  ;; Return communities splitted by level of user participation. Some communities user
  ;; already joined, to some of them join request sent and others were opened one day
  ;; and their data remained in app-db.
  ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
- (fn [communities]
+ (fn [[communities requests]]
    (reduce (fn [acc community]
-             (let [joined?    (:joined community)
-                   requested? (pos? (:requested-to-join-at community))
-                   id         (:id community)]
+             (let [joined?      (:joined community)
+                   community-id (:id community)
+                   pending?     (boolean (get requests community-id))]
                (cond
-                 joined?    (update acc :joined conj id)
-                 requested? (update acc :pending conj id)
-                 :else      (update acc :opened conj id))))
+                 joined?  (update acc :joined conj community)
+                 pending? (update acc :pending conj community)
+                 :else    (update acc :opened conj community))))
            {:joined [] :pending [] :opened []}
            communities)))
 
@@ -143,12 +135,18 @@
 (re-frame/reg-sub
  :communities/home-item
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:raw-communities])
+   [(re-frame/subscribe [:communities])
     (re-frame/subscribe [:communities/unviewed-counts community-id])])
  (fn [[communities counts] [_ identity]]
    (community->home-item
     (get communities identity)
     counts)))
+
+(re-frame/reg-sub
+ :communities/my-pending-request-to-join
+ :<- [:communities/my-pending-requests-to-join]
+ (fn [requests [_ community-id]]
+   (:id (get requests community-id))))
 
 (re-frame/reg-sub
  :communities/edited-community
@@ -216,31 +214,62 @@
         (sort-by :position)
         (into []))))
 
+(defn reduce-over-categories
+  [community-id
+   joined
+   categories
+   collapsed-categories
+   full-chats-data]
+  (fn [acc
+       [_ {:keys [name categoryID position id emoji can-post?]}]]
+    (let [category-id                       (if (seq categoryID) categoryID constants/empty-category-id)
+          {:keys [unviewed-messages-count
+                  unviewed-mentions-count]} (get full-chats-data
+                                                 (str community-id id))
+          acc-with-category                 (if (get acc category-id)
+                                              acc
+                                              (assoc acc
+                                                     category-id
+                                                     (assoc
+                                                      (or (get categories category-id)
+                                                          {:name (i18n/label :t/none)})
+                                                      :collapsed? (get collapsed-categories
+                                                                       category-id)
+                                                      :chats      [])))
+          chat                              {:name             name
+                                             :emoji            emoji
+                                             :unread-messages? (pos? unviewed-messages-count)
+                                             :position         position
+                                             :mentions-count   (or unviewed-mentions-count 0)
+                                             :locked?          (or (not joined)
+                                                                   (not can-post?))
+                                             :id               id}]
+      (update-in acc-with-category [category-id :chats] conj chat))))
+
 (re-frame/reg-sub
  :communities/categorized-channels
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
-    (re-frame/subscribe [:chats/chats])])
- (fn [[{:keys [joined categories chats]} full-chats-data] [_ community-id]]
-   (reduce
-    (fn [acc [_ {:keys [name categoryID id emoji can-post?]}]]
-      (let [category                                                  (keyword
-                                                                       (get-in categories
-                                                                               [categoryID :name]
-                                                                               (i18n/label :t/none)))
-            {:keys [unviewed-messages-count unviewed-mentions-count]} (get full-chats-data
-                                                                           (str community-id id))]
-        (update acc
-                category
-                #(vec (conj %1 %2))
-                {:name             name
-                 :emoji            emoji
-                 :unread-messages? (pos? unviewed-messages-count)
-                 :mentions-count   (or unviewed-mentions-count 0)
-                 :locked?          (or (not joined) (not can-post?))
-                 :id               id})))
-    {}
-    chats)))
+    (re-frame/subscribe [:chats/chats])
+    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
+ (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories] [_ community-id]]
+   (let [reduce-fn (reduce-over-categories
+                    community-id
+                    joined
+                    categories
+                    collapsed-categories
+                    full-chats-data)
+         categories-and-chats
+         (->>
+           chats
+           (reduce
+            reduce-fn
+            {})
+           (sort-by (comp :position second))
+           (map (fn [[k v]]
+                  [k (update v :chats #(sort-by :position %))])))]
+
+     categories-and-chats)))
 
 (re-frame/reg-sub
  :communities/users
@@ -250,3 +279,9 @@
     {:full-name "Marcus C"}
     {:full-name "MNO PQR"}
     {:full-name "STU VWX"}]))
+
+(re-frame/reg-sub
+ :communities/collapsed-categories-for-community
+ :<- [:communities/collapsed-categories]
+ (fn [collapsed-categories [_ community-id]]
+   (get collapsed-categories community-id)))

@@ -58,10 +58,6 @@
 (def neutral-95 "#0D1625")
 (def neutral-100 "#09101C")
 
-;;Blur
-(def neutral-5-opa-70 (alpha neutral-5 0.7))
-(def neutral-90-opa-70 (alpha neutral-90 0.7))
-
 ;;80 with transparency
 (def neutral-80-opa-5 (alpha neutral-80 0.05))
 (def neutral-80-opa-10 (alpha neutral-80 0.1))
@@ -75,6 +71,9 @@
 (def neutral-80-opa-80 (alpha neutral-80 0.8))
 (def neutral-80-opa-90 (alpha neutral-80 0.9))
 (def neutral-80-opa-95 (alpha neutral-80 0.95))
+
+;;90 with transparency
+(def neutral-90-opa-0 (alpha neutral-90 0))
 
 ;;95 with transparency
 (def neutral-95-opa-60 (alpha neutral-95 0.6))
@@ -102,6 +101,7 @@
 (def white "#ffffff")
 
 ;; with transparency
+(def white-opa-0 (alpha white 0))
 (def white-opa-5 (alpha white 0.05))
 (def white-opa-10 (alpha white 0.1))
 (def white-opa-20 (alpha white 0.2))
@@ -113,6 +113,14 @@
 (def white-opa-80 (alpha white 0.8))
 (def white-opa-90 (alpha white 0.9))
 (def white-opa-95 (alpha white 0.95))
+
+;;;;Blur
+(def white-70-blur (alpha white 0.7))
+(def neutral-5-opa-70-blur (alpha neutral-5 0.7))
+(def neutral-80-opa-80-blur (alpha "#192438" 0.8))
+(def neutral-90-opa-70-blur (alpha neutral-90 0.7))
+(def neutral-95-opa-70-blur neutral-95-opa-70)
+(def neutral-100-opa-70-blur neutral-100-opa-70)
 
 ;;;;Black
 
@@ -135,8 +143,8 @@
 ;;;;Success
 
 ;;Solid
-(def success-50 "#26A69A")
-(def success-60 "#208B81")
+(def success-50 "#23ADA0")
+(def success-60 "#1C8A80")
 
 ;;50 with transparency
 (def success-50-opa-5 (alpha success-50 0.05))
@@ -152,10 +160,14 @@
 (def success-60-opa-40 (alpha success-60 0.4))
 
 ;;;;Danger
+(def danger "#E95460")
+
+;; Danger with transparency
+(def danger-opa-40 (alpha danger 0.4))
 
 ;;Solid
-(def danger-50 "#E65F5C")
-(def danger-60 "#C1504D")
+(def danger-50 "#E95460")
+(def danger-60 "#BA434D")
 
 ;;50 with transparency
 (def danger-50-opa-5 (alpha danger-50 0.05))

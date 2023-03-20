@@ -18,7 +18,8 @@
                              LinearTransition)]
             [reagent.core :as reagent]
             [react-native.flat-list :as rn-flat-list]
-            [utils.collection]))
+            [utils.collection]
+            [utils.worklets.core :as worklets.core]))
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
@@ -29,14 +30,18 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
+(def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
+
+;; TODO: This one should use FlatList from Reanimated.
+;; Trying to use Flatlist from RA causes test to fail: "The first argument must be a component. Instead
+;; received: object"
 (def reanimated-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 (defn flat-list
   [props]
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
 
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
-
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))
@@ -57,9 +62,14 @@
 ;; Easings
 (def bezier (.-bezier ^js Easing))
 
+(def in-out
+  (.-inOut ^js Easing))
+
+(defn default-easing [] (in-out (.-quad ^js Easing)))
+
 (def easings
   {:linear  (bezier 0 0 1 1)
-   :easing1 (bezier 0.25 0.1 0.25 1) ;; TODO(parvesh) - rename easing functions, (design team input)
+   :easing1 (bezier 0.25 0.1 0.25 1)
    :easing2 (bezier 0 0.3 0.6 0.9)
    :easing3 (bezier 0.3 0.3 0.3 0.9)})
 
@@ -74,24 +84,20 @@
   (when (and anim (some? val))
     (set! (.-value anim) val)))
 
-;; Worklets
-(def worklet-factory (js/require "../src/js/worklet_factory.js"))
-
 (defn interpolate
   ([shared-value input-range output-range]
    (interpolate shared-value input-range output-range nil))
   ([shared-value input-range output-range extrapolation]
-   (.interpolateValue ^js worklet-factory
-                      shared-value
-                      (clj->js input-range)
-                      (clj->js output-range)
-                      (clj->js extrapolation))))
+   (worklets.core/interpolate-value
+    shared-value
+    (clj->js input-range)
+    (clj->js output-range)
+    (clj->js extrapolation))))
 
-;;;; Component Animations
 (defn apply-animations-to-style
   [animations style]
   (use-animated-style
-   (.applyAnimationsToStyle ^js worklet-factory (clj->js animations) (clj->js style))))
+   (worklets.core/apply-animations-to-style (clj->js animations) (clj->js style))))
 
 ;; Animators
 (defn animate-shared-value-with-timing
@@ -108,6 +114,14 @@
                                 (with-timing val
                                              (js-obj "duration" duration
                                                      "easing"   (get easings easing))))))
+
+(defn animate-shared-value-with-delay-default-easing
+  [anim val duration delay]
+  (set-shared-value anim
+                    (with-delay delay
+                                (with-timing val
+                                             (js-obj "duration" duration
+                                                     "easing"   (in-out (.-quad ^js Easing)))))))
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
@@ -145,9 +159,6 @@
   (set-shared-value anim
                     (with-decay (clj->js {:velocity velocity
                                           :clamp    clamp}))))
-
-(def in-out
-  (.-inOut Easing))
 
 (defn with-timing-duration
   [val duration]

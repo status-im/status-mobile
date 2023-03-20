@@ -788,7 +788,7 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         if not group_info_1.user_admin(self.usernames[0]).is_element_displayed():
             self.errors.append("Admin user is not marked as admin")
         group_info_1.get_user_from_group_info(self.usernames[0]).click()
-        if self.chats[0].profile_block_contact.is_element_displayed():
+        if self.chats[0].profile_block_contact_button.is_element_displayed():
             self.errors.append("Admin is redirected to own profile on tapping own username from group info")
 
         self.chats[0].just_fyi('Made admin another user and check system message')
@@ -1096,19 +1096,3 @@ class TestMutualContactRequests(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702377)
-    def test_mutual_cr_decline_contact_request(self):
-        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
-        self.chat_1.send_contact_request('Contact request to decline')
-        self.home_2.handle_contact_request(self.default_username_1, accept=False)
-        self.home_2.home_button.click()
-        chat_2 = self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
-
-        self.chat_1.just_fyi('Verify cannot send messages to user who declined contact request')
-        if self.chat_1.chat_message_input.is_element_displayed():
-            self.drivers[0].fail('Chat input field is displayed despite contact request has been declined')
-
-        chat_2.just_fyi('Verify cannot send messages to user whos request has been declined')
-        if chat_2.chat_message_input.is_element_displayed():
-            self.drivers[1].fail('Chat input field is displayed in 1-1 chat with user whos cr was declined')

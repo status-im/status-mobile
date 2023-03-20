@@ -7,7 +7,8 @@
             [status-im2.config :as config]
             [status-im.node.core :as node]
             [re-frame.core :as re-frame]
-            [status-im.data-store.settings :as data-store.settings]))
+            [status-im.data-store.settings :as data-store.settings]
+            [status-im.utils.platform :as utils.platform]))
 
 (defn- get-default-node-config
   [installation-id]
@@ -32,7 +33,8 @@
           (let [config-map (.stringify js/JSON
                                        (clj->js {:kdfIterations         config/default-kdf-iterations
                                                  :nodeConfig            final-node-config
-                                                 :settingCurrentNetwork config/default-network}))]
+                                                 :settingCurrentNetwork config/default-network
+                                                 :deviceType            utils.platform/os}))]
             (status/input-connection-string-for-bootstrapping
              connection-string
              config-map
@@ -46,7 +48,11 @@
   [{:keys [db]} entered-password]
   (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
         key-uid    (get-in db [:multiaccount :key-uid])
-        config-map (.stringify js/JSON (clj->js {:keyUID key-uid :keystorePath "" :password sha3-pwd}))]
+        config-map (.stringify js/JSON
+                               (clj->js {:keyUID       key-uid
+                                         :keystorePath ""
+                                         :password     sha3-pwd
+                                         :deviceType   utils.platform/os}))]
     (status/get-connection-string-for-bootstrapping-another-device
      config-map
      (fn [connection-string]

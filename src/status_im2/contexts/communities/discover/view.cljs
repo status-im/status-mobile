@@ -5,7 +5,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.menus.community-options.view :as options]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.components.react :as react]
@@ -18,26 +18,17 @@
   {:data {:community-color "#0052FF"
           :status          :gated
           :locked?         true
-          :cover           (resources/get-image :community-cover)
           :tokens          [{:id    1
                              :group [{:id         1
-                                      :token-icon (resources/get-image :status-logo)}]}]
-          :tags            [{:id        1
-                             :tag-label (i18n/label :t/music)
-                             :resource  (resources/get-image :music)}
-                            {:id        2
-                             :tag-label (i18n/label :t/lifestyle)
-                             :resource  (resources/get-image :lifestyle)}
-                            {:id        3
-                             :tag-label (i18n/label :t/podcasts)
-                             :resource  (resources/get-image :podcasts)}]}})
+                                      :token-icon (resources/get-mock-image :status-logo)}]}]}})
 
 (defn render-fn
   [community-item _ _ {:keys [width view-type]}]
-  (let [item (merge community-item
-                    (get mock-community-item-data :data))]
+  (let [item  (merge community-item
+                     (get mock-community-item-data :data))
+        cover {:uri (get-in (:images item) [:banner :uri])}]
     (if (= view-type :card-view)
-      [quo/community-card-view-item (assoc item :width width)
+      [quo/community-card-view-item (assoc item :width width :cover cover)
        #(rf/dispatch [:navigate-to :community-overview (:id item)])]
       [quo/communities-list-view-item
        {:on-press      (fn []
@@ -134,7 +125,7 @@
 
 (defn other-communities-list
   [{:keys [communities communities-ids view-type]}]
-  [rn/view {:flex 1}
+  [rn/view {:style style/other-communities-container}
    (map-indexed
     (fn [inner-index item]
       (let [community-id (when communities-ids item)
@@ -162,31 +153,24 @@
                    (get mock-community-item-data :data))])]))
     (if communities communities communities-ids))])
 
-
 (defn communities-lists
   [selected-tab view-type]
-  (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
-        all-communities         (rf/sub [:communities/sorted-communities])
-        tab                     @selected-tab]
-    [rn/view {:style {:flex 1}}
-     (case tab
-       :all
-       (other-communities-list {:communities all-communities
-                                :view-type   view-type})
+  [rn/view {:style {:flex 1}}
+   (case @selected-tab
+     :all
+     (other-communities-list {:communities (rf/sub [:communities/sorted-communities])
+                              :view-type   view-type})
 
-       :open
-       (other-communities-list {:communities-ids (:open ids-by-user-involvement)
-                                :view-type       view-type})
+     :open
+     [:<>]
 
-       :gated
-       (other-communities-list {:communities-ids (:gated ids-by-user-involvement)
-                                :view-type       view-type})
+     :gated
+     [:<>]
 
-       [quo/information-box
-        {:type :error
-         :icon :i/info}
-        (i18n/label :t/error)])]))
-
+     [quo/information-box
+      {:type :error
+       :icon :i/info}
+      (i18n/label :t/error)])])
 
 (defn render-communities
   [selected-tab

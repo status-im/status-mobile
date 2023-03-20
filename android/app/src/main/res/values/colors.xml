@@ -2,4 +2,6 @@
 <resources>
   <color name="alert_background">#ffffff</color>
   <color name="alert_text">#000000</color>
+  <color name="splash_background">#09101C</color>
+  <color name="splash_status_bar_color">#ffffff</color>
 </resources>

@@ -1,9 +1,9 @@
 (ns status-im2.contexts.activity-center.view
-  (:require [oops.core :as oops]
+  (:require [clojure.set :as set]
+            [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
             [status-im2.contexts.activity-center.notification.contact-requests.view :as contact-requests]
@@ -14,7 +14,9 @@
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [react-native.blur :as blur]
+            [react-native.navigation :as navigation]))
 
 (defn filter-selector-read-toggle
   []
@@ -126,7 +128,7 @@
                              :label               (i18n/label :t/membership)
                              :accessibility-label :tab-membership
                              :notification-dot?   (when-not is-mark-all-as-read-undoable?
-                                                    (contains? types-with-unread types/membership))}
+                                                    (set/subset? types/membership types-with-unread))}
                             {:id                  types/system
                              :label               (i18n/label :t/system)
                              :accessibility-label :tab-system
@@ -143,7 +145,7 @@
       :size                32
       :accessibility-label :close-activity-center
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:hide-popover])}
+      :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
      {:icon                true
@@ -171,32 +173,30 @@
   (let [height               (atom 0)
         set-swipeable-height #(reset! height (oops/oget % "nativeEvent.layout.height"))]
     (fn [{:keys [type] :as notification} index _ active-swipeable]
-      (let [swipeable-args {:height           height
-                            :active-swipeable active-swipeable
-                            :notification     notification}]
+      (let [props {:height               height
+                   :active-swipeable     active-swipeable
+                   :set-swipeable-height set-swipeable-height
+                   :notification         notification
+                   :extra-fn             (fn [] {:height @height :notification notification})}]
         [rn/view {:style (style/notification-container index)}
          (cond
            (= type types/contact-verification)
-           [contact-verification/view notification {}]
+           [contact-verification/view props]
 
            (= type types/contact-request)
-           [contact-requests/swipeable swipeable-args
-            [contact-requests/view notification set-swipeable-height]]
+           [contact-requests/view props]
 
            (= type types/mention)
-           [mentions/swipeable swipeable-args
-            [mentions/view notification set-swipeable-height]]
+           [mentions/view props]
 
            (= type types/reply)
-           [reply/swipeable swipeable-args
-            [reply/view notification set-swipeable-height]]
+           [reply/view props]
 
            (= type types/admin)
-           [admin/swipeable swipeable-args
-            [admin/view notification set-swipeable-height]]
+           [admin/view props]
 
            (some types/membership [type])
-           [membership/view notification]
+           [membership/view props]
 
            :else
            nil)]))))
@@ -204,21 +204,18 @@
 (defn view
   []
   (let [active-swipeable (atom nil)]
-    [:f>
-     (fn []
-       (rn/use-effect-once #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
-       [safe-area/consumer
-        (fn [{:keys [top bottom]}]
-          (let [notifications (rf/sub [:activity-center/filtered-notifications])
-                window-width  (rf/sub [:dimensions/window-width])]
-            [rn/view {:style (style/screen-container window-width top bottom)}
-             [header]
-             [rn/flat-list
-              {:data                      notifications
-               :render-data               active-swipeable
-               :content-container-style   {:flex-grow 1}
-               :empty-component           [empty-tab]
-               :key-fn                    :id
-               :on-scroll-to-index-failed identity
-               :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-               :render-fn                 notification-component}]]))])]))
+    (rf/dispatch [:activity-center.notifications/fetch-first-page])
+    (fn []
+      (let [notifications (rf/sub [:activity-center/notifications])]
+        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
+         [blur/view style/blur]
+         [header]
+         [rn/flat-list
+          {:data                      notifications
+           :render-data               active-swipeable
+           :content-container-style   {:flex-grow 1}
+           :empty-component           [empty-tab]
+           :key-fn                    :id
+           :on-scroll-to-index-failed identity
+           :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+           :render-fn                 notification-component}]]))))

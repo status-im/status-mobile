@@ -3,22 +3,29 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as db]
-            [status-im2.contexts.chat.events :as chat.events]
             [status-im.chat.models.mentions :as mentions]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.config :as config]
             [status-im.utils.image-server :as image-server]
-            [status-im2.constants :as constants]))
+            [status-im2.config :as config]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.events :as chat.events]
+            [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :chats/chat
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]
    (get chats chat-id)))
+
+(re-frame/reg-sub
+ :community-id-by-chat-id
+ (fn [[_ chat-id]]
+   [(re-frame/subscribe [:chats/chat chat-id])])
+ (fn [[chat]]
+   (:community-id chat)))
 
 (re-frame/reg-sub
  :chats/by-community-id
@@ -171,21 +178,21 @@
    (when current-chat
      (cond-> current-chat
        (chat.events/public-chat? current-chat)
-       (assoc :show-input? true)
+       (assoc :able-to-send-message? true)
 
        (and (chat.events/group-chat? current-chat)
             (group-chats.db/member? my-public-key current-chat))
-       (assoc :show-input? true
-              :member?     true)
+       (assoc :able-to-send-message? true
+              :member?               true)
 
        (and (chat.events/community-chat? current-chat)
             (communities/can-post? community my-public-key (:chat-id current-chat)))
-       (assoc :show-input? true)
+       (assoc :able-to-send-message? true)
 
        (not group-chat)
        (assoc
         :contact-request-state (get-in contacts [chat-id :contact-request-state])
-        :show-input?
+        :able-to-send-message?
         (and
          (or
           (get-in inputs [chat-id :metadata :sending-contact-request])
@@ -199,7 +206,7 @@
  (fn [current-chat]
    (select-keys current-chat
                 [:chat-id
-                 :show-input?
+                 :able-to-send-message?
                  :group-chat
                  :admins
                  :invitation-admin
@@ -212,6 +219,44 @@
                  :synced-from
                  :community-id
                  :emoji])))
+
+(re-frame/reg-sub
+ :chats/current-chat-message-list-view-context
+ :<- [:chats/current-chat-chat-view]
+ :<- [:communities/current-community]
+ :<- [:multiaccount/public-key]
+ (fn [[current-chat current-community current-public-key] [_ in-pinned-view?]]
+   (let [{:keys [group-chat chat-id public? admins space-keeper able-to-send-message?]}
+         current-chat
+
+         {:keys [can-delete-message-for-everyone? admin-settings]}
+         current-community
+
+         {:keys [pin-message-all-members-enabled?]} admin-settings
+         community? (some? current-community)
+         group-admin? (contains? admins current-public-key)
+         community-admin? (get current-community :admin false)
+
+         message-pin-enabled
+         (cond public?          false
+               (not group-chat) true ; one to one chat
+               ;; in public group or community
+               group-chat       (or group-admin?
+                                    pin-message-all-members-enabled?
+                                    community-admin?)
+               :else            false)]
+     {:group-chat                       group-chat
+      :group-admin?                     group-admin?
+      :public?                          public?
+      :community?                       community?
+      :community-admin?                 community-admin?
+      :current-public-key               current-public-key
+      :space-keeper                     space-keeper
+      :chat-id                          chat-id
+      :in-pinned-view?                  (boolean in-pinned-view?)
+      :able-to-send-message?            able-to-send-message?
+      :message-pin-enabled              message-pin-enabled
+      :can-delete-message-for-everyone? can-delete-message-for-everyone?})))
 
 (re-frame/reg-sub
  :current-chat/metadata
@@ -338,7 +383,7 @@
 
 (defn filter-selected-contacts
   [selected-contacts contacts]
-  (filter #(:added (contacts %)) selected-contacts))
+  (filter #(:added? (contacts %)) selected-contacts))
 
 (re-frame/reg-sub
  :selected-contacts-count
@@ -399,10 +444,14 @@
  :<- [:contacts/blocked-set]
  :<- [:contacts/contacts]
  :<- [:multiaccount]
- (fn [[{:keys [users community-id] :as chat} blocked all-contacts
-       {:keys [public-key] :as current-multiaccount}]]
-   (let [community-members @(re-frame/subscribe [:communities/community-members community-id])
-         mentionable-users (mentions/get-mentionable-users chat
+ :<- [:communities/current-community-members]
+ (fn
+   [[{:keys [users] :as chat}
+     blocked
+     all-contacts
+     {:keys [public-key] :as current-multiaccount}
+     community-members]]
+   (let [mentionable-users (mentions/get-mentionable-users chat
                                                            all-contacts
                                                            current-multiaccount
                                                            community-members)

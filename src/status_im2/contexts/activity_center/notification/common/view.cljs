@@ -5,7 +5,6 @@
             [quo2.foundations.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.contexts.activity-center.notification.common.style :as style]
-            [status-im2.contexts.activity-center.utils :as activity-center.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -18,7 +17,7 @@
       :size           :small
       :style          style/user-avatar-tag
       :text-style     style/user-avatar-tag-text}
-     (activity-center.utils/contact-name contact)
+     (:primary-name contact)
      (multiaccounts/displayed-photo contact)]))
 
 (defn- render-swipe-action
@@ -55,39 +54,42 @@
       (.close ^js @active-swipeable))
     (reset! active-swipeable @swipeable)))
 
-(defn left-swipe-button
-  [{:keys [style]} {:keys [notification]}]
+(defn swipe-button-container
+  [{:keys [style icon text]} _]
   [rn/animated-view
-   {:accessibility-label :notification-left-swipe
-    :style               (style/left-swipe-container style)}
+   {:accessibility-label :notification-swipe
+    :style               style}
    [rn/view {:style style/swipe-text-wrapper}
-    [quo/icon
-     (if (:read notification)
-       :i/notifications
-       :i/check)
+    [quo/icon icon
      {:color colors/white}]
     [quo/text {:style style/swipe-text}
-     (if (:read notification)
-       (i18n/label :t/unread)
-       (i18n/label :t/read))]]])
+     text]]])
 
-(defn right-swipe-button
+(defn swipe-button-read-or-unread
+  [{:keys [style]} {:keys [notification]}]
+  [swipe-button-container
+   {:style (style/swipe-primary-container style)
+    :icon  (if (:read notification)
+             :i/notifications
+             :i/check)
+    :text  (if (:read notification)
+             (i18n/label :t/unread)
+             (i18n/label :t/read))}])
+
+(defn swipe-button-delete
   [{:keys [style]}]
-  [rn/animated-view
-   {:accessibility-label :notification-right-swipe
-    :style               (style/right-swipe-container style)}
-   [rn/view {:style style/swipe-text-wrapper}
-    [quo/icon :i/delete {:color colors/white}]
-    [quo/text {:style style/swipe-text}
-     (i18n/label :t/delete)]]])
+  [swipe-button-container
+   {:style (style/swipe-danger-container style)
+    :icon  :i/delete
+    :text  (i18n/label :t/delete)}])
 
-(defn left-swipe-on-press
+(defn swipe-on-press-toggle-read
   [{:keys [notification]}]
   (if (:read notification)
     (rf/dispatch [:activity-center.notifications/mark-as-unread (:id notification)])
     (rf/dispatch [:activity-center.notifications/mark-as-read (:id notification)])))
 
-(defn right-swipe-on-press
+(defn swipe-on-press-delete
   [{:keys [notification]}]
   (rf/dispatch [:activity-center.notifications/delete (:id notification)]))
 
@@ -103,15 +105,15 @@
          & children]
       (into
        [gesture/swipeable
-        {:ref                    #(reset! swipeable-ref %)
-         :accessibility-label    :notification-swipeable
-         :friction               2
-         :left-threshold         style/swipe-action-width
-         :right-threshold        style/swipe-action-width
-         :overshoot-left         false
-         :overshoot-right        false
-         :on-swipeable-will-open (close-active-swipeable active-swipeable swipeable-ref)
-         :render-left-actions    (render-swipe-action
+        (merge
+         {:ref                    #(reset! swipeable-ref %)
+          :accessibility-label    :notification-swipeable
+          :friction               2
+          :on-swipeable-will-open (close-active-swipeable active-swipeable swipeable-ref)}
+         (when left-button
+           {:overshoot-left      false
+            :left-threshold      style/swipe-action-width
+            :render-left-actions (render-swipe-action
                                   {:active-swipeable active-swipeable
                                    :extra-fn extra-fn
                                    :interpolation-opacity style/left-swipe-opacity-interpolation-js
@@ -119,14 +121,17 @@
                                    style/left-swipe-translate-x-interpolation-js
                                    :on-press left-on-press
                                    :swipe-button left-button
-                                   :swipeable-ref swipeable-ref})
-         :render-right-actions   (render-swipe-action
-                                  {:active-swipeable active-swipeable
-                                   :extra-fn extra-fn
-                                   :interpolation-opacity style/right-swipe-opacity-interpolation-js
-                                   :interpolation-translate-x
-                                   style/right-swipe-translate-x-interpolation-js
-                                   :on-press right-on-press
-                                   :swipe-button right-button
-                                   :swipeable-ref swipeable-ref})}]
+                                   :swipeable-ref swipeable-ref})})
+         (when right-button
+           {:overshoot-right      false
+            :right-threshold      style/swipe-action-width
+            :render-right-actions (render-swipe-action
+                                   {:active-swipeable active-swipeable
+                                    :extra-fn extra-fn
+                                    :interpolation-opacity style/right-swipe-opacity-interpolation-js
+                                    :interpolation-translate-x
+                                    style/right-swipe-translate-x-interpolation-js
+                                    :on-press right-on-press
+                                    :swipe-button right-button
+                                    :swipeable-ref swipeable-ref})}))]
        children))))

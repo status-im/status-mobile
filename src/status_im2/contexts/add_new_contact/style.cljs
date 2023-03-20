@@ -138,6 +138,47 @@
    :icon true
    :size 40})
 
+(def found-user
+  {:padding-top    16
+   :flex-direction :column
+   :align-self     :stretch})
+
+(defn found-user-container
+  []
+  {:flex-direction   :row
+   :align-items      :center
+   :padding-top      8
+   :padding-left     12
+   :padding-right    12
+   :padding-bottom   8
+   :color            (colors/theme-colors
+                      colors/black
+                      colors/white)
+   :background-color (colors/theme-colors
+                      colors/white
+                      colors/neutral-95)
+   :border-width     1
+   :border-radius    12
+   :border-color     (colors/theme-colors
+                      colors/neutral-20
+                      colors/neutral-80)})
+
+(def found-user-text
+  {:margin-left    8
+   :flex-direction :column})
+
+(defn found-user-display-name
+  []
+  {:color (colors/theme-colors
+           colors/black
+           colors/white)})
+
+(defn found-user-key
+  []
+  {:color (colors/theme-colors
+           colors/neutral-50
+           colors/neutral-40)})
+
 (defn button-view-profile
   [state]
   {:type                :primary

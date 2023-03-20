@@ -142,28 +142,25 @@
 
 (defn communities
   []
-  (let [communities          (rf/sub [:communities/section-list])
-        communities-enabled? (rf/sub [:communities/enabled?])]
+  (let [communities (rf/sub [:communities/section-list])]
     [:<>
      [topbar/topbar
-      (cond-> {:title (i18n/label :t/communities)}
-        communities-enabled?
-        (assoc :right-accessories
-               [{:icon :main-icons/more
-                 :accessibility-label :chat-menu-button
-                 :on-press
-                 #(rf/dispatch [:bottom-sheet/show-sheet
-                                {:content (fn []
-                                            [communities-actions])
-                                 :height  256}])}]))]
+      {:title (i18n/label :t/communities)
+       :right-accessories
+       [{:icon :main-icons/more
+         :accessibility-label :chat-menu-button
+         :on-press
+         #(rf/dispatch [:bottom-sheet/show-sheet
+                        {:content (fn []
+                                    [communities-actions])
+                         :height  256}])}]}]
      [communities-list communities]
-     (when communities-enabled?
-       [toolbar/toolbar
-        {:show-border? true
-         :center       [quo/button
-                        {:on-press #(rf/dispatch [::communities/open-create-community])
-                         :type     :secondary}
-                        (i18n/label :t/create-community)]}])]))
+     [toolbar/toolbar
+      {:show-border? true
+       :center       [quo/button
+                      {:on-press #(rf/dispatch [::communities/open-create-community])
+                       :type     :secondary}
+                      (i18n/label :t/create-community)]}]]))
 
 (defn export-community
   []

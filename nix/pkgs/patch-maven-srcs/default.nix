@@ -16,7 +16,8 @@ writeScript "patch-maven-srcs" (''
   gradleFile="$1"
 
   # Some of those find something, some don't, that's fine.
-  patchMavenSource "$gradleFile" 'mavenCentral()' 'mavenLocal()'
-  patchMavenSource "$gradleFile" 'google()'       'mavenLocal()'
-  patchMavenSource "$gradleFile" 'jcenter()'      'mavenLocal()'
+  patchMavenSource "$gradleFile" 'mavenCentral()'       'mavenLocal()'
+  patchMavenSource "$gradleFile" 'google()'             'mavenLocal()'
+  patchMavenSource "$gradleFile" 'jcenter()'            'mavenLocal()'
+  patchMavenSource "$gradleFile" 'gradlePluginPortal()' 'mavenLocal()'
 '')

@@ -204,7 +204,7 @@
    [button opts \"label\"]
    opts
    {:type   :primary/:secondary/:grey/:dark-grey/:outline/:ghost/
-            :danger/:photo-bg/:blur-bg/:blur-bg-ouline/:shell/:community
+            :danger/:photo-bg/:blur-bg/:blur-bg-outline/:shell/:community
     :size   40/32/24
     :icon   true/false
     :community-color '#FFFFFF'
@@ -213,14 +213,14 @@
     :after  :icon-keyword}
 
    only icon
-   [button {:icon true} :main-icons/close-circle]"
+   [button {:icon true} :i/close-circle]"
   [_ _]
   (let [pressed (reagent/atom false)]
     (fn
       [{:keys [on-press disabled type size community-color community-text-color before after above
                width
                override-theme override-background-color
-               on-long-press accessibility-label icon icon-no-color style test-ID]
+               on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
         :or   {type :primary
                size 40}}
        children]
@@ -275,7 +275,8 @@
                       (community-themed? type community-color)
                       (merge
                        {:background-color community-color}
-                       (when (= state :pressed) {:opacity 0.9}))))}
+                       (when (= state :pressed) {:opacity 0.9})))
+                    inner-style)}
            (when above
              [rn/view
               [quo2.icons/icon above

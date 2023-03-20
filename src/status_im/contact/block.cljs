@@ -3,14 +3,14 @@
             [status-im2.contexts.chat.messages.list.events :as message-list]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
-            [status-im.data-store.contacts :as contacts-store]
+            [status-im2.contexts.contacts.events :as contacts-store]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 
 (rf/defn clean-up-chat
-  [{:keys [db] :as cofx}
+  [{:keys [db]}
    public-key
    {:keys [chat-id
            unviewed-messages-count
@@ -35,18 +35,18 @@
           (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
 
 (rf/defn contact-blocked
-  {:events [::contact-blocked]}
-  [{:keys [db] :as cofx} {:keys [public-key]} chats]
-  (let [fxs (when chats
+  {:events [:contacts/blocked]}
+  [{:keys [db] :as cofx} {:keys [public-key]} chats-js]
+  (let [fxs (when chats-js
               (map #(->> (chats-store/<-rpc %)
                          (clean-up-chat public-key))
-                   (types/js->clj chats)))]
+                   (types/js->clj chats-js)))]
     (apply rf/merge
            cofx
            {:db (-> db
                     (update :chats dissoc public-key)
                     (update :chats-home-list disj public-key)
-                    (assoc-in [:contacts/contacts public-key :added] false))
+                    (assoc-in [:contacts/contacts public-key :added?] false))
             :dispatch [:shell/close-switcher-card public-key]
             :clear-message-notifications
             [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
@@ -59,34 +59,28 @@
   (let [contact               (-> (contact.db/public-key->contact
                                    (:contacts/contacts db)
                                    public-key)
-                                  (assoc :blocked true
-                                         :added   false))
+                                  (assoc :blocked? true
+                                         :added?   false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (rf/merge cofx
-              {:db (-> db
-                       ;; add the contact to blocked contacts
-                       (update :contacts/blocked (fnil conj #{}) public-key)
-                       ;; update the contact in contacts list
-                       (assoc-in [:contacts/contacts public-key] contact))}
+              {:db (assoc-in db [:contacts/contacts public-key] contact)}
               (contacts-store/block
                public-key
                (fn [^js block-contact]
-                 (re-frame/dispatch [::contact-blocked contact (.-chats block-contact)])
+                 (re-frame/dispatch [:contacts/blocked contact (.-chats block-contact)])
                  (re-frame/dispatch [:sanitize-messages-and-process-response block-contact])
                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
-                (navigation/pop-to-root-tab :shell-stack)
+                (navigation/pop-to-root :shell-stack)
                 (navigation/navigate-back)))))
 
 (rf/defn contact-unblocked
-  {:events [::contact-unblocked]}
+  {:events [:contacts/unblocked]}
   [{:keys [db]} contact-id]
   (let [contact (-> (get-in db [:contacts/contacts contact-id])
-                    (assoc :blocked false))]
-    {:db (-> db
-             (update :contacts/blocked disj contact-id)
-             (assoc-in [:contacts/contacts contact-id] contact))}))
+                    (assoc :blocked? false))]
+    {:db (assoc-in db [:contacts/contacts contact-id] contact)}))
 
 (rf/defn unblock-contact
   {:events [:contact.ui/unblock-contact-pressed]}
@@ -94,4 +88,4 @@
   (contacts-store/unblock
    cofx
    contact-id
-   #(re-frame/dispatch [::contact-unblocked contact-id])))
+   #(re-frame/dispatch [:contacts/unblocked contact-id])))

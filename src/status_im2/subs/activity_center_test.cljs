@@ -1,7 +1,6 @@
 (ns status-im2.subs.activity-center-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
-            [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification-types :as types]
             status-im2.subs.activity-center
             [test-helpers.unit :as h]
@@ -65,26 +64,24 @@
 
   (is (= 28 (rf/sub [sub-name]))))
 
-(h/deftest-sub :activity-center/pending-contact-requests
+(h/deftest-sub :activity-center/unread-indicator
   [sub-name]
-  (testing "returns only contact request notifications in the pending state"
-    (let [pending {:id      "0x2"
-                   :type    types/contact-request
-                   :message {:contact-request-state
-                             constants/contact-request-message-state-pending}}]
-      (swap! rf-db/app-db assoc-in
-        [:activity-center :notifications types/contact-request :unread :data]
-        [{:id      "0x1"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-none}}
-         pending
-         {:id      "0x3"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-accepted}}
-         {:id      "0x4"
-          :type    types/contact-request
-          :message {:contact-request-state constants/contact-request-message-state-declined}}
-         {:id   "0x5"
-          :type types/mention}])
+  (testing "not seen and no unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 0})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] false)
+    (is (= :unread-indicator/none (rf/sub [sub-name]))))
 
-      (is (= [pending] (rf/sub [sub-name]))))))
+  (testing "not seen and one or more unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 1})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] false)
+    (is (= :unread-indicator/new (rf/sub [sub-name]))))
+
+  (testing "seen and no unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 0})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] true)
+    (is (= :unread-indicator/none (rf/sub [sub-name]))))
+
+  (testing "seen and one or more unread notifications"
+    (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 1})
+    (swap! rf-db/app-db assoc-in [:activity-center :seen?] true)
+    (is (= :unread-indicator/seen (rf/sub [sub-name])))))

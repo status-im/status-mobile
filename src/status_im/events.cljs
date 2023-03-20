@@ -49,13 +49,13 @@
     status-im.visibility-status-popover.core
     status-im.visibility-status-updates.core
     status-im.waku.core
-    status-im.wallet-connect-legacy.core
     status-im.wallet-connect.core
     status-im.wallet.accounts.core
     status-im.wallet.choose-recipient.core
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
     status-im2.contexts.activity-center.events
+    status-im2.contexts.activity-center.notification.contact-requests.events
     status-im2.contexts.shell.events
     status-im.chat.models.gaps
     [status-im2.navigation.events :as navigation]))
@@ -161,10 +161,10 @@
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]
-  {:db (assoc db :app-in-background-since now)
+  {:db (assoc db :app-in-background-since now)})
    ;; event not implemented
    ;; :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]
-  })
+
 
 (rf/defn app-state-change
   {:events [:app-state-change]}

@@ -115,8 +115,12 @@
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
+
+;;lightbox
 (reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)
 (reg-root-key-sub :lightbox/zoom-out-signal :lightbox/zoom-out-signal)
+(reg-root-key-sub :lightbox/orientation :lightbox/orientation)
+(reg-root-key-sub :lightbox/scale :lightbox/scale)
 
 ;;messages
 (reg-root-key-sub :messages/messages :messages)
@@ -132,6 +136,7 @@
 (reg-root-key-sub :browser/options :browser/options)
 (reg-root-key-sub :dapps/permissions :dapps/permissions)
 (reg-root-key-sub :bookmarks :bookmarks/bookmarks)
+(reg-root-key-sub :browser/screen-id :browser/screen-id)
 
 ;;stickers
 (reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
@@ -153,7 +158,6 @@
 (reg-root-key-sub :contacts/current-contact-ens-name :contacts/ens-name)
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
-(reg-root-key-sub :contacts/blocked-set :contacts/blocked)
 (reg-root-key-sub :contacts/search-query :contacts/search-query)
 
 ;;wallet
@@ -234,13 +238,14 @@
 
 ;; communities
 
-(reg-root-key-sub :raw-communities :communities)
+(reg-root-key-sub :communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
-(reg-root-key-sub :communities/enabled? :communities/enabled?)
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
+(reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
+(reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 
 (reg-root-key-sub :activity-center :activity-center)
 
@@ -249,6 +254,7 @@
 
 (reg-root-key-sub :backup/performing-backup :backup/performing-backup)
 
+
 ;; wallet connect
 (reg-root-key-sub :wallet-connect/proposal-metadata :wallet-connect/proposal-metadata)
 (reg-root-key-sub :wallet-connect/enabled? :wallet-connect/enabled?)
@@ -256,7 +262,6 @@
 (reg-root-key-sub :wallet-connect/showing-app-management-sheet?
                   :wallet-connect/showing-app-management-sheet?)
 (reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
-(reg-root-key-sub :wallet-connect-legacy/sessions :wallet-connect-legacy/sessions)
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 (reg-root-key-sub :contact-requests/pending :contact-requests/pending)
 

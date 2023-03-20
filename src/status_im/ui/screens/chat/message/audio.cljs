@@ -4,7 +4,7 @@
             [goog.string :as gstring]
             [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
-            [status-im.audio.core :as audio]
+            [react-native.audio-toolkit :as audio]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

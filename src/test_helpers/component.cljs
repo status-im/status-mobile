@@ -30,9 +30,21 @@
   [text]
   (rtl/screen.getByText text))
 
+(defn find-by-text
+  [text]
+  (rtl/screen.findByText text))
+
 (defn get-by-label-text
   [label]
   (rtl/screen.getByLabelText (name label)))
+
+(defn query-by-label-text
+  [label]
+  (rtl/screen.queryByLabelText (name label)))
+
+(defn get-by-translation-text
+  [keyword]
+  (get-by-text (str "tx:" (name keyword))))
 
 (defn get-all-by-label-text
   [label]
@@ -51,3 +63,11 @@
   (js/jest.advanceTimersByTime time-ms))
 
 (def mock-fn js/jest.fn)
+
+(defn is-truthy
+  [element]
+  (.toBeTruthy (js/expect element)))
+
+(defn is-null
+  [element]
+  (.toBeNull (js/expect element)))

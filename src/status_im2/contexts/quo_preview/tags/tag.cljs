@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.tags.tag :as tag]
             [status-im.ui.components.react :as react]
-            [status-im.react-native.resources :as resources]
+            [status-im2.common.resources :as resources]
             [reagent.core :as reagent]))
 
 (def descriptor
@@ -56,7 +56,7 @@
             {:style {:flex   1
                      :height 100}}
             [react/image
-             {:source (resources/get-image :community-cover)
+             {:source (resources/get-mock-image :community-cover)
               :style  {:flex          1
                        :width         "100%"
                        :border-radius 16}}]

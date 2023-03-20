@@ -30,10 +30,10 @@
 
 (defn contacts-list-item
   [{:keys [public-key active] :as contact} _ _ {:keys [selected]}]
-  (let [[first-name second-name] (multiaccounts/contact-two-names contact true)]
+  (let [{:keys [primary-name secondary-name]} contact]
     [quo/list-item
-     {:title     first-name
-      :subtitle  second-name
+     {:title     primary-name
+      :subtitle  secondary-name
       :icon      [chat-icon.screen/contact-icon-contacts-tab
                   (multiaccounts/displayed-photo contact)]
       :accessory :checkbox

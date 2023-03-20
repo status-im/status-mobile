@@ -5,7 +5,6 @@
   {:empty-chats-header (js/require "../resources/images/ui/empty-chats-header.png")
    :welcome            (js/require "../resources/images/ui/welcome.jpg")
    :welcome-dark       (js/require "../resources/images/ui/welcome-dark.jpg")
-   :add-new-contact    (js/require "../resources/images/ui/add-contact.png")
    :chat               (js/require "../resources/images/ui/chat.jpg")
    :chat-dark          (js/require "../resources/images/ui/chat-dark.jpg")
    :wallet             (js/require "../resources/images/ui/wallet.jpg")
@@ -49,27 +48,8 @@
    :hand-wave          (js/require "../resources/images/ui/hand-wave.png")
    :graph              (js/require "../resources/images/ui/graph.png")
    :discover           (js/require "../resources/images/ui/discover.png")
-   :community-cover    (js/require "../resources/images/ui/community-cover.png")
-   :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
-   :music              (js/require "../resources/images/ui/music.png")
-   :podcasts           (js/require "../resources/images/ui/podcasts.png")
    :no-contacts        (js/require "../resources/images/ui/no-contacts.png")
    :no-contacts-dark   (js/require "../resources/images/ui/no-contacts-dark.png")})
-
-(def mock-images
-  {:photo1               (js/require "../resources/images/mock/photo1.png")
-   :photo2               (js/require "../resources/images/mock/photo2.png")
-   :photo3               (js/require "../resources/images/mock/photo3.png")
-   :community-banner     (js/require "../resources/images/mock/community-banner.png")
-   :community-logo       (js/require "../resources/images/mock/community-logo.png")
-   :gif                  (js/require "../resources/images/mock/gif.png")
-   :sticker              (js/require "../resources/images/mock/sticker.png")
-   :user-picture-female2 (js/require "../resources/images/mock/user_picture_female2.png")
-   :user-picture-male4   (js/require "../resources/images/mock/user_picture_male4.png")
-   :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")
-   :coinbase             (js/require "../resources/images/mock/coinbase.png")
-   :small-opt-card-icon  (js/require "../resources/images/mock/small_opt_card_icon.png")
-   :small-opt-card-main  (js/require "../resources/images/mock/small_opt_card_main.png")})
 
 (defn get-theme-image
   [k]
@@ -84,15 +64,6 @@
     (get (swap! loaded-images assoc
            k
            (get ui k))
-         k)))
-
-(defn get-mock-image
-  [k]
-  (if (contains? @loaded-images k)
-    (get @loaded-images k)
-    (get (swap! loaded-images assoc
-           k
-           (get mock-images k))
          k)))
 
 (def reactions-old

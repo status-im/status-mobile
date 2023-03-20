@@ -1,6 +1,6 @@
 (ns quo2.components.navigation.page-nav
   (:require [clojure.string :as string]
-            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
@@ -30,7 +30,7 @@
            {:no-color true})))
 
 (defn left-section-view
-  [{:keys [on-press icon accessibility-label type] :or {type :grey}}
+  [{:keys [on-press icon accessibility-label type icon-override-theme] :or {type :grey}}
    put-middle-section-on-left?]
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
    [button/button
@@ -38,7 +38,8 @@
      :icon                true
      :type                type
      :size                32
-     :accessibility-label accessibility-label}
+     :accessibility-label accessibility-label
+     :override-theme      icon-override-theme}
     icon]])
 
 (defn- mid-section-comp
@@ -148,10 +149,20 @@
                   :flex-direction  :row
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
-     (map-indexed (fn [index {:keys [icon on-press type style] :or {type :grey}}]
+     (map-indexed (fn [index
+                       {:keys [icon on-press type style icon-override-theme]
+                        :or   {type :grey}}]
                     ^{:key index}
-                    [rn/view {:style (merge {:margin-right (if (not= index last-icon-index) 8 0)} style)}
-                     [button/button {:on-press on-press :icon true :type type :size 32}
+                    [rn/view
+                     {:style (assoc style
+                                    :margin-right
+                                    (if (= index last-icon-index) 0 8))}
+                     [button/button
+                      {:on-press       on-press
+                       :icon           true
+                       :type           type
+                       :size           32
+                       :override-theme icon-override-theme}
                       icon]])
                   right-section-buttons))])
 
@@ -179,16 +190,14 @@
      :left-section 
      {:type                  button-type
       :on-press              event
-      :icon                  icon 
-      :icon-color            color
-      :icon-background-color color
+      :icon                  icon
+      :icon-override-theme   :light/:dark
      }
      :right-section-buttons vector of 
       {:type                  button-type
        :on-press              event
        :icon                  icon
-       :icon-color            color 
-       :icon-background-color color
+       :icon-override-theme   :light/:dark
       }
    }
   "
@@ -216,7 +225,6 @@
                       ;;  iPhone 11 Pro's height in Figma divided by Component height 56/1125
                       :align-items        :center
                       :padding-horizontal 20
-                      :margin-top         44
                       :height             56
                       :justify-content    :space-between}
                page-nav-background-uri (assoc :background-color page-nav-color)

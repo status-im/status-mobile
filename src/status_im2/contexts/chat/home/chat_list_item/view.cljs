@@ -102,33 +102,39 @@
     (datetime/to-short-str timestamp)]])
 
 (defn avatar-view
-  [group-chat color display-name photo-path chat-id]
-  (if group-chat
+  [{:keys [contact chat-id full-name color]}]
+  (if contact ; `contact` is passed when it's not a group chat
+    (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
+          photo-path (rf/sub [:chats/photo-path chat-id])
+          image-key  (if (seq (:images contact)) :profile-picture :ring-background)]
+      [quo/user-avatar
+       {:full-name full-name
+        :size      :small
+        :online?   online?
+        image-key  photo-path}])
     [quo/group-avatar
      {:color color
-      :size  :medium}]
-    (let [online? (rf/sub [:visibility-status-updates/online? chat-id])]
-      [quo/user-avatar
-       {:full-name       display-name
-        :online?         online?
-        :profile-picture photo-path
-        :size            :small}])))
+      :size  :medium}]))
 
 (defn chat-list-item
-  [item]
-  (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count
-                unviewed-messages-count]}
-        item
-        display-name
-        (if group-chat name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
+  [{:keys [chat-id group-chat color name unviewed-messages-count unviewed-mentions-count
+           timestamp last-message]
+    :as   item}]
+  (let [display-name (if group-chat
+                       name
+                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact      (when-not group-chat
+                       (rf/sub [:contacts/contact-by-address chat-id]))]
     [rn/touchable-opacity
-     (merge {:style         (style/container)
-             :on-press      (open-chat chat-id)
-             :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                           {:content (fn [] [actions/actions item false])}])})
-     [avatar-view group-chat color display-name photo-path chat-id]
+     {:style         (style/container)
+      :on-press      (open-chat chat-id)
+      :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                    {:content (fn [] [actions/chat-actions item false])}])}
+     [avatar-view
+      {:contact   contact
+       :chat-id   chat-id
+       :full-name display-name
+       :color     color}]
      [rn/view {:style {:margin-left 8}}
       [name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))

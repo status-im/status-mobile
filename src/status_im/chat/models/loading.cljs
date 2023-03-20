@@ -1,9 +1,9 @@
 (ns status-im.chat.models.loading
   (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.messages.list.events :as message-list]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -100,17 +100,6 @@
                                     :on-success #(re-frame/dispatch
                                                   [::mark-all-read-in-community-successful %])}]}))
 
-;; For example, when a user receives a list of 4 image messages while inside the chat screen we
-;; shouldn't group the images into albums. When the user exists the chat screen then enters the
-;; chat screen again, we now need to group the images into albums (like WhatsApp). The albumize?
-;; boolean is used to know whether we need to group these images into albums now or not. The
-;; album-id can't be used for this because it will always be there.
-(defn mark-album
-  [message]
-  (if (:album-id message)
-    (assoc message :albumize? true)
-    message))
-
 (rf/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
@@ -120,19 +109,29 @@
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
     (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
-          {:keys [all-messages new-messages senders contacts]}
+          {:keys [all-messages new-messages contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
                        {:keys [message-id from]
                         :as   message}]
-                    (cond-> acc
-                      (not (get-in db [:chats chat-id :users from]))
-                      (update :senders assoc from message)
+                    (let [message
+                          ;; For example, when a user receives a list of 4 image messages while inside
+                          ;; the chat screen we shouldn't group the images into albums. When the user
+                          ;; exists the chat screen then enters the chat screen again, we now need to
+                          ;; group the images into albums (like WhatsApp). The albumize? boolean is used
+                          ;; to know whether we need to group these images into albums now or not. The
+                          ;; album-id can't be used for this because it will always be there.
+                          (if (and (:album-id message) (nil? (get all-messages message-id)))
+                            (assoc message :albumize? true)
+                            message)]
+                      (cond-> acc
+                        (not (get-in db [:chats chat-id :users from]))
+                        (update :senders assoc from message)
 
-                      (nil? (get all-messages message-id))
-                      (update :new-messages conj message)
+                        (nil? (get all-messages message-id))
+                        (update :new-messages conj message)
 
-                      :always
-                      (update :all-messages assoc message-id message)))
+                        :always
+                        (update :all-messages assoc message-id message))))
                   {:all-messages already-loaded-messages
                    :senders      {}
                    :contacts     {}
@@ -141,27 +140,24 @@
           current-clock-value (get-in db
                                       [:pagination-info chat-id
                                        :cursor-clock-value])
-          clock-value (when cursor (cursor->clock-value cursor))
-          new-messages (map mark-album new-messages)]
-      {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
-       :db       (-> db
-                     (update-in [:pagination-info chat-id :cursor-clock-value]
-                                #(if (and (seq cursor) (or (not %) (< clock-value %)))
-                                   clock-value
-                                   %))
-
-                     (update-in [:pagination-info chat-id :cursor]
-                                #(if (or (empty? cursor)
-                                         (not current-clock-value)
-                                         (< clock-value current-clock-value))
-                                   cursor
-                                   %))
-                     (assoc-in [:pagination-info chat-id :loading-messages?] false)
-                     (assoc-in [:messages chat-id] all-messages)
-                     (update-in [:message-lists chat-id] message-list/add-many new-messages)
-                     (assoc-in [:pagination-info chat-id :all-loaded?]
-                               (empty? cursor))
-                     (update :contacts/contacts merge contacts))})))
+          clock-value (when cursor (cursor->clock-value cursor))]
+      {:db (-> db
+               (update-in [:pagination-info chat-id :cursor-clock-value]
+                          #(if (and (seq cursor) (or (not %) (< clock-value %)))
+                             clock-value
+                             %))
+               (update-in [:pagination-info chat-id :cursor]
+                          #(if (or (empty? cursor)
+                                   (not current-clock-value)
+                                   (< clock-value current-clock-value))
+                             cursor
+                             %))
+               (assoc-in [:pagination-info chat-id :loading-messages?] false)
+               (assoc-in [:messages chat-id] all-messages)
+               (update-in [:message-lists chat-id] message-list/add-many new-messages)
+               (assoc-in [:pagination-info chat-id :all-loaded?]
+                         (empty? cursor))
+               (update :contacts/contacts merge contacts))})))
 
 (rf/defn load-more-messages
   {:events [:chat.ui/load-more-messages]}

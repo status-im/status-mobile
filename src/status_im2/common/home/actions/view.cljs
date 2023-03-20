@@ -433,16 +433,15 @@
            (leave-group-entry contact extra-data)
            (remove-from-group-entry contact chat-id))])]]))
 
-(defn actions
-  [{:keys [chat-type] :as item} {:keys [inside-chat?] :as extra-data}]
+(defn chat-actions
+  [{:keys [chat-type] :as item} inside-chat?]
   (case chat-type
     constants/one-to-one-chat-type
     [one-to-one-actions item inside-chat?]
     constants/public-chat-type
     [public-chat-actions item inside-chat?]
     constants/private-group-chat-type
-    [private-group-chat-actions item inside-chat?]
-    [contact-actions item extra-data]))
+    [private-group-chat-actions item inside-chat?]))
 
 (defn group-details-actions
   [{:keys [admins] :as group}]

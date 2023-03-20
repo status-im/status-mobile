@@ -12,9 +12,6 @@
     [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
     [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
-    [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
-    [status-im.ui.screens.browser.tabs.views :as browser.tabs]
-    [status-im.ui.screens.browser.views :as browser]
     [status-im.ui.screens.bug-report :as bug-report]
     [status-im.ui.screens.communities.channel-details :as communities.channel-details]
     [status-im.ui.screens.communities.community :as community]
@@ -63,7 +60,6 @@
     [status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
-    [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
     [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
     [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
     [status-im.ui.screens.onboarding.password.views :as onboarding.password]
@@ -132,11 +128,6 @@
 
    {:name      :progress
     :component progress/progress}
-
-   ;[Onboarding]
-   {:name      :intro
-    :insets    {:bottom true}
-    :component onboarding.intro/intro}
 
    ;[Onboarding]
    {:name      :get-your-keys
@@ -285,25 +276,6 @@
    {:name      :community-membership
     :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}}
     :component membership/membership}
-
-   ;;BROWSER
-
-   {:name      :empty-tab
-    :insets    {:top true}
-    :options   {:topBar             {:visible false}
-                :hardwareBackButton {:popStackOnPress false}}
-    :component empty-tab/empty-tab}
-   {:name      :browser
-    :options   {:topBar             {:visible false}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
-    :component browser/browser}
-   {:name      :browser-tabs
-    :insets    {:top true}
-    :options   {:topBar             {:visible false}
-                :hardwareBackButton {:popStackOnPress false}}
-    :component browser.tabs/tabs}
 
    ;;WALLET
 
@@ -565,7 +537,7 @@
     :insets    {:bottom true}
     ;;TODO dyn subtitle
     :options   {:topBar {:visible false}}
-    :component contact/nickname}
+    :component contact/nickname-view}
 
    {:name      :new-chat-aio
     :on-focus  [:contacts/new-chat-focus]

@@ -18,7 +18,7 @@
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
             (when (:multiaccount db)
-              (navigation/change-tab :profile))
+              (navigation/navigate-to-cofx :my-profile nil))
             (navigation/navigate-to-cofx :seed-phrase nil)))
 
 (rf/defn recovery-card-pressed

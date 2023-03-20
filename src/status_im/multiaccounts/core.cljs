@@ -3,7 +3,6 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im2.common.bottom-sheet.events :as bottom-sheet]
-            [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
             [status-im.theme.core :as theme]
@@ -12,11 +11,11 @@
             [status-im2.constants :as constants]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.utils :as utils]
             [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as utils.theme]
             [taoensso.timbre :as log]
-            [status-im2.contexts.shell.animation :as shell.animation]))
+            [status-im2.contexts.shell.animation :as shell.animation]
+            [status-im.contact.db :as contact.db]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
@@ -24,64 +23,22 @@
  (fn [[passphrase callback]]
    (native-module/validate-mnemonic passphrase callback)))
 
-(defn contact-names
-  "Returns map of all existing names for contact"
-  [{:keys [name
-           display-name
-           preferred-name
-           alias
-           public-key
-           ens-verified
-           nickname]}]
-  (let [ens-name (or preferred-name
-                     name)]
-    (cond-> {:nickname         nickname
-             :display-name     display-name
-             :three-words-name (or alias (gfycat/generate-gfy public-key))}
-      ;; Preferred name is our own otherwise we make sure it's verified
-      (or preferred-name (and ens-verified name))
-      (assoc :ens-name (or (stateofus/username ens-name) ens-name)))))
-
-(defn contact-two-names
-  "Returns vector of two names in next order nickname, ens name, display-name, three word name, public key"
-  [{:keys [names
-           compressed-key
-           public-key]
-    :as   contact} public-key?]
-  (let [{:keys [nickname
-                ens-name
-                display-name
-                three-words-name]}
-        (or names (contact-names contact))
-        non-empty-names (remove string/blank? [nickname ens-name display-name three-words-name])]
-    (if (> (count non-empty-names) 1)
-      (vec (take 2 non-empty-names))
-      [(first non-empty-names)
-       (when public-key? (utils/get-shortened-address (or compressed-key public-key)))])))
-
-(defn contact-with-names
-  "Returns contact with :names map "
-  [contact]
-  (let [contact' (assoc contact :names (contact-names contact))]
-    (assoc contact' :two-names (contact-two-names contact' true))))
-
 (defn displayed-name
   "Use preferred name, display-name, name or alias in that order"
-  [{:keys [name display-name preferred-name alias public-key ens-verified]}]
+  [{:keys [name display-name preferred-name alias public-key ens-verified primary-name]}]
   (let [display-name (if (string/blank? display-name) nil display-name)
         ens-name     (or preferred-name
                          display-name
                          name)]
     ;; Preferred name is our own otherwise we make sure it's verified
     (if (or preferred-name (and ens-verified name))
-      (let [username (stateofus/username ens-name)]
-        (or username ens-name))
-      (or display-name alias (gfycat/generate-gfy public-key)))))
+      ens-name
+      (or display-name primary-name alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
   [contacts identity]
   (or (get contacts identity)
-      (contact-with-names {:public-key identity})))
+      (contact.db/public-key->new-contact identity)))
 
 (defn contact-two-names-by-identity
   [contact current-multiaccount identity]
@@ -89,7 +46,7 @@
     (if me?
       [(or (:preferred-name current-multiaccount)
            (gfycat/generate-gfy identity))]
-      (contact-two-names contact false))))
+      [(:primary-name contact) (:secondary-name contact)])))
 
 (def photo-quality-thumbnail :thumbnail)
 (def photo-quality-large :large)

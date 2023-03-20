@@ -19,6 +19,19 @@
       (focus-input-on-reply reply had-reply text-input-ref)
       (when reply
         [rn/view
-         {:style {:padding-horizontal 15
-                  :padding-vertical   8}}
-         [reply/reply-message reply true]]))))
+         {:style (merge
+                  {:padding-horizontal 15
+                   :padding-vertical   8}
+                  (when @input/recording-audio?
+                    {:position :absolute
+                     :top      12
+                     :left     0
+                     :right    0
+                     ;;When recording an audio and replying at the same time,
+                     ;;text input is overlapped by the reply component but
+                     ;;text input still have priority over touches, so we need
+                     ;;to force the reply component to receive the touches in this
+                     ;;scenario, thus we increase its z-index
+                     :z-index  1}))}
+         [reply/reply-message reply true false
+          (and @input/recording-audio? (not @input/reviewing-audio?))]]))))
