@@ -330,7 +330,9 @@ dependencies {
     // react-native-screens
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
-
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'com.facebook.soloader:soloader:0.10.1'
+    
     implementation 'androidx.multidex:multidex:2.0.1' // only needed if minSdkVersion is less than 21 (https://developer.android.com/studio/build/multidex)
     implementation project(':react-native-dialogs')
     implementation project(':react-native-blur')

@@ -25,8 +25,10 @@ function findPackage(line, regex) {
 
     # Lines after configuration name list packages
     for (getline line; line != ""; getline line) {
-        # React Native is provided by node_modules
-        if (line ~ "com.facebook.react:react-native") { continue }
+        # Example: +--- com.facebook.react:react-native:+ -> com.facebook.react:react-android:0.71.4
+        if (findPackage(line, "--- [^ ]+ -> ([^ :]+):([^ :]+):([^ :]+)$")) {
+            continue
+        }
 
         # Example: +--- org.jetbrains.kotlin:kotlin-stdlib:1.3.50
         if (findPackage(line, "--- ([^ :]+):([^ :]+):([^ :]+)$")) {

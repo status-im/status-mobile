@@ -83,6 +83,9 @@ fi
 # Run each stage in order
 gen_proj_list
 gen_deps_list
+# FIXME: Temporary fix for missing package.
+echo 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.10' >> "${DEPS_LIST}"
+echo 'com.android.tools.lint:lint-gradle:30.3.1' >> "${DEPS_LIST}"
 gen_deps_urls
 gen_deps_json
 
