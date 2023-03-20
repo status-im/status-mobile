@@ -309,12 +309,14 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
                   callback:(RCTResponseSenderBlock)callback) {
 
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
-    NSString *keyUID = [configDict objectForKey:@"keyUID"];
+    NSError *error;
+    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *senderConfig = configDict[@"senderConfig"];
+    NSString *keyUID = senderConfig[@"keyUID"];
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
 
-    [configDict setValue:keystoreDir forKey:@"keystorePath"];
+    [senderConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
 
     NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
@@ -326,17 +328,20 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
                   callback:(RCTResponseSenderBlock)callback) {
 
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSError *error;
+    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *receiverConfig = configDict[@"receiverConfig"];
+    NSMutableDictionary *nodeConfig = receiverConfig[@"nodeConfig"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL *rootDataDir = rootUrl.path;
     NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
+    NSString *rootDataDir = rootUrl.path;
 
-    [configDict setValue:keystoreDir forKey:@"keystorePath"];
-    [configDict setValue:rootDataDir forKey:@"rootDataDir"];
+    [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
+    [nodeConfig setValue:rootDataDir forKey:@"rootDataDir"];
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs,modifiedConfigJSON);
+    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, modifiedConfigJSON);
     callback(@[result]);
 }
 

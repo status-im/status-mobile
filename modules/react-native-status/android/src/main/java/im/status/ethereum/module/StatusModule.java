@@ -801,9 +801,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
-         final String keyUID = jsonConfig.getString("keyUID");
+         final JSONObject senderConfig = jsonConfig.getJSONObject("senderConfig");
+         final String keyUID = senderConfig.getString("keyUID");
          final String keyStorePath = this.getKeyStorePath(keyUID);
-         jsonConfig.put("keystorePath", keyStorePath);
+        senderConfig.put("keystorePath", keyStorePath);
 
         executeRunnableStatusGoMethod(() -> Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonConfig.toString()), callback);
     }
@@ -811,9 +812,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void inputConnectionStringForBootstrapping(final String connectionString, final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
+         final JSONObject receiverConfig = jsonConfig.getJSONObject("receiverConfig");
          final String keyStorePath = pathCombine(this.getNoBackupDirectory(), "/keystore");
-         jsonConfig.put("keystorePath", keyStorePath);
-         jsonConfig.put("rootDataDir", this.getNoBackupDirectory());
+         receiverConfig.put("keystorePath", keyStorePath);
+         receiverConfig.getJSONObject("nodeConfig").put("rootDataDir", this.getNoBackupDirectory());
         executeRunnableStatusGoMethod(() -> Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()), callback);
     }
 
