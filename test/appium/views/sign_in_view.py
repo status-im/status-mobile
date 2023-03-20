@@ -54,9 +54,9 @@ class BeginRecoveryButton(Button):
         return self.navigate()
 
 
-class SignInButton(Button):
+class LogInButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, translation_id="sign-in")
+        super().__init__(driver, accessibility_id="login-button")
 
     def navigate(self):
         from views.home_view import HomeView
@@ -131,7 +131,7 @@ class SignInView(BaseView):
 
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
-        self.sign_in_button = SignInButton(self.driver)
+        self.login_button = LogInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, accessibility_id="generate-old-key")
         self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
@@ -233,8 +233,10 @@ class SignInView(BaseView):
 
     def sign_in(self, password=common_password, keycard=False, position=1):
         self.driver.info("## Sign in (password:%s, keycard:%s)" % (password, str(keycard)), device=False)
-        if self.multi_account_on_login_button.is_element_displayed(30):
-            self.get_multiaccount_by_position(position).click()
+
+        #Commented as this flow seems to be outdated
+        # if self.multi_account_on_login_button.is_element_displayed(30):
+        #     self.get_multiaccount_by_position(position).click()
 
         if keycard:
             from views.keycard_view import KeycardView
@@ -245,7 +247,7 @@ class SignInView(BaseView):
                 keycard_view.connect_selected_card_button.click()
         else:
             self.password_input.set_value(password)
-            self.sign_in_button.click()
+            self.login_button.click()
         self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
 
