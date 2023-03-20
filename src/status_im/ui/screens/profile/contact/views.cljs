@@ -88,14 +88,14 @@
 
 (defn valid-nickname?
   [nickname]
-  (not (string/blank? (string/trim nickname))))
+  (not (string/blank? (string/trim (or nickname "")))))
 
 (defn- nickname-input
   [nickname entered-nickname public-key]
   [quo/text-input
    {:on-change-text      #(reset! entered-nickname %)
     :on-submit-editing   #(when (valid-nickname? @entered-nickname)
-                            (save-nickname public-key (string/trim @entered-nickname)))
+                            (save-nickname public-key (string/trim (or @entered-nickname ""))))
     :auto-capitalize     :none
     :auto-focus          false
     :max-length          32
@@ -133,7 +133,7 @@
           {:type     :secondary
            :disabled (not (valid-nickname? @entered-nickname))
            :on-press #(when (valid-nickname? @entered-nickname)
-                        (save-nickname public-key (string/trim @entered-nickname)))}
+                        (save-nickname public-key (string/trim (or @entered-nickname ""))))}
           (i18n/label :t/done)]}]])))
 
 (defn button-item
