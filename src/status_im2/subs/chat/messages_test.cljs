@@ -17,6 +17,8 @@
             {:message-id "0x333" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}
             {:message-id "0x222" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}
             {:message-id "0x111" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}]
+    :content {:response-to nil}
+    :quoted-message nil
     :album-id "abc"
     :albumize? true
     :message-id "0x444"

@@ -147,8 +147,9 @@
 
 (defn build-image-messages
   [{db :db} chat-id input-text]
-  (let [images   (get-in db [:chat/inputs chat-id :metadata :sending-image])
-        album-id (str (random-uuid))]
+  (let [images               (get-in db [:chat/inputs chat-id :metadata :sending-image])
+        {:keys [message-id]} (get-in db [:chat/inputs chat-id :metadata :responding-to-message])
+        album-id             (str (random-uuid))]
     (mapv (fn [[_ {:keys [resized-uri width height]}]]
             {:chat-id      chat-id
              :album-id     album-id
@@ -159,7 +160,8 @@
              ;; TODO: message not received if text field is
              ;; nil or empty, issue:
              ;; https://github.com/status-im/status-mobile/issues/14754
-             :text         (or input-text "placeholder")})
+             :text         (or input-text "placeholder")
+             :response-to  message-id})
           images)))
 
 (rf/defn clean-input
