@@ -8,6 +8,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
+    [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]))
 
@@ -39,7 +40,7 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn top-view
-  [{:keys [from]} insets index animations derived landscape? screen-width]
+  [{:keys [from timestamp]} insets index animations derived landscape? screen-width]
   [:f>
    (fn []
      (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
@@ -76,9 +77,7 @@
           [quo/text
            {:weight :medium
             :size   :paragraph-2
-            ;; TODO: layout animation in release mode causes crash:
-            ;; https://github.com/status-im/status-mobile/issues/15395
-            :style  {:color colors/neutral-40}} "9:41 AM"]]]
+            :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
         [rn/view {:style style/top-right-buttons}
          [rn/touchable-opacity
           {:active-opacity 1
