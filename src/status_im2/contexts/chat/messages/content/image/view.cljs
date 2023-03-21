@@ -36,10 +36,12 @@
                                              :insets   insets}])}
             (when (and (not= text "placeholder") (= index 0))
               [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
-            [fast-image/fast-image
-             {:source    {:uri (:image content)}
-              :style     (merge dimensions {:border-radius 12})
-              :native-ID :shared-element
-              ;:native-ID (when (= shared-element-id message-id) :shared-element)
-              }]
+            [rn/view {:style {:width 300 :height 300 :background-color :red}
+                      :native-ID :shared-element}]
+            ;[fast-image/fast-image
+            ; {:source    {:uri (:image content)}
+            ;  :style     (merge dimensions {:border-radius 12})
+            ;  :native-ID :shared-element
+            ;  ;:native-ID (when (= shared-element-id message-id) :shared-element)
+            ;  }]
             ]))))])

@@ -266,18 +266,19 @@
                 composed-gestures (gesture/exclusive
                                    (gesture/simultaneous pinch pan-x pan-y)
                                    (gesture/exclusive double-tap tap))]
-                   ;[rn/view [rn/image {:source    {:uri (:image content)}
-                   ;                                 :native-ID :shared-element
-                   ;                                 :style {:width 300 :height 300}}]]
-            [gesture/gesture-detector {:gesture composed-gestures}
-             [reanimated/view
-              {:style (style/container dimensions
-                                       animations
-                                       @set-full-height?
-                                       (= curr-orientation orientation/portrait))}
-              [reanimated/fast-image
-               {:source    {:uri (:image content)}
-                ;:native-ID (when focused? :shared-element)
-                :native-ID :shared-element
-                :style     (style/image dimensions animations (:border-value args))}]]]
+            [rn/view {:style {:width 300 :height 300 :background-color :red}
+                      :native-ID :shared-element}]
+            ;[gesture/gesture-detector {:gesture composed-gestures}
+            ; [reanimated/view
+            ;  {:style (style/container dimensions
+            ;                           animations
+            ;                           @set-full-height?
+            ;                           (= curr-orientation orientation/portrait))}
+
+              ;[reanimated/fast-image
+              ; {:source    {:uri (:image content)}
+              ;  ;:native-ID (when focused? :shared-element)
+              ;  :native-ID :shared-element
+              ;  :style     (style/image dimensions animations (:border-value args))}]
+              ;]]
             ))]))])
