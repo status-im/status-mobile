@@ -347,6 +347,8 @@ class CommunityView(HomeView):
         self.community_info_picture = Button(self.driver, accessibility_id="chat-icon")
         self.leave_community_button = Button(self.driver, translation_id="leave-community")
         self.edit_community_button = Button(self.driver, translation_id="edit-community")
+        self.share_community_button = Button(self.driver, accessibility_id="share-community")
+        self.share_community_link_button = Button(self.driver, accessibility_id="share-community-link")
 
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
@@ -418,11 +420,21 @@ class CommunityView(HomeView):
         self.share_invite_button.click_until_presence_of_element(self.invite_button)
         self.back_button.click_until_presence_of_element(self.plus_button)
 
+    def share_community(self, coummunity_element, user_names_to_share):
+        if isinstance(user_names_to_share, str):
+            user_names_to_share = [user_names_to_share]
+        self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_share)))
+        coummunity_element.long_press_until_element_is_shown(self.share_community_button)
+        self.share_community_button.click()
+        for user_name in user_names_to_share:
+            user_contact = self.element_by_text_part(user_name)
+            user_contact.scroll_and_click()
+        self.share_community_link_button.click()
+
 
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text: str):
         super().__init__(driver, text=text)
-        # self.locator += "/android.view.ViewGroup/android.view.ViewGroup"
 
     @staticmethod
     def return_element_or_empty(obj):
@@ -670,7 +682,7 @@ class ChatView(BaseView):
         self.clear_history_button = Button(self.driver, translation_id="clear-history")
         self.reply_message_button = Button(self.driver, translation_id="message-reply")
         self.share_chat_button = Button(self.driver, accessibility_id="share-chat-button")
-        self.clear_button = Button(self.driver, translation_id="clear", uppercase=True)
+        self.clear_button = Button(self.driver, translation_id="clear-history")
         self.view_profile_button = ViewProfileButton(self.driver)
         self.view_profile_by_avatar_button = Button(self.driver, accessibility_id="member-photo")
         self.user_options = Button(self.driver, accessibility_id="options")

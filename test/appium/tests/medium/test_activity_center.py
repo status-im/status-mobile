@@ -153,13 +153,27 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
-    def test_activity_center_contact_request_accept(self):
+    def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
         self.home_2.add_contact(self.public_key_1, remove_from_contacts=True)
 
-        self.device_1.just_fyi('Device1 accepts pending contact request and check contact list')
+        self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
         self.home_1.chats_tab.click()
-        self.home_1.handle_contact_request(username=self.default_username_2)
+        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(30)
+        self.home_1.open_activity_center_button.click()
+
+        self.home_1.just_fyi("Mark all as read")
+        cr_element = self.home_1.get_element_from_activity_center_view(self.default_username_2)
+        self.home_1.more_options_activity_button.click()
+        self.home_1.mark_all_read_activity_button.click()
+        if cr_element.is_element_displayed():
+            self.errors.append("Contact request is still shown in activity centre after marking all messages as read!")
+
+        self.home_1.just_fyi("Check that can accept contact request from read notifications")
+        self.home_1.activity_unread_filter_button.click()
+        cr_element.swipe_right_on_element()
+        self.home_1.activity_notification_swipe_button.click()
+        self.home_1.close_activity_centre.click()
         self.home_1.contacts_tab.click()
         if not self.home_1.contact_details(username=self.default_username_2).is_element_displayed(20):
             self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
@@ -246,7 +260,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702947)
-    def test_activity_center_reply_read_unread_delete_filter(self):
+    def test_activity_center_reply_read_unread_delete_filter_swipe(self):
         message_to_reply, reply_to_message_from_sender = 'something to reply to', 'this is a reply'
         self.home_1.jump_to_communities_home()
         self.home_1.get_chat(self.community_name, community=True).click()
@@ -315,5 +329,89 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if reply_element.is_element_displayed():
             self.errors.append("Reply is still shown after removing from activity centre!")
 
+        self.home_1.just_fyi("Reset filter to show all AC notifications again")
+        self.home_1.reply_activity_tab_button.click()
+        self.home_1.mention_activity_tab_button.click()
+        self.home_1.all_activity_tab_button.click()
+        self.home_1.close_activity_centre.click()
+
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(702957)
+    def test_activity_center_mentions(self):
+        self.home_1.jump_to_communities_home()
+        self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
+
+        self.device_2.just_fyi("Invited member sends a message with a mention")
+        self.channel_2.mention_user(self.default_username_1)
+        self.channel_2.send_message_button.click()
+
+        self.home_1.just_fyi("Checking unread indicators")
+        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
+        for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
+            if not unread_counter.is_element_displayed(60):
+                self.errors.append('New message counter badge is not shown while mentioned!')
+            if int(unread_counter.text) != 1:
+                self.errors.append('New message counter badge is not 1, it is %s!' % unread_counter.text)
+
+        self.home_1.just_fyi("Checking mention attributes in activity center")
+        self.home_1.open_activity_center_button.click()
+        mention_element = self.home_1.get_element_from_activity_center_view('@%s' % self.default_username_1)
+        if mention_element.title.text != 'Mention':
+            self.errors.append("Expected title is not shown, '%s' is instead!" % mention_element.title)
+        if not mention_element.unread_indicator.is_element_displayed():
+            self.errors.append("No unread dot is shown on activity center element (mention)!")
+        if mention_element.message_body.text != '@%s' % self.default_username_1:
+            self.errors.append("Mention body in activity center does not match expected, it is %s!" % mention_element.message_body.text)
+
+        self.home_1.just_fyi("Tap on it and check redirect to channel")
+        mention_element.click()
+        if not self.channel_1.chat_element_by_text(self.default_username_1).is_element_displayed():
+            self.errors.append("Was not redirected to chat after tapping on mention!")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702958)
+    def test_activity_center_admin_notification_accept_swipe(self):
+        self.home_2.just_fyi("Clearing history")
+        self.home_2.jump_to_messages_home()
+        self.home_2.clear_chat_long_press(self.default_username_1)
+
+        [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
+        self.home_1.just_fyi("Open community to message")
+        self.home_1.communities_tab.click()
+        community_name = 'commun_to_check_notif'
+        self.channel_name = self.home_1.get_random_chat_name()
+        self.home_1.create_community(name=community_name, description='community to test', require_approval=True)
+        self.home_1.click_system_back_button_until_element_is_shown()
+        community_element = self.home_1.get_chat(community_name, community=True)
+        self.community_1.share_community(community_element, self.default_username_2)
+
+        self.home_1.just_fyi("Request access to community")
+        self.home_2.jump_to_messages_home()
+        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.element_by_text_part('View').click()
+        self.community_2.request_access_button.click()
+        self.community_2.jump_to_communities_home()
+
+        self.home_1.just_fyi("Checking unread indicators")
+        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        self.home_1.open_activity_center_button.click()
+        reply_element = self.home_1.get_element_from_activity_center_view(self.default_username_2)
+        if reply_element.title.text != 'Join request':
+            self.errors.append("Expected title is not shown, '%s' is instead!" % reply_element.title)
+        if not reply_element.unread_indicator.is_element_displayed():
+            self.errors.append("No unread dot is shown on activity center element!")
+        reply_element.swipe_right_on_element()
+        self.home_1.activity_notification_swipe_button.click()
+        self.home_1.close_activity_centre.click()
+
+        self.home_2.just_fyi("Checking that community appeared on thr list")
+        if not self.home_2.element_by_text_part(community_name).is_element_displayed(30):
+            self.errors.append("Community is not appeared in the list after accepting admin request from activity centre")
+        self.errors.verify_no_errors()
+
+
+
+
 

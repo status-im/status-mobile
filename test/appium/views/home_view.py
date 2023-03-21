@@ -126,6 +126,10 @@ class ActivityCenterElement(SilentButton):
     def unread_indicator(self):
         return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-unread-indicator"]')
 
+    @property
+    def message_body(self):
+        return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-message-body"]')
+
     def handle_cr(self, element_accessibility: str):
         try:
             accept_element = Button(self.driver,
@@ -220,7 +224,7 @@ class HomeView(BaseView):
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
-        self.clear_history_button = Button(self.driver, accessibility_id="clear-history-button")
+        self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-all-read-button")
 
         # Connection icons
@@ -252,11 +256,13 @@ class HomeView(BaseView):
         self.setup_chat_button = Button(self.driver, accessibility_id="next-button")
 
         # Activity centre
+        self.all_activity_tab_button = ActivityTabButton(self.driver, translation_id="all")
         self.mention_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-mention")
         self.reply_activity_tab_button = ActivityTabButton(self.driver, accessibility_id="tab-reply")
         self.activity_notification_swipe_button = Button(self.driver, accessibility_id="notification-swipe")
         self.activity_unread_filter_button = Button(self.driver, accessibility_id="selector-filter")
-
+        self.more_options_activity_button = Button(self.driver, accessibility_id="activity-center-open-more")
+        self.mark_all_read_activity_button = Button(self.driver, translation_id="mark-all-notifications-as-read")
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
