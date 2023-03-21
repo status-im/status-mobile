@@ -72,8 +72,8 @@
                                  :drawBehind      true
                                  :translucent     true}
                  :navigationBar {:backgroundColor colors/black}
-                 ;:layout        {:componentBackgroundColor :transparent
-                 ;                :backgroundColor          :transparent}
+                 :layout        {:componentBackgroundColor :transparent
+                                 :backgroundColor          :transparent}
                  :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                                     :toId          :shared-element
                                                                     :interpolation {:type
