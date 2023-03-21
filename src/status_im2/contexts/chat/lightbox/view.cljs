@@ -217,9 +217,9 @@
              {:style (reanimated/apply-animations-to-style {:background-color (:background-color
                                                                                 animations)}
                                                            {:height screen-height})}
-             (when-not @transparent?
-               [top-view/top-view (first messages) insets scroll-index animations derived landscape?
-                screen-width])
+             ;(when-not @transparent?
+             ;  [top-view/top-view (first messages) insets scroll-index animations derived landscape?
+             ;   screen-width])
              [gesture/gesture-detector
               {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
               [reanimated/view
@@ -269,8 +269,8 @@
                 [rn/view {:style {:width seperator-width}}]]
                  )
                ]]
-             (when (and (not @transparent?) (not landscape?))
-               [bottom-view/bottom-view messages index scroll-index insets animations derived
-                item-width atoms])
+             ;(when (and (not @transparent?) (not landscape?))
+             ;  [bottom-view/bottom-view messages index scroll-index insets animations derived
+             ;   item-width atoms])
              ]
             ))]))])
