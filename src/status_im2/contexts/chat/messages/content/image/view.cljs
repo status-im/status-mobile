@@ -24,28 +24,21 @@
          (let [shared-element-id (rf/sub [:shared-element-id])]
            [rn/touchable-opacity
             {:active-opacity 1
+             ;:native-ID :source-image
              :key            message-id
-             ;:style          {:margin-top (when (pos? index) 10)}
-             :style          {:width 300 :height 300}
+             :style          {:margin-top (when (pos? index) 10)}
              :on-long-press  on-long-press
-             :on-press (fn []
-                         (rf/dispatch [:navigate-to :lightbox {:messages [message] :index 0 :insets insets}]))
-             ;:on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
-             ;                               message-id
-             ;                               {:messages [message]
-             ;                                :index    0
-             ;                                :insets   insets}])
-             }
+             :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+                                            message-id
+                                            {:messages [message]
+                                             :index    0
+                                             :insets   insets}])}
             (when (and (not= text "placeholder") (= index 0))
               [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
-            [rn/view
-             {
-              :native-ID :source-image
-              ;:source    {:uri (:image content)}
-              ;:style     (merge dimensions {:border-radius 12})
-              :style          {:width 300 :height 300
-                               :background-color :red}
-              ;:native-ID :source-image
+            [fast-image/fast-image
+             {:source    {:uri (:image content)}
+              :style     (merge dimensions {:border-radius 12})
+              :native-ID :shared-element
               ;:native-ID (when (= shared-element-id message-id) :shared-element)
               }]
             ]))))])

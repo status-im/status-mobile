@@ -74,13 +74,13 @@
                  :navigationBar {:backgroundColor colors/black}
                  ;:layout        {:componentBackgroundColor :transparent
                  ;                :backgroundColor          :transparent}
-                 :animations    {:push {:sharedElementTransitions [{:fromId        :source-image
-                                                                    :toId          :destination-image
+                 :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
+                                                                    :toId          :shared-element
                                                                     :interpolation {:type
                                                                                     :decelerate
                                                                                     :factor 1.5}}]}
-                                 :pop  {:sharedElementTransitions [{:fromId        :destination-image
-                                                                    :toId          :source-image
+                                 :pop  {:sharedElementTransitions [{:fromId        :shared-element
+                                                                    :toId          :shared-element
                                                                     :interpolation {:type
                                                                                     :decelerate
                                                                                     :factor 1.5}}]}
