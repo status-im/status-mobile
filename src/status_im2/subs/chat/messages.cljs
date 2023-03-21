@@ -19,17 +19,17 @@
   so we bucket both in 1999-12-31"
   [{:keys [acc last-timestamp last-datemark]} {:keys [whisper-timestamp datemark] :as msg}]
   (cond
-    (empty? acc) ; initial element
+    (empty? acc)                                            ; initial element
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc msg)}
 
-    (and (not= last-datemark datemark) ; not the same day
-         (< whisper-timestamp last-timestamp)) ; not out-of-order
+    (and (not= last-datemark datemark)                      ; not the same day
+         (< whisper-timestamp last-timestamp))              ; not out-of-order
     {:last-timestamp whisper-timestamp
      :last-datemark  datemark
      :acc            (conj acc
-                           {:value last-datemark ; intersperse datemark message
+                           {:value last-datemark            ; intersperse datemark message
                             :type  :datemark}
                            msg)}
     :else
@@ -82,17 +82,18 @@
                                   (conj acc (assoc message :gap-ids #{message-id})))))
                             []
                             messages)]
-    (if (or loading-messages? ; it's loading messages from the database
-            (nil? synced-from) ; it's still syncing
+    (if (or loading-messages?                          ; it's loading messages from the database
+            (nil? synced-from)                         ; it's still syncing
             (= constants/timeline-chat-type chat-type) ; it's a timeline chat
-            (= constants/profile-chat-type chat-type) ; it's a profile chat
-            (and (not (nil? synced-from)) ; it's not more than a month
+            (= constants/profile-chat-type chat-type)  ; it's a profile chat
+            (and (not (nil? synced-from))              ; it's not more than a month
                  (<= synced-from (- (quot now 1000) constants/one-month)))
             (and (= constants/private-group-chat-type chat-type) ; it's a private group chat
-                 (or (not (pos? joined)) ; we haven't joined
+                 (or (not (pos? joined))                   ; we haven't joined
                      (>= (quot joined 1000) synced-from))) ; the history goes before we joined
-            (:gap-ids (peek messages-with-gaps))) ; there's already a gap on top of the chat history
-      messages-with-gaps ; don't add an extra gap
+            (:gap-ids (peek messages-with-gaps)))          ; there's already a gap on top of the chat
+                                                           ; history
+      messages-with-gaps                                   ; don't add an extra gap
       (conj messages-with-gaps (last-gap chat-id synced-from)))))
 
 (defn hydrate-messages
@@ -111,36 +112,29 @@
 
 (defn albumize-messages
   [messages]
-  (get
-   (reduce
-    (fn [{:keys [messages albums]} message]
-      (let [{:keys [album-id content quoted-message]} message
-            {:keys [response-to]}                     content
-            albums                                    (cond-> albums
-                                                        album-id (update album-id conj message))
-            messages                                  (if album-id
-                                                        (conj
-                                                         (filterv #(not= album-id (:album-id %))
-                                                                  messages)
-                                                         {:album           (get albums album-id)
-                                                          :album-id        album-id
-                                                          :albumize?       (:albumize? message)
-                                                          :message-id      (:message-id message)
-                                                          :deleted?        (:deleted? message)
-                                                          :deleted-for-me? (:deleted-for-me? message)
-                                                          :deleted-by      (:deleted-by message)
-                                                          :from            (:from message)
-                                                          :timestamp-str   (:timestamp-str message)
-                                                          :content         {:response-to response-to}
-                                                          :quoted-message  quoted-message
-                                                          :content-type    constants/content-type-album})
-                                                        (conj messages message))]
-        {:messages messages
-         :albums   albums}))
-    {:messages []
-     :albums   {}}
-    messages)
-   :messages))
+  (->> messages
+       (reduce
+        (fn [{:keys [messages albums]} message]
+          (let [album-id (:album-id message
+                )
+                albums                                    (cond-> albums
+                                                            album-id
+                                                            (update album-id conj message))
+                messages                                  (if album-id
+                                                            (conj (filterv #(not= album-id (:album-id %))
+                                                                           messages)
+                                                                  (merge message
+                                                                         {:album (get albums album-id)
+                                                                          :album-id album-id
+
+                                                                          :content-type
+                                                                          constants/content-type-album}))
+                                                            (conj messages message))]
+            {:messages messages
+             :albums   albums}))
+        {:messages []
+         :albums   {}})
+       :messages))
 
 (re-frame/reg-sub
  :chats/chat-messages
