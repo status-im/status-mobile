@@ -8,6 +8,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
+    [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]))
 
@@ -76,7 +77,7 @@
           [quo/text
            {:weight :medium
             :size   :paragraph-2
-            :style  {:color colors/neutral-40}} timestamp]]]
+            :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
         [rn/view {:style style/top-right-buttons}
          [rn/touchable-opacity
           {:active-opacity 1
