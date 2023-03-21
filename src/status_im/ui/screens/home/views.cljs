@@ -154,7 +154,7 @@
                        (re-frame/dispatch [:dismiss-keyboard])
                        (re-frame/dispatch [:chat/navigate-to-chat chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
-      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
     [communities.views/community-home-list-item home-item]))
@@ -169,7 +169,7 @@
                        (re-frame/dispatch [:dismiss-keyboard])
                        (re-frame/dispatch [:chat/navigate-to-chat chat-id])
                        (re-frame/dispatch [:search/home-filter-changed nil]))
-      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
     [communities.views/community-home-list-item home-item]))
@@ -261,7 +261,7 @@
      {:on-press            (when-not logging-in?
                              (fn []
                                (re-frame/dispatch [:group-chat/clear-contacts])
-                               (re-frame/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}])))
+                               (re-frame/dispatch [:bottom-sheet/show-sheet-old :start-a-new-chat {}])))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 
@@ -272,7 +272,7 @@
      {:on-press            (when-not logging-in?
                              (fn []
                                (re-frame/dispatch [:group-chat/clear-contacts])
-                               (re-frame/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}])))
+                               (re-frame/dispatch [:bottom-sheet/show-sheet-old :start-a-new-chat {}])))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 

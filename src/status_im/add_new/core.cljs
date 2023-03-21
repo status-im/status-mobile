@@ -83,7 +83,7 @@
       (if new-contact?
         (rf/merge cofx
                   (contact/add-contact chat-key nickname ens-name)
-                  (navigation/navigate-to-cofx :contacts-list {}))
+                  (navigation/navigate-to :contacts-list {}))
         (chat/start-chat cofx chat-key ens-name))
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (case validation-result

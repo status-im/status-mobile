@@ -1,7 +1,7 @@
 (ns status-im.multiaccounts.recover.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
@@ -142,7 +142,7 @@
                   :step :recovery-success)}
      (when (existing-account? multiaccounts key-uid)
        (show-existing-multiaccount-alert key-uid))
-     (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
+     (navigation/navigate-to :recover-multiaccount-success nil))))
 
 (rf/defn enter-phrase-pressed
   {:events [::enter-phrase-pressed]}
@@ -159,8 +159,8 @@
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed}
                    :recovered-account? true)
             (update :keycard dissoc :flow))}
-   (bottom-sheet/hide-bottom-sheet)
-   (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
+   (bottom-sheet/hide-bottom-sheet-old)
+   (navigation/navigate-to :recover-multiaccount-enter-phrase nil)))
 
 (rf/defn proceed-to-import-mnemonic
   {:events [:multiaccounts.recover/phrase-validated]}
@@ -234,7 +234,7 @@
       {:dispatch [:recovery.ui/keycard-option-pressed]}
       (rf/merge cofx
                 {:db (update db :intro-wizard assoc :step :create-code)}
-                (navigation/navigate-to-cofx :create-password nil)))))
+                (navigation/navigate-to :create-password nil)))))
 
 (rf/defn re-encrypt-pressed
   {:events [:multiaccounts.recover/re-encrypt-pressed]}
@@ -246,7 +246,7 @@
                          :step :select-key-storage
                          :selected-storage-type :default)}
             (if (nfc/nfc-supported?)
-              (navigation/navigate-to-cofx :select-key-storage nil)
+              (navigation/navigate-to :select-key-storage nil)
               (select-storage-next-pressed))))
 
 (rf/defn confirm-password-next-button-pressed

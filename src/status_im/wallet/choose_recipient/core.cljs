@@ -1,6 +1,6 @@
 (ns status-im.wallet.choose-recipient.core
   (:require [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
@@ -111,7 +111,7 @@
   {:events [:wallet.send/qr-scanner]}
   [{:keys [db] :as cofx} options]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (qr-scaner/scan-qr-code options)))
 
 (rf/defn parse-eip681-uri-and-resolve-ens

@@ -35,7 +35,7 @@
      {:on-press (when-not request?
                   #(do
                      (re-frame/dispatch [:dismiss-keyboard])
-                     (re-frame/dispatch [:bottom-sheet/show-sheet
+                     (re-frame/dispatch [:bottom-sheet/show-sheet-old
                                          {:content        (fn [] [sheets/assets (:address from)])
                                           :content-height 300}])))}
      [react/view
@@ -70,7 +70,7 @@
     :chevron  true
     :on-press #(do
                  (re-frame/dispatch [:dismiss-keyboard])
-                 (re-frame/dispatch [:bottom-sheet/show-sheet
+                 (re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content        (fn [] [sheets/accounts-list :from event])
                                       :content-height 300}]))}])
 

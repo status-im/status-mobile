@@ -10,7 +10,7 @@
    {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])} user])
 
 (defn mentions
-  [{:keys [refs suggestions max-y]} insets]
+  [{:keys [refs suggestions max-y]} bottom-inset]
   [:f>
    (fn []
      (let [translate-y (reanimated/use-shared-value 0)]
@@ -21,7 +21,7 @@
        [reanimated/view
         {:style (reanimated/apply-animations-to-style
                  {:transform [{:translateY translate-y}]}
-                 {:bottom     (or (:bottom insets) 0)
+                 {:bottom     (or bottom-inset 0)
                   :position   :absolute
                   :left       0
                   :right      0

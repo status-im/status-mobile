@@ -8,7 +8,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch event))
 
 (defn leave-sheet
@@ -25,7 +25,7 @@
     [rn/view
      {:style style/button-container}
      [quo/button
-      {:on-press #(rf/dispatch [:bottom-sheet/hide])
+      {:on-press #(rf/dispatch [:hide-bottom-sheet])
        :type     :grey
        :style    style/cancel-button}
       (i18n/label :t/cancel)]
@@ -49,7 +49,7 @@
      {:style style/button-container}
      [quo/button
       {:accessibility-label :cancel-button
-       :on-press            #(rf/dispatch [:bottom-sheet/hide])
+       :on-press            #(rf/dispatch [:hide-bottom-sheet])
        :type                :grey
        :style               style/cancel-button}
       (i18n/label :t/close)]

@@ -1,7 +1,7 @@
 (ns status-im.keycard.recovery
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
@@ -54,16 +54,16 @@
   (rf/merge cofx
             {:db       (-> db
                            (assoc-in [:keycard :setup-step] :pair))
-             :dispatch [:bottom-sheet/hide]}
+             :dispatch [:bottom-sheet/hide-old]}
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-to-cofx :keycard-recovery-pair nil)))
+            (navigation/navigate-to :keycard-recovery-pair nil)))
 
 (rf/defn keycard-storage-selected-for-recovery
   {:events [:recovery.ui/keycard-storage-selected]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (assoc-in db [:keycard :flow] :recovery)}
-            (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
+            (navigation/navigate-to :keycard-recovery-enter-mnemonic nil)))
 
 (rf/defn start-import-flow
   {:events [::recover-with-keycard-pressed]}
@@ -74,13 +74,13 @@
                  (assoc-in [:keycard :flow] :import)
                  (assoc :recovered-account? true))
              :keycard/check-nfc-enabled nil}
-            (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :keycard-recovery-intro nil)))
+            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/navigate-to :keycard-recovery-intro nil)))
 
 (rf/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
   [_]
-  {:dispatch [:bottom-sheet/show-sheet :recover-sheet]})
+  {:dispatch [:bottom-sheet/show-sheet-old :recover-sheet]})
 
 (rf/defn recovery-keycard-selected
   {:events [:recovery.ui/keycard-option-pressed]}
@@ -89,7 +89,7 @@
             {:db                        (assoc-in db [:keycard :flow] :recovery)
              :keycard/check-nfc-enabled nil}
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+            (navigation/navigate-to :keycard-onboarding-intro nil)))
 
 (rf/defn cancel-pressed
   {:events [::cancel-pressed]}
@@ -126,10 +126,10 @@
                          :keycard dissoc
                          :multiaccount-wallet-address
                          :multiaccount-whisper-public-key)}
-            (navigation/navigate-to-cofx (if platform/android?
-                                           :notifications-settings
-                                           :welcome)
-                                         nil)))
+            (navigation/navigate-to (if platform/android?
+                                      :notifications-settings
+                                      :welcome)
+                                    nil)))
 
 (rf/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
@@ -141,7 +141,7 @@
                        (dissoc :restored-account?))}
               (multiaccounts.create/prepare-intro-wizard)
               (if (pos? (count accs))
-                (navigation/navigate-to-cofx :get-your-keys nil)
+                (navigation/navigate-to :get-your-keys nil)
                 (navigation/set-stack-root :onboarding [:get-your-keys])))))
 
 (rf/defn recovery-no-key

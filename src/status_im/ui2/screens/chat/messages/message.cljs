@@ -154,7 +154,7 @@
    {:on-press
     (fn []
       (re-frame/dispatch
-       [:bottom-sheet/show-sheet
+       [:bottom-sheet/show-sheet-old
         {:content        (sheets/options chat-id message-id)
          :content-height 200}])
       (rn/dismiss-keyboard!))}

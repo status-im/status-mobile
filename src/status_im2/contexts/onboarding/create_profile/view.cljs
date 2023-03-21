@@ -107,7 +107,7 @@
                 {:customization-color @custom-color
                  :placeholder         (i18n/label :t/your-name)
                  :on-press            #(rf/dispatch
-                                        [:bottom-sheet/show-sheet
+                                        [:show-bottom-sheet
                                          {:override-theme :dark
                                           :content
                                           (fn []

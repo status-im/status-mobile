@@ -2,9 +2,8 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def page-container
-  {:margin-left   20
-   :margin-right  20
-   :margin-bottom 20})
+  {:margin-horizontal 20
+   :margin-bottom     20})
 
 (def title-container
   {:flex-direction  :row
@@ -27,9 +26,9 @@
    :margin-right 12})
 
 (defn bottom-container
-  [safe-area-insets]
-  {:padding-top     32
-   :padding-bottom  (:bottom safe-area-insets)
-   :flex-direction  :row
-   :align-items     :center
-   :justify-content :space-evenly})
+  []
+  {:margin-horizontal 20
+   :padding-top       32
+   :flex-direction    :row
+   :align-items       :center
+   :justify-content   :space-evenly})

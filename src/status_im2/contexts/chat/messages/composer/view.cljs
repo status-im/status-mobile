@@ -169,6 +169,7 @@
                suggestions (rf/sub [:chat/mention-suggestions])
                images (rf/sub [:chats/sending-image])
 
+               bottom-inset (max 20 (:bottom insets))
                {window-height :height} (rn/use-window-dimensions)
                {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
                translate-y (reanimated/use-shared-value 0)
@@ -183,11 +184,11 @@
                         (- (if (> keyboard-height 0)
                              keyboard-height
                              360)
-                           (:bottom insets))
+                           bottom-inset)
                         46)
 
                min-y (+ 108
-                        (:bottom insets)
+                        bottom-inset
                         (if suggestions?
                           (min (/ max-y 2)
                                (+ 16
@@ -200,7 +201,7 @@
                              (when (seq images) 80))))
 
                parent-height (reanimated/use-shared-value min-y)
-               max-parent-height (Math/abs (- max-y 110 (:bottom insets)))
+               max-parent-height (Math/abs (- max-y 110 bottom-inset))
 
                params
                (prepare-params
@@ -231,8 +232,8 @@
                  :sending-image          (seq images)
                  :refs                   refs}]]]]
             (if suggestions?
-              [mentions/mentions (select-keys params [:refs :suggestions :max-y]) insets]
-              [controls/view send-ref record-ref params insets chat-id images
+              [mentions/mentions (select-keys params [:refs :suggestions :max-y]) bottom-inset]
+              [controls/view send-ref record-ref params bottom-inset chat-id images
                edit #(clean-and-minimize params)])
             ;;;;black background
             [reanimated/view

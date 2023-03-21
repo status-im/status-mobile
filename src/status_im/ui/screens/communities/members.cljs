@@ -14,7 +14,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:bottom-sheet/hide-old])
   (rf/dispatch event))
 
 (defn member-sheet
@@ -72,7 +72,7 @@
       :accessory           (when (not= public-key my-public-key)
                              [quo/button
                               {:on-press
-                               #(rf/dispatch [:bottom-sheet/show-sheet
+                               #(rf/dispatch [:bottom-sheet/show-sheet-old
                                               {:content (fn []
                                                           [member-sheet primary-name member community-id
                                                            can-kick-users? can-manage-users? admin?])}])

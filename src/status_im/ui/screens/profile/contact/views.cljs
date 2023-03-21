@@ -67,7 +67,7 @@
     :accessory           :text
     :accessory-text      pin-count
     :disabled            (zero? pin-count)
-    :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :pinned-messages-list public-key])
+    :on-press            #(rf/dispatch [:pin-message/show-pins-bottom-sheet public-key])
     :chevron             true}])
 
 (defn nickname-settings

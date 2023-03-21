@@ -199,7 +199,7 @@
    (or seed {:step :intro})))
 
 (re-frame/reg-sub
- :bottom-sheet
+ :bottom-sheet-old
  :<- [:bottom-sheet/show?]
  :<- [:bottom-sheet/view]
  :<- [:bottom-sheet/options]

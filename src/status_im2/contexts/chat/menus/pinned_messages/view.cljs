@@ -7,7 +7,8 @@
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.menus.pinned-messages.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [react-native.gesture :as gesture]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -29,11 +30,9 @@
      (fn [insets]
        [:f>
         (fn []
-          (let [{window-height :height} (rn/use-window-dimensions)
-                bottom-inset            (:bottom insets)]
-            [rn/scroll-view
-             {:style               {:max-height (- window-height (:top insets))}
-              :accessibility-label :pinned-messages-menu}
+          (let [bottom-inset (:bottom insets)]
+            [gesture/scroll-view
+             {:accessibility-label :pinned-messages-menu}
              [:<>
               [quo/text
                {:size   :heading-1

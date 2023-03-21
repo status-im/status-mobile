@@ -128,7 +128,7 @@
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
-      :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+      :on-long-press #(rf/dispatch [:show-bottom-sheet
                                     {:content (fn [] [actions/chat-actions item false])}])}
      [avatar-view
       {:contact   contact

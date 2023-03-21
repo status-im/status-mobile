@@ -255,7 +255,7 @@
               (set-input :id id)
               (set-input :url (str url))
               (set-input :name (str name))
-              (navigation/navigate-to-cofx :edit-mailserver nil))))
+              (navigation/navigate-to :edit-mailserver nil))))
 
 (defn mailserver->rpc
   [mailserver current-fleet]
@@ -411,4 +411,4 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (dissoc db :mailserver.edit/mailserver)}
-            (navigation/navigate-to-cofx :edit-mailserver nil)))
+            (navigation/navigate-to :edit-mailserver nil)))

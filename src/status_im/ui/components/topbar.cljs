@@ -9,7 +9,7 @@
   [modal? {:keys [on-press label icon]}]
   (cond-> {:icon                (if modal? :i/close :i/arrow-left)
            :accessibility-label :back-button
-           :on-press            #(re-frame/dispatch [:navigate-back :bottom-sheet/hide])}
+           :on-press            #(re-frame/dispatch [:navigate-back :bottom-sheet/hide-old])}
     on-press
     (assoc :on-press on-press)
 

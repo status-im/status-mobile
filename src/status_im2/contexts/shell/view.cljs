@@ -138,7 +138,6 @@
   [:f>
    (fn []
      (let [shared-values (animation/calculate-shared-values)]
-       (animation/change-root-status-bar-style)
        [rn/view
         {:style     {:flex 1}
          :on-layout on-layout}

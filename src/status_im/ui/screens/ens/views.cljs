@@ -292,7 +292,7 @@
       :title    (:name account)
       :subtitle (utils/get-shortened-checksum-address (:address account))
       :chevron  true
-      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content (fn [] [sheets/accounts-list :from
                                                        ::ens/change-address])}])}]))
 
@@ -681,7 +681,7 @@
    [react/view {:style {:flex 1 :margin-top 8}}
     (for [name names]
       (let [action             #(do (re-frame/dispatch [::ens/save-preferred-name name])
-                                    (re-frame/dispatch [:bottom-sheet/hide]))
+                                    (re-frame/dispatch [:bottom-sheet/hide-old]))
             stateofus-username (stateofus/username name)
             s                  (or stateofus-username name)]
         ^{:key name}
@@ -755,7 +755,7 @@
         [profile.components/settings-item
          {:label-kw  :ens-primary-username
           :value     preferred-name
-          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
+          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                           {:content
                                            (fn [] (name-list names preferred-name))}])}]])]]])
 

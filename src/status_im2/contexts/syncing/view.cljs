@@ -64,12 +64,10 @@
      [quo/button
       {:size     32
        :icon     true
-       :on-press (fn []
-                   (rf/dispatch [:bottom-sheet/hide])
-                   (rf/dispatch [:bottom-sheet/show-sheet
-                                 {:show-handle? false
-                                  :content      (fn []
-                                                  [sync-device-notice/sheet])}]))}
+       :on-press #(rf/dispatch [:show-bottom-sheet
+                                {:show-handle? false
+                                 :content      (fn []
+                                                 [sync-device-notice/sheet])}])}
       :i/add]]
     [rn/view {:style style/devices-container}
      [render-device

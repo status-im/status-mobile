@@ -245,7 +245,7 @@
             {:db (-> db
                      (assoc :new-chat-name (get-in db [:chats chat-id :name]))
                      (assoc :current-chat-id chat-id))}
-            (navigation/navigate-to-cofx :group-chat-profile nil)))
+            (navigation/navigate-to :group-chat-profile nil)))
 
 (rf/defn ui-leave-chat-pressed
   {:events [:group-chats.ui/leave-chat-pressed]}
@@ -256,5 +256,5 @@
       :content             (i18n/label :t/leave-chat-confirmation)
       :confirm-button-text (i18n/label :t/leave)
       :on-accept           #(do
-                              (re-frame/dispatch [:bottom-sheet/hide])
+                              (re-frame/dispatch [:bottom-sheet/hide-old])
                               (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))

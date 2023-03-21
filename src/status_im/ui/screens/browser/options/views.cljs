@@ -15,7 +15,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
 
 (defn wallet-connection
@@ -81,7 +81,7 @@
             :accessibility-label :share
             :icon                :main-icons/share
             :on-press            (fn []
-                                   (re-frame/dispatch-sync [:bottom-sheet/hide])
+                                   (re-frame/dispatch-sync [:bottom-sheet/hide-old])
                                    (js/setTimeout
                                     #(browser/share-link url)
                                     200))}]
@@ -103,7 +103,7 @@
            :accessibility-label :connected-account
            :chevron             true
            :on-press            #(hide-sheet-and-dispatch
-                                  [:bottom-sheet/show-sheet
+                                  [:bottom-sheet/show-sheet-old
                                    {:content (wallet-connection (http/url-host url) account)}])}]
          [quo/list-item
           {:theme               :accent

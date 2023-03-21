@@ -17,7 +17,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:bottom-sheet/hide-old])
   (rf/dispatch event))
 
 (defn community-unviewed-count
@@ -49,7 +49,7 @@
                      (rf/dispatch [:communities/load-category-states id])
                      (rf/dispatch [:dismiss-keyboard])
                      (rf/dispatch [:navigate-to :community-overview id]))
-    :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+    :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet-old
                                   {:content (fn []
                                               [community/community-actions community])}])}
    [:<>
@@ -150,7 +150,7 @@
        [{:icon :main-icons/more
          :accessibility-label :chat-menu-button
          :on-press
-         #(rf/dispatch [:bottom-sheet/show-sheet
+         #(rf/dispatch [:bottom-sheet/show-sheet-old
                         {:content (fn []
                                     [communities-actions])
                          :height  256}])}]}]

@@ -30,7 +30,7 @@
     [rn/touchable-opacity
      {:on-press       (fn []
                         (rf/dispatch [:dismiss-keyboard])
-                        (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))
+                        (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))
       :active-opacity 1
       :style          (merge {:flex-direction :row :margin-vertical 8}
                              (old-style/message-wrapper message))}

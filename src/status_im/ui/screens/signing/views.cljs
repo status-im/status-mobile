@@ -470,7 +470,7 @@
     {:size     :small
      :title    (i18n/label :t/advanced)
      :chevron  true
-     :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/advanced}])}]])
+     :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old {:content sheets/advanced}])}]])
 
 (views/defview sheet
   [{:keys [from contact amount token cancel?] :as tx}]

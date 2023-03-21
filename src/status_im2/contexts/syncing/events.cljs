@@ -58,11 +58,10 @@
   (let [valid-password? (>= (count entered-password) constants/min-password-length)
         show-sheet      (fn [connection-string]
                           (rf/dispatch
-                           [:bottom-sheet/show-sheet
-                            {:show-handle? false
-                             :content      (fn []
-                                             [sheet/qr-code-view-with-connection-string
-                                              connection-string])}]))]
+                           [:show-bottom-sheet
+                            {:content (fn []
+                                        [sheet/qr-code-view-with-connection-string
+                                         connection-string])}]))]
     (if valid-password?
       (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
             key-uid    (get-in db [:multiaccount :key-uid])
@@ -76,4 +75,3 @@
          config-map
          #(show-sheet %)))
       (show-sheet ""))))
-

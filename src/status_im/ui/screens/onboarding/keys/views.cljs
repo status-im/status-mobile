@@ -103,7 +103,7 @@
           (i18n/label :t/generate-a-key)]]
         [react/view {:padding-vertical 8}
          [quo/button
-          {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet :recover-sheet])
+          {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old :recover-sheet])
            :type     :secondary}
           (i18n/label :t/access-existing-keys)]]
         [react/text {:style (assoc (styles/wizard-text) :margin-top 20 :margin-bottom 16)}

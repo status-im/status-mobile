@@ -66,7 +66,7 @@
       (and public-key own)
       (rf/merge cofx
                 {:pop-to-root-fx :shell-stack}
-                (navigation/navigate-to-cofx :my-profile nil))
+                (navigation/navigate-to :my-profile nil))
 
       (and public-key (not own))
       (rf/merge cofx
