@@ -2,6 +2,7 @@
   (:require
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
+    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]
