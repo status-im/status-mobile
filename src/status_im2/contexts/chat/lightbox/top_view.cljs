@@ -40,7 +40,7 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn top-view
-  [{:keys [from timestamp]} insets index animations derived landscape? screen-width]
+  [{:keys [from]} insets index animations derived landscape? screen-width]
   [:f>
    (fn []
      (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
@@ -77,7 +77,9 @@
           [quo/text
            {:weight :medium
             :size   :paragraph-2
-            :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
+            ;; TODO: layout animation in release mode causes crash:
+            ;; https://github.com/status-im/status-mobile/issues/15395
+            :style  {:color colors/neutral-40}} "9:41 AM"]]]
         [rn/view {:style style/top-right-buttons}
          [rn/touchable-opacity
           {:active-opacity 1
