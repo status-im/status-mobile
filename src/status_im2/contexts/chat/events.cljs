@@ -340,11 +340,11 @@
   {:db (assoc db :shared-element-id shared-element-id)})
 
 (rf/defn navigate-to-lightbox
-         {:events [:chat.ui/navigate-to-lightbox]}
-         [{:keys [db]} shared-element-id screen-params]
-         (let [updated-db (assoc db :shared-element-id shared-element-id)]
-           (reagent/next-tick #(rf/dispatch [:navigate-to :lightbox screen-params]))
-           {:db updated-db}))
+  {:events [:chat.ui/navigate-to-lightbox]}
+  [{:keys [db]} shared-element-id screen-params]
+  (let [updated-db (assoc db :shared-element-id shared-element-id)]
+    (reagent/next-tick #(rf/dispatch [:navigate-to :lightbox screen-params]))
+    {:db updated-db}))
 
 (rf/defn exit-lightbox-signal
   {:events [:chat.ui/exit-lightbox-signal]}
