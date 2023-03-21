@@ -140,7 +140,7 @@
   ;;TABS
   (merge (old-roots)
          ;;INTRO (onboarding carousel)
-         {:intro-stack
+         {:intro
           {:root
            {:stack {:id       :intro
                     :children [{:component {:name    :intro
