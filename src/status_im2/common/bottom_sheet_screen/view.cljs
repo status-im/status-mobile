@@ -2,6 +2,7 @@
   (:require
     [react-native.gesture :as gesture]
 <<<<<<< HEAD
+<<<<<<< HEAD
     [react-native.hooks :as hooks]
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
@@ -12,6 +13,9 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
 =======
+=======
+    [react-native.hooks :as hooks]
+>>>>>>> f804646ad (use back handler)
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -127,12 +131,17 @@
          (rn/use-effect
           (fn []
 <<<<<<< HEAD
+<<<<<<< HEAD
             (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
          (hooks/use-back-handler close)
 =======
             (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))
             (rn/hw-back-add-listener close)))
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
+         (hooks/use-back-handler close)
+>>>>>>> f804646ad (use back handler)
          [rn/view
           {:style {:flex        1
                    :padding-top padding-top}}
