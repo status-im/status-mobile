@@ -28,8 +28,12 @@
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
 =======
    {:transform [{:translate-y translate-y}]}
+<<<<<<< HEAD
    {:background-color        (colors/theme-colors colors/white colors/neutral-100)
 >>>>>>> 18f397b83 (review)
+=======
+   {:background-color        (colors/theme-colors colors/white colors/neutral-95)
+>>>>>>> 5ac874861 (qa)
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
@@ -46,6 +50,7 @@
    :align-items     :center})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn handle
   []
   {:width            32
@@ -59,3 +64,11 @@
    :border-radius    100
    :background-color (colors/theme-colors colors/neutral-100-opa-10 colors/white-opa-10)})
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+(defn handle
+  []
+  {:width            32
+   :height           4
+   :border-radius    100
+   :background-color (colors/theme-colors colors/neutral-100-opa-30 colors/white-opa-30)})
+>>>>>>> 5ac874861 (qa)

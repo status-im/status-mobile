@@ -9,6 +9,7 @@
     [react-native.reanimated :as reanimated]
     [oops.core :as oops]
     [react-native.safe-area :as safe-area]
+<<<<<<< HEAD
     [status-im2.common.bottom-sheet-screen.style :as style]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -20,6 +21,8 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [oops.core :as oops]
+=======
+>>>>>>> 5ac874861 (qa)
     [status-im2.common.bottom-sheet-screen.style :as style]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -101,6 +104,7 @@
   [:f>
    (let [scroll-enabled (reagent/atom true)
          curr-scroll    (atom 0)]
+<<<<<<< HEAD
      (fn []
        (let [sb-height   (navigation/status-bar-height)
              insets      (safe-area/use-safe-area)
@@ -124,6 +128,14 @@
      (fn []
        (let [opacity     (reanimated/use-shared-value 0)
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
+=======
+     (fn []
+       (let [sb-height   (navigation/status-bar-height)
+             insets      (safe-area/use-safe-area)
+             padding-top (Math/max sb-height (:top insets))
+             padding-top (if platform/ios? padding-top (+ padding-top 10))
+             opacity     (reanimated/use-shared-value 0)
+>>>>>>> 5ac874861 (qa)
              translate-y (reanimated/use-shared-value 0)
              close       (fn []
                            (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
@@ -153,6 +165,7 @@
             {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
             [rn/view {:style style/handle-container}
 <<<<<<< HEAD
+<<<<<<< HEAD
              [rn/view {:style (style/handle)}]]]
            [content
             {:insets         insets
@@ -161,6 +174,11 @@
              :on-scroll      #(on-scroll % curr-scroll)}]]])))])
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 5ac874861 (qa)
+>>>>>>> e363355c6 (qa)
              [rn/view {:style (style/handle)}]]
             [content
              {:close          close
