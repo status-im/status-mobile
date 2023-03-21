@@ -65,7 +65,7 @@
                        (anim/animate background-color :transparent)
                        (anim/animate opacity 0)
                        (rf/dispatch (if platform/ios?
-                                      [:chat.ui/exit-lightbox-signal @index]
+                                      [:navigate-back]
                                       [:navigate-back])))
            :style    style/close-container}
           [quo/icon :close {:size 20 :color colors/white}]]
