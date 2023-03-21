@@ -18,7 +18,7 @@
   [translate-y]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y translate-y}]}
-   {:background-color        (colors/theme-colors colors/white colors/neutral-100)
+   {:background-color        (colors/theme-colors colors/white colors/neutral-95)
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
@@ -34,8 +34,9 @@
    :justify-content :center
    :align-items     :center})
 
-(def handle
+(defn handle
+  []
   {:width            32
    :height           4
    :border-radius    100
-   :background-color (colors/theme-colors colors/neutral-100-opa-10 colors/white-opa-10)})
+   :background-color (colors/theme-colors colors/neutral-100-opa-30 colors/white-opa-30)})
