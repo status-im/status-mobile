@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feat/remove-cancel-contact-request",
-    "commit-sha1": "a0168425a0b11e06bcf3acb5afe4b0ae15c06923",
-    "src-sha256": "07r7ra4r0b4kbkr4j95x8jlp48axan9cpnm4kvkjcp5r75wbv4yf"
+    "version": "v0.139.0",
+    "commit-sha1": "9c1c01c66f652ad6ce6fd4bbfbc613cc7a292878",
+    "src-sha256": "15cbbzir3bddgdbrrc9pnwdrsahn7a2ihaab7mfz93r0dg3q110i"
 }
