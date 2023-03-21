@@ -204,72 +204,72 @@
                                    window-height
                                    window-width)
                 item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
-            [rn/view {:style (merge (style/image (+ screen-width seperator-width) screen-height) {:background-color :black})}
-            [reanimated/fast-image
-             {:source    {:uri (:image (:content (nth messages index)))}
-              :native-ID :shared-element
-              :style {:width window-width
-                      :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}
-              ;:style     (style/image dimensions animations (:border-value args))
-              }]]
+            ;[rn/view {:style (merge (style/image (+ screen-width seperator-width) screen-height) {:background-color :black})}
+            ;[reanimated/fast-image
+            ; {:source    {:uri (:image (:content (nth messages index)))}
+            ;  :native-ID :shared-element
+            ;  :style {:width window-width
+            ;          :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}
+            ;  ;:style     (style/image dimensions animations (:border-value args))
+            ;  }]]
 
-            ;[reanimated/view
-            ; {:style (reanimated/apply-animations-to-style {:background-color (:background-color
-            ;                                                                    animations)}
-            ;                                               {:height screen-height})}
-            ; ;(when-not @transparent?
-            ; ;  [top-view/top-view (first messages) insets scroll-index animations derived landscape?
-            ; ;   screen-width])
-            ; [gesture/gesture-detector
-            ;  {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
-            ;  [reanimated/view
-            ;   {:style (reanimated/apply-animations-to-style
-            ;             {:transform [{:translateY (:pan-y animations)}
-            ;                          {:translateX (:pan-x animations)}]}
-            ;             {})}
-            ;   (if @render-list
-            ;     [gesture/flat-list
-            ;      {:ref                               #(reset! (:flat-list-ref atoms) %)
-            ;       :key-fn                            :message-id
-            ;       :style                             {:width (+ screen-width seperator-width)}
-            ;       :data                              @data
-            ;       :render-fn                         image
-            ;       :render-data                       {:opacity-value    (:opacity animations)
-            ;                                           :border-value     (:border animations)
-            ;                                           :transparent?     transparent?
-            ;                                           :set-full-height? set-full-height?
-            ;                                           :screen-height    screen-height
-            ;                                           :screen-width     screen-width
-            ;                                           :window-height    window-height
-            ;                                           :window-width     window-width
-            ;                                           :atoms            atoms}
-            ;       :initial-scroll-index index
-            ;       :horizontal                        horizontal?
-            ;       :inverted                          inverted?
-            ;       :paging-enabled                    true
-            ;       :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
-            ;       :viewability-config                {:view-area-coverage-percent-threshold 50
-            ;                                           :wait-for-interaction                 true}
-            ;       :shows-vertical-scroll-indicator   false
-            ;       :shows-horizontal-scroll-indicator false
-            ;       :on-viewable-items-changed         callback}]
-            ;   ;[rn/view
-            ;   ; {:style (style/image (+ screen-width seperator-width) screen-height)}
-            ;   ;  [rn/view {:style {:width window-width
-            ;   ;                    :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}}
-            ;      [reanimated/fast-image
-            ;       {:source    {:uri (:image (:content (nth messages index)))}
-            ;        :native-ID :shared-element
-            ;        :style {:width window-width
-            ;                :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}
-            ;        ;:style     (style/image dimensions animations (:border-value args))
-            ;        }]
-            ;      ;]
-            ;    ;[rn/view {:style {:width seperator-width}}]]
-            ;     )
-            ;   ]]
-            ; ;(when (and (not @transparent?) (not landscape?))
-            ; ;  [bottom-view/bottom-view messages index scroll-index insets animations derived
-            ; ;   item-width atoms])
-            ; ]
+            [reanimated/view
+             {:style (reanimated/apply-animations-to-style {:background-color (:background-color
+                                                                                animations)}
+                                                           {:height screen-height})}
+             ;(when-not @transparent?
+             ;  [top-view/top-view (first messages) insets scroll-index animations derived landscape?
+             ;   screen-width])
+             [gesture/gesture-detector
+              {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
+              [reanimated/view
+               {:style (reanimated/apply-animations-to-style
+                         {:transform [{:translateY (:pan-y animations)}
+                                      {:translateX (:pan-x animations)}]}
+                         {})}
+               (if @render-list
+                 [gesture/flat-list
+                  {:ref                               #(reset! (:flat-list-ref atoms) %)
+                   :key-fn                            :message-id
+                   :style                             {:width (+ screen-width seperator-width)}
+                   :data                              @data
+                   :render-fn                         image
+                   :render-data                       {:opacity-value    (:opacity animations)
+                                                       :border-value     (:border animations)
+                                                       :transparent?     transparent?
+                                                       :set-full-height? set-full-height?
+                                                       :screen-height    screen-height
+                                                       :screen-width     screen-width
+                                                       :window-height    window-height
+                                                       :window-width     window-width
+                                                       :atoms            atoms}
+                   :initial-scroll-index index
+                   :horizontal                        horizontal?
+                   :inverted                          inverted?
+                   :paging-enabled                    true
+                   :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
+                   :viewability-config                {:view-area-coverage-percent-threshold 50
+                                                       :wait-for-interaction                 true}
+                   :shows-vertical-scroll-indicator   false
+                   :shows-horizontal-scroll-indicator false
+                   :on-viewable-items-changed         callback}]
+               [rn/view
+                {:style (style/image (+ screen-width seperator-width) screen-height)}
+                 [rn/view {:style {:width window-width
+                                   :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}}
+                  [reanimated/fast-image
+                   {:source    {:uri (:image (:content (nth messages index)))}
+                    :native-ID :shared-element
+                    :style {:width window-width
+                            :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}
+                    ;:style     (style/image dimensions animations (:border-value args))
+                    }]
+                  ]
+                [rn/view {:style {:width seperator-width}}]]
+                 )
+               ]]
+             ;(when (and (not @transparent?) (not landscape?))
+             ;  [bottom-view/bottom-view messages index scroll-index insets animations derived
+             ;   item-width atoms])
+             ]
             ))]))])
