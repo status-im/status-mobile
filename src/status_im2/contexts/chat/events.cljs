@@ -13,7 +13,8 @@
             [status-im2.contexts.contacts.events :as contacts-store]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [reagent.core :as reagent]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -338,6 +339,12 @@
   [{:keys [db]} shared-element-id]
   {:db (assoc db :shared-element-id shared-element-id)})
 
+(rf/defn navigate-to-lightbox
+  {:events [:chat.ui/navigate-to-lightbox]}
+  [{:keys [db]} shared-element-id screen-params]
+  (reagent/next-tick #(rf/dispatch [:navigate-to :lightbox screen-params]))
+  {:db (assoc db :shared-element-id shared-element-id)})
+
 (rf/defn exit-lightbox-signal
   {:events [:chat.ui/exit-lightbox-signal]}
   [{:keys [db]} value]
@@ -357,4 +364,3 @@
   {:events [:chat.ui/lightbox-scale]}
   [{:keys [db]} value]
   {:db (assoc db :lightbox/scale value)})
-
