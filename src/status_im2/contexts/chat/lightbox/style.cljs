@@ -10,9 +10,8 @@
   {:flex-direction  :row
    :width           width
    :height          height
-   ;:align-items     :center
-   ;:justify-content :center
-   })
+   :align-items     :center
+   :justify-content :center})
 
 ;;;; TOP-VIEW
 (defn top-view-container

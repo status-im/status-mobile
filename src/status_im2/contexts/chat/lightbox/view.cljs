@@ -204,6 +204,11 @@
                                    window-height
                                    window-width)
                 item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
+            ;[gesture/flat-list
+            ; {:data [1]
+            ;  :horizontal true
+            ;  :render-fn (fn [] [rn/view {:style {:width 300 :height 300 :background-color :red}
+            ;                              :native-ID :shared-element}])}]
             [reanimated/view
              {:style (reanimated/apply-animations-to-style {:background-color (:background-color
                                                                                animations)}
@@ -223,7 +228,8 @@
                  :key-fn                            :message-id
                  :style                             {:width (+ screen-width seperator-width)}
                  :data                              @data
-                 :render-fn                         image
+                 :render-fn                         (fn [] [rn/view {:style {:width 300 :height 300 :background-color :red}
+                                                                     :native-ID :shared-element}])
                  :render-data                       {:opacity-value    (:opacity animations)
                                                      :border-value     (:border animations)
                                                      :transparent?     transparent?
@@ -244,5 +250,6 @@
                  :on-viewable-items-changed         callback}]]]
              (when (and (not @transparent?) (not landscape?))
                [bottom-view/bottom-view messages index scroll-index insets animations derived
-                item-width atoms])]))]
+                item-width atoms])]
+            ))]
        ))])
