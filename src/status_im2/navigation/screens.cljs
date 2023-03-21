@@ -63,25 +63,28 @@
      :component chat/chat}
 
     {:name      :lightbox
-     :insets    {:top false :bottom false}
-     :options   {:topBar        {:visible false}
+     ;:insets    {:top false :bottom false}
+     :options   {
+                 ;:topBar        {:visible false}
                  :statusBar     {:backgroundColor :transparent
                                  :style           :light
                                  :animate         true
                                  :drawBehind      true
                                  :translucent     true}
-                 :navigationBar {:backgroundColor colors/black}
-                 :layout        {:componentBackgroundColor :transparent
-                                 :backgroundColor          :transparent}
-                 :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
-                                                                    :toId          :shared-element
-                                                                    :interpolation {:type   :decelerate
-                                                                                    :factor 1.5}}]}
-                                 :pop  {:sharedElementTransitions [{:fromId        :shared-element
-                                                                    :toId          :shared-element
+                 ;:navigationBar {:backgroundColor colors/black}
+                 ;:layout        {:componentBackgroundColor :transparent
+                 ;                :backgroundColor          :transparent}
+                 :animations    {:push {:sharedElementTransitions [{:fromId        :source-image
+                                                                    :toId          :destination-image
+                                                                    :interpolation {:type
+                                                                                    :linear
+                                                                                    }}]}
+                                 :pop  {:sharedElementTransitions [{:fromId        :destination-image
+                                                                    :toId          :source-image
                                                                     :interpolation {:type
                                                                                     :decelerate
-                                                                                    :factor 1.5}}]}}}
+                                                                                    :factor 1.5}}]}
+                                 }}
      :component lightbox/lightbox}
     {:name      :photo-selector
      :options   {:topBar {:visible false}}

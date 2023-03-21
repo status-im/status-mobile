@@ -60,9 +60,11 @@
                  [fast-image/fast-image
                   {:style     (style/image dimensions index portrait? images-count)
                    :source    {:uri (:image (:content item))}
-                   :native-ID (when (and (= shared-element-id (:message-id item))
-                                         (< index constants/max-album-photos))
-                                :shared-element)}]
+                   :native-ID :source-image
+                   ;:native-ID (when (and (= shared-element-id (:message-id item))
+                   ;                      (< index constants/max-album-photos))
+                   ;             :shared-element)
+                   }]
                  (when (and (> images-count constants/max-album-photos)
                             (= index (- constants/max-album-photos 1)))
                    [rn/view

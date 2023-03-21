@@ -274,5 +274,6 @@
                                        (= curr-orientation orientation/portrait))}
               [reanimated/fast-image
                {:source    {:uri (:image content)}
-                :native-ID (when focused? :shared-element)
+                ;:native-ID (when focused? :shared-element)
+                :native-ID :destination-image
                 :style     (style/image dimensions animations (:border-value args))}]]]))]))])

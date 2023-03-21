@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
@@ -119,7 +120,7 @@
 
 (defn lightbox
   []
-  [:f>
+  ;[:f>
    (fn []
      ;; we get `insets` from `screen-params` because trying to consume it from
      ;; lightbox screen causes lots of problems
@@ -130,116 +131,124 @@
            ;; The initial value of data is the image that was pressed (and not the whole album) in order
            ;; for the transition animation to execute properly, otherwise it would animate towards
            ;; outside the screen (even if we have `initialScrollIndex` set).
-           data                            (reagent/atom [(nth messages index)])
-           scroll-index                    (reagent/atom index)
-           transparent?                    (reagent/atom false)
-           set-full-height?                (reagent/atom false)
-           window                          (rf/sub [:dimensions/window])
-           window-width                    (:width window)
-           window-height                   (:height window)
-           window-height                   (if platform/android?
-                                             (+ window-height (:top insets))
-                                             window-height)
-           animations                      {:background-color (anim/use-val "rgba(0,0,0,0)")
-                                            :border           (anim/use-val (if platform/ios? 0 12))
-                                            :opacity          (anim/use-val 0)
-                                            :rotate           (anim/use-val "0deg")
-                                            :layout           (anim/use-val -10)
-                                            :top-view-y       (anim/use-val 0)
-                                            :top-view-x       (anim/use-val 0)
-                                            :top-view-width   (anim/use-val window-width)
-                                            :top-view-bg      (anim/use-val colors/neutral-100-opa-0)
-                                            :pan-y            (anim/use-val 0)
-                                            :pan-x            (anim/use-val 0)}
-           derived                         {:top-layout    (worklet/info-layout (:layout animations)
-                                                                                true)
-                                            :bottom-layout (worklet/info-layout (:layout animations)
-                                                                                false)}
-           callback                        (fn [e]
-                                             (on-viewable-items-changed e scroll-index atoms))]
-       (anim/animate (:background-color animations) "rgba(0,0,0,1)")
-       (reset! data messages)
-       (orientation/use-device-orientation-change
-        (fn [result]
-          (if platform/ios?
-            (handle-orientation result scroll-index window-width window-height animations insets atoms)
-            ;; `use-device-orientation-change` will always be called on Android, so need to check
-            (orientation/get-auto-rotate-state
-             (fn [enabled?]
-               ;; RNN does not support landscape-right
-               (when (and enabled? (not= result orientation/landscape-right))
-                 (handle-orientation result
-                                     scroll-index
-                                     window-width
-                                     window-height
-                                     animations
-                                     insets
-                                     atoms)))))))
-       (rn/use-effect (fn []
-                        (when @(:flat-list-ref atoms)
-                          (.scrollToIndex ^js @(:flat-list-ref atoms)
-                                          #js {:animated false :index index}))
-                        (js/setTimeout (fn []
-                                         (anim/animate (:opacity animations) 1)
-                                         (anim/animate (:layout animations) 0)
-                                         (anim/animate (:border animations) 12))
-                                       (if platform/ios? 250 100))
-                        (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
-                        (fn []
-                          (rf/dispatch [:chat.ui/zoom-out-signal nil])
-                          (when platform/android?
-                            (rf/dispatch [:chat.ui/lightbox-scale 1])))))
-       [:f>
-        (fn []
-          (let [curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
-                landscape?       (string/includes? curr-orientation orientation/landscape)
-                horizontal?      (or platform/android? (not landscape?))
-                inverted?        (and platform/ios? (= curr-orientation orientation/landscape-right))
-                screen-width     (if (or platform/ios? (= curr-orientation orientation/portrait))
-                                   window-width
-                                   window-height)
-                screen-height    (if (or platform/ios? (= curr-orientation orientation/portrait))
-                                   window-height
-                                   window-width)
-                item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
-            [reanimated/view
-             {:style (reanimated/apply-animations-to-style {:background-color (:background-color
-                                                                               animations)}
-                                                           {:height screen-height})}
-             (when-not @transparent?
-               [top-view/top-view (first messages) insets scroll-index animations derived landscape?
-                screen-width])
-             [gesture/gesture-detector
-              {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
-              [reanimated/view
-               {:style (reanimated/apply-animations-to-style
-                        {:transform [{:translateY (:pan-y animations)}
-                                     {:translateX (:pan-x animations)}]}
-                        {})}
-               [gesture/flat-list
-                {:ref                               #(reset! (:flat-list-ref atoms) %)
-                 :key-fn                            :message-id
-                 :style                             {:width (+ screen-width seperator-width)}
-                 :data                              @data
-                 :render-fn                         image
-                 :render-data                       {:opacity-value    (:opacity animations)
-                                                     :border-value     (:border animations)
-                                                     :transparent?     transparent?
-                                                     :set-full-height? set-full-height?
-                                                     :screen-height    screen-height
-                                                     :screen-width     screen-width
-                                                     :window-height    window-height
-                                                     :window-width     window-width
-                                                     :atoms            atoms}
-                 :horizontal                        horizontal?
-                 :inverted                          inverted?
-                 :paging-enabled                    true
-                 :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
-                 :viewability-config                {:view-area-coverage-percent-threshold 50
-                                                     :wait-for-interaction                 true}
-                 :shows-vertical-scroll-indicator   false
-                 :shows-horizontal-scroll-indicator false
-                 :on-viewable-items-changed         callback}]]]
-             (when (and (not @transparent?) (not landscape?))
-               [bottom-view/bottom-view messages index scroll-index insets animations derived
-                item-width atoms])]))]))])
+           ;data                            (reagent/atom [(nth messages index)])
+           ;scroll-index                    (reagent/atom index)
+           ;transparent?                    (reagent/atom false)
+           ;set-full-height?                (reagent/atom false)
+           ;window                          (rf/sub [:dimensions/window])
+           ;window-width                    (:width window)
+           ;window-height                   (:height window)
+           ;window-height                   (if platform/android?
+           ;                                  (+ window-height (:top insets))
+           ;                                  window-height)
+           ;animations                      {:background-color (anim/use-val "rgba(0,0,0,0)")
+           ;                                 :border           (anim/use-val (if platform/ios? 0 12))
+           ;                                 :opacity          (anim/use-val 0)
+           ;                                 :rotate           (anim/use-val "0deg")
+           ;                                 :layout           (anim/use-val -10)
+           ;                                 :top-view-y       (anim/use-val 0)
+           ;                                 :top-view-x       (anim/use-val 0)
+           ;                                 :top-view-width   (anim/use-val window-width)
+           ;                                 :top-view-bg      (anim/use-val colors/neutral-100-opa-0)
+           ;                                 :pan-y            (anim/use-val 0)
+           ;                                 :pan-x            (anim/use-val 0)}
+           ;derived                         {:top-layout    (worklet/info-layout (:layout animations)
+           ;                                                                     true)
+           ;                                 :bottom-layout (worklet/info-layout (:layout animations)
+           ;                                                                     false)}
+           ;callback                        (fn [e]
+           ;                                  (on-viewable-items-changed e scroll-index atoms))
+           ]
+       [rn/view {:style {:width 600 :height 600}} [rn/view {:native-ID :destination-image
+
+                                        :style {:width 300 :height 300 :background-color :red}}]]
+       ;(anim/animate (:background-color animations) "rgba(0,0,0,1)")
+       ;(reset! data messages)
+       ;(orientation/use-device-orientation-change
+       ; (fn [result]
+       ;   (if platform/ios?
+       ;     (handle-orientation result scroll-index window-width window-height animations insets atoms)
+       ;     ;; `use-device-orientation-change` will always be called on Android, so need to check
+       ;     (orientation/get-auto-rotate-state
+       ;      (fn [enabled?]
+       ;        ;; RNN does not support landscape-right
+       ;        (when (and enabled? (not= result orientation/landscape-right))
+       ;          (handle-orientation result
+       ;                              scroll-index
+       ;                              window-width
+       ;                              window-height
+       ;                              animations
+       ;                              insets
+       ;                              atoms)))))))
+       ;(rn/use-effect (fn []
+       ;                 (when @(:flat-list-ref atoms)
+       ;                   (.scrollToIndex ^js @(:flat-list-ref atoms)
+       ;                                   #js {:animated false :index index}))
+       ;                 (js/setTimeout (fn []
+       ;                                  (anim/animate (:opacity animations) 1)
+       ;                                  (anim/animate (:layout animations) 0)
+       ;                                  (anim/animate (:border animations) 12))
+       ;                                (if platform/ios? 250 100))
+       ;                 (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
+       ;                 (fn []
+       ;                   (rf/dispatch [:chat.ui/zoom-out-signal nil])
+       ;                   (when platform/android?
+       ;                     (rf/dispatch [:chat.ui/lightbox-scale 1])))))
+
+       ;[:f>
+       ; (fn []
+       ;   (let [curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
+       ;         landscape?       (string/includes? curr-orientation orientation/landscape)
+       ;         horizontal?      (or platform/android? (not landscape?))
+       ;         inverted?        (and platform/ios? (= curr-orientation orientation/landscape-right))
+       ;         screen-width     (if (or platform/ios? (= curr-orientation orientation/portrait))
+       ;                            window-width
+       ;                            window-height)
+       ;         screen-height    (if (or platform/ios? (= curr-orientation orientation/portrait))
+       ;                            window-height
+       ;                            window-width)
+       ;         item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
+       ;     [reanimated/view
+       ;      {:style (reanimated/apply-animations-to-style {:background-color (:background-color
+       ;                                                                        animations)}
+       ;                                                    {:height screen-height})}
+       ;      (when-not @transparent?
+       ;        [top-view/top-view (first messages) insets scroll-index animations derived landscape?
+       ;         screen-width])
+       ;      [gesture/gesture-detector
+       ;       {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
+       ;       [reanimated/view
+       ;        {:style (reanimated/apply-animations-to-style
+       ;                 {:transform [{:translateY (:pan-y animations)}
+       ;                              {:translateX (:pan-x animations)}]}
+       ;                 {})}
+       ;        [gesture/flat-list
+       ;         {:ref                               #(reset! (:flat-list-ref atoms) %)
+       ;          :key-fn                            :message-id
+       ;          :style                             {:width (+ screen-width seperator-width)}
+       ;          :data                              @data
+       ;          :render-fn                         image
+       ;          :render-data                       {:opacity-value    (:opacity animations)
+       ;                                              :border-value     (:border animations)
+       ;                                              :transparent?     transparent?
+       ;                                              :set-full-height? set-full-height?
+       ;                                              :screen-height    screen-height
+       ;                                              :screen-width     screen-width
+       ;                                              :window-height    window-height
+       ;                                              :window-width     window-width
+       ;                                              :atoms            atoms}
+       ;          :horizontal                        horizontal?
+       ;          :inverted                          inverted?
+       ;          :paging-enabled                    true
+       ;          :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
+       ;          :viewability-config                {:view-area-coverage-percent-threshold 50
+       ;                                              :wait-for-interaction                 true}
+       ;          :shows-vertical-scroll-indicator   false
+       ;          :shows-horizontal-scroll-indicator false
+       ;          :on-viewable-items-changed         callback}]]]
+       ;      (when (and (not @transparent?) (not landscape?))
+       ;        [bottom-view/bottom-view messages index scroll-index insets animations derived
+       ;         item-width atoms])]))]
+       ))
+   ;]
+  )

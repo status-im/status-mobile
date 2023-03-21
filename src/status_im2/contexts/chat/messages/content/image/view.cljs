@@ -25,16 +25,27 @@
            [rn/touchable-opacity
             {:active-opacity 1
              :key            message-id
-             :style          {:margin-top (when (pos? index) 10)}
+             ;:style          {:margin-top (when (pos? index) 10)}
+             :style          {:width 300 :height 300}
              :on-long-press  on-long-press
-             :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
-                                            message-id
-                                            {:messages [message]
-                                             :index    0
-                                             :insets   insets}])}
+             :on-press (fn []
+                         (rf/dispatch [:navigate-to :lightbox {:messages [message] :index 0 :insets insets}]))
+             ;:on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+             ;                               message-id
+             ;                               {:messages [message]
+             ;                                :index    0
+             ;                                :insets   insets}])
+             }
             (when (and (not= text "placeholder") (= index 0))
               [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
-            [fast-image/fast-image
-             {:source    {:uri (:image content)}
-              :style     (merge dimensions {:border-radius 12})
-              :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))])
+            [rn/view
+             {
+              :native-ID :source-image
+              ;:source    {:uri (:image content)}
+              ;:style     (merge dimensions {:border-radius 12})
+              :style          {:width 300 :height 300
+                               :background-color :red}
+              ;:native-ID :source-image
+              ;:native-ID (when (= shared-element-id message-id) :shared-element)
+              }]
+            ]))))])
