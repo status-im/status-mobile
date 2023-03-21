@@ -27,13 +27,11 @@
              :key            message-id
              :style          {:margin-top (when (pos? index) 10)}
              :on-long-press  on-long-press
-             :on-press       (fn []
-                               (rf/dispatch [:chat.ui/update-shared-element-id message-id])
-                               (js/setTimeout #(rf/dispatch [:navigate-to :lightbox
-                                                             {:messages [message]
-                                                              :index    0
-                                                              :insets   insets}])
-                                              100))}
+             :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+                                            message-id
+                                            {:messages [message]
+                                             :index    0
+                                             :insets   insets}])}
             (when (and (not= text "placeholder") (= index 0))
               [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
             [fast-image/fast-image
