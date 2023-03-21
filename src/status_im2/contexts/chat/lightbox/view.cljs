@@ -186,7 +186,7 @@
                                          (anim/animate (:border animations) 12))
                                        (if platform/ios? 250 100))
                         (js/setTimeout #(reset! (:scroll-index-lock? atoms) false) 300)
-                        ;(js/setTimeout #(reset! render-list true) 500)
+                        (js/setTimeout #(reset! render-list true) 500)
                         (fn []
                           (rf/dispatch [:chat.ui/zoom-out-signal nil])
                           (when platform/android?
@@ -217,9 +217,9 @@
              {:style (reanimated/apply-animations-to-style {:background-color (:background-color
                                                                                 animations)}
                                                            {:height screen-height})}
-             ;(when-not @transparent?
-             ;  [top-view/top-view (first messages) insets scroll-index animations derived landscape?
-             ;   screen-width])
+             (when-not @transparent?
+               [top-view/top-view (first messages) insets scroll-index animations derived landscape?
+                screen-width])
              [gesture/gesture-detector
               {:gesture (drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
               [reanimated/view
@@ -260,7 +260,8 @@
                   [reanimated/fast-image
                    {:source    {:uri (:image (:content (nth messages index)))}
                     :native-ID :shared-element
-                    :style {:width window-width
+                    :style {:border-radius 12
+                            :width window-width
                             :height (* (:image-height  (nth messages index)) (/ window-width (:image-width (nth messages index))))}
                     ;:style     (style/image dimensions animations (:border-value args))
                     }]
@@ -268,8 +269,8 @@
                 [rn/view {:style {:width seperator-width}}]]
                  )
                ]]
-             ;(when (and (not @transparent?) (not landscape?))
-             ;  [bottom-view/bottom-view messages index scroll-index insets animations derived
-             ;   item-width atoms])
+             (when (and (not @transparent?) (not landscape?))
+               [bottom-view/bottom-view messages index scroll-index insets animations derived
+                item-width atoms])
              ]
             ))]))])
