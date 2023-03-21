@@ -1,6 +1,7 @@
 (ns status-im2.common.bottom-sheet-screen.view
   (:require
     [react-native.gesture :as gesture]
+    [react-native.hooks :as hooks]
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -59,8 +60,8 @@
                            (rf/dispatch [:navigate-back]))]
          (rn/use-effect
           (fn []
-            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))
-            (rn/hw-back-add-listener close)))
+            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
+         (hooks/use-back-handler close)
          [rn/view
           {:style {:flex        1
                    :padding-top padding-top}}
