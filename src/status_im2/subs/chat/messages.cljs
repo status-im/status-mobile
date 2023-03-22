@@ -115,8 +115,8 @@
   (->> messages
        (reduce
         (fn [{:keys [messages albums]} message]
-          (let [album-id (:album-id message
-                )
+          (let [{:keys [album-id content quoted-message]} message
+                {:keys [response-to]}                     content
                 albums                                    (cond-> albums
                                                             album-id
                                                             (update album-id conj message))
@@ -126,7 +126,9 @@
                                                                   (merge message
                                                                          {:album (get albums album-id)
                                                                           :album-id album-id
-
+                                                                          :content {:response-to
+                                                                                    response-to}
+                                                                          :quoted-message quoted-message
                                                                           :content-type
                                                                           constants/content-type-album}))
                                                             (conj messages message))]
