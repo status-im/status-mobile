@@ -104,6 +104,7 @@
           :style               {:border-radius 16
                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
           :on-press            (fn []
+                                 (rn/dismiss-keyboard!)
                                  (when (and outgoing
                                             (not= outgoing-status :sending)
                                             (not @show-delivery-state?))
