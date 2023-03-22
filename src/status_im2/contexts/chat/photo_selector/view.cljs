@@ -1,9 +1,9 @@
 (ns status-im2.contexts.chat.photo-selector.view
   (:require
+    [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]
-    [react-native.safe-area :as safe-area]
     [quo2.components.notifications.info-count :as info-count]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
@@ -13,6 +13,7 @@
     [status-im2.contexts.chat.photo-selector.style :as style]
     [status-im.utils.core :as utils]
     [quo.react]
+    [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [utils.re-frame :as rf]))
 
 (defn on-press-confirm-selection
@@ -80,31 +81,38 @@
       (inc (utils/first-index #(= (:uri item) (:uri %)) @selected))])])
 
 (defn album-title
-  [photos? selected-album selected temporary-selected]
-  [rn/touchable-opacity
-   {:style               (style/title-container)
-    :active-opacity      1
-    :accessibility-label :album-title
-    :on-press            (fn []
-                           (if photos?
-                             (do
-                               (reset! temporary-selected @selected)
-                               (rf/dispatch [:open-modal :album-selector]))
-                             (rf/dispatch [:navigate-back])))}
-   [quo/text
-    {:weight          :medium
-     :ellipsize-mode  :tail
-     :number-of-lines 1
-     :style           {:max-width 150}}
-    selected-album]
-   [rn/view {:style (style/chevron-container)}
-    [quo/icon (if photos? :i/chevron-down :i/chevron-up)
-     {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])
+  [photos? selected-album]
+  (fn []
+    [rn/touchable-opacity
+     {:style               (style/title-container)
+      :active-opacity      1
+      :accessibility-label :album-title
+      :on-press            (fn []
+                             ;; TODO: album-selector issue:
+                             ;; https://github.com/status-im/status-mobile/issues/15398
+                             (js/alert "currently disabled")
+                             ;(if photos?
+                             ;  (do
+                             ;    (reset! temporary-selected @selected)
+                             ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
+                             ;  (rf/dispatch [:navigate-back]))
+                           )}
+     [quo/text
+      {:weight          :medium
+       :ellipsize-mode  :tail
+       :number-of-lines 1
+       :style           {:max-width 150}}
+      selected-album]
+     [rn/view {:style (style/chevron-container)}
+      [quo/icon (if photos? :i/chevron-down :i/chevron-up)
+       {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))
+
 
 (defn photo-selector
   []
   [:f>
-   (let [temporary-selected (reagent/atom [])] ; used when switching albums
+   (let [{:keys [insets]}   (rf/sub [:get-screen-params])
+         temporary-selected (reagent/atom [])] ; used when switching albums
      (fn []
        (let [selected        (reagent/atom []) ; currently selected
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
@@ -116,26 +124,19 @@
               (reset! selected (vec (vals selected-images)))
               (reset! selected @temporary-selected)))
           [selected-album])
-         [safe-area/consumer
-          (fn [insets]
+         [bottom-sheet-screen/view
+          (fn [{:keys [scroll-enabled on-scroll]}]
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
                   loading?           (rf/sub [:camera-roll/loading-more])
                   has-next-page?     (rf/sub [:camera-roll/has-next-page])]
-              [rn/view {:style {:flex 1}}
+              [:<>
                [rn/view
                 {:style style/buttons-container}
-                (when platform/android?
-                  [rn/touchable-opacity
-                   {:active-opacity 1
-                    :on-press       #(rf/dispatch [:navigate-back])
-                    :style          (style/close-button-container)}
-                   [quo/icon :i/close
-                    {:size 20 :color (colors/theme-colors colors/black colors/white)}]])
-                [album-title true selected-album selected temporary-selected]
+                [album-title true selected-album selected temporary-selected insets]
                 [clear-button selected]]
-               [rn/flat-list
+               [gesture/flat-list
                 {:key-fn                  identity
                  :render-fn               image
                  :render-data             {:window-width window-width :selected selected}
@@ -143,7 +144,9 @@
                  :num-columns             3
                  :content-container-style {:width          "100%"
                                            :padding-bottom (+ (:bottom insets) 100)
-                                           :padding-top    80}
+                                           :padding-top    64}
+                 :on-scroll               on-scroll
+                 :scroll-enabled          scroll-enabled
                  :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                          selected-album loading?
                                                          has-next-page?])}]
