@@ -479,8 +479,14 @@
 (defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [db]
-  (if (get db :tos/accepted?)
+  (cond
+    (get db :onboarding-2/new-account?)
+    (re-frame/dispatch [:navigate-to :enable-notifications])
+
+    (get db :tos/accepted?)
     (re-frame/dispatch [:init-root :shell-stack])
+
+    :else
     (re-frame/dispatch [:init-root :tos])))
 
 (rf/defn login-only-events

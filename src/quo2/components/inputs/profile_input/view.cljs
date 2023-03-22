@@ -25,13 +25,13 @@
                  :height       24
                  :borderRadius 12}]}
        [user-avatar/user-avatar
-        (merge image-picker-props
-               {:customization-color customization-color
-                :full-name           (if (seq full-name)
-                                       full-name
-                                       placeholder)
-                :status-indicator?   false
-                :size                :medium})]]
+        (assoc image-picker-props
+               :customization-color customization-color
+               :full-name           (if (seq full-name)
+                                      full-name
+                                      placeholder)
+               :status-indicator?   false
+               :size                :medium)]]
       [buttons/button
        {:accessibility-label       :select-profile-picture-button
         :type                      :grey
@@ -47,5 +47,6 @@
      [rn/view {:style style/input-container}
       [title-input/title-input
        (merge title-input-props
-              {:placeholder         placeholder
+              {:override-theme      :dark
+               :placeholder         placeholder
                :customization-color customization-color})]]]))

@@ -58,6 +58,18 @@
 
           (h/test "Size :small"
             (h/render (user-avatar-component :small))
+            (h/is-truthy (h/get-by-text "NU")))
+
+          (h/test "Two letters with excess whitespace"
+            (h/render [user-avatar/user-avatar
+                       {:full-name "New    User"
+                        :size      :big}])
+            (h/is-truthy (h/get-by-text "NU")))
+
+          (h/test "Two letters with leading whitespace"
+            (h/render [user-avatar/user-avatar
+                       {:full-name "   New   User"
+                        :size      :big}])
             (h/is-truthy (h/get-by-text "NU"))))
 
         (h/describe "One letter"

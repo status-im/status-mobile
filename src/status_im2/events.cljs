@@ -10,6 +10,7 @@
             [status-im2.common.theme.core :as theme]
             [status-im2.common.toasts.events]
             [status-im2.contexts.add-new-contact.events]
+            status-im2.contexts.onboarding.events
             [status-im2.common.bottom-sheet.events]
             [status-im2.navigation.events :as navigation]
             [status-im2.db :as db]

@@ -324,6 +324,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void createAccountAndLogin(final String createAccountRequest) {
+            Log.d(TAG, "createAccountAndLogin");
+            String result = Statusgo.createAccountAndLogin(createAccountRequest);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "createAccountAndLogin success: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "createAccountAndLogin failed: " + result);
+            }
+    }
+
+
+
+    @ReactMethod
     public void saveAccountAndLogin(final String multiaccountData, final String password, final String settings, final String config, final String accountsData) {
         try {
             Log.d(TAG, "saveAccountAndLogin");
@@ -519,6 +533,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             System.exit(0);
             return;
         }
+
+        Log.d(TAG, "[Opening accounts" + rootDir);
 
         Runnable r = new Runnable() {
             @Override
@@ -1127,6 +1143,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void deleteImportedKey(final String keyUID, final String address, final String password, final Callback callback) throws JSONException {
         final String keyStoreDir = this.getKeyStorePath(keyUID);
         executeRunnableStatusGoMethod(() -> Statusgo.deleteImportedKey(address, password, keyStoreDir), callback);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String keystoreDir() {
+        final String absRootDirPath = this.getNoBackupDirectory();
+        return pathCombine(absRootDirPath, "keystore");
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String backupDisabledDataDir() {
+        return this.getNoBackupDirectory();
+    }
+
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String logFilePath() {
+        return getLogsFile().getAbsolutePath();
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

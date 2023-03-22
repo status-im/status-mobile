@@ -54,7 +54,7 @@
                              key-uid
                              (fn [result]
                                (let [{:keys [error]} (types/json->clj result)]
-                                 (rf/dispatch [:onboarding/on-delete-profile-success key-uid])
+                                 (rf/dispatch [:onboarding-2/on-delete-profile-success key-uid])
                                  (log/info "profile deleted: error" error)))))}))
 
 (defn show-confirmation
