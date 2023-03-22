@@ -1,5 +1,6 @@
 (ns status-im.mobile-sync-settings.core
   (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im2.contexts.add-new-contact.events :as add-new-contact]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -42,7 +43,8 @@
        (and logged-in? initialized?)
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet)
-        (wallet/restart-wallet-service nil)]
+        (wallet/restart-wallet-service nil)
+        (add-new-contact/set-new-identity-reconnected)]
 
        logged-in?
        [(mailserver/process-next-messages-request)

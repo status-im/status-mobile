@@ -1,7 +1,10 @@
 (ns status-im2.contexts.add-new-contact.events-test
-  (:require [cljs.test :refer-macros [deftest is are]]
-            [status-im2.contexts.add-new-contact.events :as core]))
+  (:require [cljs.test :refer-macros [deftest are]]
+            [status-im2.contexts.add-new-contact.events :as events]))
 
+(def user-ukey
+  "0x04ca27ed9c7c4099d230c6d8853ad0cfaf084a019c543e9e433d3c04fac6de9147cf572b10e247cfe52f396b5aa10456b56dd1cf1d8a681e2b93993d44594b2e85")
+(def user-ckey "zQ3shtFEo4PxpQiYGcNZZ8xhJmhD6WBXwnHPBueu5SRnvPXjk")
 (def ukey
   "0x045596a7ff87da36860a84b0908191ce60a504afc94aac93c1abd774f182967ce694f1bf2d8773cd59f4dd0863e951f9b7f7351c5516291a0fceb73f8c392a0e88")
 (def ckey "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gA")
@@ -10,47 +13,118 @@
 (def link-ckey (str "https://join.status.im/u/" ckey))
 (def link-ens (str "https://join.status.im/u/" ens))
 
-(deftest identify-type-test
-  (are [input expected] (= (core/identify-type input) expected)
-   ""        {:input    ""
-              :id       nil
-              :type     :empty
-              :ens-name nil}
+;;; unit tests (no app-db involved)
 
-   ukey      {:input    ukey
-              :id       ukey
-              :type     :public-key
-              :ens-name nil}
+(deftest validate-contact-test
+  (are [i e] (= (events/validate-contact (events/init-contact
+                                          {:user-public-key user-ukey
+                                           :input           i}))
+                (events/init-contact e))
 
-   ens       {:input    ens
-              :id       ens
-              :type     :ens-name
-              :ens-name ens-stateofus-eth}
+   ""            {:user-public-key user-ukey
+                  :input           ""
+                  :type            :empty
+                  :state           :empty}
 
-   ckey      {:input    ckey
-              :id       ckey
-              :type     :compressed-key
-              :ens-name nil}
+   " "           {:user-public-key user-ukey
+                  :input           " "
+                  :type            :empty
+                  :state           :empty}
 
-   link-ckey {:input    link-ckey
-              :id       ckey
-              :type     :compressed-key
-              :ens-name nil}
+   ukey          {:user-public-key user-ukey
+                  :input           ukey
+                  :id              ukey
+                  :type            :public-key
+                  :public-key      ukey
+                  :state           :invalid
+                  :msg             :t/not-a-chatkey}
 
-   link-ens  {:input    link-ens
-              :id       ens
-              :type     :ens-name
-              :ens-name ens-stateofus-eth}))
+   ens           {:user-public-key user-ukey
+                  :input           ens
+                  :id              ens
+                  :type            :ens
+                  :ens             ens-stateofus-eth
+                  :state           :resolve-ens}
 
-(deftest search-empty-string-test
-  (is (= (core/set-new-identity {:db {:contacts/new-identity :foo}} "")
-         {:db {}})))
+   (str " " ens) {:user-public-key user-ukey
+                  :input           (str " " ens)
+                  :id              ens
+                  :type            :ens
+                  :ens             ens-stateofus-eth
+                  :state           :resolve-ens}
 
-(deftest search-uncompressed-key-test
-  (is (= (core/set-new-identity {:db {}} ukey)
-         {:db {:contacts/new-identity
-               {:input      ukey
-                :public-key ukey
-                :state      :error
-                :error      :uncompressed-key}}})))
+   ckey          {:user-public-key user-ukey
+                  :input           ckey
+                  :id              ckey
+                  :type            :compressed-key
+                  :state           :decompress-key}
 
+   link-ckey     {:user-public-key user-ukey
+                  :input           link-ckey
+                  :id              ckey
+                  :type            :compressed-key
+                  :state           :decompress-key}
+
+   link-ens      {:user-public-key user-ukey
+                  :input           link-ens
+                  :id              ens
+                  :type            :ens
+                  :ens             ens-stateofus-eth
+                  :state           :resolve-ens}))
+
+;;; event handler tests (no callbacks)
+
+(def db
+  {:multiaccount             {:public-key user-ukey}
+   :networks/current-network "mainnet_rpc"
+   :networks/networks        {"mainnet_rpc"
+                              {:id     "mainnet_rpc"
+                               :config {:NetworkId 1}}}})
+
+(deftest set-new-identity-test
+  (with-redefs [events/dispatcher (fn [& args] args)]
+    (are [i edb] (= (events/set-new-identity {:db db} i nil) edb)
+
+     ""        {:db db}
+
+     ukey      {:db (assoc db
+                           :contacts/new-identity
+                           (events/init-contact
+                            {:user-public-key user-ukey
+                             :input           ukey
+                             :id              ukey
+                             :type            :public-key
+                             :public-key      ukey
+                             :state           :invalid
+                             :msg             :t/not-a-chatkey}))}
+
+     ens       {:db (assoc db
+                           :contacts/new-identity
+                           (events/init-contact
+                            {:user-public-key user-ukey
+                             :input           ens
+                             :id              ens
+                             :type            :ens
+                             :ens             ens-stateofus-eth
+                             :public-key      nil ; not yet...
+                             :state           :resolve-ens}))
+                :contacts/resolve-public-key-from-ens
+                {:chain-id   1
+                 :ens        ens-stateofus-eth
+                 :on-success [:contacts/set-new-identity-success ens]
+                 :on-error   [:contacts/set-new-identity-error ens]}}
+
+     ;; compressed-key & add-self-as-contact
+     user-ckey {:db (assoc db
+                           :contacts/new-identity
+                           (events/init-contact
+                            {:user-public-key user-ukey
+                             :input           user-ckey
+                             :id              user-ckey
+                             :type            :compressed-key
+                             :public-key      nil ; not yet...
+                             :state           :decompress-key}))
+                :contacts/decompress-public-key
+                {:compressed-key user-ckey
+                 :on-success     [:contacts/set-new-identity-success user-ckey]
+                 :on-error       [:contacts/set-new-identity-error user-ckey]}})))
