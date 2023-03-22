@@ -271,10 +271,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702732)
     def test_group_chat_pin_messages(self):
-        self.drivers[2].quit()
-
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(2)]
-        [self.homes[i].get_chat(self.chat_name).click() for i in range(2)]
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
 
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"

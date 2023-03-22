@@ -1309,7 +1309,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702784)
     def test_1_1_chat_delete_via_long_press_relogin(self):
-        self.home_1.driver.quit()
         self.home_2.click_system_back_button_until_element_is_shown()
         self.home_2.chats_tab.click()
 

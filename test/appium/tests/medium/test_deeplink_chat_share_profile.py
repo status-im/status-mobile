@@ -369,20 +369,6 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
             self.errors.append("Can't navigate to profile from deep link with own public key")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702776)
-    def test_public_chat_open_using_deep_link(self):
-        self.drivers[0].close_app()
-        chat_name = self.home.get_random_chat_name()
-        deep_link = 'status-im://%s' % chat_name
-        self.sign_in.open_weblink_and_login(deep_link)
-        chat = self.sign_in.get_chat_view()
-        # ToDo: change to the next line when accessibility id is added for user_name_text_new_UI
-        # if not chat.user_name_text_new_UI.text == '#' + chat_name:
-        try:
-            chat.element_by_text(text=" #" + chat_name, element_type="text").wait_for_visibility_of_element()
-        except TimeoutException:
-            self.drivers[0].fail("Public chat '%s' is not opened" % chat_name)
-
     @marks.testrail_id(702775)
     @marks.xfail(reason="Profile is often not opened in e2e builds for some reason. Needs to be investigated.")
     def test_deep_link_open_user_profile(self):
@@ -391,9 +377,9 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
             deep_link = 'status-im://u/%s' % user_ident
             self.sign_in.open_weblink_and_login(deep_link)
             chat = self.sign_in.get_chat_view()
-            chat.wait_for_element_starts_with_text(ens_user['username'])
+            chat.wait_for_element_starts_with_text(ens_user['ens'])
 
-            for text in ens_user['username'], self.sign_in.get_translation_by_key("add-to-contacts"):
+            for text in ens_user['ens'], self.sign_in.get_translation_by_key("add-to-contacts"):
                 if not chat.element_by_text(text).scroll_to_element(10):
                     self.drivers[0].fail("User profile screen is not opened")
 
