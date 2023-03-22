@@ -276,7 +276,7 @@
                            (vals (get-in db [:communities community-id :chats])))]
     (when (and id
                (not= (:current-chat-id db) (str community-id id)))
-      (chat.events/navigate-to-chat cofx (str community-id id) nil))))
+      (chat.events/navigate-to-chat cofx (str community-id id)))))
 
 (rf/defn fetch
   [_]
@@ -817,7 +817,7 @@
   [cofx community-id]
   (rf/merge cofx
             (navigation/pop-to-root :shell-stack)
-            (navigation/navigate-to-nav2 :community community-id true)))
+            (navigation/navigate-to :community community-id true)))
 
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
