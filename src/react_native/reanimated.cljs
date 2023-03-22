@@ -46,6 +46,8 @@
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
 
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
+(def keyboard-avoiding-view (create-animated-component (.-KeyboardAvoidingView ^js rn)))
+(def text-input (create-animated-component (.-TextInput ^js rn)))
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))

@@ -102,12 +102,13 @@
           [message/message-with-reactions message-data context])]))])
 
 (defn messages-list
-  [{:keys [chat-id] :as chat}]
+  [{:keys [chat-id] :as chat} insets]
   (let [render-data  (rf/sub [:chats/current-chat-message-list-view-context])
         messages     (rf/sub [:chats/raw-chat-messages-stream chat-id])
         bottom-space 15]
     [rn/view
-     {:style {:flex 1}}
+     {:style {:flex 1
+              :padding-bottom (+ 108 (:bottom insets))}} ;; TODO: 108 is the composer's min-height
      ;; NOTE: DO NOT use anonymous functions for handlers
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -122,7 +123,6 @@
        :on-scroll-to-index-failed    identity ; don't remove this
        :content-container-style      {:padding-top    (+ bottom-space 32)
                                       :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space} ; iOS only
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
        :onMomentumScrollBegin        state/start-scrolling
