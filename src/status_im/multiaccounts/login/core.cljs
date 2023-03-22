@@ -521,6 +521,7 @@
                                 (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
                ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
+              (initialize-appearance)
               (transport/start-messenger)
               (communities/fetch)
               (data-store.chats/fetch-chats-rpc
@@ -624,14 +625,15 @@
        login)
       (rf/merge
        cofx
-       {:db (dissoc db :goto-key-storage?)}
+       {:db                 (dissoc db :goto-key-storage?)
+        :theme/change-theme :dark}
        (when keycard-account?
          {:db (-> db
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
           {:init-root-fx :multiaccounts-keycard}
-          {:init-root-fx :multiaccounts})
+          {:init-root-fx :profiles})
        #(when goto-key-storage?
           (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))
 
@@ -730,8 +732,9 @@
         keycard-multiaccount? (boolean (:keycard-pairing multiaccount))]
     (rf/merge
      cofx
-     {:db             (update db :keycard dissoc :application-info)
-      :navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
+     (merge
+      {:db (update db :keycard dissoc :application-info)}
+      (when keycard-multiaccount? {:navigate-to-fx :keycard-login-pin}))
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (rf/defn hide-keycard-banner

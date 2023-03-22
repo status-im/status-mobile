@@ -17,7 +17,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db db}
-            (navigation/pop-to-root :multiaccounts-stack)))
+            (navigation/pop-to-root :profiles)))
 
 (rf/defn login-pin-more-icon-pressed
   {:events [:keycard.login.pin.ui/more-icon-pressed]}

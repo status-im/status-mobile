@@ -26,18 +26,23 @@
      [quo/text {:style {:margin-left 10}} extra-text]]))
 
 (defn confirmation-drawer
-  [{:keys [title description context button-text on-press extra-action extra-text accessibility-label]}]
+  [{:keys [title description context button-text on-press extra-action extra-text accessibility-label
+           close-button-text]}]
   (let [extra-action-selected? (reagent/atom false)]
     (fn []
-      (let [{:keys [group-chat chat-id public-key color name]} context
-            id (or chat-id public-key)
-            display-name
-            (if-not group-chat (first (rf/sub [:contacts/contact-two-names-by-identity id])) name)
-            contact (when-not group-chat
-                      (rf/sub [:contacts/contact-by-address
-                               id]))
-            photo-path (when-not (empty? (:images contact))
-                         (rf/sub [:chats/photo-path id]))]
+      (let [{:keys [group-chat chat-id public-key color profile-picture
+                    name]} context
+            id             (or chat-id public-key)
+            display-name   (or
+                            name
+                            (when-not group-chat
+                              (rf/sub [:contacts/contact-name-by-identity id])))
+            contact        (when-not group-chat
+                             (rf/sub [:contacts/contact-by-address
+                                      id]))
+            photo-path     (or profile-picture
+                               (when-not (empty? (:images contact))
+                                 (rf/sub [:chats/photo-path id])))]
         [rn/view
          {:style               {:margin-horizontal 20}
           :accessibility-label accessibility-label}
@@ -57,7 +62,7 @@
            {:type     :grey
             :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
             :on-press #(rf/dispatch [:bottom-sheet/hide])}
-           (i18n/label :t/close)]
+           (or close-button-text (i18n/label :t/close))]
           [quo/button
            {:type     :danger
             :style    {:flex 0.48}

@@ -83,7 +83,7 @@
             colors-by-status (style/status-colors status-kw blur? override-theme)
             variant-colors   (style/variants-colors blur? override-theme)
             clean-props      (apply dissoc props custom-props)]
-        [rn/view
+        [:<>
          (when (or label char-limit)
            [label-&-counter
             {:variant-colors variant-colors

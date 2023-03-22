@@ -32,9 +32,9 @@
  :setup/init-theme
  (fn []
    (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (quo2.theme/set-theme (if (theme/dark-mode?) :dark :light))
+   (quo2.theme/set-theme :dark)
    ;; TODO legacy support
-   (quo.theme/set-theme (if (theme/dark-mode?) :dark :light))))
+   (quo.theme/set-theme :dark)))
 
 (rf/defn initialize-views
   {:events [:setup/initialize-view]}

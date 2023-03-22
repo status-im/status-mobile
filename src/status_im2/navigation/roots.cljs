@@ -2,12 +2,13 @@
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [status-im2.navigation.view :as views]
-            [status-im2.navigation.state :as state]
-            [status-im2.common.theme.core :as utils.theme]))
+            [status-im2.navigation.state :as state]))
 
 (defn status-bar-options
   []
-  (let [dark-mode? (if (= @state/root-id :shell-stack) (colors/dark?) (utils.theme/dark-mode?))]
+  ;; dark-mode? = After login we are going to use theme as per user's choice (colors/dark?)
+  ;; but before login we only have dark mode (dark-mode? = true)
+  (let [dark-mode? (if (= @state/root-id :shell-stack) (colors/dark?) true)]
     (if platform/android?
       {:navigationBar {:backgroundColor colors/neutral-100}
        :statusBar     {:backgroundColor :transparent
@@ -98,8 +99,8 @@
 
    :multiaccounts-keycard
    {:root {:stack {:id       :multiaccounts-stack
-                   :children [{:component {:name    :multiaccounts
-                                           :id      :multiaccounts
+                   :children [{:component {:name    :profiles
+                                           :id      :profiles
                                            :options (get-screen-options :multiaccounts)}}
                               {:component {:name    :keycard-login-pin
                                            :id      :keycard-login-pin

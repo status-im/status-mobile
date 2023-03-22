@@ -66,7 +66,7 @@
    :padding-horizontal 8
    :border-width       1
    :border-color       (:border-color colors-by-status)
-   :border-radius      (if small? 10 14)
+   :border-radius      (if small? 10 12)
    :opacity            (if disabled? 0.3 1)})
 
 (defn left-icon-container
@@ -110,8 +110,7 @@
    :color (:clear-icon variant-colors)})
 
 (def texts-container
-  {:flex           1
-   :flex-direction :row
+  {:flex-direction :row
    :height         18
    :margin-bottom  8})
 

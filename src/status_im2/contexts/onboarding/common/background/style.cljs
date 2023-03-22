@@ -3,7 +3,12 @@
 
 (def background-container
   {:background-color colors/neutral-95
-   :flex-direction   :row})
+   :flex-direction   :row
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})
 
 (defn background-gradient-overlay
   [dark-overlay?]
