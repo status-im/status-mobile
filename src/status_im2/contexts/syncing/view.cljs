@@ -4,51 +4,75 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im2.contexts.syncing.sheets.sync-device-notice.view :as sync-device-notice]
-            [status-im2.contexts.syncing.styles :as styles]
+            [status-im2.contexts.syncing.style :as style]
+            [status-im2.common.not-implemented :as not-implemented]
             [utils.re-frame :as rf]))
 
-(defn render-device
-  [device-name device-status]
-  [:<>
-   [rn/view {:style styles/device-row}
-    [quo/icon-avatar
-     {:size  :medium
-      :icon  :i/placeholder
-      :color :primary
-      :style {:margin-vertical 10}}]
-    [rn/view {:style styles/device-column}
-     [quo/text
-      {:accessibility-label :device-name
-       :weight              :medium
-       :size                :paragraph-1
-       :style               {:color colors/neutral-100}} device-name]
-
-     [quo/text
-      {:accessibility-label :device-status
-       :weight              :regular
-       :size                :paragraph-2
-       :style               {:color colors/neutral-50}} device-status]]]])
-
-(defn views
+;;TODO remove mock data (#https://github.com/status-im/status-mobile/issues/15142)
+(defn navigation-bar
   []
-  [rn/view {:style styles/container-main}
-   [quo/text
-    {:accessibility-label :synced-devices-title
-     :weight              :medium
-     :size                :paragraph-2
-     :style               {:color colors/neutral-50}} (i18n/label :t/synced-devices)]
-   [rn/view {:style styles/devices-container}
-    [render-device "iPhone 11" (i18n/label :t/this-device)] ;; note : the device name is hardcoded for
-                                                            ;; now
-    [rn/view {:style styles/sync-device-container}
+  [rn/view {:style style/navigation-bar}
+   [quo/page-nav
+    {:align-mid?   true
+     :mid-section  {:type :text-only :main-text ""}
+     :left-section {:type                :blur-bg
+                    :icon                :i/arrow-left
+                    :icon-override-theme :dark
+                    :on-press            #(rf/dispatch [:navigate-back])}}]])
+
+(defn render-device
+  [{:keys [device
+           this-device?
+           type]}]
+  [rn/view {:style style/device-container}
+   [rn/view {:style style/icon-container}
+    [quo/icon
+     (if (= type :mobile) :i/mobile :i/desktop)
+     {:color colors/white}]]
+   [rn/view {:style style/device-details}
+    [quo/text
+     {:accessibility-label :device-name
+      :weight              :medium
+      :size                :paragraph-1
+      :style               {:color colors/white}}
+     device]
+    [not-implemented/not-implemented
+     [quo/text
+      {:accessibility-label :next-back-up
+       :size                :paragraph-2
+       :style               {:color colors/white-opa-40}}
+      "Next backup in 04:36:12"]]
+    (when this-device?
+      [rn/view {:style style/tag-container}
+       [quo/status-tag
+        {:size           :small
+         :status         {:type :positive}
+         :no-icon?       true
+         :label          (i18n/label :t/this-device)
+         :override-theme :dark}]])]])
+
+(defn view
+  []
+  [rn/view {:style style/container-main}
+   [navigation-bar]
+   [rn/view {:style style/page-container}
+    [rn/view {:style style/title-container}
+     [quo/text
+      {:size   :heading-1
+       :weight :semi-bold
+       :style  {:color colors/white}} (i18n/label :t/syncing)]
      [quo/button
-      {:label    :primary
-       :size     40
-       :before   :i/placeholder
+      {:size     32
+       :icon     true
        :on-press (fn []
                    (rf/dispatch [:bottom-sheet/hide])
                    (rf/dispatch [:bottom-sheet/show-sheet
                                  {:show-handle? false
                                   :content      (fn []
                                                   [sync-device-notice/sheet])}]))}
-      (i18n/label :t/sync-new-device)]]]])
+      :i/add]]
+    [rn/view {:style style/devices-container}
+     [render-device
+      {:device       "iPhone 11"
+       :this-device? true
+       :type         :mobile}]]]])
