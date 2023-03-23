@@ -184,11 +184,13 @@
      :component enable-notifications/enable-notifications}
 
     {:name      :sign-in
-     :options   {:statusBar     {:style :light}
+     :options   {:statusBar     {:style           :light
+                                 :backgroundColor :transparent
+                                 :translucent     true}
                  :topBar        {:visible false}
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
-     :component sign-in/sign-in}
+     :component sign-in/view}
 
     {:name      :syncing-devices
      :options   {:statusBar     {:style :light}

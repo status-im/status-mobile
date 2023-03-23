@@ -162,4 +162,12 @@
                                             :id      :profiles
                                             :options (merge
                                                       (status-bar-options)
+                                                      {:topBar {:visible false}})}}]}}}
+          :enable-notifications
+          {:root
+           {:stack {:id       :enable-notifications
+                    :children [{:component {:name    :enable-notifications
+                                            :id      :enable-notifications
+                                            :options (merge
+                                                      (status-bar-options)
                                                       {:topBar {:visible false}})}}]}}}}))
