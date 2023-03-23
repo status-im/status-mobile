@@ -817,7 +817,7 @@
   [cofx community-id]
   (rf/merge cofx
             (navigation/pop-to-root :shell-stack)
-            (navigation/navigate-to :community community-id true)))
+            (navigation/navigate-to-cofx :community-overview community-id)))
 
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
