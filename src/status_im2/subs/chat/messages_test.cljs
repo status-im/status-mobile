@@ -22,9 +22,6 @@
     :album-id "abc"
     :albumize? true
     :message-id "0x444"
-    :deleted? nil
-    :deleted-for-me? nil
-    :deleted-by nil
     :from :xyz
     :timestamp-str "14:00"
     :content-type constants/content-type-album}])
