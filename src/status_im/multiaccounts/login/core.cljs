@@ -44,6 +44,7 @@
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
+    [status-im2.contexts.shell.animation :as shell.animation]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -520,6 +521,7 @@
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
+    (shell.animation/change-selected-stack-id :communities-stack true)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)
