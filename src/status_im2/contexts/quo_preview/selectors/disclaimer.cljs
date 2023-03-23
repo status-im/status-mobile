@@ -13,38 +13,44 @@
     :type  :boolean}
    {:label "Blur (only for dark theme):"
     :key   :blur?
-    :type  :boolean}])
+    :type  :boolean}
+   {:label "Text"
+    :key   :text
+    :type  :text}])
+
+(defn blur-background
+  [blur?]
+  (when (and blur? (theme/dark?))
+    [rn/view
+     {:style {:position :absolute
+              :top      0
+              :bottom   0
+              :left     0
+              :right    0}}
+     [preview/blur-view
+      {:style                 {:flex 1}
+       :show-blur-background? true}]]))
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:checked? false
-                             :blur?    true})]
+                             :blur?    true
+                             :text     "I agree with the community rules"})]
     (fn []
-      [rn/view {:style {:flex 1}}
-       [rn/view {:style {:flex 1}}
-        [preview/customizer state descriptor]]
-       [rn/view {:style {:padding-horizontal 15}}
-        (when (and (:blur? @state) (theme/dark?))
-          [rn/view
-           {:style {:position :absolute
-                    :top      0
-                    :bottom   0
-                    :left     0
-                    :right    0}}
-           [preview/blur-view
-            {:style                 {:flex        1
-                                     :align-items :center}
-             :show-blur-background? true}]])
-        [rn/view
-         {:style {:margin-vertical 50
-                  :width           "100%"}}
-         [disclaimer/view
-          {:blur?     (:blur? @state)
-           :checked?  (:checked? @state)
-           :on-change #(swap! state update :checked? not)}
-          "I agree with the community rules"]]
-        [button/button {:disabled (not (:checked? @state))}
-         "submit"]]])))
+      (let [{:keys [blur? checked? text]} @state]
+        [rn/view {:style {:flex 1}}
+         [rn/view {:style {:flex 1}}
+          [preview/customizer state descriptor]]
+         [rn/view {:style {:padding-horizontal 15}}
+          [blur-background blur?]
+          [rn/view {:style {:margin-vertical 50}}
+           [disclaimer/view
+            {:blur?     blur?
+             :checked?  checked?
+             :on-change #(swap! state update :checked? not)}
+            text]]
+          [button/button {:disabled (not checked?)}
+           "submit"]]]))))
 
 (defn preview-disclaimer
   []
