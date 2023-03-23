@@ -2,6 +2,7 @@
   (:require [quo2.components.buttons.button :as button]
             [quo2.components.selectors.disclaimer.view :as disclaimer]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -23,7 +24,7 @@
        [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        [rn/view {:style {:padding-horizontal 15}}
-        (when (and (:blur? @state) (quo2.theme/dark?))
+        (when (and (:blur? @state) (theme/dark?))
           [rn/view
            {:style {:position :absolute
                     :top      0
