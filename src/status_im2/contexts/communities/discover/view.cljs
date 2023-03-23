@@ -22,7 +22,7 @@
                              :group [{:id         1
                                       :token-icon (resources/get-mock-image :status-logo)}]}]}})
 
-(defn render-fn
+(defn community-list-item
   [community-item _ _ {:keys [width view-type]}]
   (let [item  (merge community-item
                      (get mock-community-item-data :data))
@@ -98,7 +98,7 @@
        {:style     style/featured-list-container
         :on-layout #(swap! view-size
                       (fn []
-                        (- (oops/oget % "nativeEvent.layout.width") 20)))}
+                        (- (oops/oget % "nativeEvent.layout.width") 40)))}
        (when-not (= @view-size 0)
          [rn/flat-list
           {:key-fn                            :id
@@ -107,9 +107,11 @@
            :shows-horizontal-scroll-indicator false
            :separator                         [rn/view {:width 12}]
            :data                              communities
-           :render-fn                         render-fn
+           :render-fn                         community-list-item
            :render-data                       {:width     @view-size
-                                               :view-type view-type}}])])))
+                                               :view-type view-type}
+           :style                             style/flat-list-container}])])))
+
 
 (defn discover-communities-header
   [{:keys [featured-communities-count
@@ -120,7 +122,7 @@
    [screen-title]
    [featured-communities-header featured-communities-count]
    [featured-list featured-communities view-type]
-   [quo/separator]
+   [quo/separator {:style {:margin-horizontal 20}}]
    [discover-communities-segments selected-tab false]])
 
 (defn other-communities-list
@@ -131,14 +133,16 @@
       (let [community-id (when communities-ids item)
             community    (if communities
                            item
-                           [rf/sub [:communities/home-item community-id]])]
+                           (rf/sub [:communities/home-item community-id]))
+            cover        {:uri (get-in (:images item) [:banner :uri])}]
         [rn/view
          {:key           (str inner-index (:id community))
           :margin-bottom 16}
          (if (= view-type :card-view)
            [quo/community-card-view-item
             (merge community
-                   (get mock-community-item-data :data))
+                   (get mock-community-item-data :data)
+                   {:cover cover})
             #(rf/dispatch [:navigate-to :community-overview (:id community)])]
            [quo/communities-list-view-item
             {:on-press      (fn []

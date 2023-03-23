@@ -16,15 +16,13 @@
                  :height        230
                  :border-radius 20}
       :on-press on-press}
-     [rn/view
-      {:flex 1}
+     [rn/view {:style style/detail-container}
       [rn/view (style/community-cover-container 60)
        [rn/image
         {:source cover
-         :style
-         {:flex                    1
-          :border-top-right-radius 20
-          :border-top-left-radius  20}}]]
+         :style  {:flex                    1
+                  :border-top-right-radius 20
+                  :border-top-left-radius  20}}]]
       [rn/view (style/card-view-content-container 12)
        [rn/view (style/card-view-chat-icon 48)
         [icon/community-icon {:images images} 48]]
@@ -38,7 +36,7 @@
         {:title       name
          :description description}]
        [rn/view {:style (style/card-stats-position)}
-        [community-view/community-stats-column :card-view]]
+        [community-view/community-stats-column
+         {:type :card-view}]]
        [rn/view {:style (style/community-tags-position)}
         [community-view/community-tags tags]]]]]]])
-
