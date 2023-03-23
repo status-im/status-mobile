@@ -7,7 +7,8 @@ abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
 
-  use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(:path => config[:reactNativePath],
+                    :hermes_enabled => false)
 
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
   pod 'react-native-config', :path => '../node_modules/react-native-config'
