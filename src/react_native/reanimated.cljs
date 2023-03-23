@@ -46,7 +46,6 @@
   [reanimated-flat-list (rn-flat-list/base-list-props props)])
 
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
-(def keyboard-avoiding-view (create-animated-component (.-KeyboardAvoidingView ^js rn)))
 (def text-input (create-animated-component (.-TextInput ^js rn)))
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
@@ -76,15 +75,7 @@
   (.-inOut ^js Easing))
 
 ;; trying to put default-easing inside easings map causes test to fail
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn default-easing [] (in-out (.-quad ^js Easing)))
-=======
-(def default-easing (in-out (.-quad ^js Easing)))
->>>>>>> 52b8d487a (feat: bottom sheet screen)
-=======
-(defn default-easing [] (in-out (.-quad ^js Easing)))
->>>>>>> bf8c8a36b (fix test)
 
 (def easings
   {:linear  (bezier 0 0 1 1)
@@ -108,15 +99,15 @@
    (interpolate shared-value input-range output-range nil))
   ([shared-value input-range output-range extrapolation]
    (worklets.core/interpolate-value
-    shared-value
-    (clj->js input-range)
-    (clj->js output-range)
-    (clj->js extrapolation))))
+     shared-value
+     (clj->js input-range)
+     (clj->js output-range)
+     (clj->js extrapolation))))
 
 (defn apply-animations-to-style
   [animations style]
   (use-animated-style
-   (worklets.core/apply-animations-to-style (clj->js animations) (clj->js style))))
+    (worklets.core/apply-animations-to-style (clj->js animations) (clj->js style))))
 
 ;; Animators
 (defn animate-shared-value-with-timing
@@ -142,15 +133,7 @@
                      (with-delay delay
                                  (with-timing val
                                               (clj->js {:duration duration
-<<<<<<< HEAD
-<<<<<<< HEAD
                                                         :easing   (default-easing)}))))))
-=======
-                                                        :easing   default-easing}))))))
->>>>>>> 52b8d487a (feat: bottom sheet screen)
-=======
-                                                        :easing   (default-easing)}))))))
->>>>>>> bf8c8a36b (fix test)
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
@@ -168,12 +151,12 @@
    (set-shared-value anim
                      (with-delay delay
                                  (with-repeat
-                                  (with-timing val
-                                               #js
-                                                {:duration duration
-                                                 :easing   (get easings easing)})
-                                  number-of-repetitions
-                                  reverse?)))))
+                                   (with-timing val
+                                                #js
+                                                        {:duration duration
+                                                         :easing   (get easings easing)})
+                                   number-of-repetitions
+                                   reverse?)))))
 
 (defn animate-shared-value-with-spring
   [anim val {:keys [mass stiffness damping]}]
