@@ -117,21 +117,6 @@
                           (anim/animate opacity 1)
                           (anim/animate layout 0)))))))
 
-(defn composer []
-  (let [text-value (reagent/atom "")]
-    (fn []
-      [rn/text-input
-       {
-        :style {:position :absolute
-                :top 100
-                :z-index 100}
-        :value                  @text-value
-        :on-change-text         (fn [text] (reset! text-value text))
-        :placeholder-text-color :red
-        :placeholder           "asdf"
-        }])
-    ))
-
 (defn lightbox
   []
   [:f>
@@ -231,7 +216,6 @@
                         {:transform [{:translateY (:pan-y animations)}
                                      {:translateX (:pan-x animations)}]}
                         {})}
-               [composer]
                [gesture/flat-list
                 {:ref                               #(reset! (:flat-list-ref atoms) %)
                  :key-fn                            :message-id

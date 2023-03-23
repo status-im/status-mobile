@@ -14,9 +14,10 @@
   [insets]
   (merge
     {:border-top-left-radius  20
+     ;:background-color :black
      :border-top-right-radius 20
      :padding-horizontal      20
-     :position :absolute
+     :position                :absolute
      ;:height 400
      :bottom                  0
      :left                    0
@@ -50,24 +51,40 @@
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
 (defn input
+  []
+  (merge typography/paragraph-1
+         {
+          :min-height 32
+          :flex 1
+          ;:position (if platform/android? :absolute :relative)
+          ;:top 0
+          ;:overflow :hidden
+          ;:padding-vertical 10
+          ;:min-height input-height
+          ;:min-height 40
+          ;:min-height input-height
+          ;:height 300
+          ;:background-color :green
+          }))
+
+(defn input-container
   [height]
   (reanimated/apply-animations-to-style
+    {:height height}
     {
-     :min-height height
-     ;:height height
-     ;:height height
-     ;:max-height height
-     ;:height           height
-     }
-    (merge typography/paragraph-1
-           {:padding-vertical 5
-            ;:height 300
-            ;:background-color :green
-            })))
+     ;:overflow :hidden
+     ;:padding-vertical 5
+     ;:background-color :red
+     ;:justify-content :center
+     ;:align-items :center
+     }))
 
 
 (defn actions-container
-  []
+  [value]
   {:height          actions-container-height
+   :background-color (when (> (reanimated/get-shared-value value) input-height) :white)
    :justify-content :center
+   :z-index 2
+   ;:background-color :yellow
    })

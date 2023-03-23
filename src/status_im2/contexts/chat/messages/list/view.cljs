@@ -142,4 +142,4 @@
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
       {:position :absolute
-       :bottom   6}]]))
+       :bottom   (+ 6 (+ 108 (:bottom insets)))}]]))

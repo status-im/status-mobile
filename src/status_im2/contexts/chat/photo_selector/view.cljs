@@ -89,6 +89,7 @@
       :on-press            (fn []
                              ;; TODO: album-selector issue:
                              ;; https://github.com/status-im/status-mobile/issues/15398
+<<<<<<< HEAD
                              (js/alert "currently disabled"))}
      ;(if photos?
      ;  (do
@@ -96,6 +97,15 @@
      ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
      ;  (rf/dispatch [:navigate-back]))
 
+=======
+                             (js/alert "currently disabled")
+                             ;(if photos?
+                             ;  (do
+                             ;    (reset! temporary-selected @selected)
+                             ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
+                             ;  (rf/dispatch [:navigate-back]))
+                             )}
+>>>>>>> 13502ac3c (updates)
      [quo/text
       {:weight          :medium
        :ellipsize-mode  :tail
@@ -143,6 +153,7 @@
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
+<<<<<<< HEAD
           (fn []
             (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
             (if (seq selected-images)
@@ -157,8 +168,17 @@
 =======
 >>>>>>> 46b746724 (review)
 <<<<<<< HEAD
+=======
+           (fn []
+             (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+             (if (seq selected-images)
+               (reset! selected (vec (vals selected-images)))
+               (reset! selected @temporary-selected)))
+           [selected-album])
+>>>>>>> 51f87a6d5 (updates)
          [bottom-sheet-screen/view
           (fn [{:keys [scroll-enabled on-scroll]}]
+<<<<<<< HEAD
 =======
          [bottom-sheet-screen/consumer
           (fn [close scroll-enabled on-scroll]
@@ -184,7 +204,12 @@
           (fn [{:keys [scroll-enabled on-scroll]}]
 >>>>>>> aaea14c93 (lint)
 >>>>>>> 8a983f7e0 (lint)
+<<<<<<< HEAD
 >>>>>>> c430c406a (lint)
+=======
+=======
+>>>>>>> 13502ac3c (updates)
+>>>>>>> 51f87a6d5 (updates)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
@@ -193,6 +218,7 @@
               [:<>
                [rn/view
                 {:style style/buttons-container}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 [album-title true selected-album selected temporary-selected]
@@ -210,6 +236,8 @@
 >>>>>>> 52b8d487a (feat: bottom sheet screen)
 =======
 >>>>>>> af6996923 (remove close button)
+=======
+>>>>>>> 51f87a6d5 (updates)
                 [album-title true selected-album selected temporary-selected insets]
 >>>>>>> 7c3fd5384 (feat: bottom sheet screen)
                 [clear-button selected]]
