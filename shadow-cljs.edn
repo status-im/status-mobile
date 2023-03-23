@@ -45,7 +45,13 @@
    :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
    :dev {:devtools {:after-load   status-im2.setup.hot-reload/reload
                     :build-notify status-im2.setup.hot-reload/build-notify
-                    :preloads     [re-frisk-remote.preload]}
+                    :preloads     [re-frisk-remote.preload
+                                   ;; In order to use component test helpers in
+                                   ;; the REPL we need to preload namespaces
+                                   ;; that are not normally required by
+                                   ;; production code, such as
+                                   ;; @testing-library/react-native.
+                                   test-helpers.component]}
          :closure-defines
          {status-im2.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
           status-im2.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
