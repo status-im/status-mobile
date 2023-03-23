@@ -31,10 +31,11 @@
         callback
         (fn [final-node-config]
           (let [config-map (.stringify js/JSON
-                                       (clj->js {:kdfIterations         config/default-kdf-iterations
-                                                 :nodeConfig            final-node-config
-                                                 :settingCurrentNetwork config/default-network
-                                                 :deviceType            utils.platform/os}))]
+                                       (clj->js
+                                        {:receiverConfig {:kdfIterations config/default-kdf-iterations
+                                                          :nodeConfig final-node-config
+                                                          :settingCurrentNetwork config/default-network
+                                                          :deviceType utils.platform/os}}))]
             (status/input-connection-string-for-bootstrapping
              connection-string
              config-map
@@ -49,10 +50,11 @@
   (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
         key-uid    (get-in db [:multiaccount :key-uid])
         config-map (.stringify js/JSON
-                               (clj->js {:keyUID       key-uid
-                                         :keystorePath ""
-                                         :password     sha3-pwd
-                                         :deviceType   utils.platform/os}))]
+                               (clj->js {:senderConfig {:keyUID       key-uid
+                                                        :keystorePath ""
+                                                        :password     sha3-pwd
+                                                        :deviceType   utils.platform/os}
+                                         :serverConfig {:timeout 0}}))]
     (status/get-connection-string-for-bootstrapping-another-device
      config-map
      (fn [connection-string]
