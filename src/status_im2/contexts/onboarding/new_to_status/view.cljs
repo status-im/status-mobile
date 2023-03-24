@@ -49,7 +49,7 @@
                       (* 2 56) ;; two other list items
                       (* 2 16) ;; spacing between items
                       220)     ;; extra spacing (top bar)
-       :on-press   #(rf/dispatch [:navigate-to :create-profile])}]
+       :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
 
      [rn/view {:style style/subtitle-container}
       [quo/text
@@ -69,10 +69,17 @@
       [rn/view {:style style/space-between-suboptions}]
       [quo/small-option-card
        {:variant  :icon
-        :title    (i18n/label :t/use-recovery-phrase)
+        :title    "Temporary (old) recover phrase flow"
         :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
         :image    (resources/get-image :ethereum-address)
         :on-press #(rf/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
+      [rn/view {:style style/space-between-suboptions}]
+      [quo/small-option-card
+       {:variant  :icon
+        :title    (i18n/label :t/use-recovery-phrase)
+        :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
+        :image    (resources/get-image :ethereum-address)
+        :on-press #(rf/dispatch [:navigate-to :enter-seed-phrase])}]
       [rn/view {:style style/space-between-suboptions}]
       [quo/small-option-card
        {:variant  :icon

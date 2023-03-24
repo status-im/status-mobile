@@ -44,6 +44,7 @@
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
+    [status-im2.contexts.shell.animation :as shell.animation]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -480,6 +481,9 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (cond
+    (get db :local-pairing/completed-pairing?)
+    (re-frame/dispatch [:syncing/pairing-completed])
+
     (get db :onboarding-2/new-account?)
     (re-frame/dispatch [:navigate-to :enable-notifications])
 
@@ -520,6 +524,7 @@
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
+    (shell.animation/change-selected-stack-id :communities-stack true)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)

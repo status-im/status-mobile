@@ -377,14 +377,14 @@
                       :height 40}}]
            [communities.icon/community-icon community])]
         [rn/view {:padding-right 14 :flex 1}
-         [rn/text {:style {:font-weight "700" :font-size 17}}
+         [rn/text {:style {:font-weight "700" :font-size 17 :color quo.colors/black}}
           name]
-         [rn/text description]]]
+         [rn/text {:style {:color quo.colors/black}} description]]]
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
          {:on-press #(re-frame/dispatch
                       [:communities/navigate-to-community
-                       {:community-id (:id community)}])}
+                       (:id community)])}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))

@@ -974,6 +974,13 @@ RCT_EXPORT_METHOD(createAccountAndLogin:(NSString *)request) {
     StatusgoCreateAccountAndLogin(request);
 }
 
+RCT_EXPORT_METHOD(restoreAccountAndLogin:(NSString *)request) {
+#if DEBUG
+    NSLog(@"restoreAccountAndLogin() method called");
+#endif
+    StatusgoRestoreAccountAndLogin(request);
+}
+
 RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

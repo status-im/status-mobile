@@ -22,6 +22,7 @@
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
+    [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
@@ -168,6 +169,12 @@
      :insets    {:top false}
      :component generating-keys/generating-keys}
 
+    {:name      :enter-seed-phrase
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
      :options   {:statusBar     {:style :light}
@@ -177,11 +184,13 @@
      :component enable-notifications/enable-notifications}
 
     {:name      :sign-in
-     :options   {:statusBar     {:style :light}
+     :options   {:statusBar     {:style           :light
+                                 :backgroundColor :transparent
+                                 :translucent     true}
                  :topBar        {:visible false}
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
-     :component sign-in/sign-in}
+     :component sign-in/view}
 
     {:name      :syncing-devices
      :options   {:statusBar     {:style :light}

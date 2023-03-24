@@ -1,9 +1,9 @@
 (ns status-im2.contexts.onboarding.create-profile.view
-  (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
+            [clojure.string :as string]
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.onboarding.create-profile.style :as style]
+            [utils.i18n :as i18n]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.background.view :as background]

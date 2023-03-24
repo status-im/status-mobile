@@ -11,11 +11,16 @@
     (assoc-in [:navigation/screen-params view] screen-params)))
 
 (rf/defn navigate-to-cofx
-  [{:keys [db]} go-to-view-id screen-params]
-  {:db
-   (-> (assoc db :view-id go-to-view-id)
-       (all-screens-params go-to-view-id screen-params))
-   :navigate-to-fx go-to-view-id})
+  [{:keys [db] :as cofx} go-to-view-id screen-params]
+  (merge
+   {:db             (-> (assoc db :view-id go-to-view-id)
+                        (all-screens-params go-to-view-id screen-params))
+    :navigate-to-fx go-to-view-id}
+   (when (#{:chat :community-overview} go-to-view-id)
+     {:dispatch-later
+      ;; 300 ms delay because, navigation is priority over shell card update
+      [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
+        :ms       300}]})))
 
 (rf/defn navigate-to
   {:events [:navigate-to]}
@@ -99,14 +104,6 @@
   [_]
   {:shell/reset-bottom-tabs nil
    :dispatch                [:init-root :shell-stack]})
-
-(rf/defn navigate-to-nav2
-  {:events [:navigate-to-nav2]}
-  [cofx view-id screen-params from-shell?]
-  (rf/merge
-   cofx
-   {:dispatch [:shell/add-switcher-card view-id screen-params from-shell?]}
-   (navigate-to-cofx view-id screen-params)))
 
 (rf/defn change-root-status-bar-style
   {:events [:change-root-status-bar-style]}

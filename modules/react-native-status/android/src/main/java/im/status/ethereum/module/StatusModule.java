@@ -335,7 +335,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
     }
 
-
+    @ReactMethod
+    public void restoreAccountAndLogin(final String restoreAccountRequest) {
+            Log.d(TAG, "restoreAccountAndLogin");
+            String result = Statusgo.restoreAccountAndLogin(restoreAccountRequest);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "restoreAccountAndLogin success: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "restoreAccountAndLogin failed: " + result);
+            }
+    }
 
     @ReactMethod
     public void saveAccountAndLogin(final String multiaccountData, final String password, final String settings, final String config, final String accountsData) {
