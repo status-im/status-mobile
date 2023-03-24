@@ -309,10 +309,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home = self.sign_in.create_user()
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_button)
         self.community_name = self.home.get_random_chat_name()
-        self.channel_name = self.home.get_random_chat_name()
-        self.community = self.home.create_community(name=self.community_name, description='test description',
-                                                    require_approval=False)
-        self.channel = self.community.add_channel(name=self.channel_name)
+        self.channel_name = 'general'
+        self.community = self.home.create_community(name=self.community_name, description='test description')
+
+        self.home.jump_to_communities_home()
+        self.home.get_chat(self.community_name, community=True).click()
+        community_view = self.home.get_community_view()
+        self.channel = community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702846)
     def test_community_navigate_to_channel_when_relaunch(self):
@@ -378,16 +381,20 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
         self.community_name = self.home_1.get_random_chat_name()
-        self.channel_name = self.home_1.get_random_chat_name()
+        self.channel_name = 'general'
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
-        self.community_1 = CommunityView(self.drivers[0])
-        self.community_1.send_invite_to_community(self.default_username_2)
-        self.channel_1 = self.community_1.add_channel(self.channel_name)
+        self.home_1.jump_to_communities_home()
+        self.home_1.get_chat(self.community_name, community=True).click()
+        community_view = self.home_1.get_community_view()
+        self.channel_1 = community_view.get_channel(self.channel_name).click()
         self.channel_1.send_message(self.text_message)
+        self.community_1 = CommunityView(self.drivers[0])
+        self.community_1.send_invite_to_community(self.community_name, self.default_username_2)
+
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.chat_2.element_by_text_part('View').click()
         self.community_2 = CommunityView(self.drivers[1])
-        self.community_2.join_button.click()
+        self.community_2.join_community()
 
         self.home_1.just_fyi("Reopen community view to use new interface")
         for home in (self.home_1, self.home_2):

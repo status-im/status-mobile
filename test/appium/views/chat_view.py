@@ -337,8 +337,9 @@ class CommunityView(HomeView):
         self.channel_name_edit_box = EditBox(self.driver, translation_id="name-your-channel-placeholder")
         self.channel_descripton = ChatView(self.driver).community_description_edit_box
         self.community_options_button = Button(self.driver, accessibility_id="community-menu-button")
+        self.view_members_button = Button(self.driver, accessibility_id="view-members")
         self.community_info_button = Button(self.driver, translation_id="community-info")
-        self.invite_button = Button(self.driver, accessibility_id="invite-button")
+        self.invite_button = Button(self.driver, accessibility_id="community-invite-people")
 
         # Community info page
         self.community_membership_request_value = Text(self.driver, translation_id="members-label",
@@ -358,12 +359,19 @@ class CommunityView(HomeView):
         # Requesting access to community / joining community
         self.request_access_button = Button(self.driver, translation_id="request-access")
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
-        self.join_button = Button(self.driver, translation_id="join")
+        self.join_button = Button(self.driver, accessibility_id="show-request-to-join-screen-button")
+        self.join_community_button = Button(self.driver, accessibility_id="join-community-button")
         self.follow_button = Button(self.driver, translation_id="follow")
 
         #### NEW UI
         # Communities initial page
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
+
+    def join_community(self):
+        self.join_button.click()
+        self.checkbox_button.scroll_and_click()
+        self.join_community_button.scroll_and_click()
+
 
     def get_channel(self, channel_name: str):
         self.driver.info("Getting  %s channel element in community" % channel_name)
@@ -407,12 +415,15 @@ class CommunityView(HomeView):
             Button(self.driver, xpath="//*[starts-with(@text,'%s')]%s" % (username, decline_suffix)).click()
         self.close_button.click()
 
-    def send_invite_to_community(self, user_names_to_invite):
+    def send_invite_to_community(self, community_name, user_names_to_invite):
         if isinstance(user_names_to_invite, str):
             user_names_to_invite = [user_names_to_invite]
         self.driver.info("Send %s invite to community" % ', '.join(map(str, user_names_to_invite)))
-        self.community_options_button.click()
-        self.community_info_button.click()
+        self.jump_to_communities_home()
+        home = self.get_home_view()
+        community_element = home.get_chat(community_name, community=True)
+        community_element.long_press_until_element_is_shown(self.view_members_button)
+        self.view_members_button.click_until_presence_of_element(self.invite_button)
         self.invite_button.click()
         for user_name in user_names_to_invite:
             user_contact = self.element_by_text_part(user_name)
