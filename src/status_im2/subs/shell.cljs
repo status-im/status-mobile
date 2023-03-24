@@ -67,7 +67,7 @@
                                               (str profile-picture "&addRing=0"))}
      :customization-color (or (:customization-color contact) :primary)
      :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id true])
+     :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id])
      :content             (get-card-content chat communities)}))
 
 (defn private-group-chat-card
@@ -76,7 +76,7 @@
    :avatar-params       {}
    :customization-color (or (:customization-color chat) :primary)
    :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-   :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id true])
+   :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id])
    :content             (get-card-content chat communities)})
 
 (defn community-card
@@ -88,7 +88,7 @@
                             {:name (:name community)})
      :customization-color (or (:customization-color community) :primary)
      :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:navigate-to-nav2 :community-overview id true])
+     :on-press            #(re-frame/dispatch [:navigate-to :community-overview id])
      :content             {:community-info {:type :permission}}}))
 
 (defn community-channel-card
@@ -98,9 +98,9 @@
    {:content  {:community-channel {:emoji        (:emoji channel)
                                    :channel-name (str "# " (:name channel))}}
     :on-press (fn []
-                (re-frame/dispatch [:navigate-to-nav2 :community-overview community-id true])
+                (re-frame/dispatch [:navigate-to :community-overview community-id])
                 (js/setTimeout
-                 #(re-frame/dispatch [:chat/navigate-to-chat channel-id true])
+                 #(re-frame/dispatch [:chat/navigate-to-chat channel-id])
                  100))}))
 
 (re-frame/reg-sub

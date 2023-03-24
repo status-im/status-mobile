@@ -42,7 +42,7 @@
   (utils.universal-links/initialize)
 
   ;; TODO(parvesh) - Remove while moving functionality to status-go
-  (async-storage/get-item :selected-stack-id #(animation/selected-stack-id-loaded %))
+  (async-storage/get-item :selected-stack-id #(animation/change-selected-stack-id %))
 
   (async-storage/get-item :screen-height #(reset! animation/screen-height %))
 

@@ -384,7 +384,7 @@
         [rn/touchable-opacity
          {:on-press #(re-frame/dispatch
                       [:communities/navigate-to-community
-                       {:community-id (:id community)}])}
+                       (:id community)])}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))

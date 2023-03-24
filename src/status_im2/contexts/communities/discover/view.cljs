@@ -34,7 +34,7 @@
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
+                         (rf/dispatch [:navigate-to :community-overview (:id item)]))
         :on-long-press #(rf/dispatch
                          [:bottom-sheet/show-sheet
                           {:content (fn []
@@ -144,7 +144,7 @@
             {:on-press      (fn []
                               (rf/dispatch [:communities/load-category-states (:id community)])
                               (rf/dispatch [:dismiss-keyboard])
-                              (rf/dispatch [:navigate-to :community (:id community)]))
+                              (rf/dispatch [:navigate-to :community-overview (:id community)]))
              :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                            {:content (fn []
                                                        ;; TODO implement with quo2

@@ -26,6 +26,16 @@
     (or (= state shell.constants/open-with-animation)
         (= state shell.constants/open-without-animation))))
 
+(defn calculate-home-stack-state-value
+  [stack-id & animate?]
+  (if animate?
+    (if (some? stack-id)
+      shell.constants/open-with-animation
+      shell.constants/close-with-animation)
+    (if (some? stack-id)
+      shell.constants/open-without-animation
+      shell.constants/close-without-animation)))
+
 (defn load-stack
   [stack-id]
   (case stack-id
@@ -35,14 +45,14 @@
     :browser-stack     (reset! load-browser-stack? true)
     ""))
 
-(defn selected-stack-id-loaded
-  [stack-id]
-  (reset! selected-stack-id stack-id)
-  (reset!
-    home-stack-state
-    (if (some? stack-id)
-      shell.constants/open-with-animation
-      shell.constants/close-with-animation)))
+(defn change-selected-stack-id
+  [stack-id & [store? home-stack-state-value]]
+  (let [home-stack-state-value (or home-stack-state-value
+                                   (calculate-home-stack-state-value stack-id))]
+    (reset! selected-stack-id stack-id)
+    (reset! home-stack-state home-stack-state-value)
+    (when store?
+      (async-storage/set-item! :selected-stack-id stack-id))))
 
 (defn calculate-home-stack-position
   []
@@ -133,28 +143,17 @@
 
 (defn open-home-stack
   [stack-id animate?]
-  (let [home-stack-state-value (if animate?
-                                 shell.constants/open-with-animation
-                                 shell.constants/open-without-animation)]
-    (reanimated/set-shared-value
-     (:selected-stack-id @shared-values-atom)
-     (name stack-id))
-    (reanimated/set-shared-value
-     (:home-stack-state @shared-values-atom)
-     home-stack-state-value)
-    (reset! home-stack-state home-stack-state-value)
-    (js/setTimeout
-     change-root-status-bar-style
-     shell.constants/shell-animation-time)
-    (reset! selected-stack-id stack-id)
-    (async-storage/set-item! :selected-stack-id stack-id)))
+  (let [home-stack-state-value (calculate-home-stack-state-value stack-id animate?)]
+    (reanimated/set-shared-value (:selected-stack-id @shared-values-atom) (name stack-id))
+    (reanimated/set-shared-value (:home-stack-state @shared-values-atom) home-stack-state-value)
+    (js/setTimeout change-root-status-bar-style shell.constants/shell-animation-time)
+    (change-selected-stack-id stack-id true home-stack-state-value)))
 
 (defn change-tab
   [stack-id]
   (reanimated/set-shared-value (:animate-home-stack-left @shared-values-atom) false)
   (reanimated/set-shared-value (:selected-stack-id @shared-values-atom) (name stack-id))
-  (reset! selected-stack-id stack-id)
-  (async-storage/set-item! :selected-stack-id stack-id))
+  (change-selected-stack-id stack-id true))
 
 (defn bottom-tab-on-press
   [stack-id]
@@ -169,16 +168,9 @@
 
 (defn close-home-stack
   [animate?]
-  (let [home-stack-state-value (if animate?
-                                 shell.constants/close-with-animation
-                                 shell.constants/close-without-animation)]
-    (reanimated/set-shared-value
-     (:animate-home-stack-left @shared-values-atom)
-     true)
-    (reanimated/set-shared-value
-     (:home-stack-state @shared-values-atom)
-     home-stack-state-value)
-    (reset! home-stack-state home-stack-state-value)
+  (let [stack-id               nil
+        home-stack-state-value (calculate-home-stack-state-value stack-id animate?)]
+    (reanimated/set-shared-value (:animate-home-stack-left @shared-values-atom) true)
+    (reanimated/set-shared-value (:home-stack-state @shared-values-atom) home-stack-state-value)
     (change-root-status-bar-style)
-    (reset! selected-stack-id nil)
-    (async-storage/set-item! :selected-stack-id nil)))
+    (change-selected-stack-id stack-id true home-stack-state-value)))

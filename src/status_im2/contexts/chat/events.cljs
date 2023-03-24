@@ -202,9 +202,9 @@
 (rf/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat/navigate-to-chat]}
-  [{db :db :as cofx} chat-id from-shell?]
+  [{db :db :as cofx} chat-id]
   (rf/merge cofx
-            {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
+            {:dispatch [:navigate-to :chat chat-id]}
             (when-not (or (= (:view-id db) :community) (= (:view-id db) :community-overview))
               (navigation/pop-to-root :shell-stack))
             (close-chat false)
