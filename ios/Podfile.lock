@@ -671,8 +671,8 @@ SPEC CHECKSUMS:
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: cd5a82674938b226e2496acc3c3bd0b91db3360d
-  glog: 7cfb5f34f4a6bfeb4b325967717f6809a8920c0a
+  FBReactNativeSpec: eff6279ea2a4950b3d4319d37a25b1bbb7725fc0
+  glog: 72c9d9a8b21b8b6335516c0397954895922ad63d
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
