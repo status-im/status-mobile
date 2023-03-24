@@ -12,9 +12,6 @@
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
     "app:android": "react-native run-android"
   },
-  "resolutions": {
-    "react-devtools-core": "^4.26.0"
-  },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
     "@react-native-async-storage/async-storage": "^1.17.9",
