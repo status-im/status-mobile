@@ -3,9 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im2.contexts.onboarding.syncing.syncing-devices.style :as style]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [utils.re-frame :as rf]))
+            [status-im2.contexts.onboarding.common.background.view :as background]))
 
 
 (defn navigation-bar
@@ -14,10 +12,6 @@
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :blur-bg
-                             :icon                :i/arrow-left
-                             :icon-override-theme :dark
-                             :on-press            #(rf/dispatch [:navigate-back])}
      :right-section-buttons [{:type                :blur-bg
                               :icon                :i/info
                               :icon-override-theme :dark
@@ -39,10 +33,7 @@
     [quo/text
      {:size   :heading-2
       :weight :semi-bold
-      :style  {:color colors/white}} "will show sync failed if unsuccessful"]
-    [quo/button
-     {:on-press #(rf/dispatch [:navigate-to :enable-notifications])
-      :style    {}} (i18n/label :t/continue)]]])
+      :style  {:color colors/white}} "will show sync failed if unsuccessful"]]])
 
 (defn syncing-devices
   []

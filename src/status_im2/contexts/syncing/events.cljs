@@ -10,6 +10,13 @@
             [status-im.data-store.settings :as data-store.settings]
             [status-im.utils.platform :as utils.platform]))
 
+(rf/defn local-pairing-completed
+  {:events [:syncing/pairing-completed]}
+  [{:keys [db] :as cofx}]
+  (rf/merge cofx
+            {:db       (dissoc db :local-pairing/completed-pairing?)
+             :dispatch [:init-root :enable-notifications]}))
+
 (defn- get-default-node-config
   [installation-id]
   (let [db {:networks/current-network config/default-network
@@ -24,7 +31,7 @@
 (rf/defn initiate-local-pairing-with-connection-string
   {:events       [:syncing/input-connection-string-for-bootstrapping]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db]} {connection-string :data}]
+  [{:keys [random-guid-generator db]} connection-string]
   (let [installation-id (random-guid-generator)
         default-node-config (get-default-node-config installation-id)
         default-node-config-string (.stringify js/JSON (clj->js default-node-config))

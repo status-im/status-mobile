@@ -481,6 +481,9 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (cond
+    (get db :local-pairing/completed-pairing?)
+    (re-frame/dispatch [:syncing/pairing-completed])
+
     (get db :onboarding-2/new-account?)
     (re-frame/dispatch [:navigate-to :enable-notifications])
 

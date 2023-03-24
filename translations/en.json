@@ -2020,5 +2020,19 @@
     "remove-profile-message": "Remove profile from this device",
     "remove-profile-confirm-message": "All profile data will removed from device.",
     "create-new-profile": "Create new profile",
-    "add-existing-status-profile": "Add existing Status profile"
+    "add-existing-status-profile": "Add existing Status profile",
+    "find-sync-code": "Find sync code",
+    "sign-in-by-syncing": "Sign in by syncing",
+    "synchronise-your-data-across-your-devices": "Synchronise your data across your devices",
+    "scan-sync-qr-code": "Scan QR code",
+    "enter-sync-code": "Enter sync code",
+    "enable-access-to-camera": "Enable access to camera",
+    "to-scan-a-qr-enable-your-camera": "To scan a QR, enable your camera",
+    "enable-camera": "Enable camera",
+    "ensure-qr-code-in-focus-to-scan": "Ensure that the QR code is in focus to scan",
+    "i-dont-have-status-on-another-device": "I don’t have Status on another device",
+    "ensure-qr-code-is-in-focus-to-scan":"Ensure that the QR code is in focus to scan",
+    "error-this-is-not-a-sync-qr-code": "Oops! This is not a sync QR code",
+    "error-syncing-connection-failed": "Oops! Connection failed. Try again",
+    "camera-permission-denied": "Permission denied"
 }

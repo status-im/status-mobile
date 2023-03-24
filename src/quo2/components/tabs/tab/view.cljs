@@ -79,11 +79,12 @@
         [notification-dot/notification-dot
          {:style style/notification-dot}])
       [rn/view
-       {:style (style/tab {:size                   size
-                           :disabled               disabled
-                           :segmented?             segmented?
-                           :background-color       background-color
-                           :show-notification-dot? show-notification-dot?})}
+       {:style (style/tab
+                {:size                   size
+                 :disabled               disabled
+                 :segmented?             segmented?
+                 :background-color       (if (and segmented? (not active)) :transparent background-color)
+                 :show-notification-dot? show-notification-dot?})}
        (when before
          [rn/view
           [icons/icon before {:color icon-color}]])
