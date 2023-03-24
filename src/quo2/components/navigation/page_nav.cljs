@@ -30,16 +30,16 @@
            {:no-color true})))
 
 (defn left-section-view
-  [{:keys [on-press icon accessibility-label type icon-override-theme] :or {type :grey}}
+  [{:keys [on-press icon accessibility-label type icon-background-color] :or {type :grey}}
    put-middle-section-on-left?]
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
    [button/button
-    {:on-press            on-press
-     :icon                true
-     :type                type
-     :size                32
-     :accessibility-label accessibility-label
-     :override-theme      icon-override-theme}
+    {:on-press                  on-press
+     :icon                      true
+     :type                      type
+     :size                      32
+     :accessibility-label       accessibility-label
+     :override-background-color icon-background-color}
     icon]])
 
 (defn- mid-section-comp
@@ -235,15 +235,18 @@
                :align-items    :center}}
       (when left-section
         [left-section-view left-section put-middle-section-on-left?])
-      (when put-middle-section-on-left?
-        [mid-section-view
-         (assoc mid-section-props
-                :left-align?           true
-                :description           (:description mid-section)
-                :description-color     (:description-color mid-section)
-                :description-icon      (:description-icon mid-section)
-                :align-mid?            align-mid?
-                :description-user-icon (:description-user-icon mid-section))])]
-     (when-not put-middle-section-on-left?
-       [mid-section-view mid-section-props])
+      (when mid-section
+        (cond
+          put-middle-section-on-left?
+          [mid-section-view
+           (assoc mid-section-props
+                  :left-align?           true
+                  :description           (:description mid-section)
+                  :description-color     (:description-color mid-section)
+                  :description-icon      (:description-icon mid-section)
+                  :align-mid?            align-mid?
+                  :description-user-icon (:description-user-icon mid-section))]
+
+          (not put-middle-section-on-left?)
+          [mid-section-view mid-section-props]))]
      [right-section-view right-section-buttons]]))
