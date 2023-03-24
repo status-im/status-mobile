@@ -1,7 +1,5 @@
 (ns status-im2.events
   (:require [clojure.string :as string]
-            [quo.theme :as quo.theme]
-            [quo2.theme :as quo2.theme]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
@@ -32,10 +30,8 @@
 (re-frame/reg-fx
  :setup/init-theme
  (fn []
-   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (quo2.theme/set-theme :dark)
-   ;; TODO legacy support
-   (quo.theme/set-theme :dark)))
+   (theme/add-device-theme-change-listener
+    #(re-frame/dispatch [:system-theme-mode-changed %]))))
 
 (rf/defn initialize-views
   {:events [:setup/initialize-view]}

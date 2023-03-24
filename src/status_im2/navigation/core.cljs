@@ -190,6 +190,9 @@
    (let [root (get (roots/roots) new-root-id)]
      (log/debug :init-root-fx new-root-id)
      (dismiss-all-modals)
+     (re-frame/dispatch [:multiaccounts.ui/switch-theme
+                         (get roots/themes new-root-id)
+                         new-root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) new-root-id))
      (navigation/set-root root))))
 
