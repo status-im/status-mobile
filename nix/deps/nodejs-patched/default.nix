@@ -13,6 +13,7 @@ stdenv.mkDerivation {
     "patchHermesPhase"
     "patchJavaPhase"
     "patchReactNativePhase"
+    "patchPodPhase"
     "installPhase"
   ];
 
@@ -86,6 +87,16 @@ stdenv.mkDerivation {
         'src/config.h.in' \
         'src/config.h.in && rm src/config.h.in.bak'
   '';
+
+#  Fix pod issue in react-native 0.67.5:
+#  https://stackoverflow.com/questions/71248072/no-member-named-cancelbuttontintcolor-in-jsnativeactionsheetmanagerspecsh
+#  TODO: remove this patch when maybe after 0.68.5
+  patchPodPhase = ''
+    substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
+          '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
+          '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
+  '';
+
 
   # The ELF types are incompatible with the host platform, so let's not even try
   # TODO: Use Android NDK to strip binaries manually
