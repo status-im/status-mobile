@@ -3,6 +3,8 @@ platform :ios, '11.0'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+RCT_NEW_ARCH_ENABLED="1"
+
 abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
@@ -11,7 +13,7 @@ abstract_target 'Status' do
   flags = get_default_flags()
 
   use_react_native!(:path => config[:reactNativePath],
-       :hermes_enabled => flags[:hermes_enabled],
+       :hermes_enabled => true,
        :fabric_enabled => flags[:fabric_enabled],
        # An absolute path to your application root.
        :app_path => "#{Pod::Config.instance.installation_root}/.."
@@ -44,8 +46,6 @@ abstract_target 'Status' do
   end
 
   post_install do |installer|
-    react_native_post_install(installer)
-        __apply_Xcode_12_5_M1_post_install_workaround(installer)
     # some of libs wouldn't be build for x86_64 otherwise and that is
     # necessary for ios simulators
     installer.pods_project.targets.each do |target|
