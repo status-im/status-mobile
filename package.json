@@ -41,7 +41,7 @@
     "react-native-blob-util": "^0.13.18",
     "react-native-camera-kit": "^8.0.4",
     "react-native-codegen": "^0.0.7",
-    "react-native-config": "git+https://github.com/status-im/react-native-config.git#refs/tags/v1.4.2-status",
+    "react-native-config": "^1.5.0",
     "react-native-dialogs": "^1.0.4",
     "react-native-draggable-flatlist": "^3.0.3",
     "react-native-fast-image": "^8.5.11",
