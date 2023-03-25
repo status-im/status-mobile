@@ -7,8 +7,15 @@ abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
 
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
   use_react_native!(:path => config[:reactNativePath],
-                    :hermes_enabled => false)
+       :hermes_enabled => flags[:hermes_enabled],
+       :fabric_enabled => flags[:fabric_enabled],
+       # An absolute path to your application root.
+       :app_path => "#{Pod::Config.instance.installation_root}/.."
+       )
 
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
   pod 'react-native-config', :path => '../node_modules/react-native-config'
@@ -37,6 +44,8 @@ abstract_target 'Status' do
   end
 
   post_install do |installer|
+    react_native_post_install(installer)
+        __apply_Xcode_12_5_M1_post_install_workaround(installer)
     # some of libs wouldn't be build for x86_64 otherwise and that is
     # necessary for ios simulators
     installer.pods_project.targets.each do |target|
