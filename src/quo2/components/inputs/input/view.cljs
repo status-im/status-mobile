@@ -139,7 +139,7 @@
        (assoc props
               :accessibility-label :password-input
               :auto-capitalize     :none
-              :auto-complete       :new-password
+              :auto-complete       :password
               :secure-text-entry   (not @password-shown?)
               :right-icon          {:style-fn  style/password-icon
                                     :icon-name (if @password-shown? :i/hide :i/reveal)
