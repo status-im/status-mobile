@@ -8707,9 +8707,10 @@ react-native-codegen@^0.0.8:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-"react-native-config@git+https://github.com/status-im/react-native-config.git#refs/tags/v1.4.2-status":
-  version "1.4.2"
-  resolved "git+https://github.com/status-im/react-native-config.git#c3e58d76fed923aaf88eadc5073099fab5ecb346"
+react-native-config@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.5.0.tgz#ff5a78fbbc2c2a0525788e5f3c86101110651ba4"
+  integrity sha512-slecooA/0tCwhb+RuWEbwLqtKirGh9vWPRpgDfH7uPAraCciqHNH2XjS9ylW+Spn4FUrHg5KWTqUGs9BdBADHg==
 
 react-native-crypto@^2.0.1:
   version "2.2.0"
