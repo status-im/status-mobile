@@ -39,7 +39,7 @@
     "qrcode": "^1.4.1",
     "react": "17.0.1",
     "react-dom": "^16.4.2",
-    "react-native": "0.63.5",
+    "react-native": "0.64.4",
     "react-native-background-timer": "^2.1.1",
     "react-native-blob-util": "^0.13.18",
     "react-native-camera-kit": "^8.0.4",
@@ -97,7 +97,7 @@
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",
     "process": "0.11.10",
-    "react-test-renderer": "16.13.1",
+    "react-test-renderer": "17.0.1",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
     "shadow-cljs": "2.11.16"
   },
