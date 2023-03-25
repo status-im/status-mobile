@@ -13,7 +13,8 @@
             [status-im2.contexts.contacts.events :as contacts-store]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [reagent.core :as reagent]))
 
 (defn- get-chat
   [cofx chat-id]
