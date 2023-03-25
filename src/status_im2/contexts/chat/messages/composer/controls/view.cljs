@@ -41,13 +41,13 @@
      :size 32} :i/reaction]])
 
 (defn image-button
-  [chat-id]
+  [insets]
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
                  {:permissions [:read-external-storage :write-external-storage]
                   :on-allowed  #(rf/dispatch
-                                 [:open-modal :photo-selector {:chat-id chat-id}])
+                                 [:open-modal :photo-selector {:insets insets}])
                   :on-denied   (fn []
                                  (background-timer/set-timeout
                                   #(utils-old/show-popup (i18n/label :t/error)
@@ -122,7 +122,7 @@
     (when (and (not @input/recording-audio?)
                (nil? (get @input/reviewing-audio-filepath chat-id)))
       [:<>
-       [image-button chat-id]
+       [image-button insets]
        [rn/view {:width 12}]
        [reactions-button]
        [rn/view {:flex 1}]

@@ -309,12 +309,14 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
                   callback:(RCTResponseSenderBlock)callback) {
 
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
-    NSString *keyUID = [configDict objectForKey:@"keyUID"];
+    NSError *error;
+    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *senderConfig = configDict[@"senderConfig"];
+    NSString *keyUID = senderConfig[@"keyUID"];
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
 
-    [configDict setValue:keystoreDir forKey:@"keystorePath"];
+    [senderConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
 
     NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
@@ -326,17 +328,20 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
                   callback:(RCTResponseSenderBlock)callback) {
 
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSError *error;
+    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *receiverConfig = configDict[@"receiverConfig"];
+    NSMutableDictionary *nodeConfig = receiverConfig[@"nodeConfig"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL *rootDataDir = rootUrl.path;
     NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
+    NSString *rootDataDir = rootUrl.path;
 
-    [configDict setValue:keystoreDir forKey:@"keystorePath"];
-    [configDict setValue:rootDataDir forKey:@"rootDataDir"];
+    [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
+    [nodeConfig setValue:rootDataDir forKey:@"rootDataDir"];
     NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs,modifiedConfigJSON);
+    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, modifiedConfigJSON);
     callback(@[result]);
 }
 
@@ -857,6 +862,34 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
   return StatusgoGenerateAlias(publicKey);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+
+    NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+
+    return commonKeystoreDir.path;
+}
+
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    return rootUrl.path;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFilePath) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    return rootUrl.path;
+}
+
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -932,6 +965,20 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
 #endif
     NSString *result = StatusgoIdenticon(publicKey);
     callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(createAccountAndLogin:(NSString *)request) {
+#if DEBUG
+    NSLog(@"createAccountAndLogin() method called");
+#endif
+    StatusgoCreateAccountAndLogin(request);
+}
+
+RCT_EXPORT_METHOD(restoreAccountAndLogin:(NSString *)request) {
+#if DEBUG
+    NSLog(@"restoreAccountAndLogin() method called");
+#endif
+    StatusgoRestoreAccountAndLogin(request);
 }
 
 RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey

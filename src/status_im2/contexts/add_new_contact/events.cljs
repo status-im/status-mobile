@@ -1,5 +1,6 @@
 (ns status-im2.contexts.add-new-contact.events
-  (:require [utils.re-frame :as rf]
+  (:require [clojure.string :as string]
+            [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
@@ -11,11 +12,120 @@
             [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im.utils.utils :as utils]))
 
+(defn init-contact
+  "Create a new contact (persisted to app-db as [:contacts/new-identity]).
+  The following options are available:
+
+  | key                | description |
+  | -------------------|-------------|
+  | `:user-public-key` | user's public key (not the contact)
+  | `:input`           | raw user input (untrimmed)
+  | `:scanned`         | scanned user input (untrimmed)
+  | `:id`              | public-key|compressed-key|ens
+  | `:type`            | :empty|:public-key|:compressed-key|:ens
+  | `:ens`             | id.eth|id.ens-stateofus
+  | `:public-key`      | public-key (from decompression or ens resolution)
+  | `:state`           | :empty|:invalid|:decompress-key|:resolve-ens|:valid
+  | `:msg`             | keyword i18n msg"
+  ([]
+   (-> [:user-public-key :input :scanned :id :type :ens :public-key :state :msg]
+       (zipmap (repeat nil))))
+  ([kv] (-> (init-contact) (merge kv))))
+
+(def url-regex #"^https?://join.status.im/u/(.+)")
+
+(defn ->id
+  [{:keys [input] :as contact}]
+  (let [trimmed-input (utils/safe-trim input)]
+    (->> {:id (if (empty? trimmed-input)
+                nil
+                (if-some [[_ id] (re-matches url-regex trimmed-input)]
+                  id
+                  trimmed-input))}
+         (merge contact))))
+
+(defn ->type
+  [{:keys [id] :as contact}]
+  (->> (cond
+         (empty? id)
+         {:type :empty}
+
+         (validators/valid-public-key? id)
+         {:type       :public-key
+          :public-key id}
+
+         (validators/valid-compressed-key? id)
+         {:type :compressed-key}
+
+         :else
+         {:type :ens
+          :ens  (stateofus/ens-name-parse id)})
+       (merge contact)))
+
+(defn ->state
+  [{:keys [id type public-key user-public-key] :as contact}]
+  (->> (cond
+         (empty? id)
+         {:state :empty}
+
+         (= type :public-key)
+         {:state :invalid
+          :msg   :t/not-a-chatkey}
+
+         (= public-key user-public-key)
+         {:state :invalid
+          :msg   :t/can-not-add-yourself}
+
+         (and (= type :compressed-key) (empty? public-key))
+         {:state :decompress-key}
+
+         (and (= type :ens) (empty? public-key))
+         {:state :resolve-ens}
+
+         (and (or (= type :compressed-key) (= type :ens))
+              (validators/valid-public-key? public-key))
+         {:state :valid})
+       (merge contact)))
+
+(def validate-contact (comp ->state ->type ->id))
+
+(defn dispatcher [event input] (fn [arg] (rf/dispatch [event input arg])))
+
+(rf/defn set-new-identity
+  {:events [:contacts/set-new-identity]}
+  [{:keys [db]} input scanned]
+  (let [user-public-key (get-in db [:multiaccount :public-key])
+        {:keys [input id ens state]
+         :as   contact} (-> {:user-public-key user-public-key
+                             :input           input
+                             :scanned         scanned}
+                            init-contact
+                            validate-contact)]
+    (case state
+
+      :empty            {:db (dissoc db :contacts/new-identity)}
+      (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
+      :decompress-key   {:db (assoc db :contacts/new-identity contact)
+                         :contacts/decompress-public-key
+                         {:compressed-key id
+                          :on-success
+                          (dispatcher :contacts/set-new-identity-success input)
+                          :on-error
+                          (dispatcher :contacts/set-new-identity-error input)}}
+      :resolve-ens      {:db (assoc db :contacts/new-identity contact)
+                         :contacts/resolve-public-key-from-ens
+                         {:chain-id (ethereum/chain-id db)
+                          :ens ens
+                          :on-success
+                          (dispatcher :contacts/set-new-identity-success input)
+                          :on-error
+                          (dispatcher :contacts/set-new-identity-error input)}})))
+
 (re-frame/reg-fx
  :contacts/decompress-public-key
- (fn [{:keys [public-key on-success on-error]}]
+ (fn [{:keys [compressed-key on-success on-error]}]
    (status/compressed-key->public-key
-    public-key
+    compressed-key
     (fn [resp]
       (let [{:keys [error]} (types/json->clj resp)]
         (if error
@@ -23,74 +133,16 @@
           (on-success (str "0x" (subs resp 5)))))))))
 
 (re-frame/reg-fx
- :contacts/resolve-public-key-from-ens-name
- (fn [{:keys [chain-id ens-name on-success on-error]}]
-   (ens/pubkey chain-id ens-name on-success on-error)))
-
-(defn fx-callbacks
-  [input ens-name]
-  {:on-success (fn [pubkey]
-                 (rf/dispatch [:contacts/set-new-identity-success input ens-name pubkey]))
-   :on-error   (fn [err]
-                 (rf/dispatch [:contacts/set-new-identity-error err input]))})
-
-(defn identify-type
-  [input]
-  (let [regex           #"^https?://join.status.im/u/(.+)"
-        id              (as-> (utils/safe-trim input) $
-                          (if-some [[_ match] (re-matches regex $)]
-                            match
-                            $)
-                          (if (empty? $) nil $))
-        public-key?     (validators/valid-public-key? id)
-        compressed-key? (validators/valid-compressed-key? id)
-        type            (cond (empty? id)     :empty
-                              public-key?     :public-key
-                              compressed-key? :compressed-key
-                              :else           :ens-name)
-        ens-name        (when (= type :ens-name)
-                          (stateofus/ens-name-parse id))]
-    {:input    input
-     :id       id
-     :type     type
-     :ens-name ens-name}))
-
-(rf/defn set-new-identity
-  {:events [:contacts/set-new-identity]}
-  [{:keys [db]} input]
-  (let [{:keys [input id type ens-name]} (identify-type input)]
-    (case type
-      :empty          {:db (dissoc db :contacts/new-identity)}
-      :public-key     {:db (assoc db
-                                  :contacts/new-identity
-                                  {:input      input
-                                   :public-key id
-                                   :state      :error
-                                   :error      :uncompressed-key})}
-      :compressed-key {:db
-                       (assoc db
-                              :contacts/new-identity
-                              {:input input
-                               :state :searching})
-                       :contacts/decompress-public-key
-                       (merge {:public-key id}
-                              (fx-callbacks id ens-name))}
-      :ens-name       {:db
-                       (assoc db
-                              :contacts/new-identity
-                              {:input input
-                               :state :searching})
-                       :contacts/resolve-public-key-from-ens-name
-                       (merge {:chain-id (ethereum/chain-id db)
-                               :ens-name ens-name}
-                              (fx-callbacks id ens-name))})))
+ :contacts/resolve-public-key-from-ens
+ (fn [{:keys [chain-id ens on-success on-error]}]
+   (ens/pubkey chain-id ens on-success on-error)))
 
 (rf/defn build-contact
   {:events [:contacts/build-contact]}
-  [_ pubkey ens-name open-profile-modal?]
+  [_ pubkey ens open-profile-modal?]
   {:json-rpc/call [{:method      "wakuext_buildContact"
                     :params      [{:publicKey pubkey
-                                   :ENSName   ens-name}]
+                                   :ENSName   ens}]
                     :js-response true
                     :on-success  #(rf/dispatch [:contacts/contact-built
                                                 pubkey
@@ -106,24 +158,25 @@
 
 (rf/defn set-new-identity-success
   {:events [:contacts/set-new-identity-success]}
-  [{:keys [db] :as cofx} input ens-name pubkey]
-  (rf/merge cofx
-            {:db (assoc db
-                        :contacts/new-identity
-                        {:input      input
-                         :public-key pubkey
-                         :ens-name   ens-name
-                         :state      :valid})}
-            (build-contact pubkey ens-name false)))
+  [{:keys [db]} input pubkey]
+  (let [contact (get-in db [:contacts/new-identity])]
+    (when (= (:input contact) input)
+      (rf/merge {:db (assoc db
+                            :contacts/new-identity
+                            (->state (assoc contact :public-key pubkey)))}
+                (build-contact pubkey (:ens contact) false)))))
 
 (rf/defn set-new-identity-error
   {:events [:contacts/set-new-identity-error]}
-  [{:keys [db]} error input]
-  {:db (assoc db
-              :contacts/new-identity
-              {:input input
-               :state :error
-               :error :invalid})})
+  [{:keys [db]} input err]
+  (let [contact (get-in db [:contacts/new-identity])]
+    (when (= (:input contact) input)
+      (let [state (cond
+                    (or (string/includes? (:message err) "fallback failed")
+                        (string/includes? (:message err) "no such host"))
+                    {:state :invalid :msg :t/lost-connection}
+                    :else {:state :invalid})]
+        {:db (assoc db :contacts/new-identity (merge contact state))}))))
 
 (rf/defn clear-new-identity
   {:events [:contacts/clear-new-identity :contacts/new-chat-focus]}
@@ -132,7 +185,13 @@
 
 (rf/defn qr-code-scanned
   {:events [:contacts/qr-code-scanned]}
-  [{:keys [db] :as cofx} input]
+  [{:keys [db] :as cofx} scanned]
   (rf/merge cofx
-            (set-new-identity input)
+            (set-new-identity scanned scanned)
             (navigation/navigate-back)))
+
+(rf/defn set-new-identity-reconnected
+  [{:keys [db]}]
+  (let [input     (get-in db [:contacts/new-identity :input])
+        resubmit? (and input (= :new-contact (get-in db [:view-id])))]
+    (rf/dispatch [:contacts/set-new-identity input])))

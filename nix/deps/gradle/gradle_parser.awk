@@ -29,17 +29,17 @@ function findPackage(line, regex) {
         if (line ~ "com.facebook.react:react-native") { continue }
 
         # Example: +--- org.jetbrains.kotlin:kotlin-stdlib:1.3.50
-        if (findPackage(line, "--- ([^:]+):([^:]+):([^ ]+)$")) {
+        if (findPackage(line, "--- ([^ :]+):([^ :]+):([^ :]+)$")) {
             continue
         }
 
         # Example: +--- androidx.lifecycle:lifecycle-common:{strictly 2.0.0} -> 2.0.0 (c)
-        if (findPackage(line, "--- ([^:]+):([^:]+):[^ ]+ -> ([^: ]+) ?(\\([*c]\\))?$")) {
+        if (findPackage(line, "--- ([^ :]+):([^ :]+):[^:]+ -> ([^ :]+) ?(\\([*c]\\))?$")) {
             continue
         }
 
         # Example: +--- com.android.support:appcompat-v7:28.0.0 -> androidx.appcompat:appcompat:1.0.2
-        if (findPackage(line, "--- [^:]+:[^:]+:[^ ]+ -> ([^:]+):([^:]+):([^ ]+)$")) {
+        if (findPackage(line, "--- [^ :]+:[^ :]+:[^ ]+ -> ([^ :]+):([^ :]+):([^ :]+)$")) {
             continue
         }
     }

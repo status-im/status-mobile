@@ -10,6 +10,13 @@
             [status-im.data-store.settings :as data-store.settings]
             [status-im.utils.platform :as utils.platform]))
 
+(rf/defn local-pairing-completed
+  {:events [:syncing/pairing-completed]}
+  [{:keys [db] :as cofx}]
+  (rf/merge cofx
+            {:db       (dissoc db :local-pairing/completed-pairing?)
+             :dispatch [:init-root :enable-notifications]}))
+
 (defn- get-default-node-config
   [installation-id]
   (let [db {:networks/current-network config/default-network
@@ -24,17 +31,18 @@
 (rf/defn initiate-local-pairing-with-connection-string
   {:events       [:syncing/input-connection-string-for-bootstrapping]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db]} {connection-string :data}]
+  [{:keys [random-guid-generator db]} connection-string]
   (let [installation-id (random-guid-generator)
         default-node-config (get-default-node-config installation-id)
         default-node-config-string (.stringify js/JSON (clj->js default-node-config))
         callback
         (fn [final-node-config]
           (let [config-map (.stringify js/JSON
-                                       (clj->js {:kdfIterations         config/default-kdf-iterations
-                                                 :nodeConfig            final-node-config
-                                                 :settingCurrentNetwork config/default-network
-                                                 :deviceType            utils.platform/os}))]
+                                       (clj->js
+                                        {:receiverConfig {:kdfIterations config/default-kdf-iterations
+                                                          :nodeConfig final-node-config
+                                                          :settingCurrentNetwork config/default-network
+                                                          :deviceType utils.platform/os}}))]
             (status/input-connection-string-for-bootstrapping
              connection-string
              config-map
@@ -49,10 +57,11 @@
   (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
         key-uid    (get-in db [:multiaccount :key-uid])
         config-map (.stringify js/JSON
-                               (clj->js {:keyUID       key-uid
-                                         :keystorePath ""
-                                         :password     sha3-pwd
-                                         :deviceType   utils.platform/os}))]
+                               (clj->js {:senderConfig {:keyUID       key-uid
+                                                        :keystorePath ""
+                                                        :password     sha3-pwd
+                                                        :deviceType   utils.platform/os}
+                                         :serverConfig {:timeout 0}}))]
     (status/get-connection-string-for-bootstrapping-another-device
      config-map
      (fn [connection-string]

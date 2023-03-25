@@ -1,27 +1,33 @@
 (ns status-im2.navigation.screens
-  (:require [utils.i18n :as i18n] ;; TODO remove when not used anymore
-            [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im.ui.screens.screens :as old-screens]
-            [status-im2.config :as config]
-            [status-im2.contexts.activity-center.view :as activity-center]
-            [status-im2.contexts.add-new-contact.views :as add-new-contact]
-            [status-im2.contexts.chat.lightbox.view :as lightbox]
-            [status-im2.contexts.chat.messages.view :as chat]
-            [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
-            [status-im2.contexts.chat.photo-selector.view :as photo-selector]
-            [status-im2.contexts.communities.discover.view :as communities.discover]
-            [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.onboarding.common.intro.view :as intro]
-            [status-im2.contexts.onboarding.create-password.view :as create-password]
-            [status-im2.contexts.onboarding.create-profile.view :as create-profile]
-            [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
-            [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
-            [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
-            [status-im2.contexts.onboarding.profiles.view :as profiles]
-            [status-im2.contexts.quo-preview.main :as quo.preview]
-            [status-im2.contexts.shell.view :as shell]
-            [status-im2.contexts.syncing.view :as settings-syncing]))
+  (:require
+    [utils.i18n :as i18n] ;; TODO remove when not used anymore
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [status-im.ui.screens.screens :as old-screens]
+    [status-im2.config :as config]
+    [status-im2.contexts.activity-center.view :as activity-center]
+    [status-im2.contexts.add-new-contact.views :as add-new-contact]
+    [status-im2.contexts.chat.lightbox.view :as lightbox]
+    [status-im2.contexts.chat.messages.view :as chat]
+    [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
+    [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.communities.discover.view :as communities.discover]
+    [status-im2.contexts.communities.overview.view :as communities.overview]
+    [status-im2.contexts.onboarding.common.intro.view :as intro]
+    [status-im2.contexts.onboarding.create-password.view :as create-password]
+    [status-im2.contexts.onboarding.create-profile.view :as create-profile]
+    [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
+    [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.welcome.view :as welcome]
+    [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
+    [status-im2.contexts.onboarding.sign-in.view :as sign-in]
+    [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
+    [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
+    [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
+    [status-im2.contexts.onboarding.profiles.view :as profiles]
+    [status-im2.contexts.quo-preview.main :as quo.preview]
+    [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.syncing.view :as settings-syncing]))
 
 (def components
   [])
@@ -34,11 +40,19 @@
                              :orientation              :portrait
                              :backgroundColor          :transparent}}
    (if platform/android?
-     {:navigationBar {:backgroundColor colors/neutral-100}
-      :statusBar     {:backgroundColor :transparent
-                      :style           :light
-                      :drawBehind      true}}
+     {:statusBar {:backgroundColor :transparent
+                  :style           :light
+                  :drawBehind      true}}
      {:statusBar {:style :light}})))
+
+(def bottom-sheet-options
+  {:topBar                 {:visible false}
+   :layout                 {:componentBackgroundColor :transparent
+                            :backgroundColor          :transparent}
+   :modalPresentationStyle :overCurrentContext})
+
+(def bottom-sheet-insets
+  {:top false})
 
 (defn screens
   []
@@ -84,7 +98,8 @@
                                                                                     :factor 1.5}}]}}}
      :component lightbox/lightbox}
     {:name      :photo-selector
-     :options   {:topBar {:visible false}}
+     :insets    bottom-sheet-insets
+     :options   bottom-sheet-options
      :component photo-selector/photo-selector}
 
     {:name      :album-selector
@@ -116,9 +131,14 @@
 
     ;; Onboarding - new to Status
     {:name      :new-to-status
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar {:style :light}
+                 :topBar    {:visible false}}
+     :insets    {:top false}
+     :component new-to-status/new-to-status}
+
+    {:name      :create-profile
+     :options   {:statusBar {:style :light}
+                 :topBar    {:visible false}}
      :insets    {:top false}
      :component new-to-status/new-to-status}
 
@@ -143,12 +163,49 @@
      :insets    {:top false}
      :component enable-biometrics/enable-biometrics}
 
+    {:name      :generating-keys
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component generating-keys/generating-keys}
+
+    {:name      :enter-seed-phrase
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component enter-seed-phrase/enter-seed-phrase}
+
     {:name      :enable-notifications
      :options   {:statusBar     {:style :light}
                  :topBar        {:visible false}
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
-     :component enable-notifications/enable-notifications}]
+     :component enable-notifications/enable-notifications}
+
+    {:name      :sign-in
+     :options   {:statusBar     {:style           :light
+                                 :backgroundColor :transparent
+                                 :translucent     true}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component sign-in/view}
+
+    {:name      :syncing-devices
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component syncing-devices/syncing-devices}
+
+    {:name      :welcome
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component welcome/view}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)

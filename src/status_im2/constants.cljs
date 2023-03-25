@@ -90,6 +90,9 @@
 (def ^:const command-state-transaction-pending 6)
 (def ^:const command-state-transaction-sent 7)
 
+(def ^:const profile-default-color :blue)
+(def ^:const profile-name-max-length 24)
+
 (def ^:const profile-pictures-show-to-contacts-only 1)
 (def ^:const profile-pictures-show-to-everyone 2)
 (def ^:const profile-pictures-show-to-none 3)
@@ -260,6 +263,27 @@
   An example of a connection string is -> cs2:5vd6J6:Jfc:27xMmHKEYwzRGXcvTtuiLZFfXscMx4Mz8d9wEHUxDj4p7:EG7Z13QScfWBJNJ5cprszzDQ5fBVsYMirXo8MaQFJvpF:3 "
   "cs")
 
+;; sender and receiver events
+(def ^:const local-pairing-event-connection-success "connection-success")
+(def ^:const local-pairing-event-connection-error "connection-error")
+(def ^:const local-pairing-event-transfer-success "transfer-success")
+(def ^:const local-pairing-event-transfer-error "transfer-error")
+
+;; receiver events
+(def ^:const local-pairing-event-received-amount "received-account")
+(def ^:const local-pairing-event-process-success "process-success")
+(def ^:const local-pairing-event-process-error "process-error")
+
+(def ^:const local-pairing-event-errors
+  #{local-pairing-event-connection-error
+    local-pairing-event-transfer-error
+    local-pairing-event-process-error})
+
+(def ^:const local-pairing-action-connect 1)
+(def ^:const local-pairing-action-pairing-account 2)
+(def ^:const local-pairing-action-sync-device 3)
+(def ^:const local-pairing-action-pairing-installation 4)
+
 (def ^:const serialization-key
   "We pass this serialization key as a parameter to MultiformatSerializePublicKey
   function at status-go, This key determines the output base of the serialization.
@@ -292,3 +316,5 @@
 (def ^:const everyone-mention-id "0x00001")
 
 (def ^:const empty-category-id :communities/not-categorized)
+
+(def ^:const seed-phrase-valid-length #{12 18 24})

@@ -802,9 +802,9 @@ https://repo.maven.apache.org/maven2/org/ow2/asm/asm/6.0/asm-6.0.pom
 https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.4/asm-9.4.pom
 https://repo.maven.apache.org/maven2/org/ow2/ow2/1.3/ow2-1.3.pom
 https://repo.maven.apache.org/maven2/org/ow2/ow2/1.5.1/ow2-1.5.1.pom
-https://repo.maven.apache.org/maven2/org/slf4j/jcl-over-slf4j/2.0.6/jcl-over-slf4j-2.0.6.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-jdk14/2.0.6/slf4j-jdk14-2.0.6.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/2.0.6/slf4j-parent-2.0.6.pom
+https://repo.maven.apache.org/maven2/org/slf4j/jcl-over-slf4j/2.0.7/jcl-over-slf4j-2.0.7.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-jdk14/2.0.7/slf4j-jdk14-2.0.7.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/2.0.7/slf4j-parent-2.0.7.pom
 https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom
 https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom

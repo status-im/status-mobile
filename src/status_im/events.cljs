@@ -57,6 +57,7 @@
     status-im2.contexts.activity-center.events
     status-im2.contexts.activity-center.notification.contact-requests.events
     status-im2.contexts.shell.events
+    status-im2.contexts.onboarding.events
     status-im.chat.models.gaps
     [status-im2.navigation.events :as navigation]))
 
@@ -116,7 +117,7 @@
   (let [current-theme-type (get-in cofx [:db :multiaccount :appearance])]
     (when (and (multiaccounts.model/logged-in? cofx)
                (= current-theme-type status-im2.constants/theme-type-system))
-      {:multiaccounts.ui/switch-theme
+      {:multiaccounts.ui/switch-theme-fx
        [(get-in db [:multiaccount :appearance])
         (:view-id db) true]})))
 

@@ -1,7 +1,5 @@
 (ns status-im2.events
   (:require [clojure.string :as string]
-            [quo.theme :as quo.theme]
-            [quo2.theme :as quo2.theme]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
@@ -10,6 +8,7 @@
             [status-im2.common.theme.core :as theme]
             [status-im2.common.toasts.events]
             [status-im2.contexts.add-new-contact.events]
+            status-im2.contexts.onboarding.events
             [status-im2.common.bottom-sheet.events]
             [status-im2.navigation.events :as navigation]
             [status-im2.db :as db]
@@ -31,10 +30,8 @@
 (re-frame/reg-fx
  :setup/init-theme
  (fn []
-   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (quo2.theme/set-theme (if (theme/dark-mode?) :dark :light))
-   ;; TODO legacy support
-   (quo.theme/set-theme (if (theme/dark-mode?) :dark :light))))
+   (theme/add-device-theme-change-listener
+    #(re-frame/dispatch [:system-theme-mode-changed %]))))
 
 (rf/defn initialize-views
   {:events [:setup/initialize-view]}
@@ -49,7 +46,17 @@
                                                    multiaccount
                                                    [:key-uid :name :public-key :identicon :images]))
                   (keychain/get-auth-method (:key-uid multiaccount))))
-      (navigation/init-root cofx :intro-stack))))
+      (navigation/init-root cofx :intro))))
+
+(defn rpc->multiaccount
+  [{:keys [customizationColor keycard-pairing] :as multiaccount}]
+  (-> multiaccount
+      (dissoc :customizationColor)
+      (assoc :customization-color (keyword customizationColor))
+      (assoc :keycard-pairing
+             (when-not
+               (string/blank? keycard-pairing)
+               keycard-pairing))))
 
 (rf/defn initialize-multiaccounts
   {:events [:setup/initialize-multiaccounts]}
@@ -57,10 +64,7 @@
   (let [multiaccounts (reduce (fn [acc
                                    {:keys [key-uid keycard-pairing]
                                     :as   multiaccount}]
-                                (-> (assoc acc key-uid multiaccount)
-                                    (assoc-in [key-uid :keycard-pairing]
-                                              (when-not (string/blank? keycard-pairing)
-                                                keycard-pairing))))
+                                (assoc acc key-uid (rpc->multiaccount multiaccount)))
                               {}
                               all-multiaccounts)]
     (rf/merge cofx

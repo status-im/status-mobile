@@ -60,6 +60,7 @@
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
     quo2.components.onboarding.small-option-card.view
+    quo2.components.tabs.segmented-tab
     quo2.components.tabs.account-selector
     quo2.components.tabs.tabs
     quo2.components.tags.context-tags
@@ -91,6 +92,7 @@
 (def audio-tag quo2.components.tags.context-tags/audio-tag)
 (def community-tag quo2.components.tags.context-tags/community-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
+(def segmented-control quo2.components.tabs.segmented-tab/segmented-control)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def page-nav quo2.components.navigation.page-nav/page-nav)

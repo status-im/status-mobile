@@ -44,6 +44,7 @@
     [status-im2.navigation.events :as navigation]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
+    [status-im2.contexts.shell.animation :as shell.animation]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -338,10 +339,6 @@
     {:method     "permissions_getDappPermissions"
      :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
 
-(rf/defn initialize-appearance
-  [cofx]
-  {:multiaccounts.ui/switch-theme [(get-in cofx [:db :multiaccount :appearance]) nil false]})
-
 (rf/defn get-group-chat-invitations
   [_]
   {:json-rpc/call
@@ -393,7 +390,6 @@
                 #(do (re-frame/dispatch [:chats-list/load-success %])
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
-              (initialize-appearance)
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
@@ -479,8 +475,17 @@
 (defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [db]
-  (if (get db :tos/accepted?)
+  (cond
+    (get db :local-pairing/completed-pairing?)
+    (re-frame/dispatch [:syncing/pairing-completed])
+
+    (get db :onboarding-2/new-account?)
+    (re-frame/dispatch [:navigate-to :enable-notifications])
+
+    (get db :tos/accepted?)
     (re-frame/dispatch [:init-root :shell-stack])
+
+    :else
     (re-frame/dispatch [:init-root :tos])))
 
 (rf/defn login-only-events
@@ -514,10 +519,11 @@
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
+    (shell.animation/change-selected-stack-id :communities-stack true)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)
-                                (assoc :tos/next-root :onboarding-notification :chats/loading? false)
+                                (assoc :tos/next-root :enable-notifications :chats/loading? false)
                                 (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
                ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
@@ -528,7 +534,7 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-              (navigation/init-root :shell-stack))))
+              (navigation/init-root :enable-notifications))))
 
 (defn- keycard-setup?
   [cofx]
@@ -631,7 +637,7 @@
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
           {:init-root-fx :multiaccounts-keycard}
-          {:init-root-fx :multiaccounts})
+          {:init-root-fx :profiles})
        #(when goto-key-storage?
           (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))
 
@@ -730,8 +736,9 @@
         keycard-multiaccount? (boolean (:keycard-pairing multiaccount))]
     (rf/merge
      cofx
-     {:db             (update db :keycard dissoc :application-info)
-      :navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
+     (merge
+      {:db (update db :keycard dissoc :application-info)}
+      (when keycard-multiaccount? {:navigate-to-fx :keycard-login-pin}))
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (rf/defn hide-keycard-banner

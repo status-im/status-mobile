@@ -46,8 +46,8 @@ in {
 
   # Package version adjustments
   gradle = super.gradle_5;
-  nodejs = super.nodejs-16_x;
-  yarn = super.yarn.override { nodejs = super.nodejs-16_x; };
+  nodejs = super.nodejs-18_x;
+  yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.openjdk8_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "13.3";

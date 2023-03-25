@@ -2,14 +2,16 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn card-container
-  [customization-color padding-bottom]
-  {:flex-direction     :column
-   :padding-horizontal 12
-   :padding-top        12
-   :padding-bottom     padding-bottom
-   :flex               1
-   :border-radius      16
-   :background-color   (colors/custom-color customization-color 50 40)})
+  [{:keys [customization-color padding-bottom border-bottom-radius]}]
+  {:padding-horizontal         12
+   :padding-top                12
+   :padding-bottom             padding-bottom
+   :flex                       1
+   :border-top-left-radius     16
+   :border-top-right-radius    16
+   :border-bottom-left-radius  border-bottom-radius
+   :border-bottom-right-radius border-bottom-radius
+   :background-color           (colors/custom-color customization-color 50 40)})
 
 (def card-header
   {:flex-direction  :row

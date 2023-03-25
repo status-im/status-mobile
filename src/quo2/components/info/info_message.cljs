@@ -22,18 +22,18 @@
   opts
   {:type           :default/:success/:error
    :size           :default/:tiny
-   :icon           :main-icons/info ;; info message icon
+   :icon           :i/info ;; info message icon
    :text-color     colors/white     ;; text color override
    :icon-color     colors/white    ;; icon color override
    :no-icon-color? false       ;; disable tint color for icon"
-  [{:keys [type size icon text-color icon-color no-icon-color?]} message]
+  [{:keys [type size icon text-color icon-color no-icon-color? style]} message]
   (let [weight     (if (= size :default) :regular :medium)
         size       (if (= size :default) :paragraph-2 :label)
         text-color (or text-color (get-color type))
         icon-color (or icon-color text-color)]
     [rn/view
-     {:style {:flex-direction :row
-              :flex           1}}
+     {:style (merge {:flex-direction :row}
+                    style)}
      [quo2.icons/icon icon
       {:color           icon-color
        :no-color        no-icon-color?

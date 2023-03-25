@@ -17,12 +17,11 @@
             {:message-id "0x333" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}
             {:message-id "0x222" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}
             {:message-id "0x111" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}]
+    :content {:response-to nil}
+    :quoted-message nil
     :album-id "abc"
     :albumize? true
     :message-id "0x444"
-    :deleted? nil
-    :deleted-for-me? nil
-    :deleted-by nil
     :from :xyz
     :timestamp-str "14:00"
     :content-type constants/content-type-album}])

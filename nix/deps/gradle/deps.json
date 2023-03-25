@@ -11572,57 +11572,57 @@
   },
 
   {
-    "path": "org/slf4j/jcl-over-slf4j/2.0.6",
+    "path": "org/slf4j/jcl-over-slf4j/2.0.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jcl-over-slf4j-2.0.6.pom": {
-        "sha1": "c9d9caedcca2a1564e47b55614960958c5f78773",
-        "sha256": "1swgy5hwv54b1i1117shn3wmwba3v78qvy6cnv8v243j7ac6vzqq"
+      "jcl-over-slf4j-2.0.7.pom": {
+        "sha1": "15536e4a74a7aa317322a3d7814db8251de60d6f",
+        "sha256": "1rzjwbmzf2hb85j6c41mch803vqwqdq1rfrrirfhp1lfpfnzyd23"
       },
-      "jcl-over-slf4j-2.0.6.jar": {
-        "sha1": "839ff57e112f2e28ef372e96d135696a6896b9ad",
-        "sha256": "0s9scdwkxwj3al87ihanj10rscrjh44kligr5asb7qpl28d1xvks"
+      "jcl-over-slf4j-2.0.7.jar": {
+        "sha1": "f127fe5ee53404a8b3697cdd032dd1dd6a29dd77",
+        "sha256": "0hhpc2qdl4aa9mb8dk89wzbd5vkna557vjmjdmfswvfjw5bng021"
       }
     }
   },
 
   {
-    "path": "org/slf4j/slf4j-api/2.0.6",
+    "path": "org/slf4j/slf4j-api/2.0.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "slf4j-api-2.0.6.pom": {
-        "sha1": "2b93d5f66ad2ba259bf4b2c94da39f0d6c544400",
-        "sha256": "0dipzawn8rxikciij2z06c25rb2vdj83s8ga3a7n10r77p2qcklb"
+      "slf4j-api-2.0.7.pom": {
+        "sha1": "facf002401dbff2065d4257690651e3fa775e3f4",
+        "sha256": "10br4q2w50fn3mkvk1xji81wdpy86cm0wyv6m30xa0ha1v7kqh1d"
       },
-      "slf4j-api-2.0.6.jar": {
-        "sha1": "88c40d8b4f33326f19a7d3c0aaf2c7e8721d4953",
-        "sha256": "1nkv0z4dpkvp6pr9ph8087z5r691bv95xdv3gnfi6s5j23a94aig"
+      "slf4j-api-2.0.7.jar": {
+        "sha1": "41eb7184ea9d556f23e18b5cb99cad1f8581fc00",
+        "sha256": "1x26v62ypzpp84yfad8mx53llbacq6580y34v8nc618r7awrhqjx"
       }
     }
   },
 
   {
-    "path": "org/slf4j/slf4j-jdk14/2.0.6",
+    "path": "org/slf4j/slf4j-jdk14/2.0.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "slf4j-jdk14-2.0.6.pom": {
-        "sha1": "96ac9d6ab608e787d54892b35205bc6a560aa007",
-        "sha256": "0gnsyy1n5v8xqdy6a6p1752m5c4afihpw0n36n6aqw01y9l86q1h"
+      "slf4j-jdk14-2.0.7.pom": {
+        "sha1": "31039eac9f263c48bda14efd90aef0fb7a5a0e6a",
+        "sha256": "1vx1ziyx36zf2lrpkvvm4c75hp8pw8vjpiyr5120ss8nwpd33qal"
       },
-      "slf4j-jdk14-2.0.6.jar": {
-        "sha1": "13056cb341f2d8795120f8027766a058da874f85",
-        "sha256": "0jncm8a2ppliqpzkbqm26sn98mwif8c1nligc1zh4jbzr8mxyzhy"
+      "slf4j-jdk14-2.0.7.jar": {
+        "sha1": "d91cd16b55ffbd5f46c60d0173fd4eeccacfee2d",
+        "sha256": "1xvphj12jpnvr1sw8zx42p49in4xi61mjvpxrkk3q3qpyad7017r"
       }
     }
   },
 
   {
-    "path": "org/slf4j/slf4j-parent/2.0.6",
+    "path": "org/slf4j/slf4j-parent/2.0.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "slf4j-parent-2.0.6.pom": {
-        "sha1": "0f99f8426c64fc5e0c4b6749245e50484a16c372",
-        "sha256": "091il49sidk0lcmzdy0vl3a4l16kw6x1q0l9vk0hir1ipq66b0hl"
+      "slf4j-parent-2.0.7.pom": {
+        "sha1": "3f97e066227cc2353d212b8c43440b0bf4c033f3",
+        "sha256": "1rs55v9gqda5lks89dd81frps5c9g3zgxk832qyckw9srlvbp0n1"
       }
     }
   },

@@ -6,12 +6,13 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
-(def themes
+(defn themes
+  [customization-color]
   {:light {:primary         {:icon-color       colors/white
                              :label-color      colors/white
-                             :background-color {:default  colors/primary-50
-                                                :pressed  colors/primary-60
-                                                :disabled colors/primary-50}}
+                             :background-color {:default  (colors/custom-color customization-color 50)
+                                                :pressed  (colors/custom-color customization-color 60)
+                                                :disabled (colors/custom-color customization-color 50)}}
            :secondary       {:icon-color       colors/primary-50
                              :label-color      colors/primary-50
                              :background-color {:default  colors/primary-50-opa-20
@@ -74,9 +75,9 @@
                                                 :disabled colors/neutral-95}}}
    :dark  {:primary         {:icon-color       colors/white
                              :label-color      colors/white
-                             :background-color {:default  colors/primary-60
-                                                :pressed  colors/primary-50
-                                                :disabled colors/primary-60}}
+                             :background-color {:default  (colors/custom-color customization-color 60)
+                                                :pressed  (colors/custom-color customization-color 50)
+                                                :disabled (colors/custom-color customization-color 60)}}
            :secondary       {:icon-color       colors/primary-50
                              :label-color      colors/primary-50
                              :background-color {:default  colors/primary-50-opa-20
@@ -218,14 +219,15 @@
   (let [pressed (reagent/atom false)]
     (fn
       [{:keys [on-press disabled type size community-color community-text-color before after above
-               width
+               width customization-color
                override-theme override-background-color
                on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
-        :or   {type :primary
-               size 40}}
+        :or   {type                :primary
+               size                40
+               customization-color :primary}}
        children]
       (let [{:keys [icon-color icon-secondary-color background-color label-color border-color]}
-            (get-in themes
+            (get-in (themes customization-color)
                     [(or
                       override-theme
                       (theme/get-theme)) type])
@@ -252,11 +254,7 @@
          [rn/view
           {:style (merge
                    (shape-style-container type icon size)
-                   {:background-color
-                    (if (= state :pressed)
-                      (colors/theme-colors colors/neutral-100 colors/white)
-                      :transparent)
-                    :width width}
+                   {:width width}
                    style)}
           [rn/view
            {:style (merge

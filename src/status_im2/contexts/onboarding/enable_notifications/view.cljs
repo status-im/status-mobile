@@ -1,37 +1,71 @@
 (ns status-im2.contexts.onboarding.enable-notifications.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.contexts.onboarding.enable-notifications.style :as style]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [status-im.notifications.core :as notifications]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.enable-notifications.style :as style]))
 
 (defn navigation-bar
   []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?  true
-     :mid-section {:type :text-only :main-text ""}
-    }]])
+  [quo/page-nav
+   (merge {:horizontal-description? false
+           :one-icon-align-left?    true
+           :align-mid?              false
+           :page-nav-color          :transparent
+           :left-section            {:icon                  :i/arrow-left
+                                     :icon-background-color colors/white-opa-5
+                                     :icon-override-theme   :dark
+                                     :type                  :shell
+                                     :on-press              #()}})])
 
-(defn page
+(defn page-title
   []
-  [rn/view {:style style/page-container}
-   [navigation-bar]
-   [rn/view {:style {:padding-horizontal 20}}
-    [quo/text
-     {:size   :heading-1
-      :weight :semi-bold
-      :style  {:color colors/white}} "Enable-notifications"]
-    [quo/button
-     {:on-press       #(rf/dispatch [:navigate-to :shell-stack])
-      :type           :grey
-      :override-theme :dark
-      :style          {}} (i18n/label :t/continue)]]])
+  [rn/view {:style style/title-container}
+   [quo/text
+    {:accessibility-label :notifications-screen-title
+     :weight              :semi-bold
+     :size                :heading-1
+     :style               {:color colors/white}}
+    (i18n/label :t/intro-wizard-title6)]
+   [quo/text
+    {:accessibility-label :notifications-screen-sub-title
+     :weight              :regular
+     :size                :paragraph-1
+     :style               {:color colors/white}}
+    (i18n/label :t/enable-notifications-sub-title)]])
+
+(defn enable-notification-buttons
+  []
+  [rn/view {:style style/enable-notifications-buttons}
+   [quo/button
+    {:on-press                  (fn []
+                                  (rf/dispatch [::notifications/switch true platform/ios?])
+                                  (rf/dispatch [:init-root :welcome]))
+     :type                      :primary
+     :before                    :i/notifications
+     :accessibility-label       :enable-notifications-button
+     :override-background-color (colors/custom-color :magenta 60)}
+    (i18n/label :t/intro-wizard-title6)]
+   [quo/button
+    {:on-press                  #(rf/dispatch [:init-root :welcome])
+     :accessibility-label       :enable-notifications-later-button
+     :override-background-color colors/white-opa-5
+     :style                     {:margin-top 12}}
+    (i18n/label :t/maybe-later)]])
 
 (defn enable-notifications
   []
-  [rn/view {:style {:flex 1}}
+  [rn/view {:style style/enable-notifications}
    [background/view true]
-   [page]])
+   [navigation-bar]
+   [page-title]
+   [rn/view {:style style/page-illustration}
+    [quo/text
+     "[Illustration here]"]]
+   [enable-notification-buttons]])
+

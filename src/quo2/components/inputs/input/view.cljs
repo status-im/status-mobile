@@ -9,7 +9,9 @@
 (defn- label-&-counter
   [{:keys [label current-chars char-limit variant-colors]}]
   (let [count-text (when char-limit (str current-chars "/" char-limit))]
-    [rn/view {:style style/texts-container}
+    [rn/view
+     {:accessibility-label :input-labels
+      :style               style/texts-container}
      [rn/view {:style style/label-container}
       [text/text
        {:style  (style/label-color variant-colors)
@@ -25,23 +27,27 @@
 
 (defn- left-accessory
   [{:keys [variant-colors small? icon-name]}]
-  [rn/view {:style (style/left-icon-container small?)}
+  [rn/view
+   {:accessibility-label :input-icon
+    :style               (style/left-icon-container small?)}
    [icon/icon icon-name (style/icon variant-colors)]])
 
 (defn- right-accessory
   [{:keys [variant-colors small? disabled? on-press icon-style-fn icon-name]}]
   [rn/touchable-opacity
-   {:style    (style/right-icon-touchable-area small?)
-    :disabled disabled?
-    :on-press on-press}
+   {:accessibility-label :input-right-icon
+    :style               (style/right-icon-touchable-area small?)
+    :disabled            disabled?
+    :on-press            on-press}
    [icon/icon icon-name (icon-style-fn variant-colors)]])
 
 (defn- right-button
   [{:keys [variant-colors colors-by-status small? disabled? on-press text]}]
   [rn/touchable-opacity
-   {:style    (style/button variant-colors small?)
-    :disabled disabled?
-    :on-press on-press}
+   {:accessibility-label :input-button
+    :style               (style/button variant-colors small?)
+    :disabled            disabled?
+    :on-press            on-press}
    [rn/text {:style (style/button-text colors-by-status)}
     text]])
 
@@ -77,7 +83,7 @@
             colors-by-status (style/status-colors status-kw blur? override-theme)
             variant-colors   (style/variants-colors blur? override-theme)
             clean-props      (apply dissoc props custom-props)]
-        [rn/view
+        [:<>
          (when (or label char-limit)
            [label-&-counter
             {:variant-colors variant-colors
@@ -92,6 +98,7 @@
               :icon-name      icon-name}])
           [rn/text-input
            (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
+                    :accessibility-label    :input
                     :placeholder-text-color (:placeholder colors-by-status)
                     :cursor-color           (:cursor variant-colors)
                     :editable               (not disabled?)
@@ -126,12 +133,13 @@
     (fn [props]
       [base-input
        (assoc props
-              :auto-capitalize   :none
-              :auto-complete     :new-password
-              :secure-text-entry (not @password-shown?)
-              :right-icon        {:style-fn  style/password-icon
-                                  :icon-name (if @password-shown? :i/hide :i/reveal)
-                                  :on-press  #(swap! password-shown? not)})])))
+              :accessibility-label :password-input
+              :auto-capitalize     :none
+              :auto-complete       :new-password
+              :secure-text-entry   (not @password-shown?)
+              :right-icon          {:style-fn  style/password-icon
+                                    :icon-name (if @password-shown? :i/hide :i/reveal)
+                                    :on-press  #(swap! password-shown? not)})])))
 
 (defn input
   "This input supports the following properties:
@@ -146,7 +154,7 @@
   - :clearable? - Booolean to specify if this input has a clear button at the end.
   - :on-clear - Function executed when the clear button is pressed.
   - :button - Map containing `:on-press` & `:text` keys, if provided renders a button
-  - :label - A label for this input.
+  - :label - A string to set as label for this input.
   - :char-limit - A number to set a maximum char limit for this input.
   - :on-char-limit-reach - Function executed each time char limit is reached or exceeded.
   and supports the usual React Native's TextInput properties to control its behaviour:

@@ -25,7 +25,7 @@
       :weight :semi-bold
       :style  {:color colors/white}} "Enable-biometrics"]
     [quo/button
-     {:on-press       #(rf/dispatch [:navigate-to :enable-notifications])
+     {:on-press       #(rf/dispatch [:onboarding-2/create-account-and-login])
       :type           :grey
       :override-theme :dark
       :style          {}} (i18n/label :t/continue)]]])

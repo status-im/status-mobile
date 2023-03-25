@@ -1,12 +1,13 @@
 (ns status-im2.contexts.activity-center.notification.contact-requests.view
-  (:require [quo2.core :as quo]
-            [react-native.gesture :as gesture]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.notification.common.style :as common-style]
-            [status-im2.contexts.activity-center.notification.common.view :as common]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.gesture :as gesture]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.activity-center.notification.common.style :as common-style]
+    [status-im2.contexts.activity-center.notification.common.view :as common]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- swipe-button-accept
   [{:keys [style]} _]
@@ -22,24 +23,17 @@
     :icon  :i/placeholder
     :text  (i18n/label :t/decline)}])
 
-(defn- swipe-button-cancel-pending
-  [{:keys [style]} _]
-  [common/swipe-button-container
-   {:style (common-style/swipe-danger-container style)
-    :icon  :i/placeholder
-    :text  (i18n/label :t/cancel)}])
-
 (defn- swipeable
   [{:keys [active-swipeable extra-fn notification]} child]
-  (let [{:keys [id author message last-message]} notification
-        {:keys [contact-request-state]}          (or (:message notification)
-                                                     (:last-message notification))
-        {:keys [public-key]}                     (rf/sub [:multiaccount/contact])
-        message                                  (or message last-message)]
+  (let [{:keys [id author message]}     notification
+        {:keys [contact-request-state]} message
+        {:keys [public-key]}            (rf/sub [:multiaccount/contact])
+        outgoing?                       (= public-key author)]
     (cond
-      (#{constants/contact-request-message-state-accepted
-         constants/contact-request-message-state-declined}
-       contact-request-state)
+      (or (#{constants/contact-request-message-state-accepted
+             constants/contact-request-message-state-declined}
+           contact-request-state)
+          (and outgoing? (= contact-request-state constants/contact-request-message-state-pending)))
       [common/swipeable
        {:left-button      common/swipe-button-read-or-unread
         :left-on-press    common/swipe-on-press-toggle-read
@@ -49,33 +43,23 @@
         :extra-fn         extra-fn}
        child]
 
-      (= contact-request-state constants/contact-request-message-state-pending)
-      (if (= public-key author)
-        [common/swipeable
-         {:right-button     swipe-button-cancel-pending
-          :right-on-press   (fn []
-                              (rf/dispatch
-                               [:activity-center.contact-requests/cancel-outgoing
-                                {:contact-id      (:from message)
-                                 :notification-id id}]))
-          :active-swipeable active-swipeable
-          :extra-fn         extra-fn}
-         child]
-        [common/swipeable
-         {:left-button      swipe-button-accept
-          :left-on-press    #(rf/dispatch [:activity-center.contact-requests/accept id])
-          :right-button     swipe-button-decline
-          :right-on-press   #(rf/dispatch [:activity-center.contact-requests/decline id])
-          :active-swipeable active-swipeable
-          :extra-fn         extra-fn}
-         child])
+      (and (= contact-request-state constants/contact-request-message-state-pending)
+           (not outgoing?))
+      [common/swipeable
+       {:left-button      swipe-button-accept
+        :left-on-press    #(rf/dispatch [:activity-center.contact-requests/accept id])
+        :right-button     swipe-button-decline
+        :right-on-press   #(rf/dispatch [:activity-center.contact-requests/decline id])
+        :active-swipeable active-swipeable
+        :extra-fn         extra-fn}
+       child]
 
       :else
       child)))
 
 (defn- outgoing-contact-request-view
   [{:keys [notification set-swipeable-height]}]
-  (let [{:keys [id chat-id message last-message]}   notification
+  (let [{:keys [chat-id message last-message]}      notification
         {:keys [contact-request-state] :as message} (or message last-message)]
     (if (= contact-request-state constants/contact-request-message-state-accepted)
       [quo/activity-log
@@ -99,17 +83,7 @@
         :message   {:body (get-in message [:content :text])}
         :items     (case contact-request-state
                      constants/contact-request-message-state-pending
-                     [{:type                :button
-                       :subtype             :danger
-                       :key                 :button-cancel
-                       :label               (i18n/label :t/cancel)
-                       :accessibility-label :cancel-contact-request
-                       :on-press            (fn []
-                                              (rf/dispatch
-                                               [:activity-center.contact-requests/cancel-outgoing
-                                                {:contact-id      (:from message)
-                                                 :notification-id id}]))}
-                      {:type    :status
+                     [{:type    :status
                        :subtype :pending
                        :key     :status-pending
                        :blur?   true

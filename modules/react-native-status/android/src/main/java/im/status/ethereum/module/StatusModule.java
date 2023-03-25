@@ -324,6 +324,30 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void createAccountAndLogin(final String createAccountRequest) {
+            Log.d(TAG, "createAccountAndLogin");
+            String result = Statusgo.createAccountAndLogin(createAccountRequest);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "createAccountAndLogin success: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "createAccountAndLogin failed: " + result);
+            }
+    }
+
+    @ReactMethod
+    public void restoreAccountAndLogin(final String restoreAccountRequest) {
+            Log.d(TAG, "restoreAccountAndLogin");
+            String result = Statusgo.restoreAccountAndLogin(restoreAccountRequest);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "restoreAccountAndLogin success: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "restoreAccountAndLogin failed: " + result);
+            }
+    }
+
+    @ReactMethod
     public void saveAccountAndLogin(final String multiaccountData, final String password, final String settings, final String config, final String accountsData) {
         try {
             Log.d(TAG, "saveAccountAndLogin");
@@ -519,6 +543,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             System.exit(0);
             return;
         }
+
+        Log.d(TAG, "[Opening accounts" + rootDir);
 
         Runnable r = new Runnable() {
             @Override
@@ -785,9 +811,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
-         final String keyUID = jsonConfig.getString("keyUID");
+         final JSONObject senderConfig = jsonConfig.getJSONObject("senderConfig");
+         final String keyUID = senderConfig.getString("keyUID");
          final String keyStorePath = this.getKeyStorePath(keyUID);
-         jsonConfig.put("keystorePath", keyStorePath);
+        senderConfig.put("keystorePath", keyStorePath);
 
         executeRunnableStatusGoMethod(() -> Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonConfig.toString()), callback);
     }
@@ -795,9 +822,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void inputConnectionStringForBootstrapping(final String connectionString, final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
+         final JSONObject receiverConfig = jsonConfig.getJSONObject("receiverConfig");
          final String keyStorePath = pathCombine(this.getNoBackupDirectory(), "/keystore");
-         jsonConfig.put("keystorePath", keyStorePath);
-         jsonConfig.put("rootDataDir", this.getNoBackupDirectory());
+         receiverConfig.put("keystorePath", keyStorePath);
+         receiverConfig.getJSONObject("nodeConfig").put("rootDataDir", this.getNoBackupDirectory());
         executeRunnableStatusGoMethod(() -> Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()), callback);
     }
 
@@ -1127,6 +1155,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void deleteImportedKey(final String keyUID, final String address, final String password, final Callback callback) throws JSONException {
         final String keyStoreDir = this.getKeyStorePath(keyUID);
         executeRunnableStatusGoMethod(() -> Statusgo.deleteImportedKey(address, password, keyStoreDir), callback);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String keystoreDir() {
+        final String absRootDirPath = this.getNoBackupDirectory();
+        return pathCombine(absRootDirPath, "keystore");
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String backupDisabledDataDir() {
+        return this.getNoBackupDirectory();
+    }
+
+
+    @ReactMethod(isBlockingSynchronousMethod = true) 
+    public String logFilePath() {
+        return getLogsFile().getAbsolutePath();
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

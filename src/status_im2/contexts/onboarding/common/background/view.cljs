@@ -11,7 +11,8 @@
    {:style style/background-container}
    [rn/image
     {:blur-radius (if dark-overlay? 13 0)
-     :style       {:flex 1}
+     :style       {:height "100%"
+                   :width  "100%"}
      ;; Todo - get background image from sub using carousel index on landing page
      :source      (resources/get-image :onboarding-bg-1)}]
    [linear-gradient/linear-gradient

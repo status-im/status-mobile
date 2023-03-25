@@ -8,7 +8,7 @@
 
 (def descriptor
   [{:label "Show: Is from key card?"
-    :key   :key-card?
+    :key   :keycard-account?
     :type  :boolean}
    {:label "Show: Emoji hash?"
     :key   :show-emoji-hash?
@@ -22,33 +22,19 @@
    {:label "Show: Logged In?"
     :key   :show-logged-in?
     :type  :boolean}
+   {:label "Login Card?"
+    :key   :login-card?
+    :type  :boolean}
+   {:label "Last Item?"
+    :key   :last-item?
+    :type  :boolean}
    {:label   "Customization Color"
     :key     :customization-color
     :type    :select
-    :options [{:key   :primary
-               :value "Primary"}
-              {:key   :purple
-               :value "Purple"}
-              {:key   :indigo
-               :value "Indigo"}
-              {:key   :turquoise
-               :value "Turquoise"}
-              {:key   :blue
-               :value "Blue"}
-              {:key   :green
-               :value "Green"}
-              {:key   :yellow
-               :value "Yellow"}
-              {:key   :orange
-               :value "Orange"}
-              {:key   :red
-               :value "Red"}
-              {:key   :pink
-               :value "Pink"}
-              {:key   :brown
-               :value "Brown"}
-              {:key   :beige
-               :value "Beige"}]}
+    :options (map (fn [[color-kw _]]
+                    {:key   color-kw
+                     :value (name color-kw)})
+                  colors/customization)}
    {:label "Name"
     :key   :name
     :type  :text}
@@ -61,13 +47,15 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:key-card? false
+  (let [state (reagent/atom {:keycard-account? false
                              :name "Matt Grote"
                              :on-options-press nil
                              :on-card-press nil
                              :show-options-button? true
                              :show-logged-in? true
                              :show-user-hash? false
+                             :login-card? false
+                             :last-item? true
                              :on-press-sign nil
                              :customization-color :turquoise
                              :profile-picture (resources/get-mock-image :user-picture-male5)
@@ -80,10 +68,9 @@
         [rn/view {:flex 1}
          [preview/customizer state descriptor]]
         [rn/view
-         {:padding-vertical  60
-          :flex-direction    :row
-          :margin-horizontal 20
-          :justify-content   :center}
+         {:padding-vertical 60
+          :flex-direction   :row
+          :justify-content  :center}
          [quo/profile-card @state]]]])))
 
 (defn preview-profile-card

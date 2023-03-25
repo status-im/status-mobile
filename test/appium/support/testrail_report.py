@@ -123,7 +123,7 @@ class TestrailReport(BaseTestReport):
 
         test_cases['pr']['critical'] = 50955
         test_cases['pr']['one_to_one_chat'] = 50956
-        test_cases['pr']['deep_links'] = 50967
+       # test_cases['pr']['deep_links'] = 50967
         test_cases['pr']['group_chat'] = 50964
         test_cases['pr']['community_single'] = 50983
         test_cases['pr']['community_multiple'] = 50982

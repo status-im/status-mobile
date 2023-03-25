@@ -2,6 +2,14 @@
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]))
 
+(def continue-button
+  {:width         "100%"
+   :margin-top    :auto
+   :margin-bottom 72
+   :margin-left   :auto
+   :margin-right  :auto
+   :align-self    :flex-end})
+
 (def page-container
   {:padding-top      (if platform/ios? 44 0)
    :position         :absolute
@@ -13,3 +21,5 @@
 
 (def navigation-bar {:height 56})
 
+(def info-message
+  {:margin-top 8})

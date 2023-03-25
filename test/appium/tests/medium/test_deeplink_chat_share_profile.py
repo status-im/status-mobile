@@ -334,68 +334,54 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+# Skipped before proper testing of ENS names on goerli
+# @pytest.mark.xdist_group(name="new_one_1")
+# @marks.new_ui_critical
+# class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
+#
+#     def prepare_devices(self):
+#         self.drivers, self.loop = create_shared_drivers(1)
+#         self.sign_in = SignInView(self.drivers[0])
+#         self.home = self.sign_in.create_user()
+#         self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
+#         self.home.click_system_back_button_until_element_is_shown()
+#         self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
+#
+#     @marks.testrail_id(702774)
+#     def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
+#         self.drivers[0].close_app()
+#
+#         self.sign_in.just_fyi('Check that no error when opening invalid deep link')
+#         deep_link = 'status-im://u/%s' % self.public_key[:-10]
+#         self.sign_in.open_weblink_and_login(deep_link)
+#         self.home = self.sign_in.get_home_view()
+#         self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
+#         if not self.home.plus_button.is_element_displayed():
+#             self.errors.append(
+#                 "Can't navigate to chats tab after app opened from deep link with invalid public key")
+#         self.drivers[0].close_app()
+#
+#         self.sign_in.just_fyi('Check that no error when opening own valid deep link')
+#         deep_link = 'status-im://u/%s' % self.public_key
+#         self.sign_in.open_weblink_and_login(deep_link)
+#         profile = self.home.get_profile_view()
+#         if profile.default_username_text.text != self.default_username:
+#             self.errors.append("Can't navigate to profile from deep link with own public key")
+#         self.errors.verify_no_errors()
 
-@pytest.mark.xdist_group(name="new_one_1")
-@marks.new_ui_critical
-class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
-
-    def prepare_devices(self):
-        self.drivers, self.loop = create_shared_drivers(1)
-        self.sign_in = SignInView(self.drivers[0])
-        self.home = self.sign_in.create_user()
-        self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
-        self.home.click_system_back_button_until_element_is_shown()
-        self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
-
-    @marks.testrail_id(702774)
-    def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
-        self.drivers[0].close_app()
-
-        self.sign_in.just_fyi('Check that no error when opening invalid deep link')
-        deep_link = 'status-im://u/%s' % self.public_key[:-10]
-        self.sign_in.open_weblink_and_login(deep_link)
-        self.home = self.sign_in.get_home_view()
-        self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
-        if not self.home.plus_button.is_element_displayed():
-            self.errors.append(
-                "Can't navigate to chats tab after app opened from deep link with invalid public key")
-        self.drivers[0].close_app()
-
-        self.sign_in.just_fyi('Check that no error when opening own valid deep link')
-        deep_link = 'status-im://u/%s' % self.public_key
-        self.sign_in.open_weblink_and_login(deep_link)
-        profile = self.home.get_profile_view()
-        if profile.default_username_text.text != self.default_username:
-            self.errors.append("Can't navigate to profile from deep link with own public key")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702776)
-    def test_public_chat_open_using_deep_link(self):
-        self.drivers[0].close_app()
-        chat_name = self.home.get_random_chat_name()
-        deep_link = 'status-im://%s' % chat_name
-        self.sign_in.open_weblink_and_login(deep_link)
-        chat = self.sign_in.get_chat_view()
-        # ToDo: change to the next line when accessibility id is added for user_name_text_new_UI
-        # if not chat.user_name_text_new_UI.text == '#' + chat_name:
-        try:
-            chat.element_by_text(text=" #" + chat_name, element_type="text").wait_for_visibility_of_element()
-        except TimeoutException:
-            self.drivers[0].fail("Public chat '%s' is not opened" % chat_name)
-
-    @marks.testrail_id(702775)
-    @marks.xfail(reason="Profile is often not opened in e2e builds for some reason. Needs to be investigated.")
-    def test_deep_link_open_user_profile(self):
-        for user_ident in ens_user['ens'], ens_user['ens_upgrade'], ens_user['public_key']:
-            self.drivers[0].close_app()
-            deep_link = 'status-im://u/%s' % user_ident
-            self.sign_in.open_weblink_and_login(deep_link)
-            chat = self.sign_in.get_chat_view()
-            chat.wait_for_element_starts_with_text(ens_user['username'])
-
-            for text in ens_user['username'], self.sign_in.get_translation_by_key("add-to-contacts"):
-                if not chat.element_by_text(text).scroll_to_element(10):
-                    self.drivers[0].fail("User profile screen is not opened")
+    # @marks.testrail_id(702775)
+    # @marks.xfail(reason="Profile is often not opened in e2e builds for some reason. Needs to be investigated.")
+    # def test_deep_link_open_user_profile(self):
+    #     for user_ident in ens_user['ens']:
+    #         self.drivers[0].close_app()
+    #         deep_link = 'status-im://u/%s' % user_ident
+    #         self.sign_in.open_weblink_and_login(deep_link)
+    #         chat = self.sign_in.get_chat_view()
+    #         chat.wait_for_element_starts_with_text(ens_user['ens'])
+    #
+    #         for text in ens_user['ens'], self.sign_in.get_translation_by_key("add-to-contacts"):
+    #             if not chat.element_by_text(text).scroll_to_element(10):
+    #                 self.drivers[0].fail("User profile screen is not opened")
 
     # @marks.testrail_id(702777)
     # @marks.skip(reason="Skipping until chat names are implemented in new UI")
