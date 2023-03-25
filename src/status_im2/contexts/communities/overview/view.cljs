@@ -294,10 +294,10 @@
          :chevron-position :left}]])))
 
 (defn page-nav-right-section-buttons
-  [id name]
+  [id]
   [{:icon                :i/options
     :background-color    (scroll-page/icon-color)
-    :accessibility-label ((comp keyword str) "community-options-for-" name "-community")
+    :accessibility-label "community-options-for-community"
     :on-press            #(rf/dispatch
                            [:bottom-sheet/show-sheet
                             {:content (fn []
@@ -324,7 +324,7 @@
       [scroll-page/scroll-page
        {:cover-image                    cover
         :logo                           logo
-        :page-nav-right-section-buttons (page-nav-right-section-buttons id name)
+        :page-nav-right-section-buttons (page-nav-right-section-buttons id)
         :name                           name
         :on-scroll                      #(reset! scroll-height %)
         :navigate-back?                 true
