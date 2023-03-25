@@ -37,7 +37,7 @@
     "i18n-js": "^3.3.0",
     "node-libs-react-native": "^1.2.1",
     "qrcode": "^1.4.1",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-dom": "^16.4.2",
     "react-native": "0.64.4",
     "react-native-background-timer": "^2.1.1",
@@ -97,7 +97,7 @@
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",
     "process": "0.11.10",
-    "react-test-renderer": "17.0.1",
+    "react-test-renderer": "17.0.2",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
     "shadow-cljs": "2.11.16"
   },
