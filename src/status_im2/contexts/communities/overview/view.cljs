@@ -294,15 +294,15 @@
          :chevron-position :left}]])))
 
 (defn page-nav-right-section-buttons
-  [id]
-  [{:icon             :i/options
-    :background-color (scroll-page/icon-color)
-    :on-press         #(rf/dispatch
-                        [:bottom-sheet/show-sheet
-                         {:content
-                          (fn []
-                            [options/community-options-bottom-sheet
-                             id])}])}])
+  [id name]
+  [{:icon                :i/options
+    :background-color    (scroll-page/icon-color)
+    :accessibility-label ((comp keyword str) "community-options-for-" name "-community")
+    :on-press            #(rf/dispatch
+                           [:bottom-sheet/show-sheet
+                            {:content (fn []
+                                        [options/community-options-bottom-sheet
+                                         id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]
@@ -324,7 +324,7 @@
       [scroll-page/scroll-page
        {:cover-image                    cover
         :logo                           logo
-        :page-nav-right-section-buttons (page-nav-right-section-buttons id)
+        :page-nav-right-section-buttons (page-nav-right-section-buttons id name)
         :name                           name
         :on-scroll                      #(reset! scroll-height %)
         :navigate-back?                 true
