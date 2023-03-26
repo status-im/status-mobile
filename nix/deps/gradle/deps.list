@@ -448,8 +448,8 @@ com.intellij:annotations:12.0
 com.parse.bolts:bolts-applinks:1.4.0
 com.parse.bolts:bolts-tasks:1.4.0
 com.squareup.okhttp3:okhttp-tls:4.9.1
-com.squareup.okhttp3:okhttp-urlconnection:4.9.1
-com.squareup.okhttp3:okhttp:4.9.1
+com.squareup.okhttp3:okhttp-urlconnection:4.9.2
+com.squareup.okhttp3:okhttp:4.9.2
 com.squareup.okio:okio:2.9.0
 com.squareup:javapoet:1.8.0
 com.squareup:javapoet:1.10.0

@@ -8235,16 +8235,16 @@
   },
 
   {
-    "path": "com/squareup/okhttp3/okhttp-urlconnection/4.9.1",
+    "path": "com/squareup/okhttp3/okhttp-urlconnection/4.9.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "okhttp-urlconnection-4.9.1.pom": {
-        "sha1": "898af7b494728d96a77c74ffc73ca1b25c8fa710",
-        "sha256": "0qigcysa3izv82hlxvphxm4c88sys4m49429pgp6bqiw8hawcmd4"
+      "okhttp-urlconnection-4.9.2.pom": {
+        "sha1": "b704c6fcaf3d004756d12e06a283a5c692f5d6bb",
+        "sha256": "1i1nvfr5j8chyrp3y5czaih1grkccpq2xv3n1576rbvpb2qb46ah"
       },
-      "okhttp-urlconnection-4.9.1.jar": {
-        "sha1": "f45e809215bd0961350148cf5b78707865084e6f",
-        "sha256": "0q80lhznrf1sh5ncibvp5l4cb82b7k9dn28xcxi3qcc47yq5p9n0"
+      "okhttp-urlconnection-4.9.2.jar": {
+        "sha1": "3b9e64d3d56370bc7488ed8b336d17a8013cb336",
+        "sha256": "04bx7d7ngq0mkqfh38nms258dp44hx5csyi0r4jrd3v6i6m3j70f"
       }
     }
   },
@@ -8290,6 +8290,21 @@
       "okhttp-4.9.1.jar": {
         "sha1": "51215279c3fe472c59b6b7dd7491e6ac2e28a81b",
         "sha256": "13qzazv6314vfb816lalhslkyi19rwxgm462cpwhvdjfbzrxizba"
+      }
+    }
+  },
+
+  {
+    "path": "com/squareup/okhttp3/okhttp/4.9.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "okhttp-4.9.2.pom": {
+        "sha1": "84e07aab64e999d6f956e27e528f776882adbda6",
+        "sha256": "0vp2fsw9qz91x2b16vr1xyxd5pq4y339hrv2vpbs1dd5x3m378kj"
+      },
+      "okhttp-4.9.2.jar": {
+        "sha1": "5302714ee9320b64cf65ed865e5f65981ef9ba46",
+        "sha256": "1plj7ib8qqahg79a637322952b2dva6v7rig1p1jipy1d2vy2biv"
       }
     }
   },

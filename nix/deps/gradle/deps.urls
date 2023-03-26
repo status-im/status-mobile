@@ -555,10 +555,11 @@ https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.8.0/javapoet-1.8.0.
 https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-tls/4.9.1/okhttp-tls-4.9.1.pom
-https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-urlconnection/4.9.1/okhttp-urlconnection-4.9.1.pom
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-urlconnection/4.9.2/okhttp-urlconnection-4.9.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.12.1/okhttp-3.12.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.9.1/okhttp-4.9.1.pom
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.9.2/okhttp-4.9.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.9.1/parent-3.9.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.12.1/parent-3.12.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.3.0/okio-jvm-3.3.0.pom
