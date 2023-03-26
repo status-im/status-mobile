@@ -1,6 +1,6 @@
 import pytest
 
-from tests import marks, run_in_parallel
+from tests import marks, run_in_parallel, common_password
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
@@ -153,9 +153,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (sign_in_views[0].create_user,),
-                    (sign_in_views[1].create_user,),
-                    (sign_in_views[2].create_user,)
+                    (sign_in_views[0].create_user, {'enable_notifications': True}),
+                    (sign_in_views[1].create_user, {'enable_notifications': True}),
+                    (sign_in_views[2].create_user, {'enable_notifications': True})
                 )
             )
         )
@@ -163,22 +163,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         users = self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (self.homes[0].get_public_key_and_username, True),
-                    (self.homes[1].get_public_key_and_username, True),
-                    (self.homes[2].get_public_key_and_username, True)
+                    (self.homes[0].get_public_key_and_username, {'return_username': True}),
+                    (self.homes[1].get_public_key_and_username, {'return_username': True}),
+                    (self.homes[2].get_public_key_and_username, {'return_username': True})
                 )
             )
         )
-        self.profiles = [home.get_profile_view() for home in self.homes]
-        self.loop.run_until_complete(
-            run_in_parallel(
-                (
-                    (self.profiles[0].switch_push_notifications,),
-                    (self.profiles[1].switch_push_notifications,),
-                    (self.profiles[2].switch_push_notifications,)
-                )
-            )
-        )
+
         self.homes[0].just_fyi('Admin adds future members to contacts')
 
         for i in range(3):
@@ -195,8 +186,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (self.homes[1].handle_contact_request, self.usernames[0]),
-                    (self.homes[2].handle_contact_request, self.usernames[0])
+                    (self.homes[1].handle_contact_request, {'username': self.usernames[0]}),
+                    (self.homes[2].handle_contact_request, {'username': self.usernames[0]})
                 )
             )
         )

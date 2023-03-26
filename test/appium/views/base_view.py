@@ -617,7 +617,7 @@ class BaseView(object):
         time.sleep(3)
 
     def get_public_key_and_username(self, return_username=False):
-        self.driver.info("Get public key and username")
+        self.driver.info("Get public key and username, return_username '%s'" % str(return_username))
         profile_view = self.profile_button.click()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
