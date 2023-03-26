@@ -21,6 +21,7 @@ androidx.arch.core:core-common:2.1.0-rc01
 androidx.arch.core:core-runtime:2.0.0
 androidx.arch.core:core-runtime:2.1.0
 androidx.asynclayoutinflater:asynclayoutinflater:1.0.0
+androidx.autofill:autofill:1.1.0
 androidx.cardview:cardview:1.0.0
 androidx.collection:collection:1.0.0
 androidx.collection:collection:1.1.0
@@ -385,7 +386,6 @@ com.facebook.fresco:nativeimagetranscoder:2.5.0
 com.facebook.fresco:soloader:2.5.0
 com.facebook.fresco:stetho:2.2.0
 com.facebook.fresco:ui-common:2.5.0
-com.facebook.infer.annotation:infer-annotation:0.11.2
 com.facebook.infer.annotation:infer-annotation:0.18.0
 com.facebook.soloader:annotation:0.10.1
 com.facebook.soloader:nativeloader:0.10.1
@@ -450,7 +450,6 @@ com.parse.bolts:bolts-tasks:1.4.0
 com.squareup.okhttp3:okhttp-tls:4.9.1
 com.squareup.okhttp3:okhttp-urlconnection:4.9.1
 com.squareup.okhttp3:okhttp:4.9.1
-com.squareup.okio:okio-metadata:2.9.0
 com.squareup.okio:okio:2.9.0
 com.squareup:javapoet:1.8.0
 com.squareup:javapoet:1.10.0

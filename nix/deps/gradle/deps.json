@@ -435,6 +435,21 @@
   },
 
   {
+    "path": "androidx/autofill/autofill/1.1.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "autofill-1.1.0.pom": {
+        "sha1": "a2b5e0bf6a1f4e9e254a7c4cf8609233d5485919",
+        "sha256": "1nxl307mhq1wqkw7s7rgvfas8pi79q2ii0f8gx65mk7nvax860y5"
+      },
+      "autofill-1.1.0.aar": {
+        "sha1": "d9cdaa22b9c373ba75a35dcc33ee8871543164e5",
+        "sha256": "03zqf8y7cw2dyd6hhaxxg5akl80ai52bxssqaz1mfi97ghkbikk7"
+      }
+    }
+  },
+
+  {
     "path": "androidx/cardview/cardview/1.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -6769,21 +6784,6 @@
   },
 
   {
-    "path": "com/facebook/infer/annotation/infer-annotation/0.11.2",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "infer-annotation-0.11.2.pom": {
-        "sha1": "7438ce677964a0745b4bf71a1ee1b3c9dc9a5f78",
-        "sha256": "0760d2q476scm3fg63s0pam1l6hllfcadqsz0cpcy94kzcqb99vr"
-      },
-      "infer-annotation-0.11.2.jar": {
-        "sha1": "f514ff4ca022a579d9cf7524846988b646ae4491",
-        "sha256": "02fm111rcqqcp7avlvcv53n438g0nb5paxk75c15g90k1bx34y79"
-      }
-    }
-  },
-
-  {
     "path": "com/facebook/infer/annotation/infer-annotation/0.18.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -8327,21 +8327,6 @@
       "okio-jvm-3.3.0.jar": {
         "sha1": "2d175add2d06a67bda111ae5455e49b42d0bb287",
         "sha256": "08kj4ggh8kv2k1i4yxd9i0jxlf3b4ajdfsjcqxmx9mr0xhbq9ynz"
-      }
-    }
-  },
-
-  {
-    "path": "com/squareup/okio/okio-metadata/2.9.0",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "okio-metadata-2.9.0.pom": {
-        "sha1": "0d41f234a1cda0e130795193d25aa2ce5bfee474",
-        "sha256": "04f7vnacdh7h89scgw15i2lgcpnqmjfg6621h8sa2cy7kf2slc63"
-      },
-      "okio-metadata-2.9.0.jar": {
-        "sha1": "d6c198cf4460778d979d87d2697544ca64fc410a",
-        "sha256": "19639lrfkmv1b2s6zbfpmjpsfzjvc4lmzf883jjwhjq3ki2aiicp"
       }
     }
   },

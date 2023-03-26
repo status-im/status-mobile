@@ -27,6 +27,7 @@ https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.1.0/cor
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.0.0/core-runtime-2.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.1.0/core-runtime-2.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/asynclayoutinflater/asynclayoutinflater/1.0.0/asynclayoutinflater-1.0.0.pom
+https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.1.0/autofill-1.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/cardview/cardview/1.0.0/cardview-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.0.0/collection-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.1.0/collection-1.1.0.pom
@@ -449,7 +450,6 @@ https://repo.maven.apache.org/maven2/com/facebook/fresco/soloader/2.2.0/soloader
 https://repo.maven.apache.org/maven2/com/facebook/fresco/soloader/2.5.0/soloader-2.5.0.pom
 https://repo.maven.apache.org/maven2/com/facebook/fresco/ui-common/2.2.0/ui-common-2.2.0.pom
 https://repo.maven.apache.org/maven2/com/facebook/fresco/ui-common/2.5.0/ui-common-2.5.0.pom
-https://repo.maven.apache.org/maven2/com/facebook/infer/annotation/infer-annotation/0.11.2/infer-annotation-0.11.2.pom
 https://repo.maven.apache.org/maven2/com/facebook/infer/annotation/infer-annotation/0.18.0/infer-annotation-0.18.0.pom
 https://repo.maven.apache.org/maven2/com/facebook/soloader/annotation/0.8.2/annotation-0.8.2.pom
 https://repo.maven.apache.org/maven2/com/facebook/soloader/annotation/0.9.0/annotation-0.9.0.pom
@@ -562,7 +562,6 @@ https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.9.1/okhttp-4.
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.9.1/parent-3.9.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.12.1/parent-3.12.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.3.0/okio-jvm-3.3.0.pom
-https://repo.maven.apache.org/maven2/com/squareup/okio/okio-metadata/2.9.0/okio-metadata-2.9.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.17.4/okio-parent-1.17.4.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/1.17.4/okio-1.17.4.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/2.8.0/okio-2.8.0.pom
