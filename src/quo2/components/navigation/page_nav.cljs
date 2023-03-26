@@ -154,11 +154,10 @@
                         :or   {type :grey}}]
                     ^{:key index}
                     [rn/view
-                     {:accessibility-label accessibility-label
-                      :accessible          true
-                      :style               (assoc style
-                                                  :margin-right
-                                                  (if (= index last-icon-index) 0 8))}
+                     (cond-> {:style               (assoc style
+                                                          :margin-right
+                                                          (if (= index last-icon-index) 0 8))}
+                       accessibility-label (assoc :accessibility-label accessibility-label :accessible true))
                      [button/button
                       {:on-press       on-press
                        :icon           true
