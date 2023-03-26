@@ -41,7 +41,8 @@
         :albumId                  :album-id
         :imageWidth               :image-width
         :imageHeight              :image-height
-        :new                      :new?})
+        :new                      :new?
+        :albumCount               :album-count})
 
       (update :quoted-message
               set/rename-keys

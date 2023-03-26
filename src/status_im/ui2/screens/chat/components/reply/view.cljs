@@ -76,7 +76,8 @@
     (format-reply-author from contact-name current-public-key)]])
 
 (defn reply-message
-  [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]}
+  [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?
+           album-count]}
    in-chat-input? pin? recording-audio?]
   (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
@@ -113,7 +114,9 @@
                                            (= constants/content-type-audio content-type))
                                    {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
           (case (or content-type contentType)
-            constants/content-type-image   "Image"
+            constants/content-type-image   (if album-count
+                                             (str album-count " " "Images")
+                                             "Image")
             constants/content-type-sticker "Sticker"
             constants/content-type-audio   "Audio"
             (get-quoted-text-with-mentions (or parsed-text (:parsed-text content))))]])]
