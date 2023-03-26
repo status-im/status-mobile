@@ -350,7 +350,7 @@ dependencies {
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'com.facebook.fresco:fresco:2.2.0'
     implementation 'com.facebook.fresco:animated-gif:2.2.0'
-    implementation "com.squareup.okhttp3:okhttp-tls:3.12.12"
+    implementation "com.squareup.okhttp3:okhttp-tls:4.9.1"
 }
 
 def getLocalNDKDir = { ->
