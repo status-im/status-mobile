@@ -115,7 +115,7 @@
                                    {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
           (case (or content-type contentType)
             constants/content-type-image   (if album-count
-                                             (str album-count " " "Images")
+                                             (str album-count \space "Images")
                                              "Image")
             constants/content-type-sticker "Sticker"
             constants/content-type-audio   "Audio"
