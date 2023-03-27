@@ -71,7 +71,8 @@
                          :verifyTransactionURL     config/verify-transaction-url
                          :verifyENSURL             config/verify-ens-url
                          :verifyENSContractAddress config/verify-ens-contract-address
-                         :verifyTransactionChainID config/verify-transaction-chain-id}]
+                         :verifyTransactionChainID config/verify-transaction-chain-id
+                         :previewPrivacy           config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
      :db       (-> db
