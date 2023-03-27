@@ -115,7 +115,7 @@
                                    {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
           (case (or content-type contentType)
             constants/content-type-image   (if album-count
-                                             (str album-count \space (i18n/label :t/images))
+                                             (i18n/label :t/images-albums-count {:album-count album-count})
                                              (i18n/label :t/image))
             constants/content-type-sticker (i18n/label :t/sticker)
             constants/content-type-audio   (i18n/label :t/audio)
