@@ -27,6 +27,10 @@
   (concat
    (when (and outgoing
               (not (or deleted? deleted-for-me?))
+              ;; temporarily disable edit image message until
+              ;; https://github.com/status-im/status-mobile/issues/15298
+              ;; is implemented
+              (not= content-type constants/content-type-image)
               (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(rf/dispatch [:chat.ui/edit-message message-data])
