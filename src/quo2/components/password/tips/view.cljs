@@ -16,7 +16,8 @@
    [text/text
     {:style  (style/tip-text completed?)
      :weight :regular
-     :size   :paragraph-2} text]
+     :size   :paragraph-2}
+    text]
    (when completed?
      [rn/view
       {:style               style/strike-through

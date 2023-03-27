@@ -5,12 +5,13 @@
             [react-native.core :as rn]))
 
 (defn view
-  [{:keys [on-change accessibility-label container-style]} label]
+  [{:keys [checked? blur? on-change accessibility-label container-style]} label]
   [rn/view
-   {:style (merge container-style (style/container))}
+   {:style (merge container-style (style/container blur?))}
    [selectors/checkbox
     {:accessibility-label accessibility-label
-     :on-change           on-change}]
+     :on-change           on-change
+     :checked?            checked?}]
    [text/text
     {:size  :paragraph-2
      :style style/text}

@@ -231,7 +231,7 @@
                  :sending-image          (seq images)
                  :refs                   refs}]]]]
             (if suggestions?
-              [mentions/mentions params insets]
+              [mentions/mentions (select-keys params [:refs :suggestions :max-y]) insets]
               [controls/view send-ref record-ref params insets chat-id images
                edit #(clean-and-minimize params)])
             ;;;;black background

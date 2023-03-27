@@ -18,3 +18,23 @@
     s))
 
 (def truncate-str (memoize truncate-str-memo))
+
+(defn has-lower-case?
+  [s]
+  (some? (re-find #"[a-z]" s)))
+
+(defn has-upper-case?
+  [s]
+  (some? (re-find #"[A-Z]" s)))
+
+(defn has-numbers?
+  [s]
+  (some? (re-find #"\d" s)))
+
+(defn has-symbols?
+  [s]
+  (some? (re-find #"[^a-zA-Z0-9\s]" s)))
+
+(defn at-least-n-chars?
+  [s n]
+  (>= (count s) n))

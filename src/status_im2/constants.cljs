@@ -318,3 +318,8 @@
 (def ^:const empty-category-id :communities/not-categorized)
 
 (def ^:const seed-phrase-valid-length #{12 18 24})
+
+(def ^:const auth-method-password "password")
+(def ^:const auth-method-biometric "biometric")
+(def ^:const auth-method-biometric-prepare "biometric-prepare")
+(def ^:const auth-method-none "none")
