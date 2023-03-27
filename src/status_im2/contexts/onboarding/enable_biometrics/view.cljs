@@ -24,12 +24,14 @@
         profile-color       (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/buttons insets)}
      [quo/button
-      {:on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics])
+      {:accessibility-label       :enable-biometrics-button
+       :on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics])
        :before                    :i/face-id
        :override-background-color (colors/custom-color profile-color 50)}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
-      {:on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
+      {:accessibility-label       :maybe-later-button
+       :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
        :override-background-color colors/white-opa-5
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
