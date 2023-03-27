@@ -115,10 +115,10 @@
                                    {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
           (case (or content-type contentType)
             constants/content-type-image   (if album-count
-                                             (str album-count \space "Images")
-                                             "Image")
-            constants/content-type-sticker "Sticker"
-            constants/content-type-audio   "Audio"
+                                             (str album-count \space (i18n/label :t/images))
+                                             (i18n/label :t/image))
+            constants/content-type-sticker (i18n/label :t/sticker)
+            constants/content-type-audio   (i18n/label :t/audio)
             (get-quoted-text-with-mentions (or parsed-text (:parsed-text content))))]])]
      (when (and in-chat-input? (not recording-audio?))
        [quo2.button/button
