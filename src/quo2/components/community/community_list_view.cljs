@@ -27,7 +27,7 @@
     [counter/counter {:type :default} unread-mentions-count]
 
     unread-messages?
-    [unread-grey-dot :unviewed-messages-public"]))
+    [unread-grey-dot :unviewed-messages-public]))
 
 (defn communities-list-view-item
   [props
