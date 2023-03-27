@@ -5,14 +5,13 @@
             [status-im2.common.bottom-sheet.events :as bottom-sheet]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
-            [status-im.theme.core :as theme]
             [utils.re-frame :as rf]
             [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [status-im2.setup.hot-reload :as hot-reload]
-            [status-im2.common.theme.core :as utils.theme]
+            [status-im2.common.theme.core :as theme]
             [taoensso.timbre :as log]
             [status-im2.contexts.shell.animation :as shell.animation]
             [status-im.contact.db :as contact.db]))
@@ -137,16 +136,16 @@
     {::blank-preview-flag-changed private?}))
 
 (re-frame/reg-fx
- :multiaccounts.ui/switch-theme
+ :multiaccounts.ui/switch-theme-fx
  (fn [[theme-type view-id reload-ui?]]
    (let [[theme status-bar-theme nav-bar-color]
          ;; Status bar theme represents status bar icons colors, so opposite to app theme
          (if (or (= theme-type constants/theme-type-dark)
                  (and (= theme-type constants/theme-type-system)
-                      (utils.theme/dark-mode?)))
+                      (theme/device-theme-dark?)))
            [:dark :light colors/neutral-100]
            [:light :dark colors/white])]
-     (theme/change-theme theme)
+     (theme/set-theme theme)
      (re-frame/dispatch [:change-root-status-bar-style
                          (if (shell.animation/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
@@ -158,8 +157,16 @@
   {:events [:multiaccounts.ui/appearance-switched]}
   [cofx theme]
   (rf/merge cofx
-            {:multiaccounts.ui/switch-theme [theme :appearance true]}
+            {:multiaccounts.ui/switch-theme-fx [theme :appearance true]}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
+
+(rf/defn switch-theme
+  {:events [:multiaccounts.ui/switch-theme]}
+  [cofx theme view-id]
+  (let [theme (or theme
+                  (get-in cofx [:db :multiaccount :appearance])
+                  constants/theme-type-dark)]
+    {:multiaccounts.ui/switch-theme-fx [theme view-id false]}))
 
 (rf/defn switch-profile-picture-show-to
   {:events [:multiaccounts.ui/profile-picture-show-to-switched]}

@@ -1,5 +1,6 @@
 (ns status-im2.navigation.roots
-  (:require [quo2.foundations.colors :as colors]
+  (:require [status-im2.constants :as constants]
+            [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [status-im2.navigation.view :as views]
             [status-im2.navigation.state :as state]))
@@ -109,15 +110,6 @@
                                     (status-bar-options)
                                     {:topBar (topbar-options)})}}}
 
-   ;;WELCOME
-   :welcome
-   {:root {:stack {:children [{:component {:name    :welcome
-                                           :id      :welcome
-                                           :options (status-bar-options)}}]
-                   :options  (merge (default-root)
-                                    (status-bar-options)
-                                    {:topBar (assoc (topbar-options) :visible false)})}}}
-
    ;;NOTIFICATIONS
    :onboarding-notification
    {:root {:stack {:children [{:component {:name    :onboarding-notification
@@ -136,6 +128,16 @@
                                     (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}})
 
+;; Theme Order for navigation roots
+;; 1. Themes hardcoded in below map
+;; 2. If nil or no entry in map, then theme stored in
+;;    [:db :multiaccount :appearance] will be used (for mulitaccounts)
+;; 3). Fallback theme - Dark
+(def themes
+  {:intro       constants/theme-type-dark
+   :profiles    constants/theme-type-dark
+   :shell-stack nil})
+
 (defn roots
   []
   ;;TABS
@@ -146,8 +148,8 @@
            {:stack {:id       :intro
                     :children [{:component {:name    :intro
                                             :id      :intro
-                                            :options {:statusBar {:style :light}
-                                                      :topBar    {:visible false}}}}]}}}}
+                                            :options (merge (status-bar-options)
+                                                            {:topBar {:visible false}})}}]}}}}
          {:shell-stack
           {:root
            {:stack {:id       :shell-stack
@@ -162,12 +164,18 @@
                                             :id      :profiles
                                             :options (merge
                                                       (status-bar-options)
-                                                      {:topBar {:visible false}})}}]}}}
-          :enable-notifications
-          {:root
-           {:stack {:id       :enable-notifications
-                    :children [{:component {:name    :enable-notifications
-                                            :id      :enable-notifications
-                                            :options (merge
-                                                      (status-bar-options)
-                                                      {:topBar {:visible false}})}}]}}}}))
+                                                      {:topBar {:visible false}})}}]}}}}
+         {:enable-notifications
+          {:root {:stack {:children [{:component {:name    :enable-notifications
+                                                  :id      :enable-notifications
+                                                  :options (merge
+                                                            (status-bar-options)
+                                                            {:statusBar {:style :light}
+                                                             :topBar    {:visible false}})}}]}}}}
+         {:welcome
+          {:root {:stack {:children [{:component {:name    :welcome
+                                                  :id      :welcome
+                                                  :options (merge
+                                                            (status-bar-options)
+                                                            {:statusBar {:style :light}
+                                                             :topBar    {:visible false}})}}]}}}}))

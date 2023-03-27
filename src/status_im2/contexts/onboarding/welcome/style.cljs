@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.enable-notifications.style
+(ns status-im2.contexts.onboarding.welcome.style
   (:require
     [react-native.platform :as platform]
     [quo2.foundations.colors :as colors]))
@@ -8,10 +8,7 @@
    :margin-top         12
    :padding-horizontal 20})
 
-(def enable-notifications-buttons
-  {:margin 20})
-
-(def enable-notifications
+(def welcome-container
   {:flex             1
    :padding-top      (if platform/ios? 44 0)
    :background-color colors/neutral-80-opa-80-blur})
@@ -24,3 +21,4 @@
    :border-radius     20
    :margin-top        20
    :justify-content   :center})
+

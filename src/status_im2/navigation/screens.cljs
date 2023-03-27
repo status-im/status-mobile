@@ -18,6 +18,7 @@
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
@@ -197,7 +198,14 @@
                  :topBar        {:visible false}
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
-     :component syncing-devices/syncing-devices}]
+     :component syncing-devices/syncing-devices}
+
+    {:name      :welcome
+     :options   {:statusBar     {:style :light}
+                 :topBar        {:visible false}
+                 :navigationBar {:backgroundColor colors/black}}
+     :insets    {:top false}
+     :component welcome/view}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)

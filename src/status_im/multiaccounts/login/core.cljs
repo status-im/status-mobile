@@ -339,10 +339,6 @@
     {:method     "permissions_getDappPermissions"
      :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
 
-(rf/defn initialize-appearance
-  [cofx]
-  {:multiaccounts.ui/switch-theme [(get-in cofx [:db :multiaccount :appearance]) nil false]})
-
 (rf/defn get-group-chat-invitations
   [_]
   {:json-rpc/call
@@ -394,7 +390,6 @@
                 #(do (re-frame/dispatch [:chats-list/load-success %])
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
-              (initialize-appearance)
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
@@ -528,11 +523,10 @@
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)
-                                (assoc :tos/next-root :onboarding-notification :chats/loading? false)
+                                (assoc :tos/next-root :enable-notifications :chats/loading? false)
                                 (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
                ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
-              (initialize-appearance)
               (transport/start-messenger)
               (communities/fetch)
               (data-store.chats/fetch-chats-rpc
@@ -540,7 +534,7 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-              (navigation/init-root :shell-stack))))
+              (navigation/init-root :enable-notifications))))
 
 (defn- keycard-setup?
   [cofx]
@@ -636,8 +630,7 @@
        login)
       (rf/merge
        cofx
-       {:db                 (dissoc db :goto-key-storage?)
-        :theme/change-theme :dark}
+       {:db (dissoc db :goto-key-storage?)}
        (when keycard-account?
          {:db (-> db
                   (assoc-in [:keycard :pin :status] nil)
