@@ -297,7 +297,7 @@
   [id]
   [{:icon                :i/options
     :background-color    (scroll-page/icon-color)
-    :accessibility-label "community-options-for-community"
+    :accessibility-label :community-options-for-community
     :on-press            #(rf/dispatch
                            [:bottom-sheet/show-sheet
                             {:content (fn []
