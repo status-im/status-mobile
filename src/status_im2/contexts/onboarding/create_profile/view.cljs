@@ -108,8 +108,7 @@
         [quo/button
          {:accessibility-label       :submit-create-profile-button
           :type                      :primary
-          :override-theme            :dark
-          :override-background-color (colors/custom-color @custom-color 50)
+          :override-background-color (colors/custom-color @custom-color 60)
           :on-press                  #(rf/dispatch [:onboarding-2/profile-data-set
                                                     {:image-path   @profile-pic
                                                      :display-name @full-name
