@@ -480,7 +480,7 @@
     (re-frame/dispatch [:syncing/pairing-completed])
 
     (get db :onboarding-2/new-account?)
-    (re-frame/dispatch [:navigate-to :enable-notifications])
+    (re-frame/dispatch [:onboarding-2/finalize-setup])
 
     (get db :tos/accepted?)
     (re-frame/dispatch [:init-root :shell-stack])

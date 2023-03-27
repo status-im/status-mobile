@@ -1,6 +1,7 @@
 (ns status-im2.contexts.onboarding.events
   (:require
     [utils.re-frame :as rf]
+    [taoensso.timbre :as log]
     [re-frame.core :as re-frame]
     [status-im.utils.types :as types]
     [status-im2.config :as config]
@@ -101,9 +102,7 @@
                          :previewPrivacy           config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
-     :db       (-> db
-                   (dissoc :onboarding-2/profile)
-                   (assoc :onboarding-2/new-account? true))}))
+     :db       (assoc db :onboarding-2/new-account? true)}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}
@@ -151,3 +150,23 @@
   ;; Restart the flow
   {:db       (dissoc db :onboarding-2/profile)
    :dispatch [:navigate-to :create-profile]})
+
+(rf/defn onboarding-new-account-finalize-setup
+  {:events [:onboarding-2/finalize-setup]}
+  [{:keys [db]}]
+  (let [masked-password    (get-in db [:onboarding-2/profile :password])
+        key-uid            (get-in db [:multiaccount :key-uid])
+        biometric-enabled? (=
+                            constants/auth-method-biometric
+                            (get-in db [:onboarding-2/profile :auth-method]))]
+
+    (cond-> {:db       (dissoc db :onboarding-2/profile)
+             :dispatch [:navigate-to :enable-notifications]}
+      biometric-enabled?
+      (assoc :biometric/enable-and-save-password
+             {:key-uid         key-uid
+              :masked-password masked-password
+              :on-success      #(log/debug "successfully saved biometric")
+              :on-error        #(log/error "failed to save biometrics"
+                                           {:key-uid key-uid
+                                            :error   %})}))))

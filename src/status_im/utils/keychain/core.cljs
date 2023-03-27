@@ -155,19 +155,36 @@
              (callback nil))))
         (callback nil))))))
 
+(defn save-user-password!
+  [key-uid password]
+  (save-credentials
+   key-uid
+   key-uid
+   (security/safe-unmask-data password)
+   #(when-not %
+      (log/error
+       (str "Error while saving password."
+            " "
+            "The app will continue to work normally, "
+            "but you will have to login again next time you launch it.")))))
+
+(defn save-auth-method!
+  [key-uid method]
+  (save-credentials
+   (str key-uid "-auth")
+   key-uid
+   method
+   #(when-not %
+      (log/error
+       (str "Error while saving auth method."
+            " "
+            "The app will continue to work normally, "
+            "but you will have to login again next time you launch it.")))))
+
 (re-frame/reg-fx
  :keychain/save-user-password
- (fn [[key-uid password]]
-   (save-credentials
-    key-uid
-    key-uid
-    (security/safe-unmask-data password)
-    #(when-not %
-       (log/error
-        (str "Error while saving password."
-             " "
-             "The app will continue to work normally, "
-             "but you will have to login again next time you launch it."))))))
+ (fn [[key-uid masked-password]]
+   (save-user-password! key-uid masked-password)))
 
 (re-frame/reg-fx
  :keychain/save-auth-method
@@ -178,16 +195,7 @@
               "method"
               method)
    (when-not (empty? key-uid) ; key-uid may be nil after restore from local pairing
-     (save-credentials
-      (str key-uid "-auth")
-      key-uid
-      method
-      #(when-not %
-         (log/error
-          (str "Error while saving auth method."
-               " "
-               "The app will continue to work normally, "
-               "but you will have to login again next time you launch it.")))))))
+     (save-auth-method! key-uid method))))
 
 (re-frame/reg-fx
  :keychain/save-keycard-keys
