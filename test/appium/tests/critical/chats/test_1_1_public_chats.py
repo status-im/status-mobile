@@ -907,19 +907,17 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user, {'enable_notifications': True}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1 = self.home_1.get_profile_view()
         self.profile_2 = self.home_2.get_profile_view()
         users = self.loop.run_until_complete(run_in_parallel(
-            ((self.home_1.get_public_key_and_username, True),
-             (self.home_2.get_public_key_and_username, True))
+            ((self.home_1.get_public_key_and_username, {'return_username': True}),
+             (self.home_2.get_public_key_and_username, {'return_username': True}))
         ))
         self.public_key_1, self.default_username_1 = users[0]
         self.public_key_2, self.default_username_2 = users[1]
-
-        self.profile_1.switch_push_notifications()
-        self.profile_2.switch_push_notifications()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
         for home in (self.home_1, self.home_2):

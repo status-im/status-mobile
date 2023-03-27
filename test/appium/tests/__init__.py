@@ -5,6 +5,7 @@ import os
 import json
 from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
+import functools
 
 import time
 
@@ -28,7 +29,7 @@ async def run_in_parallel(funcs):
     returns = []
     for func in funcs:
         try:
-            res.append(loop.run_in_executor(None, func[0], func[1]))
+            res.append(loop.run_in_executor(None, functools.partial(func[0], **func[1])))
         except IndexError:
             res.append(loop.run_in_executor(None, func[0]))
     for k in res:

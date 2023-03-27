@@ -27,8 +27,8 @@ class TestChatManagement(SingleDeviceTestCase):
         keycard_view.pair_code_input.set_value(pair_code)
         keycard_view.confirm()
         keycard_view.enter_default_pin()
-        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
-        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.start_button)
+        sign_in.start_button.click_until_absense_of_element(sign_in.start_button)
         sign_in.home_button.wait_for_visibility_of_element(30)
         wallet_view = sign_in.wallet_button.click()
 
@@ -199,7 +199,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append('Another seed phrase is shown after cancelling setup during Back up seed phrase')
         keycard_flow.backup_seed_phrase()
         keycard_flow.enter_default_pin()
-        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
+        for element in sign_in.maybe_later_button, sign_in.start_button:
             element.wait_for_visibility_of_element(30)
             element.click()
         sign_in.profile_button.wait_for_visibility_of_element(30)
@@ -240,7 +240,7 @@ class TestChatManagement(SingleDeviceTestCase):
         keycard_flow.begin_setup_button.click()
         keycard_flow.enter_default_pin()
         keycard_flow.enter_default_pin()
-        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
+        for element in sign_in.maybe_later_button, sign_in.start_button:
             element.wait_for_visibility_of_element(30)
             element.click()
         sign_in.profile_button.wait_for_visibility_of_element(30)
@@ -982,8 +982,8 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
-        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
-        sign_in.lets_go_button.click()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.start_button)
+        sign_in.start_button.click()
 
         sign_in.just_fyi('Delete 2nd multiaccount')
         public_key, username = sign_in.get_public_key_and_username(return_username=True)

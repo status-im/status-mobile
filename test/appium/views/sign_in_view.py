@@ -140,11 +140,11 @@ class SignInView(BaseView):
                                              xpath="(//android.widget.EditText[@content-desc='password-input'])[1]")
         self.confirm_your_password_input = EditBox(self.driver,
                                                    xpath="(//android.widget.EditText[@content-desc='password-input'])[2]")
-        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications")
-        self.maybe_later_button = Button(self.driver, accessibility_id="maybe-later")
+        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
+        self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.terms_of_use_link = TermsOfUseLink(self.driver)
-        self.lets_go_button = Button(self.driver, accessibility_id="lets-go-button")
+        self.start_button = Button(self.driver, accessibility_id="welcome-button")
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
         self.first_username_on_choose_chat_name = Text(self.driver,
                                                        xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
@@ -178,8 +178,8 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
-        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)),
-                         device=False)
+        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
+                         (password, str(keycard), str(enable_notifications)), device=False)
         if not second_user:
             self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_key_button)
             self.generate_key_button.click()
@@ -194,8 +194,11 @@ class SignInView(BaseView):
             self.create_password_input.set_value(password)
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
-
-
+        if enable_notifications:
+            self.enable_notifications_button.click_until_presence_of_element(self.start_button)
+        else:
+            self.maybe_later_button.click_until_presence_of_element(self.start_button)
+        self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
 
         self.driver.info("## New multiaccount is created successfully!", device=False)
@@ -223,10 +226,10 @@ class SignInView(BaseView):
             self.next_button.click_until_presence_of_element(self.maybe_later_button)
         self.maybe_later_button.wait_for_element(30)
         if enable_notifications:
-            self.enable_notifications_button.click_until_presence_of_element(self.lets_go_button)
+            self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
-            self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
-        self.lets_go_button.click()
+            self.maybe_later_button.click_until_presence_of_element(self.start_button)
+        self.start_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
