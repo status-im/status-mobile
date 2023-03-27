@@ -42,19 +42,19 @@
    :padding-horizontal 20})
 
 (def multi-profile-button
-  {:align-self :flex-end})
+  {:align-self    :flex-end
+   :margin-bottom 20})
 
 (def login-profile-card
-  {:margin-vertical 20})
-
-(def keyboard-avoiding-view
-  {:flex 1})
+  {:margin-bottom 20})
 
 (def info-message
   {:margin-top 8})
 
+(def forget-password-button
+  {:margin-vertical 8})
+
 (defn login-button
   []
-  {:margin-top    8
-   :margin-bottom (if platform/android? 20 46)})
+  {:margin-bottom (if platform/android? 20 46)})
 
