@@ -135,18 +135,19 @@
         profile-picture      (:uri (first (:images multiaccount)))]
     [rn/keyboard-avoiding-view
      {:style style/login-container}
-     [rn/view
-      {:style {:flex 1}}
-      [quo/button
-       {:size                32
-        :type                :blur-bg
-        :icon                true
-        :on-press            #(reset! show-profiles? true)
-        :override-theme      :dark
-        :width               32
-        :accessibility-label :show-profiles
-        :style               style/multi-profile-button}
-       :i/multi-profile]
+     [quo/button
+      {:size                32
+       :type                :blur-bg
+       :icon                true
+       :on-press            #(reset! show-profiles? true)
+       :override-theme      :dark
+       :width               32
+       :accessibility-label :show-profiles
+       :style               style/multi-profile-button}
+      :i/multi-profile]
+     [rn/scroll-view
+      {:keyboard-should-persist-taps :always
+       :style                        {:flex 1}}
       [quo/profile-card
        {:name                name
         :customization-color (or customization-color :primary)
@@ -178,7 +179,8 @@
        :type                :ghost
        :before              :i/info
        :accessibility-label :forget-password-button
-       :override-theme      :dark}
+       :override-theme      :dark
+       :style               style/forget-password-button}
       (i18n/label :t/forget-password)]
      [quo/button
       {:size                40
