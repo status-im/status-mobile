@@ -61,6 +61,35 @@ the source file. For a real example, see
    [rn/view (do-something)]])
 ```
 
+### Always add styles inside the `:style` key
+
+Although when compiling ReactNative for mobile some components are able work with 
+their styles in the top-level of the properties map, prefer to add them inside the
+`:style` key in order to separate styles from properties:
+
+```clojure
+;; bad
+[rn/button {:flex               1
+            :padding-vertical   10
+            :padding-horizontal 20
+            :on-press           #(js/alert "Hi!")
+            :title              "Button"}]
+
+;; good
+[rn/button {:style    {:flex               1
+                       :padding-vertical   10
+                       :padding-horizontal 20}
+            :on-press #(js/alert "Hi!")
+            :title    "Button"}]
+
+;; better 
+;; (define them in a style ns & place them inside `:style` key)
+[rn/button {:style    (style/button)
+            :on-press #(js/alert "Hi!")
+            :title    "Button"}
+ ]
+```
+
 ### Don't use percents to define width/height
 
 In ReactNative, all layouts use the [flexbox

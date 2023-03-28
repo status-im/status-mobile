@@ -151,7 +151,9 @@
 
     {:name      :create-profile-password
      :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
+                 :topBar        {:visible    false
+                                 :backButton {:popStackOnPress false}}
+
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
      :component create-password/create-password}
@@ -164,9 +166,13 @@
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar          {:style :light}
+                 :navigationBar      {:backgroundColor colors/black}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}
+                 :topBar             {:visible    false
+                                      :backButton {:popStackOnPress false}}}
      :insets    {:top false}
      :component generating-keys/generating-keys}
 
@@ -178,9 +184,13 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar          {:style :light}
+                 :navigationBar      {:backgroundColor colors/black}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}
+                 :topBar             {:visible    false
+                                      :backButton {:popStackOnPress false}}}
      :insets    {:top false}
      :component enable-notifications/enable-notifications}
 
