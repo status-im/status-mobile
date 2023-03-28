@@ -7,7 +7,7 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.common.bottom-sheet.view :as bottom-sheet]
-            [status-im2.contexts.chat.messages.pin.list.view :as pin.list]
+            [status-im2.contexts.chat.menus.pinned-messages.view :as pinned-messages-menu]
             [react-native.core :as rn]))
 
 (defn bottom-sheet
@@ -50,7 +50,8 @@
           (merge key-storage/migrate-account-password)
 
           (= view :pinned-messages-list)
-          (merge {:content pin.list/pinned-messages-list}))]
+          (merge {:content                   pinned-messages-menu/pinned-messages
+                  :bottom-safe-area-spacing? false}))]
     [:f>
      (fn []
        (rn/use-effect (fn []
