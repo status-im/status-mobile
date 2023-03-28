@@ -6,9 +6,10 @@
     [utils.re-frame :as rf]
     [react-native.core :as rn]
     [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
     [status-im.notifications.core :as notifications]
+    [status-im2.contexts.onboarding.common.style :as onboarding-style]
     [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.enable-notifications.style :as style]
     [status-im2.contexts.shell.animation :as shell.animation]))
 
 (defn navigation-bar
@@ -26,23 +27,23 @@
 
 (defn page-title
   []
-  [rn/view {:style style/title-container}
+  [rn/view {:style onboarding-style/title-container}
    [quo/text
     {:accessibility-label :notifications-screen-title
      :weight              :semi-bold
      :size                :heading-1
-     :style               {:color colors/white}}
+     :style               onboarding-style/title-text}
     (i18n/label :t/intro-wizard-title6)]
    [quo/text
     {:accessibility-label :notifications-screen-sub-title
      :weight              :regular
      :size                :paragraph-1
-     :style               {:color colors/white}}
+     :style               onboarding-style/regular-text}
     (i18n/label :t/enable-notifications-sub-title)]])
 
 (defn enable-notification-buttons
-  []
-  [rn/view {:style style/enable-notifications-buttons}
+  [{:keys [insets]}]
+  [rn/view {:style (onboarding-style/buttons insets)}
    [quo/button
     {:on-press                  (fn []
                                   (shell.animation/change-selected-stack-id :communities-stack true)
@@ -51,7 +52,7 @@
      :type                      :primary
      :before                    :i/notifications
      :accessibility-label       :enable-notifications-button
-     :override-background-color (colors/custom-color :magenta 60)}
+     :override-background-color (colors/custom-color :purple 60)}
     (i18n/label :t/intro-wizard-title6)]
    [quo/button
     {:on-press                  (fn []
@@ -64,11 +65,13 @@
 
 (defn enable-notifications
   []
-  [rn/view {:style style/enable-notifications}
-   [background/view true]
-   [navigation-bar]
-   [page-title]
-   [rn/view {:style style/page-illustration}
-    [quo/text
-     "[Illustration here]"]]
-   [enable-notification-buttons]])
+  [safe-area/consumer
+   (fn [insets]
+     [rn/view {:style (onboarding-style/page-container insets)}
+      [background/view true]
+      [navigation-bar]
+      [page-title]
+      [rn/view {:style onboarding-style/page-illustration}
+       [quo/text
+        "Illustration here"]]
+      [enable-notification-buttons {:insets insets}]])])
