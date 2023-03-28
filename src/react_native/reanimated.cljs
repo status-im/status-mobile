@@ -47,6 +47,7 @@
 
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 (def text-input (create-animated-component (.-TextInput ^js rn)))
+(def keyboard-avoiding-view (create-animated-component (.-KeyboardAvoidingView ^js rn)))
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
 (def blur-view (create-animated-component (.-BlurView blur)))
@@ -115,7 +116,7 @@
   (set-shared-value anim
                     (with-timing val
                                  (js-obj "duration" duration
-                                         "easing"   (get easings easing)))))
+                                         "easing" (get easings easing)))))
 
 (defn animate-shared-value-with-delay
   [anim val duration easing delay]
@@ -123,7 +124,7 @@
                     (with-delay delay
                                 (with-timing val
                                              (js-obj "duration" duration
-                                                     "easing"   (get easings easing))))))
+                                                     "easing" (get easings easing))))))
 
 (defn animate-delay
   ([animation val delay]
@@ -140,7 +141,7 @@
   (set-shared-value anim
                     (with-repeat (with-timing val
                                               (js-obj "duration" duration
-                                                      "easing"   (get easings easing)))
+                                                      "easing" (get easings easing)))
                                  number-of-repetitions
                                  reverse?)))
 
@@ -162,8 +163,8 @@
   [anim val {:keys [mass stiffness damping]}]
   (set-shared-value anim
                     (with-spring val
-                                 (js-obj "mass"      mass
-                                         "damping"   damping
+                                 (js-obj "mass" mass
+                                         "damping" damping
                                          "stiffness" stiffness))))
 
 (defn animate-shared-value-with-decay
@@ -171,6 +172,15 @@
   (set-shared-value anim
                     (with-decay (clj->js {:velocity velocity
                                           :clamp    clamp}))))
+
+(defn animate
+  ([animation value]
+   (animate animation value default-duration))
+  ([animation value duration]
+   (set-shared-value animation
+                     (with-timing value
+                                  (clj->js {:duration duration
+                                            :easing   (default-easing)})))))
 
 (defn with-timing-duration
   [val duration]
