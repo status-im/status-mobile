@@ -11,21 +11,22 @@
 
 (defn page-title
   []
-  [rn/view {:style onboarding-style/title-container}
-   [quo/text
-    {:accessibility-label :notifications-screen-title
-     :weight              :semi-bold
-     :size                :heading-1
-     :style               onboarding-style/title-text}
-    (i18n/label (if false
-                  :t/welcome-to-web3
-                  :t/welcome-back))]
-   [quo/text
-    {:accessibility-label :notifications-screen-sub-title
-     :weight              :regular
-     :size                :paragraph-1
-     :style               onboarding-style/regular-text}
-    (i18n/label :t/welcome-to-web3-sub-title)]])
+  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+    [rn/view {:style onboarding-style/title-container}
+     [quo/text
+      {:accessibility-label :notifications-screen-title
+       :weight              :semi-bold
+       :size                :heading-1
+       :style               onboarding-style/title-text}
+      (i18n/label (if new-account?
+                    :t/welcome-to-web3
+                    :t/welcome-back))]
+     [quo/text
+      {:accessibility-label :notifications-screen-sub-title
+       :weight              :regular
+       :size                :paragraph-1
+       :style               onboarding-style/regular-text}
+      (i18n/label :t/welcome-to-web3-sub-title)]]))
 
 
 (defn navigation-bar
