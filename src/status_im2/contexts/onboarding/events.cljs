@@ -5,11 +5,12 @@
     [status-im.utils.types :as types]
     [status-im2.config :as config]
     [clojure.string :as string]
+    [utils.i18n :as i18n]
     [utils.security.core :as security]
     [status-im.native-module.core :as status]
     [status-im.ethereum.core :as ethereum]
     [status-im2.constants :as constants]
-    [utils.i18n :as i18n]))
+    [status-im2.contexts.onboarding.profiles.view :as profiles.view]))
 
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
@@ -22,10 +23,10 @@
    (status/validate-mnemonic
     (security/safe-unmask-data mnemonic)
     (fn [result]
-      (let [{:keys [error]} (types/json->clj result)]
+      (let [{:keys [error keyUID]} (types/json->clj result)]
         (if (seq error)
           (when on-error (on-error error))
-          (on-success mnemonic)))))))
+          (on-success mnemonic keyUID)))))))
 
 (re-frame/reg-fx
  :multiaccount/restore-account-and-login
@@ -121,15 +122,28 @@
   {:events [:onboarding-2/seed-phrase-entered]}
   [_ seed-phrase on-error]
   {:multiaccount/validate-mnemonic [seed-phrase
-                                    #(re-frame/dispatch [:onboarding-2/seed-phrase-validated
-                                                         seed-phrase])
+                                    (fn [mnemonic key-uid]
+                                      (re-frame/dispatch [:onboarding-2/seed-phrase-validated
+                                                          mnemonic key-uid]))
                                     on-error]})
 
 (rf/defn seed-phrase-validated
   {:events [:onboarding-2/seed-phrase-validated]}
-  [{:keys [db]} seed-phrase]
-  {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
-   :dispatch [:navigate-to :create-profile]})
+  [{:keys [db]} seed-phrase key-uid]
+  (if (contains? (:multiaccounts/multiaccounts db) key-uid)
+    {:utils/show-confirmation
+     {:title               (i18n/label :t/multiaccount-exists-title)
+      :content             (i18n/label :t/multiaccount-exists-content)
+      :confirm-button-text (i18n/label :t/unlock)
+      :on-accept           #(do
+                              (re-frame/dispatch [:pop-to-root :profiles])
+                              ;; FIXME(rasom): obviously not cool
+                              (reset! profiles.view/show-profiles? false)
+                              (re-frame/dispatch
+                               [:multiaccounts.login.ui/multiaccount-selected key-uid]))
+      :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
+    {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
+     :dispatch [:navigate-to :create-profile]}))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding-2/navigate-to-create-profile]}
