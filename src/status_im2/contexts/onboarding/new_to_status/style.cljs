@@ -4,20 +4,13 @@
 
 (def full-screen {:flex 1})
 
-(def image-background
-  {:height "100%"
-   :width  "100%"})
-
-(def layer-background
-  {:padding-top      (if platform/ios? 44 0)
-   :position         :absolute
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0
-   :background-color colors/neutral-80-opa-80-blur})
-
-(def navigation-bar {:height 56})
+(def content-container
+  {:padding-top (if platform/ios? 44 0)
+   :position    :absolute
+   :top         0
+   :bottom      0
+   :left        0
+   :right       0})
 
 (def options-container
   {:padding-top        12

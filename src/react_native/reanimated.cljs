@@ -9,6 +9,7 @@
                              withDelay
                              withSpring
                              withRepeat
+                             withSequence
                              withDecay
                              Easing
                              Keyframe
@@ -17,8 +18,8 @@
                              SlideOutUp
                              LinearTransition)]
             [reagent.core :as reagent]
+            ["react-native-redash" :refer (withPause)]
             [react-native.flat-list :as rn-flat-list]
-            [utils.collection]
             [utils.worklets.core :as worklets.core]))
 
 (def ^:const default-duration 300)
@@ -59,6 +60,8 @@
 (def with-decay withDecay)
 (def key-frame Keyframe)
 (def with-repeat withRepeat)
+(def with-sequence withSequence)
+(def with-pause withPause)
 (def cancel-animation cancelAnimation)
 
 ;; Easings
