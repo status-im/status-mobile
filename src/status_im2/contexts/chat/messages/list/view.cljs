@@ -108,7 +108,8 @@
         bottom-space 15]
     [rn/view
      {:style {:flex 1
-              :padding-bottom (+ 108 (:bottom insets))}} ;; TODO: 108 is the composer's min-height
+              ;:padding-bottom (+ 108 (:bottom insets))
+              }} ;; TODO: 108 is the composer's min-height
      ;; NOTE: DO NOT use anonymous functions for handlers
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -121,8 +122,9 @@
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
        :on-scroll-to-index-failed    identity ; don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 32)
+       :content-container-style      {:padding-top    (+ 108 (:bottom insets) 32)
                                       :padding-bottom 16}
+       :scroll-indicator-insets     {:top (+ 108 (:bottom insets))}
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
        :onMomentumScrollBegin        state/start-scrolling
@@ -142,4 +144,4 @@
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
       {:position :absolute
-       :bottom   (+ 6 (+ 108 (:bottom insets)))}]]))
+       :bottom   (+ (if platform/ios? 6 20) (+ 108 (:bottom insets)))}]]))

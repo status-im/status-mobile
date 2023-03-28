@@ -26,7 +26,7 @@
      :size                32
      :accessibility-label :send-message-button
      :on-press            (fn []
-                            (on-send)
+                            ;(on-send)
                             (messages.list/scroll-to-bottom)
                             (rf/dispatch [:chat.ui/send-current-message]))}
     :i/arrow-up]])

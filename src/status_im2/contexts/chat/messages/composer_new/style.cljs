@@ -6,12 +6,10 @@
 
 (def handle-container-height 20)
 
-(def input-height 32)
-
 (def actions-container-height 56)
 
 (defn container
-  [insets]
+  [insets focused? has-text?]
   (merge
     {:border-top-left-radius  20
      ;:background-color :black
@@ -22,22 +20,27 @@
      :bottom                  0
      :left                    0
      :right                   0
-     :background-color        (colors/theme-colors colors/white colors/neutral-90)
-     :z-index                 2
+     ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
+     ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
+     :background-color        "rgba(255,255,255,1)"
+     ;:background-color        :black
+     :opacity                 (if (or focused? has-text?) 1 (if platform/ios? 0.7 0.5))
+     :z-index                 3
      :padding-bottom          (:bottom insets)}
     (if platform/ios?
-      {:shadow-radius  16
-       :shadow-opacity 1
-       :shadow-color   "rgba(9, 16, 28, 0.04)"
-       :shadow-offset  {:width 0 :height -2}}
-      {:elevation 4})))
+      {:shadow-radius  20
+       :shadow-opacity 0.1
+       :shadow-color   "#09101C"
+       :shadow-offset  {:width 0 :height -4}}
+      {:elevation 10})))
 
 (defn handle-container
   []
-  {:left            0
+  {
+   :height          handle-container-height
+   :left            0
    :right           0
    :top             0
-   :height          handle-container-height
    ;:background-color :red
    :z-index         1
    :justify-content :center
@@ -53,11 +56,16 @@
 (defn input
   []
   (merge typography/paragraph-1
-         {
-          :min-height 32
-          :flex 1
-          ;:position (if platform/android? :absolute :relative)
-          ;:top 0
+         {:min-height (if platform/ios? 32 44)
+          :text-align-vertical    :top
+          :flex       1
+          ;:position (if (and platform/android? (or (<= (reanimated/get-shared-value value) input-height) animating))  :absolute :relative)
+          ;:position   (if platform/android? :absolute :relative)
+
+          :position   :absolute
+          :top 0
+          :left       0
+          :right      0
           ;:overflow :hidden
           ;:padding-vertical 10
           ;:min-height input-height
@@ -68,23 +76,86 @@
           }))
 
 (defn input-container
-  [height]
+  [height max-height emojis-open?]
   (reanimated/apply-animations-to-style
-    {:height height}
     {
+     ;:transform [{:translate-y value}]
+     :height height
+     }
+    {
+     :max-height max-height
+     ;:background-color :blue
+     :overflow (if emojis-open? :visible :hidden)
      ;:overflow :hidden
      ;:padding-vertical 5
-     ;:background-color :red
+     ;:justify-content :flex-end
      ;:justify-content :center
      ;:align-items :center
      }))
 
 
 (defn actions-container
-  [value]
+  []
   {:height          actions-container-height
-   :background-color (when (> (reanimated/get-shared-value value) input-height) :white)
-   :justify-content :center
-   :z-index 2
+   ;:background-color :white
+   ;:background-color :w
+   ;:background-color "rgba(255,255,255,0.5)"
+   ;:background-color (when (or (> (reanimated/get-shared-value value) input-height) platform/android?) :white)
+   ;:background-color (when (> (reanimated/get-shared-value value) input-height) :white)
+   :justify-content :space-between
+   :align-items :center
+   :z-index         2
+
+   :flex-direction  :row
+
    ;:background-color :yellow
    })
+
+(defn background
+  [opacity bg-bottom window-height height]
+  (reanimated/apply-animations-to-style
+    {:opacity   opacity
+     :transform [{:translate-y bg-bottom}]}
+    {:position         :absolute
+     :left             0
+     :right            0
+     :bottom           0
+     :height           window-height
+     :background-color colors/neutral-95-opa-70
+     :z-index          1}))
+
+(defn blur-container
+  [opacity height]
+  (reanimated/apply-animations-to-style
+    {:opacity opacity
+     :height  height}
+    {:position                :absolute
+     :elevation               10
+     :left                    0
+     :right                   0
+     :bottom                  0
+     :border-top-right-radius 20
+     :border-top-left-radius  20
+     :overflow                :hidden}))
+
+(defn text-overlay
+  []
+  {:height (if platform/ios? (:line-height typography/paragraph-1) 32)
+   :position :absolute
+   :bottom 0
+   :left 0
+   :right 0})
+
+(defn text-top-overlay
+  [opacity z-index]
+  (reanimated/apply-animations-to-style
+    {:opacity opacity}
+    {:height 80 ;; add height const
+     :position :absolute
+     :z-index z-index
+     :top 0
+     :left 0
+     :right 0}))
+
+
+
