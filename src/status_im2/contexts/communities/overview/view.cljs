@@ -295,14 +295,14 @@
 
 (defn page-nav-right-section-buttons
   [id]
-  [{:icon             :i/options
-    :background-color (scroll-page/icon-color)
-    :on-press         #(rf/dispatch
-                        [:bottom-sheet/show-sheet
-                         {:content
-                          (fn []
-                            [options/community-options-bottom-sheet
-                             id])}])}])
+  [{:icon                :i/options
+    :background-color    (scroll-page/icon-color)
+    :accessibility-label :community-options-for-community
+    :on-press            #(rf/dispatch
+                           [:bottom-sheet/show-sheet
+                            {:content (fn []
+                                        [options/community-options-bottom-sheet
+                                         id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]
