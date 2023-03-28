@@ -92,6 +92,7 @@ project.ext.react = [
      *       to guard against a hang in the UI thread after invoking status-go.
      * Also a clean and rebuild is required when changing this. */
     enableHermes: !disableHermes,
+    deleteDebugFilesForVariant: { false },
     /* Disable 'The first definition was here.' warnings */
     hermesFlagsRelease: ["-w"],
     bundleInPr: true,
@@ -167,7 +168,7 @@ def getVersionName = { ->
         }
         /* Necessary because Android Studio uses wrong PWD.
          * Is actually absolute directory path of this file. */
-        def configDir = project.projectDir.toString() 
+        def configDir = project.projectDir.toString()
         version = new File(configDir + '/../../VERSION').text
         return version.replaceAll("\\s","")
     }
@@ -190,7 +191,7 @@ def getEnvOrConfig = { varName ->
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-    
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
