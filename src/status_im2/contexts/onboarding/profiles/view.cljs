@@ -202,4 +202,4 @@
      [background/view true]
      (if @show-profiles?
        [profiles-section]
-       [login-section show-profiles?])]))
+       [login-section])]))

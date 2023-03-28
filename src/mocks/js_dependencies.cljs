@@ -293,7 +293,10 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     :createNativeWrapper      identity
     :default                  #js {}})
 
-(def react-native-redash #js {:clamp nil})
+(def react-native-redash
+  #js
+   {:clamp     nil
+    :withPause (fn [])})
 
 (def react-native-languages
   (clj->js {:default {:language            "en"
@@ -370,6 +373,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-screens"                          (clj->js {})
     "react-native-reanimated"                       react-native-reanimated
     "react-native-redash/lib/module/v1"             react-native-redash
+    "react-native-redash"                           react-native-redash
     "react-native-fetch-polyfill"                   fetch
     "react-native-status-keycard"                   status-keycard
     "react-native-keychain"                         keychain
@@ -407,6 +411,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "../src/js/worklets/bottom_sheet.js"            #js {}
     "../src/js/worklets/record_audio.js"            #js {}
     "../src/js/worklets/scroll_view.js"             #js {}
+    "../src/js/worklets/onboarding_carousel.js"     #js {}
     "../src/js/worklets/lightbox.js"                #js {}
     "./fleets.js"                                   default-fleets
     "@walletconnect/client"                         wallet-connect-client
