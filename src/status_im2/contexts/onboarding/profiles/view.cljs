@@ -31,7 +31,7 @@
       :label               (i18n/label :t/add-existing-status-profile)
       :on-press            #(do
                               (rf/dispatch [:bottom-sheet/hide])
-                              (rf/dispatch [:navigate-to :new-to-status]))
+                              (rf/dispatch [:navigate-to :sign-in]))
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options
