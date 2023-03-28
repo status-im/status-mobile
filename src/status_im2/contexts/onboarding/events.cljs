@@ -93,12 +93,15 @@
                          :wakuV2Nameserver         "1.1.1.1"
                          :logLevel                 (when log-enabled? config/log-level)
                          :logEnabled               log-enabled?
-                         :logFilePath              (status/log-file-path)
+                         :logFilePath              (status/log-file-directory)
                          :openseaAPIKey            config/opensea-api-key
                          :verifyTransactionURL     config/verify-transaction-url
                          :verifyENSURL             config/verify-ens-url
                          :verifyENSContractAddress config/verify-ens-contract-address
                          :verifyTransactionChainID config/verify-transaction-chain-id
+                         :upstreamConfig           config/default-network-rpc-url
+                         :networkId                config/default-network-id
+                         :currentNetwork           config/default-network
                          :previewPrivacy           config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
