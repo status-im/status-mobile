@@ -91,7 +91,7 @@
                           :color            (:text colors-by-status))]
     (if multiple-lines?
       (assoc base-props :text-align-vertical :top)
-      (assoc base-props :height (if small? 30 38)))))
+      (assoc base-props :height (if small? 30 38) :line-height nil))))
 
 (defn right-icon-touchable-area
   [small?]
