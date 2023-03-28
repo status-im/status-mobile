@@ -11,8 +11,8 @@
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
             [status-im2.constants :as constants]
+            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.sign-in.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -216,9 +216,7 @@
               :camera-options {:zoomMode :off}
               :scan-barcode   true
               :on-read-code   on-read-code}]
-            [rn/image
-             {:style  (merge style/absolute-fill {:height height :width width})
-              :source (resources/get-image :intro-4)}])
+            [background/view true])
           (conj hole-view-wrapper
                 [blur/view
                  {:style         style/absolute-fill

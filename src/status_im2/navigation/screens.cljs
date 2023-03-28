@@ -13,7 +13,7 @@
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.onboarding.common.intro.view :as intro]
+    [status-im2.contexts.onboarding.intro.view :as intro]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
