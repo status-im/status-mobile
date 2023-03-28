@@ -165,7 +165,7 @@
              :MailserversConfig {:Enabled true}
              :EnableNTPSync true
              :WakuConfig
-             {:Enabled         true
+             {:Enabled         (not wakuv2-enabled)
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient     true
               :MinimumPoW      0.000001}
