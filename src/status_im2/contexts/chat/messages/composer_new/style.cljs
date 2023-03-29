@@ -37,14 +37,14 @@
 (defn handle-container
   []
   {
-   :height          handle-container-height
-   :left            0
-   :right           0
-   :top             0
+   :height           handle-container-height
+   :left             0
+   :right            0
+   :top              0
    ;:background-color :red
-   :z-index         1
-   :justify-content :center
-   :align-items     :center})
+   :z-index          1
+   :justify-content  :center
+   :align-items      :center})
 
 (defn handle
   []
@@ -54,25 +54,26 @@
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
 (defn input
-  []
+  [focused? expanded?]
   (merge typography/paragraph-1
-         {:min-height (if platform/ios? 32 44)
-          :text-align-vertical    :top
-          :flex       1
+         {:min-height          (if platform/ios? 32 44)
+          :text-align-vertical :top
+          :flex                1
           ;:position (if (and platform/android? (or (<= (reanimated/get-shared-value value) input-height) animating))  :absolute :relative)
           ;:position   (if platform/android? :absolute :relative)
 
-          :position   :absolute
-          :top 0
-          :left       0
-          :right      0
+          :position            :absolute
+          :top                 0
+          :left                0
+          :right               (when (or (not focused?) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
+          ;:right               0 ; to inc gesture detection area on Android
           ;:overflow :hidden
           ;:padding-vertical 10
           ;:min-height input-height
           ;:min-height 40
           ;:min-height input-height
           ;:height 300
-          ;:background-color :green
+          ;:background-color    :green
           }))
 
 (defn input-container
@@ -83,9 +84,10 @@
      :height height
      }
     {
-     :max-height max-height
+     :max-height       max-height
      ;:background-color :blue
-     :overflow (if emojis-open? :visible :hidden)
+     ;:overflow         (if emojis-open? :visible :hidden)
+     :overflow         :hidden
      ;:overflow :hidden
      ;:padding-vertical 5
      ;:justify-content :flex-end
@@ -103,7 +105,7 @@
    ;:background-color (when (or (> (reanimated/get-shared-value value) input-height) platform/android?) :white)
    ;:background-color (when (> (reanimated/get-shared-value value) input-height) :white)
    :justify-content :space-between
-   :align-items :center
+   :align-items     :center
    :z-index         2
 
    :flex-direction  :row
@@ -140,22 +142,22 @@
 
 (defn text-overlay
   []
-  {:height (if platform/ios? (:line-height typography/paragraph-1) 32)
+  {:height   (if platform/ios? (:line-height typography/paragraph-1) 32)
    :position :absolute
-   :bottom 0
-   :left 0
-   :right 0})
+   :bottom   0
+   :left     0
+   :right    0})
 
 (defn text-top-overlay
   [opacity z-index]
   (reanimated/apply-animations-to-style
     {:opacity opacity}
-    {:height 80 ;; add height const
+    {:height   80 ;; add height const
      :position :absolute
-     :z-index z-index
-     :top 0
-     :left 0
-     :right 0}))
+     :z-index  z-index
+     :top      0
+     :left     0
+     :right    0}))
 
 
 
