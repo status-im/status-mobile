@@ -8,7 +8,8 @@
     [react-native.platform :as platform]
     [status-im.notifications.core :as notifications]
     [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.enable-notifications.style :as style]))
+    [status-im2.contexts.onboarding.enable-notifications.style :as style]
+    [status-im2.contexts.shell.animation :as shell.animation]))
 
 (defn navigation-bar
   []
@@ -44,6 +45,7 @@
   [rn/view {:style style/enable-notifications-buttons}
    [quo/button
     {:on-press                  (fn []
+                                  (shell.animation/change-selected-stack-id :communities-stack true)
                                   (rf/dispatch [::notifications/switch true platform/ios?])
                                   (rf/dispatch [:init-root :welcome]))
      :type                      :primary
@@ -52,7 +54,9 @@
      :override-background-color (colors/custom-color :magenta 60)}
     (i18n/label :t/intro-wizard-title6)]
    [quo/button
-    {:on-press                  #(rf/dispatch [:init-root :welcome])
+    {:on-press                  (fn []
+                                  (shell.animation/change-selected-stack-id :communities-stack true)
+                                  (rf/dispatch [:init-root :welcome]))
      :accessibility-label       :enable-notifications-later-button
      :override-background-color colors/white-opa-5
      :style                     {:margin-top 12}}
@@ -68,4 +72,3 @@
     [quo/text
      "[Illustration here]"]]
    [enable-notification-buttons]])
-
