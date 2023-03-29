@@ -37,8 +37,7 @@
   {:width           120
    :height          120
    :justify-content :center
-   :align-items     :center
-   :border-width    1})
+   :align-items     :center})
 
 (def no-pinned-messages-text
   {:margin-top 20})

@@ -22,8 +22,7 @@
   [chat-id]
   (let [pinned-messages        (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
-        current-chat           (rf/sub [:chat-by-id chat-id])
-        {:keys [community-id]} current-chat
+        {:keys [community-id]} (rf/sub [:chat-by-id chat-id])
         community              (rf/sub [:communities/community community-id])]
     [safe-area/consumer
      (fn [insets]
