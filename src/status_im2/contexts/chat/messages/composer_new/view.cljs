@@ -50,49 +50,65 @@
    :i/image])
 
 (defn drag-gesture
-  [height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines]
-  (->
-    (gesture/gesture-pan)
-    (gesture/on-start (fn [e] (reanimated/set-shared-value bg-bottom 0)))
-    (gesture/on-update (fn [e]
-                         (let [translation (oops/oget e "translationY")
-                               progress    (Math/abs (/ translation max-height))]
-                           (if keyboard-shown
-                             (do
-                               (if (pos? translation)
-                                 (do
-                                   (reanimated/set-shared-value height (Math/min (+ (- (/ translation 1)) (reanimated/get-shared-value saved-height)) max-height))
-                                   (reanimated/set-shared-value opacity (- 1 progress)))
-                                 (do
-                                   (reanimated/set-shared-value height (Math/min (+ (- translation) (reanimated/get-shared-value saved-height)) max-height))
-                                   (reanimated/set-shared-value opacity progress))))
-                             (do
-                               (.focus ^js @input-ref))))))
-    (gesture/on-end (fn [e]
-                      (let [diff (- (reanimated/get-shared-value height) (reanimated/get-shared-value saved-height))]
-                        (if (>= diff 0)
-                          (if (> diff drag-threshold)
-                            (do
-                              (reanimated/animate height max-height)
-                              (reanimated/set-shared-value saved-height max-height)
-                              (reanimated/set-shared-value bg-bottom 0)
-                              (reanimated/animate opacity 1))
-                            (do
-                              (reanimated/animate height (reanimated/get-shared-value saved-height))
-                              (reanimated/animate opacity 0)
-                              (reanimated/animate-delay bg-bottom (- window-height) 300)))
-                          (if (> diff (- drag-threshold))
-                            (do
-                              (reanimated/animate height max-height)
-                              (reanimated/animate opacity 1))
-                            (do
-                              (let [target-height (if (> lines 1) (+ input-height 18) input-height)]
-                                (println "blurring")
-                                (js/setTimeout #(.blur ^js @input-ref) 200)
-                                (reanimated/animate height target-height)
-                                (js/setTimeout #(reanimated/set-shared-value saved-height target-height) 300)
-                                (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)
-                                (reanimated/animate opacity 0))))))))))
+  [height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height emojis-open]
+  (let [expanding? (atom true)]
+    (->
+      (gesture/gesture-pan)
+      (gesture/on-start (fn [e] (reanimated/set-shared-value bg-bottom 0)
+                          (reset! expanding? (neg? (oops/oget e "velocityY")))))
+      (gesture/on-update (fn [e]
+                           (let [translation      (oops/oget e "translationY")
+                                 new-height       (Math/max input-height (Math/min (+ (- (/ translation 1)) (reanimated/get-shared-value saved-height)) max-height))
+                                 remaining-height (if @expanding? (- max-height (reanimated/get-shared-value saved-height)) (reanimated/get-shared-value saved-height))
+                                 progress         (/ translation remaining-height)
+                                 progress         (if (= new-height input-height) 1 progress)]
+                             (if keyboard-shown
+                               (do
+                                 (if (>= translation 0)
+                                   (do
+                                     (reanimated/set-shared-value height new-height)
+                                     (when (and (pos? progress) (not= (reanimated/get-shared-value opacity) 0))
+                                       (reanimated/set-shared-value opacity (- 1 progress))))
+                                   (do
+                                     (reanimated/set-shared-value height new-height)
+                                     (when @expanding?
+                                       (reanimated/set-shared-value opacity (Math/abs progress))))))
+                               (do
+                                 (.focus ^js @input-ref))))))
+      (gesture/on-end (fn [e]
+                        (let [diff (- (reanimated/get-shared-value height) (reanimated/get-shared-value saved-height))
+                              collapsing? (pos? (oops/oget e "velocityY"))]
+                          (if (>= diff 0)
+                            (if (> diff drag-threshold)
+                              (do
+                                (reanimated/animate height max-height)
+                                (reanimated/set-shared-value saved-height max-height)
+                                (reanimated/set-shared-value bg-bottom 0)
+                                (reanimated/animate opacity 1))
+                              (do
+                                (reanimated/animate height (reanimated/get-shared-value saved-height))
+                                (when (or (and collapsing? (not= (reanimated/get-shared-value saved-height) max-height)) (= (reanimated/get-shared-value saved-height) input-height))
+                                  (reanimated/animate opacity 0)
+                                  (reanimated/animate-delay bg-bottom (- window-height) 300))))
+                            (if (and (> diff (- drag-threshold)) (not collapsing?))
+                              (do
+                                (reanimated/animate height max-height)
+                                (reanimated/set-shared-value saved-height max-height)
+                                (reanimated/animate opacity 1))
+                              (do
+                                (let [target-height (if (> lines 1) (+ input-height 18) input-height)]
+
+                                  (when @add-keyboard-height
+                                    (reanimated/set-shared-value height (+ (reanimated/get-shared-value height) @add-keyboard-height))
+                                    (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) @add-keyboard-height))
+                                    (reset! emojis-open false)
+                                    (reset! add-keyboard-height nil))
+
+                                  (.blur ^js @input-ref)
+                                  (reanimated/animate height target-height)
+                                  (js/setTimeout #(reanimated/set-shared-value saved-height target-height) 300)
+                                  (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)
+                                  (reanimated/animate opacity 0)))))))))))
 
 (defn handle
   []
@@ -171,10 +187,11 @@
                     lines      (Math/round (/ @content-height line-height))
                     lines      (if platform/ios? lines (dec lines))
                     max-lines  (Math/round (/ max-height line-height))
-                    max-lines  (if platform/ios? max-lines (dec max-lines))]
+                    max-lines  (if platform/ios? max-lines (dec max-lines))
+                    expanded?  (= (reanimated/get-shared-value height) max-height)]
                 [:<>
                  [reanimated/view {:style (style/background opacity bg-bottom window-height height)}]
-                 [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines)}
+                 [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height emojis-open)}
                   [rn/keyboard-avoiding-view {:style                    (style/container insets @focused? (not-empty @text-value))
                                               :behavior                 (if platform/ios? "padding" nil)
                                               :keyboard-vertical-offset ios-extra-offset
@@ -225,29 +242,30 @@
                                                    (js/setTimeout #(reset! lock-layout? false) 500)
                                                    (reanimated/animate overlay-opacity 0)
                                                    (reset! overlay-z-index 0)))
-                       :style                  (style/input)
-                       :on-scroll (fn [e] (let [y (oops/oget e "nativeEvent.contentOffset.y")]
-                                            (when (and (> y line-height) (>= lines max-lines) (= @overlay-z-index 0) @focused?)
-                                              (reset! overlay-z-index 1)
-                                              (js/setTimeout #(reanimated/animate overlay-opacity 1) 0))
-                                            (when (and (<= y line-height) (= @overlay-z-index 1))
-                                              (reanimated/animate overlay-opacity 0)
-                                              (js/setTimeout #(reset! overlay-z-index 0) 300))))
+                       :style                  (style/input @focused? expanded?)
+                       :on-scroll              (fn [e] (let [y (oops/oget e "nativeEvent.contentOffset.y")]
+                                                         (when (and (> y line-height) (>= lines max-lines) (= @overlay-z-index 0) @focused?)
+                                                           (reset! overlay-z-index 1)
+                                                           (js/setTimeout #(reanimated/animate overlay-opacity 1) 0))
+                                                         (when (and (<= y line-height) (= @overlay-z-index 1))
+                                                           (reanimated/animate overlay-opacity 0)
+                                                           (js/setTimeout #(reset! overlay-z-index 0) 300))))
                        :on-content-size-change (fn [e]
-                                                 (let [extra-offset (if platform/ios? (if @emojis-open ios-extra-offset 5) 0)
-                                                       x            (+ (oops/oget e "nativeEvent.contentSize.height") extra-offset)
-                                                       diff         (Math/abs (- x (reanimated/get-shared-value height)))]
-                                                   (reset! content-height (oops/oget e "nativeEvent.contentSize.height"))
-                                                   (when (and (> diff 10) (not-empty @text-value) (<= x (+ max-height line-height)) (not= (reanimated/get-shared-value height) max-height))
-                                                     (reanimated/animate height (Math/min x max-height))
-                                                     (reanimated/set-shared-value saved-height (Math/min x max-height)))
-                                                   (if (> x (* 0.75 max-height))
-                                                     (do
-                                                       (reanimated/set-shared-value bg-bottom 0)
-                                                       (reanimated/animate opacity 1))
-                                                     (do
-                                                       (reanimated/animate opacity 0)
-                                                       (reanimated/animate-delay bg-bottom (- window-height) 300)))))
+                                                 (when @focused?
+                                                   (let [extra-offset (if platform/ios? (if @emojis-open ios-extra-offset 5) 0)
+                                                         x            (+ (oops/oget e "nativeEvent.contentSize.height") extra-offset)
+                                                         diff         (Math/abs (- x (reanimated/get-shared-value height)))]
+                                                     (reset! content-height (oops/oget e "nativeEvent.contentSize.height"))
+                                                     (when (and (> diff 10) (not-empty @text-value) (<= x (+ max-height line-height)) (not= (reanimated/get-shared-value height) max-height))
+                                                       (reanimated/animate height (Math/min x max-height))
+                                                       (reanimated/set-shared-value saved-height (Math/min x max-height)))
+                                                     (if (> (reanimated/get-shared-value saved-height) (* 0.75 max-height))
+                                                       (do
+                                                         (reanimated/set-shared-value bg-bottom 0)
+                                                         (reanimated/animate opacity 1))
+                                                       (do
+                                                         (reanimated/animate opacity 0)
+                                                         (reanimated/animate-delay bg-bottom (- window-height) 300))))))
                        :max-height             max-height
                        :multiline              true
                        :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-60)
