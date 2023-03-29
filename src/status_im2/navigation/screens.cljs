@@ -155,7 +155,7 @@
 
     {:name      :syncing-devices
      :options   {:layout options/onboarding-layout}
-     :component syncing-devices/syncing-devices}
+     :component syncing-devices/view}
 
     {:name      :welcome
      :options   {:layout options/onboarding-layout}

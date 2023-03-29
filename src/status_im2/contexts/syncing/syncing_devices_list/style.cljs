@@ -6,12 +6,15 @@
    :padding-top      44
    :flex             1})
 
-(def page-container {:margin-horizontal 20})
+(def page-container
+  {:flex              1
+   :margin-horizontal 20})
 
 (def title-container
   {:flex-direction  :row
    :align-items     :center
-   :justify-content :space-between})
+   :justify-content :space-between
+   :margin-bottom   24})
 
 (def devices-container
   {:flex 1})

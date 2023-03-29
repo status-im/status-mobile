@@ -84,14 +84,9 @@
                   completed-pairing?
                   (assoc-in [:syncing :pairing-in-progress?] false))}
            (when navigate-to-syncing-devices?
-             {:dispatch [:navigate-to :syncing-devices]})
+             {:dispatch [:navigate-to :syncing-devices {:pairing-status :connection-success}]})
            (when (and error-on-pairing? user-in-syncing-devices-screen?)
-             {:dispatch-n [[:toasts/upsert
-                            {:icon           :i/info
-                             :icon-color     colors/danger-50
-                             :override-theme :light
-                             :text           (i18n/label :t/error-syncing-connection-failed)}]
-                           [:navigate-back]]})
+             {:dispatch [:navigate-to :syncing-devices {:pairing-status :error-on-pairing}]})
            (when completed-pairing?
              {:dispatch [:syncing/pairing-completed]}))))
 
