@@ -20,13 +20,15 @@
      :bottom                  0
      :left                    0
      :right                   0
+     :background-color        (colors/theme-colors colors/white colors/neutral-90)
      ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
-     ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
-     :background-color        "rgba(255,255,255,1)"
+     ;:background-color        "rgba(255,255,255,1)"
      ;:background-color        :black
      :opacity                 (if (or focused? has-text?) 1 (if platform/ios? 0.7 0.5))
      :z-index                 3
-     :padding-bottom          (:bottom insets)}
+     :padding-bottom (:bottom insets)
+     ;:padding-bottom          0
+     }
     (if platform/ios?
       {:shadow-radius  20
        :shadow-opacity 0.1
@@ -54,7 +56,7 @@
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
 (defn input
-  [focused? expanded?]
+  [focused? expanded? saved-keyboard-height]
   (merge typography/paragraph-1
          {:min-height          (if platform/ios? 32 44)
           :text-align-vertical :top
@@ -62,11 +64,11 @@
           ;:position (if (and platform/android? (or (<= (reanimated/get-shared-value value) input-height) animating))  :absolute :relative)
           ;:position   (if platform/android? :absolute :relative)
 
-          :position            :absolute
+          :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
           :right               (when (or (not focused?) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
-          ;:right               0 ; to inc gesture detection area on Android
+
           ;:overflow :hidden
           ;:padding-vertical 10
           ;:min-height input-height
