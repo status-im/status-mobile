@@ -126,6 +126,11 @@
   (when (string? s)
     (string/replace s m r)))
 
+(defn safe-nth
+  [coll index]
+  (when (number? index)
+    (nth coll index)))
+
 (defn svg?
   [some-string]
   (string/ends-with? some-string ".svg"))
