@@ -6,7 +6,7 @@ import pytest
 from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException
 
-from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel
+from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, common_password
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.sign_in_view import SignInView
@@ -359,12 +359,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user,))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1 = self.home_1.get_profile_view()
-        self.profile_1.switch_push_notifications()
         [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
         [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         self.home_1.add_contact(self.public_key_2)

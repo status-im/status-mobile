@@ -637,7 +637,7 @@ class UnpinMessagePopUp(BaseElement):
 
 class PinnedMessagesList(BaseElement):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//*[@content-desc='pinned-messages-list']")
+        super().__init__(driver, xpath="//*[@content-desc='pinned-messages-menu']")
 
     def get_pinned_messages_number(self):
         self.driver.info("Getting number of pinned messages inside pinned messages list element")

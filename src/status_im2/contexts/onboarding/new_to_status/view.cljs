@@ -1,34 +1,15 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im.keycard.recovery :as keycard]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.onboarding.new-to-status.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
-
-(defn background-image
-  []
-  [rn/image
-   {:style       style/image-background
-    :blur-radius 13
-    :source      (resources/get-image :onboarding-blur-bg)}])
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?            true
-     :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :blur-bg
-                             :icon                :i/arrow-left
-                             :icon-override-theme :dark
-                             :on-press            #(rf/dispatch [:navigate-back])}
-     :right-section-buttons [{:type                :blur-bg
-                              :icon                :i/info
-                              :icon-override-theme :dark
-                              :on-press            #(js/alert "Pending")}]}]])
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im.keycard.recovery :as keycard]
+    [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.onboarding.new-to-status.style :as style]
+    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn sign-in-options
   []
@@ -91,7 +72,7 @@
 (defn new-to-status
   []
   [rn/view {:style style/full-screen}
-   [background-image]
-   [rn/view {:style style/layer-background}
-    [navigation-bar]
+   [background/view true]
+   [rn/view {:style style/content-container}
+    [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
     [sign-in-options]]])

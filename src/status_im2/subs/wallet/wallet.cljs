@@ -3,10 +3,10 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
-            [utils.i18n :as i18n]
-            [status-im2.config :as config]
             [status-im.utils.currency :as currency]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im2.config :as config]
+            [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :balance
@@ -253,7 +253,7 @@
  :wallet/currency
  :<- [:wallet.settings/currency]
  (fn [currency-id]
-   (get currency/currencies currency-id)))
+   (get currency/currencies currency-id (get currency/currencies :usd))))
 
 (defn filter-recipient-favs
   [search-filter {:keys [name]}]

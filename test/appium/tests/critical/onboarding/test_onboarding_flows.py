@@ -211,7 +211,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.confirm_your_password_input.set_value(common_password)
 
         self.sign_in.next_button.click()
-        [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.lets_go_button)]
+        [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.start_button)]
         self.home.cross_icon_inside_welcome_screen_button.wait_and_click(10)
         if not self.home.element_by_translation_id("welcome-blank-message").is_element_displayed():
             self.errors.append("'%s' text is not shown after welcome view was closed" %
@@ -439,7 +439,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.driver.fail("No popup about successfull migration is shown!")
         self.sign_in.ok_button.click()
         self.sign_in.maybe_later_button.wait_and_click(30)
-        self.sign_in.lets_go_button.wait_and_click(30)
+        self.sign_in.start_button.wait_and_click(30)
 
         self.sign_in.just_fyi('Check that after migrating account with assets is restored')
         wallet = self.sign_in.wallet_button.click()

@@ -163,8 +163,8 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.sign_in.next_button.click()
         self.sign_in.confirm_your_password_input.set_value(common_password)
         self.sign_in.next_button.click()
-        self.sign_in.maybe_later_button.click_until_presence_of_element(self.sign_in.lets_go_button)
-        self.sign_in.lets_go_button.click()
+        self.sign_in.maybe_later_button.click_until_presence_of_element(self.sign_in.start_button)
+        self.sign_in.start_button.click()
 
         self.sign_in.just_fyi('Add to wallet seed phrase for restored multiaccount')
         wallet = self.sign_in.wallet_button.click()

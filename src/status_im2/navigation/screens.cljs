@@ -13,7 +13,7 @@
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.onboarding.common.intro.view :as intro]
+    [status-im2.contexts.onboarding.intro.view :as intro]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -151,7 +151,9 @@
 
     {:name      :create-profile-password
      :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
+                 :topBar        {:visible    false
+                                 :backButton {:popStackOnPress false}}
+
                  :navigationBar {:backgroundColor colors/black}}
      :insets    {:top false}
      :component create-password/create-password}
@@ -164,9 +166,13 @@
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar          {:style :light}
+                 :navigationBar      {:backgroundColor colors/black}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}
+                 :topBar             {:visible    false
+                                      :backButton {:popStackOnPress false}}}
      :insets    {:top false}
      :component generating-keys/generating-keys}
 
@@ -178,9 +184,13 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:statusBar     {:style :light}
-                 :topBar        {:visible false}
-                 :navigationBar {:backgroundColor colors/black}}
+     :options   {:statusBar          {:style :light}
+                 :navigationBar      {:backgroundColor colors/black}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}
+                 :topBar             {:visible    false
+                                      :backButton {:popStackOnPress false}}}
      :insets    {:top false}
      :component enable-notifications/enable-notifications}
 

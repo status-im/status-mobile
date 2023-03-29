@@ -130,7 +130,7 @@
            ;; The initial value of data is the image that was pressed (and not the whole album) in order
            ;; for the transition animation to execute properly, otherwise it would animate towards
            ;; outside the screen (even if we have `initialScrollIndex` set).
-           data                            (reagent/atom [(nth messages index)])
+           data                            (reagent/atom (if (number? index) [(nth messages index)] []))
            scroll-index                    (reagent/atom index)
            transparent?                    (reagent/atom false)
            set-full-height?                (reagent/atom false)
