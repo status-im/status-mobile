@@ -7,15 +7,9 @@
     [status-im2.common.resources :as resources]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+    [status-im2.contexts.onboarding.common.background.view :as background]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(defn background-image
-  []
-  [rn/image
-   {:style       style/image-background
-    :blur-radius 13
-    :source      (resources/get-image :onboarding-blur-bg)}])
 
 (defn sign-in-options
   []
@@ -78,7 +72,7 @@
 (defn new-to-status
   []
   [rn/view {:style style/full-screen}
-   [background-image]
-   [rn/view {:style style/layer-background}
+   [background/view true]
+   [rn/view {:style style/content-container}
     [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
     [sign-in-options]]])

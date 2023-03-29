@@ -90,6 +90,28 @@ their styles in the top-level of the properties map, prefer to add them inside t
  ]
 ```
 
+### Always apply animated styles in the style file
+
+When implementing styles for reanimated views, we should always define
+them in the style file and apply animations with reanimated/apply-animations-to-style
+in the style definition.
+
+```clojure
+;; bad
+(defn circle
+  []
+  (let [opacity (reanimated/use-shared-value 1)]
+    [reanimated/view {:style (reanimated/apply-animations-to-style
+                              {:opacity opacity}
+                              style/circle-container)}]))
+
+;; good
+(defn circle
+  []
+  (let [opacity (reanimated/use-shared-value 1)]
+    [reanimated/view {:style (style/circle-container opacity)}]))
+```
+
 ### Don't use percents to define width/height
 
 In ReactNative, all layouts use the [flexbox
