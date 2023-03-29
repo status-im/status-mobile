@@ -5,6 +5,7 @@
             [quo2.components.tags.permission-tag :as permission]
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
+            [quo.gesture-handler :as gesture-handler] ;;TODO move to quo2
             [react-native.core :as rn]))
 
 (defn community-stats
@@ -41,17 +42,18 @@
 
 (defn community-tags
   [tags]
-  [rn/view (style/community-tags-container)
+  [gesture-handler/scroll-view
+   {:shows-horizontal-scroll-indicator false
+    :horizontal                        true}
    (for [{:keys [name emoji]} tags]
      ^{:key name}
      [rn/view {:margin-right 8}
       [tag/tag
-       {:size        24
-        :label       name
-        :type        :emoji
-        :labelled?   true
-        :scrollable? true
-        :resource    emoji}]])])
+       {:size      24
+        :label     name
+        :type      :emoji
+        :labelled? true
+        :resource  emoji}]])])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]

@@ -40,10 +40,6 @@
   {:flex-direction :row
    :align-items    :center})
 
-(defn community-tags-container
-  []
-  {:flex-direction :row})
-
 (defn card-stats-position
   []
   {:position :absolute

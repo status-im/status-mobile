@@ -4,12 +4,12 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.menus.community-options.view :as options]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.components.react :as react]
-            [react-native.platform :as platform]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.discover.style :as style]
             [utils.re-frame :as rf]))
@@ -105,13 +105,13 @@
            :horizontal                        true
            :keyboard-should-persist-taps      :always
            :shows-horizontal-scroll-indicator false
+           :nestedScrollEnabled               true
            :separator                         [rn/view {:width 12}]
            :data                              communities
            :render-fn                         community-list-item
            :render-data                       {:width     @view-size
                                                :view-type view-type}
-           :style                             style/flat-list-container}])])))
-
+           :content-container-style           style/flat-list-container}])])))
 
 (defn discover-communities-header
   [{:keys [featured-communities-count
