@@ -1,4 +1,4 @@
-(ns quo2.components.selectors.styles
+(ns quo2.components.selectors.selectors.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn toggle-background-color

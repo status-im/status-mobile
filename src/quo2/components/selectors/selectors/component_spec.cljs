@@ -1,5 +1,5 @@
-(ns quo2.components.selectors.component-spec
-  (:require [quo2.components.selectors.selectors :as selectors]
+(ns quo2.components.selectors.selectors.component-spec
+  (:require [quo2.components.selectors.selectors.view :as selectors]
             [reagent.core :as reagent]
             [test-helpers.component :as h]))
 

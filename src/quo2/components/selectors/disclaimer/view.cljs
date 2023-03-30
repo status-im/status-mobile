@@ -1,7 +1,7 @@
 (ns quo2.components.selectors.disclaimer.view
   (:require [quo2.components.markdown.text :as text]
             [quo2.components.selectors.disclaimer.style :as style]
-            [quo2.components.selectors.selectors :as selectors]
+            [quo2.components.selectors.selectors.view :as selectors]
             [react-native.core :as rn]))
 
 (defn view

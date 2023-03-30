@@ -1,6 +1,6 @@
-(ns quo2.components.selectors.selectors
+(ns quo2.components.selectors.selectors.view
   (:require [quo2.components.icon :as icons]
-            [quo2.components.selectors.styles :as style]
+            [quo2.components.selectors.selectors.style :as style]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 

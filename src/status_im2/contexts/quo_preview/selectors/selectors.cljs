@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.selectors.selectors
   (:require [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors :as quo2]
+            [quo2.components.selectors.selectors.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
