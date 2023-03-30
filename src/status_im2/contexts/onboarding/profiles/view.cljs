@@ -5,7 +5,7 @@
             [taoensso.timbre :as log]
             [reagent.core :as reagent]
             [react-native.core :as rn]
-            [status-im.utils.types :as types]
+            [utils.transforms :as types]
             [utils.security.core :as security]
             [status-im.native-module.core :as status]
             [status-im2.contexts.onboarding.profiles.style :as style]

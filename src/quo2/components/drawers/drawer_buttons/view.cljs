@@ -3,6 +3,7 @@
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
+            [react-native.blur :as blur]
             [quo2.components.drawers.drawer-buttons.style :as style]))
 
 (defn render-bottom
@@ -70,7 +71,7 @@
     child-2           string, keyword or hiccup
    "
   [{:keys [container-style top-card bottom-card]} child-1 child-2]
-  [rn/view
+  [blur/ios-view
    {:style (merge container-style style/outer-container)}
    [card
     (merge {:gap   4

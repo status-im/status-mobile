@@ -117,6 +117,7 @@
 
 ;;;;Blur
 (def white-70-blur (alpha white 0.7))
+(def neutral-80-opa-1-blur (alpha "#192438" 0.1))
 (def neutral-5-opa-70-blur (alpha neutral-5 0.7))
 (def neutral-80-opa-80-blur (alpha "#192438" 0.8))
 (def neutral-90-opa-70-blur (alpha neutral-90 0.7))

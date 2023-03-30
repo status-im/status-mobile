@@ -47,6 +47,7 @@
      [rn/view {:style style/input-container}
       [title-input/title-input
        (merge title-input-props
-              {:override-theme      :dark
+              {:blur?               true
+               :override-theme      :dark
                :placeholder         placeholder
                :customization-color customization-color})]]]))

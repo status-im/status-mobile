@@ -203,8 +203,8 @@
       }
    }
   "
-  [{:keys [one-icon-align-left? horizontal-description? align-mid?
-           page-nav-color page-nav-background-uri
+  [{:keys [container-style one-icon-align-left? horizontal-description?
+           align-mid? page-nav-color page-nav-background-uri
            mid-section
            left-section
            right-section-buttons]}]
@@ -222,13 +222,14 @@
          :left-icon               (:left-icon mid-section)
          :avatar                  (:avatar mid-section)}]
     [rn/view
-     {:style (cond-> {:display            :flex
-                      :flex-direction     :row
-                      ;;  iPhone 11 Pro's height in Figma divided by Component height 56/1125
-                      :align-items        :center
-                      :padding-horizontal 20
-                      :height             56
-                      :justify-content    :space-between}
+     {:style (cond-> (merge {:display            :flex
+                             :flex-direction     :row
+                             ;;  iPhone 11 Pro's height in Figma divided by Component height 56/1125
+                             :align-items        :center
+                             :padding-horizontal 20
+                             :height             56
+                             :justify-content    :space-between}
+                            container-style)
                page-nav-background-uri (assoc :background-color page-nav-color)
                page-nav-color          (assoc :background page-nav-background-uri))}
      [rn/view
