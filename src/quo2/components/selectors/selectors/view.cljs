@@ -15,21 +15,21 @@
         internal-checked?     (when-not controlled-component?
                                 (reagent/atom (or default-checked? false)))]
     (fn [{:keys [checked? disabled? blur? customization-color on-change container-style
-                 label-prefix outter-style-fn inner-style-fn icon-style-fn]
+                 label-prefix outer-style-fn inner-style-fn icon-style-fn]
           :or   {customization-color :blue}}]
       (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
             accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
             test-id             (str label-prefix "-component")
-            outter-styles       (outter-style-fn {:checked?            actual-checked?
-                                                  :disabled?           disabled?
-                                                  :blur?               blur?
-                                                  :container-style     container-style
-                                                  :customization-color customization-color})]
+            outer-styles        (outer-style-fn {:checked?            actual-checked?
+                                                 :disabled?           disabled?
+                                                 :blur?               blur?
+                                                 :container-style     container-style
+                                                 :customization-color customization-color})]
         [rn/touchable-without-feedback
          (when-not disabled?
            {:on-press #(handle-press on-change internal-checked? actual-checked?)})
          [rn/view
-          {:style               outter-styles
+          {:style               outer-styles
            :accessibility-label accessibility-label
            :accessibility-role  :checkbox
            :testID              test-id}
@@ -46,32 +46,32 @@
   [props]
   [selector
    (assoc props
-          :label-prefix    "toggle"
-          :outter-style-fn style/toggle
-          :inner-style-fn  style/toggle-inner)])
+          :label-prefix   "toggle"
+          :outer-style-fn style/toggle
+          :inner-style-fn style/toggle-inner)])
 
 (defn radio
   [props]
   [selector
    (assoc props
-          :label-prefix    "radio"
-          :outter-style-fn style/radio
-          :inner-style-fn  style/radio-inner)])
+          :label-prefix   "radio"
+          :outer-style-fn style/radio
+          :inner-style-fn style/radio-inner)])
 
 (defn checkbox
   [props]
   [selector
    (assoc props
-          :label-prefix    "checkbox"
-          :outter-style-fn style/checkbox
-          :inner-style-fn  style/common-checkbox-inner
-          :icon-style-fn   style/checkbox-check)])
+          :label-prefix   "checkbox"
+          :outer-style-fn style/checkbox
+          :inner-style-fn style/common-checkbox-inner
+          :icon-style-fn  style/checkbox-check)])
 
 (defn checkbox-prefill
   [props]
   [selector
    (assoc props
-          :label-prefix    "checkbox-prefill"
-          :outter-style-fn style/checkbox-prefill
-          :inner-style-fn  style/common-checkbox-inner
-          :icon-style-fn   style/checkbox-prefill-check)])
+          :label-prefix   "checkbox-prefill"
+          :outer-style-fn style/checkbox-prefill
+          :inner-style-fn style/common-checkbox-inner
+          :icon-style-fn  style/checkbox-prefill-check)])
