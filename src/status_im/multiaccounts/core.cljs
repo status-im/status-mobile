@@ -44,6 +44,7 @@
   (let [me? (= (:public-key current-multiaccount) identity)]
     (if me?
       [(or (:preferred-name current-multiaccount)
+           (:primary-name contact)
            (gfycat/generate-gfy identity))]
       [(:primary-name contact) (:secondary-name contact)])))
 

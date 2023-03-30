@@ -181,7 +181,7 @@
        :accessibility-label :forget-password-button
        :override-theme      :dark
        :style               style/forget-password-button}
-      (i18n/label :t/forget-password)]
+      (i18n/label :t/forgot-password)]
      [quo/button
       {:size                40
        :type                :primary
