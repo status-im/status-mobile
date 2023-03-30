@@ -20,11 +20,11 @@
       (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
             accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
             test-id             (str label-prefix "-component")
-            outter-styles       (outter-style-fn actual-checked?
-                                                 disabled?
-                                                 blur?
-                                                 container-style
-                                                 customization-color)]
+            outter-styles       (outter-style-fn {:checked?            actual-checked?
+                                                  :disabled?           disabled?
+                                                  :blur?               blur?
+                                                  :container-style     container-style
+                                                  :customization-color customization-color})]
         [rn/touchable-without-feedback
          (when-not disabled?
            {:on-press #(handle-press on-change internal-checked? actual-checked?)})
@@ -33,7 +33,11 @@
            :accessibility-label accessibility-label
            :accessibility-role  :checkbox
            :testID              test-id}
-          [rn/view {:style (inner-style-fn actual-checked? disabled? blur? customization-color)}
+          [rn/view
+           {:style (inner-style-fn {:checked?            actual-checked?
+                                    :disabled?           disabled?
+                                    :blur?               blur?
+                                    :customization-color customization-color})}
            (when (and icon-style-fn actual-checked?)
              [icons/icon :i/check-small
               (icon-style-fn actual-checked? disabled? blur?)])]]]))))

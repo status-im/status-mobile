@@ -92,7 +92,7 @@
     (get-in color-map route)))
 
 (defn toggle
-  [checked? disabled? blur? container-style customization-color]
+  [{:keys [checked? disabled? blur? container-style customization-color]}]
   (assoc container-style
          :height           20
          :width            30
@@ -102,7 +102,7 @@
                                (get-color [disabled? blur? checked?]))))
 
 (defn toggle-inner
-  [checked? disabled? _blur? _customization-color]
+  [{:keys [checked? disabled?]}]
   {:margin-left      (if checked? 12 2)
    :height           16
    :width            16
@@ -113,7 +113,7 @@
    :margin-bottom    :auto})
 
 (defn radio
-  [checked? disabled? blur? container-style customization-color]
+  [{:keys [checked? disabled? blur? container-style customization-color]}]
   (assoc container-style
          :height           20
          :width            20
@@ -126,7 +126,7 @@
                                (get-color [disabled? blur? checked?]))))
 
 (defn radio-inner
-  [checked? disabled? blur? customization-color]
+  [{:keys [checked? disabled? blur? customization-color]}]
   {:height           14
    :width            14
    :margin           1.8
@@ -137,7 +137,7 @@
                            (get-color [disabled? blur? checked?])))})
 
 (defn checkbox
-  [checked? disabled? blur? container-style customization-color]
+  [{:keys [checked? disabled? blur? container-style customization-color]}]
   (assoc container-style
          :height           20
          :width            20
@@ -150,7 +150,7 @@
                              (get-color checkbox-border-color [disabled? blur?]))))
 
 (defn common-checkbox-inner
-  [checked? _disabled? _blur? _customization-color]
+  [{:keys [checked?]}]
   (let [size (if checked? 20 0)]
     {:height size :width size}))
 
@@ -163,7 +163,7 @@
      :color (colors/alpha check-color (if disabled? 0.3 1))}))
 
 (defn checkbox-prefill
-  [_checked? disabled? blur? container-style _customization-color]
+  [{:keys [disabled? blur? container-style]}]
   (assoc container-style
          :height           21
          :width            21
