@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]
             [status-im2.contexts.chat.messages.content.style :as style]
             [status-im2.contexts.chat.messages.content.pin.view :as pin]
             [status-im2.constants :as constants]
@@ -104,7 +105,8 @@
           :style               {:border-radius 16
                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
           :on-press            (fn []
-                                 (rn/dismiss-keyboard!)
+                                 (when platform/ios?
+                                   (rn/dismiss-keyboard!))
                                  (when (and outgoing
                                             (not= outgoing-status :sending)
                                             (not @show-delivery-state?))
