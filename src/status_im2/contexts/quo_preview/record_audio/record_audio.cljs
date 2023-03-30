@@ -6,7 +6,8 @@
             [utils.re-frame :as rf]
             [status-im2.common.alert.events :as alert]
             [utils.i18n :as i18n]
-            [react-native.permissions :as permissions]))
+            [react-native.permissions :as permissions]
+            [status-im2.constants :as constants]))
 
 (defonce record-audio-permission-granted (reagent/atom false))
 
@@ -52,7 +53,8 @@
           :on-reviewing-audio                 on-reviewing-audio
           :on-cancel                          on-cancel
           :on-check-audio-permissions         on-check-audio-permissions
-          :on-request-record-audio-permission on-request-record-audio-permission}]]
+          :on-request-record-audio-permission on-request-record-audio-permission
+          :max-duration-ms                    constants/audio-max-duration-ms}]]
        [quo/text {:style {:margin-horizontal 20}} @message]])))
 
 (defn preview-record-audio
