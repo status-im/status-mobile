@@ -1,11 +1,10 @@
 (ns status-im2.contexts.quo-preview.selectors.selectors
-  (:require
-    [quo2.components.markdown.text :as text]
-    [quo2.components.selectors.selectors :as quo2]
-    [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo2.components.markdown.text :as text]
+            [quo2.components.selectors.selectors :as quo2]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Disabled"
@@ -14,31 +13,31 @@
    {:label "Blur"
     :key   :blur?
     :type  :boolean}
-   {:label   "Custom color"
-    :key     :custom-color
+   {:label   "Customization color"
+    :key     :customization-color
     :type    :select
     :options (map (fn [[color _]]
                     {:key color :value (name color)})
                   colors/customization)}])
 
 (defn selector-preview
-  [text component {:keys [disabled? blur? custom-color]}]
+  [text component {:keys [disabled? blur? customization-color]}]
   [rn/view
    {:style {:margin      6
             :align-items :center}}
    [text/text {:size :paragraph-1} text]
    [component
-    {:container-style {:margin 4}
-     :disabled?       disabled?
-     :blur?           blur?
-     :custom-color    custom-color}]])
+    {:container-style     {:margin 4}
+     :disabled?           disabled?
+     :blur?               blur?
+     :customization-color customization-color}]])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:disabled?    false
-                             :checked?     false
-                             :blur?        false
-                             :custom-color :blue})]
+  (let [state (reagent/atom {:disabled?           false
+                             :checked?            false
+                             :blur?               false
+                             :customization-color :blue})]
     (fn []
       [rn/view
        [preview/customizer state descriptor]

@@ -21,10 +21,11 @@
                                                    (colors/alpha off-blur-dark 0.03))}}}))
 
 (defn radio-border-color
-  [custom-color]
-  (let [on             (colors/custom-color-by-theme custom-color 50 60)
+  [customization-color]
+  (let [on             (colors/custom-color-by-theme customization-color 50 60)
         off            (colors/theme-colors colors/neutral-30 colors/neutral-70)
-        on-blur        (colors/theme-colors (colors/custom-color custom-color 50) colors/white)
+        on-blur        (colors/theme-colors (colors/custom-color customization-color 50)
+                                            colors/white)
         off-blur-light colors/neutral-80-opa-20
         off-blur-dark  colors/white-opa-40]
     {:normal {:enabled  {:on  on
@@ -47,10 +48,11 @@
                                              (colors/alpha off-blur 0.015))}}))
 
 (defn checkbox-background-color
-  [custom-color]
-  (let [on       (colors/custom-color-by-theme custom-color 50 60)
+  [customization-color]
+  (let [on       (colors/custom-color-by-theme customization-color 50 60)
         off      (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
-        on-blur  (colors/theme-colors (colors/custom-color custom-color 50) colors/white)
+        on-blur  (colors/theme-colors (colors/custom-color customization-color 50)
+                                      colors/white)
         off-blur colors/white-opa-5]
     {:normal {:enabled  {:on  on
                          :off off}
@@ -90,17 +92,17 @@
     (get-in color-map route)))
 
 (defn toggle
-  [checked? disabled? blur? container-style custom-color]
+  [checked? disabled? blur? container-style customization-color]
   (assoc container-style
          :height           20
          :width            30
          :border-radius    20
-         :background-color (-> custom-color
+         :background-color (-> customization-color
                                (toggle-background-color)
                                (get-color [disabled? blur? checked?]))))
 
 (defn toggle-inner
-  [checked? disabled? _blur? _custom-color]
+  [checked? disabled? _blur? _customization-color]
   {:margin-left      (if checked? 12 2)
    :height           16
    :width            16
@@ -111,7 +113,7 @@
    :margin-bottom    :auto})
 
 (defn radio
-  [checked? disabled? blur? container-style custom-color]
+  [checked? disabled? blur? container-style customization-color]
   (assoc container-style
          :height           20
          :width            20
@@ -119,36 +121,36 @@
          :border-width     1.2
          :background-color (when-not checked?
                              (get-color radio-background-color [disabled? blur?]))
-         :border-color     (-> custom-color
+         :border-color     (-> customization-color
                                (radio-border-color)
                                (get-color [disabled? blur? checked?]))))
 
 (defn radio-inner
-  [checked? disabled? blur? custom-color]
+  [checked? disabled? blur? customization-color]
   {:height           14
    :width            14
    :margin           1.8
    :border-radius    7
    :background-color (when checked?
-                       (-> custom-color
+                       (-> customization-color
                            (radio-border-color)
                            (get-color [disabled? blur? checked?])))})
 
 (defn checkbox
-  [checked? disabled? blur? container-style custom-color]
+  [checked? disabled? blur? container-style customization-color]
   (assoc container-style
          :height           20
          :width            20
          :border-radius    6
          :border-width     (if checked? 0 1.2)
-         :background-color (-> custom-color
+         :background-color (-> customization-color
                                (checkbox-background-color)
                                (get-color [disabled? blur? checked?]))
          :border-color     (when-not checked?
                              (get-color checkbox-border-color [disabled? blur?]))))
 
 (defn common-checkbox-inner
-  [checked? _disabled? _blur? _custom-color]
+  [checked? _disabled? _blur? _customization-color]
   (let [size (if checked? 20 0)]
     {:height size :width size}))
 
@@ -161,7 +163,7 @@
      :color (colors/alpha check-color (if disabled? 0.3 1))}))
 
 (defn checkbox-prefill
-  [_checked? disabled? blur? container-style _custom-color]
+  [_checked? disabled? blur? container-style _customization-color]
   (assoc container-style
          :height           21
          :width            21

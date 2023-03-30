@@ -14,9 +14,9 @@
   (let [controlled-component? (some? checked?)
         internal-checked?     (when-not controlled-component?
                                 (reagent/atom (or default-checked? false)))]
-    (fn [{:keys [checked? disabled? blur? custom-color on-change container-style label-prefix
-                 outter-style-fn inner-style-fn icon-style-fn]
-          :or   {custom-color :blue}}]
+    (fn [{:keys [checked? disabled? blur? customization-color on-change container-style
+                 label-prefix outter-style-fn inner-style-fn icon-style-fn]
+          :or   {customization-color :blue}}]
       (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
             accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
             test-id             (str label-prefix "-component")
@@ -24,7 +24,7 @@
                                                  disabled?
                                                  blur?
                                                  container-style
-                                                 custom-color)]
+                                                 customization-color)]
         [rn/touchable-without-feedback
          (when-not disabled?
            {:on-press #(handle-press on-change internal-checked? actual-checked?)})
@@ -33,7 +33,7 @@
            :accessibility-label accessibility-label
            :accessibility-role  :checkbox
            :testID              test-id}
-          [rn/view {:style (inner-style-fn actual-checked? disabled? blur? custom-color)}
+          [rn/view {:style (inner-style-fn actual-checked? disabled? blur? customization-color)}
            (when (and icon-style-fn actual-checked?)
              [icons/icon :i/check-small
               (icon-style-fn actual-checked? disabled? blur?)])]]]))))
