@@ -62,7 +62,6 @@
                             (do
                               (println "velo" (oops/oget e "velocityY"))
                               (when (< (oops/oget e "velocityY") velocity-threshold)
-                                (println "amxim???" max-height)
                                 (reanimated/set-shared-value last-height max-height))
                               (.focus ^js @input-ref)
                               (reset! gesture-enabled? false))
@@ -130,7 +129,7 @@
    [rn/view {:style (style/handle)}]])
 
 (defn actions
-  [input-ref text-value]
+  [input-ref text-value height saved-height opacity bg-bottom window-height]
   [rn/view {:style (style/actions-container)}
    [rn/view
     [image-button]]
@@ -140,7 +139,12 @@
        :size                32
        :accessibility-label :send-message-button
        :on-press            (fn []
-                              ;(on-send)
+
+                              (reanimated/animate height input-height)
+                              (reanimated/animate opacity 0)
+                              (js/setTimeout #(reanimated/set-shared-value saved-height input-height) 300)
+                              (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)
+
                               (reset! text-value "")
                               (.clear ^js @input-ref)
                               (messages.list/scroll-to-bottom)
@@ -149,6 +153,7 @@
 
 ;;; MAIN
 (defn sheet
+  ;; safe-area consumer insets makes incorrect values on Android
   [insets blur-opacity layout-height]
   [:f> (fn []
          (let [kb-default-height      (rf/sub [:kb-default-height])
@@ -170,34 +175,48 @@
                text-value             (reagent/atom "")
                lock-selection         (reagent/atom true)
                lock-layout?           (reagent/atom false)
-               keyboard-show-listener (reagent/atom nil)
+               android-blur?          (reagent/atom true)
+               keyboard-show-listener (atom nil)
+               keyboard-hide-listener (atom nil)
                add-keyboard-height    (atom nil)
                saved-keyboard-height  (atom nil)
                margin-top             (if platform/ios? (:top insets) (+ (:top insets) 10))
                emojis-open            (reagent/atom false)]
            (rn/use-effect
-             (fn [] (reset! keyboard-show-listener (.addListener rn/keyboard "keyboardWillShow"
+             (fn [] (reset! keyboard-show-listener (.addListener rn/keyboard (if platform/ios? "keyboardWillShow" "keyboardDidShow")
                                                                  (fn [e]
-                                                                   (let [start-h   (oops/oget e "startCoordinates.height")
-                                                                         end-h     (oops/oget e "endCoordinates.height")
-                                                                         diff      (- end-h start-h)
-                                                                         max       (- window-height end-h margin-top style/handle-container-height style/actions-container-height)
-                                                                         curr-text @text-value]
-                                                                     (if (> (reanimated/get-shared-value height) max)
-                                                                       (do
-                                                                         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
-                                                                         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
-                                                                         (reset! emojis-open true)
-                                                                         (reset! text-value (str @text-value " "))
-                                                                         (js/setTimeout #(reset! text-value curr-text) 0)
-                                                                         (reset! add-keyboard-height diff))
-                                                                       (when @add-keyboard-height
-                                                                         (reanimated/set-shared-value height (+ (reanimated/get-shared-value height) @add-keyboard-height))
-                                                                         (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) @add-keyboard-height))
-                                                                         (reset! emojis-open false)
-                                                                         (reset! add-keyboard-height nil)))
-                                                                     ))))
-               (fn [] (.remove ^js @keyboard-show-listener))))
+                                                                   (if platform/ios?
+                                                                     (let [start-h   (oops/oget e "startCoordinates.height")
+                                                                           end-h     (oops/oget e "endCoordinates.height")
+                                                                           diff      (- end-h start-h)
+                                                                           max       (- window-height end-h margin-top style/handle-container-height style/actions-container-height)
+                                                                           curr-text @text-value]
+                                                                       (if (> (reanimated/get-shared-value height) max)
+                                                                         (do
+                                                                           (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
+                                                                           (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
+                                                                           (reset! emojis-open true)
+                                                                           (reset! text-value (str @text-value " "))
+                                                                           (js/setTimeout #(reset! text-value curr-text) 0)
+                                                                           (reset! add-keyboard-height diff))
+                                                                         (when @add-keyboard-height
+                                                                           (reanimated/set-shared-value height (+ (reanimated/get-shared-value height) @add-keyboard-height))
+                                                                           (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) @add-keyboard-height))
+                                                                           (reset! emojis-open false)
+                                                                           (reset! add-keyboard-height nil))))
+                                                                     (reset! android-blur? false)))))
+               (reset! keyboard-hide-listener (.addListener rn/keyboard "keyboardDidHide"
+                                                            (fn []
+                                                              (when platform/android? ;; TODO should use target-height
+                                                                (reset! android-blur? true)
+                                                                (reanimated/animate height input-height)
+                                                                (reanimated/animate opacity 0)
+                                                                (reanimated/set-shared-value blur-opacity 1)
+                                                                (js/setTimeout #(reanimated/set-shared-value saved-height input-height) 300)
+                                                                (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)))))
+               (fn []
+                 (.remove ^js @keyboard-show-listener)
+                 (.remove ^js @keyboard-hide-listener))))
            [:f>
             (fn []
               (let [{:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
@@ -213,12 +232,14 @@
                 [:<>
                  [reanimated/view {:style (style/background opacity bg-bottom window-height height)}]
                  [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-open gesture-enabled? last-height)}
-                  [rn/view {:style     (style/container insets @focused? (not-empty @text-value))
+                  [rn/view {:style     (style/container insets @android-blur? @focused? (not-empty @text-value))
                             :on-layout (fn [e]
                                          (when-not @lock-layout?
                                            (reanimated/set-shared-value layout-height (oops/oget e "nativeEvent.layout.height"))))}
                    [handle]
-                   [reanimated/view {:style (style/input-container height max-height @emojis-open)}
+                   [reanimated/touchable-opacity {:active-opacity 1
+                                                  :on-press #(.focus ^js @input-ref) ;; for android when first entering screen
+                                                  :style (style/input-container height max-height @emojis-open)}
                     [reanimated/linear-gradient
                      {:colors ["rgba(255,255,255,0)" "rgba(255,255,255,1)"]
                       :start  {:x 0 :y 1}
@@ -237,6 +258,8 @@
                       :on-focus               (fn []
                                                 (reset! focused? true)
                                                 (reset! lock-layout? true)
+                                                (when platform/android?
+                                                  (reset! android-blur? false))
                                                 (js/setTimeout #(reset! lock-selection false) 300)
                                                 (when (not-empty @text-value)
                                                   (.setNativeProps ^js @input-ref (clj->js {:selection @saved-cursor-position})))
@@ -265,10 +288,12 @@
                                                   (reanimated/set-shared-value saved-height target-height)
                                                   (reset! focused? false)
                                                   (reset! lock-selection true)
+                                                  (when platform/android?
+                                                    (reset! android-blur? true))
                                                   (js/setTimeout #(reset! lock-layout? false) 500)
                                                   (reanimated/animate overlay-opacity 0)
                                                   (reset! overlay-z-index (if (= @overlay-z-index 1) -1 0))))
-                      :style                  (style/input @focused? expanded? @saved-keyboard-height)
+                      :style                  (style/input keyboard-shown @focused? expanded? @saved-keyboard-height)
                       :on-scroll              (fn [e] (let [y (oops/oget e "nativeEvent.contentOffset.y")]
                                                         (when (and (> y line-height) (>= lines max-lines) (= @overlay-z-index 0) @focused?)
                                                           (reset! overlay-z-index 1)
@@ -277,7 +302,7 @@
                                                           (reanimated/animate overlay-opacity 0)
                                                           (js/setTimeout #(reset! overlay-z-index 0) 300))))
                       :on-content-size-change (fn [e]
-                                                (when @focused?
+                                                (when keyboard-shown
                                                   (let [extra-offset (if platform/ios? (if @emojis-open ios-extra-offset 5) 0)
                                                         x            (+ (oops/oget e "nativeEvent.contentSize.height") extra-offset)
                                                         diff         (Math/abs (- x (reanimated/get-shared-value height)))]
@@ -285,13 +310,13 @@
                                                     (when (and (> diff 10) (not-empty @text-value) (<= x (+ max-height line-height)) (not= (reanimated/get-shared-value height) max-height))
                                                       (reanimated/animate height (Math/min x max-height))
                                                       (reanimated/set-shared-value saved-height (Math/min x max-height)))
-                                                    (if (> (reanimated/get-shared-value saved-height) (* 0.75 max-height))
+                                                    (if (or (> x (* 0.75 max-height)) (= (reanimated/get-shared-value saved-height) max-height))
                                                       (do
                                                         (reanimated/set-shared-value bg-bottom 0)
                                                         (reanimated/animate opacity 1))
                                                       (do
                                                         (reanimated/animate opacity 0)
-                                                        (reanimated/animate-delay bg-bottom (- window-height) 300))))))
+                                                        (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300))))))
                       :max-height             max-height
                       :multiline              true
                       :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-60)
@@ -305,7 +330,7 @@
                          :end    {:x 0 :y 0}
                          :style  (style/text-overlay)}]])
                     ]
-                   [actions input-ref text-value]]]]))]))])
+                   [actions input-ref text-value height saved-height opacity bg-bottom window-height]]]]))]))])
 
 
 (defn blur-view [insets blur-opacity layout-height]
