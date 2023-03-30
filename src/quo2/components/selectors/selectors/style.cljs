@@ -3,66 +3,66 @@
 
 (defn toggle-background-color
   [custom-color]
-  (let [on             (colors/custom-color-by-theme custom-color 50 60)
-        off            (colors/theme-colors colors/neutral-30 colors/neutral-80)
-        on-blur-light  (colors/custom-color custom-color 50)
-        on-blur-dark   colors/white-opa-70
-        off-blur-light colors/neutral-80-opa-20
-        off-blur-dark  colors/white-opa-10]
-    {:normal {:enabled  {:on  on
-                         :off off}
-              :disabled {:on  (colors/alpha on 0.3)
-                         :off (colors/alpha off 0.3)}}
-     :blur   {:enabled  {:on  (colors/theme-colors on-blur-light on-blur-dark)
-                         :off (colors/theme-colors off-blur-light off-blur-dark)}
-              :disabled {:on  (colors/theme-colors (colors/alpha on-blur-light 0.3)
-                                                   (colors/alpha on-blur-dark 0.21))
-                         :off (colors/theme-colors (colors/alpha off-blur-light 0.06)
-                                                   (colors/alpha off-blur-dark 0.03))}}}))
+  (let [checked              (colors/custom-color-by-theme custom-color 50 60)
+        unchecked            (colors/theme-colors colors/neutral-30 colors/neutral-80)
+        checked-blur-light   (colors/custom-color custom-color 50)
+        checked-blur-dark    colors/white-opa-70
+        unchecked-blur-light colors/neutral-80-opa-20
+        unchecked-blur-dark  colors/white-opa-10]
+    {:normal {:enabled  {:checked   checked
+                         :unchecked unchecked}
+              :disabled {:checked   (colors/alpha checked 0.3)
+                         :unchecked (colors/alpha unchecked 0.3)}}
+     :blur   {:enabled  {:checked   (colors/theme-colors checked-blur-light checked-blur-dark)
+                         :unchecked (colors/theme-colors unchecked-blur-light unchecked-blur-dark)}
+              :disabled {:checked   (colors/theme-colors (colors/alpha checked-blur-light 0.3)
+                                                         (colors/alpha checked-blur-dark 0.21))
+                         :unchecked (colors/theme-colors (colors/alpha unchecked-blur-light 0.06)
+                                                         (colors/alpha unchecked-blur-dark 0.03))}}}))
 
 (defn radio-border-color
   [customization-color]
-  (let [on             (colors/custom-color-by-theme customization-color 50 60)
-        off            (colors/theme-colors colors/neutral-30 colors/neutral-70)
-        on-blur        (colors/theme-colors (colors/custom-color customization-color 50)
-                                            colors/white)
-        off-blur-light colors/neutral-80-opa-20
-        off-blur-dark  colors/white-opa-40]
-    {:normal {:enabled  {:on  on
-                         :off off}
-              :disabled {:on  (colors/alpha on 0.3)
-                         :off (colors/alpha off 0.3)}}
-     :blur   {:enabled  {:on  on-blur
-                         :off (colors/theme-colors off-blur-light off-blur-dark)}
-              :disabled {:on  (colors/alpha on-blur 0.3)
-                         :off (colors/theme-colors (colors/alpha off-blur-light 0.06)
-                                                   (colors/alpha off-blur-dark 0.12))}}}))
+  (let [checked              (colors/custom-color-by-theme customization-color 50 60)
+        unchecked            (colors/theme-colors colors/neutral-30 colors/neutral-70)
+        checked-blur         (colors/theme-colors (colors/custom-color customization-color 50)
+                                                  colors/white)
+        unchecked-blur-light colors/neutral-80-opa-20
+        unchecked-blur-dark  colors/white-opa-40]
+    {:normal {:enabled  {:checked   checked
+                         :unchecked unchecked}
+              :disabled {:checked   (colors/alpha checked 0.3)
+                         :unchecked (colors/alpha unchecked 0.3)}}
+     :blur   {:enabled  {:checked   checked-blur
+                         :unchecked (colors/theme-colors unchecked-blur-light unchecked-blur-dark)}
+              :disabled {:checked   (colors/alpha checked-blur 0.3)
+                         :unchecked (colors/theme-colors (colors/alpha unchecked-blur-light 0.06)
+                                                         (colors/alpha unchecked-blur-dark 0.12))}}}))
 
 (def radio-background-color
-  (let [off      (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
-        off-blur colors/white-opa-5]
-    {:normal {:enabled  off
-              :disabled (colors/alpha off 0.12)}
-     :blur   {:enabled  off-blur
-              :disabled (colors/theme-colors (colors/alpha off-blur 0.12)
-                                             (colors/alpha off-blur 0.015))}}))
+  (let [unchecked      (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
+        unchecked-blur colors/white-opa-5]
+    {:normal {:enabled  unchecked
+              :disabled (colors/alpha unchecked 0.12)}
+     :blur   {:enabled  unchecked-blur
+              :disabled (colors/theme-colors (colors/alpha unchecked-blur 0.12)
+                                             (colors/alpha unchecked-blur 0.015))}}))
 
 (defn checkbox-background-color
   [customization-color]
-  (let [on       (colors/custom-color-by-theme customization-color 50 60)
-        off      (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
-        on-blur  (colors/theme-colors (colors/custom-color customization-color 50)
-                                      colors/white)
-        off-blur colors/white-opa-5]
-    {:normal {:enabled  {:on  on
-                         :off off}
-              :disabled {:on  (colors/alpha on 0.3)
-                         :off (colors/alpha off 0.12)}}
-     :blur   {:enabled  {:on  on-blur
-                         :off off-blur}
-              :disabled {:on  (colors/alpha on-blur 0.3)
-                         :off (colors/theme-colors (colors/alpha off-blur 0.12)
-                                                   (colors/alpha off-blur 0.015))}}}))
+  (let [checked        (colors/custom-color-by-theme customization-color 50 60)
+        unchecked      (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
+        checked-blur   (colors/theme-colors (colors/custom-color customization-color 50)
+                                            colors/white)
+        unchecked-blur colors/white-opa-5]
+    {:normal {:enabled  {:checked   checked
+                         :unchecked unchecked}
+              :disabled {:checked   (colors/alpha checked 0.3)
+                         :unchecked (colors/alpha unchecked 0.12)}}
+     :blur   {:enabled  {:checked   checked-blur
+                         :unchecked unchecked-blur}
+              :disabled {:checked   (colors/alpha checked-blur 0.3)
+                         :unchecked (colors/theme-colors (colors/alpha unchecked-blur 0.12)
+                                                         (colors/alpha unchecked-blur 0.015))}}}))
 
 (def checkbox-border-color
   (let [border     (colors/theme-colors colors/neutral-30 colors/neutral-70)
@@ -75,19 +75,19 @@
                                              (colors/alpha blur-dark 0.12))}}))
 
 (def checkbox-prefill-background-color
-  (let [bg      (colors/theme-colors colors/neutral-30 colors/neutral-80)
-        bg-blur (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10)]
-    {:normal {:enabled  bg
-              :disabled (colors/alpha bg 0.3)}
-     :blur   {:enabled  bg-blur
-              :disabled (colors/alpha bg-blur 0.03)}}))
+  (let [bg-color      (colors/theme-colors colors/neutral-30 colors/neutral-80)
+        bg-blur-color (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10)]
+    {:normal {:enabled  bg-color
+              :disabled (colors/alpha bg-color 0.3)}
+     :blur   {:enabled  bg-blur-color
+              :disabled (colors/alpha bg-blur-color 0.03)}}))
 
 (defn- get-color
   [color-map [& [disabled? blur? checked?]]]
   (let [blur-kw     (if blur? :blur :normal)
         disabled-kw (if disabled? :disabled :enabled)
         route       (if (boolean? checked?)
-                      [blur-kw disabled-kw (if checked? :on :off)]
+                      [blur-kw disabled-kw (if checked? :checked :unchecked)]
                       [blur-kw disabled-kw])]
     (get-in color-map route)))
 
