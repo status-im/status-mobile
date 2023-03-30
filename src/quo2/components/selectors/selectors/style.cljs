@@ -84,11 +84,11 @@
 
 (defn- get-color
   [color-map [& [disabled? blur? checked?]]]
-  (let [blur-kw     (if blur? :blur :normal)
-        disabled-kw (if disabled? :disabled :enabled)
-        route       (if (boolean? checked?)
-                      [blur-kw disabled-kw (if checked? :checked :unchecked)]
-                      [blur-kw disabled-kw])]
+  (let [blur-type     (if blur? :blur :normal)
+        disabled-type (if disabled? :disabled :enabled)
+        route         (if (boolean? checked?)
+                        [blur-type disabled-type (if checked? :checked :unchecked)]
+                        [blur-type disabled-type])]
     (get-in color-map route)))
 
 (defn toggle
