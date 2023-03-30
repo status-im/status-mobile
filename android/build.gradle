@@ -13,6 +13,16 @@ ext {
     gradlePluginVersion = project.gradlePluginVersion
 }
 
+import im.status.DepName
+def depNames = new ArrayList<DepName>()
+
+task printDependencies {
+    doLast {
+        println("The compileOnlyList \n ---------")
+        println(depNames)
+    }
+}
+
 buildscript {
     repositories {
         flatDir { dirs "libs", "${rootDir}/app/libs" }
@@ -46,6 +56,18 @@ allprojects {
     beforeEvaluate {
         if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
             throw new GradleException('STATUS_GO_ANDROID_LIBDIR environment variable is not valid!')
+        }
+    }
+
+    afterEvaluate {
+        println project.name
+        project.configurations.findAll {
+            if (it.canBeResolved) {
+                println it.name
+                it.resolvedConfiguration.resolvedArtifacts.each {d ->
+                    println "\t\t" + d.file.name
+                }
+            }
         }
     }
 
