@@ -42,7 +42,7 @@
         :imageWidth               :image-width
         :imageHeight              :image-height
         :new                      :new?
-        :albumCount               :album-count})
+        :albumImagesCount         :album-images-count})
 
       (update :quoted-message
               set/rename-keys
