@@ -9,7 +9,8 @@
 (def actions-container-height 56)
 
 (defn container
-  [insets focused? has-text?]
+  [insets android-blur? focused? has-text?]
+  (let [focusing?  (if platform/ios? focused? (not android-blur?))]
   (merge
     {:border-top-left-radius  20
      ;:background-color :black
@@ -24,7 +25,7 @@
      ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
      ;:background-color        "rgba(255,255,255,1)"
      ;:background-color        :black
-     :opacity                 (if (or focused? has-text?) 1 (if platform/ios? 0.7 0.5))
+     :opacity                 (if (or focusing? has-text?) 1 (if platform/ios? 0.7 0.5))
      :z-index                 3
      :padding-bottom (:bottom insets)
      ;:padding-bottom          0
@@ -34,7 +35,7 @@
        :shadow-opacity 0.1
        :shadow-color   "#09101C"
        :shadow-offset  {:width 0 :height -4}}
-      {:elevation 10})))
+      {:elevation 10}))))
 
 (defn handle-container
   []
@@ -56,7 +57,7 @@
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
 (defn input
-  [focused? expanded? saved-keyboard-height]
+  [keyboard-shown focused? expanded? saved-keyboard-height]
   (merge typography/paragraph-1
          {:min-height          (if platform/ios? 32 44)
           :text-align-vertical :top
@@ -67,7 +68,7 @@
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
-          :right               (when (or (not focused?) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
+          :right               (when (or (and focused? (not keyboard-shown)) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
 
           ;:overflow :hidden
           ;:padding-vertical 10
