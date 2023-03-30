@@ -212,7 +212,7 @@ def pytest_configure(config):
                                 sauce.storage.upload(file_path)
                                 os.remove(file_path)
                                 break
-                            except ConnectionError:
+                            except (ConnectionError, RemoteDisconnected):
                                 sleep(10)
                     else:
                         sauce.storage.upload(config.getoption('apk'))

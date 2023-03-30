@@ -95,6 +95,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         [home.chats_tab.click() for home in [self.home_1, self.home_2]]
 
     @marks.testrail_id(702850)
+    @marks.xfail(reason="Blocked by 15500")
     def test_activity_center_contact_request_decline(self):
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
@@ -183,8 +184,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         self.loop.run_until_complete(
-            run_in_parallel(((self.device_1.create_user, ),
-                             (self.device_2.create_user,))))
+            run_in_parallel(((self.device_1.create_user, {'username': 'user1'}),
+                             (self.device_2.create_user, {'username': 'user2'}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         users = self.loop.run_until_complete(run_in_parallel(
@@ -331,6 +332,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702957)
+    @marks.xfail(reason="Blocked by 15500")
     def test_activity_center_mentions(self):
         self.home_1.jump_to_communities_home()
         self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
@@ -365,6 +367,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702958)
+    @marks.xfail(reason="Blocked by 15500")
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
         self.home_2.jump_to_messages_home()
@@ -380,7 +383,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         community_element = self.home_1.get_chat(community_name, community=True)
         self.community_1.share_community(community_element, self.default_username_2)
 
-        self.home_1.just_fyi("Request access to community")
+        self.home_2.just_fyi("Request access to community")
         self.home_2.jump_to_messages_home()
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.chat_2.element_by_text_part('View').click()

@@ -595,11 +595,11 @@ class BaseView(object):
 
     def jump_to_messages_home(self):
         self.jump_to_button.click()
-        self.chats_tab.click()
+        self.chats_tab.click_until_presence_of_element(self.jump_to_button)
 
     def jump_to_communities_home(self):
         self.jump_to_button.click()
-        self.communities_tab.click()
+        self.communities_tab.click_until_presence_of_element(self.jump_to_button)
 
     def jump_to_card_by_text(self, text: str):
         self.jump_to_button.click()

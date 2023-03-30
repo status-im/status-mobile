@@ -154,8 +154,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             run_in_parallel(
                 (
                     (sign_in_views[0].create_user, {'enable_notifications': True}),
-                    (sign_in_views[1].create_user, {'enable_notifications': True}),
-                    (sign_in_views[2].create_user, {'enable_notifications': True})
+                    (sign_in_views[1].create_user, {'enable_notifications': True, 'username': "test user1"}),
+                    (sign_in_views[2].create_user, {'enable_notifications': True, 'username': "test user2"})
                 )
             )
         )
