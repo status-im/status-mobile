@@ -94,19 +94,20 @@
 (defn toggle
   [{:keys [checked? disabled? blur? container-style customization-color]}]
   (assoc container-style
+         :opacity          (if disabled? 0.3 1)
          :height           20
          :width            30
          :border-radius    20
          :background-color (-> customization-color
                                (toggle-background-color)
-                               (get-color [disabled? blur? checked?]))))
+                               (get-color [false blur? checked?]))))
 
 (defn toggle-inner
   [{:keys [checked? disabled?]}]
   {:margin-left      (if checked? 12 2)
    :height           16
    :width            16
-   :background-color (colors/alpha colors/white (if disabled? 0.3 1))
+   :background-color colors/white
    :border-radius    20
    :margin-right     :auto
    :margin-top       :auto
