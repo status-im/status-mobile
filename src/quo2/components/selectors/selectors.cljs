@@ -1,109 +1,73 @@
 (ns quo2.components.selectors.selectors
   (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
+            [quo2.components.selectors.styles :as style]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.components.selectors.styles :as style]))
+            [reagent.core :as reagent]))
 
 (defn- handle-press
-  [disabled? on-change checked?]
-  (when (not disabled?)
-    (fn []
-      (swap! checked? not)
-      (when on-change (on-change @checked?)))))
+  [on-change checked-atom checked?]
+  (when checked-atom (swap! checked-atom not))
+  (when on-change (on-change (not checked?))))
 
-(defn checkbox-prefill
-  [{:keys [default-checked?]}]
-  (let [internal-checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style checked?]}]
-      (when (and (not (nil? checked?)) (not= @internal-checked? checked?))
-        (reset! internal-checked? checked?))
-      (let [checked? (or checked? @internal-checked?)]
+(defn- selector
+  [{:keys [default-checked? checked?]}]
+  (let [controlled-component? (some? checked?)
+        internal-checked?     (when-not controlled-component?
+                                (reagent/atom (or default-checked? false)))]
+    (fn [{:keys [checked? disabled? blur? custom-color on-change container-style label-prefix
+                 outter-style-fn inner-style-fn icon-style-fn]
+          :or   {custom-color :blue}}]
+      (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
+            accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
+            test-id             (str label-prefix "-component")
+            outter-styles       (outter-style-fn actual-checked?
+                                                 disabled?
+                                                 blur?
+                                                 container-style
+                                                 custom-color)]
         [rn/touchable-without-feedback
-         {:on-press (handle-press disabled? on-change internal-checked?)}
+         (when-not disabled?
+           {:on-press #(handle-press on-change internal-checked? actual-checked?)})
          [rn/view
-          {:style               (merge
-                                 container-style
-                                 (style/checkbox-prefill blurred-background? disabled?))
-           :accessibility-label (str "checkbox-" (if checked? "on" "off"))
+          {:style               outter-styles
+           :accessibility-label accessibility-label
            :accessibility-role  :checkbox
-           :testID              "checkbox-prefill-component"}
-          (when checked?
-            [rn/view
-             {:style
-              {:height 20
-               :width  20}}
+           :testID              test-id}
+          [rn/view {:style (inner-style-fn actual-checked? disabled? blur? custom-color)}
+           (when (and icon-style-fn actual-checked?)
              [icons/icon :i/check-small
-              {:size  20
-               :color (colors/theme-colors
-                       (colors/alpha colors/neutral-100 (if disabled? 0.3 1))
-                       (colors/alpha colors/white (if disabled? 0.3 1)))}]])]]))))
-
-(defn checkbox
-  [{:keys [default-checked?]}]
-  (let [internal-checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style checked?]}]
-      (when (and (not (nil? checked?)) (not= @internal-checked? checked?))
-        (reset! internal-checked? checked?))
-      (let [checked? (or checked? @internal-checked?)]
-        [rn/touchable-without-feedback
-         {:on-press (handle-press disabled? on-change internal-checked?)}
-         [rn/view
-          {:style (merge
-                   container-style
-                   {:height 20
-                    :width  20})}
-          [rn/view
-           {:style               (style/checkbox blurred-background? disabled? checked?)
-            :accessibility-label (str "checkbox-" (if checked? "on" "off"))
-            :accessibility-role  :checkbox
-            :testID              "checkbox-component"}
-           (when checked?
-             [rn/view
-              {:style
-               {:height 20
-                :width  20}}
-              [icons/icon :i/check-small
-               {:size  20
-                :color colors/white}]])]]]))))
-
-(defn radio
-  [{:keys [default-checked?]}]
-  (let [internal-checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style checked?]}]
-      (when (and (not (nil? checked?)) (not= @internal-checked? checked?))
-        (reset! internal-checked? checked?))
-      (let [checked? (or checked? @internal-checked?)]
-        [rn/touchable-without-feedback
-         {:on-press (handle-press disabled? on-change internal-checked?)}
-         [rn/view
-          {:style               (merge
-                                 container-style
-                                 (style/radio checked? disabled? blurred-background?))
-           :accessibility-label (str "radio-" (if checked? "on" "off"))
-           :accessibility-role  :checkbox
-           :testID              "radio-component"}
-
-          [rn/view
-           {:style
-            (style/radio-inner checked? disabled? blurred-background?)}]]]))))
+              (icon-style-fn actual-checked? disabled? blur?)])]]]))))
 
 (defn toggle
-  [{:keys [default-checked?]}]
-  (let [internal-checked? (reagent/atom (or default-checked? false))]
-    (fn [{:keys [on-change disabled? blurred-background? container-style checked?]}]
-      (when (and (not (nil? checked?)) (not= @internal-checked? checked?))
-        (reset! internal-checked? checked?))
-      (let [checked? (or checked? @internal-checked?)]
-        [rn/touchable-without-feedback
-         {:on-press (handle-press disabled? on-change internal-checked?)}
-         [rn/view
-          {:style               (merge
-                                 container-style
-                                 (style/toggle checked? disabled? blurred-background?))
-           :accessibility-label (str "toggle-" (if checked? "on" "off"))
-           :accessibility-role  :checkbox
-           :testID              "toggle-component"}
-          [rn/view
-           {:style
-            (style/toggle-inner checked? disabled? blurred-background?)}]]]))))
+  [props]
+  [selector
+   (assoc props
+          :label-prefix    "toggle"
+          :outter-style-fn style/toggle
+          :inner-style-fn  style/toggle-inner)])
+
+(defn radio
+  [props]
+  [selector
+   (assoc props
+          :label-prefix    "radio"
+          :outter-style-fn style/radio
+          :inner-style-fn  style/radio-inner)])
+
+(defn checkbox
+  [props]
+  [selector
+   (assoc props
+          :label-prefix    "checkbox"
+          :outter-style-fn style/checkbox
+          :inner-style-fn  style/common-checkbox-inner
+          :icon-style-fn   style/checkbox-check)])
+
+(defn checkbox-prefill
+  [props]
+  [selector
+   (assoc props
+          :label-prefix    "checkbox-prefill"
+          :outter-style-fn style/checkbox-prefill
+          :inner-style-fn  style/common-checkbox-inner
+          :icon-style-fn   style/checkbox-prefill-check)])

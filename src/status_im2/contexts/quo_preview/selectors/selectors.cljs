@@ -1,91 +1,73 @@
 (ns status-im2.contexts.quo-preview.selectors.selectors
-  (:require ["react-native" :refer [StyleSheet]]
-            [oops.core :refer [oget]]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors :as quo2]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.components.selectors.selectors :as quo2]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Disabled?"
+  [{:label "Disabled"
     :key   :disabled?
-    :type  :boolean}])
+    :type  :boolean}
+   {:label "Blur"
+    :key   :blur?
+    :type  :boolean}
+   {:label   "Custom color"
+    :key     :custom-color
+    :type    :select
+    :options (map (fn [[color _]]
+                    {:key color :value (name color)})
+                  colors/customization)}])
+
+(defn selector-preview
+  [text component {:keys [disabled? blur? custom-color]}]
+  [rn/view
+   {:style {:margin      6
+            :align-items :center}}
+   [text/text {:size :paragraph-1} text]
+   [component
+    {:container-style {:margin 4}
+     :disabled?       disabled?
+     :blur?           blur?
+     :custom-color    custom-color}]])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:disabled false})]
+  (let [state (reagent/atom {:disabled?    false
+                             :checked?     false
+                             :blur?        false
+                             :custom-color :blue})]
     (fn []
       [rn/view
-       {:margin-bottom 50
-        :padding       16}
        [preview/customizer state descriptor]
+       [rn/view {:style {:margin-vertical 24}}
+        [preview/blur-view
+         {:style                 {:width       "100%"
+                                  :align-items :center
+                                  :top         (if (:blur? @state) 32 16)
+                                  :position    (if (:blur? @state)
+                                                 :absolute
+                                                 :relative)}
+          :height                300
+          :show-blur-background? (:blur? @state)}
 
-       [rn/view
-        {:padding-vertical 60
-         :align-items      :center}
-        [text/text {:size :heading-2} "Toggle"]
-        [quo2/toggle
-         {:container-style {:margin-top 0}
-          :disabled?       (:disabled? @state)}]
-        [text/text {:size :heading-2} "Radio"]
-        [quo2/radio
-         {:container-style {:margin-top 0}
-          :disabled?       (:disabled? @state)}]
-        [text/text {:size :heading-2} "Checkbox"]
-        [quo2/checkbox
-         {:container-style {:margin-top 0}
-          :disabled?       (:disabled? @state)}]
-        [text/text {:size :heading-2} "Checkbox Prefill"]
-        [quo2/checkbox-prefill
-         {:container-style {:margin-top 0}
-          :disabled?       (:disabled? @state)}]]
-
-       [rn/view
-        {:padding-vertical 60
-         :align-items      :center}
-        [react/blur-view
-         {:style      (oget StyleSheet "absoluteFill")
-          :blurAmount 20
-          :blurType   (if (colors/dark?) :dark :light)}
-         [react/linear-gradient
-          {:style  (oget StyleSheet "absoluteFill")
-           :colors [(colors/alpha "#4CB4EF" 0.2)
-                    (colors/alpha "#FB8F61" 0.2)
-                    (colors/alpha "#647084" 0.2)]
-           :start  {:x 0 :y 0}
-           :end    {:x 1 :y 1}}]]
-
-        [text/text {:size :heading-2} "Toggle"]
-        [quo2/toggle
-         {:container-style     {:margin-top 0}
-          :disabled?           (:disabled? @state)
-          :blurred-background? true}]
-        [text/text {:size :heading-2} "Radio"]
-        [quo2/radio
-         {:container-style     {:margin-top 0}
-          :disabled?           (:disabled? @state)
-          :blurred-background? true}]
-        [text/text {:size :heading-2} "Checkbox"]
-        [quo2/checkbox
-         {:container-style     {:margin-top 0}
-          :disabled?           (:disabled? @state)
-          :blurred-background? true}]
-        [text/text {:size :heading-2} "Checkbox Prefill"]
-        [quo2/checkbox-prefill
-         {:container-style     {:margin-top 0}
-          :disabled?           (:disabled? @state)
-          :blurred-background? true}]]])))
+         [rn/view
+          {:style {:flex        1
+                   :align-items :center}}
+          [selector-preview "Toggle" quo2/toggle @state]
+          [selector-preview "Radio" quo2/radio @state]
+          [selector-preview "Checkbox" quo2/checkbox @state]
+          [selector-preview "Checkbox Prefill" quo2/checkbox-prefill @state]]]]])))
 
 (defn preview-selectors
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
+   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
+            :flex             1}}
    [rn/flat-list
-    {:flex                      1
+    {:style                     {:flex 1}
      :keyboardShouldPersistTaps :always
      :header                    [cool-preview]
      :key-fn                    str}]])
