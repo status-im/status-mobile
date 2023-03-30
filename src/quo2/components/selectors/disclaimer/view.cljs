@@ -10,8 +10,9 @@
    {:style (merge container-style (style/container blur?))}
    [selectors/checkbox
     {:accessibility-label accessibility-label
-     :on-change           on-change
-     :checked?            checked?}]
+     :blur?               blur?
+     :checked?            checked?
+     :on-change           on-change}]
    [text/text
     {:size  :paragraph-2
      :style style/text}
