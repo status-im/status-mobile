@@ -8,8 +8,7 @@
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
             [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [react-native.safe-area :as safe-area]))
+            [reagent.core :as reagent]))
 
 (defn back-button
   []
