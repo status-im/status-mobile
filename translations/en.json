@@ -2054,5 +2054,7 @@
     "error-syncing-connection-failed": "Oops! Connection failed. Try again",
     "camera-permission-denied": "Permission denied",
     "enable-biometrics": "Enable biometrics",
-    "use-biometrics": "Use biometrics to fill in your password"
+    "use-biometrics": "Use biometrics to fill in your password",
+    "name-must-have-at-least-characters": "Name must have at least {{min-chars}} characters",
+    "name-is-not-valid": "Name is not valid"
 }
