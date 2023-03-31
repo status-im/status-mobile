@@ -50,7 +50,7 @@
                             ;; notifications to mark as read
                             ;; https://github.com/status-im/status-mobile/issues/14983
                             (js/alert "No unread notifications to mark as read"))
-                          (rf/dispatch [:bottom-sheet/hide]))}]]]))
+                          (rf/dispatch [:hide-bottom-sheet]))}]]]))
 
 (defn empty-tab
   []
@@ -153,7 +153,7 @@
       :size                32
       :accessibility-label :activity-center-open-more
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+      :on-press            #(rf/dispatch [:show-bottom-sheet
                                           {:content        options-bottom-sheet-content
                                            :override-theme :dark}])}
      :i/options]]

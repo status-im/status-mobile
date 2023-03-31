@@ -6,7 +6,7 @@
 (rf/defn reset-card-pressed
   {:events [:keycard-settings.ui/reset-card-pressed]}
   [cofx]
-  (navigation/navigate-to-cofx cofx :reset-card nil))
+  (navigation/navigate-to cofx :reset-card nil))
 
 (rf/defn delete-card
   [{:keys [db] :as cofx}]
@@ -20,7 +20,7 @@
 (rf/defn navigate-to-reset-card-screen
   {:events [:keycard/navigate-to-reset-card-screen]}
   [cofx]
-  (navigation/navigate-to-cofx cofx :reset-card nil))
+  (navigation/navigate-to cofx :reset-card nil))
 
 (rf/defn reset-card-next-button-pressed
   {:events [:keycard-settings.ui/reset-card-next-button-pressed]}

@@ -39,8 +39,8 @@
 
 (defn show-accounts-list
   []
-  (re-frame/dispatch [:bottom-sheet/hide])
-  (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet
+  (re-frame/dispatch [:bottom-sheet/hide-old])
+  (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                       {:content        (fn [] [accounts-list :to :wallet.send/set-field])
                                        :content-height 300}])
                  400))

@@ -11,7 +11,6 @@
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.menus.community-options.view :as options]
-            [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]
             [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.re-frame :as rf]))
@@ -47,11 +46,10 @@
 (defn open-channel-token-gating-details
   [name token-gating emoji channel-color]
   (rf/dispatch
-   [:bottom-sheet/show-sheet
+   [:show-bottom-sheet
     {:content
      (fn []
-       [channel-token-gating-details name token-gating emoji channel-color])
-     :content-height 210}]))
+       [channel-token-gating-details name token-gating emoji channel-color])}]))
 
 (defn layout-y
   [event]
@@ -137,12 +135,7 @@
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
        [quo/button
-        {:on-press                  #(rf/dispatch
-                                      [:bottom-sheet/show-sheet
-                                       {:content                   (fn [] [join-menu/request-to-join
-                                                                           community])
-                                        :bottom-safe-area-spacing? false
-                                        :content-height            300}])
+        {:on-press                  #(rf/dispatch [:open-modal :community-requests-to-join community])
          :accessibility-label       :show-request-to-join-screen-button
          :override-background-color community-color
          :style                     style/join-button
@@ -252,9 +245,8 @@
            :status   status
            :tokens   tokens
            :on-press #(rf/dispatch
-                       [:bottom-sheet/show-sheet
-                        {:content-height 210
-                         :content
+                       [:show-bottom-sheet
+                        {:content
                          (fn []
                            [community-token-gating-details
                             name
@@ -299,10 +291,9 @@
     :background-color    (scroll-page/icon-color)
     :accessibility-label :community-options-for-community
     :on-press            #(rf/dispatch
-                           [:bottom-sheet/show-sheet
+                           [:show-bottom-sheet
                             {:content (fn []
-                                        [options/community-options-bottom-sheet
-                                         id])}])}])
+                                        [options/community-options-bottom-sheet id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]

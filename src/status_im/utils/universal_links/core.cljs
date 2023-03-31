@@ -72,18 +72,18 @@
 (rf/defn handle-community-requests
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community request  " community-id)
-  (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
+  (navigation/navigate-to cofx :community-requests-to-join {:community-id community-id}))
 
 (rf/defn handle-community
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
-  (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
+  (navigation/navigate-to cofx :community {:community-id community-id}))
 
 
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
   [{:keys [db]} cofx deserialized-key]
-  (navigation/navigate-to-cofx cofx :community {:community-id deserialized-key}))
+  (navigation/navigate-to cofx :community {:community-id deserialized-key}))
 
 
 (rf/defn handle-desktop-community
@@ -111,7 +111,7 @@
     (and public-key (new-chat.db/own-public-key? db public-key))
     (rf/merge cofx
               {:pop-to-root-fx :shell-stack}
-              (navigation/navigate-to-cofx :my-profile nil))
+              (navigation/navigate-to :my-profile nil))
 
     public-key
     {:dispatch [:chat.ui/show-profile public-key ens-name]}))
@@ -120,7 +120,7 @@
   [cofx data]
   (rf/merge cofx
             (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
-            (navigation/navigate-to-cofx :wallet nil)))
+            (navigation/navigate-to :wallet nil)))
 
 (defn existing-account?
   [{:keys [db]} address]
@@ -133,9 +133,9 @@
 (rf/defn handle-wallet-account
   [cofx {address :account}]
   (when-let [account (existing-account? cofx address)]
-    (navigation/navigate-to-cofx cofx
-                                 :wallet-account
-                                 account)))
+    (navigation/navigate-to cofx
+                            :wallet-account
+                            account)))
 
 (defn handle-not-found
   [full-url]

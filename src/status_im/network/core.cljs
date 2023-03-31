@@ -202,4 +202,4 @@
 (rf/defn open-network-details
   {:events [::network-entry-pressed]}
   [cofx network]
-  (navigation/navigate-to-cofx cofx :network-details {:networks/selected-network network}))
+  (navigation/navigate-to cofx :network-details {:networks/selected-network network}))

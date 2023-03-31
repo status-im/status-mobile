@@ -1,7 +1,7 @@
 (ns status-im.keycard.common
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.keycard.nfc :as nfc]
@@ -195,8 +195,7 @@
                connected?)
     (rf/merge
      cofx
-     {:dismiss-keyboard true}
-     (bottom-sheet/show-bottom-sheet
+     (bottom-sheet/show-bottom-sheet-old
       {:view {:transparent        platform/ios?
               :show-handle?       false
               :backdrop-dismiss?  false
@@ -231,7 +230,7 @@
             {:db (assoc-in db [:keycard :card-read-in-progress?] false)}
             (restore-on-card-connected)
             (restore-on-card-read)
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (rf/defn hide-connection-sheet
   [cofx]
@@ -309,7 +308,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (assoc-in db [:keycard :pin :current] [])}
-            (navigation/navigate-to-cofx :enter-pin-settings nil)))
+            (navigation/navigate-to :enter-pin-settings nil)))
 
 (defn- tag-lost-exception?
   [code error]
@@ -492,7 +491,7 @@
       (if login?
         (rf/merge cofx
                   (clear-on-card-read)
-                  (navigation/navigate-to-cofx :not-keycard nil))
+                  (navigation/navigate-to :not-keycard nil))
         (rf/merge cofx
                   {:db (assoc-in db [:keycard :application-info-error] error)}
 

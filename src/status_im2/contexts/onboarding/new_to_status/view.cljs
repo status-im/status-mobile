@@ -55,7 +55,7 @@
 
 (defn new-to-status
   []
-  [rn/view {:style style/full-screen}
+  [:<>
    [background/view true]
    [rn/view {:style style/content-container}
     [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]

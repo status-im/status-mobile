@@ -106,12 +106,14 @@
                [quo/profile-input
                 {:customization-color @custom-color
                  :placeholder         (i18n/label :t/your-name)
-                 :on-press            #(rf/dispatch
-                                        [:bottom-sheet/show-sheet
-                                         {:override-theme :dark
-                                          :content
-                                          (fn []
-                                            [method-menu/view on-change-profile-pic])}])
+                 :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
+                                        (rf/dispatch
+                                         [:show-bottom-sheet
+                                          {:override-theme :dark
+                                           :content
+                                           (fn []
+                                             [method-menu/view on-change-profile-pic])}]))
                  :image-picker-props  {:profile-picture @profile-pic
                                        :full-name       @full-name}
                  :title-input-props   {:default-value  @full-name

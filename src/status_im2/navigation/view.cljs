@@ -1,11 +1,10 @@
 (ns status-im2.navigation.view
   (:require [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im2.common.bottom-sheet.sheets :as bottom-sheets]
+            [status-im.bottom-sheet.sheets :as bottom-sheets-old]
+            [status-im2.common.bottom-sheet.view :as bottom-sheet]
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
             [status-im.ui.screens.signing.views :as signing]
@@ -13,8 +12,9 @@
             [status-im.ui.screens.wallet.send.views :as wallet.send.views]
             [status-im2.common.toasts.view :as toasts]
             [status-im2.navigation.screens :as screens]
-            [status-im2.config :as config]
-            [status-im2.setup.hot-reload :as reloader]))
+            [status-im2.setup.hot-reload :as reloader]
+            [utils.re-frame :as rf]
+            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]))
 
 (defn get-screens
   []
@@ -24,31 +24,11 @@
    {}
    (screens/screens)))
 
-;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if
-;;debug
-;;true)
 (def screens (get-screens))
-
-(def components
-  (reduce
-   (fn [acc {:keys [name component]}]
-     (assoc acc name component))
-   {}
-   (concat screens/components)))
-
-(defn wrapped-screen-style
-  [insets-options insets background-color]
-  (merge
-   {:flex             1
-    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
-   (when (get insets-options :bottom)
-     {:padding-bottom (:bottom insets)})
-   (when (get insets-options :top true)
-     {:padding-top (:top insets)})))
 
 (defn inactive
   []
-  (when @(re-frame/subscribe [:hide-screen?])
+  (when (rf/sub [:hide-screen?])
     [rn/view
      {:position         :absolute
       :flex             1
@@ -59,13 +39,25 @@
       :background-color (colors/theme-colors colors/white colors/neutral-100)
       :z-index          999999999999999999}]))
 
+(defn wrapped-screen-style
+  [{:keys [top? bottom?]} insets background-color]
+  (merge
+   {:flex             1
+    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
+   (when bottom?
+     {:padding-bottom (:bottom insets)})
+   (when top?
+     {:padding-top (:top insets)})))
+
 (defn screen
   [key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component insets options]}
-           (get (if js/goog.DEBUG (get-screens) screens) (keyword key))
-           background-color (get-in options [:layout :backgroundColor])]
+     (let [{:keys [component options]}
+           (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
+           {:keys [insets sheet?]} options
+           background-color (or (get-in options [:layout :backgroundColor])
+                                (when sheet? :transparent))]
        ^{:key (str "root" key @reloader/cnt)}
        [safe-area/provider
         [safe-area/consumer
@@ -73,17 +65,34 @@
            [rn/view
             {:style (wrapped-screen-style insets safe-insets background-color)}
             [inactive]
-            [component]])]
+            (if sheet?
+              [bottom-sheet-screen/view component]
+              [component])])]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
-(defn component
-  [comp]
+(def bottom-sheet
   (reagent/reactify-component
    (fn []
-     [rn/view {:width 500 :height 44}
-      [comp]])))
+     ^{:key (str "sheet" @reloader/cnt)}
+     [safe-area/provider
+      [inactive]
+      [safe-area/consumer
+       (fn [insets]
+         (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
+               sheet                  (last sheets)]
+           [rn/keyboard-avoiding-view
+            {:style                    {:position :relative :flex 1}
+             :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
+            (when sheet
+              [:f>
+               bottom-sheet/view
+               {:insets insets :hide? hide?}
+               sheet])]))]])))
 
+(def toasts (reagent/reactify-component toasts/toasts))
+
+;; LEGACY (should be removed in status 2.0)
 (def popover-comp
   (reagent/reactify-component
    (fn []
@@ -93,13 +102,6 @@
       [popover/popover]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
-
-(def toasts-comp
-  (reagent/reactify-component
-   (fn []
-     ;; DON'T wrap this in safe-area-provider, it makes it unable to click through toasts
-     ^{:key (str "toasts" @reloader/cnt)}
-     [toasts/toasts])))
 
 (def visibility-status-popover-comp
   (reagent/reactify-component
@@ -111,17 +113,13 @@
       (when js/goog.DEBUG
         [reloader/reload-view])])))
 
-(def sheet-comp
+(def sheet-comp-old
   (reagent/reactify-component
    (fn []
-     ^{:key (str "sheet" @reloader/cnt)}
+     ^{:key (str "sheet-old" @reloader/cnt)}
      [safe-area/provider
       [inactive]
-      [bottom-sheets/bottom-sheet]
-      (when js/goog.DEBUG
-        [reloader/reload-view])
-      (when config/keycard-test-menu-enabled?
-        [keycard.test-menu/test-menu])])))
+      [bottom-sheets-old/bottom-sheet]])))
 
 (def signing-comp
   (reagent/reactify-component

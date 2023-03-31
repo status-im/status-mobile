@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
@@ -121,7 +121,7 @@
   (let [{:keys [state username custom-domain?]} (:ens/registration db)]
     (case state
       (:available :owned)
-      (navigation/navigate-to-cofx cofx :ens-checkout {})
+      (navigation/navigate-to cofx :ens-checkout {})
       :connected-with-different-key
       (re-frame/dispatch [::set-pub-key])
       :connected
@@ -261,7 +261,7 @@
   [{:keys [db] :as cofx} _ {:keys [address]}]
   (rf/merge cofx
             {:db (assoc-in db [:ens/registration :address] address)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (rf/defn save-preferred-name
   {:events [::save-preferred-name]}
@@ -311,14 +311,14 @@
                ::resolve-pubkey
                [chain-id username
                 #(re-frame/dispatch [::public-key-resolved username %])]}
-              (navigation/navigate-to-cofx :ens-name-details username))))
+              (navigation/navigate-to :ens-name-details username))))
 
 (rf/defn start-registration
   {:events [::add-username-pressed ::get-started-pressed]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             (set-username-candidate (get-in db [:ens/registration :username] ""))
-            (navigation/navigate-to-cofx :ens-search {})))
+            (navigation/navigate-to :ens-search {})))
 
 (rf/defn remove-username
   {:events [::remove-username]}

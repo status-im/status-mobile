@@ -313,7 +313,7 @@
     :content             (i18n/label :t/clear-history-confirmation-content)
     :confirm-button-text (i18n/label :t/clear-history-action)
     :on-accept           #(do
-                            (rf/dispatch [:bottom-sheet/hide])
+                            (rf/dispatch [:hide-bottom-sheet])
                             (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn show-remove-chat-confirmation
@@ -324,7 +324,7 @@
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
-                            (rf/dispatch [:bottom-sheet/hide])
+                            (rf/dispatch [:hide-bottom-sheet])
                             (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
 
 (rf/defn navigate-to-user-pinned-messages

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.communities.channel-details
   (:require [clojure.string :as string]
             [quo.core :as quo]
-            [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
             [utils.i18n :as i18n]
             [status-im.ui.components.profile-header.view :as profile-header]
@@ -64,5 +63,4 @@
               :accessory      :text
               :accessory-text (count pinned-messages)
               :chevron        true
-              :on-press       #(re-frame/dispatch [:bottom-sheet/show-sheet :pinned-messages-list
-                                                   chat-id])}]])]))))
+              :on-press       #(rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id])}]])]))))

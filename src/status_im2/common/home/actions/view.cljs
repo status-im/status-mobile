@@ -23,7 +23,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch event))
 
 (defn show-profile-action
@@ -50,35 +50,35 @@
 (defn clear-history-action
   [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch
-   [:bottom-sheet/show-sheet
+   [:show-bottom-sheet
     {:content (fn []
-                (confirmation-drawer/confirmation-drawer
+                [confirmation-drawer/confirmation-drawer
                  {:title               (i18n/label :t/clear-history?)
                   :description         (i18n/label :t/clear-history-confirmation-content)
                   :context             item
                   :accessibility-label :clear-history-confirm
                   :button-text         (i18n/label :t/clear-history)
-                  :on-press            #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
+                  :on-press            #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}])}]))
 
 (defn delete-chat-action
   [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch
-   [:bottom-sheet/show-sheet
+   [:show-bottom-sheet
     {:content (fn []
-                (confirmation-drawer/confirmation-drawer
+                [confirmation-drawer/confirmation-drawer
                  {:title               (i18n/label :t/delete-chat?)
                   :description         (i18n/label :t/delete-chat-confirmation)
                   :context             item
                   :accessibility-label :delete-chat-confirm
                   :button-text         (i18n/label :t/delete-chat)
-                  :on-press            #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
+                  :on-press            #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}])}]))
 
 (defn leave-group-action
   [item chat-id]
   (hide-sheet-and-dispatch
-   [:bottom-sheet/show-sheet
+   [:show-bottom-sheet
     {:content (fn []
-                (confirmation-drawer/confirmation-drawer
+                [confirmation-drawer/confirmation-drawer
                  {:title               (i18n/label :t/leave-group?)
                   :description         (i18n/label :t/leave-chat-confirmation)
                   :context             item
@@ -87,21 +87,21 @@
                   :on-press            #(do
                                           (rf/dispatch [:navigate-back])
                                           (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed
-                                                                    chat-id]))}))}]))
+                                                                    chat-id]))}])}]))
 
 (defn block-user-action
   [{:keys [public-key] :as item}]
   (hide-sheet-and-dispatch
-   [:bottom-sheet/show-sheet
+   [:show-bottom-sheet
     {:content (fn []
-                (confirmation-drawer/confirmation-drawer
+                [confirmation-drawer/confirmation-drawer
                  {:title               (i18n/label :t/block-user?)
                   :description         (i18n/label :t/block-contact-details)
                   :context             item
                   :accessibility-label :block-user
                   :button-text         (i18n/label :t/block-user)
                   :on-press            #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed
-                                                                  public-key])}))}]))
+                                                                  public-key])}])}]))
 
 (defn mute-chat-entry
   [chat-id]

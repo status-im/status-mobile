@@ -1,5 +1,5 @@
 (ns status-im.keycard.login
-  (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
+  (:require [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
             status-im.keycard.fx
@@ -22,13 +22,13 @@
 (rf/defn login-pin-more-icon-pressed
   {:events [:keycard.login.pin.ui/more-icon-pressed]}
   [cofx]
-  (bottom-sheet/show-bottom-sheet cofx {:view :keycard.login/more}))
+  (bottom-sheet/hide-bottom-sheet-old cofx))
 
 (rf/defn login-create-key-pressed
   {:events [:keycard.login.ui/create-new-key-pressed]}
   [cofx]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (onboarding/start-onboarding-flow)))
 
 (rf/defn login-add-key-pressed
@@ -48,7 +48,7 @@
   (log/debug "[keycard] load-pair-card-pressed")
   (rf/merge cofx
             {:db (assoc-in db [:keycard :flow] :login)}
-            (navigation/navigate-to-cofx :keycard-recovery-pair nil)))
+            (navigation/navigate-to :keycard-recovery-pair nil)))
 
 (rf/defn reset-pin
   {:events [::reset-pin]}
@@ -70,11 +70,11 @@
                                    :status     nil))
       :hide-popover nil})
    (when (:multiaccount db)
-     (navigation/navigate-to-cofx :my-profile nil))
+     (navigation/navigate-to :my-profile nil))
    (when-not (:multiaccounts/login db)
      (if (:popover/popover db)
        (navigation/navigate-replace :keycard-pin nil)
-       (navigation/navigate-to-cofx :keycard-pin nil)))))
+       (navigation/navigate-to :keycard-pin nil)))))
 
 (rf/defn dismiss-frozen-keycard-popover
   {:events [::frozen-keycard-popover-dismissed]}
@@ -107,22 +107,22 @@
       (empty? application-info)
       (rf/merge cofx
                 (common/hide-connection-sheet)
-                (navigation/navigate-to-cofx :not-keycard nil))
+                (navigation/navigate-to :not-keycard nil))
 
       (empty? key-uid)
       (rf/merge cofx
                 (common/hide-connection-sheet)
-                (navigation/navigate-to-cofx :keycard-blank nil))
+                (navigation/navigate-to :keycard-blank nil))
 
       multiaccount-mismatch?
       (rf/merge cofx
                 (common/hide-connection-sheet)
-                (navigation/navigate-to-cofx :keycard-wrong nil))
+                (navigation/navigate-to :keycard-wrong nil))
 
       (not paired?)
       (rf/merge cofx
                 (common/hide-connection-sheet)
-                (navigation/navigate-to-cofx :keycard-unpaired nil))
+                (navigation/navigate-to :keycard-unpaired nil))
 
       (and (zero? pin-retry-counter)
            (or (nil? puk-retry-counter)

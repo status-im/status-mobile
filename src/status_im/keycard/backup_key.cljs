@@ -18,8 +18,8 @@
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
             (when (:multiaccount db)
-              (navigation/navigate-to-cofx :my-profile nil))
-            (navigation/navigate-to-cofx :seed-phrase nil)))
+              (navigation/navigate-to :my-profile nil))
+            (navigation/navigate-to :seed-phrase nil)))
 
 (rf/defn recovery-card-pressed
   {:events [:keycard-settings.ui/recovery-card-pressed]}
@@ -69,4 +69,4 @@
                                    (update :multiaccounts/key-storage dissoc :seed-phrase))
              :dismiss-keyboard nil}
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+            (navigation/navigate-to :keycard-onboarding-intro nil)))

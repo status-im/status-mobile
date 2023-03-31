@@ -23,25 +23,20 @@
   [quo/action-drawer
    [[{:icon                :i/profile
       :label               (i18n/label :t/create-new-profile)
-      :on-press            #(do
-                              (rf/dispatch [:bottom-sheet/hide])
-                              (rf/dispatch [:navigate-to :new-to-status]))
+      :on-press            #(rf/dispatch [:navigate-to :new-to-status])
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            #(do
-                              (rf/dispatch [:bottom-sheet/hide])
-                              (rf/dispatch [:navigate-to :sign-in]))
+      :on-press            #(rf/dispatch [:navigate-to :sign-in])
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options
   []
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content new-account-options}]))
+  (rf/dispatch [:show-bottom-sheet {:content new-account-options}]))
 
 (defn delete-profile-confirmation
   [key-uid context]
-  (confirmation-drawer/confirmation-drawer
+  [confirmation-drawer/confirmation-drawer
    {:title               (i18n/label :remove-profile?)
     :description         (i18n/label :remove-profile-confirm-message)
     :accessibility-label :remove-profile-confirm
@@ -49,19 +44,18 @@
     :button-text         (i18n/label :t/remove)
     :close-button-text   (i18n/label :t/cancel)
     :on-press            #(do
-                            (rf/dispatch [:bottom-sheet/hide])
+                            (rf/dispatch [:hide-bottom-sheet])
                             (status/delete-multiaccount
                              key-uid
                              (fn [result]
                                (let [{:keys [error]} (types/json->clj result)]
                                  (rf/dispatch [:onboarding-2/on-delete-profile-success key-uid])
-                                 (log/info "profile deleted: error" error)))))}))
+                                 (log/info "profile deleted: error" error)))))}])
 
 (defn show-confirmation
   [key-uid context]
-  (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content #(delete-profile-confirmation key-uid context)}]))
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn [] [delete-profile-confirmation key-uid context])}]))
 
 (defn profile-options
   [key-uid context]
@@ -74,8 +68,8 @@
 
 (defn show-profile-options
   [key-uid context]
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content #(profile-options key-uid context)}]))
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn [] [profile-options key-uid context])}]))
 
 (defn profile-card
   [{:keys [name key-uid customization-color keycard-pairing last-index] :as multiaccount} index]

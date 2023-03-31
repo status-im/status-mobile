@@ -10,32 +10,42 @@
     (seq screen-params)
     (assoc-in [:navigation/screen-params view] screen-params)))
 
-(rf/defn navigate-to-cofx
-  [{:keys [db] :as cofx} go-to-view-id screen-params]
+(rf/defn navigate-to
+  {:events [:navigate-to]}
+  [{:keys [db]} go-to-view-id screen-params]
   (merge
-   {:db             (-> (assoc db :view-id go-to-view-id)
-                        (all-screens-params go-to-view-id screen-params))
-    :navigate-to-fx go-to-view-id}
+   {:db          (-> (assoc db :view-id go-to-view-id)
+                     (all-screens-params go-to-view-id screen-params))
+    :navigate-to go-to-view-id
+    :dispatch    [:hide-bottom-sheet]}
    (when (#{:chat :community-overview} go-to-view-id)
      {:dispatch-later
       ;; 300 ms delay because, navigation is priority over shell card update
       [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
         :ms       300}]})))
 
-(rf/defn navigate-to
-  {:events [:navigate-to]}
-  [cofx go-to-view-id screen-params]
-  (navigate-to-cofx cofx go-to-view-id screen-params))
+(rf/defn open-modal
+  {:events [:open-modal]}
+  [{:keys [db]} comp screen-params]
+  {:db            (-> (assoc db :view-id comp)
+                      (all-screens-params comp screen-params))
+   :dispatch      [:hide-bottom-sheet]
+   :open-modal-fx comp})
 
 (rf/defn navigate-back
   {:events [:navigate-back]}
   [_]
-  {:navigate-back-fx nil})
+  {:navigate-back nil})
 
 (rf/defn pop-to-root
   {:events [:pop-to-root]}
   [_ tab]
   {:pop-to-root-fx tab})
+
+(rf/defn init-root
+  {:events [:init-root]}
+  [_ root-id]
+  {:set-root root-id})
 
 (rf/defn set-stack-root
   {:events [:set-stack-root]}
@@ -56,18 +66,41 @@
     {:db                  db
      :navigate-replace-fx go-to-view-id}))
 
-(rf/defn open-modal
-  {:events [:open-modal]}
-  [{:keys [db]} comp screen-params]
-  {:db            (-> (assoc db :view-id comp)
-                      (all-screens-params comp screen-params))
-   :open-modal-fx comp})
+(rf/defn hide-bottom-sheet
+  {:events [:hide-bottom-sheet]}
+  [{:keys [db]}]
+  (let [{:keys [hide? sheets]} (:bottom-sheet db)]
+    (println :hide-bottom-sheet (not hide?) (seq sheets))
+    (when (and (not hide?) (seq sheets))
+      {:db (assoc-in db [:bottom-sheet :hide?] true)})))
 
-(rf/defn init-root
-  {:events [:init-root]}
-  [_ root-id]
-  {:init-root-fx root-id})
+(rf/defn bottom-sheet-hidden
+  {:events [:bottom-sheet-hidden]}
+  [{:keys [db]}]
+  (let [{:keys [sheets]} (:bottom-sheet db)
+        rest-sheets      (butlast sheets)]
+    (merge
+     {:db                (assoc db :bottom-sheet {:sheets rest-sheets :hide? false})
+      :hide-bottom-sheet nil}
+     (when (seq rest-sheets)
+       {:dispatch [:show-next-bottom-sheet]}))))
 
+(rf/defn show-next-bottom-sheet
+  {:events [:show-next-bottom-sheet]}
+  [_]
+  {:show-bottom-sheet nil})
+
+(rf/defn show-bottom-sheet
+  {:events [:show-bottom-sheet]}
+  [{:keys [db]} content]
+  (let [{:keys [sheets hide?]} (:bottom-sheet db)]
+    (rf/merge {:db (update-in db [:bottom-sheet :sheets] #(conj % content))}
+              #(when-not hide?
+                 (if (seq sheets)
+                   (hide-bottom-sheet %)
+                   {:show-bottom-sheet nil})))))
+
+;; LEGACY (should be removed in status 2.0)
 (rf/defn hide-signing-sheet
   {:events [:hide-signing-sheet]}
   [_]
@@ -98,19 +131,12 @@
                                                  (dissoc :wallet-connect/session-managed))
    :hide-wallet-connect-app-management-sheet nil})
 
-;; NAVIGATION 2
-(rf/defn reload-new-ui
-  {:events [:reload-new-ui]}
-  [_]
-  {:shell/reset-bottom-tabs nil
-   :dispatch                [:init-root :shell-stack]})
-
-(rf/defn change-root-status-bar-style
-  {:events [:change-root-status-bar-style]}
-  [_ style]
-  {:change-root-status-bar-style-fx style})
-
-(rf/defn change-root-nav-bar-color
-  {:events [:change-root-nav-bar-color]}
-  [_ color]
-  {:change-root-nav-bar-color-fx color})
+(rf/defn set-multiaccount-root
+  {:events [:set-multiaccount-root]}
+  [{:keys [db]}]
+  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
+        keycard-account? (boolean (get-in db
+                                          [:multiaccounts/multiaccounts
+                                           key-uid
+                                           :keycard-pairing]))]
+    {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))

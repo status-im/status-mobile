@@ -7,7 +7,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch event))
 
 (defn view-members
@@ -23,9 +23,8 @@
   {:icon                :i/bullet-list
    :right-icon          :i/chevron-right
    :accessibility-label :view-community-rules
-   :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                       {:content        (constantly [see-rules/view id])
-                                        :content-height 400}])
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content (fn [] [see-rules/view id])}])
    :label               (i18n/label :t/view-community-rules)})
 
 (defn view-token-gating
@@ -86,9 +85,8 @@
    :label               (i18n/label :t/leave-community)
    :accessibility-label :leave-community
    :danger?             true
-   :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                       {:content        (constantly [leave-menu/leave-sheet id])
-                                        :content-height 400}])})
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content (fn [] [leave-menu/leave-sheet id])}])})
 
 (defn cancel-request-to-join
   [id request-id]
@@ -96,10 +94,9 @@
    :label               (i18n/label :t/cancel-request-to-join)
    :accessibility-label :cancel-request-to-join
    :danger?             true
-   :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                       {:content        (constantly [leave-menu/cancel-request-sheet id
-                                                                     request-id])
-                                        :content-height 400}])})
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content (fn [] [leave-menu/cancel-request-sheet id
+                                                         request-id])}])})
 
 (defn edit-community
   [id]
@@ -107,7 +104,7 @@
    :label               (i18n/label :t/edit-community)
    :accessibility-label :edit-community
    :on-press            #(rf/dispatch [:communities/open-edit-community id]
-                                      (rf/dispatch [:bottom-sheet/hide]))})
+                                      (rf/dispatch [:hide-bottom-sheet]))})
 
 (defn not-joined-options
   [id token-gated?]

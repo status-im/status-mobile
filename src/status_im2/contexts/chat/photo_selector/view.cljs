@@ -13,8 +13,8 @@
     [status-im2.contexts.chat.photo-selector.style :as style]
     [status-im.utils.core :as utils]
     [quo.react]
-    [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.safe-area :as safe-area]))
 
 (defn on-press-confirm-selection
   [selected]
@@ -90,13 +90,13 @@
       :on-press            (fn []
                              ;; TODO: album-selector issue:
                              ;; https://github.com/status-im/status-mobile/issues/15398
-                             (js/alert "currently disabled")
-                             ;(if photos?
-                             ;  (do
-                             ;    (reset! temporary-selected @selected)
-                             ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
-                             ;  (rf/dispatch [:navigate-back]))
-                           )}
+                             (js/alert "currently disabled"))}
+     ;(if photos?
+     ;  (do
+     ;    (reset! temporary-selected @selected)
+     ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
+     ;  (rf/dispatch [:navigate-back]))
+
      [quo/text
       {:weight          :medium
        :ellipsize-mode  :tail
@@ -107,31 +107,29 @@
       [quo/icon (if photos? :i/chevron-down :i/chevron-up)
        {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))
 
-
 (defn photo-selector
-  []
-  [:f>
-   (let [{:keys [insets]}   (rf/sub [:get-screen-params])
-         temporary-selected (reagent/atom [])] ; used when switching albums
-     (fn []
-       (let [selected        (reagent/atom []) ; currently selected
-             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
-             selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-         (rn/use-effect
-          (fn []
-            (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-            (if (seq selected-images)
-              (reset! selected (vec (vals selected-images)))
-              (reset! selected @temporary-selected)))
-          [selected-album])
-         [bottom-sheet-screen/view
-          (fn [{:keys [scroll-enabled on-scroll]}]
+  [{:keys [scroll-enabled on-scroll]}]
+  [safe-area/consumer
+   (fn [insets]
+     [:f>
+      (let [temporary-selected (reagent/atom [])] ; used when switching albums
+        (fn []
+          (let [selected        (reagent/atom []) ; currently selected
+                selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
+                selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+            (rn/use-effect
+             (fn []
+               (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+               (if (seq selected-images)
+                 (reset! selected (vec (vals selected-images)))
+                 (reset! selected @temporary-selected)))
+             [selected-album])
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
                   loading?           (rf/sub [:camera-roll/loading-more])
                   has-next-page?     (rf/sub [:camera-roll/has-next-page])]
-              [:<>
+              [rn/view {:flex 1}
                [rn/view
                 {:style style/buttons-container}
                 [album-title true selected-album selected temporary-selected insets]
@@ -150,4 +148,4 @@
                  :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                          selected-album loading?
                                                          has-next-page?])}]
-               [bottom-gradient selected-images insets selected]]))])))])
+               [bottom-gradient selected-images insets selected]]))))])])

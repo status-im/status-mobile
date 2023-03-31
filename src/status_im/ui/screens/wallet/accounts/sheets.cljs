@@ -6,7 +6,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
 
 (defn accounts-options

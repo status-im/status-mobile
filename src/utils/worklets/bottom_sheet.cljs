@@ -7,5 +7,5 @@
   (.useTranslateY ^js bottom-sheet-js window-height bottom-sheet-dy pan-y))
 
 (defn use-background-opacity
-  [translate-y bg-height window-height]
-  (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height))
+  [translate-y bg-height window-height opacity]
+  (.useBackgroundOpacity ^js bottom-sheet-js translate-y bg-height window-height opacity))

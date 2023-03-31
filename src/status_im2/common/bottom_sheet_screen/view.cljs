@@ -70,12 +70,14 @@
                    :padding-top padding-top}}
           (when-not skip-background?
             [reanimated/view {:style (style/background opacity)}])
-          [gesture/gesture-detector
-           {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
-           [reanimated/view {:style (style/main-view translate-y)}
+
+          [reanimated/view {:style (style/main-view translate-y)}
+           [gesture/gesture-detector
+            {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
             [rn/view {:style style/handle-container}
-             [rn/view {:style (style/handle)}]]
-            [content
-             {:close          close
-              :scroll-enabled @scroll-enabled
-              :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
+             [rn/view {:style (style/handle)}]]]
+           [content
+            {:insets         insets
+             :close          close
+             :scroll-enabled @scroll-enabled
+             :on-scroll      #(on-scroll % curr-scroll)}]]])))])

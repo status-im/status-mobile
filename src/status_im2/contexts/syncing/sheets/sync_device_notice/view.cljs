@@ -55,11 +55,8 @@
       :size     40
       :style    styles/setup-syncing-button
       :before   :i/face-id20
-      :on-press (fn []
-                  (rf/dispatch [:bottom-sheet/hide])
-                  (rf/dispatch [:bottom-sheet/show-sheet
-                                {:show-handle? true
-                                 :expanded?    true
-                                 :content      (fn []
-                                                 [enter-password/sheet])}]))}
+      :on-press #(rf/dispatch [:show-bottom-sheet
+                               ;; this should be a modal screen
+                               {:content (fn []
+                                           [enter-password/sheet])}])}
      (i18n/label :t/setup-syncing)]]])

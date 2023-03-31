@@ -14,7 +14,7 @@
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:multiaccount :key-uid])]
     (rf/merge cofx
-              {:init-root-fx                         :progress
+              {:set-root                             :progress
                :chat.ui/clear-inputs                 nil
                :chat.ui/clear-inputs-old             nil
                :shell/reset-bottom-tabs              nil

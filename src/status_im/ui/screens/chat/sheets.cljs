@@ -11,7 +11,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
 
 (defn one-to-one-chat-accents
@@ -53,7 +53,7 @@
        :accessibility-label :share-chat-button
        :icon                :main-icons/share
        :on-press            (fn []
-                              (re-frame/dispatch [:bottom-sheet/hide])
+                              (re-frame/dispatch [:bottom-sheet/hide-old])
                               ;; https://github.com/facebook/react-native/pull/26839
                               (js/setTimeout
                                #(list-selection/open-share {:message message})

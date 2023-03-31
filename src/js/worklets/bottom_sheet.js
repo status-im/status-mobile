@@ -6,10 +6,10 @@ export function useTranslateY(initialTranslationY, bottomSheetDy, panY) {
   })
 }
 
-export function useBackgroundOpacity(translateY, backgroundHeight, windowHeight) {
+export function useBackgroundOpacity(translateY, backgroundHeight, windowHeight, opacity) {
   return useDerivedValue(() => {
-    const opacity = ((translateY.value - windowHeight) / -backgroundHeight) * 0.5
+    const calculatedOpacity = ((translateY.value - windowHeight) / -backgroundHeight) * opacity
 
-    return Math.max(Math.min(opacity, 0.5), 0)
+    return Math.max(Math.min(calculatedOpacity, opacity), 0)
   })
 }

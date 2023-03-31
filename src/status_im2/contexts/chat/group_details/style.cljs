@@ -34,11 +34,10 @@
    :margin-bottom    24})
 
 (defn bottom-container
-  [safe-area]
+  [bottom]
   {:padding-horizontal 20
    :padding-vertical   12
-   :padding-bottom     (+ 33 (:bottom safe-area))
-   :width              "100%"
+   :margin-bottom      bottom
    :background-color   (colors/theme-colors colors/white colors/neutral-95-opa-70)
    :flex-direction     :row})
 

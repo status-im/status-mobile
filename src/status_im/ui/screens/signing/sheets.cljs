@@ -67,7 +67,7 @@
        :margin-top        6}
       [quo/button
        {:type     :secondary
-        :on-press #(re-frame/dispatch [:bottom-sheet/hide])}
+        :on-press #(re-frame/dispatch [:bottom-sheet/hide-old])}
        (i18n/label :t/cancel)]
       [quo/button
        {:type     :secondary
@@ -201,7 +201,7 @@
         :accessibility-label :see-fee-suggestions
         ;;:on-press
         #_(re-frame/dispatch
-           [:bottom-sheet/show-sheet
+           [:bottom-sheet/show-sheet-old
             {:content        (fn []
                                [fee-bottom-sheet-eip1559 fee-display-symbol])
              :content-height 270}])}
@@ -285,7 +285,7 @@
        {:type                :secondary
         :accessibility-label :set-custom-fee
         :on-press            #(re-frame/dispatch
-                               [:bottom-sheet/show-sheet
+                               [:bottom-sheet/show-sheet-old
                                 {:content        (fn []
                                                    [fee-bottom-sheet-eip1559-custom fee-display-symbol])
                                  :content-height 270}])}

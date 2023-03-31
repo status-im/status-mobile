@@ -8,7 +8,7 @@
             [status-im.async-storage.core :as async-storage]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.universal-links.core :as universal-links]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.events :as activity-center]
@@ -445,7 +445,7 @@
   [cofx id]
   (rf/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (navigation/open-modal :invite-people-community {:invite? true})))
 
 (rf/defn share-community-pressed
@@ -453,7 +453,7 @@
   [cofx id]
   (rf/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (navigation/open-modal :invite-people-community {})))
 
 (rf/defn create-channel-pressed
@@ -575,7 +575,7 @@
   {:events [::member-banned]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (handle-response response-js)
             (activity-center/notifications-fetch-unread-count)))
 
@@ -596,7 +596,7 @@
   {:events [::member-kicked]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (handle-response response-js)))
 
 (rf/defn member-kick
@@ -817,13 +817,13 @@
   [cofx community-id]
   (rf/merge cofx
             (navigation/pop-to-root :shell-stack)
-            (navigation/navigate-to-cofx :community-overview community-id)))
+            (navigation/navigate-to :community-overview community-id)))
 
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (handle-response response-js)))
 
 (rf/defn add-role-to-member

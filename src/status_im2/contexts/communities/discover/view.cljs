@@ -36,7 +36,7 @@
                          (rf/dispatch [:dismiss-keyboard])
                          (rf/dispatch [:navigate-to :community-overview (:id item)]))
         :on-long-press #(rf/dispatch
-                         [:bottom-sheet/show-sheet
+                         [:show-bottom-sheet
                           {:content (fn []
                                       [options/community-options-bottom-sheet (:id item)])}])}])))
 
@@ -149,7 +149,7 @@
                               (rf/dispatch [:communities/load-category-states (:id community)])
                               (rf/dispatch [:dismiss-keyboard])
                               (rf/dispatch [:navigate-to :community-overview (:id community)]))
-             :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+             :on-long-press #(rf/dispatch [:show-bottom-sheet
                                            {:content (fn []
                                                        ;; TODO implement with quo2
                                                        [community/community-actions community])}])}

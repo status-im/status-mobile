@@ -60,12 +60,11 @@
         [preview/customizer state descriptor]
         [quo/button
          {:style    {:margin-horizontal 40}
-          :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                   {:content        (constantly (render-action-sheet state))
-                                    :content-height 300}])}
+          :on-press #(rf/dispatch [:show-bottom-sheet
+                                   {:content (fn [] [render-action-sheet state])}])}
          "See in bottom sheet"]
         [rn/view {:padding-vertical 60}
-         (render-action-sheet state)]]])))
+         [render-action-sheet state]]]])))
 
 (defn preview-action-drawers
   []

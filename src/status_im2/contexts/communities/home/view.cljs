@@ -20,7 +20,7 @@
      {:style         {:padding-horizontal 18}
       :on-press      #(rf/dispatch [:navigate-to :community-overview id])
       :on-long-press #(rf/dispatch
-                       [:bottom-sheet/show-sheet
+                       [:show-bottom-sheet
                         {:content       (fn []
                                           [options/community-options-bottom-sheet id])
                          :selected-item (fn []
@@ -59,7 +59,7 @@
              [common.home/top-nav]
              [common.home/title-column
               {:label               (i18n/label :t/communities)
-               :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+               :handler             #(rf/dispatch [:bottom-sheet/show-sheet-old :add-new {}])
                :accessibility-label :new-chat-button}]
              [quo/discover-card
               {:on-press            #(rf/dispatch [:navigate-to :discover-communities])

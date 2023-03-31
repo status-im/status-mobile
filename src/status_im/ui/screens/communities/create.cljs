@@ -63,7 +63,7 @@
        :icon                :main-icons/camera
        :title               (i18n/label :t/community-image-take)
        :on-press            #(do
-                               (rf/dispatch [:bottom-sheet/hide])
+                               (rf/dispatch [:bottom-sheet/hide-old])
                                (take-pic))}]
      [quo/list-item
       {:accessibility-label :pick-photo
@@ -71,7 +71,7 @@
        :theme               :accent
        :title               (i18n/label :t/community-image-pick)
        :on-press            #(do
-                               (rf/dispatch [:bottom-sheet/hide])
+                               (rf/dispatch [:bottom-sheet/hide-old])
                                (pick-pic))}]
      (when (and has-picture (not editing?))
        [quo/list-item
@@ -80,7 +80,7 @@
          :theme               :accent
          :title               (i18n/label :t/community-image-remove)
          :on-press            #(do
-                                 (rf/dispatch [:bottom-sheet/hide])
+                                 (rf/dispatch [:bottom-sheet/hide-old])
                                  (rf/dispatch [::communities/remove-field :image]))}])]))
 
 (defn photo-picker
@@ -92,7 +92,7 @@
      [rn/touchable-opacity
       {:on-press (fn []
                    (rn/dismiss-keyboard!)
-                   (rf/dispatch [:bottom-sheet/show-sheet
+                   (rf/dispatch [:bottom-sheet/show-sheet-old
                                  {:content (bottom-sheet (boolean image) editing?)}]))}
       [rn/view
        {:style {:width  128

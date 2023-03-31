@@ -133,9 +133,9 @@
 
 ;; Animations
 
-(defn change-root-status-bar-style
+(defn change-shell-status-bar-style
   []
-  (rf/dispatch [:change-root-status-bar-style
+  (rf/dispatch [:change-shell-status-bar-style
                 (if (or (colors/dark?)
                         (not (home-stack-open?)))
                   :light
@@ -146,8 +146,8 @@
   (let [home-stack-state-value (calculate-home-stack-state-value stack-id animate?)]
     (reanimated/set-shared-value (:selected-stack-id @shared-values-atom) (name stack-id))
     (reanimated/set-shared-value (:home-stack-state @shared-values-atom) home-stack-state-value)
-    (js/setTimeout change-root-status-bar-style shell.constants/shell-animation-time)
-    (change-selected-stack-id stack-id true home-stack-state-value)))
+    (change-selected-stack-id stack-id true home-stack-state-value)
+    (js/setTimeout change-shell-status-bar-style shell.constants/shell-animation-time)))
 
 (defn change-tab
   [stack-id]
@@ -172,5 +172,5 @@
         home-stack-state-value (calculate-home-stack-state-value stack-id animate?)]
     (reanimated/set-shared-value (:animate-home-stack-left @shared-values-atom) true)
     (reanimated/set-shared-value (:home-stack-state @shared-values-atom) home-stack-state-value)
-    (change-root-status-bar-style)
-    (change-selected-stack-id stack-id true home-stack-state-value)))
+    (change-selected-stack-id stack-id true home-stack-state-value)
+    (change-shell-status-bar-style)))
