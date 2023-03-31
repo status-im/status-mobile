@@ -91,9 +91,6 @@
      :component new-to-status/new-to-status}
 
     {:name      :create-profile
-     :component new-to-status/new-to-status}
-
-    {:name      :create-profile
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
