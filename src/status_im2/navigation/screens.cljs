@@ -1,6 +1,5 @@
 (ns status-im2.navigation.screens
   (:require
-    [utils.i18n :as i18n] ;; TODO remove when not used anymore
     [quo2.foundations.colors :as colors]
     [react-native.platform :as platform]
     [status-im.ui.screens.screens :as old-screens]
@@ -120,9 +119,10 @@
      :component communities.overview/overview}
 
     {:name      :settings-syncing
-     :insets    {:bottom true}
-     :options   {:topBar {:title {:text (i18n/label :t/syncing)}}}
-     :component settings-syncing/views}
+     :insets    {:top false}
+     :options   {:statusBar {:style :light}
+                 :topBar    {:visible false}}
+     :component settings-syncing/view}
 
     ;; Onboarding
     {:name      :profiles
