@@ -20,9 +20,7 @@
 (defn copy-text-and-show-toast
   [{:keys [text-to-copy post-copy-message]}]
   (react/copy-to-clipboard text-to-copy)
-  (js/setTimeout
-   #(rf/dispatch [:share/show-successfully-copied-toast post-copy-message])
-   250))
+  (rf/dispatch [:share/show-successfully-copied-toast post-copy-message]))
 
 (defn header
   []
@@ -93,10 +91,7 @@
           :size                32
           :accessibility-label :link-to-profile
           :override-theme      :dark
-          :on-press            (fn []
-                                 (js/setTimeout
-                                  #(list-selection/open-share {:message profile-qr-url})
-                                  250))}
+          :on-press            #(list-selection/open-share {:message profile-qr-url})}
          :i/share]]]]
 
      [rn/view {:style style/emoji-hash-container}
