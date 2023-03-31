@@ -35,7 +35,6 @@
 (defn cool-preview
   []
   (let [state (reagent/atom {:disabled?           false
-                             :checked?            false
                              :blur?               false
                              :customization-color :blue})]
     (fn []

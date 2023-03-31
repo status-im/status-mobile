@@ -35,12 +35,10 @@
            :testID              test-id}
           [rn/view
            {:style (inner-style-fn {:checked?            actual-checked?
-                                    :disabled?           disabled?
                                     :blur?               blur?
                                     :customization-color customization-color})}
            (when (and icon-style-fn actual-checked?)
-             [icons/icon :i/check-small
-              (icon-style-fn actual-checked? disabled? blur?)])]]]))))
+             [icons/icon :i/check-small (icon-style-fn actual-checked? blur?)])]]]))))
 
 (defn toggle
   [props]
