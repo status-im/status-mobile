@@ -1,16 +1,29 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require [status-im.utils.types :as types]
+            [status-im2.constants :as constants]
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
-(rf/defn send-multiaccount-update
+(rf/defn send-contact-update
   [{:keys [db] :as cofx}]
-  (let [multiaccount                          (:multiaccount db)
-        {:keys [name preferred-name address]} multiaccount]
+  (let [multiaccount                                       (:multiaccount db)
+        {:keys [name preferred-name display-name address]} multiaccount]
     {:json-rpc/call [{:method     "wakuext_sendContactUpdates"
-                      :params     [(or preferred-name name) ""]
+                      :params     [(or preferred-name display-name name) ""]
                       :on-success #(log/debug "sent contact update")}]}))
+
+(rf/defn update-multiaccount-account-name
+  "This updates the profile name in the profile list before login"
+  {:events [:multiaccounts.ui/update-name]}
+  [{:keys [db] :as cofx} raw-multiaccounts-from-status-go]
+  (let [{:keys [key-uid name preferred-name display-name]
+         :as   multiaccount} (:multiaccount db)
+        account              (some #(and (= (:key-uid %) key-uid) %) raw-multiaccounts-from-status-go)]
+    (when-let [new-name (and account (or preferred-name display-name name))]
+      (rf/merge cofx
+                {:json-rpc/call [{:method     "multiaccounts_updateAccount"
+                                  :params     [(assoc account :name new-name)]
+                                  :on-success #(log/debug "sent multiaccount update")}]}))))
 
 (rf/defn multiaccount-update
   "Takes effects (containing :db) + new multiaccount fields, adds all effects necessary for multiaccount update.
@@ -25,17 +38,21 @@
       (throw
        (js/Error.
         "Please shake the phone to report this error and restart the app. multiaccount is currently empty, which means something went wrong when trying to update it with"))
-      (rf/merge cofx
-                {:db (if setting-value
-                       (assoc-in db [:multiaccount setting] setting-value)
-                       (update db :multiaccount dissoc setting))
-                 :json-rpc/call
-                 [{:method     "settings_saveSetting"
-                   :params     [setting setting-value]
-                   :on-success on-success}]}
-                (when (and (not dont-sync?)
-                           (#{:name :prefered-name} setting))
-                  (send-multiaccount-update))))))
+      (rf/merge
+       cofx
+       {:db (if setting-value
+              (assoc-in db [:multiaccount setting] setting-value)
+              (update db :multiaccount dissoc setting))
+        :json-rpc/call
+        [{:method     "settings_saveSetting"
+          :params     [setting setting-value]
+          :on-success on-success}]}
+
+       (when (#{:name :preferred-name} setting)
+         (constantly {:setup/open-multiaccounts #(rf/dispatch [:multiaccounts.ui/update-name %])}))
+
+       (when (and (not dont-sync?) (#{:name :preferred-name} setting))
+         (send-contact-update))))))
 
 (rf/defn clean-seed-phrase
   "A helper function that removes seed phrase from storage."
@@ -44,7 +61,7 @@
 
 (defn augment-synchronized-recent-stickers
   "Add 'url' parameter to stickers that are synchronized from other devices.
-   It is not sent from aanother devices but we have it in our db."
+   It is not sent from another devices but we have it in our db."
   [synced-stickers stickers-from-db]
   (mapv #(assoc %
                 :url

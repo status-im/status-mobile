@@ -2,16 +2,17 @@
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
             [status-im.utils.random :as random]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]
+            [utils.datetime :as datetime]
+            [utils.re-frame :as rf]))
 
 (defn fullname
   [custom-domain? username]
@@ -122,6 +123,27 @@
     (case state
       (:available :owned)
       (navigation/navigate-to cofx :ens-checkout {})
+      :connected-with-different-key
+      (re-frame/dispatch [::set-pub-key])
+      :connected
+      (save-username cofx custom-domain? username true)
+      ;; for other states, we do nothing
+      nil)))
+
+(comment
+  (log/spy :info :kkk)
+  (rf/dispatch [::remove-username "rashawn.eth"])
+  (rf/dispatch [::input-submitted-2]))
+
+(rf/defn on-input-submitted-2
+  {:events [::input-submitted-2]}
+  [{:keys [db] :as cofx}]
+  (let [state          :connected
+        username       "rashawn.eth"
+        custom-domain? true]
+    (case state
+      (:available :owned)
+      (navigation/navigate-to-cofx cofx :ens-checkout {})
       :connected-with-different-key
       (re-frame/dispatch [::set-pub-key])
       :connected
