@@ -54,11 +54,11 @@
 
 (defn toggle-inner
   [{:keys [checked?]}]
-  {:margin-left      (if checked? 12 2)
-   :height           16
+  {:height           16
    :width            16
    :background-color colors/white
    :border-radius    20
+   :margin-left      (if checked? 12 2)
    :margin-right     :auto
    :margin-top       :auto
    :margin-bottom    :auto})
