@@ -1,6 +1,6 @@
 (ns status-im2.common.nickname-drawer.view
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
             [quo2.core :as quo]
             [react-native.core :as rn]
@@ -9,7 +9,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn bad-nickname?
+(defn empty?-nickname?
   [nickname]
   (string/blank? @nickname))
 
@@ -20,7 +20,7 @@
     (rf/dispatch [:toasts/upsert
                   {:id         :add-nickname
                    :icon       :correct
-                   :icon-color (:positive-01 @colors/theme)
+                   :icon-color (colors/theme-colors colors/success-60 colors/success-50)
                    :text       (i18n/label
                                 :t/set-nickname-toast
                                 {:primary-name primary-name
@@ -78,7 +78,7 @@
 
         [quo/button
          {:type     :primary
-          :disabled (bad-nickname? entered-nickname)
+          :disabled (empty?-nickname? entered-nickname)
           :style    {:flex 0.48}
           :on-press (add-nickname-toast primary-name entered-nickname public-key)}
          title]]])))

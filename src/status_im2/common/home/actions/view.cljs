@@ -6,7 +6,7 @@
             [utils.re-frame :as rf]
             [status-im2.common.nickname-drawer.view :as nickname-drawer]
             [clojure.string :as string]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -204,7 +204,7 @@
                                  (rf/dispatch [:toasts/upsert
                                                {:id         :remove-nickname
                                                 :icon       :correct
-                                                :icon-color (:positive-01 @colors/theme)
+                                                :icon-color (colors/theme-colors colors/success-60 colors/success-50)
                                                 :text       (i18n/label
                                                              :t/remove-nickname-toast
                                                              {:secondary-name secondary-name})}])
