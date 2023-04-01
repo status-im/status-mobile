@@ -204,7 +204,8 @@
                                  (rf/dispatch [:toasts/upsert
                                                {:id         :remove-nickname
                                                 :icon       :correct
-                                                :icon-color (colors/theme-colors colors/success-60 colors/success-50)
+                                                :icon-color (colors/theme-colors colors/success-60
+                                                                                 colors/success-50)
                                                 :text       (i18n/label
                                                              :t/remove-nickname-toast
                                                              {:secondary-name secondary-name})}])
