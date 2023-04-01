@@ -48,10 +48,11 @@
         cursor      (+ at-sign-idx (count primary-name) 2)]
     (rf/merge
      cofx
-     {:db                   (-> db
-                                (assoc-in [:chats/cursor chat-id] cursor)
-                                (assoc-in [:chats/mention-suggestions chat-id] nil))
-      :set-text-input-value [chat-id new-text text-input-ref]}
+     {:db (-> db
+              (assoc-in [:chats/cursor chat-id] cursor)
+              (assoc-in [:chats/mention-suggestions chat-id] nil))
+      ;:set-text-input-value [chat-id new-text text-input-ref]
+     }
      (set-chat-input-text new-text chat-id)
      ;; NOTE(rasom): Some keyboards do not react on selection property passed to
      ;; text input (specifically Samsung keyboard with predictive text set on).

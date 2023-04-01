@@ -192,49 +192,59 @@
 
 (defn text-input
   [{:keys [refs chat-id sending-image on-content-size-change]}]
-  (let [cooldown-enabled? (rf/sub [:chats/current-chat-cooldown-enabled?])
-        mentionable-users (rf/sub [:chats/mentionable-users])
-        timeout-id (reagent/atom nil)
-        last-text-change (reagent/atom nil)
-        mentions-enabled? (get @mentions-enabled? chat-id)
-        props
-        {:style (text-input-style chat-id)
-         :ref (:text-input-ref refs)
-         :max-font-size-multiplier 1
-         :accessibility-label :chat-message-input
-         :text-align-vertical :center
-         :multiline true
-         :editable (not cooldown-enabled?)
-         :blur-on-submit false
-         :auto-focus false
-         :max-length chat.constants/max-text-size
-         :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/white-opa-30)
-         :placeholder (if cooldown-enabled?
-                        (i18n/label :cooldown/text-input-disabled)
-                        (i18n/label :t/type-a-message))
-         :default-value (get @input-texts chat-id)
-         :underline-color-android :transparent
-         :auto-capitalize :sentences
-         :auto-correct false
-         :spell-check false
-         :on-content-size-change on-content-size-change
-         :on-selection-change (partial on-selection-change
-                                       timeout-id
-                                       last-text-change
-                                       mentionable-users)
-         :on-change
-         (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-         :on-text-input (partial on-text-input mentionable-users chat-id)}
+  (let [cooldown-enabled?   (rf/sub [:chats/current-chat-cooldown-enabled?])
+        mentionable-users   (rf/sub [:chats/mentionable-users])
+        timeout-id          (reagent/atom nil)
+        last-text-change    (reagent/atom nil)
+        mentions-enabled?   (get @mentions-enabled? chat-id)
+        props               {:style (text-input-style chat-id)
+                             :ref (:text-input-ref refs)
+                             :max-font-size-multiplier 1
+                             :accessibility-label :chat-message-input
+                             :text-align-vertical :center
+                             :multiline true
+                             :editable (not cooldown-enabled?)
+                             :blur-on-submit false
+                             :auto-focus false
+                             :max-length chat.constants/max-text-size
+                             :placeholder-text-color (colors/theme-colors colors/neutral-40
+                                                                          colors/white-opa-30)
+                             :placeholder (if cooldown-enabled?
+                                            (i18n/label :cooldown/text-input-disabled)
+                                            (i18n/label :t/type-a-message))
+                             :default-value (get @input-texts chat-id)
+                             :underline-color-android :transparent
+                             :auto-capitalize :sentences
+                             :auto-correct false
+                             :spell-check false
+                             :on-content-size-change on-content-size-change
+                             :on-selection-change (partial on-selection-change
+                                                           timeout-id
+                                                           last-text-change
+                                                           mentionable-users)
+                             :on-change
+                             (partial on-change
+                                      last-text-change
+                                      timeout-id
+                                      mentionable-users
+                                      refs
+                                      chat-id
+                                      sending-image)
+                             :on-text-input (partial on-text-input
+                                                     mentionable-users
+                                                     chat-id)}
         input-with-mentions (rf/sub [:chat/input-with-mentions])
-        children (fn []
-                   (if mentions-enabled?
-                     (map-indexed
-                      (fn [index [_ text]]
-                        ^{:key (str index "_" type "_" text)}
-                        [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
-                         text])
-                      input-with-mentions)
-                     (get @input-texts chat-id)))]
+        children            (if mentions-enabled?
+                              (map-indexed (fn [index [text-type text]]
+                                             ;; This type is the clojure fn?
+                                             ;; Should it be in the destructuring vector?
+                                             ^{:key (str index "_" text-type "_" text)}
+                                             [rn/text
+                                              (when (= text-type :mention)
+                                                {:style {:color colors/primary-50}})
+                                              text])
+                                           input-with-mentions)
+                              (get @input-texts chat-id))]
     (reset! text-input-ref (:text-input-ref refs))
     ;when ios implementation for selectable-text-input is ready, we need remove this condition and use
     ;selectable-text-input directly.
@@ -361,9 +371,9 @@
 
       :reagent-render
       (fn [chat-id {:keys [style ref on-selection-change] :as props} children]
-        (let [ref #(do (reset! text-input-ref %)
-                       (when ref
-                         (quo.react/set-ref-val! ref %)))
+        (let [ref                 #(do (reset! text-input-ref %)
+                                       (when ref
+                                         (quo.react/set-ref-val! ref %)))
               on-selection-change (fn [args]
                                     (let [selection    (.-selection ^js (.-nativeEvent ^js args))
                                           start        (.-start selection)
@@ -378,29 +388,30 @@
                                       (let [{:keys [start end text-input-handle]} @selection-event]
                                         (update-selection text-input-handle start end)
                                         (reset! selection-event nil))))
-              on-selection
-              (fn [^js event]
-                (let [native-event           (.-nativeEvent event)
-                      native-event           (transforms/js->clj native-event)
-                      {:keys [eventType content selectionStart
-                              selectionEnd]} native-event
-                      full-text              (:input-text (rf/sub [:chats/current-chat-input]))]
-                  (on-menu-item-touched {:first-level       first-level
-                                         :event-type        eventType
-                                         :content           content
-                                         :selection-start   selectionStart
-                                         :selection-end     selectionEnd
-                                         :text-input        @text-input-ref
-                                         :text-input-handle (rn/find-node-handle @text-input-ref)
-                                         :full-text         full-text
-                                         :menu-items        menu-items
-                                         :chat-id           chat-id
-                                         :selection-event   selection-event})))
-              props (merge props
-                           {:ref                 ref
-                            :style               (dissoc style :margin-horizontal)
-                            :on-selection-change on-selection-change
-                            :on-selection        on-selection})]
+              on-selection        (fn [^js event]
+                                    (let [native-event           (.-nativeEvent event)
+                                          native-event           (transforms/js->clj native-event)
+                                          {:keys [eventType content selectionStart
+                                                  selectionEnd]} native-event
+                                          full-text              (:input-text
+                                                                  (rf/sub [:chats/current-chat-input]))]
+                                      (on-menu-item-touched {:first-level       first-level
+                                                             :event-type        eventType
+                                                             :content           content
+                                                             :selection-start   selectionStart
+                                                             :selection-end     selectionEnd
+                                                             :text-input        @text-input-ref
+                                                             :text-input-handle (rn/find-node-handle
+                                                                                 @text-input-ref)
+                                                             :full-text         full-text
+                                                             :menu-items        menu-items
+                                                             :chat-id           chat-id
+                                                             :selection-event   selection-event})))
+              props               (assoc props
+                                         :ref                 ref
+                                         :style               (dissoc style :margin-horizontal)
+                                         :on-selection-change on-selection-change
+                                         :on-selection        on-selection)]
           [rn/selectable-text-input {:menuItems @menu-items :style style}
-           [rn/text-input props
+           [rn/text-input (dissoc props :default-value)
             children]]))})))
