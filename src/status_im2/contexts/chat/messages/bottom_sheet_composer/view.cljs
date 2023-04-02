@@ -35,7 +35,7 @@
 
 ;;; CONTROLS
 (defn send-button
-  [input-ref text-value height saved-height opacity bg-bottom window-height]
+  [input-ref text-value images? height saved-height opacity bg-bottom window-height]
   [:f> (fn []
          (let [btn-opacity (reanimated/use-shared-value 0)
                z-index     (reagent/atom 0)]
@@ -43,7 +43,7 @@
            [:f>
             (fn []
               (rn/use-effect (fn []
-                               (if-not (empty? @text-value)
+                               (if (or (not-empty @text-value) images?)
                                  (when-not (= @z-index 1)
                                    (reset! z-index 1)
                                    (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
@@ -209,14 +209,14 @@
    [rn/view {:style (style/handle)}]])
 
 (defn actions
-  [input-ref text-value height saved-height opacity bg-bottom window-height insets]
+  [input-ref text-value images? height saved-height opacity bg-bottom window-height insets]
   [rn/view {:style (style/actions-container)}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
     [image-button insets]
     [reaction-button]
     [format-button]]
-   [send-button input-ref text-value height saved-height opacity bg-bottom window-height]
+   [send-button input-ref text-value images? height saved-height opacity bg-bottom window-height]
    [audio-button]])
 
 ;;; MAIN
@@ -316,7 +316,6 @@
                     (fn []
                       (.remove ^js @keyboard-show-listener)
                       (.remove ^js @keyboard-hide-listener))) [max-height])
-                (println "xxx" @kb-default-height)
                 [:<>
                  [reanimated/view {:style (style/background opacity bg-bottom window-height height)}]
                  [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-open gesture-enabled? last-height maximized?)}
@@ -423,8 +422,8 @@
                          :start  {:x 0 :y 1}
                          :end    {:x 0 :y 0}
                          :style  (style/text-overlay)}]])]
-                   [images/images-list @maximized?]
-                   [actions input-ref text-value height saved-height opacity bg-bottom window-height insets]]]]))]))])
+                   [images/images-list @maximized? lock-layout?]
+                   [actions input-ref text-value (seq images) height saved-height opacity bg-bottom window-height insets]]]]))]))])
 
 
 (defn blur-view [blur-opacity layout-height]
