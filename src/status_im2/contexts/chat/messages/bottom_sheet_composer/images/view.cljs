@@ -24,7 +24,7 @@
     [quo/icon :i/close {:color colors/white :size 12}]]])
 
 (defn images-list
-  [maximized?]
+  [maximized? lock-layout?]
   [:f>
    (fn []
      (let [height (reanimated/use-shared-value 0)
@@ -32,9 +32,12 @@
        (rn/use-effect (fn []
                         (if (seq images)
                           (reanimated/animate height 76)
-                          (if-not maximized?
-                            (reanimated/animate height 0)
-                            (reanimated/set-shared-value height 0)))) [images])
+                          (do
+                            (reset! lock-layout? false)
+                            (js/setTimeout #(reset! lock-layout? true) 500)
+                            (if-not maximized?
+                              (reanimated/animate height 0)
+                              (reanimated/set-shared-value height 0))))) [images])
        [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
         [rn/flat-list
          {:key-fn                       first
