@@ -882,7 +882,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
     return rootUrl.path;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFilePath) {
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
                       URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]

@@ -316,7 +316,7 @@
         {:title name
          :right-accessories
          [{:icon     :main-icons/more
-           :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+           :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                           {:content        sheets/account-settings
                                            :content-height 60}])}]}]
        [react/animated-scroll-view

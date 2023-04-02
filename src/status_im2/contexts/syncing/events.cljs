@@ -8,7 +8,8 @@
             [status-im.node.core :as node]
             [re-frame.core :as re-frame]
             [status-im.data-store.settings :as data-store.settings]
-            [status-im.utils.platform :as utils.platform]))
+            [status-im.utils.platform :as utils.platform]
+            [status-im2.constants :as constants]))
 
 (rf/defn local-pairing-completed
   {:events [:syncing/pairing-completed]}
@@ -54,19 +55,23 @@
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
   [{:keys [db]} entered-password]
-  (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
-        key-uid    (get-in db [:multiaccount :key-uid])
-        config-map (.stringify js/JSON
-                               (clj->js {:senderConfig {:keyUID       key-uid
-                                                        :keystorePath ""
-                                                        :password     sha3-pwd
-                                                        :deviceType   utils.platform/os}
-                                         :serverConfig {:timeout 0}}))]
-    (status/get-connection-string-for-bootstrapping-another-device
-     config-map
-     (fn [connection-string]
-       (rf/dispatch
-        [:bottom-sheet/show-sheet
-         {:show-handle? false
-          :content      (fn []
-                          [sheet/qr-code-view-with-connection-string connection-string])}])))))
+  (let [valid-password? (>= (count entered-password) constants/min-password-length)
+        show-sheet      (fn [connection-string]
+                          (rf/dispatch
+                           [:show-bottom-sheet
+                            {:content (fn []
+                                        [sheet/qr-code-view-with-connection-string
+                                         connection-string])}]))]
+    (if valid-password?
+      (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
+            key-uid    (get-in db [:multiaccount :key-uid])
+            config-map (.stringify js/JSON
+                                   (clj->js {:senderConfig {:keyUID       key-uid
+                                                            :keystorePath ""
+                                                            :password     sha3-pwd
+                                                            :deviceType   utils.platform/os}
+                                             :serverConfig {:timeout 0}}))]
+        (status/get-connection-string-for-bootstrapping-another-device
+         config-map
+         #(show-sheet %)))
+      (show-sheet ""))))

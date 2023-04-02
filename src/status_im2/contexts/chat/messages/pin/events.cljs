@@ -8,7 +8,9 @@
             [status-im2.contexts.chat.messages.list.events :as message-list]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.menus.pinned-messages.view :as pinned-messages-menu]
+            [status-im2.navigation.events :as navigation]))
 
 (rf/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}
@@ -118,3 +120,8 @@
                  {:icon       :alert
                   :icon-color colors/danger-50
                   :text       (i18n/label :t/pin-limit-reached)}))
+
+(rf/defn show-pins-bottom-sheet
+  {:events [:pin-message/show-pins-bottom-sheet]}
+  [cofx chat-id]
+  (navigation/show-bottom-sheet cofx {:content (fn [] [pinned-messages-menu/pinned-messages chat-id])}))

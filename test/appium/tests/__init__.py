@@ -50,7 +50,7 @@ pytest_config_global = dict()
 test_suite_data = TestSuiteData()
 appium_container = AppiumContainer()
 
-common_password = 'qwerty'
+common_password = 'qwerty1234'
 unique_password = 'unique' + get_current_time()
 pin = '121212'
 puk = '000000000000'

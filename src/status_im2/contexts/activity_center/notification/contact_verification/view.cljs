@@ -76,20 +76,20 @@
 
 (defn- decline-challenge
   [id]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch [:activity-center.contact-verification/decline id])
   (rf/dispatch [:activity-center.notifications/mark-as-read id]))
 
 (defn- prepare-challenge-reply
   [props]
-  (rf/dispatch [:bottom-sheet/show-sheet
+  (rf/dispatch [:show-bottom-sheet
                 {:content        view
                  :override-theme :dark}
                 (assoc props :replying? true)]))
 
 (defn- send-challenge-reply
   [id reply]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch [:activity-center.contact-verification/reply id reply])
   (rf/dispatch [:activity-center.notifications/mark-as-read id]))
 

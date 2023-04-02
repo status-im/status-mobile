@@ -1,19 +1,16 @@
 (ns status-im.ui.screens.home.sheet.views
   (:require [quo.core :as quo]
-            [quo2.foundations.colors :as colors]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as rn]
-            [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]
             [status-im2.config :as config]
-            [quo2.core :as quo2]
             [status-im.ui.screens.home.sheet.styles :as style]))
 
 (defn- hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:bottom-sheet/hide-old])
   (rf/dispatch event))
 
 (defn add-new-view
@@ -60,48 +57,6 @@
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
-(defn new-chat-bottom-sheet
-  []
-  [rn/view
-   [quo2/menu-item
-    {:type                       :transparent
-     :title                      (i18n/label :t/new-chat)
-     :icon-bg-color              :transparent
-     :container-padding-vertical 12
-     :title-column-style         {:margin-left 2}
-     :style-props                {:border-bottom-width 1
-                                  :border-bottom-color (colors/theme-colors colors/neutral-10
-                                                                            colors/neutral-90)}
-     :icon-color                 (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label        :start-a-new-chat
-     :icon                       :i/new-message
-     :on-press                   (fn []
-                                   (rf/dispatch [:group-chat/clear-contacts])
-                                   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
-                                                             :start-a-new-chat {}]))}]
-   [quo2/menu-item
-    {:type                         :transparent
-     :title                        (i18n/label :t/add-a-contact)
-     :icon-bg-color                :transparent
-     :icon-container-style         {:padding-horizontal 0}
-     :container-padding-horizontal {:padding-horizontal 4}
-     :style-props                  {:margin-top    18
-                                    :margin-bottom 9}
-     :container-padding-vertical   12
-     :title-column-style           {:margin-left 2}
-     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
-     :accessibility-label          :add-a-contact
-     :subtitle                     (i18n/label :t/enter-a-chat-key)
-     :subtitle-color               colors/neutral-50
-     :icon                         :i/add-user
-     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
-
-(def new-chat-bottom-sheet-comp
-  {:content new-chat-bottom-sheet})
-
 ;; Deprecated
 (def add-new
   {:content add-new-view})
-
-(def start-a-new-chat
-  {:content new-chat-aio/contact-selection-list})

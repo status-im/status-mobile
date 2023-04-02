@@ -3,7 +3,6 @@
     [quo2.core :as quo]
     [react-native.core :as rn]
     [status-im.keycard.recovery :as keycard]
-    [status-im.multiaccounts.recover.core :as multiaccounts.recover]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
@@ -41,21 +40,6 @@
 
      [rn/view {:style style/suboptions}
       [quo/small-option-card
-       {:variant             :icon
-        :title               "Temporary (old) generate keys flow"
-        :subtitle            "generate keys"
-        :image               (resources/get-image :use-keycard)
-        :accessibility-label :generate-old-key
-        :on-press            #(rf/dispatch [:generate-and-derive-addresses])}]
-      [rn/view {:style style/space-between-suboptions}]
-      [quo/small-option-card
-       {:variant  :icon
-        :title    "Temporary (old) recover phrase flow"
-        :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
-        :image    (resources/get-image :ethereum-address)
-        :on-press #(rf/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
-      [rn/view {:style style/space-between-suboptions}]
-      [quo/small-option-card
        {:variant  :icon
         :title    (i18n/label :t/use-recovery-phrase)
         :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
@@ -71,7 +55,7 @@
 
 (defn new-to-status
   []
-  [rn/view {:style style/full-screen}
+  [:<>
    [background/view true]
    [rn/view {:style style/content-container}
     [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]

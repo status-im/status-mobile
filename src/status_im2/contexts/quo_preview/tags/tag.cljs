@@ -83,7 +83,7 @@
                                 (:labelled? @state))
                    :resource  (if (= :emoji (:type @state))
                                 (resources/get-image :music)
-                                :main-icons2/placeholder)})]]]]])))
+                                :i/placeholder)})]]]]])))
 (defn preview-tag
   []
   [rn/view

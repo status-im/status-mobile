@@ -45,21 +45,21 @@
           :editable (not disabled?)
           :max-length max-length
           :placeholder placeholder
-          :selection-color (style/get-selection-color customization-color blur?)
+          :selection-color (style/get-selection-color customization-color blur? override-theme)
           :placeholder-text-color (if @focused?
-                                    (style/get-focused-placeholder-color blur?)
-                                    (style/get-placeholder-color blur?))}]]
+                                    (style/get-focused-placeholder-color blur? override-theme)
+                                    (style/get-placeholder-color blur? override-theme))}]]
        [rn/view
         {:style style/counter-container}
         [text/text
          [text/text
-          {:style (style/char-count blur?)
+          {:style (style/char-count blur? override-theme)
            :size  :paragraph-2}
           (pad-0
            (str
             (count @value)))]
          [text/text
-          {:style (style/char-count blur?)
+          {:style (style/char-count blur? override-theme)
            :size  :paragraph-2}
           (str "/"
                (pad-0

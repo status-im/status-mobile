@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
             [utils.re-frame :as rf]
@@ -44,6 +44,7 @@
   (let [me? (= (:public-key current-multiaccount) identity)]
     (if me?
       [(or (:preferred-name current-multiaccount)
+           (:primary-name contact)
            (gfycat/generate-gfy identity))]
       [(:primary-name contact) (:secondary-name contact)])))
 
@@ -146,12 +147,12 @@
            [:dark :light colors/neutral-100]
            [:light :dark colors/white])]
      (theme/set-theme theme)
-     (re-frame/dispatch [:change-root-status-bar-style
+     (re-frame/dispatch [:change-shell-status-bar-style
                          (if (shell.animation/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
        (hot-reload/reload)
        (when-not (= view-id :shell-stack)
-         (re-frame/dispatch [:change-root-nav-bar-color nav-bar-color]))))))
+         (re-frame/dispatch [:change-shell-nav-bar-color nav-bar-color]))))))
 
 (rf/defn switch-appearance
   {:events [:multiaccounts.ui/appearance-switched]}
@@ -197,7 +198,7 @@
                                 :params     [key-uid (clean-path path) ax ay bx by]
                                 ;; NOTE: In case of an error we can show a toast error
                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet-old))))
 
 (rf/defn save-profile-picture-from-url
   {:events [::save-profile-picture-from-url]}
@@ -208,7 +209,7 @@
                                 :params     [key-uid url]
                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet-old))))
 
 (comment
   (re-frame/dispatch
@@ -226,7 +227,7 @@
                                 ;; with a toast error
                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
               (multiaccounts.update/optimistic :images nil)
-              (bottom-sheet/hide-bottom-sheet))))
+              (bottom-sheet/hide-bottom-sheet-old))))
 
 (rf/defn get-profile-picture
   [cofx]

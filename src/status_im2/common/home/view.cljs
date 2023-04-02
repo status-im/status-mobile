@@ -76,7 +76,7 @@
         (merge button-common-props
                {:icon                false
                 :accessibility-label :on-cellular-network
-                :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "🦄"])
      (when (= network-type "none")
@@ -84,7 +84,7 @@
         (merge button-common-props
                {:icon                false
                 :accessibility-label :no-network-connection
-                :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "💀"])
      (when search?

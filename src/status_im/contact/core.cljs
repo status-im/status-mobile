@@ -9,4 +9,4 @@
             {:db (assoc db
                         :group/selected-contacts #{}
                         :new-chat-name           "")}
-            (navigation/navigate-to-cofx :contact-toggle-list nil)))
+            (navigation/navigate-to :contact-toggle-list nil)))

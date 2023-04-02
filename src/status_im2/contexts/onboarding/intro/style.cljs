@@ -4,7 +4,7 @@
     [quo2.foundations.colors :as colors]))
 
 (def progress-bar-container
-  {:background-color colors/neutral-100
+  {:background-color :transparent
    :flex-direction   :row
    :margin-vertical  16})
 
@@ -26,12 +26,12 @@
    :left               0
    :right              0
    :z-index            2
-   :background-color   colors/neutral-100
+   :background-color   :transparent
    :padding-vertical   12
    :padding-horizontal 20})
 
 (def carousel-text
-  {:background-color colors/neutral-100
+  {:background-color :transparent
    :color            colors/white})
 
 (def page-container
@@ -39,14 +39,13 @@
    :justify-content :flex-end})
 
 (def page-image
-  {:position         :absolute
-   :background-color colors/neutral-100
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0
-   :width            "100%"
-   :aspect-ratio     1})
+  {:position     :absolute
+   :top          0
+   :bottom       0
+   :left         0
+   :right        0
+   :width        "100%"
+   :aspect-ratio 1})
 
 (def text-container
   {:flex      1

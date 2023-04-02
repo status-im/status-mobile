@@ -40,7 +40,7 @@
                                {:enter-step   :original
                                 :original     []
                                 :confirmation []}))}
-            (navigation/navigate-to-cofx :keycard-onboarding-pin nil)))
+            (navigation/navigate-to :keycard-onboarding-pin nil)))
 
 (rf/defn load-recovery-pin-screen
   [{:keys [db] :as cofx}]
@@ -66,7 +66,7 @@
              "instance-uid"
              instance-uid)
   (if (= flow :import)
-    (navigation/navigate-to-cofx cofx :keycard-recovery-no-key nil)
+    (navigation/navigate-to cofx :keycard-recovery-no-key nil)
     (if paired?
       (rf/merge cofx
                 (common/listen-to-hardware-back-button)
@@ -86,7 +86,7 @@
                      (assoc-in [:keycard :pin :on-verified] nil)
                      (assoc-in [:keycard :setup-step] nil))}
             (common/clear-on-card-connected)
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (navigation/navigate-to :keycard-settings nil)))
 
 (rf/defn password-option-pressed
   {:eevents [:keycard.ui/password-option-pressed]}
@@ -272,7 +272,7 @@
                              (not on-verified-failure))
                     (when exporting?
                       (navigation/navigate-back)))
-                  ;(navigation/navigate-to-cofx :enter-pin-settings nil)))
+                  ;(navigation/navigate-to :enter-pin-settings nil)))
                   (when (zero? pin-retries) (common/frozen-keycard-popup))
                   (when on-verified-failure
                     (fn [_]
@@ -505,7 +505,7 @@
               (when multiaccount
                 (set-multiaccount-pairing multiaccount pairing paired-on))
               (when (= flow :login)
-                (navigation/navigate-to-cofx :multiaccounts nil))
+                (navigation/navigate-to :multiaccounts nil))
               (when (= flow :recovery)
                 (onboarding/proceed-with-generating-key))
               (when (= flow :import)
@@ -531,7 +531,7 @@
                                                 :keycard/pair))
                 (common/hide-connection-sheet)
                 (when (= flow :import)
-                  (navigation/navigate-to-cofx :keycard-recovery-pair nil))
+                  (navigation/navigate-to :keycard-recovery-pair nil))
                 (when (not= setup-step :enter-pair-code)
                   (common/process-error code error))))))
 
@@ -579,7 +579,7 @@
 
               (when (= card-state :pre-init)
                 (if (= flow :import)
-                  (navigation/navigate-to-cofx :keycard-recovery-no-key nil)
+                  (navigation/navigate-to :keycard-recovery-no-key nil)
                   (fn [cofx]
                     (rf/merge
                      cofx
@@ -596,7 +596,7 @@
 
               (when (= card-state :blank)
                 (if (= flow :import)
-                  (navigation/navigate-to-cofx :keycard-recovery-no-key nil)
+                  (navigation/navigate-to :keycard-recovery-no-key nil)
                   (show-no-keycard-applet-alert)))
 
               (when (and (= card-state :multiaccount)

@@ -140,11 +140,8 @@ class SignInView(BaseView):
                                              xpath="(//android.widget.EditText[@content-desc='password-input'])[1]")
         self.confirm_your_password_input = EditBox(self.driver,
                                                    xpath="(//android.widget.EditText[@content-desc='password-input'])[2]")
-        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
-        self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.terms_of_use_link = TermsOfUseLink(self.driver)
-        self.start_button = Button(self.driver, accessibility_id="welcome-button")
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
         self.first_username_on_choose_chat_name = Text(self.driver,
                                                        xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
@@ -177,60 +174,81 @@ class SignInView(BaseView):
         self.continue_custom_seed_phrase_button = Button(self.driver, accessibility_id="continue-custom-seed-phrase")
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
-    def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
+        # New onboarding
+        self.generate_keys_button = Button(self.driver, translation_id="create-multiaccount")
+        self.profile_your_name_edit_box = EditBox(self.driver, accessibility_id="profile-title-input")
+        self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
+        self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")
+        self.profile_repeat_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-2")
+        self.profile_confirm_password_button = Button(self.driver, translation_id="password-creation-confirm")
+        self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
+        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
+        self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
+        self.start_button = Button(self.driver, accessibility_id="welcome-button")
+        self.use_recovery_phrase_button = Button(self.driver, translation_id="use-recovery-phrase")
+        self.passphrase_edit_box = EditBox(self.driver, accessibility_id="use-recovery-phrase")
+
+    def set_password(self, password: str):
+        self.profile_password_edit_box.set_value(password)
+        self.profile_repeat_password_edit_box.click()
+        self.profile_repeat_password_edit_box.send_keys(password)
+        self.checkbox_button.scroll_to_element()
+        self.checkbox_button.double_click()
+        self.profile_confirm_password_button.click()
+
+    def set_profile(self, username: str, set_image=False):
+        self.profile_your_name_edit_box.set_value(username)
+        self.profile_continue_button.click_until_presence_of_element(self.profile_password_edit_box)
+        if set_image:
+            pass
+
+    def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False,
+                    username="test user"):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
         if not second_user:
-            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_key_button)
-            self.generate_key_button.click()
-
-        self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
-        if keycard:
-            keycard_flow = self.keycard_storage_button.click()
-            keycard_flow.confirm_pin_and_proceed()
-            keycard_flow.backup_seed_phrase()
-        else:
-            self.next_button.click()
-            self.create_password_input.set_value(password)
-            self.confirm_your_password_input.set_value(password)
-            self.next_button.click()
+            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+            self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        self.set_profile(username)
+        self.set_password(password)
+        self.enable_biometric_maybe_later_button.wait_and_click(30)
+        # self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
+        # if keycard:
+        #     keycard_flow = self.keycard_storage_button.click()
+        #     keycard_flow.confirm_pin_and_proceed()
+        #     keycard_flow.backup_seed_phrase()
+        # else:
+        #     self.next_button.click()
+        #     self.create_password_input.set_value(password)
+        #     self.confirm_your_password_input.set_value(password)
+        #     self.next_button.click()
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
         self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
-
         self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password, keycard=False,
-                       enable_notifications=False, second_user=False):
+    def recover_access(self, passphrase: str, password: str = common_password+'1234', keycard=False,
+                       enable_notifications=False, second_user=False, username='Restore user', set_image=False):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
+
         if not second_user:
-            self.accept_tos_checkbox.enable()
-        self.get_started_button.click_until_presence_of_element(self.access_key_button)
-        self.access_key_button.click()
-        self.enter_seed_phrase_button.click()
-        self.seedphrase_input.click()
-        self.seedphrase_input.set_value(passphrase)
-        self.next_button.click()
-        self.reencrypt_your_key_button.click()
-        if keycard:
-            keycard_flow = self.keycard_storage_button.click()
-            keycard_flow.confirm_pin_and_proceed()
-        else:
-            self.next_button.click()
-            self.create_password_input.set_value(password)
-            self.confirm_your_password_input.set_value(password)
-            self.next_button.click_until_presence_of_element(self.maybe_later_button)
-        self.maybe_later_button.wait_for_element(30)
+            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+        self.use_recovery_phrase_button.click()
+        self.passphrase_edit_box.set_value(passphrase)
+        self.continue_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        self.set_profile(username, set_image)
+        self.set_password(password)
+        self.enable_biometric_maybe_later_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
         self.start_button.click()
-        self.profile_button.wait_for_visibility_of_element(30)
+        self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
 

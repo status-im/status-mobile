@@ -1,5 +1,5 @@
 (ns status-im.mobile-sync-settings.core
-  (:require [status-im2.common.bottom-sheet.events :as bottom-sheet]
+  (:require [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.contexts.add-new-contact.events :as add-new-contact]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -33,7 +33,7 @@
             (not remember-syncing-choice?)
             (not= :create-multiaccount (:view-id db)))
 
-       [(bottom-sheet/show-bottom-sheet
+       [(bottom-sheet/show-bottom-sheet-old
          {:view :mobile-network})
         (sheet-defaults)]
 
@@ -42,13 +42,13 @@
        ;; no reason to restart wallet.
        (and logged-in? initialized?)
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)
+        (bottom-sheet/hide-bottom-sheet-old)
         (wallet/restart-wallet-service nil)
         (add-new-contact/set-new-identity-reconnected)]
 
        logged-in?
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)]))))
+        (bottom-sheet/hide-bottom-sheet-old)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))
@@ -115,12 +115,10 @@
   [cofx]
   (rf/merge
    cofx
-   (bottom-sheet/hide-bottom-sheet)
-   (navigation/navigate-to-cofx :mobile-network-settings nil)))
+   (bottom-sheet/hide-bottom-sheet-old)
+   (navigation/navigate-to :mobile-network-settings nil)))
 
 (rf/defn mobile-network-show-offline-sheet
   {:events [:mobile-network/show-offline-sheet]}
   [cofx]
-  (bottom-sheet/show-bottom-sheet
-   cofx
-   {:view :mobile-network-offline}))
+  (bottom-sheet/hide-bottom-sheet-old cofx))

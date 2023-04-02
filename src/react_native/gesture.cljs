@@ -6,7 +6,8 @@
               Swipeable
               TouchableWithoutFeedback
               gestureHandlerRootHOC
-              FlatList)]
+              FlatList
+              ScrollView)]
             [react-native.flat-list :as rn-flat-list]
             [reagent.core :as reagent]))
 
@@ -69,6 +70,9 @@
         children))
 
 (def gesture-flat-list (reagent/adapt-react-class FlatList))
+
 (defn flat-list
   [props]
   [gesture-flat-list (rn-flat-list/base-list-props props)])
+
+(def scroll-view (reagent/adapt-react-class ScrollView))

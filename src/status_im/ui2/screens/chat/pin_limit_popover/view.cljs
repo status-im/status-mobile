@@ -44,8 +44,7 @@
              :active-opacity      1
              :on-press            (fn []
                                     (rf/dispatch [:pin-message/hide-pin-limit-modal chat-id])
-                                    (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list
-                                                  chat-id])
+                                    (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id])
                                     (rf/dispatch [:dismiss-keyboard]))
              :style               style/view-pinned-messages}
             [quo/text {:size :paragraph-2 :weight :medium :color colors/white}

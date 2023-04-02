@@ -94,16 +94,16 @@
 (rf/defn multiaccount-generate-and-derive-addresses-success
   {:events [:multiaccount-generate-and-derive-addresses-success]}
   [{:keys [db]} result]
-  {:db             (update db
-                           :intro-wizard
-                           (fn [data]
-                             (-> data
-                                 (dissoc :processing?)
-                                 (assoc :multiaccounts         result
-                                        :selected-storage-type :default
-                                        :selected-id           (-> result first :id)
-                                        :step                  :choose-key))))
-   :navigate-to-fx :choose-name})
+  {:db          (update db
+                        :intro-wizard
+                        (fn [data]
+                          (-> data
+                              (dissoc :processing?)
+                              (assoc :multiaccounts         result
+                                     :selected-storage-type :default
+                                     :selected-id           (-> result first :id)
+                                     :step                  :choose-key))))
+   :navigate-to :choose-name})
 
 (rf/defn generate-and-derive-addresses
   {:events [:generate-and-derive-addresses]}

@@ -628,6 +628,6 @@
   []
   (.keystoreDir ^js (status)))
 
-(defn log-file-path
+(defn log-file-directory
   []
-  (.logFilePath ^js (status)))
+  (.logFileDirectory ^js (status)))

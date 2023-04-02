@@ -125,6 +125,28 @@
  (fn [[cb options]]
    (authenticate-fx #(cb %) options)))
 
+(re-frame/reg-fx
+ :biometric/enable-and-save-password
+ (fn [{:keys [key-uid
+              masked-password
+              on-success
+              on-error]}]
+   (-> (keychain/save-user-password!
+        key-uid
+        masked-password)
+       (.then
+        (fn [_]
+          (keychain/save-auth-method!
+           key-uid
+           keychain/auth-method-biometric)))
+       (.then
+        (fn [_]
+          (when on-success
+            (on-success))))
+       (.catch (fn [error]
+                 (when on-error
+                   (on-error error)))))))
+
 (rf/defn update-biometric
   [{db :db :as cofx} biometric-auth?]
   (let [key-uid (or (get-in db [:multiaccount :key-uid])

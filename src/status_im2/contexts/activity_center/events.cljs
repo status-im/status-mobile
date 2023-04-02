@@ -552,7 +552,7 @@
                                {:icon       :placeholder
                                 :icon-color colors/primary-50-opa-40
                                 :title      (i18n/label :t/contact-request-accepted-toast
-                                                        {:name (:alias message)})})
+                                                        {:name (or name (:alias message))})})
 
                 :else
                 cofx))

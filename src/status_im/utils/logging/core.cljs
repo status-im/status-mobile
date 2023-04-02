@@ -3,7 +3,7 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [react-native.mail :as react-native-mail]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [utils.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.transport.utils :as transport.utils]
@@ -206,7 +206,7 @@
     {:db (assoc db :bug-report/description-error error)}
     (rf/merge
      cofx
-     (bottom-sheet/hide-bottom-sheet)
+     (bottom-sheet/hide-bottom-sheet-old)
      (send-logs :email))))
 
 (re-frame/reg-fx
@@ -234,5 +234,5 @@
   (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
-   (bottom-sheet/hide-bottom-sheet)
+   (bottom-sheet/hide-bottom-sheet-old)
    (submit-issue)))

@@ -32,9 +32,8 @@
   (when (and pinned deleted? message-pin-enabled)
     (fn []
       (rf/dispatch [:dismiss-keyboard])
-      (rf/dispatch [:bottom-sheet/show-sheet
-                    {:content (drawers/reactions-and-actions message
-                                                             context)}]))))
+      (rf/dispatch [:show-bottom-sheet
+                    {:content (drawers/reactions-and-actions message context)}]))))
 
 (defn deleted-by-message
   [{:keys [deleted-by deleted-undoable-till timestamp-str deleted-for-me-undoable-till from]}

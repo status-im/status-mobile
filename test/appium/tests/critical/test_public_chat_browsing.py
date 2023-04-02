@@ -494,7 +494,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         'yotube_full': {
                             'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
                             'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'}
+                            'subtitle': 'YouTube'},
+                        'yotube_mobile': {
+                            'url': 'https://m.youtube.com/watch?v=Je7yErjEVt4',
+                            'txt': 'Status, your gateway to Ethereum',
+                            'subtitle': 'YouTube'},
+
                         # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
                         # 'twitter': {
                         #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',

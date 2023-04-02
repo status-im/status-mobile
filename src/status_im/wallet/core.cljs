@@ -4,7 +4,7 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.async-storage.core :as async-storage]
-    [status-im2.common.bottom-sheet.events :as bottom-sheet]
+    [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
     [status-im.ethereum.core :as ethereum]
     [status-im.ethereum.eip55 :as eip55]
@@ -87,7 +87,7 @@
 (rf/defn open-transaction-details
   {:events [:wallet.ui/show-transaction-details]}
   [cofx hash address]
-  (navigation/navigate-to-cofx cofx :wallet-transaction-details {:hash hash :address address}))
+  (navigation/navigate-to cofx :wallet-transaction-details {:hash hash :address address}))
 
 (defn dups
   [seq]
@@ -589,21 +589,21 @@
   [{:keys [db] :as cofx} symbol]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction :symbol] symbol)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (rf/defn wallet-send-set-field
   {:events [:wallet.send/set-field]}
   [{:keys [db] :as cofx} field value]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (rf/defn wallet-request-set-field
   {:events [:wallet.request/set-field]}
   [{:keys [db] :as cofx} field value]
   (rf/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (rf/defn navigate-to-recipient-code
   {:events [:wallet.send/navigate-to-recipient-code]}
@@ -611,7 +611,7 @@
   (rf/merge cofx
             {:db (-> db
                      (assoc :wallet/recipient {}))}
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (navigation/open-modal :recipient nil)))
 
 (rf/defn show-delete-account-confirmation

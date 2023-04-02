@@ -19,7 +19,7 @@
     :icon                :main-icons/share
     :accessibility-label accessibility-label
     :on-press            (fn []
-                           (re-frame/dispatch [:bottom-sheet/hide])
+                           (re-frame/dispatch [:bottom-sheet/hide-old])
                            (js/setTimeout
                             #(re-frame/dispatch [::invite.events/share-link nil])
                             250))}])

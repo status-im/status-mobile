@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.group-details.view
   (:require [utils.i18n :as i18n]
-            [quo.components.safe-area :as safe-area]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -31,7 +30,7 @@
       :width               32
       :style               {:margin-right 20}
       :accessibility-label :options-button
-      :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+      :on-press            #(rf/dispatch [:show-bottom-sheet
                                           {:content (fn [] [actions/group-details-actions group])}])}
      [quo/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
 
@@ -92,52 +91,50 @@
                         :on-check on-toggle}})
          item]))))
 
-(defn add-members-sheet
-  [group admin?]
-  [:f>
-   (fn []
-     (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area               (safe-area/use-safe-area)
-           selected-participants   (rf/sub [:group-chat/selected-participants])
-           deselected-members      (rf/sub [:group-chat/deselected-members])]
-       [rn/view {:style {:height (- window-height (:top safe-area))}}
-        [rn/touchable-opacity
-         {:on-press            #(rf/dispatch [:bottom-sheet/hide])
-          :accessibility-label :close-manage-members
-          :style               (style/close-icon)}
-         [quo/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
-        [quo/text
-         {:size   :heading-1
-          :weight :semi-bold
-          :style  {:margin-left 20}}
-         (i18n/label (if admin? :t/manage-members :t/add-members))]
-        [rn/section-list
-         {:key-fn                         :title
-          :sticky-section-headers-enabled false
-          :sections                       (rf/sub [:contacts/grouped-by-first-letter])
-          :render-section-header-fn       contact-list/contacts-section-header
-          :content-container-style        {:padding-bottom 20}
-          :render-data                    {:group group}
-          :render-fn                      add-member-contact-item-render}]
-        [rn/view {:style (style/bottom-container safe-area)}
-         [quo/button
-          {:style               {:flex 1}
-           :accessibility-label :save
-           :on-press            (fn []
-                                  (rf/dispatch [:bottom-sheet/hide])
-                                  (js/setTimeout (fn []
-                                                   (rf/dispatch
-                                                    [:group-chats.ui/remove-members-pressed]))
-                                                 500)
-                                  (rf/dispatch [:group-chats.ui/add-members-pressed]))
-           :disabled            (and (zero? (count selected-participants))
-                                     (zero? (count deselected-members)))}
-          (i18n/label :t/save)]]]))])
+(defn add-manage-members
+  []
+  (let [selected-participants      (rf/sub [:group-chat/selected-participants])
+        deselected-members         (rf/sub [:group-chat/deselected-members])
+        {:keys [admins] :as group} (rf/sub [:chats/current-chat])
+        admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
+    [rn/view {:flex 1 :margin-top 20}
+     [rn/touchable-opacity
+      {:on-press            #(rf/dispatch [:navigate-back])
+       :accessibility-label :close-manage-members
+       :style               (style/close-icon)}
+      [quo/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+     [quo/text
+      {:size   :heading-1
+       :weight :semi-bold
+       :style  {:margin-left 20}}
+      (i18n/label (if admin? :t/manage-members :t/add-members))]
+     [rn/section-list
+      {:key-fn                         :title
+       :sticky-section-headers-enabled false
+       :sections                       (rf/sub [:contacts/grouped-by-first-letter])
+       :render-section-header-fn       contact-list/contacts-section-header
+       :content-container-style        {:padding-bottom 20}
+       :render-data                    {:group group}
+       :render-fn                      add-member-contact-item-render}]
+     [rn/view {:style (style/bottom-container 30)}
+      [quo/button
+       {:style               {:flex 1}
+        :accessibility-label :save
+        :on-press            (fn []
+                               (rf/dispatch [:navigate-back])
+                               (js/setTimeout (fn []
+                                                (rf/dispatch
+                                                 [:group-chats.ui/remove-members-pressed]))
+                                              500)
+                               (rf/dispatch [:group-chats.ui/add-members-pressed]))
+        :disabled            (and (zero? (count selected-participants))
+                                  (zero? (count deselected-members)))}
+       (i18n/label :t/save)]]]))
 
 (defn contact-item-render
   [{:keys [public-key] :as item} _ _ extra-data]
   (let [current-pk           (rf/sub [:multiaccount/public-key])
-        show-profile-actions #(rf/dispatch [:bottom-sheet/show-sheet
+        show-profile-actions #(rf/dispatch [:show-bottom-sheet
                                             {:content (fn [] [actions/contact-actions item
                                                               extra-data])}])]
     [contact-list-item/contact-list-item
@@ -151,13 +148,11 @@
 (defn group-details
   []
   (let [{:keys [admins chat-id chat-name color public?
-                muted contacts]
-         :as   group}   (rf/sub
-                         [:chats/current-chat])
-        members         (rf/sub [:contacts/group-members-sections])
-        pinned-messages (rf/sub [:chats/pinned chat-id])
-        current-pk      (rf/sub [:multiaccount/public-key])
-        admin?          (get admins current-pk)]
+                muted contacts]} (rf/sub [:chats/current-chat])
+        members                  (rf/sub [:contacts/group-members-sections])
+        pinned-messages          (rf/sub [:chats/pinned chat-id])
+        current-pk               (rf/sub [:multiaccount/public-key])
+        admin?                   (get admins current-pk)]
     [rn/view
      {:style {:flex             1
               :background-color (colors/theme-colors colors/white colors/neutral-95)}}
@@ -185,7 +180,7 @@
         :accessibility-label :pinned-messages
         :on-press            (fn []
                                (rf/dispatch [:dismiss-keyboard])
-                               (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}
+                               (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}
        [rn/view
         {:style {:flex-direction  :row
                  :justify-content :space-between}}
@@ -207,9 +202,7 @@
         :on-press            (fn []
                                (rf/dispatch [:group/clear-added-participants])
                                (rf/dispatch [:group/clear-removed-members])
-                               (rf/dispatch
-                                [:bottom-sheet/show-sheet
-                                 {:content (fn [] [add-members-sheet group admin?])}]))}
+                               (rf/dispatch [:open-modal :group-add-manage-members]))}
        [rn/view
         {:style {:flex-direction  :row
                  :justify-content :space-between}}

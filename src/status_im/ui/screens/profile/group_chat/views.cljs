@@ -71,7 +71,7 @@
                  (not= public-key current-user-identity))
         {:accessory [quo/button
                      {:on-press            #(re-frame/dispatch
-                                             [:bottom-sheet/show-sheet
+                                             [:bottom-sheet/show-sheet-old
                                               {:content (fn []
                                                           [member-sheet chat-id member admin?])}])
                       :type                :icon
@@ -105,7 +105,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (debounce/dispatch-and-chill event 2000))
 
 (defn invitation-sheet
@@ -142,7 +142,7 @@
      {:title    (multiaccounts/displayed-name contact)
       :icon     [chat-icon/contact-icon-contacts-tab
                  (multiaccounts/displayed-photo contact)]
-      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content (fn []
                                                  [invitation-sheet invitation contact])}])}]))
 
@@ -214,8 +214,7 @@
              :accessory      :text
              :accessory-text (count pinned-messages)
              :chevron        true
-             :on-press       #(re-frame/dispatch [:bottom-sheet/show-sheet :pinned-messages-list
-                                                  chat-id])}]
+             :on-press       #(re-frame/dispatch [:pin-message/show-pins-bottom-sheet chat-id])}]
            (when member?
              [quo/list-item
               {:theme               :negative

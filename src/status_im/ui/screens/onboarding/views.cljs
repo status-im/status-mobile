@@ -10,7 +10,7 @@
 (defn learn-more
   [title content]
   [react/text
-   {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :learn-more
+   {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old :learn-more
                                               {:title   (i18n/label title)
                                                :content (i18n/label content)}])
     :style               (merge (styles/wizard-text) {:color colors/blue})

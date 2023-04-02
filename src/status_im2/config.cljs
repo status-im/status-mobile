@@ -138,6 +138,12 @@
    :url "#"
    :icons ["https://statusnetwork.com/img/press-kit-status-logo.svg"]})
 
+(def default-network-id
+  (get-in default-networks-by-id [default-network :config :NetworkId]))
+
+(def default-network-rpc-url
+  (get-in default-networks-by-id [default-network :config :UpstreamConfig :URL]))
+
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
 (def delete-message-undo-time-limit-ms 4000)

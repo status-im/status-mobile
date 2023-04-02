@@ -296,7 +296,7 @@ class UsernameOptions(Button):
 class UsernameCheckbox(Button):
     def __init__(self, driver, username):
         self.username = username
-        super().__init__(driver, xpath="//*[@text='%s']" % username)
+        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='checkbox-off']" % username)
 
     def click(self):
         try:

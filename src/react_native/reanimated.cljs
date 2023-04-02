@@ -16,7 +16,8 @@
                              cancelAnimation
                              SlideInUp
                              SlideOutUp
-                             LinearTransition)]
+                             LinearTransition
+                             runOnJS)]
             [reagent.core :as reagent]
             ["react-native-redash" :refer (withPause)]
             [react-native.flat-list :as rn-flat-list]
@@ -63,6 +64,8 @@
 (def with-sequence withSequence)
 (def with-pause withPause)
 (def cancel-animation cancelAnimation)
+
+(def run-on-js runOnJS)
 
 ;; Easings
 (def bezier (.-bezier ^js Easing))
