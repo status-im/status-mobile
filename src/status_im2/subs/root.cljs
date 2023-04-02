@@ -50,7 +50,6 @@
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :dimensions/window :dimensions/window)
-(reg-root-key-sub :kb-default-height :kb-default-height)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
 (reg-root-key-sub :animations :animations)
 (reg-root-key-sub :ui/search :ui/search)
