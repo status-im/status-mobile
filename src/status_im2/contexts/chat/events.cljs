@@ -306,28 +306,6 @@
                              :on-success #(rf/dispatch [:chat/mute-successfully chat-id])}]}))
 
 (rf/defn show-clear-history-confirmation
-<<<<<<< HEAD
-  {:events [:chat.ui/show-clear-history-confirmation]}
-  [_ chat-id]
-  {:ui/show-confirmation
-   {:title               (i18n/label :t/clear-history-title)
-    :content             (i18n/label :t/clear-history-confirmation-content)
-    :confirm-button-text (i18n/label :t/clear-history-action)
-    :on-accept           #(do
-                            (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
-
-(rf/defn show-remove-chat-confirmation
-  {:events [:chat.ui/show-remove-confirmation]}
-  [_ chat-id]
-  {:ui/show-confirmation
-   {:title               (i18n/label :t/delete-confirmation)
-    :content             (i18n/label :t/delete-chat-confirmation)
-    :confirm-button-text (i18n/label :t/delete)
-    :on-accept           #(do
-                            (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
-=======
          {:events [:chat.ui/show-clear-history-confirmation]}
          [_ chat-id]
          {:ui/show-confirmation
@@ -335,7 +313,7 @@
            :content             (i18n/label :t/clear-history-confirmation-content)
            :confirm-button-text (i18n/label :t/clear-history-action)
            :on-accept           #(do
-                                   (rf/dispatch [:bottom-sheet/hide])
+                                   (rf/dispatch [:hide-bottom-sheet])
                                    (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn show-remove-chat-confirmation
@@ -346,9 +324,8 @@
            :content             (i18n/label :t/delete-chat-confirmation)
            :confirm-button-text (i18n/label :t/delete)
            :on-accept           #(do
-                                   (rf/dispatch [:bottom-sheet/hide])
+                                   (rf/dispatch [:hide-bottom-sheet])
                                    (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
->>>>>>> e779f6b5b (updates)
 
 (rf/defn navigate-to-user-pinned-messages
          "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

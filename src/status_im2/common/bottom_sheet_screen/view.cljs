@@ -75,44 +75,9 @@
            [gesture/gesture-detector
             {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
             [rn/view {:style style/handle-container}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
              [rn/view {:style (style/handle)}]]]
            [content
             {:insets         insets
              :close          close
              :scroll-enabled @scroll-enabled
              :on-scroll      #(on-scroll % curr-scroll)}]]])))])
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 5ac874861 (qa)
->>>>>>> e363355c6 (qa)
-=======
->>>>>>> 13502ac3c (updates)
-             [rn/view {:style (style/handle)}]]
-            [content
-             {:close          close
-              :scroll-enabled @scroll-enabled
-              :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
-<<<<<<< HEAD
-=======
-             [rn/view {:style style/handle}]]
-<<<<<<< HEAD
-            (children close @scroll-enabled #(on-scroll % curr-scroll))]]])))])
->>>>>>> 52b8d487a (feat: bottom sheet screen)
-<<<<<<< HEAD
->>>>>>> fb1ba49a5 (feat: bottom sheet screen)
-=======
-=======
-            [content
-             {:close          close
-              :scroll-enabled @scroll-enabled
-              :on-scroll      #(on-scroll % curr-scroll)}]]]])))])
->>>>>>> 18f397b83 (review)
->>>>>>> e1051a659 (review)
-=======
->>>>>>> 13502ac3c (updates)
