@@ -89,7 +89,6 @@
       :on-press            (fn []
                              ;; TODO: album-selector issue:
                              ;; https://github.com/status-im/status-mobile/issues/15398
-<<<<<<< HEAD
                              (js/alert "currently disabled"))}
      ;(if photos?
      ;  (do
@@ -97,15 +96,6 @@
      ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
      ;  (rf/dispatch [:navigate-back]))
 
-=======
-                             (js/alert "currently disabled")
-                             ;(if photos?
-                             ;  (do
-                             ;    (reset! temporary-selected @selected)
-                             ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
-                             ;  (rf/dispatch [:navigate-back]))
-                             )}
->>>>>>> 13502ac3c (updates)
      [quo/text
       {:weight          :medium
        :ellipsize-mode  :tail
@@ -117,7 +107,6 @@
        {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))
 
 (defn photo-selector
-<<<<<<< HEAD
   [{:keys [scroll-enabled on-scroll]}]
 <<<<<<< HEAD
   [:f>
@@ -136,6 +125,7 @@
                 selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
                 selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
             (rn/use-effect
+<<<<<<< HEAD
              (fn []
                (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
                (if (seq selected-images)
@@ -210,6 +200,14 @@
 =======
 >>>>>>> 13502ac3c (updates)
 >>>>>>> 51f87a6d5 (updates)
+=======
+              (fn []
+                (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+                (if (seq selected-images)
+                  (reset! selected (vec (vals selected-images)))
+                  (reset! selected @temporary-selected)))
+              [selected-album])
+>>>>>>> 47bbed1b0 (rebase)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
