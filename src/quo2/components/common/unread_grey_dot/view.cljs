@@ -3,6 +3,7 @@
             [quo2.components.common.unread-grey-dot.style :as style]))
 
 (defn unread-grey-dot
-  []
+  [accessibility-label]
   [rn/view
-   {:style style/unread-grey-dot}])
+   (cond-> {:style style/unread-grey-dot}
+     accessibility-label (assoc :accessibility-label accessibility-label :accessible true))])
