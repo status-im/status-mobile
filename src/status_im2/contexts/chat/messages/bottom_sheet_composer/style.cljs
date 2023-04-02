@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.messages.composer-new.style
+(ns status-im2.contexts.chat.messages.bottom-sheet-composer.style
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [react-native.platform :as platform]
@@ -9,7 +9,7 @@
 (def actions-container-height 56)
 
 (defn container
-  [insets android-blur? focused? has-text?]
+  [insets android-blur? focused? text? images?]
   (let [focusing?  (if platform/ios? focused? (not android-blur?))]
   (merge
     {:border-top-left-radius  20
@@ -25,7 +25,7 @@
      ;:background-color        (colors/theme-colors colors/white colors/neutral-90)
      ;:background-color        "rgba(255,255,255,1)"
      ;:background-color        :black
-     :opacity                 (if (or focusing? has-text?) 1 (if platform/ios? 0.7 0.5))
+     :opacity                 (if (or focusing? text? images?) 1 (if platform/ios? 0.7 0.5))
      :z-index                 3
      :padding-bottom (:bottom insets)
      ;:padding-bottom          0
@@ -68,8 +68,8 @@
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
-          :right               (when (or (and focused? (not keyboard-shown)) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
-
+          ;:right               (when (or (and focused? (not keyboard-shown)) expanded? platform/ios?) 0) ; to inc gesture detection area on Android
+          :right               (when (or expanded? platform/ios?) 0) ; to inc gesture detection area on Android
           ;:overflow :hidden
           ;:padding-vertical 10
           ;:min-height input-height
@@ -161,6 +161,19 @@
      :top      0
      :left     0
      :right    0}))
+
+
+
+(defn record-audio-container
+  [insets]
+  {:align-items      :center
+   :background-color :transparent
+   :flex-direction   :row
+   ;:position         :absolute
+   ;:left             0
+   ;:right            0
+   ;:bottom           (- (:bottom insets) 7)
+   })
 
 
 

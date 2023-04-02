@@ -39,6 +39,18 @@
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
 
+(rf/defn set-input-content-height
+         {:events [:chat.ui/set-input-content-height]}
+         [{db :db} content-height chat-id]
+         (let [current-chat-id (or chat-id (:current-chat-id db))]
+           {:db (assoc-in db [:chat/inputs current-chat-id :input-content-height] content-height)}))
+
+(rf/defn set-input-focused
+         {:events [:chat.ui/set-input-focused]}
+         [{db :db} focused? chat-id]
+         (let [current-chat-id (or chat-id (:current-chat-id db))]
+           {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
+
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
   [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match public-key] :as user}]

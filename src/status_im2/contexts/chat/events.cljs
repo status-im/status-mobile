@@ -387,8 +387,3 @@
          {:events [:chat.ui/lightbox-scale]}
          [{:keys [db]} value]
          {:db (assoc db :lightbox/scale value)})
-
-(rf/defn kb-default-height
-         {:events [:kb-default-height]}
-         [{:keys [db]} value]
-         {:db (assoc db :kb-default-height value)})
