@@ -9,7 +9,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn empty?-nickname?
+(defn empty-nickname?
   [nickname]
   (string/blank? @nickname))
 
@@ -19,7 +19,7 @@
     (rf/dispatch [:hide-bottom-sheet])
     (rf/dispatch [:toasts/upsert
                   {:id         :add-nickname
-                   :icon       :correct
+                   :icon       :i/correct
                    :icon-color (colors/theme-colors colors/success-60 colors/success-50)
                    :text       (i18n/label
                                 :t/set-nickname-toast
@@ -78,7 +78,7 @@
 
         [quo/button
          {:type     :primary
-          :disabled (empty?-nickname? entered-nickname)
+          :disabled (empty-nickname? entered-nickname)
           :style    {:flex 0.48}
           :on-press (add-nickname-toast primary-name entered-nickname public-key)}
          title]]])))
