@@ -1584,7 +1584,7 @@
     "type-nickname": "Type nickname",
     "remove-nickname": "Remove nickname",
     "set-nickname-toast": "You have renamed {{primary-name}} as {{nickname}}",
-    "remove-nickname-toast": "You hae removed {{secondary-name}}'s nickname",
+    "remove-nickname-toast": "You have removed {{secondary-name}}'s nickname",
     "nickname-description": "Nicknames help you identify others in Status.\nOnly you can see the nicknames you’ve added",
     "accept": "Accept",
     "group-invite": "Group invite",
