@@ -3,10 +3,10 @@
             [react-native.platform :as platform]))
 
 (defn gradient-container
-  [insets]
+  [bottom-inset]
   {:left     0
    :right    0
-   :height   (+ (:bottom insets) (if platform/ios? 65 85))
+   :height   (+ bottom-inset (if platform/ios? 65 85))
    :position :absolute
    :bottom   0})
 
