@@ -31,7 +31,7 @@
 
 (def overlay-height 80)
 
-(def velocity-threshold (if platform/ios? -1000 -500))
+(def velocity-threshold -1000)
 
 ;;; CONTROLS
 (defn send-button
@@ -240,7 +240,6 @@
                lock-selection         (reagent/atom true)
                lock-layout?           (reagent/atom false)
                android-blur?          (reagent/atom true)
-               maximized?             (reagent/atom false)
                keyboard-show-listener (atom nil)
                keyboard-hide-listener (atom nil)
                add-keyboard-height    (atom nil)
@@ -249,7 +248,8 @@
                emojis-open            (reagent/atom false)]
            [:f>
             (fn []
-              (let [images         (rf/sub [:chats/sending-image])
+              (let [maximized?             (reagent/atom false)
+                    images         (rf/sub [:chats/sending-image])
                     {:keys [input-text input-content-height]} (rf/sub [:chats/current-chat-input])
                     content-height (reagent/atom (or input-content-height input-height))
                     {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
@@ -267,6 +267,7 @@
                     expanded?      (= (reanimated/get-shared-value height) max-height)]
                 (rn/use-effect
                   (fn []
+                    (js/setTimeout #(reset! lock-layout? true) 500)
                     (when-not @kb-default-height
                       (async-storage/get-item "kb-default-height" (fn [result] (reset! kb-default-height (when-not (= nil result) (js/parseInt result))))))
                     (when (and (empty? @text-value) (not= input-text nil))
@@ -344,7 +345,6 @@
                                                   (reset! cursor-position {:start (oops/oget e "nativeEvent.selection.end") :end (oops/oget e "nativeEvent.selection.end")})))
                       :on-focus               (fn []
                                                 (reset! focused? true)
-                                                (reset! lock-layout? true)
                                                 (when platform/android?
                                                   (reset! android-blur? false))
                                                 (js/setTimeout #(reset! lock-selection false) 300)
@@ -380,7 +380,6 @@
                                                   (reset! lock-selection true)
                                                   (when platform/android?
                                                     (reset! android-blur? true))
-                                                  (js/setTimeout #(reset! lock-layout? false) 500)
                                                   (reanimated/animate overlay-opacity 0)
                                                   (reset! overlay-z-index (if (= @overlay-z-index 1) -1 0))
                                                   (rf/dispatch [:chat.ui/set-input-focused false])))
@@ -422,7 +421,7 @@
                          :start  {:x 0 :y 1}
                          :end    {:x 0 :y 0}
                          :style  (style/text-overlay)}]])]
-                   [images/images-list @maximized? lock-layout?]
+                   [images/images-list @maximized?]
                    [actions input-ref text-value (seq images) height saved-height opacity bg-bottom window-height insets]]]]))]))])
 
 
