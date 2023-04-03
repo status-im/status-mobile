@@ -59,7 +59,7 @@
             (common/clear-pin)
             (common/hide-connection-sheet)
             (if (get-in db [:keycard :pin :puk-restore?])
-              (navigation/navigate-to-cofx :multiaccounts nil)
+              (navigation/navigate-to :multiaccounts nil)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))))
 
 (rf/defn change-pin
@@ -150,7 +150,7 @@
                                   :content (i18n/label :t/pin-changed)}}
               (common/hide-connection-sheet)
               (if puk-restore?
-                (navigation/navigate-to-cofx :multiaccounts nil)
+                (navigation/navigate-to :multiaccounts nil)
                 (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))
               (when (:multiaccounts/login db)
                 (common/get-keys-from-keycard)))))
@@ -211,5 +211,5 @@
                                        :sign         []
                                        :error-label  :t/pin-mismatch))}
                    (when (zero? pin-retries) (common/frozen-keycard-popup))
-                   (navigation/navigate-to-cofx :enter-pin-settings nil))
+                   (navigation/navigate-to :enter-pin-settings nil))
          (common/show-wrong-keycard-alert))))))

@@ -93,7 +93,7 @@
       [icons/icon :main-icons/arrow-right {:color colors/black}]]
      [react/touchable-highlight
       {:accessibility-label :select-account
-       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                  {:content (accounts/accounts-list accounts
                                                                                    dapps-account)}])}
       [chat-icon/custom-icon-view-list (:name dapps-account) (:color dapps-account) 32]]
@@ -112,7 +112,7 @@
         [icons/icon :main-icons/qr {:color colors/black}]]
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch
-                                [:bottom-sheet/show-sheet
+                                [:bottom-sheet/show-sheet-old
                                  {:content (options/browser-options
                                             url
                                             dapps-account
@@ -143,7 +143,7 @@
                     {:permissions (map resources-to-permissions-map resources)
                      :on-allowed  #(.answerPermissionRequest ^js webview-ref true resources)
                      :on-denied   #(.answerPermissionRequest ^js webview-ref false)})
-                   (re-frame/dispatch [:bottom-sheet/hide]))}
+                   (re-frame/dispatch [:bottom-sheet/hide-old]))}
       (i18n/label :t/allow)]]
     [react/view styles/blocked-access-button-wrapper
      [quo/button
@@ -151,7 +151,7 @@
        :style    styles/blocked-access-button
        :on-press (fn []
                    (.answerPermissionRequest ^js webview-ref false)
-                   (re-frame/dispatch [:bottom-sheet/hide]))}
+                   (re-frame/dispatch [:bottom-sheet/hide-old]))}
       (i18n/label :t/deny)]]]])
 
 (views/defview block-resources-panel
@@ -166,7 +166,7 @@
 (defn request-resources-access-for-page
   [resources url webview-ref]
   (re-frame/dispatch
-   [:bottom-sheet/show-sheet
+   [:bottom-sheet/show-sheet-old
     {:content            (fn [] [request-resources-panel resources url webview-ref])
      :show-handle?       false
      :backdrop-dismiss?  false
@@ -176,7 +176,7 @@
 (defn block-resources-access-and-notify-user
   [url]
   (.answerPermissionRequest ^js @webview-ref/webview-ref false)
-  (re-frame/dispatch [:bottom-sheet/show-sheet
+  (re-frame/dispatch [:bottom-sheet/show-sheet-old
                       {:content (fn [] [block-resources-panel url])}]))
 
 ;; should-component-update is called only when component's props are changed,

@@ -1,7 +1,7 @@
 (ns status-im.multiaccounts.key-storage.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
             [utils.i18n :as i18n]
@@ -22,7 +22,7 @@
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
   {:events [::key-and-storage-management-pressed]}
   [cofx]
-  (navigation/navigate-to-cofx
+  (navigation/navigate-to
    cofx
    (if (multiaccounts.model/logged-in? cofx)
      :actions-logged-in
@@ -60,7 +60,7 @@
   (rf/merge
    cofx
    {:db (assoc db :recovered-account? true)}
-   (navigation/navigate-to-cofx :seed-phrase nil)))
+   (navigation/navigate-to :seed-phrase nil)))
 
 (rf/defn seed-phrase-input-changed
   {:events [::seed-phrase-input-changed]}
@@ -85,7 +85,7 @@
   (let [backup? (get-in db [:keycard :creating-backup?])]
     (if backup?
       (keycard.backup/start-keycard-backup cofx)
-      (navigation/navigate-to-cofx cofx :storage nil))))
+      (navigation/navigate-to cofx :storage nil))))
 
 (defn validate-seed-against-key-uid
   "Check if the key-uid was generated with the given seed-phrase"
@@ -173,7 +173,7 @@ We don't need to take the exact steps, just set the required state and redirect 
 "
 (rf/defn import-multiaccount
   [{:keys [db] :as cofx}]
-  {:dispatch [:bottom-sheet/hide]
+  {:dispatch [:bottom-sheet/hide-old]
    ::multiaccounts.recover/import-multiaccount
    {:passphrase    (get-in db [:multiaccounts/key-storage :seed-phrase])
     :password      nil
@@ -183,7 +183,7 @@ We don't need to take the exact steps, just set the required state and redirect 
   {:events [::delete-multiaccount-and-init-keycard-onboarding]}
   [{:keys [db] :as cofx}]
   (rf/merge
-   {:dispatch [:bottom-sheet/hide]
+   {:dispatch [:bottom-sheet/hide-old]
     :db       (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] true)}
    (import-multiaccount)))
 
@@ -192,7 +192,7 @@ We don't need to take the exact steps, just set the required state and redirect 
   [{:keys [db] :as cofx}]
   (if (get-in db [:multiaccounts/key-storage :reset-db-checked?])
     (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning})
-    (bottom-sheet/show-bottom-sheet cofx {:view :migrate-account-password})))
+    (bottom-sheet/hide-bottom-sheet-old cofx)))
 
 (rf/defn skip-password-pressed
   {:events [::skip-password-pressed]}
@@ -248,14 +248,14 @@ We don't need to take the exact steps, just set the required state and redirect 
                      (dissoc :multiaccounts/key-storage))}
             (popover/hide-popover)
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+            (navigation/navigate-to :keycard-onboarding-intro nil)))
 
 (rf/defn goto-multiaccounts-screen
   {:events [::hide-popover-and-goto-multiaccounts-screen]}
   [cofx _]
   (rf/merge cofx
             (popover/hide-popover)
-            (navigation/navigate-to-cofx :multiaccounts nil)))
+            (navigation/navigate-to :multiaccounts nil)))
 
 (rf/defn confirm-logout-and-goto-key-storage
   {:events [::confirm-logout-and-goto-key-storage]}

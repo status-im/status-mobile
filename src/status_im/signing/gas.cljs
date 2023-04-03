@@ -1,7 +1,7 @@
 (ns status-im.signing.gas
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.popover.core :as popover]
@@ -277,7 +277,7 @@
                                                                    max-priority-fee})]
     (rf/merge cofx
               {:db (assoc db :signing/edit-fee edit-fee)}
-              (bottom-sheet/show-bottom-sheet {:view sheet-opts}))))
+              (bottom-sheet/show-bottom-sheet-old {:view sheet-opts}))))
 
 (rf/defn submit-fee
   {:events [:signing.edit-fee.ui/submit]}
@@ -300,14 +300,14 @@
                              :maxFeePerGas         (money/->wei :gwei (:value-number maxFeePerGas))
                              :maxPriorityFeePerGas (money/->wei :gwei
                                                                 (:value-number maxPriorityFeePerGas)))}
-                (bottom-sheet/hide-bottom-sheet)))))
+                (bottom-sheet/hide-bottom-sheet-old)))))
 
 (rf/defn submit-nonce
   {:events [:signing.nonce/submit]}
   [{db :db :as cofx} nonce]
   (rf/merge cofx
             {:db (assoc-in db [:signing/tx :nonce] (if (string/blank? nonce) nil nonce))}
-            (bottom-sheet/hide-bottom-sheet)))
+            (bottom-sheet/hide-bottom-sheet-old)))
 
 (re-frame/reg-fx
  :signing/update-gas-price

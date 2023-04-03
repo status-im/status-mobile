@@ -62,4 +62,4 @@
                 (not muted?)
                 (not (pos? (int mentions-count)))
                 unread-messages?)
-       [unread-grey-dot])]]])
+       [unread-grey-dot :unviewed-messages-public])]]])

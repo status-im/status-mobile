@@ -18,7 +18,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (js/setTimeout #(re-frame/dispatch event) 200))
 
 (defn list-item
@@ -30,7 +30,7 @@
         :on-press            #(re-frame/dispatch [:browser.ui/open-url url])
         :on-long-press       (fn []
                                (re-frame/dispatch
-                                [:bottom-sheet/show-sheet
+                                [:bottom-sheet/show-sheet-old
                                  {:content (fn []
                                              [react/view {:flex 1}
                                               [quo/list-item
@@ -109,7 +109,7 @@
      [quo/button
       {:accessibility-label :select-account
        :type                :scale
-       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                  {:content (accounts/accounts-list accounts
                                                                                    dapps-account)}])}
       [react/view (styles/dapps-account color)

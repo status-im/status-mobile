@@ -35,6 +35,10 @@
 (defn has-common-names [s] (pos? (count (filter #(string/includes? s %) common-names))))
 (def special-characters-regex (new js/RegExp #"[^a-zA-Z\d\s-._]" "i"))
 (defn has-special-characters [s] (re-find special-characters-regex s))
+(def min-length 5)
+(defn length-not-valid [s] (< (count (string/trim s)) min-length))
+(def valid-regex (new js/RegExp #"^[\w-\s]{5,24}$" "i"))
+(defn valid-name [s] (re-find valid-regex s))
 
 (defn validation-message
   [s]
@@ -47,6 +51,9 @@
     (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
     (has-common-names s)         (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
     (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (length-not-valid s)         (i18n/label :t/name-must-have-at-least-characters
+                                             {:min-chars min-length})
+    (not (valid-name s))         (i18n/label :t/name-is-not-valid)
     :else                        nil))
 
 (defn button-container
@@ -67,7 +74,7 @@
            validation-msg        (reagent/atom (validation-message @full-name))
            on-change-text        (fn [s]
                                    (reset! validation-msg (validation-message s))
-                                   (reset! full-name s))
+                                   (reset! full-name (string/trim s)))
            custom-color          (reagent/atom (or color c/profile-default-color))
            profile-pic           (reagent/atom image-path)
            on-change-profile-pic #(reset! profile-pic %)
@@ -106,12 +113,14 @@
                [quo/profile-input
                 {:customization-color @custom-color
                  :placeholder         (i18n/label :t/your-name)
-                 :on-press            #(rf/dispatch
-                                        [:bottom-sheet/show-sheet
-                                         {:override-theme :dark
-                                          :content
-                                          (fn []
-                                            [method-menu/view on-change-profile-pic])}])
+                 :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
+                                        (rf/dispatch
+                                         [:show-bottom-sheet
+                                          {:override-theme :dark
+                                           :content
+                                           (fn []
+                                             [method-menu/view on-change-profile-pic])}]))
                  :image-picker-props  {:profile-picture @profile-pic
                                        :full-name       @full-name}
                  :title-input-props   {:default-value  @full-name

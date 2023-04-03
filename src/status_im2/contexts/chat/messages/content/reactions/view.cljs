@@ -30,6 +30,6 @@
         {:on-press (fn []
                      (rf/dispatch [:dismiss-keyboard])
                      (rf/dispatch
-                      [:bottom-sheet/show-sheet
+                      [:show-bottom-sheet
                        {:content (fn [] [drawers/reactions
                                          {:chat-id chat-id :message-id message-id}])}]))}]])))

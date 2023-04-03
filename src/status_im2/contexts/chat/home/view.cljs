@@ -15,7 +15,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [status-im2.contexts.chat.home.style :as style]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im2.contexts.chat.sheets.view :as home.sheet]))
 
 (defn get-item-layout
   [_ index]
@@ -61,7 +62,7 @@
 (defn contact-item-render
   [{:keys [public-key] :as item}]
   (let [current-pk           (rf/sub [:multiaccount/public-key])
-        show-profile-actions #(rf/dispatch [:bottom-sheet/show-sheet
+        show-profile-actions #(rf/dispatch [:show-bottom-sheet
                                             {:content (fn [] [actions/contact-actions item])}])]
     [contact-list-item/contact-list-item
      (when (not= public-key current-pk)
@@ -119,8 +120,8 @@
              [common.home/top-nav]
              [common.home/title-column
               {:label               (i18n/label :t/messages)
-               :handler             #(rf/dispatch [:bottom-sheet/show-sheet :new-chat-bottom-sheet
-                                                   {}])
+               :handler             #(rf/dispatch [:show-bottom-sheet
+                                                   {:content home.sheet/new-chat-bottom-sheet}])
                :accessibility-label :new-chat-button}]
              [quo/discover-card
               {:title       (i18n/label :t/invite-friends-to-status)

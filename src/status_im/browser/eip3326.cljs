@@ -13,7 +13,7 @@
                             :messageId message-id
                             :error     {:code    4001
                                         :message "User rejected the request."}}
-   :dispatch               [:bottom-sheet/hide]})
+   :dispatch               [:bottom-sheet/hide-old]})
 
 (rf/defn handle-switch-ethereum-chain
   {:events [:eip3326/handle-switch-ethereum-chain]}
@@ -39,7 +39,7 @@
                                        :target-network-id target-network-id
                                        :network-from      network-from
                                        :network-to        network-to)]
-          {:dispatch [:bottom-sheet/show-sheet
+          {:dispatch [:bottom-sheet/show-sheet-old
                       {:content (fn []
                                   [sheet/permissions-panel dapp-name message-id params])}]}))
       {:browser/send-to-bridge {:type constants/web3-send-async-callback

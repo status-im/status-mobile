@@ -210,7 +210,7 @@
          :use-insets        true
          :extended-header   (profile-header/extended-header
                              {:on-press  on-share
-                              :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet
+                              :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                               {:content (edit/bottom-sheet
                                                                          has-picture)}])
                               :title     (multiaccounts/displayed-name account)

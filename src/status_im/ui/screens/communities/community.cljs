@@ -3,8 +3,7 @@
     [utils.i18n :as i18n]
     [quo.core :as quo]
     [quo.design-system.colors :as colors]
-    [quo2.components.community.style :as styles] ;; TODO reimplement with quo2 library and new
-                                                 ;; designs
+    [quo2.components.community.style :as styles]
     [quo2.components.navigation.floating-shell-button :as floating-shell-button]
     [react-native.core :as rn]
     [status-im.communities.core :as communities]
@@ -69,7 +68,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:bottom-sheet/hide-old])
   (rf/dispatch event))
 
 (defn community-plus-actions
@@ -173,7 +172,7 @@
                      (rf/dispatch [:dismiss-keyboard])
                      (rf/dispatch [:chat/navigate-to-chat chat-id])
                      (rf/dispatch [:search/home-filter-changed nil]))
-    :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+    :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet-old
                                   {:content (fn []
                                               [sheets/actions home-item])}])}])
 
@@ -292,7 +291,7 @@
              (when (or admin joined)
                [{:icon                :main-icons/more
                  :accessibility-label :community-menu-button
-                 :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                 :on-press            #(rf/dispatch [:bottom-sheet/show-sheet-old
                                                      {:content (fn []
                                                                  [community-actions community])}])}])}]
            (if joined
@@ -300,7 +299,7 @@
              [community-channel-preview-list id chats])
            (when admin
              [components.plus-button/plus-button-old
-              {:on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+              {:on-press            #(rf/dispatch [:bottom-sheet/show-sheet-old
                                                    {:content (fn []
                                                                [community-plus-actions community])}])
                :accessibility-label :new-chat-button}])

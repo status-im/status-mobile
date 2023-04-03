@@ -44,14 +44,14 @@
 
 (defn pick-pic
   [update-profile-pic-callback]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (show-image-picker
    #(update-profile-pic-callback (.-path ^js %))
    crop-opts))
 
 (defn take-pic
   [update-profile-pic-callback]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (show-image-picker-camera
    #(update-profile-pic-callback (.-path ^js %))
    crop-opts))

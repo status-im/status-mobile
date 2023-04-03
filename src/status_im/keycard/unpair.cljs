@@ -87,7 +87,7 @@
                                  :content (i18n/label :t/card-unpaired)}}
      (common/clear-on-card-connected)
      (remove-pairing-from-multiaccount nil)
-     (navigation/navigate-to-cofx :keycard-settings nil))))
+     (navigation/navigate-to :keycard-settings nil))))
 
 (rf/defn on-unpair-error
   {:events [:keycard.callback/on-unpair-error]}
@@ -103,7 +103,7 @@
              :utils/show-popup             {:title   ""
                                             :content (i18n/label :t/something-went-wrong)}}
             (common/clear-on-card-connected)
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (navigation/navigate-to :keycard-settings nil)))
 
 (rf/defn remove-key-with-unpair
   {:events [:keycard/remove-key-with-unpair]}

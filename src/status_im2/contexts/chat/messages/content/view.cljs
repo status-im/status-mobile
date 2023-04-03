@@ -79,9 +79,8 @@
 (defn on-long-press
   [message-data context]
   (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch [:bottom-sheet/show-sheet
-                {:content (drawers/reactions-and-actions message-data
-                                                         context)}]))
+  (rf/dispatch [:show-bottom-sheet
+                {:content (drawers/reactions-and-actions message-data context)}]))
 
 (defn user-message-content
   []

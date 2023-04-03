@@ -4,7 +4,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im2.common.bottom-sheet.events :as bottom-sheet]
+            [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
@@ -447,8 +447,8 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             (multiaccounts.create/prepare-intro-wizard)
-            (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :get-your-keys nil)))
+            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/navigate-to :get-your-keys nil)))
 
 (defn- more-sheet-content
   []

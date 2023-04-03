@@ -5,6 +5,7 @@
             [quo2.components.tags.permission-tag :as permission]
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
+            [quo.gesture-handler :as gesture-handler] ;;TODO move to quo2
             [react-native.core :as rn]))
 
 (defn community-stats
@@ -23,7 +24,7 @@
     members-count]])
 
 (defn community-stats-column
-  [type]
+  [{:keys [type]}]
   (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
     [rn/view
      (if (= type :card-view)
@@ -41,7 +42,9 @@
 
 (defn community-tags
   [tags]
-  [rn/view (style/community-tags-container)
+  [gesture-handler/scroll-view
+   {:shows-horizontal-scroll-indicator false
+    :horizontal                        true}
    (for [{:keys [name emoji]} tags]
      ^{:key name}
      [rn/view {:margin-right 8}

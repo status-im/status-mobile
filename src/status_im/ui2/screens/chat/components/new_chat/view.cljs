@@ -14,11 +14,6 @@
             [status-im.react-native.resources :as resources]
             [status-im2.common.contact-list-item.view :as contact-list-item]))
 
-(defn- hide-sheet-and-dispatch
-  [event]
-  (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch event))
-
 (defn- no-contacts-view
   []
   [rn/view
@@ -45,7 +40,7 @@
     (i18n/label :t/invite-friends)]
    [quo2/button
     {:type     :grey
-     :on-press #(hide-sheet-and-dispatch [:open-modal :new-contact])}
+     :on-press #(rf/dispatch [:open-modal :new-contact])}
     (i18n/label :t/add-a-contact)]])
 
 (defn contact-item-render
@@ -69,18 +64,17 @@
      (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
            selected-contacts-count           (rf/sub [:selected-contacts-count])
            selected-contacts                 (rf/sub [:group/selected-contacts])
-           window-height                     (rf/sub [:dimensions/window-height])
            one-contact-selected?             (= selected-contacts-count 1)
            contacts-selected?                (pos? selected-contacts-count)
            {:keys [primary-name public-key]} (when one-contact-selected?
                                                (rf/sub [:contacts/contact-by-identity
                                                         (first selected-contacts)]))
            no-contacts?                      (empty? contacts)]
-       [rn/view {:style {:height (* window-height 0.9)}}
+       [:<>
         [quo2/button
          {:type                      :grey
           :icon                      true
-          :on-press                  #(rf/dispatch [:bottom-sheet/hide])
+          :on-press                  #(rf/dispatch [:navigate-back])
           :style                     style/contact-selection-close
           :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
                                                                quo2.colors/neutral-90)}
@@ -117,10 +111,8 @@
             :accessibility-label :next-button
             :on-press            (fn []
                                    (if one-contact-selected?
-                                     (hide-sheet-and-dispatch [:chat.ui/start-chat
-                                                               public-key])
-                                     (hide-sheet-and-dispatch [:navigate-to
-                                                               :new-group])))}
+                                     (rf/dispatch [:chat.ui/start-chat public-key])
+                                     (rf/dispatch [:navigate-to :new-group])))}
            (if one-contact-selected?
              (i18n/label :t/chat-with {:selected-user primary-name})
              (i18n/label :t/setup-group-chat))])]))])

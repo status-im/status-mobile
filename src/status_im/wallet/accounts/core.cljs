@@ -37,7 +37,7 @@
                                          {:name (str "Account " path-num)}))]
     (rf/merge cofx
               {:db (assoc db :add-account (assoc add-account :account account))}
-              (navigation/navigate-to-cofx :add-new-account nil))))
+              (navigation/navigate-to :add-new-account nil))))
 
 (rf/defn new-account-error
   {:events [::new-account-error]}

@@ -13,3 +13,5 @@
 (def ^:const velocity-factor 0.5)
 
 (def ^:const default-duration 300)
+
+(def ^:const default-dimension 1000)

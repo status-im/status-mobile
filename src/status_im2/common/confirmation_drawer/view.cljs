@@ -61,7 +61,7 @@
           [quo/button
            {:type     :grey
             :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(rf/dispatch [:bottom-sheet/hide])}
+            :on-press #(rf/dispatch [:hide-bottom-sheet])}
            (or close-button-text (i18n/label :t/close))]
           [quo/button
            {:type     :danger

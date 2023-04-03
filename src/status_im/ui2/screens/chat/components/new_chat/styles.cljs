@@ -14,7 +14,8 @@
    :margin-left     20
    :margin-bottom   36
    :justify-content :center
-   :align-items     :center})
+   :align-items     :center
+   :margin-top      40})
 
 (def chat-button
   {:position   :absolute

@@ -1060,7 +1060,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_1.pinned_messages_list.message_element_by_text(
                 self.message_2).click_inside_element_by_coordinate()
             self.home_1.just_fyi("Unpin one message so that another could be pinned")
-            self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
+            self.chat_1.element_by_translation_id('unpin-from-chat').click()
             self.chat_1.chat_element_by_text(self.message_4).click()
             self.chat_1.pin_message(self.message_4, 'pin-to-chat')
             if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and

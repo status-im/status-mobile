@@ -3,7 +3,7 @@
     ["eth-phishing-detect" :as eth-phishing-detect]
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im2.common.bottom-sheet.events :as bottom-sheet]
+    [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.browser.eip3085 :as eip3085]
     [status-im.browser.eip3326 :as eip3326]
     [status-im.browser.permissions :as browser.permissions]
@@ -572,7 +572,7 @@
   [{:keys [db] :as cofx} address]
   (rf/merge cofx
             {:browser/clear-web-data nil}
-            (bottom-sheet/hide-bottom-sheet)
+            (bottom-sheet/hide-bottom-sheet-old)
             (browser.permissions/clear-dapps-permissions)
             (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)

@@ -35,10 +35,13 @@
 (reg-root-key-sub :shared-element-id :shared-element-id)
 
 
-;;bottom sheet
+;;bottom sheet old
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
 (reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
 (reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
+
+;;bottom sheet
+(reg-root-key-sub :bottom-sheet :bottom-sheet)
 
 ;;general
 (reg-root-key-sub :sync-state :sync-state)

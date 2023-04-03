@@ -28,7 +28,7 @@
                     :on-success #(re-frame/dispatch [:eip3085/send-success-call-to-bridge cofx id
                                                      message-id])
                     :on-error   #(log/error "failed to perform settings_saveSetting" %)}]
-   :dispatch      [:bottom-sheet/hide]})
+   :dispatch      [:bottom-sheet/hide-old]})
 
 (rf/defn deny-permission
   {:events [:eip3085.ui/dapp-permission-denied]}
@@ -37,7 +37,7 @@
                             :messageId message-id
                             :error     {:code    4001
                                         :message "User rejected the request."}}
-   :dispatch               [:bottom-sheet/hide]})
+   :dispatch               [:bottom-sheet/hide-old]})
 
 (rf/defn handle-add-ethereum-chain
   {:events [:eip3085/handle-add-ethereum-chain]}
@@ -64,7 +64,7 @@
                                                               :id           id
                                                               :new-network  network)]
         (if (network/chain-id-available? networks network)
-          {:dispatch [:bottom-sheet/show-sheet
+          {:dispatch [:bottom-sheet/show-sheet-old
                       {:content (fn []
                                   [sheet/permissions-panel dapp-name message-id params])}]}
           (send-success-call-to-bridge cofx id message-id)))

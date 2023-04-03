@@ -1,56 +1,36 @@
 (ns status-im2.common.bottom-sheet.styles
   (:require [quo2.foundations.colors :as colors]))
 
-(def border-radius 20)
-
 (defn handle
   [override-theme]
-  {:position         :absolute
-   :top              8
-   :width            32
+  {:width            32
    :height           4
    :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
-   :opacity          0.1
+   :opacity          0.05
    :border-radius    100
-   :align-self       :center})
+   :align-self       :center
+   :margin-vertical  8})
 
-(def backdrop
-  {:position         :absolute
-   :left             0
-   :right            0
-   :bottom           0
-   :top              0
-   :background-color colors/neutral-100})
-
-(def container
-  {:position :absolute
-   :left     0
-   :right    0
-   :top      0
-   :bottom   0
-   :overflow :hidden})
-
-(defn content-style
-  [insets bottom-safe-area-spacing?]
-  {:position       :absolute
-   :left           0
-   :right          0
-   :top            0
-   :padding-top    border-radius
-   :padding-bottom (if bottom-safe-area-spacing? (:bottom insets) 0)})
-
-(defn selected-background
-  [override-theme]
-  {:border-radius     12
-   :padding-left      12
-   :margin-horizontal 8
-   :margin-bottom     10
-   :height            48
-   :background-color  (colors/theme-colors colors/white colors/neutral-90 override-theme)})
-
-(defn background
-  [override-theme]
-  {:background-color        (colors/theme-colors colors/white colors/neutral-95 override-theme)
+(defn sheet
+  [{:keys [top bottom]} window-height override-theme]
+  {:position                :absolute
+   :max-height              (- window-height top 20)
+   :z-index                 1
+   :bottom                  0
+   :left                    0
+   :right                   0
+   :border-top-left-radius  20
+   :border-top-right-radius 20
    :flex                    1
-   :border-top-left-radius  border-radius
-   :border-top-right-radius border-radius})
+   :padding-bottom          (max 20 bottom)
+   :background-color        (colors/theme-colors colors/white colors/neutral-90 override-theme)})
+
+(defn selected-item
+  [override-theme]
+  {:position          :absolute
+   :bottom            10
+   :left              0
+   :right             0
+   :border-radius     12
+   :margin-horizontal 8
+   :background-color  (colors/theme-colors colors/white colors/neutral-90 override-theme)})

@@ -36,7 +36,7 @@
         (rf/merge cofx
                   {:utils/show-popup {:title   (i18n/label :t/error)
                                       :content (i18n/label :t/something-went-wrong)}}
-                  (navigation/navigate-to-cofx :keycard-authentication-method nil))))))
+                  (navigation/navigate-to :keycard-authentication-method nil))))))
 
 (rf/defn load-preparing-screen
   {:events [:keycard/load-preparing-screen]}
@@ -120,7 +120,7 @@
   [cofx]
   (rf/merge cofx
             (recovery-phrase-start-confirmation)
-            (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase-confirm-word1 nil)))
+            (navigation/navigate-to :keycard-onboarding-recovery-phrase-confirm-word1 nil)))
 
 (rf/defn recovery-phrase-next-word
   [{:keys [db]}]
@@ -143,7 +143,7 @@
                                     :on-verified :keycard/generate-and-load-key
                                     :current     []})
                          (assoc-in [:keycard :setup-step] :loading-keys))}
-                (navigation/navigate-to-cofx :keycard-onboarding-pin nil))
+                (navigation/navigate-to :keycard-onboarding-pin nil))
       (load-finishing-screen cofx))))
 
 (rf/defn recovery-phrase-confirm-word-next-pressed
@@ -178,10 +178,10 @@
     (rf/merge cofx
               {:keycard/check-nfc-enabled nil}
               (if (= flow :import)
-                (navigation/navigate-to-cofx :keycard-recovery-intro nil)
+                (navigation/navigate-to :keycard-recovery-intro nil)
                 (do
                   (common/listen-to-hardware-back-button)
-                  (navigation/navigate-to-cofx :keycard-onboarding-intro nil))))))
+                  (navigation/navigate-to :keycard-onboarding-intro nil))))))
 
 (rf/defn start-onboarding-flow
   {:events [:keycard/start-onboarding-flow]}
@@ -190,7 +190,7 @@
             {:db                        (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+            (navigation/navigate-to :keycard-onboarding-intro nil)))
 
 (rf/defn open-nfc-settings-pressed
   {:events [:keycard.onboarding.nfc-on/open-nfc-settings-pressed]}

@@ -80,7 +80,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
 
 (defview connectivity-sheet
@@ -187,6 +187,6 @@
       [quo/button
        {:type                :icon
         :accessibility-label (str "conn-button-" (name icon))
-        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                   {:content connectivity-sheet}])
         :theme               (if (= (:peers state) :offline) :negative :secondary)} icon])))

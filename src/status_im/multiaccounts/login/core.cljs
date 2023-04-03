@@ -621,12 +621,12 @@
     (if password
       (rf/merge
        cofx
-       {:db           (update-in db
-                                 [:multiaccounts/login]
-                                 assoc
-                                 :password       password
-                                 :save-password? true)
-        :init-root-fx :progress}
+       {:db       (update-in db
+                             [:multiaccounts/login]
+                             assoc
+                             :password       password
+                             :save-password? true)
+        :set-root :progress}
        login)
       (rf/merge
        cofx
@@ -636,10 +636,10 @@
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
-          {:init-root-fx :multiaccounts-keycard}
-          {:init-root-fx :profiles})
+          {:set-root :multiaccounts-keycard}
+          {:set-root :profiles})
        #(when goto-key-storage?
-          (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))
+          (navigation/navigate-to % :actions-not-logged-in nil))))))
 
 (rf/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -725,7 +725,7 @@
 (rf/defn welcome-lets-go
   {:events [:welcome-lets-go]}
   [_]
-  {:init-root-fx :shell-stack})
+  {:set-root :shell-stack})
 
 (rf/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}
@@ -738,7 +738,7 @@
      cofx
      (merge
       {:db (update db :keycard dissoc :application-info)}
-      (when keycard-multiaccount? {:navigate-to-fx :keycard-login-pin}))
+      (when keycard-multiaccount? {:navigate-to :keycard-login-pin}))
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (rf/defn hide-keycard-banner

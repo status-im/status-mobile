@@ -23,7 +23,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
 
 (defn custom-token-actions-view
@@ -65,7 +65,7 @@
         :on-press            #(re-frame/dispatch
                                [:wallet.settings/toggle-visible-token (keyword symbol) (not checked?)])
         :on-long-press       #(re-frame/dispatch
-                               [:bottom-sheet/show-sheet
+                               [:bottom-sheet/show-sheet-old
                                 {:content (custom-token-actions-view token)}])}])}))
 
 (defn- render-token-wrapper

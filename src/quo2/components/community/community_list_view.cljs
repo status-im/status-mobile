@@ -27,7 +27,7 @@
     [counter/counter {:type :default} unread-mentions-count]
 
     unread-messages?
-    [unread-grey-dot]))
+    [unread-grey-dot :unviewed-messages-public]))
 
 (defn communities-list-view-item
   [props
@@ -46,7 +46,7 @@
     (merge {:style {:height        56
                     :border-radius 16}}
            props)
-    [rn/view {:flex 1}
+    [rn/view {:style style/detail-container}
      [rn/view (style/list-info-container)
       [community-icon/community-icon
        {:images community-icon} 32]
@@ -64,7 +64,8 @@
                                          colors/neutral-40
                                          colors/neutral-60))}}
         name]
-       [community-view/community-stats-column :list-view]]
+       [community-view/community-stats-column
+        {:type :list-view}]]
       (if (= status :gated)
         [community-view/permission-tag-container
          {:locked? locked?

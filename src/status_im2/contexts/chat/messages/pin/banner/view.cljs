@@ -21,6 +21,6 @@
       :pins-count      pins-count
       :on-press        (fn []
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}]))
+                         (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}]))
 
 
