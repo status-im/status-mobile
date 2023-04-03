@@ -9,10 +9,6 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn empty-nickname?
-  [nickname]
-  (string/blank? nickname))
-
 (defn add-nickname-toast
   [primary-name entered-nickname public-key]
   (rf/dispatch [:hide-bottom-sheet])
@@ -27,13 +23,13 @@
   (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)]))
 
 (defn nickname-drawer
-  [{:keys [title description contact accessibility-label
-           close-button-text]}]
+  [{:keys [contact]}]
   (let [{:keys [primary-name nickname public-key]} contact
         entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (when-not (empty? (:images contact))
                                                      (rf/sub [:chats/photo-path public-key]))]
-    (fn []
+    (fn [{:keys [title description accessibility-label
+                 close-button-text]}]
       [rn/view
        {:style               style/nickname-container
         :accessibility-label accessibility-label}
@@ -77,7 +73,7 @@
 
         [quo/button
          {:type     :primary
-          :disabled (empty-nickname? @entered-nickname)
+          :disabled (string/blank? @entered-nickname)
           :style    {:flex 0.48}
           :on-press #(add-nickname-toast primary-name @entered-nickname public-key)}
          title]]])))
