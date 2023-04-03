@@ -7,8 +7,9 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [quo2.components.qr-code.qr :as qr]
+            [status-im2.common.qr-code.qr :as qr]
             [clojure.string :as string]
+            [status-im2.constants :as const]
             ;;TODO(siddarthkay) : move the components below over to status-im2 ns
             ;; issue -> https://github.com/status-im/status-mobile/issues/15549
             [status-im.ui.components.list-selection :as list-selection]
@@ -46,7 +47,7 @@
         emoji-hash                (string/join "" (get multiaccount :emoji-hash))
         qr-size                   (- window-width 64)
         public-pk                 (get multiaccount :public-key)
-        profile-qr-url            (str "https://join.status.im/u/" public-pk)
+        profile-qr-url            (str const/status-profile-base-url public-pk)
         port                      (rf/sub [:mediaserver/port])
         key-uid                   (get multiaccount :key-uid)
         emoji-hash-max-width      (* window-width 0.76)
