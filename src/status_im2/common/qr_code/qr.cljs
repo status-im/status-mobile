@@ -1,9 +1,10 @@
-(ns quo2.components.qr-code.qr
-  (:require [react-native.core :as rn]))
+(ns status-im2.common.qr-code.qr
+  (:require [react-native.core :as rn]
+            [status-im2.constants :as const]))
 
 (defn user-profile-qr-code
   [{:keys [key-uid public-key port qr-size]}]
-  (let [profile-qr-url         (str "https://join.status.im/u/" public-key)
+  (let [profile-qr-url         (str const/status-profile-base-url public-key)
         base-64-qr-url         (js/btoa profile-qr-url)
         profile-image-type     "large"
         error-correction-level 4
