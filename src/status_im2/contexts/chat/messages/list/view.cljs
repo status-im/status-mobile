@@ -115,7 +115,7 @@
        :header                       [list-header chat]
        :footer                       [list-footer chat]
        :data                         messages
-       :render-data                  render-data
+       :render-data                  render-data ;; TODO: What does this key do?
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
