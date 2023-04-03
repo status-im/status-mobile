@@ -24,7 +24,7 @@
                    :text       (i18n/label
                                 :t/set-nickname-toast
                                 {:primary-name primary-name
-                                 :nickname     (string/trim @entered-nickname)})}])
+                                 :nickname     (string/trim entered-nickname)})}])
     (rf/dispatch [:contacts/update-nickname public-key (string/trim @entered-nickname)])))
 
 (defn nickname-drawer
@@ -59,7 +59,7 @@
          :max-length        32
          :on-change-text    (fn [nickname]
                               (reset! entered-nickname nickname))
-         :on-submit-editing (add-nickname-toast primary-name entered-nickname public-key)}]
+         :on-submit-editing (add-nickname-toast primary-name @entered-nickname public-key)}]
        [rn/view
         {:style style/nickname-description-container}
         [icons/icon :i/info
