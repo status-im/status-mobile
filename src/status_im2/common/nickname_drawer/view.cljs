@@ -11,27 +11,27 @@
 
 (defn empty-nickname?
   [nickname]
-  (string/blank? @nickname))
+  (string/blank? nickname))
 
 (defn add-nickname-toast
   [primary-name entered-nickname public-key]
-  (fn []
-    (rf/dispatch [:hide-bottom-sheet])
-    (rf/dispatch [:toasts/upsert
-                  {:id         :add-nickname
-                   :icon       :i/correct
-                   :icon-color (colors/theme-colors colors/success-60 colors/success-50)
-                   :text       (i18n/label
-                                :t/set-nickname-toast
-                                {:primary-name primary-name
-                                 :nickname     (string/trim entered-nickname)})}])
-    (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)])))
+  (prn entered-nickname)
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch [:toasts/upsert
+                {:id         :add-nickname
+                 :icon       :i/correct
+                 :icon-color (colors/theme-colors colors/success-60 colors/success-50)
+                 :text       (i18n/label
+                              :t/set-nickname-toast
+                              {:primary-name primary-name
+                               :nickname     (string/trim entered-nickname)})}])
+  (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)]))
 
 (defn nickname-drawer
   [{:keys [title description contact accessibility-label
            close-button-text]}]
   (let [{:keys [primary-name nickname public-key]} contact
-        entered-nickname                           (reagent/atom nickname)
+        entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (when-not (empty? (:images contact))
                                                      (rf/sub [:chats/photo-path public-key]))]
     (fn []
@@ -59,7 +59,7 @@
          :max-length        32
          :on-change-text    (fn [nickname]
                               (reset! entered-nickname nickname))
-         :on-submit-editing (add-nickname-toast primary-name @entered-nickname public-key)}]
+         :on-submit-editing #(add-nickname-toast primary-name @entered-nickname public-key)}]
        [rn/view
         {:style style/nickname-description-container}
         [icons/icon :i/info
@@ -78,7 +78,7 @@
 
         [quo/button
          {:type     :primary
-          :disabled (empty-nickname? entered-nickname)
+          :disabled (empty-nickname? @entered-nickname)
           :style    {:flex 0.48}
-          :on-press (add-nickname-toast primary-name entered-nickname public-key)}
+          :on-press #(add-nickname-toast primary-name @entered-nickname public-key)}
          title]]])))
