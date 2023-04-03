@@ -41,13 +41,12 @@
      :size 32} :i/reaction]])
 
 (defn image-button
-  [insets]
+  [bottom-inset]
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
                  {:permissions [:read-external-storage :write-external-storage]
-                  :on-allowed  #(rf/dispatch
-                                 [:open-modal :photo-selector {:insets insets}])
+                  :on-allowed  #(rf/dispatch [:open-modal :photo-selector {:bottom-inset bottom-inset}])
                   :on-denied   (fn []
                                  (background-timer/set-timeout
                                   #(utils-old/show-popup (i18n/label :t/error)
