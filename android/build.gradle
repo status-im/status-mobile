@@ -13,13 +13,12 @@ ext {
     gradlePluginVersion = project.gradlePluginVersion
 }
 
-import im.status.DepName
-def depNames = new ArrayList<DepName>()
+def depsSet = new TreeSet<String>()
 
 task printDependencies {
     doLast {
         println("The compileOnlyList \n ---------")
-        println(depNames)
+        println(depsSet)
     }
 }
 
@@ -60,12 +59,12 @@ allprojects {
     }
 
     afterEvaluate {
-        println project.name
-        project.configurations.findAll {
-            if (it.canBeResolved) {
-                println it.name
-                it.resolvedConfiguration.resolvedArtifacts.each {d ->
-                    println "\t\t" + d.file.name
+        project.configurations.all { config ->
+            if (!config.name.toLowerCase().startsWith('test')) {
+                config.allDependencies.all { dep ->
+                    if (dep.group && dep.name && dep.version) {
+                        depsSet.add("${dep.group}:${dep.name}:${dep.version}")
+                    }
                 }
             }
         }
