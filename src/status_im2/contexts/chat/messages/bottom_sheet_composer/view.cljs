@@ -245,10 +245,11 @@
                add-keyboard-height    (atom nil)
                saved-keyboard-height  (atom nil)
                margin-top             (if platform/ios? (:top insets) (+ (:top insets) 10))
-               emojis-open            (reagent/atom false)]
+               emojis-open            (reagent/atom false)
+               maximized?             (reagent/atom false)]
            [:f>
             (fn []
-              (let [maximized?             (reagent/atom false)
+              (let [
                     images         (rf/sub [:chats/sending-image])
                     {:keys [input-text input-content-height]} (rf/sub [:chats/current-chat-input])
                     content-height (reagent/atom (or input-content-height input-height))
