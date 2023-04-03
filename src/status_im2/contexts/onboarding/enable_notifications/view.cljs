@@ -41,22 +41,23 @@
 
 (defn enable-notification-buttons
   []
-  [rn/view {:style style/enable-notifications-buttons}
-   [quo/button
-    {:on-press                  (fn []
-                                  (rf/dispatch [::notifications/switch true platform/ios?])
-                                  (rf/dispatch [:init-root :welcome]))
-     :type                      :primary
-     :before                    :i/notifications
-     :accessibility-label       :enable-notifications-button
-     :override-background-color (colors/custom-color :magenta 60)}
-    (i18n/label :t/intro-wizard-title6)]
-   [quo/button
-    {:on-press                  #(rf/dispatch [:init-root :welcome])
-     :accessibility-label       :enable-notifications-later-button
-     :override-background-color colors/white-opa-5
-     :style                     {:margin-top 12}}
-    (i18n/label :t/maybe-later)]])
+  (let [{profile-color :color} (rf/sub [:onboarding-2/profile])]
+    [rn/view {:style style/enable-notifications-buttons}
+     [quo/button
+      {:on-press                  (fn []
+                                    (rf/dispatch [::notifications/switch true platform/ios?])
+                                    (rf/dispatch [:init-root :welcome]))
+       :type                      :primary
+       :before                    :i/notifications
+       :accessibility-label       :enable-notifications-button
+       :override-background-color (colors/custom-color profile-color 60)}
+      (i18n/label :t/intro-wizard-title6)]
+     [quo/button
+      {:on-press                  #(rf/dispatch [:init-root :welcome])
+       :accessibility-label       :enable-notifications-later-button
+       :override-background-color colors/white-opa-5
+       :style                     {:margin-top 12}}
+      (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications
   []
