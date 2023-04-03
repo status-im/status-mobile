@@ -5,11 +5,12 @@
    :lifestyle               (js/require "../resources/images/ui2/lifestyle.png")
    :music                   (js/require "../resources/images/ui2/music.png")
    :podcasts                (js/require "../resources/images/ui2/podcasts.png")
-   :sync-device             (js/require "../resources/images/ui2/sync-new-device-cover-background.png")
-   :generate-keys           (js/require "../resources/images/ui2/generate_keys.png")
-   :ethereum-address        (js/require "../resources/images/ui2/ethereum_address.png")
+   :generate-keys           (js/require "../resources/images/ui2/generate-keys.png")
+   :ethereum-address        (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard             (js/require "../resources/images/ui2/keycard.png")
-   :onboarding-illustration (js/require "../resources/images/ui2/onboarding_illustration.png")})
+   :onboarding-illustration (js/require "../resources/images/ui2/onboarding_illustration.png")
+   :qr-code                 (js/require "../resources/images/ui2/qr-code.png")
+  })
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")
