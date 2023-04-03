@@ -6,6 +6,7 @@
     [quo2.components.inputs.title-input.view :as title-input]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.hole-view :as hole-view]))
 
 (defn profile-input
@@ -18,20 +19,29 @@
     [rn/view
      {:style (style/container customization-color)}
      [rn/view
-      [hole-view/hole-view
-       {:holes [{:x            33
-                 :y            23
-                 :width        24
-                 :height       24
-                 :borderRadius 12}]}
-       [user-avatar/user-avatar
-        (assoc image-picker-props
-               :customization-color customization-color
-               :full-name           (if (seq full-name)
-                                      full-name
-                                      placeholder)
-               :status-indicator?   false
-               :size                :medium)]]
+      (if platform/ios?
+        [hole-view/hole-view
+         {:holes [{:x            33
+                   :y            23
+                   :width        24
+                   :height       24
+                   :borderRadius 12}]}
+         [user-avatar/user-avatar
+          (assoc image-picker-props
+                 :customization-color customization-color
+                 :full-name           (if (seq full-name)
+                                        full-name
+                                        placeholder)
+                 :status-indicator?   false
+                 :size                :medium)]]
+        [user-avatar/user-avatar
+         (assoc image-picker-props
+                :customization-color customization-color
+                :full-name           (if (seq full-name)
+                                       full-name
+                                       placeholder)
+                :status-indicator?   false
+                :size                :medium)])
       [buttons/button
        {:accessibility-label       :select-profile-picture-button
         :type                      :grey
