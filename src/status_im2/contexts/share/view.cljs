@@ -44,7 +44,7 @@
 (defn profile-tab
   [window-width]
   (let [multiaccount              (rf/sub [:multiaccount])
-        emoji-hash                (string/join "" (get multiaccount :emoji-hash))
+        emoji-hash                (string/join (get multiaccount :emoji-hash))
         qr-size                   (- window-width 64)
         public-pk                 (get multiaccount :public-key)
         profile-qr-url            (str const/status-profile-base-url public-pk)
@@ -138,27 +138,31 @@
 (defn view
   []
   (let [selected-tab (reagent/atom profile-tab-id)]
-    [safe-area/consumer
-     (fn [{:keys [top bottom]}]
-       (let [window-width (rf/sub [:dimensions/window-width])]
-         [rn/view {:style (style/screen-container window-width top bottom)}
-          [header]
-          [rn/view {:style style/tabs-container}
-           [quo/segmented-control
-            {:size                28
-             :scrollable?         true
-             :blur?               true
-             :override-theme      :dark
-             :style               style/tabs
-             :fade-end-percentage 0.79
-             :scroll-on-press?    true
-             :fade-end?           true
-             :on-change           #(reset! selected-tab %)
-             :default-active      @selected-tab
-             :data                [{:id    profile-tab-id
-                                    :label (i18n/label :t/profile)}
-                                   {:id    wallet-tab-id
-                                    :label (i18n/label :t/wallet)}]}]]
-          (if (= @selected-tab profile-tab-id)
-            [profile-tab window-width]
-            [wallet-tab])]))]))
+    (fn[]
+      [safe-area/consumer
+       (fn [{:keys [top bottom]}]
+         (let [window-width (rf/sub [:dimensions/window-width])]
+           [rn/view {:style (style/screen-container window-width top bottom)}
+            [header]
+            [rn/view {:style style/tabs-container}
+             [quo/segmented-control
+              {:size                28
+               :scrollable?         true
+               :blur?               true
+               :override-theme      :dark
+               :style               style/tabs
+               :fade-end-percentage 0.79
+               :scroll-on-press?    true
+               :fade-end?           true
+               :on-change           #(reset! selected-tab %)
+               :default-active      @selected-tab
+               :data                [{:id    profile-tab-id
+                                      :label (i18n/label :t/profile)}
+                                     {:id    wallet-tab-id
+                                      :label (i18n/label :t/wallet)}]}]]
+            (if (= @selected-tab profile-tab-id)
+              [profile-tab window-width]
+              [wallet-tab])]))]
+
+      )
+    ))
