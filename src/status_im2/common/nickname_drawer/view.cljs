@@ -15,7 +15,6 @@
 
 (defn add-nickname-toast
   [primary-name entered-nickname public-key]
-  (prn entered-nickname)
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch [:toasts/upsert
                 {:id         :add-nickname
