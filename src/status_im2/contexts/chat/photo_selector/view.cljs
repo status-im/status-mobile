@@ -109,6 +109,7 @@
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll]}]
 <<<<<<< HEAD
+<<<<<<< HEAD
   [:f>
    (let [{:keys [bottom-inset]} (rf/sub [:screen-params]) ; TODO:
                                                           ; https://github.com/status-im/status-mobile/issues/15535
@@ -159,12 +160,26 @@
 >>>>>>> 46b746724 (review)
 <<<<<<< HEAD
 =======
+=======
+  [:f>
+   (let [
+         ;{:keys [bottom-inset]} (rf/sub [:screen-params]) ; TODO:
+         bottom-inset (if platform/ios? 34 0)
+         ; https://github.com/status-im/status-mobile/issues/15535
+         temporary-selected     (reagent/atom [])] ; used when switching albums
+     (fn []
+       (let [selected        (reagent/atom [])     ; currently selected
+             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
+             selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+         (rn/use-effect
+>>>>>>> 5cf992597 (updates)
            (fn []
              (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
              (if (seq selected-images)
                (reset! selected (vec (vals selected-images)))
                (reset! selected @temporary-selected)))
            [selected-album])
+<<<<<<< HEAD
 >>>>>>> 51f87a6d5 (updates)
          [bottom-sheet-screen/view
           (fn [{:keys [scroll-enabled on-scroll]}]
@@ -208,6 +223,10 @@
                   (reset! selected @temporary-selected)))
               [selected-album])
 >>>>>>> 47bbed1b0 (rebase)
+=======
+         [:f>
+          (fn []
+>>>>>>> 5cf992597 (updates)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
@@ -216,6 +235,7 @@
               [:<>
                [rn/view
                 {:style style/buttons-container}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -238,6 +258,9 @@
 >>>>>>> 51f87a6d5 (updates)
                 [album-title true selected-album selected temporary-selected insets]
 >>>>>>> 7c3fd5384 (feat: bottom sheet screen)
+=======
+                [album-title true selected-album selected temporary-selected]
+>>>>>>> 5cf992597 (updates)
                 [clear-button selected]]
                [gesture/flat-list
                 {:key-fn                  identity
