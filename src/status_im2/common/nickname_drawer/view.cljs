@@ -25,7 +25,7 @@
                                 :t/set-nickname-toast
                                 {:primary-name primary-name
                                  :nickname     (string/trim entered-nickname)})}])
-    (rf/dispatch [:contacts/update-nickname public-key (string/trim @entered-nickname)])))
+    (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)])))
 
 (defn nickname-drawer
   [{:keys [title description contact accessibility-label
