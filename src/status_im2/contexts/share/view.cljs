@@ -48,10 +48,10 @@
     [:<>
      [rn/view {:style style/qr-code-container}
       [qr/user-profile-qr-code
-       {:key-uid      key-uid
-        :qr-size      qr-size
-        :public-key   public-pk
-        :port         port}]
+       {:key-uid    key-uid
+        :qr-size    qr-size
+        :public-key public-pk
+        :port       port}]
       [rn/view {:style style/profile-address-container}
        [rn/view {:style style/profile-address-column}
         [quo/text
