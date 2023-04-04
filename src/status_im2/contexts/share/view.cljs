@@ -38,15 +38,13 @@
 
 (defn profile-tab
   [window-width]
-  (let [multiaccount              (rf/sub [:multiaccount])
-        emoji-hash                (string/join (get multiaccount :emoji-hash))
-        qr-size                   (- window-width 64)
-        public-pk                 (get multiaccount :public-key)
-        profile-qr-url            (str const/status-profile-base-url public-pk)
-        port                      (rf/sub [:mediaserver/port])
-        key-uid                   (get multiaccount :key-uid)
-        emoji-hash-max-width      (* window-width 0.76)
-        link-to-profile-max-width (* window-width 0.70)]
+  (let [multiaccount   (rf/sub [:multiaccount])
+        emoji-hash     (string/join (get multiaccount :emoji-hash))
+        qr-size        (- window-width 64)
+        public-pk      (get multiaccount :public-key)
+        profile-qr-url (str const/status-profile-base-url public-pk)
+        port           (rf/sub [:mediaserver/port])
+        key-uid        (get multiaccount :key-uid)]
     [:<>
      [rn/view {:style style/qr-code-container}
       [qr/user-profile-qr-code
@@ -55,7 +53,7 @@
         :qr-size      qr-size
         :public-key   public-pk
         :port         port}]
-      [rn/view {:style (style/profile-address-container qr-size)}
+      [rn/view {:style style/profile-address-container}
        [rn/view {:style style/profile-address-column}
         [quo/text
          {:size   :paragraph-2
@@ -71,7 +69,7 @@
           :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url
                                            (i18n/label :t/link-to-profile-copied)])}
          [quo/text
-          {:style           (style/profile-address-content link-to-profile-max-width)
+          {:style           style/profile-address-content
            :size            :paragraph-1
            :weight          :medium
            :ellipsize-mode  :middle
@@ -103,8 +101,8 @@
                                            (i18n/label :t/emoji-hash-copied)])
           :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
                                            (i18n/label :t/emoji-hash-copied)])}
-         [rn/text {:style (style/emoji-hash-content emoji-hash-max-width)} emoji-hash]]]]
-      [rn/view {:style style/share-button-container}
+         [rn/text {:style style/emoji-hash-content} emoji-hash]]]]
+      [rn/view {:style style/emoji-share-button-container}
        [quo/button
         {:icon                true
          :type                :blur-bg
