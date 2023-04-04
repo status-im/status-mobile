@@ -21,6 +21,7 @@
   {:json-rpc/call [{:method     "wakuext_chatPinnedMessages"
                     :params     [chat-id cursor limit]
                     :on-success (fn [result]
+                                  (prn result)
                                   (let [result (set/rename-keys result
                                                                 {:pinnedMessages
                                                                  :pinned-messages})]
