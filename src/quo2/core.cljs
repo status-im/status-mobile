@@ -72,7 +72,7 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.title.title
+    quo2.components.text-combinations.title.view
     quo2.components.list-items.user-list))
 
 (def toast quo2.components.notifications.toast/toast)
@@ -195,7 +195,7 @@
 (def token-tag quo2.components.tags.token-tag/tag)
 
 ;;;; TITLE
-(def title quo2.components.title.title/title)
+(def title quo2.components.text-combinations.title.view)
 
 ;;;; LINKS
 (def url-preview quo2.components.links.url-preview.view/view)

@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.title.title
-  (:require [quo2.components.title.title :as quo2]
+  (:require [quo2.components.text-combinations.title.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -34,9 +34,9 @@
    {:background-color (colors/theme-colors colors/white colors/neutral-90)
     :flex             1}
    [rn/flat-list
-    {:flex                      1
-     :flex-grow                 1
-     :nestedScrollEnabled       true
-     :keyboardShouldPersistTaps :always
-     :header                    [cool-preview]
-     :key-fn                    str}]])
+    {:flex                         1
+     :flex-grow                    1
+     :nested-scroll-enabled        true
+     :keyboard-should-persist-taps :always
+     :header                       [cool-preview]
+     :key-fn                       str}]])

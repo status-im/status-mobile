@@ -295,7 +295,7 @@
                            {:name      :token-tag
                             :insets    {:top false}
                             :component token-tag/preview-token-tag}]
-   :title                 [{:name      :title
+   :text-combinations     [{:name      :title
                             :insets    {:top false}
                             :component title/preview-title}]
    :wallet                [{:name      :lowest-price

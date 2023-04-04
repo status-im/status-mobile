@@ -1,7 +1,7 @@
-(ns quo2.components.title.title
+(ns quo2.components.text-combinations.title.view
   (:require
     [quo2.components.markdown.text :as text]
-    [quo2.components.title.style :as style]
+    [quo2.components.text-combinations.title.style :as style]
     [react-native.core :as rn]))
 
 (defn title
