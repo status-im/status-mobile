@@ -14,21 +14,20 @@
     {:elevation 10}))
 
 (defn container
-  [insets android-blur? focused? text? images?]
-  (let [focusing? (if platform/ios? focused? (not android-blur?))]
-    (merge
-      {:border-top-left-radius  20
-       :border-top-right-radius 20
-       :padding-horizontal      20
-       :position                :absolute
-       :bottom                  0
-       :left                    0
-       :right                   0
-       :background-color        (colors/theme-colors colors/white colors/neutral-90)
-       :opacity                 (if (or focusing? text? images?) 1 (if platform/ios? 0.7 0.5))
-       :z-index                 3
-       :padding-bottom          (:bottom insets)}
-      shadow)))
+  [insets focused? text? images?]
+  (merge
+    {:border-top-left-radius  20
+     :border-top-right-radius 20
+     :padding-horizontal      20
+     :position                :absolute
+     :bottom                  0
+     :left                    0
+     :right                   0
+     :background-color        (colors/theme-colors colors/white colors/neutral-90)
+     :opacity                 (if (or focused? text? images?) 1 (if platform/ios? 0.7 0.5))
+     :z-index                 3
+     :padding-bottom          (:bottom insets)}
+    shadow))
 
 (defn handle-container
   []
@@ -79,10 +78,10 @@
    :flex-direction  :row})
 
 (defn background
-  [opacity bg-bottom window-height]
+  [opacity translate-y window-height]
   (reanimated/apply-animations-to-style
     {:opacity   opacity
-     :transform [{:translate-y bg-bottom}]}
+     :transform [{:translate-y translate-y}]}
     {:position         :absolute
      :left             0
      :right            0
@@ -105,15 +104,7 @@
      :border-top-left-radius  20
      :overflow                :hidden}))
 
-(defn text-overlay
-  []
-  {:height   (if platform/ios? (:line-height typography/paragraph-1) 32)
-   :position :absolute
-   :bottom   0
-   :left     0
-   :right    0})
-
-(defn text-top-overlay
+(defn text-top-gradient
   [opacity z-index]
   (reanimated/apply-animations-to-style
     {:opacity opacity}
@@ -124,5 +115,10 @@
      :left     0
      :right    0}))
 
-
-
+(defn text-bottom-gradient
+  []
+  {:height   (if platform/ios? (:line-height typography/paragraph-1) 32)
+   :position :absolute
+   :bottom   0
+   :left     0
+   :right    0})
