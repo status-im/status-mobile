@@ -39,17 +39,18 @@
 
 (defn view
   []
-  [rn/view {:style style/welcome-container}
-   [background/view true]
-   [navigation-bar :enable-notifications]
-   [page-title]
-   [rn/view {:style style/page-illustration}
-    [quo/text
-     "Illustration here"]]
-   [quo/button
-    {:on-press                  #(rf/dispatch [:init-root :shell-stack])
-     :type                      :primary
-     :accessibility-label       :welcome-button
-     :override-background-color (colors/custom-color :magenta 60)
-     :style                     {:margin 20}}
-    (i18n/label :t/start-using-status)]])
+  (let [{profile-color :color} (rf/sub [:onboarding-2/profile])]
+    [rn/view {:style style/welcome-container}
+     [background/view true]
+     [navigation-bar :enable-notifications]
+     [page-title]
+     [rn/view {:style style/page-illustration}
+      [quo/text
+       "Illustration here"]]
+     [quo/button
+      {:on-press                  #(rf/dispatch [:init-root :shell-stack])
+       :type                      :primary
+       :accessibility-label       :welcome-button
+       :override-background-color (colors/custom-color profile-color 60)
+       :style                     {:margin 20}}
+      (i18n/label :t/start-using-status)]]))
