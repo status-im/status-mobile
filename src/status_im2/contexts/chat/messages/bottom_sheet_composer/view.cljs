@@ -26,7 +26,7 @@
 
 ;;; CONTROLS
 (defn send-button
-  [input-ref text-value images? height saved-height opacity bg-bottom window-height]
+  [input-ref text-value images? height saved-height opacity background-y window-height]
   [:f> (fn []
          (let [btn-opacity (reanimated/use-shared-value 0)
                z-index     (reagent/atom 0)]
@@ -56,7 +56,7 @@
                                         (reanimated/animate height c/input-height)
                                         (reanimated/animate opacity 0)
                                         (js/setTimeout #(reanimated/set-shared-value saved-height c/input-height) 300)
-                                        (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)
+                                        (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
 
                                         (reset! text-value "")
                                         (.clear ^js @input-ref)
@@ -123,7 +123,7 @@
    :i/format])
 
 (defn drag-gesture
-  [height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-open gesture-enabled? last-height maximized?]
+  [height saved-height opacity background-y window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-kb? gesture-enabled? last-height maximized?]
   (let [expanding? (atom true)]
     (->
       (gesture/gesture-pan)
@@ -136,11 +136,11 @@
                               (.focus ^js @input-ref)
                               (reset! gesture-enabled? false))
                             (do
-                              (reanimated/set-shared-value bg-bottom 0)
+                              (reanimated/set-shared-value background-y 0)
                               (reset! expanding? (neg? (oops/oget e "velocityY")))))))
       (gesture/on-update (fn [e]
                            (let [translation          (oops/oget e "translationY")
-                                 new-height           (Math/max c/input-height (Math/min (+ (- (/ translation 1)) (reanimated/get-shared-value saved-height)) max-height))
+                                 new-height           (Math/max c/input-height (Math/min (+ (- translation) (reanimated/get-shared-value saved-height)) max-height))
                                  remaining-height     (if @expanding? (- max-height (reanimated/get-shared-value saved-height)) (reanimated/get-shared-value saved-height))
                                  progress             (/ translation remaining-height)
                                  progress             (if (= new-height c/input-height) 1 progress)
@@ -167,14 +167,14 @@
                                 (do
                                   (reanimated/animate height max-height)
                                   (reanimated/set-shared-value saved-height max-height)
-                                  (reanimated/set-shared-value bg-bottom 0)
+                                  (reanimated/set-shared-value background-y 0)
                                   (reanimated/animate opacity 1)
                                   (reset! maximized? true))
                                 (do
                                   (reanimated/animate height (reanimated/get-shared-value saved-height))
                                   (when (or (and collapsing? (not= (reanimated/get-shared-value saved-height) max-height)) (= (reanimated/get-shared-value saved-height) c/input-height))
                                     (reanimated/animate opacity 0)
-                                    (reanimated/animate-delay bg-bottom (- window-height) 300))))
+                                    (reanimated/animate-delay background-y (- window-height) 300))))
                               (if (or (> (reanimated/get-shared-value height) (- max-height threshold)) (and (not collapsing?) (> (Math/abs diff) threshold)))
                                 (do
                                   (reanimated/animate height max-height)
@@ -184,14 +184,14 @@
                                 (let [target-height (if (> lines 1) (+ c/input-height 18) c/input-height)]
 
                                   (when @add-keyboard-height
-                                    (reset! emojis-open false)
+                                    (reset! emojis-kb? false)
                                     (reset! saved-keyboard-height @add-keyboard-height)
                                     (reset! add-keyboard-height nil))
 
                                   (.blur ^js @input-ref)
                                   (reanimated/animate height target-height)
                                   (js/setTimeout #(reanimated/set-shared-value saved-height target-height) 300)
-                                  (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)
+                                  (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
                                   (reanimated/animate opacity 0))))
                             (reset! gesture-enabled? true))))))))
 
@@ -201,14 +201,14 @@
    [rn/view {:style (style/handle)}]])
 
 (defn actions
-  [input-ref text-value images? height saved-height opacity bg-bottom window-height insets]
+  [input-ref text-value images? height saved-height opacity background-y window-height insets]
   [rn/view {:style (style/actions-container)}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
     [image-button insets height]
     [reaction-button]
     [format-button]]
-   [send-button input-ref text-value images? height saved-height opacity bg-bottom window-height]
+   [send-button input-ref text-value images? height saved-height opacity background-y window-height]
    [audio-button]])
 
 ;;; MAIN
@@ -221,65 +221,64 @@
                keyboard-hide-listener (atom nil)
                add-keyboard-height    (atom nil)
                saved-keyboard-height  (atom nil)
-               kb-default-height      (reagent/atom nil)
-               overlay-z-index        (reagent/atom 0)
-               focused?               (reagent/atom false)
-               gesture-enabled?       (reagent/atom true)
-               cursor-position        (reagent/atom {:start 0 :end 0})
-               saved-cursor-position  (reagent/atom {:start 0 :end 0})
                text-value             (reagent/atom "")
-               lock-selection         (reagent/atom true)
+               cursor-position        (reagent/atom 0)
+               saved-cursor-position  (reagent/atom 0)
+               gradient-z-index       (reagent/atom 0)
+               kb-default-height      (reagent/atom nil)
+               gesture-enabled?       (reagent/atom true)
+               lock-selection?        (reagent/atom true)
+               focused?               (reagent/atom false)
                lock-layout?           (reagent/atom false)
-               android-blur?          (reagent/atom true)
-               emojis-open            (reagent/atom false)
                maximized?             (reagent/atom false)
+               emojis-kb?             (reagent/atom false)
                window-height          (rf/sub [:dimensions/window-height])
                line-height            (:line-height typography/paragraph-1)
-               margin-top             (if platform/ios? (:top insets) (+ (:top insets) 10))
-               opacity                (reanimated/use-shared-value 0)
-               overlay-opacity        (reanimated/use-shared-value 0)
-               bg-bottom              (reanimated/use-shared-value (- window-height))]
+               margin-top             (if platform/ios? (:top insets) (+ (:top insets) 10))]
            (println "H0")
            [:f>
             (fn []
-              (let [images         (rf/sub [:chats/sending-image])
+              (let [images           (rf/sub [:chats/sending-image])
                     {:keys [input-text input-content-height]} (rf/sub [:chats/current-chat-input])
-                    content-height (reagent/atom (or input-content-height c/input-height))
+                    content-height   (reagent/atom (or input-content-height c/input-height))
                     {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-                    max-height     (- window-height margin-top keyboard-height c/handle-container-height c/actions-container-height)
-                    max-height     (if (and @kb-default-height (< keyboard-height @kb-default-height)) (+ max-height keyboard-height (- @kb-default-height)) max-height)
-                    max-height     (if (seq images) (- max-height c/images-container-height) max-height)
-                    lines          (Math/round (/ @content-height line-height))
-                    lines          (if platform/ios? lines (dec lines))
-                    initial-height (if (> lines 1) (+ c/input-height 18) c/input-height)
-                    height         (reanimated/use-shared-value initial-height)
-                    saved-height   (reanimated/use-shared-value initial-height)
-                    last-height    (reanimated/use-shared-value (Math/min (Math/max (+ @content-height (if platform/ios? 5 0)) c/input-height)
-                                                                          max-height)) ;; add extra offset
-                    max-lines      (Math/round (/ max-height line-height))
-                    max-lines      (if platform/ios? max-lines (dec max-lines))
-                    expanded?      (= (reanimated/get-shared-value height) max-height)]
+                    max-height       (- window-height margin-top keyboard-height c/handle-container-height c/actions-container-height)
+                    max-height       (if (and @kb-default-height (< keyboard-height @kb-default-height)) (+ max-height keyboard-height (- @kb-default-height)) max-height)
+                    max-height       (if (seq images) (- max-height c/images-container-height) max-height)
+                    lines            (Math/round (/ @content-height line-height))
+                    lines            (if platform/ios? lines (dec lines))
+                    initial-height   (if (> lines 1) (+ c/input-height 18) c/input-height)
+                    opacity          (reanimated/use-shared-value 0)
+                    gradient-opacity (reanimated/use-shared-value 0)
+                    background-y     (reanimated/use-shared-value (- window-height))
+                    height           (reanimated/use-shared-value initial-height)
+                    saved-height     (reanimated/use-shared-value initial-height)
+                    last-height      (reanimated/use-shared-value (Math/min (Math/max (+ @content-height (if platform/ios? 5 0)) c/input-height)
+                                                                            max-height)) ;; add extra offset
+                    max-lines        (Math/round (/ max-height line-height))
+                    max-lines        (if platform/ios? max-lines (dec max-lines))
+                    expanded?        (= (reanimated/get-shared-value height) max-height)]
                 (println "H1")
                 (rn/use-effect
                   (fn []
                     (println "H2")
                     (js/setTimeout #(reset! lock-layout? true) 500)
                     (when-not @kb-default-height
-                      (async-storage/get-item "kb-default-height" (fn [result] (reset! kb-default-height (when-not (= nil result) (js/parseInt result))))))
+                      (async-storage/get-item :kb-default-height (fn [result] (reset! kb-default-height (when-not (= nil result) (js/parseInt result))))))
                     (when (and (empty? @text-value) (not= input-text nil))
                       (reset! text-value input-text)
                       (reset! content-height input-content-height)
                       (when (> lines 1)
                         (reanimated/animate height (+ c/input-height 18))
                         (reanimated/set-shared-value saved-height (+ c/input-height 18)))
-                      (reset! saved-cursor-position {:start (count input-text) :end (count input-text)}))
+                      (reset! saved-cursor-position (count input-text)))
                     (when (or @maximized? (= input-content-height max-height))
                       (reanimated/set-shared-value height max-height)
                       (reanimated/set-shared-value saved-height max-height))
                     (reset! keyboard-show-listener (.addListener rn/keyboard (if platform/ios? "keyboardWillChangeFrame" "keyboardDidShow")
                                                                  (fn [e]
                                                                    (when (and (not @kb-default-height) (pos? keyboard-height))
-                                                                     (async-storage/set-item "kb-default-height" keyboard-height))
+                                                                     (async-storage/set-item :kb-default-height keyboard-height))
                                                                    (if platform/ios?
                                                                      (let [start-h   (oops/oget e "startCoordinates.height")
                                                                            end-h     (oops/oget e "endCoordinates.height")
@@ -290,16 +289,15 @@
                                                                          (do
                                                                            (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
                                                                            (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
-                                                                           (reset! emojis-open true)
+                                                                           (reset! emojis-kb? true)
                                                                            (reset! text-value (str @text-value " "))
                                                                            (js/setTimeout #(reset! text-value curr-text) 0)
                                                                            (reset! add-keyboard-height diff))
                                                                          (when @add-keyboard-height
                                                                            (reanimated/set-shared-value height (+ (reanimated/get-shared-value height) @add-keyboard-height))
                                                                            (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) @add-keyboard-height))
-                                                                           (reset! emojis-open false)
-                                                                           (reset! add-keyboard-height nil))))
-                                                                     (reset! android-blur? false)))))
+                                                                           (reset! emojis-kb? false)
+                                                                           (reset! add-keyboard-height nil))))))))
                     (reset! keyboard-hide-listener (.addListener rn/keyboard "keyboardDidHide"
                                                                  (fn []
                                                                    (when platform/android? ;; TODO should use target-height
@@ -308,15 +306,15 @@
                                                                      (js/setTimeout (fn []
                                                                                       (reanimated/animate height c/input-height)
                                                                                       (reanimated/set-shared-value saved-height c/input-height)
-                                                                                      (reanimated/set-shared-value bg-bottom (- window-height))) 100)
+                                                                                      (reanimated/set-shared-value background-y (- window-height))) 100)
                                                                      (js/setTimeout #(reanimated/set-shared-value blur-opacity 1) 400)))))
                     (fn []
                       (.remove ^js @keyboard-show-listener)
                       (.remove ^js @keyboard-hide-listener))) [max-height])
                 [:<>
-                 [reanimated/view {:style (style/background opacity bg-bottom window-height)}]
-                 [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity bg-bottom window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-open gesture-enabled? last-height maximized?)}
-                  [rn/view {:style     (style/container insets @android-blur? @focused? (not-empty @text-value) (seq images))
+                 [reanimated/view {:style (style/background opacity background-y window-height)}]
+                 [gesture/gesture-detector {:gesture (drag-gesture height saved-height opacity background-y window-height keyboard-shown max-height input-ref lines add-keyboard-height saved-keyboard-height emojis-kb? gesture-enabled? last-height maximized?)}
+                  [rn/view {:style     (style/container insets @focused? (not-empty @text-value) (seq images))
                             :on-layout (fn [e]
                                          (when-not @lock-layout?
                                            (reanimated/set-shared-value layout-height (oops/oget e "nativeEvent.layout.height"))))}
@@ -328,24 +326,22 @@
                      {:colors ["rgba(255,255,255,0)" "rgba(255,255,255,1)"]
                       :start  {:x 0 :y 1}
                       :end    {:x 0 :y 0}
-                      :style  (style/text-top-overlay overlay-opacity @overlay-z-index)}]
+                      :style  (style/text-top-gradient gradient-opacity @gradient-z-index)}]
                     [rn/text-input
                      {:ref                    #(reset! input-ref %)
                       :default-value          @text-value
                       :on-change-text         (fn [text]
                                                 (reset! text-value text)
-                                                (js/setTimeout #(.setNativeProps ^js @input-ref (clj->js {:selection (clj->js @cursor-position)})) 20)
+                                                (js/setTimeout #(.setNativeProps ^js @input-ref (clj->js {:selection {:start @cursor-position :end @cursor-position}})) 20)
                                                 (rf/dispatch [:chat.ui/set-chat-input-text text]))
                       :on-selection-change    (fn [e]
-                                                (when-not @lock-selection
-                                                  (reset! cursor-position {:start (oops/oget e "nativeEvent.selection.end") :end (oops/oget e "nativeEvent.selection.end")})))
+                                                (when-not @lock-selection?
+                                                  (reset! cursor-position (oops/oget e "nativeEvent.selection.end"))))
                       :on-focus               (fn []
                                                 (reset! focused? true)
-                                                (when platform/android?
-                                                  (reset! android-blur? false))
-                                                (js/setTimeout #(reset! lock-selection false) 300)
+                                                (js/setTimeout #(reset! lock-selection? false) 300)
                                                 (when (not-empty @text-value)
-                                                  (.setNativeProps ^js @input-ref (clj->js {:selection @saved-cursor-position})))
+                                                  (.setNativeProps ^js @input-ref (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
                                                 (reanimated/animate height (reanimated/get-shared-value last-height))
                                                 (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
                                                 (when @saved-keyboard-height
@@ -356,11 +352,11 @@
                                                                    (reset! saved-keyboard-height nil)) 600))
                                                 (when (> (reanimated/get-shared-value last-height) (* 0.75 max-height))
                                                   (reanimated/animate opacity 1)
-                                                  (reanimated/set-shared-value bg-bottom 0))
+                                                  (reanimated/set-shared-value background-y 0))
                                                 (reanimated/set-shared-value blur-opacity 0)
-                                                (when (= @overlay-z-index -1)
-                                                  (reanimated/animate overlay-opacity 1)
-                                                  (reset! overlay-z-index 1))
+                                                (when (= @gradient-z-index -1)
+                                                  (reanimated/animate gradient-opacity 1)
+                                                  (reset! gradient-z-index 1))
                                                 (rf/dispatch [:chat.ui/set-input-focused true]))
                       :on-blur                (fn []
                                                 (let [target-height (if (> lines 1) (+ c/input-height 18) c/input-height)]
@@ -373,23 +369,21 @@
                                                   (reanimated/animate height target-height)
                                                   (reanimated/set-shared-value saved-height target-height)
                                                   (reset! focused? false)
-                                                  (reset! lock-selection true)
-                                                  (when platform/android?
-                                                    (reset! android-blur? true))
-                                                  (reanimated/animate overlay-opacity 0)
-                                                  (reset! overlay-z-index (if (= @overlay-z-index 1) -1 0))
+                                                  (reset! lock-selection? true)
+                                                  (reanimated/animate gradient-opacity 0)
+                                                  (reset! gradient-z-index (if (= @gradient-z-index 1) -1 0))
                                                   (rf/dispatch [:chat.ui/set-input-focused false])))
                       :style                  (style/input expanded? @saved-keyboard-height)
                       :on-scroll              (fn [e] (let [y (oops/oget e "nativeEvent.contentOffset.y")]
-                                                        (when (and (> y line-height) (>= lines max-lines) (= @overlay-z-index 0) @focused?)
-                                                          (reset! overlay-z-index 1)
-                                                          (js/setTimeout #(reanimated/animate overlay-opacity 1) 0))
-                                                        (when (and (<= y line-height) (= @overlay-z-index 1))
-                                                          (reanimated/animate overlay-opacity 0)
-                                                          (js/setTimeout #(reset! overlay-z-index 0) 300))))
+                                                        (when (and (> y line-height) (>= lines max-lines) (= @gradient-z-index 0) @focused?)
+                                                          (reset! gradient-z-index 1)
+                                                          (js/setTimeout #(reanimated/animate gradient-opacity 1) 0))
+                                                        (when (and (<= y line-height) (= @gradient-z-index 1))
+                                                          (reanimated/animate gradient-opacity 0)
+                                                          (js/setTimeout #(reset! gradient-z-index 0) 300))))
                       :on-content-size-change (fn [e]
                                                 (when keyboard-shown
-                                                  (let [extra-offset (if platform/ios? (if @emojis-open c/ios-extra-offset 5) 0)
+                                                  (let [extra-offset (if platform/ios? (if @emojis-kb? c/ios-extra-offset 5) 0)
                                                         x            (+ (oops/oget e "nativeEvent.contentSize.height") extra-offset)
                                                         diff         (Math/abs (- x (reanimated/get-shared-value height)))]
                                                     (reset! content-height (oops/oget e "nativeEvent.contentSize.height"))
@@ -398,11 +392,11 @@
                                                       (reanimated/set-shared-value saved-height (Math/min x max-height)))
                                                     (if (or (> x (* 0.75 max-height)) (= (reanimated/get-shared-value saved-height) max-height))
                                                       (do
-                                                        (reanimated/set-shared-value bg-bottom 0)
+                                                        (reanimated/set-shared-value background-y 0)
                                                         (reanimated/animate opacity 1))
                                                       (do
                                                         (reanimated/animate opacity 0)
-                                                        (js/setTimeout #(reanimated/set-shared-value bg-bottom (- window-height)) 300)))
+                                                        (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
                                                     (rf/dispatch [:chat.ui/set-input-content-height (Math/min x max-height)]))))
                       :max-height             max-height
                       :multiline              true
@@ -415,9 +409,9 @@
                         {:colors ["rgba(255,255,255,1)" "rgba(255,255,255,0)"]
                          :start  {:x 0 :y 1}
                          :end    {:x 0 :y 0}
-                         :style  (style/text-overlay)}]])]
+                         :style  (style/text-bottom-gradient)}]])]
                    [images/images-list @maximized?]
-                   [actions input-ref text-value (seq images) height saved-height opacity bg-bottom window-height insets]]]]))]))])
+                   [actions input-ref text-value (seq images) height saved-height opacity background-y window-height insets]]]]))]))])
 
 
 (defn blur-view [blur-opacity layout-height]
@@ -439,4 +433,3 @@
        [rn/view
         [blur-view blur-opacity layout-height]
         [sheet insets blur-opacity layout-height]]))])
-
