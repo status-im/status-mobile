@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 /**
@@ -17,8 +19,7 @@ def depsSet = new TreeSet<String>()
 
 task printDependencies {
     doLast {
-        println("The compileOnlyList \n ---------")
-        println(depsSet)
+        println(depsSet.stream().sorted().collect(Collectors.toList()))
     }
 }
 
@@ -62,7 +63,7 @@ allprojects {
         project.configurations.all { config ->
             if (!config.name.toLowerCase().startsWith('test')) {
                 config.allDependencies.all { dep ->
-                    if (dep.group && dep.name && dep.version) {
+                    if (dep.group && dep.name && dep.version && dep.version != "unspecified") {
                         depsSet.add("${dep.group}:${dep.name}:${dep.version}")
                     }
                 }
