@@ -1,4 +1,5 @@
 import java.util.stream.Collectors
+import im.status.DependencyListTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -38,7 +39,7 @@ buildscript {
 }
 
 subprojects {
-    task allDeps(type: DependencyReportTask) {}
+    task allDeps(type: DependencyListTask) { }
 
     afterEvaluate {
         if (project.hasProperty("android")) {
