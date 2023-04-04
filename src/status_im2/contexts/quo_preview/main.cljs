@@ -76,6 +76,7 @@
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
+    [status-im2.contexts.quo-preview.title.title :as title]
     [status-im2.contexts.quo-preview.inputs.input :as input]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
@@ -294,6 +295,9 @@
                            {:name      :token-tag
                             :insets    {:top false}
                             :component token-tag/preview-token-tag}]
+   :title                 [{:name      :title
+                            :insets    {:top false}
+                            :component title/preview-title}]
    :wallet                [{:name      :lowest-price
                             :insets    {:top false}
                             :component lowest-price/preview-lowest-price}
