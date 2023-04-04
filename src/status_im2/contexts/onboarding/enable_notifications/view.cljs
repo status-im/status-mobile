@@ -27,10 +27,11 @@
 
 (defn page-title
   []
-  [quo/title {:title                        (i18n/label :t/intro-wizard-title6)
-              :title-accessibility-label    :notifications-title
-              :subtitle                     (i18n/label :t/enable-notifications-sub-title)
-              :subtitle-accessibility-label :notifications-sub-title}])
+  [quo/title
+   {:title                        (i18n/label :t/intro-wizard-title6)
+    :title-accessibility-label    :notifications-title
+    :subtitle                     (i18n/label :t/enable-notifications-sub-title)
+    :subtitle-accessibility-label :notifications-sub-title}])
 
 (defn enable-notification-buttons
   [{:keys [insets]}]

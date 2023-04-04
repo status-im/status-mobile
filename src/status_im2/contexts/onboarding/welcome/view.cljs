@@ -12,12 +12,13 @@
 (defn page-title
   []
   (let [new-account? (rf/sub [:onboarding-2/new-account?])]
-    [quo/title {:title                        (i18n/label (if new-account?
-                                                            :t/welcome-to-web3
-                                                            :t/welcome-back))
-                :title-accessibility-label    :welcome-title
-                :subtitle                     (i18n/label :t/welcome-to-web3-sub-title)
-                :subtitle-accessibility-label :welcome-sub-title}]))
+    [quo/title
+     {:title                        (i18n/label (if new-account?
+                                                  :t/welcome-to-web3
+                                                  :t/welcome-back))
+      :title-accessibility-label    :welcome-title
+      :subtitle                     (i18n/label :t/welcome-to-web3-sub-title)
+      :subtitle-accessibility-label :welcome-sub-title}]))
 
 
 (defn navigation-bar
