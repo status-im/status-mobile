@@ -52,6 +52,10 @@ subprojects {
     }
 }
 
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+}
+
 allprojects {
     beforeEvaluate {
         if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
