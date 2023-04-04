@@ -117,7 +117,6 @@
        (let [selected        (reagent/atom []) ; currently selected
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-         (println "insets" insets)
          (rn/use-effect
           (fn []
             (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
