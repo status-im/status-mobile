@@ -10,6 +10,7 @@
             [status-im2.common.qr-code.qr :as qr]
             [clojure.string :as string]
             [status-im2.constants :as const]
+            [react-native.blur :as blur]
             ;;TODO(siddarthkay) : move the components below over to status-im2 ns
             ;; issue -> https://github.com/status-im/status-mobile/issues/15549
             [status-im.ui.components.list-selection :as list-selection]
@@ -25,10 +26,10 @@
     {:icon                true
      :type                :blur-bg
      :size                32
-     :accessibility-label :close-activity-center
+     :accessibility-label :close-shell-share-tab
      :override-theme      :dark
      :style               style/header-button
-     :on-press            #(rf/dispatch [:hide-popover])}
+     :on-press            #(rf/dispatch [:navigate-back])}
     :i/close]
    [quo/text
     {:size   :heading-1
@@ -125,6 +126,7 @@
        (fn [{:keys [top bottom]}]
          (let [window-width (rf/sub [:dimensions/window-width])]
            [rn/view {:style (style/screen-container window-width top bottom)}
+            [blur/view style/blur]
             [header]
             [rn/view {:style style/tabs-container}
              [quo/segmented-control

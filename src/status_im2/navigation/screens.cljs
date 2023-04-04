@@ -27,6 +27,7 @@
     [status-im2.contexts.syncing.view :as settings-syncing]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
+    [status-im2.contexts.share.view :as share]
 
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]))
@@ -42,6 +43,10 @@
     {:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
+
+    {:name      :share-shell
+     :options   options/transparent-screen-options
+     :component share/view}
 
     {:name      :shell-stack
      :component shell/shell-stack}

@@ -97,7 +97,7 @@
      [quo/button
       (merge button-common-props
              {:accessibility-label :show-qr-button
-              :on-press            #(rf/dispatch [:share/open])})
+              :on-press            #(rf/dispatch [:open-modal :share-shell])})
       :i/qr-code]
      [rn/view
       [unread-indicator]
