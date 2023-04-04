@@ -13,15 +13,10 @@
             ;;TODO(siddarthkay) : move the components below over to status-im2 ns
             ;; issue -> https://github.com/status-im/status-mobile/issues/15549
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.react :as react]))
+            ))
 
 (def ^:const profile-tab-id 0)
 (def ^:const wallet-tab-id 1)
-
-(defn copy-text-and-show-toast
-  [{:keys [text-to-copy post-copy-message]}]
-  (react/copy-to-clipboard text-to-copy)
-  (rf/dispatch [:share/show-successfully-copied-toast post-copy-message]))
 
 (defn header
   []
@@ -72,12 +67,8 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(copy-text-and-show-toast
-                              {:text-to-copy      profile-qr-url
-                               :post-copy-message (i18n/label :t/link-to-profile-copied)})
-          :on-long-press    #(copy-text-and-show-toast
-                              {:text-to-copy      profile-qr-url
-                               :post-copy-message (i18n/label :t/link-to-profile-copied)})}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url (i18n/label :t/link-to-profile-copied)])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url (i18n/label :t/link-to-profile-copied)])}
          [quo/text
           {:style           (style/profile-address-content link-to-profile-max-width)
            :size            :paragraph-1
@@ -107,12 +98,8 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(copy-text-and-show-toast
-                              {:text-to-copy      emoji-hash
-                               :post-copy-message (i18n/label :t/emoji-hash-copied)})
-          :on-long-press    #(copy-text-and-show-toast
-                              {:text-to-copy      emoji-hash
-                               :post-copy-message (i18n/label :t/emoji-hash-copied)})}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])}
          [rn/text {:style (style/emoji-hash-content emoji-hash-max-width)} emoji-hash]]]]
       [rn/view {:style style/share-button-container}
        [quo/button
@@ -122,12 +109,8 @@
          :accessibility-label :link-to-profile
          :override-theme      :dark
          :style               {:margin-right 12}
-         :on-press            #(copy-text-and-show-toast
-                                {:text-to-copy      emoji-hash
-                                 :post-copy-message (i18n/label :t/emoji-hash-copied)})
-         :on-long-press       #(copy-text-and-show-toast
-                                {:text-to-copy      emoji-hash
-                                 :post-copy-message (i18n/label :t/emoji-hash-copied)})}
+         :on-press            #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])
+         :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])}
         :i/copy]]]]))
 
 (defn wallet-tab
