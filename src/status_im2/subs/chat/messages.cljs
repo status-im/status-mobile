@@ -229,7 +229,6 @@
  (fn [[message-list messages pin-messages loading-messages? synced-from chat-type joined] [_ chat-id]]
    ;;TODO (perf)
 
-   ;; TODO: check value returned
    (let [message-list-seq (models.message-list/->seq message-list)]
      ; Don't show gaps if that's the case as we are still loading messages
      (if (and (empty? message-list-seq) loading-messages?)

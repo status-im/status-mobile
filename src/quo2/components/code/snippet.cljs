@@ -172,4 +172,4 @@
     :show-line-numbers false
     :style             #js {}
     :custom-style      #js {:backgroundColor nil}}
-   children])
+   #_children])

@@ -7,6 +7,18 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn- underline [children]
+  [quo/text {:style {:text-decoration-line :underline}}
+   children])
+
+;; TODO: ask for an exmaple for multiline quote
+(defn- quote [children]
+  [rn/view {:style {:flex-direction :row}}
+   [quo/text {:style {:color        colors/neutral-40
+                      :margin-right 10}}
+    "|"]
+   [quo/text children]])
+
 (defn render-inline
   [units {:keys [type literal destination]} chat-id]
   (case (keyword type)
@@ -18,7 +30,7 @@
     (conj units [quo/text {:style {:font-style :italic}} literal])
 
     :strong
-    (conj units [quo/text {:weight :bold} literal])
+    (conj units [quote literal])
 
     :strong-emph
     (conj units [quo/text
@@ -85,13 +97,13 @@
     :edited-block
     (conj blocks
           [rn/view {:style style/paragraph}
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id))
+           (reduce (fn [acc e]
+                     (render-inline acc e chat-id))
             [quo/text]
             children)])
 
     :blockquote
+    ;; TODO: ask for an exmaple for multiline quote
     (conj blocks
           [rn/view {:style style/quote}
            [quo/text literal]])
@@ -119,9 +131,6 @@
 
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
-  (def --content content)
-  (def --chat-id chat-id)
-  (def --edited-at edited-at)
   [rn/view {:style style/parsed-text-block}
    (reduce (fn [acc e]
              (render-block acc e chat-id))
