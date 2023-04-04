@@ -4,7 +4,8 @@
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.messages.bottom-sheet-composer.images.style :as style]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.bottom-sheet-composer.constants :as c]))
 
 (defn image
   [item]
@@ -28,10 +29,10 @@
   [:f>
    (fn []
      (let [images (rf/sub [:chats/sending-image])
-           height (reanimated/use-shared-value (if (seq images) 76 0))]
+           height (reanimated/use-shared-value (if (seq images) c/images-container-height 0))]
        (rn/use-effect (fn []
                         (if (seq images)
-                          (reanimated/animate height 76)
+                          (reanimated/animate height c/images-container-height)
                           (if-not maximized?
                             (reanimated/animate height 0)
                             (reanimated/set-shared-value height 0)))) [images])
