@@ -13,8 +13,7 @@
             [react-native.blur :as blur]
             ;;TODO(siddarthkay) : move the components below over to status-im2 ns
             ;; issue -> https://github.com/status-im/status-mobile/issues/15549
-            [status-im.ui.components.list-selection :as list-selection]
-            ))
+            [status-im.ui.components.list-selection :as list-selection]))
 
 (def ^:const profile-tab-id 0)
 (def ^:const wallet-tab-id 1)
@@ -47,8 +46,7 @@
         port                      (rf/sub [:mediaserver/port])
         key-uid                   (get multiaccount :key-uid)
         emoji-hash-max-width      (* window-width 0.76)
-        link-to-profile-max-width (* window-width 0.70)
-       ]
+        link-to-profile-max-width (* window-width 0.70)]
     [:<>
      [rn/view {:style style/qr-code-container}
       [qr/user-profile-qr-code
@@ -68,8 +66,10 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url (i18n/label :t/link-to-profile-copied)])
-          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url (i18n/label :t/link-to-profile-copied)])}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url
+                                           (i18n/label :t/link-to-profile-copied)])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast profile-qr-url
+                                           (i18n/label :t/link-to-profile-copied)])}
          [quo/text
           {:style           (style/profile-address-content link-to-profile-max-width)
            :size            :paragraph-1
@@ -99,8 +99,10 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])
-          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
+                                           (i18n/label :t/emoji-hash-copied)])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
+                                           (i18n/label :t/emoji-hash-copied)])}
          [rn/text {:style (style/emoji-hash-content emoji-hash-max-width)} emoji-hash]]]]
       [rn/view {:style style/share-button-container}
        [quo/button
@@ -110,18 +112,20 @@
          :accessibility-label :link-to-profile
          :override-theme      :dark
          :style               {:margin-right 12}
-         :on-press            #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])
-         :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash (i18n/label :t/emoji-hash-copied)])}
+         :on-press            #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
+                                             (i18n/label :t/emoji-hash-copied)])
+         :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
+                                             (i18n/label :t/emoji-hash-copied)])}
         :i/copy]]]]))
 
 (defn wallet-tab
   []
-   [rn/text {:style {:color colors/white :text-align :center}} "not implemented"])
+  [rn/text {:style {:color colors/white :text-align :center}} "not implemented"])
 
 (defn view
   []
   (let [selected-tab (reagent/atom profile-tab-id)]
-    (fn[]
+    (fn []
       [safe-area/consumer
        (fn [{:keys [top bottom]}]
          (let [window-width (rf/sub [:dimensions/window-width])]
@@ -146,7 +150,4 @@
                                       :label (i18n/label :t/wallet)}]}]]
             (if (= @selected-tab profile-tab-id)
               [profile-tab window-width]
-              [wallet-tab])]))]
-
-      )
-    ))
+              [wallet-tab])]))])))
