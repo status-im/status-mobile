@@ -20,7 +20,7 @@
 
 (defn header
   []
-  [rn/view
+  [:<>
    [quo/button
     {:icon                true
      :type                :blur-bg
