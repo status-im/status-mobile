@@ -132,8 +132,7 @@
 
 (defn wallet-tab
   []
-  [:<>
-   [rn/text {:style {:color colors/white :text-align :center}} "not implemented"]])
+   [rn/text {:style {:color colors/white :text-align :center}} "not implemented"])
 
 (defn view
   []
