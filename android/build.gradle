@@ -17,7 +17,7 @@ ext {
 
 def depsSet = new TreeSet<String>()
 
-task printDependencies {
+task printDeps {
     doLast {
         println(depsSet.stream().sorted().collect(Collectors.toList()))
     }
@@ -38,6 +38,8 @@ buildscript {
 }
 
 subprojects {
+    task allDeps(type: DependencyReportTask) {}
+
     afterEvaluate {
         if (project.hasProperty("android")) {
             android {
@@ -50,10 +52,6 @@ subprojects {
             }
         }
     }
-}
-
-subprojects {
-    task allDeps(type: DependencyReportTask) {}
 }
 
 allprojects {
