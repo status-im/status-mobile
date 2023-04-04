@@ -48,8 +48,7 @@
     [:<>
      [rn/view {:style style/qr-code-container}
       [qr/user-profile-qr-code
-       {:window-width window-width
-        :key-uid      key-uid
+       {:key-uid      key-uid
         :qr-size      qr-size
         :public-key   public-pk
         :port         port}]
