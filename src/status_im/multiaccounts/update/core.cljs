@@ -5,9 +5,8 @@
             [utils.re-frame :as rf]))
 
 (rf/defn send-contact-update
-  [{:keys [db] :as cofx}]
-  (let [multiaccount                                       (:multiaccount db)
-        {:keys [name preferred-name display-name address]} multiaccount]
+  [{:keys [db]}]
+  (let [{:keys [name preferred-name display-name address]} (:multiaccount db)]
     {:json-rpc/call [{:method     "wakuext_sendContactUpdates"
                       :params     [(or preferred-name display-name name) ""]
                       :on-success #(log/debug "sent contact update")}]}))
@@ -16,9 +15,9 @@
   "This updates the profile name in the profile list before login"
   {:events [:multiaccounts.ui/update-name]}
   [{:keys [db] :as cofx} raw-multiaccounts-from-status-go]
-  (let [{:keys [key-uid name preferred-name display-name]
-         :as   multiaccount} (:multiaccount db)
-        account              (some #(and (= (:key-uid %) key-uid) %) raw-multiaccounts-from-status-go)]
+  (let [{:keys [key-uid name preferred-name
+                display-name]} (:multiaccount db)
+        account                (some #(and (= (:key-uid %) key-uid) %) raw-multiaccounts-from-status-go)]
     (when-let [new-name (and account (or preferred-name display-name name))]
       (rf/merge cofx
                 {:json-rpc/call [{:method     "multiaccounts_updateAccount"
