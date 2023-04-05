@@ -65,6 +65,8 @@
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
+    [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
+    [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
@@ -262,6 +264,13 @@
                            {:name      :accounts
                             :insets    {:top false}
                             :component accounts/preview-accounts}]
+   :share                 [{:name      :qr-code
+                            :insets    {:top false}
+                            :component qr-code/preview-qr-code}
+                           {:name      :share-qr-code
+                            :insets    {:top false}
+                            :component share-qr-code/preview-share-qr-code}
+                          ]
    :tabs                  [{:name      :segmented
                             :insets    {:top false}
                             :component segmented/preview-segmented}
