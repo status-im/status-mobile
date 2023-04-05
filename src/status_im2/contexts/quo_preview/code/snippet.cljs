@@ -26,6 +26,23 @@
         s.logger.Error(\"failed to set Server.port\", zap.Error(err))
         return
     }
+
+    if s.afterPortChanged != nil {
+        s.afterPortChanged(s.port)
+    }
+    s.run = true
+
+    err = s.server.Serve(listener)
+    if err != http.ErrServerClosed {
+        s.logger.Error(\"server failed unexpectedly, restarting\", zap.Error(err))
+        err = s.Start()
+        if err != nil {
+            s.logger.Error(\"server start failed, giving up\", zap.Error(err))
+        }
+        return
+    }
+
+    s.run = false
 }")
 
 (def clojure-example
@@ -59,9 +76,13 @@
                :value :clojure}
               {:key   :go
                :value :go}]}
-   {:label "Max lines:"
-    :key   :max-lines
-    :type  :text}
+   {:label   "Max lines:"
+    :key     :max-lines
+    :type    :select
+    :options (map (fn [n]
+                    {:key   n
+                     :value (str n " lines")})
+                  (range 0 41 5))}
    {:label "Syntax highlight:"
     :key   :syntax
     :type  :boolean}])
@@ -69,7 +90,7 @@
 (defn cool-preview
   []
   (let [state (reagent/atom {:language  :clojure
-                             :max-lines ""
+                             :max-lines 40
                              :syntax    true})]
     (fn []
       (let [language  (if (:syntax @state) (:language @state) :text)
