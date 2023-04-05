@@ -19,8 +19,9 @@
   [class-names]
   (let [text-color (->> class-names
                         (map keyword)
-                        (some #(when-let [text-color (theme %)]
-                                 text-color)))]
+                        (some (fn [class-name]
+                                (when-let [text-color (theme class-name)]
+                                  text-color))))]
     (cond-> {:flex-shrink 1
              :line-height 18}
       text-color (assoc :color text-color))))
