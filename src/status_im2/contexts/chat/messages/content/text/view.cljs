@@ -13,7 +13,7 @@
   [units {:keys [type literal destination]} chat-id]
   (case (keyword type)
     :code
-    (conj units [rn/view {:style (merge style/block (style/code))} [quo/text {:weight :code} literal]])
+    (conj units [quo/text {:style (merge style/block (style/code))}{:weight :code} literal])
 
     :emph
     (conj units [quo/text {:style {:font-style :italic}} literal])
