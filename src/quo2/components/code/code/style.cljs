@@ -44,6 +44,7 @@
    :left     0
    :right    0
    :z-index  1})
+
 (def gradient {:height 48})
 
 (defn line-number-container
@@ -66,6 +67,7 @@
    :background-color (border-color)})
 
 (def line {:flex-direction :row})
+
 (defn line-number
   [width]
   {:margin-right 20 ; 8+12 margin
