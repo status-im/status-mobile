@@ -1,5 +1,4 @@
-(ns quo2.components.share.qr-code.style
-  (:require [react-native.core :as rn]))
+(ns quo2.components.share.qr-code.style)
 
 (def container
   {:flex-direction  :row
@@ -10,6 +9,4 @@
   {:width         width
    :height        height
    :border-radius 12
-   :aspect-ratio  1
-
-  })
+   :aspect-ratio  1})

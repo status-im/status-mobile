@@ -269,8 +269,7 @@
                             :component qr-code/preview-qr-code}
                            {:name      :share-qr-code
                             :insets    {:top false}
-                            :component share-qr-code/preview-share-qr-code}
-                          ]
+                            :component share-qr-code/preview-share-qr-code}]
    :tabs                  [{:name      :segmented
                             :insets    {:top false}
                             :component segmented/preview-segmented}

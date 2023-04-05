@@ -2,7 +2,7 @@
   (:require [quo2.components.share.share-qr-code.view :as share-qr-code]
             [test-helpers.component :as h]))
 
-(h/describe "Profile Input"
+(h/describe "Share QR Code component"
   (h/test "renders share qr code component"
     (h/render [share-qr-code/view
                {:link-title " A test title"}])
