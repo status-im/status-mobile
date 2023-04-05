@@ -58,7 +58,7 @@
      child]
     child))
 
-(defn- calc-line-numer-width
+(defn- calc-line-number-width
   [font-scale rows-to-show]
   (let [max-line-digits (-> rows-to-show str count)]
     (if (= 1 max-line-digits)
@@ -71,7 +71,7 @@
   (let [font-scale          (:font-scale (rn/use-window-dimensions))
         total-rows          (count rows)
         number-rows-to-show (min (count rows) max-lines)
-        line-number-width   (calc-line-numer-width font-scale number-rows-to-show)
+        line-number-width   (calc-line-number-width font-scale number-rows-to-show)
         truncated?          (< number-rows-to-show total-rows)
         rows-to-show-coll   (if truncated?
                               (as-> rows $
