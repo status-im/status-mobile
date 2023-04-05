@@ -77,7 +77,7 @@
    :right    8
    :z-index  1})
 
-(defn gradient-color [] (colors/theme-colors colors/white "#1b273d"))
+(defn gradient-color [] (colors/theme-colors colors/white colors/neutral-80))
 
 (defn button-background-color
   []
