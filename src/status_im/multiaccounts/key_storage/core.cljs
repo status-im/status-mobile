@@ -21,10 +21,10 @@
 (rf/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
   {:events [::key-and-storage-management-pressed]}
-  [cofx]
+  [{:keys [db] :as cofx}]
   (navigation/navigate-to
    cofx
-   (if (multiaccounts.model/logged-in? cofx)
+   (if (multiaccounts.model/logged-in? db)
      :actions-logged-in
      :actions-not-logged-in)
    nil))

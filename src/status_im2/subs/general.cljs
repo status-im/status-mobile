@@ -29,7 +29,7 @@
 (re-frame/reg-sub
  :multiaccount/logged-in?
  (fn [db]
-   (multiaccounts.model/logged-in? {:db db})))
+   (multiaccounts.model/logged-in? db)))
 
 (re-frame/reg-sub
  :hide-screen?
