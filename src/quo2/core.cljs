@@ -195,7 +195,7 @@
 (def token-tag quo2.components.tags.token-tag/tag)
 
 ;;;; TITLE
-(def title quo2.components.text-combinations.title.view)
+(def title quo2.components.text-combinations.title.view/title)
 
 ;;;; LINKS
 (def url-preview quo2.components.links.url-preview.view/view)

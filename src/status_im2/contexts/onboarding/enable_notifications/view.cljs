@@ -35,25 +35,26 @@
 
 (defn enable-notification-buttons
   [{:keys [insets]}]
-  [rn/view {:style (style/buttons insets)}
-   [quo/button
-    {:on-press                  (fn []
-                                  (shell.animation/change-selected-stack-id :communities-stack true)
+  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+    [rn/view {:style (style/buttons insets)}
+     [quo/button
+      {:on-press                  (fn []
+                                    (shell.animation/change-selected-stack-id :communities-stack true)
                                   (rf/dispatch [::notifications/switch true platform/ios?])
-                                  (rf/dispatch [:init-root :welcome]))
-     :type                      :primary
-     :before                    :i/notifications
-     :accessibility-label       :enable-notifications-button
-     :override-background-color (colors/custom-color :purple 60)}
-    (i18n/label :t/intro-wizard-title6)]
-   [quo/button
-    {:on-press                  (fn []
+                                    (rf/dispatch [:init-root :welcome]))
+       :type                      :primary
+       :before                    :i/notifications
+       :accessibility-label       :enable-notifications-button
+       :override-background-color (colors/custom-color profile-color 60)}
+      (i18n/label :t/intro-wizard-title6)]
+     [quo/button
+      {:on-press                  (fn []
                                   (shell.animation/change-selected-stack-id :communities-stack true)
                                   (rf/dispatch [:init-root :welcome]))
-     :accessibility-label       :enable-notifications-later-button
-     :override-background-color colors/white-opa-5
-     :style                     {:margin-top 12}}
-    (i18n/label :t/maybe-later)]])
+       :accessibility-label       :enable-notifications-later-button
+       :override-background-color colors/white-opa-5
+       :style                     {:margin-top 12}}
+      (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications
   []
