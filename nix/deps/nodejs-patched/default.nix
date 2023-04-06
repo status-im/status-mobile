@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchHermesPhase"
     "patchJavaPhase"
-    "patchNodePackagePhase"
+    "patchYogaNodePackagePhase"
     "installPhase"
   ];
 
@@ -68,7 +68,7 @@ stdenv.mkDerivation {
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
   # Patch node modules using `patch-package`
-  patchNodePackagePhase = ''
+  patchYogaNodePackagePhase = ''
     substituteInPlace ./node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp --replace \
         'node->getLayout().hadOverflow() |' \
         'node->getLayout().hadOverflow() ||'
