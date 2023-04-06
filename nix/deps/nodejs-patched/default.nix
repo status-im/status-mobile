@@ -67,7 +67,7 @@ stdenv.mkDerivation {
   patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
-  # Patch node modules using `patch-package`
+  # Patch React Native Yoga.cpp file
   patchYogaNodePackagePhase = ''
     substituteInPlace ./node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp --replace \
         'node->getLayout().hadOverflow() |' \
