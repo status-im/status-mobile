@@ -12,6 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchHermesPhase"
     "patchJavaPhase"
+    "patchNodePackagePhase"
     "installPhase"
   ];
 
@@ -65,6 +66,12 @@ stdenv.mkDerivation {
   # Patch Java files in modules which are not yet ported to AndroidX
   patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
+  '';
+  # Patch node modules using `patch-package`
+  patchNodePackagePhase = ''
+    substituteInPlace ./node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp --replace \
+        'node->getLayout().hadOverflow() |' \
+        'node->getLayout().hadOverflow() ||'
   '';
   installPhase = ''
     mkdir -p $out
