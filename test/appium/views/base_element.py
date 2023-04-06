@@ -72,17 +72,17 @@ class BaseElement(object):
         return None
 
     def find_element(self):
-        for _ in range(3):
-            try:
-                self.driver.info("Find `%s` by `%s`: `%s`" % (self.name, self.by, self.exclude_emoji(self.locator)))
-                return self.driver.find_element(self.by, self.locator)
-            except NoSuchElementException:
-                raise NoSuchElementException(
-                    "Device %s: %s by %s: `%s` is not found on the screen" % (
-                        self.driver.number, self.name, self.by, self.locator)) from None
-            except Exception as exception:
-                if 'Internal Server Error' in str(exception):
-                    continue
+        # for _ in range(3):
+        try:
+            self.driver.info("Find `%s` by `%s`: `%s`" % (self.name, self.by, self.exclude_emoji(self.locator)))
+            return self.driver.find_element(self.by, self.locator)
+        except NoSuchElementException:
+            raise NoSuchElementException(
+                "Device %s: %s by %s: `%s` is not found on the screen" % (
+                    self.driver.number, self.name, self.by, self.locator)) from None
+        # except Exception as exception:
+        #     if 'Internal Server Error' in str(exception):
+        #         continue
 
     def find_elements(self):
         return self.driver.find_elements(self.by, self.locator)
