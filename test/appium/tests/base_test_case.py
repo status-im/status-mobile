@@ -15,7 +15,6 @@ from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
-from urllib3.exceptions import MaxRetryError
 
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
@@ -310,9 +309,9 @@ def create_shared_drivers(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
             return drivers, loop
-        except MaxRetryError as e:
+        except Exception as e:
             loop.close()
-            raise Exception("%s %s" % (e.__class__.__name__, str(e.reason))) from None
+            raise e from None
 
 
 class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
@@ -371,12 +370,14 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
                 geth_contents.append(self.pull_geth(self.drivers[driver]))
-
             except (WebDriverException, AttributeError):
                 pass
             finally:
-                geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-                test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
+                try:
+                    geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
+                    test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
+                except IndexError:
+                    pass
 
     @pytest.fixture(scope='class', autouse=True)
     def prepare(self, request):
@@ -396,7 +397,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException):
+                except (RemoteDisconnected, SauceException, ConnectionError):
                     pass
                 try:
                     driver.quit()
