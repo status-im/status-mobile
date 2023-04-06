@@ -365,6 +365,25 @@
   [_]
   (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
 
+(rf/defn redirect-to-root
+  "Decides which root should be initialised depending on user and app state"
+  [{:keys [db] :as cofx}]
+  (cond
+    (get db :local-pairing/completed-pairing?)
+    {:dispatch [:syncing/pairing-completed]}
+
+    (get db :onboarding-2/new-account?)
+    {:dispatch [:onboarding-2/finalize-setup]}
+
+    (get db :tos/accepted?)
+    (rf/merge
+     cofx
+     (multiaccounts/switch-theme nil :shell-stack)
+     (navigation/init-root :shell-stack))
+
+    :else
+    {:dispatch [:init-root :tos]}))
+
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
@@ -397,7 +416,8 @@
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
-              (activity-center/notifications-fetch-unread-count))))
+              (activity-center/notifications-fetch-unread-count)
+              (redirect-to-root))))
 
 (re-frame/reg-fx
  ::open-last-chat
@@ -472,22 +492,6 @@
         keychain/auth-method-biometric
         keychain/auth-method-password))))
 
-(defn redirect-to-root
-  "Decides which root should be initialised depending on user and app state"
-  [db]
-  (cond
-    (get db :local-pairing/completed-pairing?)
-    (re-frame/dispatch [:syncing/pairing-completed])
-
-    (get db :onboarding-2/new-account?)
-    (re-frame/dispatch [:onboarding-2/finalize-setup])
-
-    (get db :tos/accepted?)
-    (re-frame/dispatch [:init-root :shell-stack])
-
-    :else
-    (re-frame/dispatch [:init-root :tos])))
-
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
   (let [auth-method     (:auth-method db)
@@ -499,8 +503,7 @@
               {:db (assoc db :chats/loading? true)
                :json-rpc/call
                [{:method     "settings_getSettings"
-                 :on-success #(do (re-frame/dispatch [::get-settings-callback %])
-                                  (redirect-to-root db))}]}
+                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))

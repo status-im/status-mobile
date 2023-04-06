@@ -6,16 +6,16 @@
             [status-im2.navigation.state :as state]))
 
 (defn status-bar-options
-  []
+  [& [status-bar-theme]]
   ;; dark-mode? = After login we are going to use theme as per user's choice (colors/dark?)
   ;; but before login we only have dark mode (dark-mode? = true)
   (let [dark-mode? (if (= @state/root-id :shell-stack) (colors/dark?) true)]
     (if platform/android?
       {:navigationBar {:backgroundColor colors/neutral-100}
        :statusBar     {:backgroundColor :transparent
-                       :style           (if dark-mode? :light :dark)
+                       :style           (or status-bar-theme (if dark-mode? :light :dark))
                        :drawBehind      true}}
-      {:statusBar {:style (if dark-mode? :light :dark)}})))
+      {:statusBar {:style (or status-bar-theme (if dark-mode? :light :dark))}})))
 
 (defn topbar-options
   []
@@ -155,7 +155,8 @@
            {:stack {:id       :shell-stack
                     :children [{:component {:name    :shell-stack
                                             :id      :shell-stack
-                                            :options (merge (status-bar-options)
+                                            :options (merge (status-bar-options
+                                                             (if (colors/dark?) :light :dark))
                                                             {:topBar {:visible false}})}}]}}}
           :profiles
           {:root
