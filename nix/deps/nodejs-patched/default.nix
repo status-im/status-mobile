@@ -12,6 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchHermesPhase"
     "patchJavaPhase"
+    "patchYogaNodePackagePhase"
     "installPhase"
   ];
 
@@ -65,6 +66,14 @@ stdenv.mkDerivation {
   # Patch Java files in modules which are not yet ported to AndroidX
   patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
+  '';
+  # Patch React Native Yoga.cpp file
+  # FIXME: Remove this once release newer than 1.19.0 is used which includes:
+  # https://github.com/facebook/yoga/commit/f174de70
+  patchYogaNodePackagePhase = ''
+    substituteInPlace ./node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp --replace \
+        'node->getLayout().hadOverflow() |' \
+        'node->getLayout().hadOverflow() ||'
   '';
   installPhase = ''
     mkdir -p $out
