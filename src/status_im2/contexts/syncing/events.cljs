@@ -13,10 +13,17 @@
 
 (rf/defn local-pairing-completed
   {:events [:syncing/pairing-completed]}
-  [{:keys [db] :as cofx}]
-  (rf/merge cofx
-            {:db       (dissoc db :local-pairing/completed-pairing?)
-             :dispatch [:init-root :enable-notifications]}))
+  [{:keys [db]}]
+  (let [receiver? (= (get-in db [:syncing :role]) constants/local-pairing-role-receiver)]
+    (merge
+     {:db (dissoc db :syncing)}
+     (when receiver?
+       {:dispatch [:init-root :enable-notifications]}))))
+
+(rf/defn local-pairing-update-role
+  {:events [:syncing/update-role]}
+  [{:keys [db]} role]
+  {:db (assoc-in db [:syncing :role] role)})
 
 (defn- get-default-node-config
   [installation-id]
@@ -44,6 +51,7 @@
                                                           :nodeConfig final-node-config
                                                           :settingCurrentNetwork config/default-network
                                                           :deviceType utils.platform/os}}))]
+            (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (status/input-connection-string-for-bootstrapping
              connection-string
              config-map
@@ -61,7 +69,8 @@
                            [:show-bottom-sheet
                             {:content (fn []
                                         [sheet/qr-code-view-with-connection-string
-                                         connection-string])}]))]
+                                         connection-string])}])
+                          (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender]))]
     (if valid-password?
       (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
             key-uid    (get-in db [:multiaccount :key-uid])

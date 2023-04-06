@@ -476,9 +476,6 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (cond
-    (get db :local-pairing/completed-pairing?)
-    (re-frame/dispatch [:syncing/pairing-completed])
-
     (get db :onboarding-2/new-account?)
     (re-frame/dispatch [:onboarding-2/finalize-setup])
 
@@ -490,8 +487,9 @@
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
-  (let [auth-method     (:auth-method db)
-        new-auth-method (get-new-auth-method auth-method save-password?)]
+  (let [auth-method          (:auth-method db)
+        new-auth-method      (get-new-auth-method auth-method save-password?)
+        pairing-in-progress? (get-in db [:syncing :pairing-in-progress?])]
     (log/debug "[login] login-only-events"
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
@@ -500,7 +498,8 @@
                :json-rpc/call
                [{:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
-                                  (redirect-to-root db))}]}
+                                  (when-not pairing-in-progress?
+                                    (redirect-to-root db)))}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
