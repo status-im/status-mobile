@@ -13,23 +13,24 @@
      :shadow-offset  {:width 0 :height -4}}
     {:elevation 10}))
 
-(defn container
-  [insets focused? text? images?]
-  (merge
-    {:border-top-left-radius  20
-     :border-top-right-radius 20
-     :padding-horizontal      20
-     :position                :absolute
-     :bottom                  0
-     :left                    0
-     :right                   0
-     :background-color        (colors/theme-colors colors/white colors/neutral-90)
-     :opacity                 (if (or focused? text? images?) 1 (if platform/ios? 0.7 0.5))
-     :z-index                 3
-     :padding-bottom          (:bottom insets)}
-    shadow))
+(defn sheet-container
+  [insets opacity]
+  (reanimated/apply-animations-to-style
+    {:opacity opacity}
+    (merge
+      {:border-top-left-radius  20
+       :border-top-right-radius 20
+       :padding-horizontal      20
+       :position                :absolute
+       :bottom                  0
+       :left                    0
+       :right                   0
+       :background-color        (colors/theme-colors colors/white colors/neutral-95)
+       :z-index                 3
+       :padding-bottom          (:bottom insets)}
+      shadow)))
 
-(defn handle-container
+(defn bar-container
   []
   {:height          c/handle-container-height
    :left            0
@@ -39,7 +40,7 @@
    :justify-content :center
    :align-items     :center})
 
-(defn handle
+(defn bar
   []
   {:width            32
    :height           4
@@ -47,17 +48,18 @@
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
 (defn input
-  [expanded? saved-keyboard-height]
+  [maximized? saved-keyboard-height]
   (merge typography/paragraph-1
          {:min-height          c/input-height
           :color               (colors/theme-colors :black :white)
           :text-align-vertical :top
           :flex                1
+          :z-index 1
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
           ; to inc gesture detection area on Android
-          :right               (when (or expanded? platform/ios?) 0)}))
+          :right               (when (or maximized? platform/ios?) 0)}))
 
 (defn input-container
   [height max-height]
@@ -78,10 +80,10 @@
    :flex-direction  :row})
 
 (defn background
-  [opacity translate-y window-height]
+  [opacity background-y window-height]
   (reanimated/apply-animations-to-style
     {:opacity   opacity
-     :transform [{:translate-y translate-y}]}
+     :transform [{:translate-y background-y}]}
     {:position         :absolute
      :left             0
      :right            0
@@ -91,10 +93,9 @@
      :z-index          1}))
 
 (defn blur-container
-  [opacity height]
+  [height]
   (reanimated/apply-animations-to-style
-    {:opacity opacity
-     :height  height}
+    {:height height}
     {:position                :absolute
      :elevation               10
      :left                    0
@@ -104,21 +105,43 @@
      :border-top-left-radius  20
      :overflow                :hidden}))
 
-(defn text-top-gradient
+(def blur-view
+  {:style       {:flex 1}
+   :blur-radius 20
+   :blur-type   :light
+   :blur-amount 20})
+
+(defn top-gradient-style
   [opacity z-index]
   (reanimated/apply-animations-to-style
     {:opacity opacity}
-    {:height   c/top-gradient-height
+    {:height   80
      :position :absolute
      :z-index  z-index
      :top      0
      :left     0
      :right    0}))
 
-(defn text-bottom-gradient
-  []
+(defn top-gradient
+  [opacity z-index]
+  {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0)
+            (colors/theme-colors colors/white colors/neutral-95)]
+   :start  {:x 0 :y 1}
+   :end    {:x 0 :y 0}
+   :style  (top-gradient-style opacity z-index)})
+
+(def bottom-gradient-style
   {:height   (if platform/ios? (:line-height typography/paragraph-1) 32)
    :position :absolute
    :bottom   0
    :left     0
-   :right    0})
+   :right    0
+   :z-index 2})
+
+(defn bottom-gradient
+  []
+  {:colors [(colors/theme-colors colors/white colors/neutral-95)
+            (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0)]
+   :start  {:x 0 :y 1}
+   :end    {:x 0 :y 0}
+   :style  bottom-gradient-style})
