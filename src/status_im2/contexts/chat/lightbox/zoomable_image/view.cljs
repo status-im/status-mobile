@@ -216,11 +216,9 @@
            curr-orientation                        (or (rf/sub [:lightbox/orientation])
                                                        orientation/portrait)
            portrait?                               (= curr-orientation orientation/portrait)
-           dimensions                              (utils/get-dimensions
-                                                    (or image-width c/default-dimension)
-                                                    (or image-height c/default-duration)
-                                                    curr-orientation
-                                                    args)
+           dimensions                              (utils/get-dimensions (or image-width (:window-width args))
+                                                                         (or image-height (:window-width args))
+                                                                         curr-orientation args)
            animations                              {:scale         (anim/use-val c/min-scale)
                                                     :saved-scale   (anim/use-val c/min-scale)
                                                     :pan-x-start   (anim/use-val c/init-offset)
