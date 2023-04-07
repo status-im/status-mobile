@@ -10,9 +10,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.constants :as chat.constants]
-            [status-im.chat.models.mentions :as mentions]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.chat.components.reply :as reply]
@@ -95,7 +93,7 @@
         :color               (styles/send-icon-color)}])]])
 
 (defn on-selection-change
-  [timeout-id last-text-change mentionable-users args]
+  [timeout-id last-text-change args]
   (let [selection (.-selection ^js (.-nativeEvent ^js args))
         start     (.-start selection)
         end       (.-end selection)]
@@ -106,10 +104,9 @@
       (reset!
         timeout-id
         (utils.utils/set-timeout
-         #(re-frame/dispatch [::mentions/on-selection-change
+         #(re-frame/dispatch [:mention/on-selection-change
                               {:start start
-                               :end   end}
-                              mentionable-users])
+                               :end   end}])
          50)))
     ;; NOTE(rasom): on Android we dispatch event only in case if there
     ;; was no text changes during last 50ms. `on-selection-change` is
@@ -118,10 +115,9 @@
     (when (and platform/android?
                (or (not @last-text-change)
                    (< 50 (- (js/Date.now) @last-text-change))))
-      (re-frame/dispatch [::mentions/on-selection-change
+      (re-frame/dispatch [:mention/on-selection-change
                           {:start start
-                           :end   end}
-                          mentionable-users]))))
+                           :end   end}]))))
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled (reagent/atom {}))
@@ -183,7 +179,7 @@
   (re-frame/dispatch [:chat.ui/set-chat-input-text val]))
 
 (defn on-change
-  [last-text-change timeout-id mentionable-users refs chat-id sending-image args]
+  [last-text-change timeout-id refs chat-id sending-image args]
   (let [text      (.-text ^js (.-nativeEvent ^js args))
         prev-text (get @input-texts chat-id)]
     (when (and (seq prev-text) (empty? text) (not sending-image))
@@ -206,46 +202,24 @@
     ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
     ;; that's why mention suggestions are calculated on `on-change`
     (when platform/ios?
-      (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
+      (re-frame/dispatch [:mention/calculate-suggestions]))))
 
 (rf/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui.input/set-chat-input-text]}
   [{:keys [db]} text chat-id]
-  (let [text-with-mentions   (mentions/->input-field text)
-        all-contacts         (:contacts/contacts db)
-        chat                 (get-in db [:chats chat-id])
-        current-multiaccount (:multiaccount db)
-        community-members    (when (= (:chat-type chat) chat.constants/community-chat-type)
-                               (get-in db [:communities (:community-id chat) :members]))
-        mentionable-users    (mentions/get-mentionable-users
-                              chat
-                              all-contacts
-                              current-multiaccount
-                              community-members)
-        hydrated-mentions    (map
-                              (fn [[t mention :as e]]
-                                (if (= t :mention)
-                                  (let [mention (multiaccounts/displayed-name
-                                                 (get mentionable-users mention))]
-                                    [:mention
-                                     (if (string/starts-with? mention "@")
-                                       mention
-                                       (str "@" mention))])
-                                  e))
-                              text-with-mentions)
-        info                 (mentions/->info hydrated-mentions)
-        new-text             (string/join (map second hydrated-mentions))]
-    {:set-text-input-value [chat-id new-text]
-     :db
-     (-> db
-         (assoc-in [:chats/cursor chat-id] (:mention-end info))
-         (assoc-in [:chat/inputs-with-mentions chat-id] hydrated-mentions)
-         (assoc-in [:chats/mentions chat-id :mentions] info))}))
+  (let [params [chat-id text]
+        method "wakuext_chatMentionToInputField"]
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-to-input-field-success %])
+                      :on-error   #(rf/dispatch [:mention/on-error
+                                                 {:method method
+                                                  :params params} %])}]}))
 
 (defn on-text-input
-  [mentionable-users chat-id args]
+  [chat-id args]
   (let [native-event  (.-nativeEvent ^js args)
         text          (.-text ^js native-event)
         previous-text (.-previousText ^js native-event)
@@ -256,7 +230,7 @@
       (swap! mentions-enabled assoc chat-id true))
 
     (re-frame/dispatch
-     [::mentions/on-text-input
+     [:mention/on-text-input
       {:new-text      text
        :previous-text previous-text
        :start         start
@@ -265,12 +239,11 @@
     ;; `on-change`, that's why mention suggestions are calculated
     ;; on `on-change`
     (when platform/android?
-      (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
+      (re-frame/dispatch [:mention/calculate-suggestions]))))
 
 (defn text-input
   [{:keys [set-active-panel refs chat-id sending-image]}]
   (let [cooldown-enabled? @(re-frame/subscribe [:chats/current-chat-cooldown-enabled?])
-        mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id        (atom nil)
         last-text-change  (atom nil)
         mentions-enabled  (get @mentions-enabled chat-id)
@@ -296,11 +269,10 @@
       :auto-capitalize :sentences
       :on-selection-change (partial on-selection-change
                                     timeout-id
-                                    last-text-change
-                                    mentionable-users)
+                                    last-text-change)
       :on-change
-      (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-      :on-text-input (partial on-text-input mentionable-users chat-id)}
+      (partial on-change last-text-change timeout-id refs chat-id sending-image)
+      :on-text-input (partial on-text-input chat-id)}
      (if mentions-enabled
        (for [[idx [type text]] (map-indexed
                                 (fn [idx item]
