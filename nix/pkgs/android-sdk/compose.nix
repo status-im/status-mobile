@@ -13,7 +13,7 @@ androidenv.composeAndroidPackages {
   buildToolsVersions = [ "30.0.0" ];
   platformVersions = [ "31" ];
   cmakeVersions = [ "3.18.1" ];
-  ndkVersion = "22.1.7171670";
+  ndkVersion = "24.0.8215888";
   includeNDK = true;
   includeExtras = [
     "extras;android;m2repository"
