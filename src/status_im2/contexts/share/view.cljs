@@ -11,8 +11,6 @@
             [clojure.string :as string]
             [status-im2.constants :as const]
             [react-native.blur :as blur]
-            ;;TODO(siddarthkay) : move the components below over to status-im2 ns
-            ;; issue -> https://github.com/status-im/status-mobile/issues/15549
             [status-im.ui.components.list-selection :as list-selection]))
 
 (defn header
