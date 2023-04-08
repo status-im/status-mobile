@@ -15,9 +15,6 @@
             ;; issue -> https://github.com/status-im/status-mobile/issues/15549
             [status-im.ui.components.list-selection :as list-selection]))
 
-(def ^:const profile-tab-id 0)
-(def ^:const wallet-tab-id 1)
-
 (defn header
   []
   [:<>
@@ -121,7 +118,7 @@
 
 (defn view
   []
-  (let [selected-tab (reagent/atom profile-tab-id)]
+  (let [selected-tab (reagent/atom :profile)]
     (fn []
       [safe-area/consumer
        (fn [{:keys [top bottom]}]
@@ -131,20 +128,15 @@
             [header]
             [rn/view {:style style/tabs-container}
              [quo/segmented-control
-              {:size                28
-               :scrollable?         true
-               :blur?               true
-               :override-theme      :dark
-               :style               style/tabs
-               :fade-end-percentage 0.79
-               :scroll-on-press?    true
-               :fade-end?           true
-               :on-change           #(reset! selected-tab %)
-               :default-active      @selected-tab
-               :data                [{:id    profile-tab-id
-                                      :label (i18n/label :t/profile)}
-                                     {:id    wallet-tab-id
-                                      :label (i18n/label :t/wallet)}]}]]
-            (if (= @selected-tab profile-tab-id)
+              {:size           28
+               :blur?          true
+               :override-theme :dark
+               :on-change      #(reset! selected-tab %)
+               :default-active :profile
+               :data           [{:id    :profile
+                                 :label (i18n/label :t/profile)}
+                                {:id    :wallet
+                                 :label (i18n/label :t/wallet)}]}]]
+            (if (= @selected-tab :profile)
               [profile-tab window-width]
               [wallet-tab])]))])))

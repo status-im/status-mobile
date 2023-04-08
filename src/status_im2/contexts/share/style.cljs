@@ -4,9 +4,9 @@
 (def screen-padding 20)
 
 (def blur
-  {:style        {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
+  {:style         {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
    :overlay-color colors/neutral-80-opa-80
-   :blur-amount  20})
+   :blur-amount   20})
 
 (def header-button
   {:margin-bottom 12
@@ -23,9 +23,6 @@
    :width          window-width
    :padding-top    (if (pos? top) (+ top 12) 12)
    :padding-bottom bottom})
-
-(def tabs
-  {:padding-left screen-padding})
 
 (def qr-code-container
   {:padding           12
