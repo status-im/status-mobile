@@ -184,7 +184,7 @@
   on login, otherwise just handle it"
   {:events [:universal-links/handle-url]}
   [{:keys [db] :as cofx} url]
-  (if (and (multiaccounts.model/logged-in? cofx) (= (:app-state db) "active"))
+  (if (and (multiaccounts.model/logged-in? db) (= (:app-state db) "active"))
     (route-url cofx url)
     (store-url-for-later cofx url)))
 

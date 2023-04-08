@@ -4,6 +4,6 @@
 
 (deftest logged-in-test
   (testing "multiaccount is defined"
-    (is (multiaccounts.model/logged-in? {:db {:multiaccount {}}})))
+    (is (multiaccounts.model/logged-in? {:multiaccount {}})))
   (testing "multiaccount is not there"
-    (is (not (multiaccounts.model/logged-in? {:db {}})))))
+    (is (not (multiaccounts.model/logged-in? {})))))

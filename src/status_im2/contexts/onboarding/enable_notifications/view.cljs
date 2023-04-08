@@ -8,7 +8,8 @@
     [react-native.platform :as platform]
     [status-im.notifications.core :as notifications]
     [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.enable-notifications.style :as style]))
+    [status-im2.contexts.onboarding.enable-notifications.style :as style]
+    [status-im2.contexts.shell.animation :as shell.animation]))
 
 (defn navigation-bar
   []
@@ -43,20 +44,23 @@
   []
   (let [{profile-color :color} (rf/sub [:onboarding-2/profile])]
     [rn/view {:style style/enable-notifications-buttons}
-     [quo/button
-      {:on-press                  (fn []
-                                    (rf/dispatch [::notifications/switch true platform/ios?])
-                                    (rf/dispatch [:init-root :welcome]))
-       :type                      :primary
-       :before                    :i/notifications
-       :accessibility-label       :enable-notifications-button
+    [quo/button
+     {:on-press                  (fn []
+                                   (shell.animation/change-selected-stack-id :communities-stack true)
+                                   (rf/dispatch [::notifications/switch true platform/ios?])
+                                   (rf/dispatch [:init-root :welcome]))
+      :type                      :primary
+      :before                    :i/notifications
+     :accessibility-label       :enable-notifications-button
        :override-background-color (colors/custom-color profile-color 60)}
-      (i18n/label :t/intro-wizard-title6)]
-     [quo/button
-      {:on-press                  #(rf/dispatch [:init-root :welcome])
+     (i18n/label :t/intro-wizard-title6)]
+    [quo/button
+    {:on-press                  (fn []
+                                  (shell.animation/change-selected-stack-id :communities-stack true)
+                                  (rf/dispatch [:init-root :welcome]))
        :accessibility-label       :enable-notifications-later-button
        :override-background-color colors/white-opa-5
-       :style                     {:margin-top 12}}
+      :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications
@@ -69,4 +73,3 @@
     [quo/text
      "[Illustration here]"]]
    [enable-notification-buttons]])
-

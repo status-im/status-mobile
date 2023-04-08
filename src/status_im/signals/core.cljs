@@ -60,27 +60,29 @@
   [{:keys [db] :as cofx} event]
   (log/info "local pairing signal received"
             {:event event})
-  (let [connection-success?             (= (:type event)
-                                           constants/local-pairing-event-connection-success)
+  (let [connection-success?             (and (= (:type event)
+                                                constants/local-pairing-event-connection-success)
+                                             (= (:action event)
+                                                constants/local-pairing-action-connect))
         error-on-pairing?               (contains? constants/local-pairing-event-errors (:type event))
         completed-pairing?              (and (= (:type event)
-                                                constants/local-pairing-event-process-success)
+                                                constants/local-pairing-event-transfer-success)
                                              (= (:action event)
-                                                constants/local-pairing-action-pairing-account))
-        logged-in?                      (multiaccounts.model/logged-in? cofx)
+                                                constants/local-pairing-action-pairing-installation))
+        logged-in?                      (multiaccounts.model/logged-in? db)
         ;; since `connection-success` event is received on both sender and receiver devices
         ;; we check the `logged-in?` status to identify the receiver and take the user to next screen
         navigate-to-syncing-devices?    (and connection-success? (not logged-in?))
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-devices)]
     (merge {:db (cond-> db
                   connection-success?
-                  (assoc :local-pairing/completed-pairing? false)
+                  (assoc-in [:syncing :pairing-in-progress?] true)
 
                   error-on-pairing?
-                  (dissoc :local-pairing/completed-pairing?)
+                  (update-in [:syncing :pairing-in-progress?] dissoc)
 
                   completed-pairing?
-                  (assoc :local-pairing/completed-pairing? true))}
+                  (assoc-in [:syncing :pairing-in-progress?] false))}
            (when navigate-to-syncing-devices?
              {:dispatch [:navigate-to :syncing-devices]})
            (when (and error-on-pairing? user-in-syncing-devices-screen?)
@@ -89,7 +91,9 @@
                              :icon-color     colors/danger-50
                              :override-theme :light
                              :text           (i18n/label :t/error-syncing-connection-failed)}]
-                           [:navigate-back]]}))))
+                           [:navigate-back]]})
+           (when completed-pairing?
+             {:dispatch [:syncing/pairing-completed]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}

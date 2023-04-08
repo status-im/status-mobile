@@ -15,7 +15,8 @@
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.sign-in.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.transforms :as transforms]))
 
 (defonce camera-permission-granted? (reagent/atom false))
 
@@ -85,14 +86,20 @@
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
-  [rn/view
-   {:style     style/qr-view-finder
-    :on-layout (fn [event]
-                 (let [layout      (js->clj (oops/oget event "nativeEvent.layout")
-                                            :keywordize-keys
-                                            true)
-                       view-finder (assoc layout :height (:width layout))]
-                   (reset! qr-view-finder view-finder)))}])
+  (let [status-bar-height (rn/status-bar-height)]
+    [rn/view
+     {:style     style/qr-view-finder
+      :on-layout (fn [event]
+                   (let [layout      (transforms/js->clj (oops/oget event "nativeEvent.layout"))
+                         width       (:width layout)
+                         y           (if platform/android?
+                                       (+ status-bar-height (:y layout))
+                                       (:y layout))
+                         view-finder (-> layout
+                                         (assoc :height width)
+                                         (assoc :y y))]
+                     (reset! qr-view-finder view-finder)))}]))
+
 
 (defn- border
   [border1 border2 corner]
