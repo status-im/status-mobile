@@ -19,7 +19,7 @@
 
 (defn bottom-tab
   ([icon stack-id shared-values notifications-data]
-   (bottom-tab icon stack-id shared-values notifications-data nil))
+   [bottom-tab icon stack-id shared-values notifications-data nil])
   ([icon stack-id shared-values notifications-data double-tap-gesture]
    [bottom-nav-tab/bottom-nav-tab
     (cond-> (assoc (get notifications-data stack-id)
