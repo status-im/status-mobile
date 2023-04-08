@@ -92,7 +92,10 @@ project.ext.react = [
      *       to guard against a hang in the UI thread after invoking status-go.
      * Also a clean and rebuild is required when changing this. */
     enableHermes: !disableHermes,
+    /* FIXME: Workaround for crash caused by missing libhermes-executor-release.so.
+     * https://github.com/facebook/react-native/issues/32928 */
     deleteDebugFilesForVariant: { false },
+    enableVmCleanup: false,
     /* Disable 'The first definition was here.' warnings */
     hermesFlagsRelease: ["-w"],
     bundleInPr: true,
@@ -321,6 +324,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.facebook.soloader:soloader:0.10.1+"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
