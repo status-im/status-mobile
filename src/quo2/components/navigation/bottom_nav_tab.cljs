@@ -16,7 +16,6 @@
      press-out?    "transparent"
      pass-through? colors/white-opa-5
      :else         colors/neutral-70)))
-
 (defn bottom-nav-tab
   "[bottom-nav-tab opts]
    opts
