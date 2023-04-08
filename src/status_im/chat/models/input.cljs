@@ -41,36 +41,19 @@
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
-  [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match] :as user}]
-  (let [chat-id     (:current-chat-id db)
-        new-text    (mentions/new-input-text-with-mention cofx user)
-        at-sign-idx (get-in db [:chats/mentions chat-id :mentions :at-sign-idx])
-        cursor      (+ at-sign-idx (count primary-name) 2)]
-    (rf/merge
-     cofx
-     {:db                   (-> db
-                                (assoc-in [:chats/cursor chat-id] cursor)
-                                (assoc-in [:chats/mention-suggestions chat-id] nil))
-      :set-text-input-value [chat-id new-text text-input-ref]}
-     (set-chat-input-text new-text chat-id)
-     ;; NOTE(rasom): Some keyboards do not react on selection property passed to
-     ;; text input (specifically Samsung keyboard with predictive text set on).
-     ;; In this case, if the user continues typing after the programmatic change,
-     ;; the new text is added to the last known cursor position before
-     ;; programmatic change. By calling `reset-text-input-cursor` we force the
-     ;; keyboard's cursor position to be changed before the next input.
-     (mentions/reset-text-input-cursor text-input-ref cursor)
-     ;; NOTE(roman): on-text-input event is not dispatched when we change input
-     ;; programmatically, so we have to call `on-text-input` manually
-     (mentions/on-text-input
-      (let [match-len (count match)
-            start     (inc at-sign-idx)
-            end       (+ start match-len)]
-        {:new-text      match
-         :previous-text searched-text
-         :start         start
-         :end           end}))
-     (mentions/recheck-at-idxs {primary-name user}))))
+  [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match public-key] :as user}]
+  (let [chat-id (:current-chat-id db)
+        text    (get-in db [:chat/inputs chat-id :input-text])
+        method  "wakuext_chatMentionNewInputTextWithMention"
+        params  [chat-id text primary-name]]
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-new-input-text-with-mentions-success %
+                                                 primary-name text-input-ref match searched-text
+                                                 public-key])
+                      :on-error   #(rf/dispatch [:mention/on-error
+                                                 {:method method
+                                                  :params params} %])}]}))
 
 (rf/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"
@@ -182,8 +165,7 @@
     (rf/merge cofx
               {:set-text-input-value [current-chat-id ""]}
               (clean-input current-chat-id)
-              (mentions/clear-mentions)
-              (mentions/clear-cursor))))
+              (mentions/clear-mentions))))
 
 (rf/defn send-messages
   [{:keys [db] :as cofx} input-text current-chat-id]
@@ -251,13 +233,29 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
         editing-message               (:editing-message metadata)
-        input-text-with-mentions      (mentions/check-mentions cofx input-text)]
-    (rf/merge cofx
-              (if editing-message
-                (send-edited-message input-text-with-mentions editing-message)
-                (send-messages input-text-with-mentions current-chat-id))
-              (mentions/clear-mentions)
-              (mentions/clear-cursor))))
+        method                        "wakuext_chatMentionCheckMentions"
+        params                        [current-chat-id input-text]]
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-error   #(rf/dispatch [:mention/on-error {:method method :params params} %])
+                      :on-success #(rf/dispatch [:mention/on-check-mentions-success
+                                                 current-chat-id
+                                                 editing-message
+                                                 input-text
+                                                 %])}]}))
+
+(rf/defn on-check-mentions-success
+  {:events [:mention/on-check-mentions-success]}
+  [{:keys [db] :as cofx} current-chat-id editing-message input-text new-text]
+  (log/debug "[mentions] on-check-mentions-success"
+             {:chat-id         current-chat-id
+              :editing-message editing-message
+              :input-text      input-text
+              :new-text        new-text})
+  (rf/merge cofx
+            (if editing-message
+              (send-edited-message new-text editing-message)
+              (send-messages new-text current-chat-id))))
 
 (rf/defn send-contact-request
   {:events [:contacts/send-contact-request]}
@@ -271,7 +269,6 @@
                                          :on-error    #(log/warn "failed to send a contact request" %)
                                          :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
-            (mentions/clear-cursor)
             (clean-input (:current-chat-id db))))
 
 (rf/defn cancel-contact-request
@@ -282,7 +279,6 @@
     (rf/merge cofx
               {:db (assoc-in db [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)}
               (mentions/clear-mentions)
-              (mentions/clear-cursor)
               (clean-input (:current-chat-id db)))))
 
 (rf/defn chat-send-sticker

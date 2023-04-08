@@ -21,7 +21,7 @@
 (rf/defn on-network-status-change
   [{:keys [db] :as cofx}]
   (let [initialized?                       (get db :network-status/initialized?)
-        logged-in?                         (multiaccounts.model/logged-in? cofx)
+        logged-in?                         (multiaccounts.model/logged-in? db)
         {:keys [remember-syncing-choice?]} (:multiaccount db)]
     (apply
      rf/merge
