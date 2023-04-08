@@ -238,7 +238,7 @@
                                                        :t/keycard-can-use-with-new-passcode
                                                        :t/keycard-backup-success-body))}}
             (cond
-              (multiaccounts.model/logged-in? cofx)
+              (multiaccounts.model/logged-in? db)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])
 
               (:multiaccounts/login db)

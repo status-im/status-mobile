@@ -1,9 +1,8 @@
 (ns status-im.multiaccounts.model)
 
 (defn logged-in?
-  [cofx]
-  (boolean
-   (get-in cofx [:db :multiaccount])))
+  [{:keys [multiaccount]}]
+  (boolean multiaccount))
 
 (defn credentials
   [cofx]
