@@ -280,3 +280,6 @@
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
 (reg-root-key-sub :information-box-states :information-box-states)
+
+; Messages home view -> tabs
+(reg-root-key-sub :messages-home-view/selected-tab :messages-home-view/selected-tab)
