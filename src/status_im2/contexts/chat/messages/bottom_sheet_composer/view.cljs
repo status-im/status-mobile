@@ -321,6 +321,7 @@
 
 (defn handle-content-size-change
   [e
+   {:keys [maximized?]}
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
@@ -331,6 +332,8 @@
       (when (should-update-height content-size height max-height)
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
+      (when (= new-height max-height)
+        (reset! maximized? true))
       (if (or (> new-height (* c/background-threshold max-height))
               (= (reanimated/get-shared-value saved-height) max-height))
         (do
@@ -612,6 +615,7 @@
                  :on-focus                 #(handle-focus props state animations dimensions)
                  :on-blur                  #(handle-blur state animations dimensions images)
                  :on-content-size-change   #(handle-content-size-change %
+                                                                        state
                                                                         animations
                                                                         dimensions
                                                                         keyboard-shown)
