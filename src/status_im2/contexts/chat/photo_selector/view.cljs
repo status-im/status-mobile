@@ -24,12 +24,7 @@
   (rf/dispatch [:navigate-back]))
 
 (defn bottom-gradient
-<<<<<<< HEAD
   [selected-images bottom-inset selected]
-=======
-  [selected-images insets selected]
-  (println "kkk" insets)
->>>>>>> 6a1a1c93c (updates)
   (when (or (seq @selected) (seq selected-images))
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
@@ -113,61 +108,8 @@
 
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll]}]
-<<<<<<< HEAD
-<<<<<<< HEAD
   [:f>
    (let [{:keys [bottom-inset]} (rf/sub [:screen-params]) ; TODO:
-                                                          ; https://github.com/status-im/status-mobile/issues/15535
-         temporary-selected     (reagent/atom [])] ; used when switching albums
-     (fn []
-       (let [selected        (reagent/atom [])     ; currently selected
-=======
-  [safe-area/consumer
-   (fn [insets]
-     [:f>
-      (let [temporary-selected (reagent/atom [])] ; used when switching albums
-        (fn []
-          (let [selected        (reagent/atom []) ; currently selected
-                selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
-                selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-            (rn/use-effect
-<<<<<<< HEAD
-             (fn []
-               (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-               (if (seq selected-images)
-                 (reset! selected (vec (vals selected-images)))
-                 (reset! selected @temporary-selected)))
-             [selected-album])
-=======
-  []
-  [:f>
-   (let [{:keys [insets]}   (rf/sub [:get-screen-params])
-         temporary-selected (reagent/atom [])] ; used when switching albums
-     (fn []
-       (let [selected        (reagent/atom []) ; currently selected
->>>>>>> 7c3fd5384 (feat: bottom sheet screen)
-             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
-             selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-         (rn/use-effect
-<<<<<<< HEAD
-          (fn []
-            (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-            (if (seq selected-images)
-              (reset! selected (vec (vals selected-images)))
-              (reset! selected @temporary-selected)))
-          [selected-album])
-<<<<<<< HEAD
-<<<<<<< HEAD
-         [:f>
-          (fn []
-=======
-=======
->>>>>>> 46b746724 (review)
-<<<<<<< HEAD
-=======
-=======
-  [:f>
-   (let [{:keys [insets]} (rf/sub [:get-screen-params]) ; TODO:
          ; https://github.com/status-im/status-mobile/issues/15535
          temporary-selected     (reagent/atom [])] ; used when switching albums
      (fn []
@@ -175,61 +117,14 @@
              selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
->>>>>>> 5cf992597 (updates)
            (fn []
              (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
              (if (seq selected-images)
                (reset! selected (vec (vals selected-images)))
                (reset! selected @temporary-selected)))
            [selected-album])
-<<<<<<< HEAD
->>>>>>> 51f87a6d5 (updates)
-         [bottom-sheet-screen/view
-          (fn [{:keys [scroll-enabled on-scroll]}]
-<<<<<<< HEAD
-=======
-         [bottom-sheet-screen/consumer
-          (fn [close scroll-enabled on-scroll]
->>>>>>> 52b8d487a (feat: bottom sheet screen)
-<<<<<<< HEAD
->>>>>>> fb1ba49a5 (feat: bottom sheet screen)
-<<<<<<< HEAD
->>>>>>> 7c3fd5384 (feat: bottom sheet screen)
-=======
-=======
-=======
-         [bottom-sheet-screen/view
-<<<<<<< HEAD
-          (fn [{:keys [close scroll-enabled on-scroll]}]
->>>>>>> 18f397b83 (review)
-<<<<<<< HEAD
->>>>>>> e1051a659 (review)
-<<<<<<< HEAD
->>>>>>> 46b746724 (review)
-=======
-=======
-=======
-          (fn [{:keys [scroll-enabled on-scroll]}]
->>>>>>> aaea14c93 (lint)
->>>>>>> 8a983f7e0 (lint)
-<<<<<<< HEAD
->>>>>>> c430c406a (lint)
-=======
-=======
->>>>>>> 13502ac3c (updates)
->>>>>>> 51f87a6d5 (updates)
-=======
-              (fn []
-                (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-                (if (seq selected-images)
-                  (reset! selected (vec (vals selected-images)))
-                  (reset! selected @temporary-selected)))
-              [selected-album])
->>>>>>> 47bbed1b0 (rebase)
-=======
          [:f>
           (fn []
->>>>>>> 5cf992597 (updates)
             (let [window-width       (:width (rn/get-window))
                   camera-roll-photos (rf/sub [:camera-roll/photos])
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
@@ -238,32 +133,7 @@
               [:<>
                [rn/view
                 {:style style/buttons-container}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 [album-title true selected-album selected temporary-selected]
-=======
-=======
->>>>>>> b8eb56525 (remove close button)
-<<<<<<< HEAD
-=======
-                [rn/touchable-opacity
-                 {:active-opacity 1
-                  :on-press       close
-                  :style          (style/close-button-container)}
-                 [quo/icon :i/close
-                  {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
->>>>>>> 52b8d487a (feat: bottom sheet screen)
-=======
->>>>>>> af6996923 (remove close button)
-=======
->>>>>>> 51f87a6d5 (updates)
-                [album-title true selected-album selected temporary-selected insets]
->>>>>>> 7c3fd5384 (feat: bottom sheet screen)
-=======
-                [album-title true selected-album selected temporary-selected]
->>>>>>> 5cf992597 (updates)
                 [clear-button selected]]
                [gesture/flat-list
                 {:key-fn                  identity
@@ -272,11 +142,11 @@
                  :data                    camera-roll-photos
                  :num-columns             3
                  :content-container-style {:width          "100%"
-                                           :padding-bottom (+ (:bottom insets) 100)
+                                           :padding-bottom (+ (:bottom bottom-inset) 100)
                                            :padding-top    64}
                  :on-scroll               on-scroll
                  :scroll-enabled          scroll-enabled
                  :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                          selected-album loading?
                                                          has-next-page?])}]
-               [bottom-gradient selected-images insets selected]]))])))])
+               [bottom-gradient selected-images bottom-inset selected]]))])))])
