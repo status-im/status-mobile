@@ -14,7 +14,7 @@
     [oops.core :as oops]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.utils.utils :as utils-old]
+    [status-im2.common.alert.events :as alert]
     [status-im2.contexts.chat.messages.list.view :as messages.list]
     [utils.i18n :as i18n]
     [status-im2.contexts.chat.messages.bottom-sheet-composer.style :as style]
@@ -25,7 +25,8 @@
 
 ;;; CONTROLS
 (defn send-button
-  [input-ref text-value images? height saved-height opacity background-y window-height]
+  [input-ref text-value images? window-height
+   {:keys [height saved-height last-height opacity background-y container-opacity]}]
   [:f> (fn []
          (let [btn-opacity (reanimated/use-shared-value 0)
                z-index     (reagent/atom 0)]
@@ -51,16 +52,17 @@
                  :size                32
                  :accessibility-label :send-message-button
                  :on-press            (fn []
-
                                         (reanimated/animate height c/input-height)
+                                        (reanimated/set-shared-value saved-height c/input-height)
+                                        (reanimated/set-shared-value last-height c/input-height)
                                         (reanimated/animate opacity 0)
-                                        (js/setTimeout #(reanimated/set-shared-value saved-height c/input-height) 300)
+                                        (js/setTimeout #(reanimated/animate container-opacity 0.7) 300)
                                         (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
-
+                                        (rf/dispatch [:chat.ui/send-current-message])
+                                        (rf/dispatch [:chat.ui/set-input-maximized false])
                                         (reset! text-value "")
                                         (.clear ^js @input-ref)
-                                        (messages.list/scroll-to-bottom)
-                                        (rf/dispatch [:chat.ui/send-current-message]))}
+                                        (messages.list/scroll-to-bottom))}
                 :i/arrow-up]])]))])
 
 (defn audio-button
@@ -82,17 +84,17 @@
    :i/camera])
 (defn image-button
   [insets height]
+  (println "kkkiii" insets)
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
                   {:permissions [:read-external-storage :write-external-storage]
                    :on-allowed  (fn []
                                   (rf/dispatch [:chat.ui/set-input-content-height (reanimated/get-shared-value height)])
-                                  (rf/dispatch
-                                    [:open-modal :photo-selector {:insets insets}]))
+                                  (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
                    :on-denied   (fn []
                                   (background-timer/set-timeout
-                                    #(utils-old/show-popup (i18n/label :t/error)
+                                    #(alert/show-popup (i18n/label :t/error)
                                                            (i18n/label
                                                              :t/external-storage-denied))
                                     50))}))
@@ -122,14 +124,14 @@
    :i/format])
 
 (defn actions
-  [input-ref text-value images? {:keys [height saved-height opacity background-y]} window-height insets]
+  [input-ref text-value images? {:keys [height saved-height opacity background-y] :as animations} window-height insets]
   [rn/view {:style (style/actions-container)}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
     [image-button insets height]
     [reaction-button]
     [format-button]]
-   [send-button input-ref text-value images? height saved-height opacity background-y window-height]
+   [send-button input-ref text-value images? window-height animations]
    [audio-button]])
 
 (defn bar
@@ -167,13 +169,16 @@
   (reanimated/set-shared-value saved-height max-height)
   (reanimated/set-shared-value background-y 0)
   (reanimated/animate opacity 1)
-  (reset! maximized? true))
+  (reset! maximized? true)
+  (println "maximizeing")
+  (rf/dispatch [:chat.ui/set-input-maximized true]))
 
 (defn minimize
   [{:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}]
   (when @emoji-kb-extra-height
     (reset! saved-emoji-kb-extra-height @emoji-kb-extra-height)
     (reset! emoji-kb-extra-height nil))
+  (rf/dispatch [:chat.ui/set-input-maximized false])
   (.blur ^js @input-ref))
 
 (defn bounce-back
@@ -254,8 +259,7 @@
   (js/setTimeout #(reset! lock-selection? false) 300)
   (when (not-empty @text-value)
     (.setNativeProps ^js @input-ref (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
-  (handle-refocus-emoji-kb-ios props animations dimensions)
-  (rf/dispatch [:chat.ui/set-input-focused true]))
+  (handle-refocus-emoji-kb-ios props animations dimensions))
 
 (defn calc-reopen-height
   [text-value min-height content-height saved-height]
@@ -283,8 +287,7 @@
     (reset! saved-cursor-position @cursor-position)
     (reset! gradient-z-index (if (= (reanimated/get-shared-value gradient-opacity) 1) -1 0))
     (when (not= reopen-height max-height)
-      (reset! maximized? false))
-    (rf/dispatch [:chat.ui/set-input-focused false])))
+      (reset! maximized? false))))
 
 (defn should-update-height
   [content-size height max-height]
@@ -299,7 +302,7 @@
    keyboard-shown]
   (when keyboard-shown
     (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
-          new-height   (Math/min content-size max-height)]
+          new-height   (bounded-val content-size c/input-height max-height)]
       (reset! content-height content-size)
       (when (should-update-height content-size height max-height)
         (reanimated/animate height new-height)
@@ -398,17 +401,16 @@
     (reanimated/set-shared-value layout-height (oops/oget e "nativeEvent.layout.height"))))
 
 (defn handle-reenter-screen
-  [{:keys [text-value saved-cursor-position]}
+  [{:keys [text-value saved-cursor-position maximized?]}
    {:keys [height saved-height]}
-   {:keys [lines]}
-   content-height input-content-height input-text]
+   {:keys [lines content-height]}
+   {:keys [input-content-height input-text input-maximized?]}]
   (when (and (empty? @text-value) (not= input-text nil))
     (reset! text-value input-text)
     (reset! content-height input-content-height)
-    (when (> lines 1)
-      (reanimated/animate height c/multiline-minimized-height)
-      (reanimated/set-shared-value saved-height c/multiline-minimized-height))
-    (reset! saved-cursor-position (count input-text))))
+    (reset! saved-cursor-position (count input-text)))
+  (when input-maximized?
+    (reset! maximized? true)))
 
 (defn store-kb-height
   [{:keys [kb-default-height]} keyboard-height]
@@ -443,20 +445,28 @@
 
 (defn use-effect
   [props
-   {:keys [lock-layout? kb-default-height maximized?] :as state}
-   {:keys [height saved-height] :as animations}
-   {:keys [content-height max-height] :as dimensions}
-   {:keys [input-content-height input-text]}
-   keyboard-height]
+   {:keys [lock-layout? kb-default-height maximized? text-value] :as state}
+   {:keys [height saved-height container-opacity opacity background-y] :as animations}
+   {:keys [max-height] :as dimensions}
+   {:keys [input-content-height input-text] :as chat-input}
+   keyboard-height images?]
   (rn/use-effect
     (fn []
-      (js/setTimeout #(reset! lock-layout? true) 500)
-      (when-not @kb-default-height
-        (async-storage/get-item :kb-default-height #(reset! kb-default-height (when (not= nil %) (js/parseInt %)))))
-      (handle-reenter-screen state animations dimensions content-height input-content-height input-text)
       (when (or @maximized? (>= input-content-height max-height))
         (reanimated/animate height max-height)
         (reanimated/set-shared-value saved-height max-height))
+      (handle-reenter-screen state animations dimensions chat-input)
+      (when (nil? input-text)
+        (js/setTimeout #(reset! lock-layout? true) 500))
+      (when-not @kb-default-height
+        (async-storage/get-item :kb-default-height #(reset! kb-default-height (when (not= nil %) (js/parseInt %)))))
+      (when (or @maximized? (>= input-content-height (* max-height c/background-threshold)))
+        (reanimated/set-shared-value background-y 0)
+        (reanimated/animate opacity 1))
+      (when images?
+        (reanimated/animate container-opacity 1))
+      (when (and (empty? @text-value) (not images?) (not @maximized?))
+        (reanimated/animate-delay container-opacity 0.7 200))
       (add-kb-listeners props state animations dimensions keyboard-height)
       #(component-will-unmount props)) [max-height]))
 
@@ -523,7 +533,7 @@
                                     :window-height  window-height
                                     :lines          lines
                                     :max-lines      max-lines}]
-                (use-effect props state animations dimensions chat-input keyboard-height)
+                (use-effect props state animations dimensions chat-input keyboard-height (seq images))
                 [gesture/gesture-detector {:gesture (drag-gesture props state animations dimensions keyboard-shown)}
                  [reanimated/view {:style     (style/sheet-container insets (:container-opacity animations))
                                    :on-layout #(handle-layout % state layout-height)}
@@ -547,7 +557,7 @@
                      :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
                      :style                    (style/input @(:maximized? state) @(:saved-emoji-kb-extra-height props))}]
                    [gradient-components props state animations dimensions]]
-                  [images/images-list @(:maximized? state)]
+                  [images/images-list]
                   [actions (:input-ref props) (:text-value state) (seq images) animations window-height insets]]]))]))])
 
 

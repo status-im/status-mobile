@@ -45,11 +45,11 @@
          (let [current-chat-id (or chat-id (:current-chat-id db))]
            {:db (assoc-in db [:chat/inputs current-chat-id :input-content-height] content-height)}))
 
-(rf/defn set-input-focused
-         {:events [:chat.ui/set-input-focused]}
-         [{db :db} focused? chat-id]
+(rf/defn set-input-maximized
+         {:events [:chat.ui/set-input-maximized]}
+         [{db :db} maximized? chat-id]
          (let [current-chat-id (or chat-id (:current-chat-id db))]
-           {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
+           {:db (assoc-in db [:chat/inputs current-chat-id :input-maximized?] maximized?)}))
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
