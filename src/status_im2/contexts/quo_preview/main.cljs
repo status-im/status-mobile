@@ -40,6 +40,7 @@
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
+    [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.markdown.text :as text]
@@ -183,7 +184,10 @@
                             :component title-input/preview-title-input}]
    :links                 [{:name      :url-preview
                             :options   {:insets {:top? true}}
-                            :component url-preview/preview}]
+                            :component url-preview/preview}
+                           {:name      :url-preview-list
+                            :options   {:insets {:top? true}}
+                            :component url-preview-list/preview}]
    :list-items            [{:name      :channel
                             :insets    {:top false}
                             :component channel/preview-channel}
