@@ -62,8 +62,8 @@
                            (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
                            (rf/dispatch [:navigate-back]))]
          (rn/use-effect
-           (fn []
-             (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
+          (fn []
+            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
          (hooks/use-back-handler close)
          [rn/view
           {:style {:flex        1

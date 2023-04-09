@@ -6,23 +6,23 @@
 (defn background
   [opacity]
   (reanimated/apply-animations-to-style
-    {:opacity opacity}
-    {:background-color colors/neutral-100-opa-70
-     :position         :absolute
-     :top              0
-     :bottom           0
-     :left             0
-     :right            0}))
+   {:opacity opacity}
+   {:background-color colors/neutral-100-opa-70
+    :position         :absolute
+    :top              0
+    :bottom           0
+    :left             0
+    :right            0}))
 
 (defn main-view
   [translate-y]
   (reanimated/apply-animations-to-style
-    {:transform [{:translate-y translate-y}]}
-    {:background-color        (colors/theme-colors colors/white colors/neutral-95)
-     :border-top-left-radius  20
-     :border-top-right-radius 20
-     :flex                    1
-     :overflow                :hidden}))
+   {:transform [{:translate-y translate-y}]}
+   {:background-color        (colors/theme-colors colors/white colors/neutral-95)
+    :border-top-left-radius  20
+    :border-top-right-radius 20
+    :flex                    1
+    :overflow                :hidden}))
 
 (def handle-container
   {:left            0

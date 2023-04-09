@@ -82,7 +82,7 @@
           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
           ;[composer/composer chat-id insets]
           [bottom-sheet-composer/bottom-sheet-composer chat-id insets]
-          )])]))
+        )])]))
 
 (defn chat
   []

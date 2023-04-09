@@ -33,7 +33,8 @@
        (rn/use-effect (fn []
                         (if (seq images)
                           (reanimated/animate height c/images-container-height)
-                          (reanimated/animate height 0))) [images])
+                          (reanimated/animate height 0)))
+                      [images])
        [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
         [rn/flat-list
          {:key-fn                       first
