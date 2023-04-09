@@ -3,9 +3,7 @@
             [quo2.core :as quo]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
-            [react-native.hooks :as hooks]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
@@ -15,7 +13,8 @@
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.bottom-sheet-composer.constants :as c]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -103,35 +102,6 @@
           [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
-
-(defn shell-button
-  [insets]
-  [:f>
-  (fn []
-    (let [{:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
-          lines      (Math/round (/ input-content-height 22))
-          lines      (if platform/ios? lines (dec lines))
-          extra      (if (and (not focused?) (> lines 1)) -18 0)
-          y (reanimated/use-shared-value 0)]
-      (rn/use-effect (fn []
-                       (reanimated/animate y extra 100)) [extra])
-      [reanimated/view {:style (reanimated/apply-animations-to-style
-                                 {:transform [{:translate-y y}]}
-                                 {:bottom (+ (if platform/ios? 6 20) (+ 108 (:bottom insets)))
-                                  :position    :absolute
-                                  :left 0
-                                  :right 0})}
-      [quo/floating-shell-button
-       (merge {:jump-to
-               {:on-press #(do
-                             (rf/dispatch [:chat/close true])
-                             (rf/dispatch [:shell/navigate-to-jump-to]))
-                :label    (i18n/label :t/jump-to)
-                :style {:align-self :center}}}
-              (when @show-floating-scroll-down-button
-                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
-       {}]]))])
-
 (defn messages-list
   [{:keys [chat-id] :as chat} insets]
   [:f>
@@ -182,5 +152,13 @@
                :inverted                     (when platform/ios? true)
                :style                        (when platform/android? {:scaleY -1})
                :on-layout                    on-messages-view-layout}]
-
-             [shell-button insets]]))]))])
+             [quo/floating-shell-button
+              (merge {:jump-to
+                      {:on-press #(do
+                                    (rf/dispatch [:chat/close true])
+                                    (rf/dispatch [:shell/navigate-to-jump-to]))
+                       :label    (i18n/label :t/jump-to)}}
+                     (when @show-floating-scroll-down-button
+                       {:scroll-to-bottom {:on-press scroll-to-bottom}}))
+              {:position :absolute
+               :bottom  (+ (:bottom insets) c/composer-default-height 6)}]]))]))])

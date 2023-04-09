@@ -25,7 +25,7 @@
     [quo/icon :i/close {:color colors/white :size 12}]]])
 
 (defn images-list
-  [maximized?]
+  []
   [:f>
    (fn []
      (let [images (rf/sub [:chats/sending-image])
@@ -33,9 +33,7 @@
        (rn/use-effect (fn []
                         (if (seq images)
                           (reanimated/animate height c/images-container-height)
-                          (if-not maximized?
-                            (reanimated/animate height 0)
-                            (reanimated/set-shared-value height 0)))) [images])
+                          (reanimated/animate height 0))) [images])
        [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
         [rn/flat-list
          {:key-fn                       first
@@ -43,4 +41,3 @@
           :data                         images
           :horizontal                   true
           :keyboard-should-persist-taps :handled}]]))])
-
