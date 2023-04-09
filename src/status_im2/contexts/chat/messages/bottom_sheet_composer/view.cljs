@@ -84,7 +84,6 @@
    :i/camera])
 (defn image-button
   [insets height]
-  (println "kkkiii" insets)
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
@@ -170,7 +169,6 @@
   (reanimated/set-shared-value background-y 0)
   (reanimated/animate opacity 1)
   (reset! maximized? true)
-  (println "maximizeing")
   (rf/dispatch [:chat.ui/set-input-maximized true]))
 
 (defn minimize
@@ -402,8 +400,7 @@
 
 (defn handle-reenter-screen
   [{:keys [text-value saved-cursor-position maximized?]}
-   {:keys [height saved-height]}
-   {:keys [lines content-height]}
+   {:keys [content-height]}
    {:keys [input-content-height input-text input-maximized?]}]
   (when (and (empty? @text-value) (not= input-text nil))
     (reset! text-value input-text)
@@ -455,7 +452,7 @@
       (when (or @maximized? (>= input-content-height max-height))
         (reanimated/animate height max-height)
         (reanimated/set-shared-value saved-height max-height))
-      (handle-reenter-screen state animations dimensions chat-input)
+      (handle-reenter-screen state dimensions chat-input)
       (when (nil? input-text)
         (js/setTimeout #(reset! lock-layout? true) 500))
       (when-not @kb-default-height
