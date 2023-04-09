@@ -44,17 +44,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                                  (dec (oops/oget evt "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                            (dec (oops/oget evt "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -90,7 +90,8 @@
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
 (defn render-fn
-  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _ {:keys [context keyboard-shown]}]
+  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
+   {:keys [context keyboard-shown]}]
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
@@ -110,13 +111,16 @@
            keyboard-hide-listener (atom nil)
            keyboard-shown         (atom false)]
        (rn/use-effect
-         (fn [] (reset! keyboard-show-listener (.addListener rn/keyboard "keyboardWillShow"
-                                                             (fn [e] (reset! keyboard-shown true))))
-           (reset! keyboard-hide-listener (.addListener rn/keyboard "keyboardWillHide"
-                                                        (fn [e] (reset! keyboard-shown false))))
-           (fn []
-             (.remove ^js @keyboard-show-listener)
-             (.remove ^js @keyboard-hide-listener))))
+        (fn []
+          (reset! keyboard-show-listener (.addListener rn/keyboard
+                                                       "keyboardWillShow"
+                                                       (fn [e] (reset! keyboard-shown true))))
+          (reset! keyboard-hide-listener (.addListener rn/keyboard
+                                                       "keyboardWillHide"
+                                                       (fn [e] (reset! keyboard-shown false))))
+          (fn []
+            (.remove ^js @keyboard-show-listener)
+            (.remove ^js @keyboard-hide-listener))))
        [:f>
         (fn []
           (let [context      (rf/sub [:chats/current-chat-message-list-view-context])
@@ -125,7 +129,7 @@
             [rn/view
              {:style {:flex 1
                       ;:padding-bottom (+ 108 (:bottom insets))
-                      }} ;; TODO: 108 is the composer's min-height
+                     }} ;; TODO: 108 is the composer's min-height
              ;; NOTE: DO NOT use anonymous functions for handlers
              [rn/flat-list
               {:key-fn                       list-key-fn
@@ -161,4 +165,4 @@
                      (when @show-floating-scroll-down-button
                        {:scroll-to-bottom {:on-press scroll-to-bottom}}))
               {:position :absolute
-               :bottom  (+ (:bottom insets) c/composer-default-height 6)}]]))]))])
+               :bottom   (+ (:bottom insets) c/composer-default-height 6)}]]))]))])

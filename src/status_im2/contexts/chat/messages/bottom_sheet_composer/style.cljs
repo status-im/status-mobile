@@ -16,19 +16,19 @@
 (defn sheet-container
   [insets opacity]
   (reanimated/apply-animations-to-style
-    {:opacity opacity}
-    (merge
-      {:border-top-left-radius  20
-       :border-top-right-radius 20
-       :padding-horizontal      20
-       :position                :absolute
-       :bottom                  0
-       :left                    0
-       :right                   0
-       :background-color        (colors/theme-colors colors/white colors/neutral-95)
-       :z-index                 3
-       :padding-bottom          (:bottom insets)}
-      shadow)))
+   {:opacity opacity}
+   (merge
+    {:border-top-left-radius  20
+     :border-top-right-radius 20
+     :padding-horizontal      20
+     :position                :absolute
+     :bottom                  0
+     :left                    0
+     :right                   0
+     :background-color        (colors/theme-colors colors/white colors/neutral-95)
+     :z-index                 3
+     :padding-bottom          (:bottom insets)}
+    shadow)))
 
 (defn bar-container
   []
@@ -54,7 +54,7 @@
           :color               (colors/theme-colors :black :white)
           :text-align-vertical :top
           :flex                1
-          :z-index 1
+          :z-index             1
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
@@ -64,11 +64,10 @@
 (defn input-container
   [height max-height]
   (reanimated/apply-animations-to-style
-    {:height height}
-    {
-     ;:min-height c/input-height
-     :max-height max-height
-     :overflow   :hidden}))
+   {:height height}
+   {;:min-height c/input-height
+    :max-height max-height
+    :overflow   :hidden}))
 
 
 (defn actions-container
@@ -82,28 +81,28 @@
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style
-    {:opacity   opacity
-     :transform [{:translate-y background-y}]}
-    {:position         :absolute
-     :left             0
-     :right            0
-     :bottom           0
-     :height           window-height
-     :background-color colors/neutral-95-opa-70
-     :z-index          1}))
+   {:opacity   opacity
+    :transform [{:translate-y background-y}]}
+   {:position         :absolute
+    :left             0
+    :right            0
+    :bottom           0
+    :height           window-height
+    :background-color colors/neutral-95-opa-70
+    :z-index          1}))
 
 (defn blur-container
   [height]
   (reanimated/apply-animations-to-style
-    {:height height}
-    {:position                :absolute
-     :elevation               10
-     :left                    0
-     :right                   0
-     :bottom                  0
-     :border-top-right-radius 20
-     :border-top-left-radius  20
-     :overflow                :hidden}))
+   {:height height}
+   {:position                :absolute
+    :elevation               10
+    :left                    0
+    :right                   0
+    :bottom                  0
+    :border-top-right-radius 20
+    :border-top-left-radius  20
+    :overflow                :hidden}))
 
 (def blur-view
   {:style       {:flex 1}
@@ -114,13 +113,13 @@
 (defn top-gradient-style
   [opacity z-index]
   (reanimated/apply-animations-to-style
-    {:opacity opacity}
-    {:height   80
-     :position :absolute
-     :z-index  z-index
-     :top      0
-     :left     0
-     :right    0}))
+   {:opacity opacity}
+   {:height   80
+    :position :absolute
+    :z-index  z-index
+    :top      0
+    :left     0
+    :right    0}))
 
 (defn top-gradient
   [opacity z-index]
@@ -136,7 +135,7 @@
    :bottom   0
    :left     0
    :right    0
-   :z-index 2})
+   :z-index  2})
 
 (defn bottom-gradient
   []
