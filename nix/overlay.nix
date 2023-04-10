@@ -53,9 +53,9 @@ in {
     version = "13.3";
     allowHigher = true;
   };
-  go = super.go_1_18;
-  buildGoPackage = super.buildGo118Package;
-  buildGoModule = super.buildGo118Module;
+  go = super.go_1_19;
+  buildGoPackage = super.buildGo119Package;
+  buildGoModule = super.buildGo119Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
     patches = self.fetchurl { # https://github.com/golang/mobile/pull/84
       url = "https://github.com/golang/mobile/commit/f20e966e05b8f7e06bed500fa0da81cf6ebca307.patch";
