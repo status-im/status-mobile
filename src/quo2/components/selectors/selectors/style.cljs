@@ -16,7 +16,8 @@
                                             colors/white)
             :unchecked (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40)}})
 
-(def radio-background-unchecked-color
+(defn radio-background-unchecked-color
+  []
   {:normal (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
    :blur   colors/white-opa-5})
 
@@ -28,11 +29,13 @@
                                             colors/white)
             :unchecked colors/white-opa-5}})
 
-(def checkbox-border-unchecked-color
+(defn checkbox-border-unchecked-color
+  []
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-70)
    :blur   (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40)})
 
-(def checkbox-prefill-background-color
+(defn checkbox-prefill-background-color
+  []
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-80)
    :blur   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10)})
 
@@ -72,7 +75,7 @@
          :border-width     1.2
          :opacity          (if disabled? 0.3 1)
          :background-color (when-not checked?
-                             (get-color radio-background-unchecked-color blur?))
+                             (get-color (radio-background-unchecked-color) blur?))
          :border-color     (get-color (radio-border-color customization-color) blur? checked?)))
 
 (defn radio-inner
@@ -94,7 +97,7 @@
          :border-width     (if checked? 0 1.2)
          :background-color (get-color (checkbox-background-color customization-color) blur? checked?)
          :border-color     (when-not checked?
-                             (get-color checkbox-border-unchecked-color blur?))))
+                             (get-color (checkbox-border-unchecked-color) blur?))))
 
 (defn common-checkbox-inner
   [{:keys [checked?]}]
@@ -115,7 +118,7 @@
          :width            21
          :border-radius    6
          :opacity          (if disabled? 0.3 1)
-         :background-color (get-color checkbox-prefill-background-color blur?)))
+         :background-color (get-color (checkbox-prefill-background-color) blur?)))
 
 (defn checkbox-prefill-check
   [checked? _blur?]
