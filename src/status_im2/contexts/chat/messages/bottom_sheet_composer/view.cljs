@@ -79,7 +79,7 @@
                           (if-not keyboard-shown
                             (do ; focus and end
                               (when (< (oops/oget e "velocityY") c/velocity-threshold)
-                                (reanimated/animate container-opacity 1)
+                                (reanimated/set-shared-value container-opacity 1)
                                 (reanimated/set-shared-value last-height max-height))
                               (.focus ^js @input-ref)
                               (reset! gesture-enabled? false))
@@ -219,10 +219,9 @@
    {:keys [input-ref]}
    {:keys [text-value cursor-position]}]
   (reset! text-value text)
-  (js/setTimeout #(.setNativeProps ^js @input-ref
-                                   (clj->js {:selection {:start @cursor-position
-                                                         :end   @cursor-position}}))
-                 20)
+  (reagent/next-tick #(.setNativeProps ^js @input-ref
+                                       (clj->js {:selection {:start @cursor-position
+                                                             :end   @cursor-position}})))
   (rf/dispatch [:chat.ui/set-chat-input-text text]))
 
 (defn handle-selection-change
@@ -256,7 +255,7 @@
 
 (defn use-effect
   [props
-   {:keys [lock-layout? kb-default-height maximized? text-value] :as state}
+   {:keys [lock-layout? kb-default-height maximized? focused? text-value] :as state}
    {:keys [height saved-height container-opacity opacity background-y] :as animations}
    {:keys [max-height] :as dimensions}
    {:keys [input-content-height] :as chat-input}
@@ -277,7 +276,7 @@
        (reanimated/animate opacity 1))
      (when images?
        (reanimated/animate container-opacity 1))
-     (when (and (empty? @text-value) (not images?) (not @maximized?))
+     (when (and (empty? @text-value) (not images?) (not @maximized?) (not @focused?))
        (reanimated/animate-delay container-opacity 0.7 200))
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
