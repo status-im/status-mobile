@@ -1,12 +1,13 @@
 // !$*UTF8*$!
 {
-    archiveVersion = 1;
-    classes = {
-    };
-    objectVersion = 52;
-    objects = {
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
 
 /* Begin PBXBuildFile section */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -15,6 +16,9 @@
 =======
 		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
 >>>>>>> 082e83dd1 (updates)
+=======
+		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
+>>>>>>> 84439d6fd (updates)
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
@@ -51,16 +55,21 @@
 		715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 <<<<<<< HEAD
+<<<<<<< HEAD
 		7DC033789D9E0F726FD9C7AC /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6955EB77D86338A4FA30BF8B /* libPods-Status-StatusImPR.a */; };
 		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
 		8FC9C79C1A8446E7C7C18C60 /* libPods-Status-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 983EA05FB44F859255242D55 /* libPods-Status-StatusIm.a */; };
 =======
 		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
 >>>>>>> 082e83dd1 (updates)
+=======
+		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
+>>>>>>> 84439d6fd (updates)
 		B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FC1DE7195700D694FF /* Social.framework */; };
 		B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 		BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */; };
@@ -71,10 +80,14 @@
 		C1715FFA29C0BCE10088FA8B /* launch-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9029C0AD9C005C58A7 /* launch-icon@2x.png */; };
 		C1715FFB29C0BCE50088FA8B /* launch-icon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F8C29C0A149005C58A7 /* launch-icon@3x.png */; };
 		C1715FFC29C0BCE80088FA8B /* launch-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9229C0ADB5005C58A7 /* launch-icon.png */; };
+=======
+		BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */; };
+>>>>>>> 84439d6fd (updates)
 		CE4E31B31D8695250033ED64 /* Statusgo.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.xcframework */; };
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -135,54 +148,61 @@
 >>>>>>> 082e83dd1 (updates)
 =======
 >>>>>>> 12ff0b995 (updates)
+=======
+		E9C92E7783C7FB91C9616112 /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CBBEA420F440D344DD99E5 /* libPods-Status-StatusImPR.a */; };
+		F51761A0F4D1FAE41A72435A /* libPods-Status-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 928CC6D1D5BCCF9D3BC60D6A /* libPods-Status-StatusIm.a */; };
+>>>>>>> 84439d6fd (updates)
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-        00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
-            isa = PBXContainerItemProxy;
-            containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-            proxyType = 1;
-            remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-            remoteInfo = StatusIm;
-        };
-        9EC013781E06FB1900155B5C /* PBXContainerItemProxy */ = {
-            isa = PBXContainerItemProxy;
-            containerPortal = 9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */;
-            proxyType = 2;
-            remoteGlobalIDString = 0974579A1D2A440A000D9368;
-            remoteInfo = RCTWKWebView;
-        };
+		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = StatusIm;
+		};
+		9EC013781E06FB1900155B5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0974579A1D2A440A000D9368;
+			remoteInfo = RCTWKWebView;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-        20B6B6891D92C42700CC5C6A /* Embed Frameworks */ = {
-            isa = PBXCopyFilesBuildPhase;
-            buildActionMask = 2147483647;
-            dstPath = "";
-            dstSubfolderSpec = 10;
-            files = (
-            );
-            name = "Embed Frameworks";
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        3AAD2AD624A3A60E0075D594 /* Embed Frameworks */ = {
-            isa = PBXCopyFilesBuildPhase;
-            buildActionMask = 2147483647;
-            dstPath = "";
-            dstSubfolderSpec = 10;
-            files = (
-            );
-            name = "Embed Frameworks";
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		20B6B6891D92C42700CC5C6A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AAD2AD624A3A60E0075D594 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* StatusImTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StatusImTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -199,21 +219,28 @@
 		3AAD2ADC24A3A60E0075D594 /* Status PR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Status PR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusIm-Bridging-Header.h"; sourceTree = "<group>"; };
 <<<<<<< HEAD
+<<<<<<< HEAD
 		3D03948FF807541657E64335 /* Pods-Status-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 =======
+=======
+>>>>>>> 84439d6fd (updates)
 		43341A7CBCE457435677CC51 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		564309A78329EB657677709C /* Pods-Status-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
 		57CBBEA420F440D344DD99E5 /* libPods-Status-StatusImPR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusImPR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F30F922E4B02AB10F6CB65E /* Pods-Status-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
+<<<<<<< HEAD
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 		65F693BD2578002500A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
 		65F693BF2578003600A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/iOSSupport/System/Library/Frameworks/CoreNFC.framework; sourceTree = DEVELOPER_DIR; };
 		65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusImTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		65F6941825780A4F00A45E76 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 <<<<<<< HEAD
 		691D1B2EE134FCF74D07E435 /* Pods-Status-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
 		693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../resources/fonts/Inter-SemiBold.otf"; sourceTree = "<group>"; };
@@ -227,6 +254,8 @@
 		9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InterStatus-Regular.otf"; path = "../resources/fonts/InterStatus-Regular.otf"; sourceTree = "<group>"; };
 		9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWKWebView.xcodeproj; path = "../node_modules/react-native-wkwebview-reborn/ios/RCTWKWebView.xcodeproj"; sourceTree = "<group>"; };
 =======
+=======
+>>>>>>> 84439d6fd (updates)
 		693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../resources/fonts/Inter-SemiBold.otf"; sourceTree = "<group>"; };
 		70ACC04C7CF0A6C6421A805D /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "UbuntuMono-Regular.ttf"; path = "../resources/fonts/UbuntuMono-Regular.ttf"; sourceTree = "<group>"; };
@@ -239,7 +268,10 @@
 		9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InterStatus-Regular.otf"; path = "../resources/fonts/InterStatus-Regular.otf"; sourceTree = "<group>"; };
 		9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWKWebView.xcodeproj; path = "../node_modules/react-native-wkwebview-reborn/ios/RCTWKWebView.xcodeproj"; sourceTree = "<group>"; };
 		A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+<<<<<<< HEAD
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 		A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBoldItalic.otf"; path = "../resources/fonts/Inter-SemiBoldItalic.otf"; sourceTree = "<group>"; };
 		B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.otf"; path = "../resources/fonts/Inter-Italic.otf"; sourceTree = "<group>"; };
 		B24FC7FC1DE7195700D694FF /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -247,6 +279,7 @@
 		B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.otf"; path = "../resources/fonts/Inter-Medium.otf"; sourceTree = "<group>"; };
 		B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = StatusIm/Images.xcassets; sourceTree = "<group>"; };
 		B321D25F4493470980039457 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../resources/fonts/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
+<<<<<<< HEAD
 <<<<<<< HEAD
 		BDC1942C3E1889184B8DFEA8 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 =======
@@ -563,186 +596,192 @@
 >>>>>>> 082e83dd1 (updates)
 =======
 >>>>>>> 12ff0b995 (updates)
+=======
+		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
+		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
+		CE4E31B21D8695250033ED64 /* Statusgo.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Statusgo.xcframework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.xcframework"; sourceTree = "<group>"; };
+>>>>>>> 84439d6fd (updates)
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-        00E356EB1AD99517003FC87E /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */,
-                B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */,
-                CE4E31B31D8695250033ED64 /* Statusgo.xcframework in Frameworks */,
-                25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */,
-                BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
-                F51761A0F4D1FAE41A72435A /* libPods-Status-StatusIm.a in Frameworks */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        3AAD2ABF24A3A60E0075D594 /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                3A8F8EAA24A4D31600BF206D /* GameKit.framework in Frameworks */,
-                3AAD2AC024A3A60E0075D594 /* MessageUI.framework in Frameworks */,
-                3AAD2AC124A3A60E0075D594 /* Social.framework in Frameworks */,
-                3AAD2AC224A3A60E0075D594 /* Statusgo.xcframework in Frameworks */,
-                3AAD2AC524A3A60E0075D594 /* libc++.tbd in Frameworks */,
-                3AAD2AC624A3A60E0075D594 /* libz.tbd in Frameworks */,
-                E9C92E7783C7FB91C9616112 /* libPods-Status-StatusImPR.a in Frameworks */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		00E356EB1AD99517003FC87E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */,
+				B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */,
+				CE4E31B31D8695250033ED64 /* Statusgo.xcframework in Frameworks */,
+				25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */,
+				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
+				F51761A0F4D1FAE41A72435A /* libPods-Status-StatusIm.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AAD2ABF24A3A60E0075D594 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A8F8EAA24A4D31600BF206D /* GameKit.framework in Frameworks */,
+				3AAD2AC024A3A60E0075D594 /* MessageUI.framework in Frameworks */,
+				3AAD2AC124A3A60E0075D594 /* Social.framework in Frameworks */,
+				3AAD2AC224A3A60E0075D594 /* Statusgo.xcframework in Frameworks */,
+				3AAD2AC524A3A60E0075D594 /* libc++.tbd in Frameworks */,
+				3AAD2AC624A3A60E0075D594 /* libz.tbd in Frameworks */,
+				E9C92E7783C7FB91C9616112 /* libPods-Status-StatusImPR.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-        00E356EF1AD99517003FC87E /* StatusImTests */ = {
-            isa = PBXGroup;
-            children = (
-                00E356F21AD99517003FC87E /* StatusImTests.m */,
-                00E356F01AD99517003FC87E /* Supporting Files */,
-            );
-            path = StatusImTests;
-            sourceTree = "<group>";
-        };
-        00E356F01AD99517003FC87E /* Supporting Files */ = {
-            isa = PBXGroup;
-            children = (
-                00E356F11AD99517003FC87E /* Info.plist */,
-            );
-            name = "Supporting Files";
-            sourceTree = "<group>";
-        };
-        13B07FAE1A68108700A75B9A /* StatusIm */ = {
-            isa = PBXGroup;
-            children = (
-                922C4CA61F4D5F8B0033C753 /* StatusIm.entitlements */,
-                B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
-                008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-                13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-                13B07FB01A68108700A75B9A /* AppDelegate.m */,
-                13B07FB61A68108700A75B9A /* Info.plist */,
-                13B07FB71A68108700A75B9A /* main.m */,
-                3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */,
-                3A2626CE245C3F2200D5F94B /* Dummy.swift */,
-            );
-            name = StatusIm;
-            sourceTree = "<group>";
-        };
-        1E7837547A9A40E18AD63CF3 /* Resources */ = {
-            isa = PBXGroup;
-            children = (
-                74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */,
-                CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */,
-                B321D25F4493470980039457 /* Inter-BoldItalic.otf */,
-                B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */,
-                B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */,
-                C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */,
-                1426DF592BA248FC81D955CB /* Inter-Regular.otf */,
-                693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */,
-                A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */,
-                9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */,
-                715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */,
-            );
-            name = Resources;
-            sourceTree = "<group>";
-        };
-        3AAD2AB624A3A5F10075D594 /* StatusImPR */ = {
-            isa = PBXGroup;
-            children = (
-                3A6406FB24A3ADF90046ED37 /* Info.plist */,
-            );
-            path = StatusImPR;
-            sourceTree = "<group>";
-        };
-        832341AE1AAA6A7D00B99B32 /* Libraries */ = {
-            isa = PBXGroup;
-            children = (
-                9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */,
-            );
-            name = Libraries;
-            sourceTree = "<group>";
-        };
-        83CBB9F61A601CBA00E9B192 = {
-            isa = PBXGroup;
-            children = (
-                65F6941825780A4F00A45E76 /* Bridge.swift */,
-                3AAD2AB624A3A5F10075D594 /* StatusImPR */,
-                13B07FAE1A68108700A75B9A /* StatusIm */,
-                832341AE1AAA6A7D00B99B32 /* Libraries */,
-                00E356EF1AD99517003FC87E /* StatusImTests */,
-                83CBBA001A601CBA00E9B192 /* Products */,
-                A97BA941B2FB44B4B66EE6D3 /* Frameworks */,
-                1E7837547A9A40E18AD63CF3 /* Resources */,
-                65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */,
-                D0D5C8D06825D33BA2D2121E /* Pods */,
-            );
-            indentWidth = 2;
-            sourceTree = "<group>";
-            tabWidth = 2;
-            usesTabs = 0;
-        };
-        83CBBA001A601CBA00E9B192 /* Products */ = {
-            isa = PBXGroup;
-            children = (
-                13B07F961A680F5B00A75B9A /* StatusIm.app */,
-                00E356EE1AD99517003FC87E /* StatusImTests.xctest */,
-                3AAD2ADC24A3A60E0075D594 /* Status PR.app */,
-            );
-            name = Products;
-            sourceTree = "<group>";
-        };
-        9EC0135D1E06FB1900155B5C /* Products */ = {
-            isa = PBXGroup;
-            children = (
-                9EC013791E06FB1900155B5C /* libRCTWKWebView.a */,
-            );
-            name = Products;
-            sourceTree = "<group>";
-        };
-        A97BA941B2FB44B4B66EE6D3 /* Frameworks */ = {
-            isa = PBXGroup;
-            children = (
-                65F693BD2578002500A45E76 /* CoreNFC.framework */,
-                65F693BF2578003600A45E76 /* CoreNFC.framework */,
-                3A8F8EA924A4D31600BF206D /* GameKit.framework */,
-                4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */,
-                B24FC7FE1DE7195F00D694FF /* MessageUI.framework */,
-                B24FC7FC1DE7195700D694FF /* Social.framework */,
-                CE4E31B21D8695250033ED64 /* Statusgo.xcframework */,
-                8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */,
-                4E586E1B0E544F64AA9F5BD1 /* libz.tbd */,
-                928CC6D1D5BCCF9D3BC60D6A /* libPods-Status-StatusIm.a */,
-                A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */,
-                57CBBEA420F440D344DD99E5 /* libPods-Status-StatusImPR.a */,
-            );
-            name = Frameworks;
-            sourceTree = "<group>";
-        };
-        D0D5C8D06825D33BA2D2121E /* Pods */ = {
-            isa = PBXGroup;
-            children = (
-                564309A78329EB657677709C /* Pods-Status-StatusIm.debug.xcconfig */,
-                5F30F922E4B02AB10F6CB65E /* Pods-Status-StatusIm.release.xcconfig */,
-                43341A7CBCE457435677CC51 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */,
-                70ACC04C7CF0A6C6421A805D /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */,
-                8D3CFDC9666FBD03D1AA059A /* Pods-Status-StatusImPR.debug.xcconfig */,
-                8B3C115CD813729DE4735219 /* Pods-Status-StatusImPR.release.xcconfig */,
-            );
-            path = Pods;
-            sourceTree = "<group>";
-        };
+		00E356EF1AD99517003FC87E /* StatusImTests */ = {
+			isa = PBXGroup;
+			children = (
+				00E356F21AD99517003FC87E /* StatusImTests.m */,
+				00E356F01AD99517003FC87E /* Supporting Files */,
+			);
+			path = StatusImTests;
+			sourceTree = "<group>";
+		};
+		00E356F01AD99517003FC87E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				00E356F11AD99517003FC87E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		13B07FAE1A68108700A75B9A /* StatusIm */ = {
+			isa = PBXGroup;
+			children = (
+				922C4CA61F4D5F8B0033C753 /* StatusIm.entitlements */,
+				B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
+				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
+				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				13B07FB61A68108700A75B9A /* Info.plist */,
+				13B07FB71A68108700A75B9A /* main.m */,
+				3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */,
+				3A2626CE245C3F2200D5F94B /* Dummy.swift */,
+			);
+			name = StatusIm;
+			sourceTree = "<group>";
+		};
+		1E7837547A9A40E18AD63CF3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */,
+				CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */,
+				B321D25F4493470980039457 /* Inter-BoldItalic.otf */,
+				B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */,
+				B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */,
+				C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */,
+				1426DF592BA248FC81D955CB /* Inter-Regular.otf */,
+				693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */,
+				A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */,
+				9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */,
+				715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		3AAD2AB624A3A5F10075D594 /* StatusImPR */ = {
+			isa = PBXGroup;
+			children = (
+				3A6406FB24A3ADF90046ED37 /* Info.plist */,
+			);
+			path = StatusImPR;
+			sourceTree = "<group>";
+		};
+		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		83CBB9F61A601CBA00E9B192 = {
+			isa = PBXGroup;
+			children = (
+				65F6941825780A4F00A45E76 /* Bridge.swift */,
+				3AAD2AB624A3A5F10075D594 /* StatusImPR */,
+				13B07FAE1A68108700A75B9A /* StatusIm */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				00E356EF1AD99517003FC87E /* StatusImTests */,
+				83CBBA001A601CBA00E9B192 /* Products */,
+				A97BA941B2FB44B4B66EE6D3 /* Frameworks */,
+				1E7837547A9A40E18AD63CF3 /* Resources */,
+				65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */,
+				D0D5C8D06825D33BA2D2121E /* Pods */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		83CBBA001A601CBA00E9B192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13B07F961A680F5B00A75B9A /* StatusIm.app */,
+				00E356EE1AD99517003FC87E /* StatusImTests.xctest */,
+				3AAD2ADC24A3A60E0075D594 /* Status PR.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9EC0135D1E06FB1900155B5C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9EC013791E06FB1900155B5C /* libRCTWKWebView.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A97BA941B2FB44B4B66EE6D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				65F693BD2578002500A45E76 /* CoreNFC.framework */,
+				65F693BF2578003600A45E76 /* CoreNFC.framework */,
+				3A8F8EA924A4D31600BF206D /* GameKit.framework */,
+				4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */,
+				B24FC7FE1DE7195F00D694FF /* MessageUI.framework */,
+				B24FC7FC1DE7195700D694FF /* Social.framework */,
+				CE4E31B21D8695250033ED64 /* Statusgo.xcframework */,
+				8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */,
+				4E586E1B0E544F64AA9F5BD1 /* libz.tbd */,
+				928CC6D1D5BCCF9D3BC60D6A /* libPods-Status-StatusIm.a */,
+				A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */,
+				57CBBEA420F440D344DD99E5 /* libPods-Status-StatusImPR.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D0D5C8D06825D33BA2D2121E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				564309A78329EB657677709C /* Pods-Status-StatusIm.debug.xcconfig */,
+				5F30F922E4B02AB10F6CB65E /* Pods-Status-StatusIm.release.xcconfig */,
+				43341A7CBCE457435677CC51 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */,
+				70ACC04C7CF0A6C6421A805D /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */,
+				8D3CFDC9666FBD03D1AA059A /* Pods-Status-StatusImPR.debug.xcconfig */,
+				8B3C115CD813729DE4735219 /* Pods-Status-StatusImPR.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -814,6 +853,8 @@
 <<<<<<< HEAD
 >>>>>>> 1ae28d67c (updates)
 =======
+=======
+>>>>>>> 84439d6fd (updates)
 		00E356ED1AD99517003FC87E /* StatusImTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "StatusImTests" */;
@@ -878,131 +919,145 @@
 			productReference = 3AAD2ADC24A3A60E0075D594 /* Status PR.app */;
 			productType = "com.apple.product-type.application";
 		};
+<<<<<<< HEAD
 >>>>>>> 082e83dd1 (updates)
 =======
 >>>>>>> 12ff0b995 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-        83CBB9F71A601CBA00E9B192 /* Project object */ = {
-            isa = PBXProject;
-            attributes = {
-                LastUpgradeCheck = 1140;
-                ORGANIZATIONNAME = Status;
-                TargetAttributes = {
-                    00E356ED1AD99517003FC87E = {
-                        CreatedOnToolsVersion = 6.2;
-                        TestTargetID = 13B07F861A680F5B00A75B9A;
-                    };
-                    13B07F861A680F5B00A75B9A = {
-                        LastSwiftMigration = 1140;
-                        SystemCapabilities = {
-                            com.apple.BackgroundModes = {
-                                enabled = 1;
-                            };
-                            com.apple.Keychain = {
-                                enabled = 1;
-                            };
-                            com.apple.Push = {
-                                enabled = 1;
-                            };
-                            com.apple.SafariKeychain = {
-                                enabled = 1;
-                            };
-                        };
-                    };
-                };
-            };
-            buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "StatusIm" */;
-            compatibilityVersion = "Xcode 3.2";
-            developmentRegion = en;
-            hasScannedForEncodings = 0;
-            knownRegions = (
-                en,
-                Base,
-            );
-            mainGroup = 83CBB9F61A601CBA00E9B192;
-            productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
-            projectDirPath = "";
-            projectReferences = (
-                {
-                    ProductGroup = 9EC0135D1E06FB1900155B5C /* Products */;
-                    ProjectRef = 9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */;
-                },
-            );
-            projectRoot = "";
-            targets = (
-                13B07F861A680F5B00A75B9A /* StatusIm */,
-                00E356ED1AD99517003FC87E /* StatusImTests */,
-                3AAD2AB924A3A60E0075D594 /* StatusImPR */,
-            );
-        };
+		83CBB9F71A601CBA00E9B192 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = Status;
+				TargetAttributes = {
+					00E356ED1AD99517003FC87E = {
+						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 8B5X2M6H2Y;
+						ProvisioningStyle = Manual;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 8B5X2M6H2Y;
+						LastSwiftMigration = 1140;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+						};
+					};
+					3AAD2AB924A3A60E0075D594 = {
+						DevelopmentTeam = 8B5X2M6H2Y;
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "StatusIm" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 83CBB9F61A601CBA00E9B192;
+			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9EC0135D1E06FB1900155B5C /* Products */;
+					ProjectRef = 9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				13B07F861A680F5B00A75B9A /* StatusIm */,
+				00E356ED1AD99517003FC87E /* StatusImTests */,
+				3AAD2AB924A3A60E0075D594 /* StatusImPR */,
+			);
+		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-        9EC013791E06FB1900155B5C /* libRCTWKWebView.a */ = {
-            isa = PBXReferenceProxy;
-            fileType = archive.ar;
-            path = libRCTWKWebView.a;
-            remoteRef = 9EC013781E06FB1900155B5C /* PBXContainerItemProxy */;
-            sourceTree = BUILT_PRODUCTS_DIR;
-        };
+		9EC013791E06FB1900155B5C /* libRCTWKWebView.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTWKWebView.a;
+			remoteRef = 9EC013781E06FB1900155B5C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-        00E356EC1AD99517003FC87E /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        13B07F8E1A680F5B00A75B9A /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
-                715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
-                B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
-                D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,
-                D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */,
-                3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */,
-                393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */,
-                D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */,
-                57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */,
-                70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */,
-                3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */,
-                8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        3AAD2AC924A3A60E0075D594 /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                3AAD2ACA24A3A60E0075D594 /* launch-image-universal.storyboard in Resources */,
-                715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
-                3AAD2ACB24A3A60E0075D594 /* Images.xcassets in Resources */,
-                3AAD2ACC24A3A60E0075D594 /* Inter-Bold.otf in Resources */,
-                3AAD2ACD24A3A60E0075D594 /* Inter-BoldItalic.otf in Resources */,
-                3AAD2ACE24A3A60E0075D594 /* InterStatus-Regular.otf in Resources */,
-                3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
-                3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
-                3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
-                3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
-                3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
-                3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		00E356EC1AD99517003FC87E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F8E1A680F5B00A75B9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
+				715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
+				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
+				D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,
+				D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */,
+				3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */,
+				393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */,
+				D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */,
+				57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */,
+				70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */,
+				3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */,
+				8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AAD2AC924A3A60E0075D594 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AAD2ACA24A3A60E0075D594 /* launch-image-universal.storyboard in Resources */,
+				715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
+				3AAD2ACB24A3A60E0075D594 /* Images.xcassets in Resources */,
+				3AAD2ACC24A3A60E0075D594 /* Inter-Bold.otf in Resources */,
+				3AAD2ACD24A3A60E0075D594 /* Inter-BoldItalic.otf in Resources */,
+				3AAD2ACE24A3A60E0075D594 /* InterStatus-Regular.otf in Resources */,
+				3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
+				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
+				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
+				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
+				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
+				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1014,11 +1069,17 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
 		};
 <<<<<<< HEAD
 =======
+=======
+			shellPath = /bin/sh;
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
+		};
+>>>>>>> 84439d6fd (updates)
 		0F876BD5356F61BF142A01A0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1037,7 +1098,11 @@
 				"$(DERIVED_FILE_DIR)/Pods-Status-StatusIm-StatusImTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
+=======
+			shellPath = /bin/sh;
+>>>>>>> 84439d6fd (updates)
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1059,11 +1124,18 @@
 				"$(DERIVED_FILE_DIR)/Pods-Status-StatusIm-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 >>>>>>> 082e83dd1 (updates)
+=======
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+>>>>>>> 84439d6fd (updates)
 		3AAD2AD524A3A60E0075D594 /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1075,8 +1147,13 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+=======
+			shellPath = /bin/sh;
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
+>>>>>>> 84439d6fd (updates)
 		};
 		3AAD2AD724A3A60E0075D594 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1089,6 +1166,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
 		};
@@ -1097,6 +1175,12 @@
 =======
 		3C1038075AE5E6FB86AC2319 /* [CP] Copy Pods Resources */ = {
 >>>>>>> 082e83dd1 (updates)
+=======
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
+		};
+		3C1038075AE5E6FB86AC2319 /* [CP] Copy Pods Resources */ = {
+>>>>>>> 84439d6fd (updates)
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1115,10 +1199,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+<<<<<<< HEAD
 		8E74556C932D28F855241EA1 /* [CP] Check Pods Manifest.lock */ = {
 =======
 			shellPath = "/usr/bin/env sh";
@@ -1127,6 +1215,9 @@
 		};
 		50F1BA2DC5224CBE6FDD2998 /* [CP] Check Pods Manifest.lock */ = {
 >>>>>>> 082e83dd1 (updates)
+=======
+		50F1BA2DC5224CBE6FDD2998 /* [CP] Check Pods Manifest.lock */ = {
+>>>>>>> 84439d6fd (updates)
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1145,10 +1236,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+<<<<<<< HEAD
 		B6E3CF1D675245267368C9A7 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1201,6 +1296,9 @@
 		};
 		6ECED279DE66BA46FFB5EE0D /* [CP] Copy Pods Resources */ = {
 >>>>>>> 082e83dd1 (updates)
+=======
+		6ECED279DE66BA46FFB5EE0D /* [CP] Copy Pods Resources */ = {
+>>>>>>> 84439d6fd (updates)
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1219,10 +1317,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = /bin/sh;
 =======
 			shellPath = "/usr/bin/env sh";
 >>>>>>> 082e83dd1 (updates)
+=======
+			shellPath = /bin/sh;
+>>>>>>> 84439d6fd (updates)
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1237,6 +1339,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
 		};
@@ -1245,6 +1348,12 @@
 =======
 		E732E3E1B024946173BF6D3D /* [CP] Copy Pods Resources */ = {
 >>>>>>> 082e83dd1 (updates)
+=======
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
+		};
+		E732E3E1B024946173BF6D3D /* [CP] Copy Pods Resources */ = {
+>>>>>>> 84439d6fd (updates)
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1263,10 +1372,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 12ff0b995 (updates)
@@ -1468,55 +1581,63 @@
 >>>>>>> 082e83dd1 (updates)
 =======
 >>>>>>> 12ff0b995 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-        00E356EA1AD99517003FC87E /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */,
-                00E356F31AD99517003FC87E /* StatusImTests.m in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        13B07F871A680F5B00A75B9A /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                65F6941925780A4F00A45E76 /* Bridge.swift in Sources */,
-                13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-                3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
-                13B07FC11A68108700A75B9A /* main.m in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        3AAD2ABB24A3A60E0075D594 /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */,
-                3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
-                3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
-                3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		00E356EA1AD99517003FC87E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */,
+				00E356F31AD99517003FC87E /* StatusImTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F871A680F5B00A75B9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65F6941925780A4F00A45E76 /* Bridge.swift in Sources */,
+				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
+				13B07FC11A68108700A75B9A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AAD2ABB24A3A60E0075D594 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */,
+				3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
+				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
+				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-        00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
-            isa = PBXTargetDependency;
-            target = 13B07F861A680F5B00A75B9A /* StatusIm */;
-            targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
-        };
+		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* StatusIm */;
+			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 <<<<<<< HEAD
+<<<<<<< HEAD
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6D32AC40F159AF0551D2D2BF /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */;
+=======
+		00E356F61AD99517003FC87E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 43341A7CBCE457435677CC51 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = .debug;
@@ -1553,7 +1674,11 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+<<<<<<< HEAD
 			baseConfigurationReference = BDC1942C3E1889184B8DFEA8 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */;
+=======
+			baseConfigurationReference = 70ACC04C7CF0A6C6421A805D /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = "";
@@ -1586,7 +1711,11 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+<<<<<<< HEAD
 			baseConfigurationReference = 3D03948FF807541657E64335 /* Pods-Status-StatusIm.debug.xcconfig */;
+=======
+			baseConfigurationReference = 564309A78329EB657677709C /* Pods-Status-StatusIm.debug.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
@@ -1645,7 +1774,10 @@
 					"-lc++",
 					"-ObjC",
 				);
+<<<<<<< HEAD
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+=======
+>>>>>>> 84439d6fd (updates)
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				PROVISIONING_PROFILE = "9da75626-9594-43d9-a827-0f6d43c28f54";
@@ -1661,7 +1793,11 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+<<<<<<< HEAD
 			baseConfigurationReference = 691D1B2EE134FCF74D07E435 /* Pods-Status-StatusIm.release.xcconfig */;
+=======
+			baseConfigurationReference = 5F30F922E4B02AB10F6CB65E /* Pods-Status-StatusIm.release.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
@@ -1712,7 +1848,10 @@
 					"-lc++",
 					"-ObjC",
 				);
+<<<<<<< HEAD
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+=======
+>>>>>>> 84439d6fd (updates)
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				PROVISIONING_PROFILE = "e2202b12-7a66-4ff7-af3c-a52e35f32dc1";
@@ -1726,7 +1865,11 @@
 		};
 		3AAD2ADA24A3A60E0075D594 /* Debug */ = {
 			isa = XCBuildConfiguration;
+<<<<<<< HEAD
 			baseConfigurationReference = E6B5FBF37AFD0AA1F05937C8 /* Pods-Status-StatusImPR.debug.xcconfig */;
+=======
+			baseConfigurationReference = 8D3CFDC9666FBD03D1AA059A /* Pods-Status-StatusImPR.debug.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
@@ -1795,7 +1938,11 @@
 		};
 		3AAD2ADB24A3A60E0075D594 /* Release */ = {
 			isa = XCBuildConfiguration;
+<<<<<<< HEAD
 			baseConfigurationReference = FBE095C8AC4C540F85C859D7 /* Pods-Status-StatusImPR.release.xcconfig */;
+=======
+			baseConfigurationReference = 8B3C115CD813729DE4735219 /* Pods-Status-StatusImPR.release.xcconfig */;
+>>>>>>> 84439d6fd (updates)
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIconPR$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
@@ -1894,7 +2041,11 @@
 				ENABLE_TESTABILITY = YES;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
+<<<<<<< HEAD
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+=======
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+>>>>>>> 84439d6fd (updates)
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1932,7 +2083,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
+<<<<<<< HEAD
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+=======
+>>>>>>> 84439d6fd (updates)
 				SDKROOT = iphoneos;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -1977,7 +2131,10 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXCLUDED_ARCHS = "";
+<<<<<<< HEAD
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+=======
+>>>>>>> 84439d6fd (updates)
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -2007,13 +2164,17 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
+<<<<<<< HEAD
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+=======
+>>>>>>> 84439d6fd (updates)
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
+<<<<<<< HEAD
 =======
         00E356F61AD99517003FC87E /* Debug */ = {
             isa = XCBuildConfiguration;
@@ -2509,46 +2670,48 @@
             name = Release;
         };
 >>>>>>> 12ff0b995 (updates)
+=======
+>>>>>>> 84439d6fd (updates)
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-        00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "StatusImTests" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                00E356F61AD99517003FC87E /* Debug */,
-                00E356F71AD99517003FC87E /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
-        13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "StatusIm" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                13B07F941A680F5B00A75B9A /* Debug */,
-                13B07F951A680F5B00A75B9A /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
-        3AAD2AD924A3A60E0075D594 /* Build configuration list for PBXNativeTarget "StatusImPR" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                3AAD2ADA24A3A60E0075D594 /* Debug */,
-                3AAD2ADB24A3A60E0075D594 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
-        83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "StatusIm" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                83CBBA201A601CBA00E9B192 /* Debug */,
-                83CBBA211A601CBA00E9B192 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "StatusImTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00E356F61AD99517003FC87E /* Debug */,
+				00E356F71AD99517003FC87E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "StatusIm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13B07F941A680F5B00A75B9A /* Debug */,
+				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3AAD2AD924A3A60E0075D594 /* Build configuration list for PBXNativeTarget "StatusImPR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3AAD2ADA24A3A60E0075D594 /* Debug */,
+				3AAD2ADB24A3A60E0075D594 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "StatusIm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83CBBA201A601CBA00E9B192 /* Debug */,
+				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-    };
-    rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
+	};
+	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
