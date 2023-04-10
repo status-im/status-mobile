@@ -72,7 +72,7 @@ def get_capabilities_sauce_lab():
     desired_caps['platformVersion'] = '10.0'
     desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
     desired_caps['deviceOrientation'] = "portrait"
-    desired_caps['commandTimeout'] = 600
+    desired_caps['newCommandTimeout'] = 600
     desired_caps['idleTimeout'] = 1000
     desired_caps['unicodeKeyboard'] = True
     desired_caps['automationName'] = 'UiAutomator2'
@@ -314,7 +314,7 @@ def create_shared_drivers(quantity):
             return drivers, loop
         except Exception as e:
             loop.close()
-            raise e from None
+            raise e #from None
 
 
 class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
