@@ -11,7 +11,7 @@
 
 (def ^:const composer-default-height (+ handle-container-height input-height actions-container-height))
 
-(def ^:const multiline-minimized-height (+ input-height 18))
+(def ^:const multiline-minimized-height (if platform/ios? (+ input-height 18) (* input-height 2)))
 
 (def ^:const images-container-height 76)
 
