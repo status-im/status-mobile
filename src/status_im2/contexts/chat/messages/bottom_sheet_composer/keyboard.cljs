@@ -48,14 +48,17 @@
    {:keys [opacity height saved-height background-y]}
    {:keys [window-height lines]}]
   (when platform/android?
-    (let [min-height (utils/get-min-height lines)]
-      (.blur ^js @input-ref)
-      (reanimated/animate opacity 0)
-      (js/setTimeout (fn []
-                       (reanimated/animate height min-height)
-                       (reanimated/set-shared-value saved-height min-height)
-                       (reanimated/set-shared-value background-y (- window-height)))
-                     100))))
+    (.blur ^js @input-ref)
+    ;(let [min-height (utils/get-min-height lines)]
+    ;  (.blur ^js @input-ref)
+      ;(reanimated/animate opacity 0)
+      ;(js/setTimeout (fn []
+      ;                 (reanimated/animate height min-height)
+      ;                 (reanimated/set-shared-value saved-height min-height)
+      ;                 (reanimated/set-shared-value background-y (- window-height)))
+      ;               100)
+      ;)
+    ))
 
 (defn add-kb-listeners
   [{:keys [keyboard-show-listener keyboard-frame-listener keyboard-hide-listener] :as props}
