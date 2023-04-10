@@ -73,16 +73,22 @@
 <<<<<<< HEAD
 =======
 		BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */; };
+<<<<<<< HEAD
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> b84524835 (updates)
 		C14C5F8D29C0A149005C58A7 /* launch-icon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F8C29C0A149005C58A7 /* launch-icon@3x.png */; };
 		C14C5F9129C0AD9C005C58A7 /* launch-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9029C0AD9C005C58A7 /* launch-icon@2x.png */; };
 		C14C5F9329C0ADB5005C58A7 /* launch-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9229C0ADB5005C58A7 /* launch-icon.png */; };
 		C1715FFA29C0BCE10088FA8B /* launch-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9029C0AD9C005C58A7 /* launch-icon@2x.png */; };
 		C1715FFB29C0BCE50088FA8B /* launch-icon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F8C29C0A149005C58A7 /* launch-icon@3x.png */; };
 		C1715FFC29C0BCE80088FA8B /* launch-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C14C5F9229C0ADB5005C58A7 /* launch-icon.png */; };
+<<<<<<< HEAD
 =======
 		BFF6343F5A1F0F5FFFC8D020 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B974811E312E44D5BBE9EC /* libPods-Status-StatusIm-StatusImTests.a */; };
 >>>>>>> 84439d6fd (updates)
+=======
+>>>>>>> b84524835 (updates)
 		CE4E31B31D8695250033ED64 /* Statusgo.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.xcframework */; };
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
@@ -281,9 +287,12 @@
 		B321D25F4493470980039457 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../resources/fonts/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		BDC1942C3E1889184B8DFEA8 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 =======
 >>>>>>> 082e83dd1 (updates)
+=======
+>>>>>>> b84524835 (updates)
 		C14C5F8C29C0A149005C58A7 /* launch-icon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "launch-icon@3x.png"; path = "StatusIm/launch-icon@3x.png"; sourceTree = "<group>"; };
 		C14C5F9029C0AD9C005C58A7 /* launch-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "launch-icon@2x.png"; path = "StatusIm/launch-icon@2x.png"; sourceTree = "<group>"; };
 		C14C5F9229C0ADB5005C58A7 /* launch-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "launch-icon.png"; path = "StatusIm/launch-icon.png"; sourceTree = "<group>"; };
@@ -662,6 +671,9 @@
 		13B07FAE1A68108700A75B9A /* StatusIm */ = {
 			isa = PBXGroup;
 			children = (
+				C14C5F9229C0ADB5005C58A7 /* launch-icon.png */,
+				C14C5F9029C0AD9C005C58A7 /* launch-icon@2x.png */,
+				C14C5F8C29C0A149005C58A7 /* launch-icon@3x.png */,
 				922C4CA61F4D5F8B0033C753 /* StatusIm.entitlements */,
 				B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -1013,8 +1025,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C14C5F9329C0ADB5005C58A7 /* launch-icon.png in Resources */,
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
 				715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
+				C14C5F9129C0AD9C005C58A7 /* launch-icon@2x.png in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,
 				D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */,
@@ -1025,6 +1039,7 @@
 				70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */,
 				3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */,
 				8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */,
+				C14C5F8D29C0A149005C58A7 /* launch-icon@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1037,13 +1052,16 @@
 				3AAD2ACB24A3A60E0075D594 /* Images.xcassets in Resources */,
 				3AAD2ACC24A3A60E0075D594 /* Inter-Bold.otf in Resources */,
 				3AAD2ACD24A3A60E0075D594 /* Inter-BoldItalic.otf in Resources */,
+				C1715FFA29C0BCE10088FA8B /* launch-icon@2x.png in Resources */,
 				3AAD2ACE24A3A60E0075D594 /* InterStatus-Regular.otf in Resources */,
 				3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
 				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
 				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
+				C1715FFC29C0BCE80088FA8B /* launch-icon.png in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
+				C1715FFB29C0BCE50088FA8B /* launch-icon@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1070,6 +1088,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
 		};
@@ -1078,6 +1097,10 @@
 =======
 			shellPath = /bin/sh;
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
+=======
+			shellPath = "/usr/bin/env sh";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+>>>>>>> b84524835 (updates)
 		};
 >>>>>>> 84439d6fd (updates)
 		0F876BD5356F61BF142A01A0 /* [CP] Check Pods Manifest.lock */ = {
@@ -1099,10 +1122,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 =======
 			shellPath = /bin/sh;
 >>>>>>> 84439d6fd (updates)
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1125,6 +1152,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
@@ -1132,6 +1160,9 @@
 >>>>>>> 082e83dd1 (updates)
 =======
 			shellPath = /bin/sh;
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1148,12 +1179,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
 =======
 			shellPath = /bin/sh;
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
 >>>>>>> 84439d6fd (updates)
+=======
+			shellPath = "/usr/bin/env sh";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\" --openssl-legacy-provider --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+>>>>>>> b84524835 (updates)
 		};
 		3AAD2AD724A3A60E0075D594 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1167,6 +1203,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
 		};
@@ -1178,6 +1215,10 @@
 =======
 			shellPath = /bin/sh;
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
+=======
+			shellPath = "/usr/bin/env sh";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+>>>>>>> b84524835 (updates)
 		};
 		3C1038075AE5E6FB86AC2319 /* [CP] Copy Pods Resources */ = {
 >>>>>>> 84439d6fd (updates)
@@ -1200,9 +1241,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1237,9 +1282,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1318,6 +1367,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = /bin/sh;
 =======
 			shellPath = "/usr/bin/env sh";
@@ -1325,6 +1375,9 @@
 =======
 			shellPath = /bin/sh;
 >>>>>>> 84439d6fd (updates)
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
@@ -1340,6 +1393,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
 		};
@@ -1351,6 +1405,10 @@
 =======
 			shellPath = /bin/sh;
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./set_xcode_version.log 2>&1";
+=======
+			shellPath = "/usr/bin/env sh";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+>>>>>>> b84524835 (updates)
 		};
 		E732E3E1B024946173BF6D3D /* [CP] Copy Pods Resources */ = {
 >>>>>>> 84439d6fd (updates)
@@ -1373,9 +1431,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 84439d6fd (updates)
 			shellPath = /bin/sh;
+=======
+			shellPath = "/usr/bin/env sh";
+>>>>>>> b84524835 (updates)
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
