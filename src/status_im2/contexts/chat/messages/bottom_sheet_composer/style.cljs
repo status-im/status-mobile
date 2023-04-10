@@ -70,14 +70,6 @@
     :overflow   :hidden}))
 
 
-(defn actions-container
-  []
-  {:height          c/actions-container-height
-   :justify-content :space-between
-   :align-items     :center
-   :z-index         2
-   :flex-direction  :row})
-
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style

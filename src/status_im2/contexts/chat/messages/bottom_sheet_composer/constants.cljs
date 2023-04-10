@@ -5,7 +5,7 @@
 
 (def ^:const handle-container-height 20)
 
-(def ^:const input-height (if platform/ios? 32 32))
+(def ^:const input-height (if platform/ios? 32 42))
 
 (def ^:const actions-container-height 56)
 
