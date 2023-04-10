@@ -41,7 +41,8 @@
 
 (defn should-update-blur-height
   [e lock-layout? layout-height]
-  (or (not @lock-layout?) (> (reanimated/get-shared-value layout-height) (oops/oget e "nativeEvent.layout.height"))))
+  (or (not @lock-layout?)
+      (> (reanimated/get-shared-value layout-height) (oops/oget e "nativeEvent.layout.height"))))
 
 (defn calc-lines
   [height]

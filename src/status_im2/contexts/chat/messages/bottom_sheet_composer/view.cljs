@@ -254,17 +254,21 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn use-effect
-  [props
+  [{:keys [input-ref] :as props}
    {:keys [lock-layout? kb-default-height maximized? focused? text-value] :as state}
-   {:keys [height saved-height container-opacity opacity background-y] :as animations}
+   {:keys [height saved-height last-height container-opacity opacity background-y] :as animations}
    {:keys [max-height] :as dimensions}
-   {:keys [input-content-height] :as chat-input}
+   {:keys [input-content-height input-refocus?] :as chat-input}
    keyboard-height images?]
   (rn/use-effect
    (fn []
      (when (or @maximized? (>= input-content-height max-height))
        (reanimated/animate height max-height)
-       (reanimated/set-shared-value saved-height max-height))
+       (reanimated/set-shared-value saved-height max-height)
+       (reanimated/set-shared-value last-height max-height))
+     (when input-refocus?
+       (.focus ^js @input-ref)
+       (rf/dispatch [:chat.ui/set-input-refocus false]))
      (handle-reenter-screen state dimensions chat-input)
      (when-not @lock-layout?
        (js/setTimeout #(reset! lock-layout? true) 500))
