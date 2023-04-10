@@ -232,9 +232,9 @@
 (defn handle-layout
   [e
    {:keys [lock-layout?]}
-   layout-height]
-  (when-not @lock-layout?
-    (reanimated/set-shared-value layout-height (oops/oget e "nativeEvent.layout.height"))))
+   blur-height]
+  (when (utils/should-update-blur-height e lock-layout? blur-height)
+    (reanimated/set-shared-value blur-height (oops/oget e "nativeEvent.layout.height"))))
 
 (defn handle-reenter-screen
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -284,7 +284,7 @@
 
 ;;; MAIN
 (defn sheet
-  [insets window-height layout-height opacity background-y]
+  [insets window-height blur-height opacity background-y]
   [:f>
    (fn []
      (let [props      {:input-ref                   (atom nil)
@@ -352,7 +352,7 @@
              {:gesture (drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
               {:style     (style/sheet-container insets (:container-opacity animations))
-               :on-layout #(handle-layout % state layout-height)}
+               :on-layout #(handle-layout % state blur-height)}
               [sub-view/bar]
               [reanimated/touchable-opacity
                {:active-opacity 1
@@ -380,7 +380,7 @@
                                                         @(:saved-emoji-kb-extra-height props))}]
                [sub-view/gradients props state animations dimensions]]
               [images/images-list]
-              [actions/view (:input-ref props) (:text-value state) (seq images) animations window-height
+              [actions/view (:input-ref props) state (seq images) animations window-height
                insets]]]))]))])
 
 (defn bottom-sheet-composer
@@ -391,8 +391,8 @@
            insets        (safe-area/use-safe-area)
            opacity       (reanimated/use-shared-value 0)
            background-y  (reanimated/use-shared-value (- window-height))
-           layout-height (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]
+           blur-height (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]
        [rn/view
         [reanimated/view {:style (style/background opacity background-y window-height)}]
-        [sub-view/blur-view layout-height]
-        [sheet insets window-height layout-height opacity background-y]]))])
+        [sub-view/blur-view blur-height]
+        [sheet insets window-height blur-height opacity background-y]]))])

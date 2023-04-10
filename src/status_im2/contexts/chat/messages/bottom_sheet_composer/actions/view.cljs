@@ -17,8 +17,8 @@
 
 ;;; CONTROLS
 (defn send-button
-  [input-ref text-value images? window-height
-   {:keys [height saved-height last-height opacity background-y container-opacity]}]
+  [input-ref {:keys [text-value lock-layout? focused?]} images? window-height
+   {:keys [height saved-height last-height opacity background-y container-opacity layout-height]}]
   [:f>
    (fn []
      (let [btn-opacity (reanimated/use-shared-value 0)
@@ -50,7 +50,8 @@
                                     (reanimated/set-shared-value saved-height c/input-height)
                                     (reanimated/set-shared-value last-height c/input-height)
                                     (reanimated/animate opacity 0)
-                                    (js/setTimeout #(reanimated/animate container-opacity 0.7) 300)
+                                    (when-not @focused?
+                                      (js/setTimeout #(reanimated/animate container-opacity 0.7) 300))
                                     (js/setTimeout #(reanimated/set-shared-value background-y
                                                                                  (- window-height))
                                                    300)
@@ -121,7 +122,7 @@
    :i/format])
 
 (defn view
-  [input-ref text-value images? {:keys [height] :as animations}
+  [input-ref state images? {:keys [height] :as animations}
    window-height insets]
   [rn/view {:style (style/actions-container)}
    [rn/view {:style {:flex-direction :row}}
@@ -129,5 +130,5 @@
     [image-button insets height]
     [reaction-button]
     [format-button]]
-   [send-button input-ref text-value images? window-height animations]
+   [send-button input-ref state images? window-height animations]
    [audio-button]])

@@ -3,8 +3,7 @@
             [react-native.async-storage :as async-storage]
             [react-native.core :as rn]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.messages.bottom-sheet-composer.utils :as utils]))
+            [react-native.reanimated :as reanimated]))
 
 (defn get-kb-height
   [curr-height default-height]
@@ -43,25 +42,8 @@
                                         @emoji-kb-extra-height))
         (reset! emoji-kb-extra-height nil)))))
 
-(defn handle-kb-hide-android
-  [{:keys [input-ref]}
-   {:keys [opacity height saved-height background-y]}
-   {:keys [window-height lines]}]
-  (when platform/android?
-    (.blur ^js @input-ref)
-    ;(let [min-height (utils/get-min-height lines)]
-    ;  (.blur ^js @input-ref)
-      ;(reanimated/animate opacity 0)
-      ;(js/setTimeout (fn []
-      ;                 (reanimated/animate height min-height)
-      ;                 (reanimated/set-shared-value saved-height min-height)
-      ;                 (reanimated/set-shared-value background-y (- window-height)))
-      ;               100)
-      ;)
-    ))
-
 (defn add-kb-listeners
-  [{:keys [keyboard-show-listener keyboard-frame-listener keyboard-hide-listener] :as props}
+  [{:keys [keyboard-show-listener keyboard-frame-listener keyboard-hide-listener input-ref] :as props}
    state animations dimensions keyboard-height]
   (reset! keyboard-show-listener (.addListener rn/keyboard
                                                "keyboardDidShow"
@@ -72,4 +54,5 @@
                                    #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
-                                               #(handle-kb-hide-android props animations dimensions))))
+                                               #(when platform/android?
+                                                  (.blur ^js @input-ref)))))

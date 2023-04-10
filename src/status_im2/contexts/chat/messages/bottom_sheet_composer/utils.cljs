@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.bottom-sheet-composer.utils
   (:require
+    [oops.core :as oops]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.messages.bottom-sheet-composer.constants :as c]))
@@ -37,6 +38,10 @@
   (and
    (<= y c/line-height)
    (= (reanimated/get-shared-value gradient-opacity) 1)))
+
+(defn should-update-blur-height
+  [e lock-layout? layout-height]
+  (or (not @lock-layout?) (> (reanimated/get-shared-value layout-height) (oops/oget e "nativeEvent.layout.height"))))
 
 (defn calc-lines
   [height]
