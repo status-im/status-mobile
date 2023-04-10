@@ -5,6 +5,7 @@
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.alert.events :as alert]
@@ -81,21 +82,25 @@
     :style    {:margin-right 12}}
    :i/camera])
 (defn image-button
-  [insets height]
+  [input-ref focused? insets height]
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
-                 {:permissions [:read-external-storage :write-external-storage]
-                  :on-allowed  (fn []
-                                 (rf/dispatch [:chat.ui/set-input-content-height
-                                               (reanimated/get-shared-value height)])
-                                 (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
-                  :on-denied   (fn []
-                                 (background-timer/set-timeout
-                                  #(alert/show-popup (i18n/label :t/error)
-                                                     (i18n/label
-                                                      :t/external-storage-denied))
-                                  50))}))
+                  {:permissions [:read-external-storage :write-external-storage]
+                   :on-allowed  (fn []
+                                  (when platform/android?
+                                    (when @focused?
+                                      (rf/dispatch [:chat.ui/set-input-refocus true]))
+                                    (.blur ^js @input-ref))
+                                  (rf/dispatch [:chat.ui/set-input-content-height
+                                                (reanimated/get-shared-value height)])
+                                  (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
+                   :on-denied   (fn []
+                                  (background-timer/set-timeout
+                                    #(alert/show-popup (i18n/label :t/error)
+                                                       (i18n/label
+                                                         :t/external-storage-denied))
+                                    50))}))
     :icon     true
     :type     :outline
     :size     32
@@ -127,7 +132,7 @@
   [rn/view {:style (style/actions-container)}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
-    [image-button insets height]
+    [image-button input-ref (:focused? state) insets height]
     [reaction-button]
     [format-button]]
    [send-button input-ref state images? window-height animations]
