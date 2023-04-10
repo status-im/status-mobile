@@ -94,4 +94,4 @@
                         :left             51
                         :position         :absolute
                         :background-color colors/primary-50}}]))]]
-         double-tap-gesture [gesture/gesture-detector {:gesture double-tap-gesture}])))])
+         double-tap-gesture (conj [gesture/gesture-detector {:gesture double-tap-gesture}]))))])
