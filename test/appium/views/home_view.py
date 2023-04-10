@@ -1,6 +1,8 @@
 import time
 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
@@ -312,6 +314,11 @@ class HomeView(BaseView):
             chat_element.cancel_contact_request()
         else:
             self.driver.fail("Illegal option for CR!")
+        try:
+            element = self.close_activity_centre.find_element()
+            WebDriverWait(self.driver, 30).until(expected_conditions.staleness_of(element))
+        except TimeoutException:
+            pass
         self.close_activity_centre.click()
         self.chats_tab.wait_for_visibility_of_element()
 
