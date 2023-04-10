@@ -3,6 +3,6 @@
     [utils.re-frame :as rf]))
 
 (rf/defn messages-home-select-tab-event
-  {:events [:messages-home-view/select-tab]}
+  {:events [:messages-home/select-tab]}
   [{:keys [db]} tab]
-  {:db (assoc db :messages-home-view/selected-tab tab)})
+  {:db (assoc db :messages-home/selected-tab tab)})

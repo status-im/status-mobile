@@ -92,9 +92,9 @@
 
 (defn get-tabs-data
   [dot?]
-  [{:id :recent :label (i18n/label :t/recent) :accessibility-label :tab-recent}
-   {:id :groups :label (i18n/label :t/groups) :accessibility-label :tab-groups}
-   {:id                  :contacts
+  [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :tab-recent}
+   {:id :tab/groups :label (i18n/label :t/groups) :accessibility-label :tab-groups}
+   {:id                  :tab/contacts
     :label               (i18n/label :t/contacts)
     :accessibility-label :tab-contacts
     :notification-dot?   dot?}])
@@ -103,8 +103,7 @@
   []
   (fn []
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-          selected-tab             (or (rf/sub [:messages-home-view/selected-tab])
-                                       :recent)]
+          selected-tab             (rf/sub [:messages-home/selected-tab])]
       [safe-area/consumer
        (fn [{:keys [top]}]
          [:<>
@@ -130,6 +129,6 @@
             {:style          style/tabs
              :size           32
              :on-change      (fn [tab]
-                               (rf/dispatch [:messages-home-view/select-tab tab]))
+                               (rf/dispatch [:messages-home/select-tab tab]))
              :default-active selected-tab
              :data           (get-tabs-data (pos? (count pending-contact-requests)))}]]])])))

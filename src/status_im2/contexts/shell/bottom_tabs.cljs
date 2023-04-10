@@ -47,7 +47,7 @@
                                            (gesture/number-of-taps 2)
                                            (gesture/on-start
                                             (fn [_event]
-                                              (rf/dispatch [:messages-home-view/select-tab :recent]))))]
+                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
        (animation/load-stack @animation/selected-stack-id)
        (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
        [reanimated/view {:style animated-style}
