@@ -12,7 +12,9 @@
    (fn []
      (when (pos? item-count)
        ;; We use a delay because calling `scrollToIndex` without a delay does
-       ;; nothing.
+       ;; nothing while the flatlist is still rendering its children.
+       ;; `scrollToEnd` doesn't work because it positions the item off-center
+       ;; and there's no argument to offset it.
        (let [timer-id (js/setTimeout
                        (fn []
                          (when (and @flat-list-ref (pos? item-count))
