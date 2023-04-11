@@ -52,10 +52,10 @@
     {:db (assoc-in db [:chat/inputs current-chat-id :input-maximized?] maximized?)}))
 
 (rf/defn set-input-focused
-         {:events [:chat.ui/set-input-refocus]}
-         [{db :db} refocus? chat-id]
-         (let [current-chat-id (or chat-id (:current-chat-id db))]
-           {:db (assoc-in db [:chat/inputs current-chat-id :input-refocus?] refocus?)}))
+  {:events [:chat.ui/set-input-refocus]}
+  [{db :db} refocus? chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-refocus?] refocus?)}))
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
