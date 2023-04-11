@@ -15,7 +15,6 @@
             [quo2.components.record-audio.record-audio.buttons.lock-button :as lock-button]
             [quo2.components.record-audio.record-audio.buttons.delete-button :as delete-button]
             [quo2.components.record-audio.record-audio.buttons.record-button :as record-button]
-            [react-native.platform :as platform]
             [clojure.string :as string]))
 
 (def ^:private min-audio-duration-ms 500)
