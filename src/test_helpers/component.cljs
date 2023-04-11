@@ -186,5 +186,5 @@
   (.toBeNull (js/expect element)))
 
 (defn was-called
-  [element]
-  (.toHaveBeenCalled (js/expect element)))
+  [mock]
+  (.toHaveBeenCalled (js/expect mock)))
