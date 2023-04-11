@@ -68,7 +68,7 @@ def get_capabilities_sauce_lab():
     desired_caps['build'] = pytest_config_global['build']
     desired_caps['name'] = test_suite_data.current_test.name
     desired_caps['platformName'] = 'Android'
-    desired_caps['appiumVersion'] = '1.22.1'
+    desired_caps['appiumVersion'] = '1.18.1'
     desired_caps['platformVersion'] = '11.0'
     desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
     desired_caps['deviceOrientation'] = "portrait"
@@ -300,14 +300,14 @@ def create_shared_drivers(quantity):
         capabilities = {'maxDuration': 3600}
         print('SC Executor: %s' % executor_sauce_lab)
         try:
-            options = webdriver.webdriver.AppiumOptions()
-            for key, value in update_capabilities_sauce_lab(capabilities).items():
-                options.set_capability(key, value)
+            # options = webdriver.webdriver.AppiumOptions()
+            # for key, value in update_capabilities_sauce_lab(capabilities).items():
+            #     options.set_capability(key, value)
             drivers = loop.run_until_complete(start_threads(quantity,
                                                             Driver,
                                                             drivers,
-                                                            command_executor=executor_sauce_lab,
-                                                            options=options))
+                                                            executor_sauce_lab,
+                                                            update_capabilities_sauce_lab(capabilities)))
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)

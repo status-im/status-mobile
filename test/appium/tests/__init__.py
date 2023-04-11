@@ -9,14 +9,15 @@ from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
 
 
-async def start_threads(quantity: int, func: type, returns: dict, **kwargs):
+async def start_threads(quantity: int, func: type, returns: dict, *args):
     loop = asyncio.get_event_loop()
     #    from tests.conftest import sauce
     #     for _ in range(60):
     #         if 16 - len([job for job in sauce.jobs.get_user_jobs() if job['status'] == 'in progress']) < quantity:
     #             time.sleep(10)
     for i in range(quantity):
-        returns[i] = loop.run_in_executor(None, functools.partial(func, **kwargs))
+        returns[i] = loop.run_in_executor(None, func, *args)
+        # returns[i] = loop.run_in_executor(None, functools.partial(func, **kwargs))
     for k in returns:
         returns[k] = await returns[k]
     return returns

@@ -243,7 +243,8 @@ def should_save_device_stats(config):
     return all(db_args)
 
 
-@pytest.hookimpl(hookwrapper=True)
+# @pytest.hookimpl(hookwrapper=True)
+@pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
