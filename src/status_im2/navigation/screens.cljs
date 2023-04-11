@@ -117,7 +117,7 @@
 
     {:name      :sign-in
      :component sign-in/view
-     :options   {:layout {:orientation :portrait}}}
+     :options   {:layout {:orientation ["portrait"]}}}
 
     {:name      :syncing-devices
      :component syncing-devices/syncing-devices}
