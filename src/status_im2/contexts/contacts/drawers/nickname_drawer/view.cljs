@@ -1,4 +1,4 @@
-(ns status-im2.common.nickname-drawer.view
+(ns status-im2.contexts.contacts.drawers.nickname-drawer.view
   (:require [clojure.string :as string]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
@@ -9,18 +9,19 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn add-nickname-toast
+(defn add-nickname-and-show-toast
   [primary-name entered-nickname public-key]
-  (rf/dispatch [:hide-bottom-sheet])
-  (rf/dispatch [:toasts/upsert
-                {:id         :add-nickname
-                 :icon       :i/correct
-                 :icon-color (colors/theme-colors colors/success-60 colors/success-50)
-                 :text       (i18n/label
-                              :t/set-nickname-toast
-                              {:primary-name primary-name
-                               :nickname     (string/trim entered-nickname)})}])
-  (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)]))
+  (when-not (string/blank? entered-nickname)
+    (rf/dispatch [:hide-bottom-sheet])
+    (rf/dispatch [:toasts/upsert
+                  {:id         :add-nickname
+                   :icon       :i/correct
+                   :icon-color (colors/theme-colors colors/success-60 colors/success-50)
+                   :text       (i18n/label
+                                :t/set-nickname-toast
+                                {:primary-name primary-name
+                                 :nickname     (string/trim entered-nickname)})}])
+    (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)])))
 
 (defn nickname-drawer
   [{:keys [contact]}]
@@ -54,11 +55,12 @@
          :max-length        32
          :on-change-text    (fn [nickname]
                               (reset! entered-nickname nickname))
-         :on-submit-editing #(add-nickname-toast primary-name @entered-nickname public-key)}]
+         :on-submit-editing #(add-nickname-and-show-toast primary-name @entered-nickname public-key)}]
        [rn/view
         {:style style/nickname-description-container}
         [icons/icon :i/info
-         {:size 16}]
+         {:size 16
+          :color (colors/theme-colors colors/black colors/white)}]
         [quo/text
          {:weight :regular
           :size   :paragraph-2
@@ -75,5 +77,5 @@
          {:type     :primary
           :disabled (string/blank? @entered-nickname)
           :style    {:flex 0.48}
-          :on-press #(add-nickname-toast primary-name @entered-nickname public-key)}
+          :on-press #(add-nickname-and-show-toast primary-name @entered-nickname public-key)}
          title]]])))

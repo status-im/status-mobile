@@ -1,4 +1,4 @@
-(ns status-im2.common.nickname-drawer.style
+(ns status-im2.contexts.contacts.drawers.nickname-drawer.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn context-container

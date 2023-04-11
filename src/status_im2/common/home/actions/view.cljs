@@ -4,7 +4,7 @@
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [status-im2.common.nickname-drawer.view :as nickname-drawer]
+            [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [clojure.string :as string]
             [quo2.foundations.colors :as colors]))
 
