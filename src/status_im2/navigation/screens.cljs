@@ -116,7 +116,8 @@
      :component enable-notifications/enable-notifications}
 
     {:name      :sign-in
-     :component sign-in/view}
+     :component sign-in/view
+     :options   {:layout {:orientation :portrait}}}
 
     {:name      :syncing-devices
      :component syncing-devices/syncing-devices}
