@@ -33,6 +33,7 @@
     quo2.components.inputs.input.view
     quo2.components.inputs.title-input.view
     quo2.components.inputs.profile-input.view
+    quo2.components.links.url-preview.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -182,3 +183,6 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
+
+;;;; LINKS
+(def url-preview quo2.components.links.url-preview.view/view)
