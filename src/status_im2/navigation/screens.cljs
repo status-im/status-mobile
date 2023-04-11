@@ -18,7 +18,6 @@
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
-    [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im2.contexts.onboarding.profiles.view :as profiles]
@@ -32,7 +31,9 @@
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.share.view :as share]))
+    [status-im2.contexts.share.view :as share] 
+   [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
+   [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]))
 
 (defn screens
   []
@@ -156,6 +157,9 @@
     {:name      :syncing-devices
      :options   {:layout options/onboarding-layout}
      :component syncing-devices/view}
+
+    {:name      :syncing-results
+     :component syncing-results/view}
 
     {:name      :welcome
      :options   {:layout options/onboarding-layout}

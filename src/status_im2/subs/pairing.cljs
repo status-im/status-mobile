@@ -20,3 +20,7 @@
  :pairing/installation-name
  :<- [:multiaccount]
  (fn [multiaccount] (:installation-name multiaccount)))
+
+(re-frame/reg-sub
+ :pairing/pairing-in-progress
+ (fn [pairing-in-progress?] (:syncing pairing-in-progress?)))

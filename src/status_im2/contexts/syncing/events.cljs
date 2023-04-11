@@ -17,7 +17,7 @@
     (merge
      {:db (dissoc db :syncing)}
      (when receiver?
-       {:dispatch [:navigate-to :syncing-devices {:pairing-status :completed-pairing}]}))))
+       {:dispatch [:navigate-to :syncing-results]}))))
 
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}

@@ -3,8 +3,9 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
-            [status-im2.common.not-implemented :as not-implemented]
+            [status-im2.contexts.syncing.sheets.sync-device-notice.view :as sync-device-notice]
+            [status-im2.contexts.syncing.style :as style]
+            [status-im2.contexts.onboarding.common.syncing.render-device :as device]
             [utils.re-frame :as rf]))
 
 ;;TODO remove mock data (#https://github.com/status-im/status-mobile/issues/15142)

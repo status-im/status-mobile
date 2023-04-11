@@ -3,7 +3,6 @@
 
 (def container-main
   {:background-color colors/neutral-95
-   :padding-top      44
    :flex             1})
 
 (def page-container

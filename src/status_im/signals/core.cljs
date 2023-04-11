@@ -11,7 +11,6 @@
             [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
             [status-im2.constants :as constants]
-            [quo2.foundations.colors :as colors]
             [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (rf/defn status-node-started
@@ -72,21 +71,20 @@
         logged-in?                      (multiaccounts.model/logged-in? db)
         ;; since `connection-success` event is received on both sender and receiver devices
         ;; we check the `logged-in?` status to identify the receiver and take the user to next screen
-        navigate-to-syncing-devices?    (and connection-success? (not logged-in?))
+        navigate-to-syncing-devices?    (or (and connection-success? (not logged-in?))
+                                            error-on-pairing?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-devices)]
     (merge {:db (cond-> db
                   connection-success?
                   (assoc-in [:syncing :pairing-in-progress?] true)
 
                   error-on-pairing?
-                  (update-in [:syncing :pairing-in-progress?] dissoc)
+                  (assoc-in [:syncing :pairing-in-progress?] dissoc)
 
                   completed-pairing?
                   (assoc-in [:syncing :pairing-in-progress?] false))}
            (when navigate-to-syncing-devices?
-             {:dispatch [:navigate-to :syncing-devices {:pairing-status :connection-success}]})
-           (when (and error-on-pairing? user-in-syncing-devices-screen?)
-             {:dispatch [:navigate-to :syncing-devices {:pairing-status :error-on-pairing}]})
+             {:dispatch [:navigate-to :syncing-devices]})
            (when completed-pairing?
              {:dispatch [:syncing/pairing-completed]}))))
 
