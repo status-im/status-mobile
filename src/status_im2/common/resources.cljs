@@ -21,6 +21,7 @@
    :photo1               (js/require "../resources/images/mock2/photo1.png")
    :photo2               (js/require "../resources/images/mock2/photo2.png")
    :photo3               (js/require "../resources/images/mock2/photo3.png")
+   :qr-code              (js/require "../resources/images/mock2/qr-code.png")
    :small-opt-card-icon  (js/require "../resources/images/mock2/small_opt_card_icon.png")
    :small-opt-card-main  (js/require "../resources/images/mock2/small_opt_card_main.png")
    :status-logo          (js/require "../resources/images/mock2/status-logo.png")

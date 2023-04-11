@@ -60,6 +60,8 @@
     quo2.components.separator
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
+    quo2.components.share.qr-code.view
+    quo2.components.share.share-qr-code.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.tabs.segmented-tab
     quo2.components.tabs.account-selector
@@ -92,9 +94,7 @@
 (def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
 (def audio-tag quo2.components.tags.context-tags/audio-tag)
 (def community-tag quo2.components.tags.context-tags/community-tag)
-(def tabs quo2.components.tabs.tabs/tabs)
-(def segmented-control quo2.components.tabs.segmented-tab/segmented-control)
-(def account-selector quo2.components.tabs.account-selector/account-selector)
+
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
@@ -176,6 +176,15 @@
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
+
+;;;; SHARE
+(def qr-code quo2.components.share.qr-code.view/qr-code)
+(def share-qr-code quo2.components.share.share-qr-code.view/view)
+
+;;;; TABS
+(def tabs quo2.components.tabs.tabs/tabs)
+(def segmented-control quo2.components.tabs.segmented-tab/segmented-control)
+(def account-selector quo2.components.tabs.account-selector/account-selector)
 
 ;;;; TAGS
 (def tag quo2.components.tags.tag/tag)
