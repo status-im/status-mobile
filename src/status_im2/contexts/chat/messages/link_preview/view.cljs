@@ -4,6 +4,7 @@
     [utils.i18n :as i18n]
     [reagent.core :as reagent]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.link-preview.events]
     [status-im2.contexts.chat.messages.link-preview.style :as style]
@@ -113,7 +114,7 @@
               (when-not (is-gif? thumbnail-url)
                 [:<>
                  [rn/view (style/title-wrapper)
-                  [rn/image {:style (style/title-site-image)}]
+                  [fast-image/fast-image {:style (style/title-site-image)}]
                   [rn/text {:style (style/title-text)}
                    site]]
                  [rn/text {:style (style/main-text)}
@@ -123,7 +124,7 @@
               (when-not (string/blank? thumbnail-url)
                 [:<>
                  [rn/view (style/separator)]
-                 [rn/image
+                 [fast-image/fast-image
                   {:source              {:uri thumbnail-url}
                    :style               (style/image (select-keys preview-data [:height :width]))
                    :accessibility-label :member-photo}]])]]))))}))
