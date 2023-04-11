@@ -39,6 +39,7 @@
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
+    [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.markdown.text :as text]
@@ -64,6 +65,8 @@
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
+    [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
+    [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
@@ -73,6 +76,7 @@
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
+    [status-im2.contexts.quo-preview.title.title :as title]
     [status-im2.contexts.quo-preview.inputs.input :as input]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
@@ -177,6 +181,9 @@
                            {:name      :title-input
                             :insets    {:top false}
                             :component title-input/preview-title-input}]
+   :links                 [{:name      :url-preview
+                            :options   {:insets {:top? true}}
+                            :component url-preview/preview}]
    :list-items            [{:name      :channel
                             :insets    {:top false}
                             :component channel/preview-channel}
@@ -258,6 +265,12 @@
                            {:name      :accounts
                             :insets    {:top false}
                             :component accounts/preview-accounts}]
+   :share                 [{:name      :qr-code
+                            :insets    {:top false}
+                            :component qr-code/preview-qr-code}
+                           {:name      :share-qr-code
+                            :insets    {:top false}
+                            :component share-qr-code/preview-share-qr-code}]
    :tabs                  [{:name      :segmented
                             :insets    {:top false}
                             :component segmented/preview-segmented}
@@ -282,6 +295,9 @@
                            {:name      :token-tag
                             :insets    {:top false}
                             :component token-tag/preview-token-tag}]
+   :text-combinations     [{:name      :title
+                            :insets    {:top false}
+                            :component title/preview-title}]
    :wallet                [{:name      :lowest-price
                             :insets    {:top false}
                             :component lowest-price/preview-lowest-price}

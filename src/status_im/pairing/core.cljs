@@ -247,11 +247,11 @@
   [cofx installation-id]
   (rf/merge cofx
             (enable installation-id)
-            (multiaccounts.update/send-multiaccount-update)))
+            (multiaccounts.update/send-contact-update)))
 
 (rf/defn disable-installation-success
   {:events [:pairing.callback/disable-installation-success]}
   [cofx installation-id]
   (rf/merge cofx
             (disable installation-id)
-            (multiaccounts.update/send-multiaccount-update)))
+            (multiaccounts.update/send-contact-update)))

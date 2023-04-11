@@ -5,24 +5,20 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [status-im2.contexts.onboarding.welcome.style :as style]
     [status-im2.contexts.onboarding.common.background.view :as background]))
 
 (defn page-title
   []
-  [rn/view {:style style/title-container}
-   [quo/text
-    {:accessibility-label :notifications-screen-title
-     :weight              :semi-bold
-     :size                :heading-1
-     :style               {:color colors/white}}
-    (i18n/label :t/welcome-to-web3)]
-   [quo/text
-    {:accessibility-label :notifications-screen-sub-title
-     :weight              :regular
-     :size                :paragraph-1
-     :style               {:color colors/white}}
-    (i18n/label :t/welcome-to-web3-sub-title)]])
+  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+    [quo/title
+     {:title                        (i18n/label (if new-account?
+                                                  :t/welcome-to-web3
+                                                  :t/welcome-back))
+      :title-accessibility-label    :welcome-title
+      :subtitle                     (i18n/label :t/welcome-to-web3-sub-title)
+      :subtitle-accessibility-label :welcome-sub-title}]))
 
 
 (defn navigation-bar
@@ -39,17 +35,20 @@
 
 (defn view
   []
-  [rn/view {:style style/welcome-container}
-   [background/view true]
-   [navigation-bar :enable-notifications]
-   [page-title]
-   [rn/view {:style style/page-illustration}
-    [quo/text
-     "Illustration here"]]
-   [quo/button
-    {:on-press                  #(rf/dispatch [:init-root :shell-stack])
-     :type                      :primary
-     :accessibility-label       :welcome-button
-     :override-background-color (colors/custom-color :magenta 60)
-     :style                     {:margin 20}}
-    (i18n/label :t/start-using-status)]])
+  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+    [safe-area/consumer
+     (fn [insets]
+       [rn/view {:style (style/page-container insets)}
+        [background/view true]
+        [navigation-bar :enable-notifications]
+        [page-title]
+        [rn/view {:style style/page-illustration}
+         [quo/text
+          "Illustration here"]]
+        [rn/view {:style (style/buttons insets)}
+         [quo/button
+          {:on-press                  #(rf/dispatch [:init-root :shell-stack])
+           :type                      :primary
+           :accessibility-label       :welcome-button
+           :override-background-color (colors/custom-color profile-color 60)}
+          (i18n/label :t/start-using-status)]]])]))

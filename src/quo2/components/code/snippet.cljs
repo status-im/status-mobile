@@ -1,175 +1,110 @@
 (ns quo2.components.code.snippet
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
-            [oops.core :as oops]
             [quo2.components.buttons.button :as button]
+            [quo2.components.code.code.style :as style]
             [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
-            [react-native.masked-view :as masked-view]
             [react-native.syntax-highlighter :as highlighter]
             [reagent.core :as reagent]))
 
-;; Example themes:
-;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs
-(def ^:private themes
-  {:light {:hljs-comment {:color colors/neutral-40}
-           :hljs-title   {:color (colors/custom-color :blue 50)}
-           :hljs-keyword {:color (colors/custom-color :green 50)}
-           :hljs-string  {:color (colors/custom-color :turquoise 50)}
-           :hljs-literal {:color (colors/custom-color :turquoise 50)}
-           :hljs-number  {:color (colors/custom-color :turquoise 50)}
-           :line-number  {:color colors/neutral-40}}
-   :dark  {:hljs-comment {:color colors/neutral-60}
-           :hljs-title   {:color (colors/custom-color :blue 60)}
-           :hljs-keyword {:color (colors/custom-color :green 60)}
-           :hljs-string  {:color (colors/custom-color :turquoise 60)}
-           :hljs-literal {:color (colors/custom-color :turquoise 60)}
-           :hljs-number  {:color (colors/custom-color :turquoise 60)}
-           :line-number  {:color colors/neutral-40}}})
-
-(defn- text-style
-  [class-names]
-  (->> class-names
-       (map keyword)
-       (reduce #(merge %1 (get-in themes [(theme/get-theme) %2]))
-               {:flex-shrink 1
-                ;; Round to a nearest whole number to achieve consistent
-                ;; spacing (also important for calculating `max-text-height`).
-                ;; Line height seems to be inconsistent between text being
-                ;; wrapped and text being rendered on a newline using Flexbox
-                ;; layout.
-                :line-height 18})))
-
 (defn- render-nodes
   [nodes]
-  (map (fn [{:keys [children value] :as node}]
-         ;; Node can have :children or a :value.
+  (map (fn [{:keys [children value last-line?] :as node}]
          (if children
            (into [text/text
-                  {:weight :code
-                   :size   :paragraph-2
-                   :style  (text-style (get-in node [:properties :className]))}]
+                  (cond-> {:weight :code
+                           :size   :paragraph-2
+                           :style  (style/text-style (get-in node [:properties :className]))}
+                    last-line? (assoc :number-of-lines 1))]
                  (render-nodes children))
            ;; Remove newlines as we already render each line separately.
-           (-> value string/trim-newline)))
+           (string/trim-newline value)))
        nodes))
+
+(defn- line
+  [{:keys [line-number line-number-width]} children]
+  [rn/view {:style style/line}
+   [rn/view {:style (style/line-number line-number-width)}
+    [text/text
+     {:style  (style/text-style ["line-number"])
+      :weight :code
+      :size   :paragraph-2}
+     line-number]]
+   children])
 
 (defn- code-block
   [{:keys [rows line-number-width]}]
-  [into [:<>]
+  [rn/view
    (->> rows
         (render-nodes)
-        ;; Line numbers
-        (map-indexed (fn [idx row]
-                       (conj [rn/view {:style {:flex-direction :row}}
-                              [rn/view
-                               {:style {:width        line-number-width
-                                        ;; 8+12 margin
-                                        :margin-right 20}}
-                               [text/text
-                                {:weight :code
-                                 :size   :paragraph-2
-                                 :style  (text-style ["line-number"])}
-                                (inc idx)]]]
-                             row))))])
+        (map-indexed (fn [idx row-content]
+                       [line
+                        {:line-number       (inc idx)
+                         :line-number-width line-number-width}
+                        row-content]))
+        (into [:<>]))])
+
+(defn- mask-view
+  [{:keys [apply-mask?]} child]
+  (if apply-mask?
+    [:<>
+     [rn/view {:style style/gradient-container}
+      [linear-gradient/linear-gradient
+       {:style  style/gradient
+        :colors [:transparent (style/gradient-color)]}
+       [rn/view {:style style/gradient}]]]
+     child]
+    child))
+
+(defn- calc-line-number-width
+  [font-scale rows-to-show]
+  (let [max-line-digits (-> rows-to-show str count)]
+    (if (= 1 max-line-digits)
+      18 ;; ~ 9 is char width, 18 is width used in Figma.
+      (* 9 max-line-digits font-scale))))
 
 (defn- native-renderer
-  []
-  (let [text-height (reagent/atom nil)]
-    (fn [{:keys [rows max-lines on-copy-press]}]
-      (let [background-color      (colors/theme-colors
-                                   colors/white
-                                   colors/neutral-80-opa-40)
-            background-color-left (colors/theme-colors
-                                   colors/neutral-5
-                                   colors/neutral-80)
-            border-color          (colors/theme-colors
-                                   colors/neutral-20
-                                   colors/neutral-80)
-            rows                  (bean/->clj rows)
-            font-scale            (:font-scale (rn/use-window-dimensions))
-            max-rows              (or max-lines (count rows)) ;; Cut down on rows to process.
-            max-line-digits       (-> rows count (min max-rows) str count)
-            ;; ~ 9 is char width, 18 is width used in Figma.
-            line-number-width     (* font-scale (max 18 (* 9 max-line-digits)))
-            max-text-height       (some-> max-lines
-                                          (* font-scale 18)) ;; 18 is font's line height.
-            truncated?            (and max-text-height (< max-text-height @text-height))
-            maybe-mask-wrapper    (if truncated?
-                                    [masked-view/masked-view
-                                     {:mask-element
-                                      (reagent/as-element
-                                       [linear-gradient/linear-gradient
-                                        {:colors    ["black" "transparent"]
-                                         :locations [0.75 1]
-                                         :style     {:flex 1}}])}]
-                                    [:<>])]
-
-        [rn/view
-         {:style {:overflow         :hidden
-                  :padding          8
-                  :background-color background-color
-                  :border-color     border-color
-                  :border-width     1
-                  :border-radius    8
-                  ;; Hide on intial render to avoid flicker when mask-wrapper is shown.
-                  :opacity          (if @text-height 1 0)}}
-         ;; Line number container
-         [rn/view
-          {:style {:position           :absolute
-                   :bottom             0
-                   :top                0
-                   :left               0
-                   :width              (+ line-number-width 8 8)
-                   :background-color   background-color-left
-                   :border-right-color border-color
-                   :border-right-width 1}}]
-         (conj maybe-mask-wrapper
-               [rn/view {:max-height max-text-height}
-                [rn/view
-                 {:on-layout (fn [evt]
-                               (let [height (oops/oget evt "nativeEvent.layout.height")]
-                                 (reset! text-height height)))}
-                 [code-block
-                  {:rows              (take max-rows rows)
-                   :line-number-width line-number-width}]]])
-
-         ;; Copy button
-         [rn/view
-          {:style {:position :absolute
-                   :bottom   8
-                   :right    8}}
-          [button/button
-           {:icon     true
-            :type     :grey
-            :size     24
-            :on-press on-copy-press}
-           :main-icons/copy]]]))))
-
-(defn- wrap-renderer-fn
-  [f {:keys [max-lines on-copy-press]}]
-  (fn [^js props]
-    (reagent/as-element [:f> f
-                         {:rows          (.-rows props)
-                          :max-lines     max-lines
-                          :on-copy-press on-copy-press}])))
+  [{:keys [rows max-lines on-copy-press]
+    :or   {max-lines ##Inf}}]
+  (let [font-scale          (:font-scale (rn/use-window-dimensions))
+        total-rows          (count rows)
+        number-rows-to-show (min (count rows) max-lines)
+        line-number-width   (calc-line-number-width font-scale number-rows-to-show)
+        truncated?          (< number-rows-to-show total-rows)
+        rows-to-show-coll   (if truncated?
+                              (as-> rows $
+                                (update $ number-rows-to-show assoc :last-line? true)
+                                (take (inc number-rows-to-show) $))
+                              rows)]
+    [rn/view {:style (style/container)}
+     [rn/view {:style (style/line-number-container line-number-width)}]
+     [rn/view {:style (style/divider line-number-width)}]
+     [mask-view {:apply-mask? truncated?}
+      [code-block
+       {:rows              rows-to-show-coll
+        :line-number-width line-number-width}]]
+     [rn/view {:style style/copy-button}
+      [button/button
+       {:icon                      true
+        :type                      :grey
+        :size                      24
+        :on-press                  on-copy-press
+        :override-background-color (style/button-background-color)}
+       :main-icons/copy]]]))
 
 (defn snippet
   [{:keys [language max-lines on-copy-press]} children]
   [highlighter/highlighter
    {:language          language
-    :renderer          (wrap-renderer-fn
-                        native-renderer
-                        {:max-lines     max-lines
-                         :on-copy-press #(when on-copy-press
-                                           (on-copy-press children))})
-    ;; Default props to adapt Highlighter for react-native.
-    ;;:CodeTag           react-native/View
-    ;;:PreTag            react-native/View
+    :renderer          (fn [^js/Object props]
+                         (reagent/as-element
+                          [:f> native-renderer
+                           {:rows          (-> props .-rows bean/->clj)
+                            :on-copy-press #(when on-copy-press (on-copy-press children))
+                            :max-lines     max-lines}]))
     :show-line-numbers false
-    :style             #js {}
-    :custom-style      #js {:backgroundColor nil}}
+    :style             {}
+    :custom-style      {:background-color nil}}
    children])
