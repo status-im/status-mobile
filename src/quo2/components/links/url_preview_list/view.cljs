@@ -21,10 +21,31 @@
     :on-clear        on-clear
     :container-style {:width width}}])
 
-(defn view
+(defn- use-scroll-to-last-item
+  [flat-list-ref item-count]
+  (rn/use-effect
+   (fn []
+     (when (pos? item-count)
+       ;; We use a delay because calling `scrollToIndex` without a delay does
+       ;; nothing.
+       (let [timer-id (js/setTimeout
+                       (fn []
+                         (when (and @flat-list-ref (pos? item-count))
+                           (.scrollToIndex ^js @flat-list-ref
+                                           #js
+                                            {:index    (max 0 (dec item-count))
+                                             :animated true})))
+                       25)]
+         (fn []
+           (js/clearTimeout timer-id)))))
+   [item-count]))
+
+(defn- view-component
   []
-  (let [preview-width (reagent/atom 0)]
-    (fn [{:keys [ref data key-fn horizontal-spacing on-clear loading-message]}]
+  (let [preview-width (reagent/atom 0)
+        flat-list-ref (atom nil)]
+    (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message]}]
+      (use-scroll-to-last-item flat-list-ref (count data))
       ;; We need to use a wrapping view expanded to 100% instead of "flex 1",
       ;; otherwise `on-layout` will be triggered multiple times as the flat list
       ;; renders its children.
@@ -32,23 +53,25 @@
        {:style               {:width "100%"}
         :accessibility-label :url-preview-list}
        [rn/flat-list
-        (merge
-         (when ref
-           {:ref #(reset! ref %)})
-         {:key-fn                            key-fn
-          :on-layout                         (fn [^js e]
-                                               (let [width (- (oops/oget e "nativeEvent.layout.width")
-                                                              (* 2 horizontal-spacing))]
-                                                 (reset! preview-width width)))
-          :horizontal                        true
-          :deceleration-rate                 :fast
-          :on-scroll-to-index-failed         identity
-          :content-container-style           {:padding-horizontal horizontal-spacing}
-          :separator                         [url-preview-separator]
-          :snap-to-interval                  (+ @preview-width style/url-preview-gap)
-          :shows-horizontal-scroll-indicator false
-          :data                              data
-          :render-fn                         url-preview-item
-          :render-data                       {:width           @preview-width
-                                              :on-clear        on-clear
-                                              :loading-message loading-message}})]])))
+        {:ref                               #(reset! flat-list-ref %)
+         :key-fn                            key-fn
+         :on-layout                         (fn [^js e]
+                                              (let [width (- (oops/oget e "nativeEvent.layout.width")
+                                                             (* 2 horizontal-spacing))]
+                                                (reset! preview-width width)))
+         :horizontal                        true
+         :deceleration-rate                 :fast
+         :on-scroll-to-index-failed         identity
+         :content-container-style           {:padding-horizontal horizontal-spacing}
+         :separator                         [url-preview-separator]
+         :snap-to-interval                  (+ @preview-width style/url-preview-gap)
+         :shows-horizontal-scroll-indicator false
+         :data                              data
+         :render-fn                         url-preview-item
+         :render-data                       {:width           @preview-width
+                                             :on-clear        on-clear
+                                             :loading-message loading-message}}]])))
+
+(defn view
+  [props]
+  [:f> view-component props])
