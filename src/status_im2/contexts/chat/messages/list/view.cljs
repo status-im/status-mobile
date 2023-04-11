@@ -14,7 +14,7 @@
             [status-im2.contexts.chat.messages.list.state :as state]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.bottom-sheet-composer.constants :as c]))
+            [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
 (defonce messages-list-ref (atom nil))
 
