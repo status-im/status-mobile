@@ -114,7 +114,7 @@
               (when-not (is-gif? thumbnail-url)
                 [:<>
                  [rn/view (style/title-wrapper)
-                  [fast-image/fast-image {:style (style/title-site-image)}]
+                  [rn/image {:style (style/title-site-image)}]
                   [rn/text {:style (style/title-text)}
                    site]]
                  [rn/text {:style (style/main-text)}
