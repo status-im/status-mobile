@@ -538,7 +538,7 @@
           [rn/view
            {:test-ID                       "record-audio"
             :style                         style/button-container
-            :hit-slop                      {:top    (if platform/ios? -70 0)
+            :hit-slop                      {:top    -70
                                             :bottom 0
                                             :left   0
                                             :right  0}
