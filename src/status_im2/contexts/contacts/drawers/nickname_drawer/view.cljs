@@ -59,7 +59,7 @@
        [rn/view
         {:style style/nickname-description-container}
         [icons/icon :i/info
-         {:size 16
+         {:size  16
           :color (colors/theme-colors colors/black colors/white)}]
         [quo/text
          {:weight :regular
