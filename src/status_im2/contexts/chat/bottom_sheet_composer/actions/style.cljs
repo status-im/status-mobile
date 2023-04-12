@@ -16,8 +16,8 @@
 (defn send-button
   [opacity z-index]
   (reanimated/apply-animations-to-style
-    {:opacity opacity}
-    {:position         :absolute
-     :right            0
-     :z-index          z-index
-     :background-color (colors/theme-colors colors/white colors/neutral-95)}))
+   {:opacity opacity}
+   {:position         :absolute
+    :right            0
+    :z-index          z-index
+    :background-color (colors/theme-colors colors/white colors/neutral-95)}))

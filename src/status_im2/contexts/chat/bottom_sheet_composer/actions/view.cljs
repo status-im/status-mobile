@@ -90,19 +90,19 @@
   [quo/button
    {:on-press (fn []
                 (permissions/request-permissions
-                  {:permissions [:read-external-storage :write-external-storage]
-                   :on-allowed  (fn []
-                                  (when platform/android?
-                                    (when @focused?
-                                      (rf/dispatch [:chat.ui/set-input-refocus true]))
-                                    (.blur ^js @input-ref))
-                                  (rf/dispatch [:chat.ui/set-input-content-height
-                                                (reanimated/get-shared-value height)])
-                                  (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
-                   :on-denied   (fn []
-                                  (alert/show-popup (i18n/label :t/error)
-                                                    (i18n/label
-                                                      :t/external-storage-denied)))}))
+                 {:permissions [:read-external-storage :write-external-storage]
+                  :on-allowed  (fn []
+                                 (when platform/android?
+                                   (when @focused?
+                                     (rf/dispatch [:chat.ui/set-input-refocus true]))
+                                   (.blur ^js @input-ref))
+                                 (rf/dispatch [:chat.ui/set-input-content-height
+                                               (reanimated/get-shared-value height)])
+                                 (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
+                  :on-denied   (fn []
+                                 (alert/show-popup (i18n/label :t/error)
+                                                   (i18n/label
+                                                    :t/external-storage-denied)))}))
     :icon     true
     :type     :outline
     :size     32
