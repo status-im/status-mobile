@@ -5,7 +5,7 @@
             [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.common.nickname-drawer.style :as style]
+            [status-im2.contexts.contacts.drawers.nickname-drawer.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
