@@ -103,31 +103,31 @@
                 :on-press       #(.focus ^js @(:input-ref props))
                 :style          (style/input-container (:height animations) max-height)}
                [rn/text-input
-                {:ref                      #(reset! (:input-ref props) %)
-                 :default-value            @(:text-value state)
-                 :on-focus                 #(handle/focus props state animations dimensions)
-                 :on-blur                  #(handle/blur state animations dimensions images)
-                 :on-content-size-change   #(handle/content-size-change % state animations dimensions)
-                 :on-scroll                #(handle/scroll % state animations dimensions)
-                 :on-change-text           #(handle/change-text % props state)
-                 :on-selection-change      #(handle/selection-change % state)
-                 :max-height               max-height
+                {:ref #(reset! (:input-ref props) %)
+                 :default-value @(:text-value state)
+                 :on-focus #(handle/focus props state animations dimensions)
+                 :on-blur #(handle/blur state animations dimensions images)
+                 :on-content-size-change
+                 #(handle/content-size-change % state animations dimensions keyboard-shown)
+                 :on-scroll #(handle/scroll % state animations dimensions)
+                 :on-change-text #(handle/change-text % props state)
+                 :on-selection-change #(handle/selection-change % state)
+                 :max-height max-height
                  :max-font-size-multiplier 1
-                 :multiline                true
-                 :placeholder              (i18n/label :t/type-something)
-                 :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-                 :style                    (style/input @(:maximized? state)
-                                                        @(:saved-emoji-kb-extra-height props))}]
+                 :multiline true
+                 :placeholder (i18n/label :t/type-something)
+                 :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
+                 :style (style/input @(:maximized? state)
+                                     @(:saved-emoji-kb-extra-height props))}]
                [sub-view/gradients props state animations dimensions]]
               [images/images-list]
               [actions/view props state animations window-height insets (seq images)]]]))]))])
 
 (defn bottom-sheet-composer
-  []
+  [insets]
   [:f>
    (fn []
      (let [window-height (rf/sub [:dimensions/window-height])
-           insets        (safe-area/use-safe-area)
            opacity       (reanimated/use-shared-value 0)
            background-y  (reanimated/use-shared-value (- window-height))
            blur-height   (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]

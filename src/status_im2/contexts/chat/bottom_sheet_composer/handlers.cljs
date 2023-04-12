@@ -57,24 +57,25 @@
   [e
    {:keys [maximized?]}
    {:keys [height saved-height opacity background-y]}
-   {:keys [content-height window-height max-height]}]
-  (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
-        new-height   (utils/bounded-val content-size c/input-height max-height)]
-    (reset! content-height content-size)
-    (when (utils/should-update-height content-size height max-height)
-      (reanimated/animate height new-height)
-      (reanimated/set-shared-value saved-height new-height))
-    (when (= new-height max-height)
-      (reset! maximized? true))
-    (if (or (> new-height (* c/background-threshold max-height))
-            (= (reanimated/get-shared-value saved-height) max-height))
-      (do
-        (reanimated/set-shared-value background-y 0)
-        (reanimated/animate opacity 1))
-      (when (= (reanimated/get-shared-value opacity) 1)
-        (reanimated/animate opacity 0)
-        (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
-    (rf/dispatch [:chat.ui/set-input-content-height new-height])))
+   {:keys [content-height window-height max-height]}
+   keyboard-shown]
+  (when keyboard-shown
+    (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
+          new-height   (utils/bounded-val content-size c/input-height max-height)]
+      (reset! content-height content-size)
+      (when (utils/should-update-height content-size height max-height)
+        (reanimated/animate height new-height)
+        (reanimated/set-shared-value saved-height new-height))
+      (when (= new-height max-height)
+        (reset! maximized? true))
+      (if (utils/should-show-background saved-height max-height new-height)
+        (do
+          (reanimated/set-shared-value background-y 0)
+          (reanimated/animate opacity 1))
+        (when (= (reanimated/get-shared-value opacity) 1)
+          (reanimated/animate opacity 0)
+          (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
+      (rf/dispatch [:chat.ui/set-input-content-height new-height]))))
 
 (defn scroll
   [e

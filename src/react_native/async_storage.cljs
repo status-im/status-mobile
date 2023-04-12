@@ -5,12 +5,10 @@
 (defn set-item
   [key value]
   (-> (.setItem AsyncStorage (clj->js key) (str value))
-      (.then #(println "Data stored successfully!" value))
-      (.catch #(js/console.error (str "Error storing data: " %)))))
+      (.catch #(js/console.error (str "Error storing data in async-storage: " %)))))
 
 (defn get-item
   [key callback]
   (-> (.getItem AsyncStorage (clj->js key))
-      (.then (fn [result]
-               (callback result)))
-      (.catch #(js/console.error (str "Error retrieving data: " %)))))
+      (.then #(callback %))
+      (.catch #(js/console.error (str "Error retrieving data from async-storage: " %)))))

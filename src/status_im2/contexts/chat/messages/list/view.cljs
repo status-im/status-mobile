@@ -44,17 +44,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                                  (dec (oops/oget evt "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                            (dec (oops/oget evt "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -156,15 +156,15 @@
            keyboard-hide-listener (atom nil)
            keyboard-shown         (atom false)]
        (rn/use-effect
-         (fn []
-           (reset! keyboard-show-listener (.addListener rn/keyboard
-                                                        "keyboardWillShow"
-                                                        #(reset! keyboard-shown true)))
-           (reset! keyboard-hide-listener (.addListener rn/keyboard
-                                                        "keyboardWillHide"
-                                                        #(reset! keyboard-shown false)))
-           (fn []
-             (.remove ^js @keyboard-show-listener)
-             (.remove ^js @keyboard-hide-listener))))
+        (fn []
+          (reset! keyboard-show-listener (.addListener rn/keyboard
+                                                       "keyboardWillShow"
+                                                       #(reset! keyboard-shown true)))
+          (reset! keyboard-hide-listener (.addListener rn/keyboard
+                                                       "keyboardWillHide"
+                                                       #(reset! keyboard-shown false)))
+          (fn []
+            (.remove ^js @keyboard-show-listener)
+            (.remove ^js @keyboard-hide-listener))))
        [messages-list-content chat insets keyboard-shown]))])
 

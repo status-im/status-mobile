@@ -72,6 +72,7 @@
     :type     :outline
     :size     32}
    :i/audio])
+
 (defn camera-button
   []
   [quo/button
