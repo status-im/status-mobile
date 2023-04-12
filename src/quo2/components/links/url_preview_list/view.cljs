@@ -7,25 +7,26 @@
     [reagent.core :as reagent]))
 
 (defn- use-scroll-to-last-item
-  [flat-list-ref item-count]
+  [flat-list-ref item-count item-width]
   (rn/use-effect
    (fn []
-     (when (pos? item-count)
-       ;; We use a delay because calling `scrollToIndex` without a delay does
+     (when (and (pos? item-count) (pos? item-width))
+       ;; We use a delay because calling `scrollToOffset` without a delay does
        ;; nothing while the flatlist is still rendering its children.
        ;; `scrollToEnd` doesn't work because it positions the item off-center
        ;; and there's no argument to offset it.
        (let [timer-id (js/setTimeout
                        (fn []
                          (when (and @flat-list-ref (pos? item-count))
-                           (.scrollToIndex ^js @flat-list-ref
-                                           #js
-                                            {:index    (max 0 (dec item-count))
-                                             :animated true})))
+                           (.scrollToOffset ^js @flat-list-ref
+                                            #js
+                                             {:animated true
+                                              :offset   (* (+ item-width style/url-preview-gap)
+                                                           (max 0 (dec item-count)))})))
                        25)]
          (fn []
            (js/clearTimeout timer-id)))))
-   [item-count]))
+   [item-count item-width]))
 
 (defn- separator
   []
@@ -52,13 +53,13 @@
   []
   (let [preview-width (reagent/atom 0)
         flat-list-ref (atom nil)]
-    (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message]}]
-      (use-scroll-to-last-item flat-list-ref (count data))
+    (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message container-style]}]
+      (use-scroll-to-last-item flat-list-ref (count data) @preview-width)
       ;; We need to use a wrapping view expanded to 100% instead of "flex 1",
       ;; otherwise `on-layout` will be triggered multiple times as the flat list
       ;; renders its children.
       [rn/view
-       {:style               {:width "100%"}
+       {:style               (merge container-style {:width "100%"})
         :accessibility-label :url-preview-list}
        [rn/flat-list
         {:ref                               #(reset! flat-list-ref %)
