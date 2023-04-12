@@ -393,8 +393,7 @@
                                          :selection-event   selection-event})))
               props (merge props
                            {:ref                 ref
-                            :style               (merge (dissoc style :margin-horizontal)
-                                                        {:background-color :red})
+                            :style               (dissoc style :margin-horizontal)
                             :on-selection-change on-selection-change
                             :on-selection        on-selection})]
           [rn/selectable-text-input {:menuItems @menu-items :style style}
