@@ -141,33 +141,15 @@
       (reset! last-text-change (js/Date.now)))
 
     (on-text-change text chat-id)
-    ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
-    ;; that's why mention suggestions are calculated on `on-change`
-    (when platform/ios?
-      (rf/dispatch [:mention/calculate-suggestions]))))
+
+    (rf/dispatch [:mention/on-change-text text])))
 
 (defn on-text-input
   [chat-id args]
-  (let [native-event  (.-nativeEvent ^js args)
-        text          (.-text ^js native-event)
-        previous-text (.-previousText ^js native-event)
-        range         (.-range ^js native-event)
-        start         (.-start ^js range)
-        end           (.-end ^js range)]
+  (let [native-event (.-nativeEvent ^js args)
+        text         (.-text ^js native-event)]
     (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))
-      (swap! mentions-enabled? assoc chat-id true))
-
-    (rf/dispatch
-     [:mention/on-text-input
-      {:new-text      text
-       :previous-text previous-text
-       :start         start
-       :end           end}])
-    ;; NOTE(rasom): on Android `on-text-input` is dispatched after
-    ;; `on-change`, that's why mention suggestions are calculated
-    ;; on `on-change`
-    (when platform/android?
-      (rf/dispatch [:mention/calculate-suggestions]))))
+      (swap! mentions-enabled? assoc chat-id true))))
 
 (defn text-input-style
   [chat-id]
