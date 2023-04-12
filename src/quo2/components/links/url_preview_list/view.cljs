@@ -33,7 +33,8 @@
   [rn/view {:style style/url-preview-separator}])
 
 (defn- item-component
-  [{:keys [title body loading? logo]} _ _ {:keys [width on-clear loading-message]}]
+  [{:keys [title body loading? logo]} _ _
+   {:keys [width on-clear loading-message container-style]}]
   [url-preview/view
    {:logo            logo
     :title           title
@@ -41,7 +42,7 @@
     :loading?        loading?
     :loading-message loading-message
     :on-clear        on-clear
-    :container-style {:width width}}])
+    :container-style (merge container-style {:width width})}])
 
 (defn- calculate-width
   [preview-width horizontal-spacing ^js e]
@@ -53,7 +54,8 @@
   []
   (let [preview-width (reagent/atom 0)
         flat-list-ref (atom nil)]
-    (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message container-style]}]
+    (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message
+                 container-style container-style-item]}]
       (use-scroll-to-last-item flat-list-ref (count data) @preview-width)
       ;; We need to use a wrapping view expanded to 100% instead of "flex 1",
       ;; otherwise `on-layout` will be triggered multiple times as the flat list
@@ -76,7 +78,8 @@
          :render-fn                         item-component
          :render-data                       {:width           @preview-width
                                              :on-clear        on-clear
-                                             :loading-message loading-message}}]])))
+                                             :loading-message loading-message
+                                             :container-style container-style-item}}]])))
 
 (defn view
   [props]
