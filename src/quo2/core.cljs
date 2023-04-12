@@ -56,7 +56,7 @@
     quo2.components.record-audio.record-audio.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
-    quo2.components.selectors.selectors
+    quo2.components.selectors.selectors.view
     quo2.components.separator
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
@@ -99,7 +99,7 @@
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
-(def checkbox quo2.components.selectors.selectors/checkbox)
+(def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)

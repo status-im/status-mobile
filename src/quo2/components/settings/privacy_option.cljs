@@ -1,7 +1,7 @@
 (ns quo2.components.settings.privacy-option
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors :as selectors]
+            [quo2.components.selectors.selectors.view :as selectors]
             [quo2.components.settings.style :as style]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]))
