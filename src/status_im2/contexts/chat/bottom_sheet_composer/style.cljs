@@ -96,7 +96,7 @@
 
 (def blur-view
   {:style       {:flex 1}
-   :blur-radius 20
+   :blur-radius (if platform/ios? 20 10)
    :blur-type   :light
    :blur-amount 20})
 
