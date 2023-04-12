@@ -39,6 +39,11 @@
    (<= y c/line-height)
    (= (reanimated/get-shared-value gradient-opacity) 1)))
 
+(defn should-show-background
+  [saved-height max-height new-height]
+  (or (= (reanimated/get-shared-value saved-height) max-height)
+      (> new-height (* c/background-threshold max-height))))
+
 (defn should-update-blur-height
   [e lock-layout? layout-height]
   (or (not @lock-layout?)

@@ -48,6 +48,13 @@
    :border-radius    100
    :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
 
+(defn input-container
+  [height max-height]
+  (reanimated/apply-animations-to-style
+   {:height height}
+   {:max-height max-height
+    :overflow   :hidden}))
+
 (defn input
   [maximized? saved-keyboard-height]
   (merge typography/paragraph-1
@@ -59,17 +66,7 @@
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
-          ; to inc gesture detection area on Android
           :right               (when (or maximized? platform/ios?) 0)}))
-
-(defn input-container
-  [height max-height]
-  (reanimated/apply-animations-to-style
-   {:height height}
-   {;:min-height c/input-height
-    :max-height max-height
-    :overflow   :hidden}))
-
 
 (defn background
   [opacity background-y window-height]

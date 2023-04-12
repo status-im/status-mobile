@@ -106,7 +106,6 @@
           :style               {:border-radius 16
                                 :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
           :on-press            (fn []
-                                 (println "kkk" @keyboard-shown)
                                  (if (and platform/ios? @keyboard-shown)
                                    (rn/dismiss-keyboard!)
                                    (when (and outgoing

@@ -81,7 +81,7 @@
         (if-not able-to-send-message?
           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
           ;[composer/composer chat-id insets]
-          [bottom-sheet-composer/bottom-sheet-composer chat-id insets]
+          [bottom-sheet-composer/bottom-sheet-composer insets]
         )])]))
 
 (defn chat
