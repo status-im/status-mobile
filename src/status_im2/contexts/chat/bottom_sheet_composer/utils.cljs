@@ -55,9 +55,13 @@
     (if platform/ios? lines (dec lines))))
 
 (defn calc-max-height
-  [window-height margin-top kb-height images]
-  (let [max-height
-        (- window-height margin-top kb-height c/bar-container-height c/actions-container-height)]
+  [window-height kb-height insets images]
+  (let [margin-top (if platform/ios? (:top insets) 10)
+        max-height (- window-height
+                      margin-top
+                      kb-height
+                      c/bar-container-height
+                      c/actions-container-height)]
     (if (seq images)
       (- max-height c/images-container-height)
       max-height)))

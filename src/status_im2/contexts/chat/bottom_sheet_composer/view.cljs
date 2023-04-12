@@ -26,24 +26,22 @@
   [insets window-height blur-height opacity background-y]
   [:f>
    (fn []
-     (let [props      {:input-ref                   (atom nil)
-                       :keyboard-show-listener      (atom nil)
-                       :keyboard-frame-listener     (atom nil)
-                       :keyboard-hide-listener      (atom nil)
-                       :emoji-kb-extra-height       (atom nil)
-                       :saved-emoji-kb-extra-height (atom nil)}
-           state      {:text-value            (reagent/atom "")
-                       :cursor-position       (reagent/atom 0)
-                       :saved-cursor-position (reagent/atom 0)
-                       :gradient-z-index      (reagent/atom 0)
-                       :kb-default-height     (reagent/atom nil)
-                       :gesture-enabled?      (reagent/atom true)
-                       :lock-selection?       (reagent/atom true)
-                       :focused?              (reagent/atom false)
-                       :lock-layout?          (reagent/atom false)
-                       :maximized?            (reagent/atom false)}
-           margin-top (if platform/ios? (:top insets) 10)]
-       (println "qqq" window-height insets)
+     (let [props {:input-ref                   (atom nil)
+                  :keyboard-show-listener      (atom nil)
+                  :keyboard-frame-listener     (atom nil)
+                  :keyboard-hide-listener      (atom nil)
+                  :emoji-kb-extra-height       (atom nil)
+                  :saved-emoji-kb-extra-height (atom nil)}
+           state {:text-value            (reagent/atom "")
+                  :cursor-position       (reagent/atom 0)
+                  :saved-cursor-position (reagent/atom 0)
+                  :gradient-z-index      (reagent/atom 0)
+                  :kb-default-height     (reagent/atom nil)
+                  :gesture-enabled?      (reagent/atom true)
+                  :lock-selection?       (reagent/atom true)
+                  :focused?              (reagent/atom false)
+                  :lock-layout?          (reagent/atom false)
+                  :maximized?            (reagent/atom false)}]
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
@@ -55,8 +53,8 @@
                 kb-height                                (kb/get-kb-height keyboard-height
                                                                            @(:kb-default-height state))
                 max-height                               (utils/calc-max-height window-height
-                                                                                margin-top
                                                                                 kb-height
+                                                                                insets
                                                                                 images)
                 lines                                    (utils/calc-lines @content-height)
                 max-lines                                (utils/calc-lines max-height)
@@ -87,8 +85,6 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}]
-               (println "www" window-height margin-top kb-height images)
-
             (effects/use-effect props
                                 state
                                 animations
@@ -132,11 +128,9 @@
   [:f>
    (fn []
      (let [window-height (rf/sub [:dimensions/window-height])
-           sb-height   (navigation/status-bar-height)
            opacity       (reanimated/use-shared-value 0)
            background-y  (reanimated/use-shared-value (- window-height))
            blur-height   (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]
-       (println "qqqxxx" sb-height insets)
        [rn/view
         [reanimated/view {:style (style/background opacity background-y window-height)}]
         [sub-view/blur-view blur-height]
