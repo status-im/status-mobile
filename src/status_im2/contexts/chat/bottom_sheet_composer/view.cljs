@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
+    [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -41,7 +42,8 @@
                        :focused?              (reagent/atom false)
                        :lock-layout?          (reagent/atom false)
                        :maximized?            (reagent/atom false)}
-           margin-top (if platform/ios? (:top insets) (+ (:top insets) 10))]
+           margin-top (if platform/ios? (:top insets) 10)]
+       (println "qqq" window-height insets)
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
@@ -85,6 +87,8 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}]
+               (println "www" window-height margin-top kb-height images)
+
             (effects/use-effect props
                                 state
                                 animations
@@ -128,9 +132,11 @@
   [:f>
    (fn []
      (let [window-height (rf/sub [:dimensions/window-height])
+           sb-height   (navigation/status-bar-height)
            opacity       (reanimated/use-shared-value 0)
            background-y  (reanimated/use-shared-value (- window-height))
            blur-height   (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]
+       (println "qqqxxx" sb-height insets)
        [rn/view
         [reanimated/view {:style (style/background opacity background-y window-height)}]
         [sub-view/blur-view blur-height]
