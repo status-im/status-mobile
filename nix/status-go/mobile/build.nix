@@ -41,7 +41,6 @@ in buildGoPackage {
     runHook preBuild
     echo -e "\nBuilding $pname for: ${concatStringsSep "," targets}"
 
-    set -x
     gomobile bind \
       ${concatStringsSep " " goBuildFlags} \
       -ldflags="$ldflags" \

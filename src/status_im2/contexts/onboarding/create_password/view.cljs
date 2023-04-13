@@ -171,8 +171,9 @@
           (when (= @focused-input :repeat-password)
             [rn/view {:style style/disclaimer-container}
              [quo/disclaimer
-              {:on-change #(reset! accepts-disclaimer? %)
-               :checked?  @accepts-disclaimer?}
+              {:blur?     true
+               :checked?  @accepts-disclaimer?
+               :on-change #(reset! accepts-disclaimer? %)}
               (i18n/label :t/password-creation-disclaimer)]])
 
           [rn/view {:style style/button-container}

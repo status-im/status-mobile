@@ -19,7 +19,7 @@ pipeline {
   }
 
   /* WARNING: Defining parameters here with the ?: trick causes them to remember last value. */
-  parameters { 
+  parameters {
     choice(
       name: 'BUILD_TYPE',
       description: 'Makefile target to build. Optional Parameter.',
