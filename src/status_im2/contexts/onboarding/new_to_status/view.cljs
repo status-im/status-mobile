@@ -59,7 +59,7 @@
   (fn []
     [safe-area/consumer
      (fn [{:keys [top]}]
-       [:<>
+       [rn/view {:style {:flex 1}}
         [background/view true]
         [rn/view {:style style/content-container}
          [navigation-bar/navigation-bar

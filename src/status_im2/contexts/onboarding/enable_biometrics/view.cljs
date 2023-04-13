@@ -21,7 +21,7 @@
   [{:keys [insets]}]
   (let [supported-biometric (rf/sub [:supported-biometric-auth])
         bio-type-label      (biometric/get-label supported-biometric)
-        profile-color (:color (rf/sub [:onboarding-2/profile]))]
+        profile-color       (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics])

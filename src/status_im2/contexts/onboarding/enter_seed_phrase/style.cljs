@@ -3,8 +3,7 @@
             [react-native.platform :as platform]))
 
 (def page-container
-  {:padding-top      (if platform/ios? 44 0)
-   :position         :absolute
+  {:position         :absolute
    :top              0
    :bottom           0
    :left             0
