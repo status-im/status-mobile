@@ -2,7 +2,6 @@
   (:require
     [oops.core :as oops]
     [quo2.components.links.url-preview-list.view :as view]
-    [status-im2.common.resources :as resources]
     [test-helpers.component :as h]))
 
 (def previews
@@ -11,7 +10,6 @@
        (mapv (fn [index]
                {:title    (str "Title " index)
                 :body     (str "status.im." index)
-                :logo     (resources/get-mock-image :status-logo)
                 :loading? false
                 :url      (str "status.im." index)}))))
 
