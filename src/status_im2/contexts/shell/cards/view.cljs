@@ -181,37 +181,38 @@
            on-press on-close content banner]}]
   (let [color-50 (colors/custom-color customization-color 50)
         color-60 (colors/custom-color customization-color 60)]
-    [rn/touchable-without-feedback {:on-press on-press}
-     [rn/view {:style (style/base-container color-50)}
-      (when banner
-        [rn/image
-         {:source (:source banner)
-          :style  {:width 160}}])
-      [rn/view {:style style/secondary-container}
-       [quo/text
-        {:size            :paragraph-1
-         :weight          :semi-bold
-         :number-of-lines 1
-         :ellipsize-mode  :tail
-         :style           style/title}
-        title]
-       [quo/text
-        {:size   :paragraph-2
-         :weight :medium
-         :style  style/subtitle}
-        (subtitle type content)]
-       [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
-      #_(when avatar-params
-        [rn/view {:style style/avatar-container}
-         [avatar avatar-params type customization-color]])
-      #_[quo/button
-       {:size           24
-        :type           :grey
-        :icon           true
-        :on-press       on-close
-        :override-theme :dark
-        :style          style/close-button}
-       :i/close]]]))
+    [rn/view [rn/text {:style {:color :red}} "SOME TEXT"]]
+    #_[rn/touchable-without-feedback {:on-press on-press}
+       [rn/view {:style (style/base-container color-50)}
+        (when banner
+          [rn/image
+           {:source (:source banner)
+            :style  {:width 160}}])
+        #_[rn/view {:style style/secondary-container}
+           [quo/text
+            {:size            :paragraph-1
+             :weight          :semi-bold
+             :number-of-lines 1
+             :ellipsize-mode  :tail
+             :style           style/title}
+            title]
+           [quo/text
+            {:size   :paragraph-2
+             :weight :medium
+             :style  style/subtitle}
+            (subtitle type content)]
+           [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
+        #_(when avatar-params
+            [rn/view {:style style/avatar-container}
+             [avatar avatar-params type customization-color]])
+        #_[quo/button
+           {:size           24
+            :type           :grey
+            :icon           true
+            :on-press       on-close
+            :override-theme :dark
+            :style          style/close-button}
+           :i/close]]]))
 
 ;; browser Card
 (defn browser-card
