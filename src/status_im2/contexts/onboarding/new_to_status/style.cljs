@@ -1,6 +1,5 @@
 (ns status-im2.contexts.onboarding.new-to-status.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def full-screen {:flex 1})
 

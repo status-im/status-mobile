@@ -1,6 +1,5 @@
 (ns status-im2.contexts.onboarding.enter-seed-phrase.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def page-container
   {:position         :absolute
