@@ -106,7 +106,7 @@
                  :bottom           -1
                  :position         :absolute
                  :background-color colors/neutral-100}}
-        [jump-to-list switcher-cards shell-margin]
+        ;;[jump-to-list switcher-cards shell-margin]
         [top-nav-blur-overlay (:top insets)]
         [common.home/top-nav
          {:type  :shell
