@@ -10,15 +10,17 @@
 (defn page
   [{:keys [navigation-bar-top]}]
   [rn/view {:style style/page-container}
-   [rn/view {:style {:height     56
-                     :margin-top navigation-bar-top}}]
+   [rn/view
+    {:style {:height     56
+             :margin-top navigation-bar-top}}]
    [rn/view {:style {:padding-horizontal 20}}
     [quo/text
      {:size   :heading-1
       :weight :semi-bold
       :style  {:color colors/white}} (i18n/label :t/generating-keys)]]])
 
-(defn generating-keys []
+(defn generating-keys
+  []
   (fn []
     [safe-area/consumer
      (fn [{:keys [top]}]

@@ -33,7 +33,7 @@
    [quo/input
     (-> input-props
         (dissoc :hint)
-        (assoc :type :password
+        (assoc :type  :password
                :blur? true))]
    [rn/view {:style style/label-container}
     (when shown
@@ -53,12 +53,12 @@
            on-blur-repeat-password]}]
   (let [hint-1-status (if password-long-enough? :success :neutral)
         hint-2-status (if passwords-match? :success :danger)
-        hint-2-text (if passwords-match?
-                      (i18n/label :t/password-creation-match)
-                      (i18n/label :t/password-creation-dont-match))
-        error? (and show-password-validation?
-                    (not passwords-match?)
-                    (not empty-password?))]
+        hint-2-text   (if passwords-match?
+                        (i18n/label :t/password-creation-match)
+                        (i18n/label :t/password-creation-dont-match))
+        error?        (and show-password-validation?
+                           (not passwords-match?)
+                           (not empty-password?))]
     [:<>
      [password-with-hint
       {:hint           {:text   (i18n/label :t/password-creation-hint)
@@ -121,24 +121,24 @@
 
 (defn password-form
   [{:keys [scroll-to-end-fn]}]
-  (let [password (reagent/atom "")
-        repeat-password (reagent/atom "")
-        accepts-disclaimer? (reagent/atom false)
-        focused-input (reagent/atom nil)
+  (let [password                  (reagent/atom "")
+        repeat-password           (reagent/atom "")
+        accepts-disclaimer?       (reagent/atom false)
+        focused-input             (reagent/atom nil)
         show-password-validation? (reagent/atom false)
-        same-password-length? #(and (seq @password)
-                                    (= (count @password) (count @repeat-password)))]
+        same-password-length?     #(and (seq @password)
+                                        (= (count @password) (count @repeat-password)))]
     (fn []
       (let [{user-color :color} (rf/sub [:onboarding-2/profile])
             {:keys [long-enough?]
              :as   validations} (password-validations @password)
-            password-strength (calc-password-strength validations)
-            empty-password? (empty? @password)
-            same-passwords? (= @password @repeat-password)
-            meet-requirements? (and (not empty-password?)
-                                    (utils.string/at-least-n-chars? @password 10)
-                                    same-passwords?
-                                    @accepts-disclaimer?)]
+            password-strength   (calc-password-strength validations)
+            empty-password?     (empty? @password)
+            same-passwords?     (= @password @repeat-password)
+            meet-requirements?  (and (not empty-password?)
+                                     (utils.string/at-least-n-chars? @password 10)
+                                     same-passwords?
+                                     @accepts-disclaimer?)]
         [:<>
          [rn/view {:style style/top-part}
           [header]
@@ -180,13 +180,13 @@
             {:disabled                  (not meet-requirements?)
              :override-background-color (colors/custom-color user-color 60)
              :on-press                  #(rf/dispatch
-                                           [:onboarding-2/password-set
-                                            (security/mask-data @password)])}
+                                          [:onboarding-2/password-set
+                                           (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
 (defn create-password
   []
-  (let [scroll-view-ref (atom nil)
+  (let [scroll-view-ref  (atom nil)
         scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
     (fn []
       [safe-area/consumer

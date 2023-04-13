@@ -5,8 +5,9 @@
 
 (defn navigation-bar
   [{:keys [top right-section-buttons disable-back-button?]}]
-  [rn/view {:style {:height     56
-                    :margin-top top}}
+  [rn/view
+   {:style {:height     56
+            :margin-top top}}
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}

@@ -17,9 +17,9 @@
 
 (def emoji-regex
   (new
-    js/RegExp
-    #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"
-    "i"))
+   js/RegExp
+   #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"
+   "i"))
 (defn has-emojis [s] (re-find emoji-regex s))
 (def common-names ["Ethereum" "Bitcoin"])
 (defn has-common-names [s] (pos? (count (filter #(string/includes? s %) common-names))))
@@ -33,18 +33,18 @@
 (defn validation-message
   [s]
   (cond
-    (or (= s nil) (= s "")) nil
-    (has-special-characters s) (i18n/label :t/are-not-allowed
-                                           {:check (i18n/label :t/special-characters)})
+    (or (= s nil) (= s ""))      nil
+    (has-special-characters s)   (i18n/label :t/are-not-allowed
+                                             {:check (i18n/label :t/special-characters)})
     (string/ends-with? s "-eth") (i18n/label :t/ending-not-allowed {:ending "-eth"})
     (string/ends-with? s "_eth") (i18n/label :t/ending-not-allowed {:ending "_eth"})
     (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
-    (has-common-names s) (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
-    (has-emojis s) (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
-    (length-not-valid s) (i18n/label :t/name-must-have-at-least-characters
-                                     {:min-chars min-length})
-    (not (valid-name s)) (i18n/label :t/name-is-not-valid)
-    :else nil))
+    (has-common-names s)         (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
+    (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (length-not-valid s)         (i18n/label :t/name-must-have-at-least-characters
+                                             {:min-chars min-length})
+    (not (valid-name s))         (i18n/label :t/name-is-not-valid)
+    :else                        nil))
 
 (defn button-container
   [keyboard-shown? children]
@@ -60,31 +60,31 @@
   [:f>
    (fn []
      (let [{:keys [image-path display-name color]} onboarding-profile-data
-           full-name (reagent/atom display-name)
-           keyboard-shown? (reagent/atom false)
-           validation-msg (reagent/atom (validation-message @full-name))
-           on-change-text (fn [s]
-                            (reset! validation-msg (validation-message s))
-                            (reset! full-name (string/trim s)))
-           custom-color (reagent/atom (or color c/profile-default-color))
-           profile-pic (reagent/atom image-path)
-           on-change-profile-pic #(reset! profile-pic %)
-           on-change #(reset! custom-color %)]
+           full-name                               (reagent/atom display-name)
+           keyboard-shown?                         (reagent/atom false)
+           validation-msg                          (reagent/atom (validation-message @full-name))
+           on-change-text                          (fn [s]
+                                                     (reset! validation-msg (validation-message s))
+                                                     (reset! full-name (string/trim s)))
+           custom-color                            (reagent/atom (or color c/profile-default-color))
+           profile-pic                             (reagent/atom image-path)
+           on-change-profile-pic                   #(reset! profile-pic %)
+           on-change                               #(reset! custom-color %)]
        (fn []
          (rn/use-effect
-           (let [will-show-listener (oops/ocall rn/keyboard
-                                                "addListener"
-                                                "keyboardWillShow"
-                                                #(swap! keyboard-shown? (fn [] true)))
-                 will-hide-listener (oops/ocall rn/keyboard
-                                                "addListener"
-                                                "keyboardWillHide"
-                                                #(swap! keyboard-shown? (fn [] false)))]
-             (fn []
-               (fn []
-                 (oops/ocall will-show-listener "remove")
-                 (oops/ocall will-hide-listener "remove"))))
-           [])
+          (let [will-show-listener (oops/ocall rn/keyboard
+                                               "addListener"
+                                               "keyboardWillShow"
+                                               #(swap! keyboard-shown? (fn [] true)))
+                will-hide-listener (oops/ocall rn/keyboard
+                                               "addListener"
+                                               "keyboardWillHide"
+                                               #(swap! keyboard-shown? (fn [] false)))]
+            (fn []
+              (fn []
+                (oops/ocall will-show-listener "remove")
+                (oops/ocall will-hide-listener "remove"))))
+          [])
          [rn/view {:style style/page-container}
           [navigation-bar/navigation-bar {:top navigation-bar-top}]
           [rn/scroll-view
@@ -107,11 +107,11 @@
                  :on-press            (fn []
                                         (rf/dispatch [:dismiss-keyboard])
                                         (rf/dispatch
-                                          [:show-bottom-sheet
-                                           {:override-theme :dark
-                                            :content
-                                            (fn []
-                                              [method-menu/view on-change-profile-pic])}]))
+                                         [:show-bottom-sheet
+                                          {:override-theme :dark
+                                           :content
+                                           (fn []
+                                             [method-menu/view on-change-profile-pic])}]))
                  :image-picker-props  {:profile-picture @profile-pic
                                        :full-name       @full-name}
                  :title-input-props   {:default-value  @full-name
@@ -148,12 +148,14 @@
               :disabled                  (or (not (seq @full-name)) @validation-msg)}
              (i18n/label :t/continue)]]]])))])
 
-(defn create-profile []
+(defn create-profile
+  []
   (fn []
     (let [onboarding-profile-data (rf/sub [:onboarding-2/profile])]
       [safe-area/consumer
        (fn [{:keys [top]}]
          [:<>
           [background/view true]
-          [page {:navigation-bar-top      top
-                 :onboarding-profile-data onboarding-profile-data}]])])))
+          [page
+           {:navigation-bar-top      top
+            :onboarding-profile-data onboarding-profile-data}]])])))

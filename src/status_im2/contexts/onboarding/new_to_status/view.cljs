@@ -27,9 +27,9 @@
        :subtitle   (i18n/label :t/generate-keys-subtitle)
        :image      (resources/get-image :generate-keys)
        :max-height (- (:height window)
-                      (* 2 56)                              ;; two other list items
-                      (* 2 16)                              ;; spacing between items
-                      220)                                  ;; extra spacing (top bar)
+                      (* 2 56) ;; two other list items
+                      (* 2 16) ;; spacing between items
+                      220)     ;; extra spacing (top bar)
        :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
 
      [rn/view {:style style/subtitle-container}
@@ -54,7 +54,8 @@
         :image    (resources/get-image :use-keycard)
         :on-press #(rf/dispatch [::keycard/recover-with-keycard-pressed])}]]]))
 
-(defn new-to-status []
+(defn new-to-status
+  []
   (fn []
     [safe-area/consumer
      (fn [{:keys [top]}]

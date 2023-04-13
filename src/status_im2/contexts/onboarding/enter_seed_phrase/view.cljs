@@ -63,7 +63,8 @@
         (when (seq @error-message)
           [quo/text @error-message])]])))
 
-(defn enter-seed-phrase []
+(defn enter-seed-phrase
+  []
   (fn []
     [safe-area/consumer
      (fn [{:keys [top]}]
