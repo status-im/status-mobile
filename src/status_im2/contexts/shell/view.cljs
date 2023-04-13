@@ -49,6 +49,8 @@
 
 (defn render-card
   [{:keys [type screen-id] :as card}]
+  [rn/view [rn/text {:style {:color :red}} "SOME TEXT"]]
+  #_
   (let [card-data (case type
                     shell.constants/one-to-one-chat-card
                     (rf/sub [:shell/one-to-one-chat-card screen-id])
