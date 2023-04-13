@@ -13,9 +13,7 @@
 (rf/defn navigate-to
   {:events [:navigate-to]}
   [{:keys [db]} go-to-view-id screen-params]
-  (let [dis-n (cond-> [[:hide-bottom-sheet]]
-                (#{:chat :community-overview} go-to-view-id)
-                (conj [:shell/add-switcher-card go-to-view-id screen-params]))]
+  (let [dis-n [[:hide-bottom-sheet]]]
     (merge
      {:db          (-> (assoc db :view-id go-to-view-id)
                        (all-screens-params go-to-view-id screen-params))
