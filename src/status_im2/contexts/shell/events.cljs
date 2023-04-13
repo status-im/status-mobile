@@ -100,7 +100,7 @@
                                        [:shell/switcher-cards (:card-id card-data)]
                                        switcher-card)
         :shell/navigate-from-shell-fx (:navigate-from card-data)}
-       (switcher-cards-store/upsert-switcher-card-rpc switcher-card)))))
+       #_(switcher-cards-store/upsert-switcher-card-rpc switcher-card)))))
 
 (rf/defn close-switcher-card
   {:events [:shell/close-switcher-card]}
