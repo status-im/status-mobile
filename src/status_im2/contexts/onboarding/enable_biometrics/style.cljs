@@ -11,8 +11,6 @@
    :right            0
    :background-color colors/neutral-80-opa-80-blur})
 
-(def navigation-bar {:height 56})
-
 (def image-container
   {:margin-top       20
    :margin-bottom    24

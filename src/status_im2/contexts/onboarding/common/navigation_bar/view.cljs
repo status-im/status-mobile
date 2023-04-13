@@ -4,16 +4,15 @@
             [utils.re-frame :as rf]))
 
 (defn navigation-bar
-  [{:keys [on-press-info]}]
-  [rn/view {:style {:height 56}}
+  [{:keys [top right-section-buttons disable-back-button?]}]
+  [rn/view {:style {:height     56
+                    :margin-top top}}
    [quo/page-nav
     {:align-mid?            true
-     :mid-section           {:type :text-only}
+     :mid-section           {:type :text-only :main-text ""}
      :left-section          {:type                :blur-bg
                              :icon                :i/arrow-left
                              :icon-override-theme :dark
-                             :on-press            #(rf/dispatch [:navigate-back])}
-     :right-section-buttons [{:type                :blur-bg
-                              :icon                :i/info
-                              :icon-override-theme :dark
-                              :on-press            on-press-info}]}]])
+                             :on-press            (when-not disable-back-button?
+                                                    #(rf/dispatch [:navigate-back]))}
+     :right-section-buttons right-section-buttons}]])

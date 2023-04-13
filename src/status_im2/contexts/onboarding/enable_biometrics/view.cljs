@@ -2,27 +2,22 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.onboarding.enable-biometrics.style :as style]
-            [utils.i18n :as i18n]
+            [react-native.safe-area :as safe-area]
             [status-im2.contexts.onboarding.common.background.view :as background]
-            [utils.re-frame :as rf]
-            [status-im.multiaccounts.biometric.core :as biometric]))
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?  true
-     :mid-section {:type :text-only :main-text ""}
-    }]])
+            [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn page
-  []
+  [{:keys [navigation-bar-top]}]
   (let [supported-biometric (rf/sub [:supported-biometric-auth])
-        bio-type-label      (biometric/get-label supported-biometric)
-        profile-color       (:color (rf/sub [:onboarding-2/profile]))]
+        bio-type-label (biometric/get-label supported-biometric)
+        profile-color (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style style/page-container}
-     [navigation-bar]
+     [navigation-bar/navigation-bar {:top                  navigation-bar-top
+                                     :disable-back-button? true}]
      [rn/view
       {:style {:padding-horizontal 20
                :flex               1}}
@@ -52,8 +47,10 @@
          :style                     {:margin-top 12}}
         (i18n/label :t/maybe-later)]]]]))
 
-(defn enable-biometrics
-  []
-  [rn/view {:style {:flex 1}}
-   [background/view true]
-   [page]])
+(defn enable-biometrics []
+  (fn []
+    [safe-area/consumer
+     (fn [{:keys [top]}]
+       [rn/view {:style {:flex 1}}
+        [background/view true]
+        [page {:navigation-bar-top top}]])]))

@@ -8,20 +8,11 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
             [status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [utils.i18n :as i18n]))
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?   true
-     :left-section {:type                :blur-bg
-                    :icon                :i/arrow-left
-                    :icon-override-theme :dark
-                    :on-press            #(rf/dispatch [:navigate-back])}
-     :mid-section  {:type :text-only :main-text ""}}]])
 
 (def button-disabled?
   (comp not constants/seed-phrase-valid-length mnemonic/words-count))
@@ -35,13 +26,13 @@
     (string/join " " $)))
 
 (defn page
-  []
+  [{:keys [navigation-bar-top]}]
   (let [seed-phrase            (reagent/atom "")
         error-message          (reagent/atom "")
         on-invalid-seed-phrase #(reset! error-message (i18n/label :t/custom-seed-phrase))]
     (fn []
       [rn/view {:style style/page-container}
-       [navigation-bar]
+       [navigation-bar/navigation-bar {:top navigation-bar-top}]
        [rn/view {:style {:padding-horizontal 20}}
         [quo/text
          {:weight :bold
@@ -72,8 +63,10 @@
         (when (seq @error-message)
           [quo/text @error-message])]])))
 
-(defn enter-seed-phrase
-  []
-  [rn/view {:style {:flex 1}}
-   [background/view true]
-   [page]])
+(defn enter-seed-phrase []
+  (fn []
+    [safe-area/consumer
+     (fn [{:keys [top]}]
+       [rn/view {:style {:flex 1}}
+        [background/view true]
+        [page {:navigation-bar-top top}]])]))

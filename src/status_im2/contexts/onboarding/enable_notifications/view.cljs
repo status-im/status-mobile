@@ -9,21 +9,9 @@
     [react-native.safe-area :as safe-area]
     [status-im.notifications.core :as notifications]
     [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.enable-notifications.style :as style]
     [status-im2.contexts.shell.animation :as shell.animation]))
-
-(defn navigation-bar
-  []
-  [quo/page-nav
-   (merge {:horizontal-description? false
-           :one-icon-align-left?    true
-           :align-mid?              false
-           :page-nav-color          :transparent
-           :left-section            {:icon                  :i/arrow-left
-                                     :icon-background-color colors/white-opa-5
-                                     :icon-override-theme   :dark
-                                     :type                  :shell
-                                     :on-press              #()}})])
 
 (defn page-title
   []
@@ -62,7 +50,7 @@
    (fn [insets]
      [rn/view {:style (style/page-container insets)}
       [background/view true]
-      [navigation-bar]
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
       [page-title]
       [rn/view {:style style/page-illustration}
        [quo/text

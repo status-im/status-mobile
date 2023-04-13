@@ -2,6 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
@@ -26,9 +27,9 @@
        :subtitle   (i18n/label :t/generate-keys-subtitle)
        :image      (resources/get-image :generate-keys)
        :max-height (- (:height window)
-                      (* 2 56) ;; two other list items
-                      (* 2 16) ;; spacing between items
-                      220)     ;; extra spacing (top bar)
+                      (* 2 56)                              ;; two other list items
+                      (* 2 16)                              ;; spacing between items
+                      220)                                  ;; extra spacing (top bar)
        :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
 
      [rn/view {:style style/subtitle-container}
@@ -53,10 +54,17 @@
         :image    (resources/get-image :use-keycard)
         :on-press #(rf/dispatch [::keycard/recover-with-keycard-pressed])}]]]))
 
-(defn new-to-status
-  []
-  [:<>
-   [background/view true]
-   [rn/view {:style style/content-container}
-    [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
-    [sign-in-options]]])
+(defn new-to-status []
+  (fn []
+    [safe-area/consumer
+     (fn [{:keys [top]}]
+       [:<>
+        [background/view true]
+        [rn/view {:style style/content-container}
+         [navigation-bar/navigation-bar
+          {:top                   top
+           :right-section-buttons [{:type                :blur-bg
+                                    :icon                :i/info
+                                    :icon-override-theme :dark
+                                    :on-press            #(js/alert "Info pressed")}]}]
+         [sign-in-options]]])]))
