@@ -18,11 +18,11 @@
                      (all-screens-params go-to-view-id screen-params))
     :navigate-to go-to-view-id
     :dispatch    [:hide-bottom-sheet]}
-   (when (#{:chat :community-overview} go-to-view-id)
-     {:dispatch-later
-      ;; 300 ms delay because, navigation is priority over shell card update
-      [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
-        :ms       300}]})))
+   #_(when (#{:chat :community-overview} go-to-view-id)
+       {:dispatch-later
+        ;; 300 ms delay because, navigation is priority over shell card update
+        [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
+          :ms       300}]})))
 
 (rf/defn open-modal
   {:events [:open-modal]}
