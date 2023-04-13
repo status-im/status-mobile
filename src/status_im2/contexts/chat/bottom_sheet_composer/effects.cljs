@@ -44,7 +44,7 @@
   [{:keys [kb-default-height]}]
   (when-not @kb-default-height
     (async-storage/get-item :kb-default-height
-                            #(reset! kb-default-height (when (not= nil %) (js/parseInt %))))))
+                            #(reset! kb-default-height (when (some? %) (js/parseInt %))))))
 
 (defn background-effect
   [{:keys [maximized?]}
@@ -66,7 +66,7 @@
    {:keys [container-opacity]}
    images?]
   (when (and (empty? @text-value) (not images?) (not @maximized?) (not @focused?))
-    (reanimated/animate-delay container-opacity 0.7 200)))
+    (reanimated/animate-delay container-opacity c/empty-opacity 200)))
 
 (defn component-will-unmount
   [{:keys [keyboard-show-listener keyboard-hide-listener keyboard-frame-listener]}]

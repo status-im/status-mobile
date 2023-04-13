@@ -13,6 +13,8 @@
 
 (def ^:const multiline-minimized-height (+ input-height 18))
 
+(def ^:const empty-opacity 0.7)
+
 (def ^:const images-container-height 76)
 
 (def ^:const extra-content-offset (if platform/ios? 6 0))

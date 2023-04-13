@@ -23,7 +23,7 @@
   (reanimated/set-shared-value last-height c/input-height)
   (reanimated/animate opacity 0)
   (when-not @focused?
-    (js/setTimeout #(reanimated/animate container-opacity 0.7) 300))
+    (js/setTimeout #(reanimated/animate container-opacity c/empty-opacity) 300))
   (js/setTimeout #(reanimated/set-shared-value background-y
                                                (- window-height))
                  300)

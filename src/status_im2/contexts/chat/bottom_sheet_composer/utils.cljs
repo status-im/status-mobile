@@ -68,5 +68,5 @@
 
 (defn empty-input?
   [input-text images]
-  (and (nil? input-text) (not (seq images))))
+  (and (nil? input-text) (empty? images)))
 

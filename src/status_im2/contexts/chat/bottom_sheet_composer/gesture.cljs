@@ -47,7 +47,7 @@
    {:keys [window-height]}
    starting-opacity]
   (reanimated/animate height (reanimated/get-shared-value saved-height))
-  (when (= starting-opacity 0)
+  (when (zero? starting-opacity)
     (reanimated/animate opacity 0)
     (reanimated/animate-delay background-y (- window-height) 300)))
 
