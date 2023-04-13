@@ -63,8 +63,7 @@
                     (rf/sub [:shell/community-channel-card screen-id])
 
                     nil)]
-    [rn/view [rn/text {:style {:color :red}} "BOOOOOO"]]
-    #_[switcher-cards/card (merge card card-data)]))
+    [switcher-cards/card (merge card card-data)]))
 
 (def empty-cards (repeat 6 {:type shell.constants/empty-card}))
 

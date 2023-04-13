@@ -201,10 +201,10 @@
          :style  style/subtitle}
         (subtitle type content)]
        [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
-      (when avatar-params
+      #_(when avatar-params
         [rn/view {:style style/avatar-container}
          [avatar avatar-params type customization-color]])
-      [quo/button
+      #_[quo/button
        {:size           24
         :type           :grey
         :icon           true
