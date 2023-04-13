@@ -13,16 +13,19 @@
 (rf/defn navigate-to
   {:events [:navigate-to]}
   [{:keys [db]} go-to-view-id screen-params]
-  (merge
-   {:db          (-> (assoc db :view-id go-to-view-id)
-                     (all-screens-params go-to-view-id screen-params))
-    :navigate-to go-to-view-id
-    :dispatch    [:hide-bottom-sheet]}
-   #_(when (#{:chat :community-overview} go-to-view-id)
-       {:dispatch-later
+  (let [dis-n (cond-> [[:hide-bottom-sheet]]
+                (#{:chat :community-overview} go-to-view-id)
+                (conj [:shell/add-switcher-card go-to-view-id screen-params]))]
+    (merge
+     {:db          (-> (assoc db :view-id go-to-view-id)
+                       (all-screens-params go-to-view-id screen-params))
+      :navigate-to go-to-view-id
+      :dispatch-n  dis-n}
+     #_(when (#{:chat :community-overview} go-to-view-id)
+         {:dispatch-later
         ;; 300 ms delay because, navigation is priority over shell card update
-        [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
-          :ms       300}]})))
+          [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
+            :ms       300}]}))))
 
 (rf/defn open-modal
   {:events [:open-modal]}
