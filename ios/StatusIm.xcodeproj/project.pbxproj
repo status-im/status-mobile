@@ -9,14 +9,14 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
 		09B7B3FF4CFA16C028BA0B05 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC21589D612F7787EA45C863 /* libPods-Status-StatusIm-StatusImTests.a */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
+		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
 		3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */; };
 		3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2626CE245C3F2200D5F94B /* Dummy.swift */; };
 		3A8F8EAA24A4D31600BF206D /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A8F8EA924A4D31600BF206D /* GameKit.framework */; };
-		3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
+		3AAD2ABC24A3A60E0075D594 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2626CE245C3F2200D5F94B /* Dummy.swift */; };
 		3AAD2ABE24A3A60E0075D594 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3AAD2AC024A3A60E0075D594 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
@@ -110,7 +110,7 @@
 		00E356F21AD99517003FC87E /* StatusImTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusImTests.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* StatusIm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StatusIm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = StatusIm/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = StatusIm/AppDelegate.m; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = StatusIm/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = StatusIm/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = StatusIm/main.m; sourceTree = "<group>"; };
 		1426DF592BA248FC81D955CB /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../resources/fonts/Inter-Regular.otf"; sourceTree = "<group>"; };
@@ -222,7 +222,7 @@
 				B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */,
@@ -735,7 +735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65F6941925780A4F00A45E76 /* Bridge.swift in Sources */,
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -746,7 +746,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */,
-				3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
+				3AAD2ABC24A3A60E0075D594 /* AppDelegate.mm in Sources */,
 				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
 				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
 			);
