@@ -49,9 +49,7 @@
 
 (defn render-card
   [{:keys [type screen-id] :as card}]
-
-  [rn/view [rn/text {:style {:color :red}} "BOOOOOO"]]
-  #_(let [card-data (case type
+  (let [card-data (case type
                     shell.constants/one-to-one-chat-card
                     (rf/sub [:shell/one-to-one-chat-card screen-id])
 
@@ -65,7 +63,8 @@
                     (rf/sub [:shell/community-channel-card screen-id])
 
                     nil)]
-    [switcher-cards/card (merge card card-data)]))
+    [rn/view [rn/text {:style {:color :red}} "BOOOOOO"]]
+    #_[switcher-cards/card (merge card card-data)]))
 
 (def empty-cards (repeat 6 {:type shell.constants/empty-card}))
 
