@@ -49,7 +49,9 @@
 
 (defn render-card
   [{:keys [type screen-id] :as card}]
-  (let [card-data (case type
+
+  [rn/view [rn/text {:style {:color :red}} "BOOOOOO"]]
+  #_(let [card-data (case type
                     shell.constants/one-to-one-chat-card
                     (rf/sub [:shell/one-to-one-chat-card screen-id])
 
@@ -106,7 +108,7 @@
                  :bottom           -1
                  :position         :absolute
                  :background-color colors/neutral-100}}
-        ;;[jump-to-list switcher-cards shell-margin]
+        [jump-to-list switcher-cards shell-margin]
         [top-nav-blur-overlay (:top insets)]
         [common.home/top-nav
          {:type  :shell
