@@ -31,13 +31,14 @@
     quo2.components.info.info-message
     quo2.components.info.information-box
     quo2.components.inputs.input.view
-    quo2.components.inputs.title-input.view
     quo2.components.inputs.profile-input.view
-    quo2.components.links.url-preview.view
+    quo2.components.inputs.title-input.view
     quo2.components.links.url-preview-list.view
+    quo2.components.links.url-preview.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
+    quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
     quo2.components.markdown.text
     quo2.components.messages.author.view
@@ -49,7 +50,9 @@
     quo2.components.notifications.count-down-circle
     quo2.components.notifications.info-count
     quo2.components.notifications.notification-dot
-    quo2.components.notifications.toast
+    quo2.components.notifications.notification.view
+    quo2.components.notifications.toast.view
+    quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
@@ -63,20 +66,18 @@
     quo2.components.settings.privacy-option
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
-    quo2.components.onboarding.small-option-card.view
-    quo2.components.tabs.segmented-tab
     quo2.components.tabs.account-selector
+    quo2.components.tabs.segmented-tab
     quo2.components.tabs.tabs
     quo2.components.tags.context-tag.view
-    quo2.components.tags.status-tags
     quo2.components.tags.permission-tag
+    quo2.components.tags.status-tags
+    quo2.components.tags.status-tags
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
-    quo2.components.list-items.user-list))
+    quo2.components.text-combinations.title.view))
 
-(def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def text quo2.components.markdown.text/text)
@@ -163,6 +164,8 @@
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
+(def notification quo2.components.notifications.notification.view/notification)
+(def toast quo2.components.notifications.toast.view/toast)
 
 ;;;; PASSWORD
 (def tips quo2.components.password.tips.view/view)
