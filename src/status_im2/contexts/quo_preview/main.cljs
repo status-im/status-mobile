@@ -81,6 +81,8 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
+    [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
@@ -180,6 +182,9 @@
                            {:name      :profile-input
                             :insets    {:top false}
                             :component profile-input/preview-profile-input}
+                           {:name      :search-input
+                            :insets    {:top false}
+                            :component search-input/preview-search-input}
                            {:name      :title-input
                             :insets    {:top false}
                             :component title-input/preview-title-input}]
