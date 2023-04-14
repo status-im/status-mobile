@@ -61,8 +61,7 @@
                                    public-key)
                                   (assoc :blocked? true
                                          :added?   false
-                                         :active?  false
-                                         :mutual?  false))
+                                         :active?  false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (rf/merge cofx
               {:db (assoc-in db [:contacts/contacts public-key] contact)}
