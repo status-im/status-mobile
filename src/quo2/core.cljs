@@ -72,7 +72,6 @@
     quo2.components.tags.context-tag.view
     quo2.components.tags.permission-tag
     quo2.components.tags.status-tags
-    quo2.components.tags.status-tags
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
