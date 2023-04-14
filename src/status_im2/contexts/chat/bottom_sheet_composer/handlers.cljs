@@ -62,7 +62,7 @@
     (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
           new-height   (utils/bounded-val content-size c/input-height max-height)]
       (reset! content-height content-size)
-      (when (utils/update-height? content-size height max-height)
+      (when (utils/update-height? content-size height max-height maximized?)
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)

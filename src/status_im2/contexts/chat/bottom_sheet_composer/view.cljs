@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.view
   (:require
     [quo2.foundations.colors :as colors]
-    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]

@@ -20,10 +20,11 @@
     (Math/min @content-height (reanimated/get-shared-value saved-height))))
 
 (defn update-height?
-  [content-size height max-height]
-  (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
-    (and (not= (reanimated/get-shared-value height) max-height)
-         (> diff c/content-change-threshold))))
+  [content-size height max-height maximized?]
+  (when-not @maximized?
+    (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
+      (and (not= (reanimated/get-shared-value height) max-height)
+           (> diff c/content-change-threshold)))))
 
 (defn show-top-gradient?
   [y lines max-lines gradient-opacity focused?]
