@@ -219,11 +219,11 @@
                   [:ens/search-screen]]
     [react/keyboard-avoiding-view {:flex 1}
      [react/scroll-view
-      {:style                     {:flex 1}
+      {:style                        {:flex 1}
        ;;NOTE required so that switching custom-domain
        ;;works on first tap and persists keyboard
        ;;instead of dismissing keyboard and requiring two taps
-       :keyboardShouldPersistTaps :always}
+       :keyboard-should-persist-taps :always}
       [react/view {:style {:flex 1}}
        [react/view
         {:style {:flex            1

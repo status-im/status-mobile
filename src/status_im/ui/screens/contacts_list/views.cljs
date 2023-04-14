@@ -65,9 +65,9 @@
   []
   (letsubs [blocked-contacts [:contacts/blocked]]
     [list.views/flat-list
-     {:data                      blocked-contacts
-      :key-fn                    :address
-      :render-fn                 contacts-list-item
-      :default-separator?        true
-      :enableEmptySections       true
-      :keyboardShouldPersistTaps :always}]))
+     {:data                         blocked-contacts
+      :key-fn                       :address
+      :render-fn                    contacts-list-item
+      :default-separator?           true
+      :enableEmptySections          true
+      :keyboard-should-persist-taps :always}]))
