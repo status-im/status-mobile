@@ -8,7 +8,7 @@
 
 (defn bar
   []
-  [rn/view {:style (style/bar-container)}
+  [rn/view {:style style/bar-container}
    [rn/view {:style (style/bar)}]])
 
 (defn blur-view
@@ -16,7 +16,7 @@
   [:f>
    (fn []
      [reanimated/view {:style (style/blur-container layout-height)}
-      [blur/view style/blur-view]])])
+      [blur/view (style/blur-view)]])])
 
 (defn gradients
   [{:keys [input-ref]}
@@ -29,7 +29,5 @@
       [reanimated/linear-gradient (style/top-gradient gradient-opacity @gradient-z-index)]
       (when (and (not-empty @text-value) (not @focused?) (> lines 2))
         [rn/touchable-without-feedback
-         {:on-press #(.focus ^js @input-ref)}
+         {:on-press #(when @input-ref (.focus ^js @input-ref))}
          [linear-gradient/linear-gradient (style/bottom-gradient)]])])])
-
-

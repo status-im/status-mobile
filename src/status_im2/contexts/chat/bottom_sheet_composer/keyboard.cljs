@@ -14,7 +14,7 @@
 (defn store-kb-height
   [{:keys [kb-default-height]} keyboard-height]
   (when (and (not @kb-default-height) (pos? keyboard-height))
-    (async-storage/set-item :kb-default-height keyboard-height)))
+    (async-storage/set-item :kb-default-height (str keyboard-height))))
 
 (defn handle-emoji-kb-ios
   [e
@@ -54,7 +54,7 @@
                                    #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
-                                               #(when platform/android?
+                                               #(when (and platform/android? @input-ref)
                                                   (.blur ^js @input-ref)))))
 
 (defn handle-refocus-emoji-kb-ios

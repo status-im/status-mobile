@@ -40,7 +40,8 @@
     (reset! saved-emoji-kb-extra-height @emoji-kb-extra-height)
     (reset! emoji-kb-extra-height nil))
   (rf/dispatch [:chat.ui/set-input-maximized false])
-  (.blur ^js @input-ref))
+  (when @input-ref
+    (.blur ^js @input-ref)))
 
 (defn bounce-back
   [{:keys [height saved-height opacity background-y]}
@@ -68,7 +69,8 @@
                               (when (< (oops/oget e "velocityY") c/velocity-threshold)
                                 (reanimated/set-shared-value container-opacity 1)
                                 (reanimated/set-shared-value last-height max-height))
-                              (.focus ^js @input-ref)
+                              (when @input-ref
+                                (.focus ^js @input-ref))
                               (reset! gesture-enabled? false))
                             (do ; else, will start gesture
                               (reanimated/set-shared-value background-y 0)
@@ -76,8 +78,7 @@
       (gesture/on-update (fn [e]
                            (let [translation (oops/oget e "translationY")
                                  min-height  (utils/get-min-height lines)
-                                 new-height  (+ (- translation)
-                                                (reanimated/get-shared-value saved-height))
+                                 new-height  (- (reanimated/get-shared-value saved-height) translation)
                                  new-height  (utils/bounded-val new-height min-height max-height)]
                              (when keyboard-shown
                                (reanimated/set-shared-value height new-height)

@@ -31,7 +31,7 @@
 (defn refocus-effect
   [{:keys [input-ref]}
    {:keys [input-refocus?]}]
-  (when input-refocus?
+  (when (and input-refocus? @input-ref)
     (.focus ^js @input-ref)
     (rf/dispatch [:chat.ui/set-input-refocus false])))
 
@@ -44,7 +44,7 @@
   [{:keys [kb-default-height]}]
   (when-not @kb-default-height
     (async-storage/get-item :kb-default-height
-                            #(reset! kb-default-height (when (some? %) (js/parseInt %))))))
+                            #(reset! kb-default-height (utils.number/parse-int % nil)))))
 
 (defn background-effect
   [{:keys [maximized?]}
@@ -74,7 +74,7 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
-(defn use-effect
+(defn initialize
   [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images?]
   (rn/use-effect
    (fn []

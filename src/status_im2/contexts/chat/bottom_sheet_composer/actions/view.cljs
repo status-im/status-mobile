@@ -31,7 +31,8 @@
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height c/input-height])
   (reset! text-value "")
-  (.clear ^js @input-ref)
+  (when @input-ref
+    (.clear ^js @input-ref))
   (messages.list/scroll-to-bottom))
 
 (defn send-button
@@ -96,7 +97,8 @@
                                  (when platform/android?
                                    (when @focused?
                                      (rf/dispatch [:chat.ui/set-input-refocus true]))
-                                   (.blur ^js @input-ref))
+                                   (when @input-ref
+                                     (.blur ^js @input-ref)))
                                  (rf/dispatch [:chat.ui/set-input-content-height
                                                (reanimated/get-shared-value height)])
                                  (rf/dispatch [:open-modal :photo-selector {:insets insets}]))

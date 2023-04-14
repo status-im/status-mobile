@@ -10,5 +10,5 @@
 (defn get-item
   [key callback]
   (-> (.getItem AsyncStorage (clj->js key))
-      (.then #(callback %))
-      (.catch #(js/console.error (str "Error retrieving data from async-storage: " %)))))
+      (.then callback)
+      (.catch #(taoensso.timbre/error (str "Error retrieving data from async-storage: " %)))))

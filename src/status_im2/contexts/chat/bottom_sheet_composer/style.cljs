@@ -5,7 +5,6 @@
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
-
 (def shadow
   (if platform/ios?
     {:shadow-radius  20
@@ -31,8 +30,7 @@
      :padding-bottom          (:bottom insets)}
     shadow)))
 
-(defn bar-container
-  []
+(def bar-container
   {:height          c/bar-container-height
    :left            0
    :right           0
@@ -94,10 +92,11 @@
     :border-top-left-radius  20
     :overflow                :hidden}))
 
-(def blur-view
+(defn blur-view
+  []
   {:style       {:flex 1}
    :blur-radius (if platform/ios? 20 10)
-   :blur-type   :light
+   :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
 
 (defn top-gradient-style

@@ -19,13 +19,13 @@
     min-height
     (Math/min @content-height (reanimated/get-shared-value saved-height))))
 
-(defn should-update-height
+(defn update-height?
   [content-size height max-height]
   (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
     (and (not= (reanimated/get-shared-value height) max-height)
          (> diff c/content-change-threshold))))
 
-(defn should-show-top-gradient
+(defn show-top-gradient?
   [y lines max-lines gradient-opacity focused?]
   (and
    (> y c/line-height)
@@ -33,18 +33,18 @@
    (= (reanimated/get-shared-value gradient-opacity) 0)
    @focused?))
 
-(defn should-hide-top-gradient
+(defn hide-top-gradient?
   [y gradient-opacity]
   (and
    (<= y c/line-height)
    (= (reanimated/get-shared-value gradient-opacity) 1)))
 
-(defn should-show-background
+(defn show-background?
   [saved-height max-height new-height]
   (or (= (reanimated/get-shared-value saved-height) max-height)
       (> new-height (* c/background-threshold max-height))))
 
-(defn should-update-blur-height
+(defn update-blur-height?
   [e lock-layout? layout-height]
   (or (not @lock-layout?)
       (> (reanimated/get-shared-value layout-height) (oops/oget e "nativeEvent.layout.height"))))
@@ -69,4 +69,3 @@
 (defn empty-input?
   [input-text images]
   (and (nil? input-text) (empty? images)))
-

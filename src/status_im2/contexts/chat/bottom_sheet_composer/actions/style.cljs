@@ -4,7 +4,6 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
-
 (defn actions-container
   []
   {:height          c/actions-container-height

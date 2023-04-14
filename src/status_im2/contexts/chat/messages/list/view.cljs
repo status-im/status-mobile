@@ -106,9 +106,8 @@
 (defn messages-list-content
   [{:keys [chat-id] :as chat} insets keyboard-shown]
   (fn []
-    (let [context      (rf/sub [:chats/current-chat-message-list-view-context])
-          messages     (rf/sub [:chats/raw-chat-messages-stream chat-id])
-          bottom-space 15]
+    (let [context  (rf/sub [:chats/current-chat-message-list-view-context])
+          messages (rf/sub [:chats/raw-chat-messages-stream chat-id])]
       [rn/view
        {:style {:flex 1}}
        ;; NOTE: DO NOT use anonymous functions for handlers
@@ -129,9 +128,9 @@
          :scroll-indicator-insets      {:top (+ c/composer-default-height (:bottom insets))}
          :keyboard-dismiss-mode        :interactive
          :keyboard-should-persist-taps :handled
-         :onMomentumScrollBegin        state/start-scrolling
-         :onMomentumScrollEnd          state/stop-scrolling
-         :scrollEventThrottle          16
+         :on-momentum-scroll-begin     state/start-scrolling
+         :on-momentum-scroll-end       state/stop-scrolling
+         :scroll-event-throttle        16
          :on-scroll                    on-scroll
          ;; TODO https://github.com/facebook/react-native/issues/30034
          :inverted                     (when platform/ios? true)
@@ -167,4 +166,3 @@
             (.remove ^js @keyboard-show-listener)
             (.remove ^js @keyboard-hide-listener))))
        [messages-list-content chat insets keyboard-shown]))])
-

@@ -24,11 +24,10 @@
     (reanimated/animate gradient-opacity 1)
     (reset! gradient-z-index 1))
   (js/setTimeout #(reset! lock-selection? false) 300)
-  (when (not-empty @text-value)
+  (when (and (not-empty @text-value) @input-ref)
     (.setNativeProps ^js @input-ref
                      (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
   (kb/handle-refocus-emoji-kb-ios props animations dimensions))
-
 
 (defn blur
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
@@ -63,12 +62,12 @@
     (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
           new-height   (utils/bounded-val content-size c/input-height max-height)]
       (reset! content-height content-size)
-      (when (utils/should-update-height content-size height max-height)
+      (when (utils/update-height? content-size height max-height)
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
         (reset! maximized? true))
-      (if (utils/should-show-background saved-height max-height new-height)
+      (if (utils/show-background? saved-height max-height new-height)
         (do
           (reanimated/set-shared-value background-y 0)
           (reanimated/animate opacity 1))
@@ -83,10 +82,10 @@
    {:keys [gradient-opacity]}
    {:keys [lines max-lines]}]
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
-    (when (utils/should-show-top-gradient y lines max-lines gradient-opacity focused?)
+    (when (utils/show-top-gradient? y lines max-lines gradient-opacity focused?)
       (reset! gradient-z-index 1)
       (js/setTimeout #(reanimated/animate gradient-opacity 1) 0))
-    (when (utils/should-hide-top-gradient y gradient-opacity)
+    (when (utils/hide-top-gradient? y gradient-opacity)
       (reanimated/animate gradient-opacity 0)
       (js/setTimeout #(reset! gradient-z-index 0) 300))))
 
@@ -95,9 +94,10 @@
    {:keys [input-ref]}
    {:keys [text-value cursor-position]}]
   (reset! text-value text)
-  (reagent/next-tick #(.setNativeProps ^js @input-ref
-                                       (clj->js {:selection {:start @cursor-position
-                                                             :end   @cursor-position}})))
+  (reagent/next-tick #(when @input-ref
+                        (.setNativeProps ^js @input-ref
+                                         (clj->js {:selection {:start @cursor-position
+                                                               :end   @cursor-position}}))))
   (rf/dispatch [:chat.ui/set-chat-input-text text]))
 
 (defn selection-change
@@ -109,5 +109,5 @@
   [e
    {:keys [lock-layout?]}
    blur-height]
-  (when (utils/should-update-blur-height e lock-layout? blur-height)
+  (when (utils/update-blur-height? e lock-layout? blur-height)
     (reanimated/set-shared-value blur-height (oops/oget e "nativeEvent.layout.height"))))
