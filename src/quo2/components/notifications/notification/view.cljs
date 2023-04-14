@@ -65,7 +65,7 @@
         header (when header [header-container header])
         body   (or body (when text [message text override-theme]))
         body   (when body [body-container body])
-        avatar [avatar-container avatar]]
+        avatar (when avatar [avatar-container avatar])]
     [notification-container
      {:avatar          avatar
       :header          header
