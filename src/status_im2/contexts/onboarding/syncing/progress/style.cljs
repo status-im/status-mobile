@@ -3,10 +3,8 @@
 
 (def navigation-bar {:height 56})
 
-(defn page-container
-  [insets]
-  {:padding-top      insets
-   :position         :absolute
+(def page-container
+  {:position         :absolute
    :top              0
    :bottom           0
    :left             0
@@ -22,3 +20,7 @@
    :border-radius     20
    :margin-top        20
    :justify-content   :center})
+
+(def try-again-button
+  {:margin-top         20
+   :padding-horizontal 20})

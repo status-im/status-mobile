@@ -1,12 +1,8 @@
 (ns status-im2.contexts.onboarding.syncing.results.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def navigation-bar {:height 56})
-
-(defn page-container
-  [insets]
+(def page-container
   {:flex             1
-   :padding-top      insets
    :position         :absolute
    :top              0
    :bottom           0
@@ -21,4 +17,8 @@
 (def device-list
   {:flex               1
    :margin-top         24
+   :padding-horizontal 20})
+
+(def continue-button
+  {:margin-top         20
    :padding-horizontal 20})

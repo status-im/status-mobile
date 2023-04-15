@@ -3,9 +3,8 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.syncing.sheets.sync-device-notice.view :as sync-device-notice]
-            [status-im2.contexts.syncing.style :as style]
-            [status-im2.contexts.onboarding.common.syncing.render-device :as device]
+            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
+            [status-im2.contexts.onboarding.common.syncing.view :as device]
             [utils.re-frame :as rf]))
 
 ;;TODO remove mock data (#https://github.com/status-im/status-mobile/issues/15142)
@@ -36,7 +35,7 @@
        :on-press #(rf/dispatch [:navigate-to :settings-setup-syncing])}
       :i/add]]
     [rn/view {:style style/devices-container}
-     [device/render-device
+     [device/view
       {:name         "iPhone 11"
        :this-device? true
        :device-type  :mobile}]]]])

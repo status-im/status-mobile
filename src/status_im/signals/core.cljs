@@ -76,13 +76,13 @@
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-devices)]
     (merge {:db (cond-> db
                   connection-success?
-                  (assoc-in [:syncing :pairing-in-progress?] true)
+                  (assoc-in [:syncing :pairing-in-progress?] :connected)
 
                   error-on-pairing?
-                  (assoc-in [:syncing :pairing-in-progress?] dissoc)
+                  (assoc-in [:syncing :pairing-in-progress?] :error)
 
                   completed-pairing?
-                  (assoc-in [:syncing :pairing-in-progress?] false))}
+                  (assoc-in [:syncing :pairing-in-progress?] :completed))}
            (when navigate-to-syncing-devices?
              {:dispatch [:navigate-to :syncing-devices]})
            (when completed-pairing?

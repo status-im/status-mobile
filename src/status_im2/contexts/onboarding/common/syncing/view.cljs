@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.common.syncing.render-device
+(ns status-im2.contexts.onboarding.common.syncing.view
   [:require
    [quo2.core :as quo]
    [utils.i18n :as i18n]
@@ -7,8 +7,9 @@
    [status-im2.common.not-implemented :as not-implemented]
    [status-im2.contexts.onboarding.common.syncing.style :as style]])
 
-;; TODO replace with settings component
-(defn render-device
+;; TODO replace with section list component
+;; https://github.com/status-im/status-mobile/issues/15665
+(defn view
   [{:keys [name
            this-device?
            device-type]}]
@@ -42,13 +43,7 @@
           :override-theme :dark}]])
      (when-not this-device?
        [rn/view {:style {:flex-direction :row}}
-        [rn/view
-         {:background-color colors/success-60
-          :align-self       :center
-          :width            8
-          :height           8
-          :border-radius    4
-          :margin-right     6}]
+        [rn/view style/render-device-status]
         [quo/text
          {:accessibility-label :next-back-up
           :size                :paragraph-2

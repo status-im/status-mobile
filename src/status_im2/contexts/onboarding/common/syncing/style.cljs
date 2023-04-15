@@ -19,3 +19,11 @@
 
 (def tag-container
   {:margin-top 8})
+
+(def render-device-status
+  {:background-color colors/success-60
+   :align-self       :center
+   :width            8
+   :height           8
+   :border-radius    4
+   :margin-right     6})

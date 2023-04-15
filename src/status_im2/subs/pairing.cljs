@@ -23,4 +23,6 @@
 
 (re-frame/reg-sub
  :pairing/pairing-in-progress
- (fn [pairing-in-progress?] (:syncing pairing-in-progress?)))
+ :<- [:syncing]
+ (fn [syncing]
+   (:pairing-in-progress? syncing)))
