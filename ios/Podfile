@@ -6,6 +6,13 @@ platform :ios, '12.4'
 
 production = ENV["PRODUCTION"] == "1"
 
+# We need to enable codegen discovery to fix the issue of these files not being generated properly:
+# ios/build/generated/ios/FBReactNativeSpec/FBReactNativeSpec-generated.mm
+# ios/build/generated/ios/FBReactNativeSpec/FBReactNativeSpec.h
+# more details here : https://github.com/status-im/status-mobile/issues/15911
+# TODO: remove this flag once you upgrade react-native above version 0.70
+ENV['USE_CODEGEN_DISCOVERY'] = "1"
+
 abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
@@ -18,6 +25,7 @@ abstract_target 'Status' do
                     :production => production,
                     :hermes_enabled => flags[:hermes_enabled],
                     :fabric_enabled => flags[:fabric_enabled],
+                    :use_codegen_discovery => true,
                     # :flipper_configuration => FlipperConfiguration.enabled,
                     # An absolute path to your application root.
                     :app_path => "#{Pod::Config.instance.installation_root}/.."

@@ -231,6 +231,13 @@ jsbundle: export BUILD_ENV ?= prod
 jsbundle: ##@build Build JavaScript and Clojurescript bundle for iOS and Android
 	nix/scripts/build.sh targets.mobile.jsbundle
 
+release-ios-pr: export TARGET := ios
+release-ios-pr: export BUILD_ENV ?= prod
+release-ios-pr: watchman-clean ##@build Build release PR for iOS release
+	@git clean -dxf -f target/ios && \
+	$(MAKE) jsbundle-ios && \
+	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusImPR -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive | xcpretty  --no-color
+
 #--------------
 # status-go lib
 #--------------

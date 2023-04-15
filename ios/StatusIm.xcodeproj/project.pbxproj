@@ -840,6 +840,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -848,13 +849,14 @@
 				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
 				);
+
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -893,6 +895,12 @@
 					"-lc++",
 					"-ObjC",
 				);
+                OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
@@ -913,6 +921,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -927,6 +936,7 @@
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
 				);
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = (
@@ -959,6 +969,12 @@
 					"-lc++",
 					"-ObjC",
 				);
+                OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
@@ -978,6 +994,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -991,6 +1008,7 @@
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
 				);
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1029,6 +1047,12 @@
 					"-lc++",
 					"-ObjC",
 				);
+                OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development im.status.ethereum.pr";
@@ -1047,6 +1071,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIconPR$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -1060,6 +1085,7 @@
 					"$(PROJECT_DIR)/Pods/**",
 					"$(PROJECT_DIR)",
 				);
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = (
@@ -1092,6 +1118,12 @@
 					"-lc++",
 					"-ObjC",
 				);
+                OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
 				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc im.status.ethereum.pr";
@@ -1108,7 +1140,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1141,7 +1173,7 @@
 				ENABLE_TESTABILITY = YES;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1178,7 +1210,13 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = arm64;
@@ -1192,7 +1230,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1224,7 +1262,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -1253,6 +1291,12 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CPLUSPLUSFLAGS = (
+                    "$(OTHER_CFLAGS)",
+                    "-DFOLLY_NO_CONFIG",
+                    "-DFOLLY_MOBILE=1",
+                    "-DFOLLY_USE_LIBCPP=1",
+                );
 				ONLY_ACTIVE_ARCH = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				SDKROOT = iphoneos;
