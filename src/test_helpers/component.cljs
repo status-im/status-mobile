@@ -61,6 +61,8 @@
   "Pretty-print to STDOUT the current component tree."
   (with-node-or-screen :debug))
 
+(def within rtl/within)
+
 (defn fire-event
   ([event-name node]
    (fire-event event-name node nil))
@@ -188,3 +190,7 @@
 (defn was-called
   [mock]
   (.toHaveBeenCalled (js/expect mock)))
+
+(defn was-called-times
+  [^js mock number-of-times]
+  (.toHaveBeenCalledTimes (js/expect mock) number-of-times))

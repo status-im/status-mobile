@@ -64,13 +64,15 @@
 (defn map-chats
   [{:keys [db] :as cofx}]
   (fn [val]
-    (assoc
-     (merge
-      (or (get (:chats db) (:chat-id val))
-          (create-new-chat (:chat-id val) cofx))
-      val)
-     :invitation-admin
-     (:invitation-admin val))))
+    (let [chat (or (get (:chats db) (:chat-id val))
+                   (create-new-chat (:chat-id val) cofx))]
+      (assoc
+       (merge
+        (cond-> chat
+          (comp not :muted) (dissoc chat :muted-till))
+        val)
+       :invitation-admin
+       (:invitation-admin val)))))
 
 (rf/defn leave-removed-chat
   [{{:keys [view-id current-chat-id chats]} :db
@@ -292,18 +294,20 @@
 
 (rf/defn mute-chat-toggled-successfully
   {:events [:chat/mute-successfully]}
-  [_ chat-id]
-  (log/debug "muted chat successfully" chat-id))
+  [{:keys [db]} chat-id muted-till]
+  (log/debug "muted chat successfully" chat-id " for" muted-till)
+  {:db (assoc-in db [:chats chat-id :muted-till] muted-till)})
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
-  [{:keys [db]} chat-id muted?]
-  (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")]
+  [{:keys [db]} chat-id muted? mute-type]
+  (let [method (if muted? "wakuext_muteChatV2" "wakuext_unmuteChat")
+        params (if muted? [{:chatId chat-id :mutedType mute-type}] [chat-id])]
     {:db            (assoc-in db [:chats chat-id :muted] muted?)
      :json-rpc/call [{:method     method
-                      :params     [chat-id]
+                      :params     params
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
-                      :on-success #(rf/dispatch [:chat/mute-successfully chat-id])}]}))
+                      :on-success #(rf/dispatch [:chat/mute-successfully chat-id %])}]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}

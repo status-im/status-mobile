@@ -34,6 +34,7 @@
     quo2.components.inputs.title-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.links.url-preview.view
+    quo2.components.links.url-preview-list.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -56,7 +57,7 @@
     quo2.components.record-audio.record-audio.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
-    quo2.components.selectors.selectors
+    quo2.components.selectors.selectors.view
     quo2.components.separator
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
@@ -66,7 +67,7 @@
     quo2.components.tabs.segmented-tab
     quo2.components.tabs.account-selector
     quo2.components.tabs.tabs
-    quo2.components.tags.context-tags
+    quo2.components.tags.context-tag.view
     quo2.components.tags.status-tags
     quo2.components.tags.permission-tag
     quo2.components.tags.tag
@@ -90,16 +91,15 @@
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
 (def add-reaction quo2.components.reactions.reaction/add-reaction)
-(def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
-(def context-tag quo2.components.tags.context-tags/context-tag)
-(def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
-(def audio-tag quo2.components.tags.context-tags/audio-tag)
-(def community-tag quo2.components.tags.context-tags/community-tag)
-
+(def user-avatar-tag quo2.components.tags.context-tag.view/user-avatar-tag)
+(def context-tag quo2.components.tags.context-tag.view/context-tag)
+(def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
+(def audio-tag quo2.components.tags.context-tag.view/audio-tag)
+(def community-tag quo2.components.tags.context-tag.view/community-tag)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
-(def checkbox quo2.components.selectors.selectors/checkbox)
+(def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
@@ -199,3 +199,4 @@
 
 ;;;; LINKS
 (def url-preview quo2.components.links.url-preview.view/view)
+(def url-preview-list quo2.components.links.url-preview-list.view/view)

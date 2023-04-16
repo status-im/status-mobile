@@ -3,7 +3,10 @@
             [quo2.core :as quo]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
+            [clojure.string :as string]
+            [quo2.foundations.colors :as colors]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -36,12 +39,19 @@
   (hide-sheet-and-dispatch [:chat/mark-all-as-read chat-id]))
 
 (defn edit-nickname-action
-  [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/edit-nickname chat-id]))
+  [contact]
+  (hide-sheet-and-dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [nickname-drawer/nickname-drawer
+                 {:title               (i18n/label :t/add-nickname-title)
+                  :description         (i18n/label :t/nickname-visible-to-you)
+                  :contact             contact
+                  :accessibility-label :edit-nickname}])}]))
 
 (defn mute-chat-action
   [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true]))
+  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true constants/mute-till-unmuted]))
 
 (defn unmute-chat-action
   [chat-id]
@@ -175,13 +185,35 @@
 
 (defn edit-nickname-entry
   [chat-id]
-  (entry {:icon                :i/edit
-          :label               (i18n/label :t/edit-nickname)
-          :on-press            #(edit-nickname-action chat-id)
-          :danger?             false
-          :accessibility-label :edit-nickname
-          :sub-label           nil
-          :chevron?            false}))
+  (let [{:keys [nickname public-key secondary-name]
+         :as   contact} (select-keys (rf/sub [:contacts/contact-by-address chat-id])
+                                     [:primary-name :nickname :public-key :secondary-name])
+        no-nickname?    (string/blank? nickname)]
+    (entry
+     {:icon                (if no-nickname?
+                             :i/edit
+                             :i/delete)
+      :label               (i18n/label (if no-nickname?
+                                         :t/add-nickname-title
+                                         :t/remove-nickname))
+      :on-press            (fn []
+                             (if no-nickname?
+                               (edit-nickname-action contact)
+                               (do
+                                 (rf/dispatch [:hide-bottom-sheet])
+                                 (rf/dispatch [:toasts/upsert
+                                               {:id         :remove-nickname
+                                                :icon       :correct
+                                                :icon-color (colors/theme-colors colors/success-60
+                                                                                 colors/success-50)
+                                                :text       (i18n/label
+                                                             :t/remove-nickname-toast
+                                                             {:secondary-name secondary-name})}])
+                                 (rf/dispatch [:contacts/update-nickname public-key ""]))))
+      :danger?             false
+      :accessibility-label :add-nickname
+      :sub-label           nil
+      :chevron?            false})))
 
 ;; TODO(OmarBasem): Requires design input.
 (defn edit-name-image-entry
