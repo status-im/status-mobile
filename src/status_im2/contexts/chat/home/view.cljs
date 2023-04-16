@@ -23,7 +23,7 @@
 
 (defn filter-items-by-tab
   [tab items]
-  (if (= tab :groups)
+  (if (= tab :tab/groups)
     (filter :group-chat items)
     (filter :chat-id items)))
 
@@ -107,7 +107,7 @@
       [safe-area/consumer
        (fn [{:keys [top]}]
          [:<>
-          (if (= selected-tab :contacts)
+          (if (= selected-tab :tab/contacts)
             [contacts pending-contact-requests top]
             [chats selected-tab top])
           [rn/view
