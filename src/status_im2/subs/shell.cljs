@@ -156,17 +156,19 @@
  (fn [chats]
    (let [{:keys [chats-stack community-stack]}
          (reduce
-          (fn [acc [_ {:keys [unviewed-messages-count unviewed-mentions-count chat-type]}]]
+          (fn [acc [_ {:keys [unviewed-messages-count unviewed-mentions-count chat-type muted]}]]
             (case chat-type
               constants/community-chat-type
-              (-> acc
-                  (update-in [:community-stack :unviewed-messages-count] + unviewed-messages-count)
-                  (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
+              (when-not muted
+                (-> acc
+                    (update-in [:community-stack :unviewed-messages-count] + unviewed-messages-count)
+                    (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count)))
 
               (constants/private-group-chat-type constants/one-to-one-chat-type)
-              (-> acc
-                  (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
-                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count))
+              (when-not muted
+                (-> acc
+                    (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
+                    (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count)))
 
               acc))
           {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}

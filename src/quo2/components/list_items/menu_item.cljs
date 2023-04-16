@@ -30,18 +30,18 @@
             (when on-press
               {:on-press on-press}))
      [rn/view
-      {:style {:flex-direction     :row
-               :flex-grow          0
-               :flex-shrink        1
-               :padding-horizontal 20
-               :align-items        :center}}
+      {:style (cond-> {:flex-direction :row
+                       :flex-grow      0
+                       :flex-shrink    1
+                       :align-items    :center}
+                icon (assoc :padding-horizontal 20))}
       [rn/view
-       {:style {:width           20
-                :height          20
-                :align-items     :center
-                :justify-content :center
-                :margin-right    12}}
-       [icons/icon icon {:color icon-color}]]
+       {:style (cond-> {:width           20
+                        :height          20
+                        :align-items     :center
+                        :justify-content :center}
+                 icon (assoc :margin-right 12))}
+       (when icon [icons/icon icon {:color icon-color}])]
       [rn/view
        [text/text
         {:weight          :medium

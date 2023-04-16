@@ -36,6 +36,12 @@
 (def ^:const activity-center-membership-status-accepted 2)
 (def ^:const activity-center-membership-status-declined 3)
 
+(def ^:const mute-for-15-mins-type 1)
+(def ^:const mute-for-1-hour-type 2)
+(def ^:const mute-for-8-hours-type 3)
+(def ^:const mute-for-1-week 4)
+(def ^:const mute-till-unmuted 5)
+
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
 (def ^:const activity-center-max-unread-count 99)
 
