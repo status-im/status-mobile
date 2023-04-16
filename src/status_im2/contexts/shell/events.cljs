@@ -25,7 +25,7 @@
 (re-frame/reg-fx
  :shell/navigate-from-shell-fx
  (fn [stack-id]
-   (js/setTimeout #(animation/bottom-tab-on-press stack-id) 500)))
+   (animation/bottom-tab-on-press stack-id)))
 
 (re-frame/reg-fx
  :shell/reset-bottom-tabs

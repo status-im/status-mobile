@@ -276,6 +276,7 @@
 ; onboarding
 
 (reg-root-key-sub :onboarding-2/profile :onboarding-2/profile)
+(reg-root-key-sub :onboarding-2/new-account? :onboarding-2/new-account?)
 
 ; Testing
 

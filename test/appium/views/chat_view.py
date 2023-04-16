@@ -467,7 +467,7 @@ class PreviewMessage(ChatElementByText):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
-                                 xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[2]")
+                                 xpath="//*[@content-desc='member-photo']/ancestor::android.view.ViewGroup[1]/preceding-sibling::android.widget.TextView[2]")
 
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
@@ -476,7 +476,7 @@ class PreviewMessage(ChatElementByText):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
-                                 xpath="//*[@content-desc='member-photo']/preceding-sibling::android.widget.TextView[3]")
+                                 xpath="//*[@content-desc='member-photo']/ancestor::android.view.ViewGroup[1]/preceding-sibling::android.widget.TextView[3]")
 
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
