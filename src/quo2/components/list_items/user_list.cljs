@@ -5,7 +5,7 @@
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
             [quo2.components.messages.author.view :as author]
-            [quo2.components.selectors.selectors :as selectors]))
+            [quo2.components.selectors.selectors.view :as selectors]))
 
 (def container-style
   {:margin-horizontal  8

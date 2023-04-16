@@ -13,6 +13,7 @@
     [quo2.components.inputs.input.component-spec]
     [quo2.components.inputs.profile-input.component-spec]
     [quo2.components.inputs.title-input.component-spec]
+    [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
     [quo2.components.markdown.--tests--.text-component-spec]
     [quo2.components.onboarding.small-option-card.component-spec]
@@ -20,7 +21,8 @@
     [quo2.components.profile.select-profile.component-spec]
     [quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec]
     [quo2.components.record-audio.soundtrack.--tests--.soundtrack-component-spec]
-    [quo2.components.selectors.--tests--.selectors-component-spec]
     [quo2.components.selectors.disclaimer.component-spec]
     [quo2.components.selectors.filter.component-spec]
+    [quo2.components.selectors.selectors.component-spec]
+    [quo2.components.share.share-qr-code.component-spec]
     [quo2.components.tags.--tests--.status-tags-component-spec]))
