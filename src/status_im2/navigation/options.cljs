@@ -4,7 +4,7 @@
 
 (defn default-options
   []
-  {:layout {:orientation :portrait}
+  {:layout {:orientation ["portrait"]}
    :topBar {:visible false}})
 
 (defn statusbar-and-navbar-root
@@ -22,7 +22,7 @@
   (merge (statusbar-and-navbar-root)
          {:topBar {:visible false}
           :layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
-                   :orientation              :portrait
+                   :orientation              ["portrait"]
                    :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}}))
 
 (defn navbar
@@ -59,7 +59,7 @@
   (merge
    {:modalPresentationStyle :overCurrentContext
     :layout                 {:componentBackgroundColor :transparent
-                             :orientation              :portrait
+                             :orientation              ["portrait"]
                              :backgroundColor          :transparent}}
    (if platform/android?
      {:statusBar {:backgroundColor :transparent
