@@ -20,15 +20,6 @@
      :style  (style/header-text)} (i18n/label :t/mute-channel)]
    [quo/menu-item
     {:type                       :transparent
-     :title                      (i18n/label :t/mute-for-1-min)
-     :icon-bg-color              :transparent
-     :container-padding-vertical 12
-     :title-column-style         {:margin-left 2}
-     :on-press                   (fn []
-                                   (hide-sheet-and-dispatch [:chat.ui/mute chat-id true
-                                                             constants/mute-for-1-min]))}]
-   [quo/menu-item
-    {:type                       :transparent
      :title                      (i18n/label :t/mute-for-15-mins)
      :icon-bg-color              :transparent
      :container-padding-vertical 12
