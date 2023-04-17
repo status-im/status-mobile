@@ -8,13 +8,13 @@
     (and blur? (= state :active))
     (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 override-theme)
 
-    blur? ;; state is default
+    blur? ; state is default
     (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-30 override-theme)
 
     (= state :active)
     (colors/theme-colors colors/neutral-30 colors/neutral-60 override-theme)
 
-    :else ;; Not blur and state is default
+    :else ; Not blur and state is default
     (colors/theme-colors colors/neutral-40 colors/neutral-50 override-theme)))
 
 (def clear-icon-container
