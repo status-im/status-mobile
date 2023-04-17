@@ -811,7 +811,7 @@ class ChatView(BaseView):
         self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',
                                                  suffix='/following-sibling::android.view.ViewGroup')
         self.confirm_create_in_community_button = Button(self.driver, translation_id="create")
-        self.mentions_list = BaseElement(self.driver, accessibility_id="mentions-list")
+        self.mentions_list = BaseElement(self.driver, accessibility_id="user-list")
 
         # New UI
         self.pinned_messages_count = Button(self.driver,

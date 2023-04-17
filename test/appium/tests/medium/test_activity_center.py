@@ -332,7 +332,6 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702957)
-    @marks.xfail(reason="Blocked by 15500")
     def test_activity_center_mentions(self):
         self.home_1.jump_to_communities_home()
         self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
