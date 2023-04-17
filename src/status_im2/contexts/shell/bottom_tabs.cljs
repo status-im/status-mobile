@@ -18,19 +18,16 @@
    :overlay-color :transparent})
 
 (defn bottom-tab
-  ([icon stack-id shared-values notifications-data]
-   [bottom-tab icon stack-id shared-values notifications-data nil])
-  ([icon stack-id shared-values notifications-data double-tap-gesture]
-   [bottom-nav-tab/bottom-nav-tab
-    (cond-> (assoc (get notifications-data stack-id)
-                   :test-ID             stack-id
-                   :icon                icon
-                   :icon-color-anim     (get
-                                         shared-values
-                                         (get shell.constants/tabs-icon-color-keywords stack-id))
-                   :on-press            #(animation/bottom-tab-on-press stack-id)
-                   :accessibility-label (str (name stack-id) "-tab"))
-      double-tap-gesture (assoc :double-tap-gesture double-tap-gesture))]))
+  [icon stack-id shared-values notifications-data]
+  [bottom-nav-tab/bottom-nav-tab
+   (assoc (get notifications-data stack-id)
+          :test-ID             stack-id
+          :icon                icon
+          :icon-color-anim     (get
+                                shared-values
+                                (get shell.constants/tabs-icon-color-keywords stack-id))
+          :on-press            #(animation/bottom-tab-on-press stack-id)
+          :accessibility-label (str (name stack-id) "-tab"))])
 
 (defn bottom-tabs
   []
@@ -55,7 +52,7 @@
           [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
         [rn/view {:style (style/bottom-tabs)}
          [bottom-tab :i/communities :communities-stack shared-values notifications-data]
-         [bottom-tab :i/messages :chats-stack shared-values notifications-data
-          messages-double-tap-gesture]
+         [gesture/gesture-detector {:gesture messages-double-tap-gesture}
+          [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
          [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
          [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))])

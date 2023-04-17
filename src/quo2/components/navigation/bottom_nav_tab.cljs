@@ -29,7 +29,7 @@
     :icon-color-anim        reanimated shared value
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
-           on-press pass-through? icon-color-anim accessibility-label test-ID double-tap-gesture]}]
+           on-press pass-through? icon-color-anim accessibility-label test-ID]}]
   [:f>
    (fn []
      (let [icon-animated-style       (reanimated/apply-animations-to-style
@@ -44,54 +44,52 @@
                                       {:width         90
                                        :height        40
                                        :border-radius 10})]
-       (cond->>
-         [rn/touchable-without-feedback
-          {:test-ID             test-ID
-           :on-press            on-press
-           :on-press-in         #(toggle-background-color background-color false pass-through?)
-           :on-press-out        #(toggle-background-color background-color true pass-through?)
-           :accessibility-label accessibility-label}
-          [reanimated/view {:style background-animated-style}
-           ;; In android animations are not working for the animated components which are nested by
-           ;; hole-view,
-           ;; Interestingly this only happens when hole view and blur view are used together
-           ;; Similar behavior is also seen while removing holes, and to fix that we used key and
-           ;; force-rendered view
-           ;; But we need animations faster for tab clicks, so we can't rely on reagent atoms,
-           ;; so for now only using hole view for the ios tab icon notification boundary
-           (if platform/ios?
-             [hole-view/hole-view
-              {:key   new-notifications? ;; Key is required to force removal of holes
-               :holes (cond
-                        (not new-notifications?) ;; No new notifications, remove holes
-                        []
+       [rn/touchable-without-feedback
+        {:test-ID             test-ID
+         :on-press            on-press
+         :on-press-in         #(toggle-background-color background-color false pass-through?)
+         :on-press-out        #(toggle-background-color background-color true pass-through?)
+         :accessibility-label accessibility-label}
+        [reanimated/view {:style background-animated-style}
+         ;; In android animations are not working for the animated components which are nested by
+         ;; hole-view,
+         ;; Interestingly this only happens when hole view and blur view are used together
+         ;; Similar behavior is also seen while removing holes, and to fix that we used key and
+         ;; force-rendered view
+         ;; But we need animations faster for tab clicks, so we can't rely on reagent atoms,
+         ;; so for now only using hole view for the ios tab icon notification boundary
+         (if platform/ios?
+           [hole-view/hole-view
+            {:key   new-notifications? ;; Key is required to force removal of holes
+             :holes (cond
+                      (not new-notifications?) ;; No new notifications, remove holes
+                      []
 
-                        (= notification-indicator :unread-dot)
-                        [{:x 50 :y 5 :width 10 :height 10 :borderRadius 5}]
+                      (= notification-indicator :unread-dot)
+                      [{:x 50 :y 5 :width 10 :height 10 :borderRadius 5}]
 
-                        :else
-                        [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
-              [reanimated/image
-               {:style  icon-animated-style
-                :source (icons/icon-source (keyword (str icon 24)))}]]
-             [reanimated/image
-              {:style  icon-animated-style
-               :source (icons/icon-source (keyword (str icon 24)))}])
-           (when new-notifications?
-             (if (= notification-indicator :counter)
-               [counter/counter
-                {:override-text-color colors/white
-                 :override-bg-color   colors/primary-50
-                 :style               {:position :absolute
-                                       :left     48
-                                       :top      2}}
-                counter-label]
-               [rn/view
-                {:style {:width            8
-                         :height           8
-                         :border-radius    4
-                         :top              6
-                         :left             51
-                         :position         :absolute
-                         :background-color colors/primary-50}}]))]]
-         double-tap-gesture (conj [gesture/gesture-detector {:gesture double-tap-gesture}]))))])
+                      :else
+                      [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
+            [reanimated/image
+             {:style  icon-animated-style
+              :source (icons/icon-source (keyword (str icon 24)))}]]
+           [reanimated/image
+            {:style  icon-animated-style
+             :source (icons/icon-source (keyword (str icon 24)))}])
+         (when new-notifications?
+           (if (= notification-indicator :counter)
+             [counter/counter
+              {:override-text-color colors/white
+               :override-bg-color   colors/primary-50
+               :style               {:position :absolute
+                                     :left     48
+                                     :top      2}}
+              counter-label]
+             [rn/view
+              {:style {:width            8
+                       :height           8
+                       :border-radius    4
+                       :top              6
+                       :left             51
+                       :position         :absolute
+                       :background-color colors/primary-50}}]))]]))])

@@ -103,7 +103,7 @@
   []
   (fn []
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-          selected-tab             (rf/sub [:messages-home/selected-tab])]
+          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)]
       [safe-area/consumer
        (fn [{:keys [top]}]
          [:<>

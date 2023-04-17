@@ -26,10 +26,8 @@
     status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub
-  ([sub-name db-key not-found]
-   (re-frame/reg-sub sub-name (fn [db] (get db db-key not-found))))
-  ([sub-name db-key]
-   (re-frame/reg-sub sub-name (fn [db] (get db db-key)))))
+  [sub-name db-key]
+  (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
 ;;view
 (reg-root-key-sub :view-id :view-id)
@@ -285,4 +283,4 @@
 (reg-root-key-sub :information-box-states :information-box-states)
 
 ; Messages home view -> tabs
-(reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab :tab/recent)
+(reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)
