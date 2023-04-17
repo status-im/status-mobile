@@ -161,8 +161,7 @@
     {:component {:name    comp
                  :id      comp
                  :options (merge (options/statusbar)
-                                 {:layout  {:componentBackgroundColor :transparent
-                                            :orientation              ["portrait"]}
+                                 {:layout  {:componentBackgroundColor :transparent}
                                   :overlay {:interceptTouchOutside true}}
                                  opts)}})))
 
