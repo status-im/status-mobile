@@ -46,7 +46,7 @@
   []
   [rn/view {:flex 1}
    [rn/flat-list
-    {:flex                      1
-     :keyboardShouldPersistTaps :always
-     :header                    [cool-preview]
-     :key-fn                    str}]])
+    {:flex                         1
+     :keyboard-should-persist-taps :always
+     :header                       [cool-preview]
+     :key-fn                       str}]])

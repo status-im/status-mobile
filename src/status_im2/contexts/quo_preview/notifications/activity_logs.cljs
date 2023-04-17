@@ -188,7 +188,7 @@
   []
   [rn/view {:flex 1}
    [rn/flat-list
-    {:flex                      1
-     :header                    [preview]
-     :key-fn                    str
-     :keyboardShouldPersistTaps :always}]])
+    {:flex                         1
+     :header                       [preview]
+     :key-fn                       str
+     :keyboard-should-persist-taps :always}]])

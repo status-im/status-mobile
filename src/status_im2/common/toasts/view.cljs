@@ -28,8 +28,10 @@
 
 (defn toast
   [id]
-  (let [toast-opts (rf/sub [:toasts/toast id])]
-    [quo/toast toast-opts]))
+  (let [{:keys [type] :as toast-opts} (rf/sub [:toasts/toast id])]
+    (if (= type :notification)
+      [quo/notification toast-opts]
+      [quo/toast toast-opts])))
 
 (defn container
   [id]
@@ -81,7 +83,7 @@
            (rn/use-unmount on-dismissed)
            [gesture/gesture-detector {:gesture pan}
             [reanimated/view
-             {;; TODO: this will eanble layout animation at runtime and causing flicker on android
+             {;; TODO: this will enable layout animation at runtime and causing flicker on android
               ;; we need to resolve this and re-enable layout animation
               ;; issue at https://github.com/status-im/status-mobile/issues/14752
               ;; :entering slide-in-up-animation
