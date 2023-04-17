@@ -5,15 +5,17 @@
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
-(def shadow
-  (when platform/ios? ; For Android, `elevation` is applied on the blur-view
+(defn shadow
+  [lines]
+  (if platform/ios?
     {:shadow-radius  20
      :shadow-opacity (colors/theme-colors 0.1 0.7)
      :shadow-color   colors/neutral-100
-     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}))
+     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
+    {:elevation (if (> lines 1) 10 0)}))
 
 (defn sheet-container
-  [insets opacity]
+  [insets opacity lines]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    (merge
@@ -27,7 +29,7 @@
      :background-color        (colors/theme-colors colors/white colors/neutral-95)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
-    shadow)))
+    (shadow lines))))
 
 (def bar-container
   {:height          c/bar-container-height

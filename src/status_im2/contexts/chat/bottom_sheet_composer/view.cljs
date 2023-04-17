@@ -17,7 +17,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.sub-view :as sub-view]
     [status-im2.contexts.chat.bottom-sheet-composer.effects :as effects]
     [status-im2.contexts.chat.bottom-sheet-composer.gesture :as drag-gesture]
-    [status-im2.contexts.chat.bottom-sheet-composer.handlers :as handle]
+    [status-im2.contexts.chat.bottom-sheet-composer.handlers :as handler]
     [status-im2.contexts.chat.bottom-sheet-composer.gradients.view :as gradients]))
 
 (defn sheet
@@ -93,8 +93,8 @@
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
-              {:style     (style/sheet-container insets (:container-opacity animations))
-               :on-layout #(handle/layout % state blur-height)}
+              {:style     (style/sheet-container insets (:container-opacity animations) lines)
+               :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
               [reanimated/touchable-opacity
                {:active-opacity      1
@@ -104,16 +104,16 @@
                [rn/text-input
                 {:ref                      #(reset! (:input-ref props) %)
                  :default-value            @(:text-value state)
-                 :on-focus                 #(handle/focus props state animations dimensions)
-                 :on-blur                  #(handle/blur state animations dimensions images)
-                 :on-content-size-change   #(handle/content-size-change %
+                 :on-focus                 #(handler/focus props state animations dimensions)
+                 :on-blur                  #(handler/blur state animations dimensions images)
+                 :on-content-size-change   #(handler/content-size-change %
                                                                         state
                                                                         animations
                                                                         dimensions
                                                                         keyboard-shown)
-                 :on-scroll                #(handle/scroll % state animations dimensions)
-                 :on-change-text           #(handle/change-text % props state)
-                 :on-selection-change      #(handle/selection-change % state)
+                 :on-scroll                #(handler/scroll % state animations dimensions)
+                 :on-change-text           #(handler/change-text % props state)
+                 :on-selection-change      #(handler/selection-change % state)
                  :max-height               max-height
                  :max-font-size-multiplier 1
                  :multiline                true
