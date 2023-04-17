@@ -7,19 +7,23 @@
   {:layout {:orientation :portrait}
    :topBar {:visible false}})
 
+;; Note: Currently, the status bar style provided while setting the root has a high preference,
+;; and even if we change the status bar style later dynamically, the style gets restored to this
+;; set root style while navigating
+;; https://github.com/status-im/status-mobile/pull/15596
 (defn statusbar-and-navbar-root
-  []
+  [& [status-bar-theme]]
   (if platform/android?
     {:navigationBar {:backgroundColor colors/neutral-100}
      :statusBar     {:translucent     true
                      :backgroundColor :transparent
-                     :style           :light
+                     :style           (or status-bar-theme :light)
                      :drawBehind      true}}
-    {:statusBar {:style :light}}))
+    {:statusBar {:style (or status-bar-theme :light)}}))
 
 (defn default-root
-  []
-  (merge (statusbar-and-navbar-root)
+  [& [status-bar-theme]]
+  (merge (statusbar-and-navbar-root status-bar-theme)
          {:topBar {:visible false}
           :layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
                    :orientation              :portrait

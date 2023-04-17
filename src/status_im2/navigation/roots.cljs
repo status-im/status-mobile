@@ -1,5 +1,6 @@
 (ns status-im2.navigation.roots
   (:require [status-im2.navigation.view :as views]
+            [quo2.foundations.colors :as colors]
             [status-im2.navigation.options :as options]
             [status-im2.constants :as constants]))
 
@@ -101,7 +102,8 @@
            {:stack {:id       :shell-stack
                     :children [{:component {:name    :shell-stack
                                             :id      :shell-stack
-                                            :options (options/default-root)}}]}}}
+                                            :options (options/default-root
+                                                      (if (colors/dark?) :light :dark))}}]}}}
           :profiles
           {:root
            {:stack {:id       :profiles

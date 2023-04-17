@@ -65,7 +65,7 @@
                         :shown  true}
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
        :on-change-text on-change-password
-       :on-focus       #(on-input-focus :password)}]
+       :on-focus       on-input-focus}]
      [rn/view {:style style/space-between-inputs}]
      [password-with-hint
       {:hint           {:text   hint-2-text
@@ -75,7 +75,7 @@
        :error?         error?
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
        :on-change-text on-change-repeat-password
-       :on-focus       #(on-input-focus :repeat-password)
+       :on-focus       on-input-focus
        :on-blur        on-blur-repeat-password}]]))
 
 (def strength-status
@@ -146,9 +146,9 @@
             :passwords-match?          same-passwords?
             :empty-password?           empty-password?
             :show-password-validation? @show-password-validation?
-            :on-input-focus            (fn [input-id]
+            :on-input-focus            (fn []
                                          (scroll-to-end-fn)
-                                         (reset! focused-input input-id))
+                                         (reset! focused-input :password))
             :on-change-password        (fn [new-value]
                                          (reset! password new-value)
                                          (when (same-password-length?)
@@ -162,18 +162,16 @@
                                           (reset! show-password-validation? true))}]]
 
          [rn/view {:style style/bottom-part}
+          [rn/view {:style style/disclaimer-container}
+           [quo/disclaimer
+            {:on-change #(reset! accepts-disclaimer? %)
+             :checked?  @accepts-disclaimer?}
+            (i18n/label :t/password-creation-disclaimer)]]
+
           (when (= @focused-input :password)
             [help
              {:validations       validations
               :password-strength password-strength}])
-
-          (when (= @focused-input :repeat-password)
-            [rn/view {:style style/disclaimer-container}
-             [quo/disclaimer
-              {:blur?     true
-               :checked?  @accepts-disclaimer?
-               :on-change #(reset! accepts-disclaimer? %)}
-              (i18n/label :t/password-creation-disclaimer)]])
 
           [rn/view {:style style/button-container}
            [quo/button
