@@ -10,7 +10,7 @@
 
 (defn get-display-name
   [{:keys [chat-id message]}]
-  (let [name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+  (let [name        (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         no-ens-name (string/blank? (get-in message [:content :ens-name]))]
     (if no-ens-name
       (first (string/split name " "))
@@ -45,11 +45,14 @@
    [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
-    [quo/text {:size  :paragraph-1
-               :style {:color (colors/theme-colors colors/black colors/white)}}
+    [quo/text
+     {:size   :paragraph-1
+      :weight :semi-bold
+      :style  {:color (colors/theme-colors colors/black colors/white)}}
      (i18n/label :t/pending-requests)]
-    [quo/text {:size  :paragraph-2
-               :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+    [quo/text
+     {:size  :paragraph-2
+      :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
      (requests-summary requests)]]
    [quo/info-count {:accessibility-label :pending-contact-requests-count}
     (count requests)]])
