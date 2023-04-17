@@ -6,7 +6,7 @@
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
 (def shadow
-  (when platform/ios?
+  (when platform/ios? ; For Android, `elevation` is applied on the blur-view
     {:shadow-radius  20
      :shadow-opacity (colors/theme-colors 0.1 0.7)
      :shadow-color   colors/neutral-100
