@@ -5,8 +5,7 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.hole-view :as hole-view]
-            [react-native.reanimated :as reanimated]
-            [react-native.gesture :as gesture]))
+            [react-native.reanimated :as reanimated]))
 
 (defn toggle-background-color
   [background-color press-out? pass-through?]
