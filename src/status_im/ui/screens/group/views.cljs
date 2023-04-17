@@ -76,11 +76,11 @@
 (defn toggle-list
   [{:keys [contacts render-fn render-data]}]
   [list/flat-list
-   {:data                      contacts
-    :key-fn                    :public-key
-    :render-data               render-data
-    :render-fn                 render-fn
-    :keyboardShouldPersistTaps :always}])
+   {:data                         contacts
+    :key-fn                       :public-key
+    :render-data                  render-data
+    :render-fn                    render-fn
+    :keyboard-should-persist-taps :always}])
 
 (defn no-contacts
   [{:keys [no-contacts]}]

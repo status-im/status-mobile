@@ -44,10 +44,10 @@
          :on-change      (fn [text]
                            (re-frame/dispatch [:search/currency-filter-changed text]))}]]
       [list/flat-list
-       {:data                      (->> currencies
-                                        vals
-                                        (sort #(compare (:code %1) (:code %2))))
-        :key-fn                    :code
-        :render-data               currency-id
-        :render-fn                 render-currency
-        :keyboardShouldPersistTaps :always}]]]))
+       {:data                         (->> currencies
+                                           vals
+                                           (sort #(compare (:code %1) (:code %2))))
+        :key-fn                       :code
+        :render-data                  currency-id
+        :render-fn                    render-currency
+        :keyboard-should-persist-taps :always}]]]))

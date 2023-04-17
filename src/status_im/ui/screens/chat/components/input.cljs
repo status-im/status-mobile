@@ -331,13 +331,13 @@
          [rn/view
           {:style {:height height}}
           [list/flat-list
-           {:keyboardShouldPersistTaps :always
-            :footer                    [rn/view {:style {:height 8}}]
-            :header                    [rn/view {:style {:height 8}}]
-            :data                      suggestions
-            :key-fn                    first
-            :render-data               text-input-ref
-            :render-fn                 mention-item}]]]))))
+           {:keyboard-should-persist-taps :always
+            :footer                       [rn/view {:style {:height 8}}]
+            :header                       [rn/view {:style {:height 8}}]
+            :data                         suggestions
+            :key-fn                       first
+            :render-data                  text-input-ref
+            :render-fn                    mention-item}]]]))))
 
 (defn on-chat-toolbar-layout
   [^js ev]

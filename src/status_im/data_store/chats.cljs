@@ -87,7 +87,7 @@
        :identicon               (.-identicon chat)
        :muted                   (.-muted chat)
        :joined                  (.-joined chat)
-
+       :muted-till              (.-mutetill chat)
        :chat-id                 (.-id chat)
        :community-id            (.-communityId chat)
        :synced-from             (.-syncedFrom chat)
