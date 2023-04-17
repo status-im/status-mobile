@@ -65,7 +65,7 @@
    {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
             :flex             1}}
    [rn/flat-list
-    {:style                     {:flex 1}
-     :keyboardShouldPersistTaps :always
-     :header                    [cool-preview]
-     :key-fn                    str}]])
+    {:style                        {:flex 1}
+     :keyboard-should-persist-taps :always
+     :header                       [cool-preview]
+     :key-fn                       str}]])

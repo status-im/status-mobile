@@ -29,9 +29,9 @@
                   :elevation  5
                   :max-height (/ max-y 2)})}
         [rn/flat-list
-         {:keyboardShouldPersistTaps :always
-          :data                      (vals suggestions)
-          :key-fn                    :key
-          :render-fn                 mention-item
-          :render-data               (:text-input-ref refs)
-          :accessibility-label       :mentions-list}]]))])
+         {:keyboard-should-persist-taps :always
+          :data                         (vals suggestions)
+          :key-fn                       :key
+          :render-fn                    mention-item
+          :render-data                  (:text-input-ref refs)
+          :accessibility-label          :mentions-list}]]))])

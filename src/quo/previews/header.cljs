@@ -44,8 +44,8 @@
    {:background-color (:ui-background @colors/theme)
     :flex             1}
    [rn/flat-list
-    {:flex                      1
-     :keyboardShouldPersistTaps :always
-     :data                      all-props
-     :render-fn                 render-item
-     :key-fn                    str}]])
+    {:flex                         1
+     :keyboard-should-persist-taps :always
+     :data                         all-props
+     :render-fn                    render-item
+     :key-fn                       str}]])

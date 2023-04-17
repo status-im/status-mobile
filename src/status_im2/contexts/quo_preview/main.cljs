@@ -37,12 +37,14 @@
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
+    [status-im2.contexts.quo-preview.inputs.input :as input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
+    [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
     [status-im2.contexts.quo-preview.messages.gap :as messages-gap]
@@ -52,6 +54,7 @@
     [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
     [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
     [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
+    [status-im2.contexts.quo-preview.notifications.notification :as notification]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
     [status-im2.contexts.quo-preview.password.tips :as tips]
@@ -78,12 +81,10 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
-    [status-im2.contexts.quo-preview.inputs.input :as input]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
-    [status-im2.contexts.quo-preview.list-items.user-list :as user-list]))
+    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -226,7 +227,10 @@
                             :component activity-logs/preview-activity-logs}
                            {:name      :toast
                             :insets    {:top false}
-                            :component toast/preview-toasts}]
+                            :component toast/preview-toasts}
+                           {:name      :notification
+                            :insets    {:top false}
+                            :component notification/preview-notification}]
    :onboarding            [{:name      :small-option-card
                             :insets    {:top false}
                             :component small-option-card/preview-small-option-card}]
