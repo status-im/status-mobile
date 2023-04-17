@@ -4,8 +4,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
-(defn actions-container
-  []
+(def actions-container
   {:height          c/actions-container-height
    :justify-content :space-between
    :align-items     :center

@@ -17,7 +17,8 @@
     [status-im2.contexts.chat.bottom-sheet-composer.sub-view :as sub-view]
     [status-im2.contexts.chat.bottom-sheet-composer.effects :as effects]
     [status-im2.contexts.chat.bottom-sheet-composer.gesture :as drag-gesture]
-    [status-im2.contexts.chat.bottom-sheet-composer.handlers :as handle]))
+    [status-im2.contexts.chat.bottom-sheet-composer.handlers :as handle]
+    [status-im2.contexts.chat.bottom-sheet-composer.gradients.view :as gradients]))
 
 (defn sheet
   [insets window-height blur-height opacity background-y]
@@ -96,9 +97,10 @@
                :on-layout #(handle/layout % state blur-height)}
               [sub-view/bar]
               [reanimated/touchable-opacity
-               {:active-opacity 1
-                :on-press       (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
-                :style          (style/input-container (:height animations) max-height)}
+               {:active-opacity      1
+                :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+                :style               (style/input-container (:height animations) max-height)
+                :accessibility-label :message-input-container}
                [rn/text-input
                 {:ref                      #(reset! (:input-ref props) %)
                  :default-value            @(:text-value state)
@@ -118,8 +120,9 @@
                  :placeholder              (i18n/label :t/type-something)
                  :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
                  :style                    (style/input @(:maximized? state)
-                                                        @(:saved-emoji-kb-extra-height props))}]
-               [sub-view/gradients props state animations dimensions]]
+                                                        @(:saved-emoji-kb-extra-height props))
+                 :accessibility-label      :chat-message-input}]
+               [gradients/view props state animations dimensions]]
               [images/images-list]
               [actions/view props state animations window-height insets (seq images)]]]))]))])
 

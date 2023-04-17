@@ -133,7 +133,7 @@
 
 (defn view
   [props state animations window-height insets images?]
-  [rn/view {:style (style/actions-container)}
+  [rn/view {:style style/actions-container}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
     [image-button props state animations insets]
