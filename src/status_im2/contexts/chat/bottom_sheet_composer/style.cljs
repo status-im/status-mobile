@@ -6,12 +6,11 @@
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
 (def shadow
-  (if platform/ios?
+  (when platform/ios?
     {:shadow-radius  20
      :shadow-opacity (colors/theme-colors 0.1 0.7)
      :shadow-color   colors/neutral-100
-     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
-    {:elevation 10}))
+     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}))
 
 (defn sheet-container
   [insets opacity]

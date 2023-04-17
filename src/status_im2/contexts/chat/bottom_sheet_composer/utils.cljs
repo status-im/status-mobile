@@ -57,7 +57,7 @@
 
 (defn calc-max-height
   [window-height kb-height insets images]
-  (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
+  (let [margin-top (if platform/ios? (:top insets) (+ 10 0))
         max-height (- window-height
                       margin-top
                       kb-height

@@ -82,6 +82,7 @@
    {:keys [gradient-opacity]}
    {:keys [lines max-lines]}]
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
+    (println (str "qqq") (oops/oget e "nativeEvent"))
     (when (utils/show-top-gradient? y lines max-lines gradient-opacity focused?)
       (reset! gradient-z-index 1)
       (js/setTimeout #(reanimated/animate gradient-opacity 1) 0))
