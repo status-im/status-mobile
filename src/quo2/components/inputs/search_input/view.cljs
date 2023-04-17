@@ -22,9 +22,10 @@
     {:color (style/clear-icon blur? override-theme)
      :size  20}]])
 
-(defn handle-backspace
+(defn- handle-backspace
   [event ^js/Object scroll-view-ref]
-  (when (= (oops/oget event "nativeEvent.key") "Backspace")
+  (when (and (= (oops/oget event "nativeEvent.key") "Backspace")
+             scroll-view-ref)
     (.scrollToEnd scroll-view-ref #js {:animated false})))
 
 (def ^:private props-to-remove
