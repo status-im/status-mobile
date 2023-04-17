@@ -83,7 +83,6 @@
      {:component {:id      comp
                   :name    comp
                   :options (merge (options/statusbar-and-navbar)
-                                  {:layout {:orientation ["portrait"]}}
                                   options
                                   (if (:topBar options)
                                     (options/merge-top-bar (options/topbar-options) options)
