@@ -58,8 +58,8 @@
             banner-hidden                                              [:keycard/banner-hidden]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [react/scroll-view
-      {:keyboardShouldPersistTaps :always
-       :style                     styles/login-view}
+      {:keyboard-should-persist-taps :always
+       :style                        styles/login-view}
       [react/view styles/login-badge-container
        [multiaccount-login-badge multiaccount]
        [react/view {:style styles/password-container}

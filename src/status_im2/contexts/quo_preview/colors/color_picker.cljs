@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.colors.color-picker
-  (:require [react-native.core :as rn]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [quo2.core :as quo]
             [react-native.blur :as blur]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -39,8 +39,8 @@
                        colors/neutral-95)
     :flex             1}
    [rn/flat-list
-    {:flex                      1
-     :keyboardShouldPersistTaps :always
-     :header                    [cool-preview]
-     :key-fn                    str}]])
+    {:flex                         1
+     :keyboard-should-persist-taps :always
+     :header                       [cool-preview]
+     :key-fn                       str}]])
 

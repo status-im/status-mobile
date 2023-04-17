@@ -23,13 +23,13 @@ setups and runs the test suite once.
 setups and runs the test suite and watches for code changes will then retrigger the test suite.
 
 ## Writing Tests
-New test files will need their namespace added to either the file "src/quo2/core_spec.cljs" or "src/status_im2/core_spec.cljs. These locations may update overtime but it is dependent on the entrypoint in shadowcljs config discussed below.
+New test files will need their namespace added to either the file "src/quo2/core_spec.cljs" or "src/status_im2/core_spec.cljs. These locations may update overtime but it is dependent on the entrypoint in shadow-cljs config discussed below.
 
 
 ### Best practices
 For the moment we will keep best practices for tests in our other guidelines document:
 
-To that point these guidelines will follow the conventions of Jest and React Native Testing Library recomendations and Status mobile will just stack their preferences on top.
+To that point these guidelines will follow the conventions of Jest and React Native Testing Library recommendations and Status mobile will just stack their preferences on top.
 
 ### Utilities
 There is a file of utility functions defined in "src/test_helpers/component.cljs" and "src/test_helpers/component.clj". It will be great to use these utilities and to add any common testing tools to these files as it should make writing tests easier and faster.

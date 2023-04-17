@@ -126,7 +126,7 @@
                                            colors/neutral-90)
     :flex             1}
    [rn/flat-list
-    {:flex                      1
-     :keyboardShouldPersistTaps :always
-     :header                    [@trackable-cool-preview]
-     :key-fn                    str}]])
+    {:flex                         1
+     :keyboard-should-persist-taps :always
+     :header                       [@trackable-cool-preview]
+     :key-fn                       str}]])
