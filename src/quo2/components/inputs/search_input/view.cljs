@@ -23,7 +23,7 @@
      :size  20}]])
 
 (defn handle-backspace
-  [^js/Object event scroll-view-ref]
+  [event ^js/Object scroll-view-ref]
   (when (= (oops/oget event "nativeEvent.key") "Backspace")
     (.scrollToEnd scroll-view-ref #js {:animated false})))
 
