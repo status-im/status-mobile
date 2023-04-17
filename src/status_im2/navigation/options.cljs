@@ -4,7 +4,7 @@
 
 (defn default-options
   []
-  {:layout {:orientation :portrait}
+  {:layout {:orientation ["portrait"]}
    :topBar {:visible false}})
 
 (defn statusbar-and-navbar-root
