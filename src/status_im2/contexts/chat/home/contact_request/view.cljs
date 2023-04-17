@@ -48,7 +48,7 @@
     [quo/text
      {:size   :paragraph-1
       :weight :semi-bold
-      :style  {:color (colors/theme-colors colors/black colors/white)}}
+      :style  {:color (colors/theme-colors colors/neutral-100 colors/white)}}
      (i18n/label :t/pending-requests)]
     [quo/text
      {:size  :paragraph-2
