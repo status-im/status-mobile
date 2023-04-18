@@ -11,7 +11,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.images.view :as images]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.actions.view :as actions]
     [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
     [status-im2.contexts.chat.bottom-sheet-composer.sub-view :as sub-view]
@@ -46,7 +46,7 @@
                 {:keys [input-text input-content-height]
                  :as   chat-input}                       (rf/sub [:chats/current-chat-input])
                 content-height                           (reagent/atom (or input-content-height
-                                                                           c/input-height))
+                                                                           constants/input-height))
                 {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
                 kb-height                                (kb/get-kb-height keyboard-height
                                                                            @(:kb-default-height state))
@@ -57,8 +57,8 @@
                 lines                                    (utils/calc-lines @content-height)
                 max-lines                                (utils/calc-lines max-height)
                 initial-height                           (if (> lines 1)
-                                                           c/multiline-minimized-height
-                                                           c/input-height)
+                                                           constants/multiline-minimized-height
+                                                           constants/input-height)
                 animations                               {:gradient-opacity  (reanimated/use-shared-value
                                                                               0)
                                                           :container-opacity (reanimated/use-shared-value
@@ -74,7 +74,7 @@
                                                           :last-height       (reanimated/use-shared-value
                                                                               (utils/bounded-val
                                                                                @content-height
-                                                                               c/input-height
+                                                                               constants/input-height
                                                                                max-height))
                                                           :opacity           opacity
                                                           :background-y      background-y}
@@ -133,7 +133,8 @@
      (let [window-height (rf/sub [:dimensions/window-height])
            opacity       (reanimated/use-shared-value 0)
            background-y  (reanimated/use-shared-value (- window-height))
-           blur-height   (reanimated/use-shared-value (+ c/composer-default-height (:bottom insets)))]
+           blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
+                                                         (:bottom insets)))]
        [rn/view
         [reanimated/view {:style (style/background opacity background-y window-height)}]
         [sub-view/blur-view blur-height]

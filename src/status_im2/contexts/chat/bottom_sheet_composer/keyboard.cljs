@@ -17,13 +17,13 @@
     (async-storage/set-item! :kb-default-height (str keyboard-height))))
 
 (defn handle-emoji-kb-ios
-  [e
+  [event
    {:keys [emoji-kb-extra-height]}
    {:keys [text-value]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h   (oops/oget e "startCoordinates.height")
-        end-h     (oops/oget e "endCoordinates.height")
+  (let [start-h   (oops/oget event "startCoordinates.height")
+        end-h     (oops/oget event "endCoordinates.height")
         diff      (- end-h start-h)
         max       (- max-height diff)
         curr-text @text-value]

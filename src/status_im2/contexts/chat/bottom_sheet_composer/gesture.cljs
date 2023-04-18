@@ -3,7 +3,7 @@
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
     [oops.core :as oops]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [utils.re-frame :as rf]))
 
@@ -62,10 +62,10 @@
         starting-opacity (reanimated/get-shared-value opacity)]
     (-> (gesture/gesture-pan)
         (gesture/enabled @gesture-enabled?)
-        (gesture/on-start (fn [e]
+        (gesture/on-start (fn [event]
                             (if-not keyboard-shown
                               (do ; focus and end
-                                (when (< (oops/oget e "velocityY") c/velocity-threshold)
+                                (when (< (oops/oget event "velocityY") constants/velocity-threshold)
                                   (reanimated/set-shared-value container-opacity 1)
                                   (reanimated/set-shared-value last-height max-height))
                                 (when @input-ref
@@ -73,15 +73,15 @@
                                 (reset! gesture-enabled? false))
                               (do ; else, will start gesture
                                 (reanimated/set-shared-value background-y 0)
-                                (reset! expanding? (neg? (oops/oget e "velocityY")))))))
-        (gesture/on-update (fn [e]
-                             (let [translation (oops/oget e "translationY")
+                                (reset! expanding? (neg? (oops/oget event "velocityY")))))))
+        (gesture/on-update (fn [event]
+                             (let [translation (oops/oget event "translationY")
                                    min-height  (utils/get-min-height lines)
                                    new-height  (- (reanimated/get-shared-value saved-height) translation)
                                    new-height  (utils/bounded-val new-height min-height max-height)]
                                (when keyboard-shown
                                  (reanimated/set-shared-value height new-height)
-                                 (set-opacity (oops/oget e "velocityY")
+                                 (set-opacity (oops/oget event "velocityY")
                                               opacity
                                               translation
                                               @expanding?
@@ -94,10 +94,10 @@
                                         (reanimated/get-shared-value saved-height))]
                             (if @gesture-enabled?
                               (if (>= diff 0)
-                                (if (> diff c/drag-threshold)
+                                (if (> diff constants/drag-threshold)
                                   (maximize state animations dimensions)
                                   (bounce-back animations dimensions starting-opacity))
-                                (if (> (Math/abs diff) c/drag-threshold)
+                                (if (> (Math/abs diff) constants/drag-threshold)
                                   (minimize props)
                                   (bounce-back animations dimensions starting-opacity)))
                               (reset! gesture-enabled? true))))))))

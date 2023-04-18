@@ -2,7 +2,7 @@
   (:require [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [oops.core :as oops]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]
+            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
             [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
             [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
             [utils.re-frame :as rf]))
@@ -17,7 +17,7 @@
   (reanimated/animate height (reanimated/get-shared-value last-height))
   (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
   (reanimated/animate container-opacity 1)
-  (when (> (reanimated/get-shared-value last-height) (* c/background-threshold max-height))
+  (when (> (reanimated/get-shared-value last-height) (* constants/background-threshold max-height))
     (reanimated/animate opacity 1)
     (reanimated/set-shared-value background-y 0))
   (when (= @gradient-z-index -1)
@@ -44,7 +44,7 @@
     (reanimated/animate opacity 0)
     (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
     (when (and (empty? @text-value) (empty? images))
-      (reanimated/animate container-opacity c/empty-opacity))
+      (reanimated/animate container-opacity constants/empty-opacity))
     (reanimated/animate gradient-opacity 0)
     (reset! lock-selection? true)
     (reset! saved-cursor-position @cursor-position)
@@ -53,14 +53,15 @@
       (reset! maximized? false))))
 
 (defn content-size-change
-  [e
+  [event
    {:keys [maximized?]}
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
-    (let [content-size (+ (oops/oget e "nativeEvent.contentSize.height") c/extra-content-offset)
-          new-height   (utils/bounded-val content-size c/input-height max-height)]
+    (let [content-size (+ (oops/oget event "nativeEvent.contentSize.height")
+                          constants/extra-content-offset)
+          new-height   (utils/bounded-val content-size constants/input-height max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
         (reanimated/animate height new-height)
@@ -77,11 +78,11 @@
       (rf/dispatch [:chat.ui/set-input-content-height new-height]))))
 
 (defn scroll
-  [e
+  [event
    {:keys [gradient-z-index focused?]}
    {:keys [gradient-opacity]}
    {:keys [lines max-lines]}]
-  (let [y (oops/oget e "nativeEvent.contentOffset.y")]
+  (let [y (oops/oget event "nativeEvent.contentOffset.y")]
     (when (utils/show-top-gradient? y lines max-lines gradient-opacity focused?)
       (reset! gradient-z-index 1)
       (js/setTimeout #(reanimated/animate gradient-opacity 1) 0))
@@ -101,13 +102,13 @@
   (rf/dispatch [:chat.ui/set-chat-input-text text]))
 
 (defn selection-change
-  [e {:keys [lock-selection? cursor-position]}]
+  [event {:keys [lock-selection? cursor-position]}]
   (when-not @lock-selection?
-    (reset! cursor-position (oops/oget e "nativeEvent.selection.end"))))
+    (reset! cursor-position (oops/oget event "nativeEvent.selection.end"))))
 
 (defn layout
-  [e
+  [event
    {:keys [lock-layout?]}
    blur-height]
-  (when (utils/update-blur-height? e lock-layout? blur-height)
-    (reanimated/set-shared-value blur-height (oops/oget e "nativeEvent.layout.height"))))
+  (when (utils/update-blur-height? event lock-layout? blur-height)
+    (reanimated/set-shared-value blur-height (oops/oget event "nativeEvent.layout.height"))))

@@ -2,10 +2,10 @@
   (:require
     [quo2.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
 
 (def actions-container
-  {:height          c/actions-container-height
+  {:height          constants/actions-container-height
    :justify-content :space-between
    :align-items     :center
    :z-index         2

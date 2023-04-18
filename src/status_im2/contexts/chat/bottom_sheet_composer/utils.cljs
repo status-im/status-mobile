@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
 
 (defn bounded-val
   [val min-val max-val]
@@ -11,7 +11,7 @@
 
 (defn get-min-height
   [lines]
-  (if (> lines 1) c/multiline-minimized-height c/input-height))
+  (if (> lines 1) constants/multiline-minimized-height constants/input-height))
 
 (defn calc-reopen-height
   [text-value min-height content-height saved-height]
@@ -24,12 +24,12 @@
   (when-not @maximized?
     (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
       (and (not= (reanimated/get-shared-value height) max-height)
-           (> diff c/content-change-threshold)))))
+           (> diff constants/content-change-threshold)))))
 
 (defn show-top-gradient?
   [y lines max-lines gradient-opacity focused?]
   (and
-   (> y c/line-height)
+   (> y constants/line-height)
    (>= lines max-lines)
    (= (reanimated/get-shared-value gradient-opacity) 0)
    @focused?))
@@ -37,22 +37,22 @@
 (defn hide-top-gradient?
   [y gradient-opacity]
   (and
-   (<= y c/line-height)
+   (<= y constants/line-height)
    (= (reanimated/get-shared-value gradient-opacity) 1)))
 
 (defn show-background?
   [saved-height max-height new-height]
   (or (= (reanimated/get-shared-value saved-height) max-height)
-      (> new-height (* c/background-threshold max-height))))
+      (> new-height (* constants/background-threshold max-height))))
 
 (defn update-blur-height?
-  [e lock-layout? layout-height]
+  [event lock-layout? layout-height]
   (or (not @lock-layout?)
-      (> (reanimated/get-shared-value layout-height) (oops/oget e "nativeEvent.layout.height"))))
+      (> (reanimated/get-shared-value layout-height) (oops/oget event "nativeEvent.layout.height"))))
 
 (defn calc-lines
   [height]
-  (let [lines (Math/round (/ height c/line-height))]
+  (let [lines (Math/round (/ height constants/line-height))]
     (if platform/ios? lines (dec lines))))
 
 (defn calc-max-height
@@ -61,10 +61,10 @@
         max-height (- window-height
                       margin-top
                       kb-height
-                      c/bar-container-height
-                      c/actions-container-height)]
+                      constants/bar-container-height
+                      constants/actions-container-height)]
     (if (seq images)
-      (- max-height c/images-container-height)
+      (- max-height constants/images-container-height)
       max-height)))
 
 (defn empty-input?

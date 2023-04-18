@@ -3,7 +3,7 @@
             [quo2.foundations.typography :as typography]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
+            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
 
 (defn shadow
   [lines]
@@ -32,7 +32,7 @@
     (shadow lines))))
 
 (def bar-container
-  {:height          c/bar-container-height
+  {:height          constants/bar-container-height
    :left            0
    :right           0
    :top             0
@@ -57,7 +57,7 @@
 (defn input
   [maximized? saved-keyboard-height]
   (merge typography/paragraph-1
-         {:min-height          c/input-height
+         {:min-height          constants/input-height
           :color               (colors/theme-colors :black :white)
           :text-align-vertical :top
           :flex                1

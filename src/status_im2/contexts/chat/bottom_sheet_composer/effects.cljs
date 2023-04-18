@@ -3,7 +3,7 @@
     [status-im.async-storage.core :as async-storage]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
     [utils.re-frame :as rf]))
 
@@ -51,7 +51,7 @@
    {:keys [opacity background-y]}
    {:keys [max-height]}
    {:keys [input-content-height]}]
-  (when (or @maximized? (>= input-content-height (* max-height c/background-threshold)))
+  (when (or @maximized? (>= input-content-height (* max-height constants/background-threshold)))
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
 
@@ -66,7 +66,7 @@
    {:keys [container-opacity]}
    images?]
   (when (and (empty? @text-value) (not images?) (not @maximized?) (not @focused?))
-    (reanimated/animate-delay container-opacity c/empty-opacity 200)))
+    (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
   [{:keys [keyboard-show-listener keyboard-hide-listener keyboard-frame-listener]}]
