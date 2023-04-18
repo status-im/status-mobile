@@ -124,10 +124,13 @@
                   (models.communities/handle-removed-chats removed-chats-clj)))
 
       (seq requests-to-join-community)
-      (let [request-js (types/js->clj (.pop requests-to-join-community))]
+      (let [requests (->> requests-to-join-community
+                          types/js->clj
+                          (map models.communities/<-request-to-join-community-rpc))]
+        (js-delete response-js "requestsToJoinCommunity")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-request-to-join request-js)))
+                  (models.communities/handle-requests-to-join requests)))
 
       (seq emoji-reactions)
       (let [reactions (types/js->clj emoji-reactions)]

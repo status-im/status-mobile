@@ -2071,5 +2071,12 @@
     "mute-for-8-hours": "For 8 hours",
     "mute-for-1-week": "For 7 days",
     "mute-till-unmute": "Until you turn it back on",
-    "mute-channel": "Mute channel"
+    "mute-channel": "Mute channel",
+    "community-request-accepted": "Request accepted",
+    "community-request-accepted-body-text": "Now you are a member of",
+    "community-request-not-accepted": "Request hasn't been accepted",
+    "community-request-not-accepted-body-text-prefix": "Your request to join",
+    "community-request-not-accepted-body-text-suffix": "hasn't been accepted",
+    "community-request-pending": "Request pending",
+    "community-request-pending-body-text": "You requested to join"
 }

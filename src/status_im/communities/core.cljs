@@ -87,23 +87,27 @@
   (:communities/community-id-input db))
 
 (defn- handle-my-request
-  [db {:keys [community-id state] :as request}]
-  {:db (if (= constants/community-request-to-join-state-pending state)
-         (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
-         (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))})
+  [db {:keys [community-id state deleted] :as request}]
+  (if (and (= constants/community-request-to-join-state-pending state) (not deleted))
+    (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
+    (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)))
 
 (defn handle-admin-request
-  [db {:keys [id community-id] :as request}]
-  {:db (assoc-in db [:communities/requests-to-join community-id id] request)})
+  [db {:keys [id community-id deleted] :as request}]
+  (if deleted
+    (update-in db [:communities/requests-to-join community-id] dissoc id)
+    (assoc-in db [:communities/requests-to-join community-id id] request)))
 
-(rf/defn handle-request-to-join
-  [{:keys [db]} r]
-  (let [my-public-key                                    (get-in db [:multiaccount :public-key])
-        {:keys [id community-id public-key] :as request} (<-request-to-join-community-rpc r)
-        my-request?                                      (= my-public-key public-key)]
-    (if my-request?
-      (handle-my-request db request)
-      (handle-admin-request db request))))
+(rf/defn handle-requests-to-join
+  [{:keys [db]} requests]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    {:db (reduce (fn [db {:keys [public-key] :as request}]
+                   (let [my-request? (= my-public-key public-key)]
+                     (if my-request?
+                       (handle-my-request db request)
+                       (handle-admin-request db request))))
+                 db
+                 requests)}))
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
@@ -317,6 +321,7 @@
                         :on-error    #(do
                                         (log/error "failed to invite-user community" %)
                                         (re-frame/dispatch [::failed-to-invite-people %]))}]})))
+
 (rf/defn share-community
   {:events [::share-community-confirmation-pressed]}
   [cofx user-pk contacts]
@@ -898,3 +903,16 @@
                                              :event        :communities/toggle-collapsed-category
                                              :category-id  category-id
                                              :collapse?    collapse?})}]})
+
+(rf/defn check-and-delete-pending-request-to-join
+  {:events [:communities/check-and-delete-pending-request-to-join]}
+  [_]
+  {:json-rpc/call [{:method      "wakuext_checkAndDeletePendingRequestToJoinCommunity"
+                    :params      []
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/info
+                                   "failed to fetch communities"
+                                   {:error %
+                                    :event
+                                    :communities/check-and-delete-pending-request-to-join-community})}]})
