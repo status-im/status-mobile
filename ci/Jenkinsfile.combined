@@ -1,0 +1,137 @@
+library 'status-jenkins-lib@v1.6.9'
+
+pipeline {
+  agent { label 'linux' }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 40, unit: 'MINUTES')
+    /* Allow copying of artifacts from this job. */
+    copyArtifactPermission('/status-mobile/e2e/*')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '30',
+      artifactNumToKeepStr: '10',
+    ))
+  }
+
+  /* WARNING: Defining parameters here with the ?: trick causes them to remember last value. */
+  parameters {
+    choice(
+      name: 'BUILD_TYPE',
+      description: 'Makefile target to build. Optional Parameter.',
+      choices: genChoices(params.BUILD_TYPE, ['manual', 'nightly', 'release', 'pr', 'e2e']),
+    )
+    booleanParam(
+      name: 'PUBLISH',
+      description: 'Trigger publishing of build results for nightly or release.',
+      defaultValue: getPublishDefault(params.PUBLISH),
+    )
+  }
+
+  stages {
+    stage('Prep') {
+      steps { script {
+        println("Current JOB: ${env.JOB_NAME}")
+        /* just for a shorter access */
+        btype = utils.getBuildType()
+      } }
+    }
+    stage('Build') {
+      parallel {
+        stage('iOS') { steps { script {
+          ios = jenkins.Build('status-mobile/platforms/ios')
+        } } }
+        stage('Android') { steps { script {
+          apk = jenkins.Build('status-mobile/platforms/android')
+        } } }
+        stage('Android e2e') { steps { script {
+          apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
+        } } }
+        stage('Tests') { steps { script {
+          jenkins.Build('status-mobile/platforms/tests')
+        } } }
+      }
+    }
+    stage('Archive') {
+      steps { script {
+        sh('rm -f pkg/*')
+        jenkins.copyArts(ios)
+        //jenkins.copyArts(iose2e)
+        jenkins.copyArts(apk)
+        jenkins.copyArts(apke2e)
+        sha = "pkg/${utils.pkgFilename(ext: 'sha256')}"
+        dir('pkg') {
+          /* generate sha256 checksums for upload */
+          sh "sha256sum * | tee ../${sha}"
+          archiveArtifacts('*')
+        }
+      } }
+    }
+    stage('Upload') {
+      steps { script {
+        /* object for easier URLs handling */
+        urls = [
+          /* mobile */
+          Apk: utils.pkgUrl(apk), Apke2e: utils.pkgUrl(apke2e),
+          iOS: utils.pkgUrl(ios), /*iOSe2e: utils.pkgUrl(iose2e),*/
+          Diawi: utils.getEnv(ios, 'DIAWI_URL'),
+          /* upload the sha256 checksums file too */
+          SHA: s3.uploadArtifact(sha),
+        ]
+        /* add URLs to the build description */
+        jenkins.setBuildDesc(urls)
+      } }
+    }
+    stage('Publish') {
+      when { expression { params.PUBLISH } }
+      steps { script {
+        switch (btype) {
+          case 'nightly':
+            /* Create JSON file with newest build URLs */
+            s3.updateBucketJSON(urls, 'latest.json');
+            build(job: 'website/status.im', wait: false);
+            break;
+          case 'release':
+            github.publishReleaseFiles(repo: 'status-mobile');
+            break;
+        }
+      } }
+    }
+    stage('Run e2e') {
+      when { expression { btype == 'nightly' && params.PUBLISH } }
+      steps { script {
+        e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
+        build(
+          job: 'status-mobile/e2e/status-app-nightly',
+          parameters: [string(name: 'APK_URL', value: e2eApk)],
+          wait: false
+        )
+      } }
+    }
+  }
+}
+
+/* Helper that generates list of available choices for a parameter
+ * but re-orders them based on the currently set value. First is default. */
+def List genChoices(String previousChoice, List defaultChoices) {
+  if (previousChoice == null) {
+     return defaultChoices
+  }
+  choices = defaultChoices.minus(previousChoice)
+  choices.add(0, previousChoice)
+  return choices
+}
+
+/* Helper that makes PUBLISH default to 'false' unless:
+ * - The build is for a release branch
+ * - A user explicitly specified a value
+ * Since release builds create and re-create GitHub drafts every time. */
+def Boolean getPublishDefault(Boolean previousValue) {
+  if (env.JOB_NAME.startsWith('status-mobile/release')) { return true }
+  if (previousValue != null) { return previousValue }
+  return false
+}
