@@ -100,4 +100,5 @@
     [into
      [rn/view
       {:style style/outmost-transparent-container}]
-     (map (fn [id] ^{:key id} [container id]) toasts-ordered)]))
+     (doall
+       (map (fn [id] ^{:key id} [container id]) toasts-ordered))]))
