@@ -35,16 +35,22 @@
 
 (defn initialize-animation
   []
-  (when-not @progress
-    (reset! progress (reanimated/use-shared-value 0))
-    (reset! paused (reanimated/use-shared-value false))
-    (animate-progress @progress @paused)))
+  (reset! progress (reanimated/use-shared-value 0))
+  (reset! paused (reanimated/use-shared-value false))
+  (animate-progress @progress @paused))
 
-;; Derived Values
 (defn carousel-left-position
-  [window-width]
-  (worklets.onboarding-carousel/carousel-left-position window-width @progress))
+  [window-width animate?]
+  (if animate?
+    (worklets.onboarding-carousel/carousel-left-position window-width @progress)
+    (-> (or (reanimated/get-shared-value @progress) 0)
+        (quot -25)
+        (* window-width))))
 
 (defn dynamic-progress-bar-width
-  [progress-bar-width]
-  (worklets.onboarding-carousel/dynamic-progress-bar-width progress-bar-width @progress))
+  [progress-bar-width animate?]
+  (if animate?
+    (worklets.onboarding-carousel/dynamic-progress-bar-width progress-bar-width @progress)
+    (-> (or (reanimated/get-shared-value @progress) 0)
+        (* progress-bar-width)
+        (/ 100))))
