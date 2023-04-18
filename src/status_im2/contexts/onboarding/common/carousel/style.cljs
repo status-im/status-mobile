@@ -4,7 +4,7 @@
     [react-native.reanimated :as reanimated]))
 
 (defn header-container
-  [status-bar-height content-width index]
+  [status-bar-height content-width index header-background]
   {:position         :absolute
    :top              0
    :left             (* content-width index)
@@ -12,7 +12,7 @@
    :width            content-width
    :height           (+ 96 status-bar-height)
    :flex-direction   :row
-   :background-color colors/onboarding-header-black})
+   :background-color (when header-background colors/onboarding-header-black)})
 
 (defn header-text-view
   [window-width]
@@ -26,11 +26,6 @@
 (def carousel-sub-text
   {:color      colors/white
    :margin-top 2})
-
-(defn background-image
-  [content-width]
-  {:resize-mode :stretch
-   :width       content-width})
 
 (defn progress-bar-item
   [static? end?]

@@ -166,7 +166,7 @@
                             constants/auth-method-biometric
                             (get-in db [:onboarding-2/profile :auth-method]))]
 
-    (cond-> {:dispatch [:navigate-to :enable-notifications]}
+    (cond-> {:dispatch [:navigate-to :identifiers]}
       biometric-enabled?
       (assoc :biometric/enable-and-save-password
              {:key-uid         key-uid

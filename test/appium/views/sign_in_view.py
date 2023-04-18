@@ -182,6 +182,7 @@ class SignInView(BaseView):
         self.profile_repeat_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-2")
         self.profile_confirm_password_button = Button(self.driver, translation_id="password-creation-confirm")
         self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
+        self.identifiers_button = Button(self.driver, accessibility_id="skip-identifiers")
         self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
         self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
@@ -222,6 +223,7 @@ class SignInView(BaseView):
         #     self.create_password_input.set_value(password)
         #     self.confirm_your_password_input.set_value(password)
         #     self.next_button.click()
+        self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
