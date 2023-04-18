@@ -45,8 +45,12 @@
    [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
-    [rn/text {:weight :semi-bold} (i18n/label :t/pending-requests)]
-    [rn/text
+    [quo/text
+     {:size   :paragraph-1
+      :weight :semi-bold
+      :style  {:color (colors/theme-colors colors/neutral-100 colors/white)}}
+     (i18n/label :t/pending-requests)]
+    [quo/text
      {:size  :paragraph-2
       :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
      (requests-summary requests)]]
