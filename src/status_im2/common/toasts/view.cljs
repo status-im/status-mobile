@@ -43,7 +43,7 @@
       [:f>
        (fn []
          (let [duration (or (rf/sub [:toasts/toast-cursor id :duration]) 3000)
-               on-dismissed #((or (rf/sub [:toasts/toast-cursor id :on-dismissed]) identity) id)
+               on-dismissed (or (rf/sub [:toasts/toast-cursor id :on-dismissed]) identity)
                create-timer (fn []
                               (reset! timer (utils.utils/set-timeout close! duration)))
                translate-y (reanimated/use-shared-value 0)
@@ -80,7 +80,7 @@
                                      (create-timer)))))]
            ;; create auto dismiss timer, clear timer when unmount or duration changed
            (rn/use-effect (fn [] (create-timer) clear-timer) [duration])
-           (rn/use-unmount on-dismissed)
+           (rn/use-unmount #(on-dismissed id))
            [gesture/gesture-detector {:gesture pan}
             [reanimated/view
              {;; TODO: this will enable layout animation at runtime and causing flicker on android
@@ -100,4 +100,5 @@
     [into
      [rn/view
       {:style style/outmost-transparent-container}]
-     (map (fn [id] ^{:key id} [container id]) toasts-ordered)]))
+     (doall
+      (map (fn [id] ^{:key id} [container id]) toasts-ordered))]))
