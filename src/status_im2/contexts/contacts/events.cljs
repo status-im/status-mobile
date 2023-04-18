@@ -75,16 +75,20 @@
   [{:keys [db]} contacts]
   {:db (assoc db :contacts/contacts (into {} (map #(vector (:public-key %) %) contacts)))})
 
-(rf/defn add-contact
-  "Add a contact and set pending to false"
-  {:events [:contact.ui/add-contact-pressed]}
-  [{:keys [db]} public-key nickname ens-name]
-  (when (not= (get-in db [:multiaccount :public-key]) public-key)
-    {:json-rpc/call [{:method      "wakuext_addContact"
-                      :params      [{:id public-key :nickname nickname :ensName ens-name}]
-                      :js-response true
-                      :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-                      :on-error    #(log/error "failed to add contact" public-key %)}]}))
+(rf/defn send-contact-request
+  {:events [:contact.ui/send-contact-request]}
+  [{:keys [db]} id]
+  (when (not= id (get-in db [:multiaccount :public-key]))
+    {:json-rpc/call
+     [{:method      "wakuext_sendContactRequest"
+       :js-response true
+       :params      [{:id id :message "Please add me to your contacts"}]
+       :on-error    (fn [error]
+                      (log/error "Failed to send contact request"
+                                 {:error error
+                                  :event :contact.ui/send-contact-request
+                                  :id    id}))
+       :on-success  #(rf/dispatch [:transport/message-sent %])}]}))
 
 (rf/defn remove-contact
   "Remove a contact from current account's contact list"

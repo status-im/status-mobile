@@ -82,7 +82,7 @@
     (if-not validation-result
       (if new-contact?
         (rf/merge cofx
-                  (contact/add-contact chat-key nickname ens-name)
+                  (contact/send-contact-request chat-key)
                   (navigation/navigate-to :contacts-list {}))
         (chat/start-chat cofx chat-key ens-name))
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
