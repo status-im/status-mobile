@@ -1141,7 +1141,7 @@ class ChatView(BaseView):
         try:
             self.mentions_list.wait_for_element()
             user_in_list = BaseElement(self.driver, xpath="%s//*[@text='%s']" % (self.mentions_list.locator, user_name))
-            user_in_list.click()
+            user_in_list.click_until_presence_of_element(self.send_message_button)
 
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
