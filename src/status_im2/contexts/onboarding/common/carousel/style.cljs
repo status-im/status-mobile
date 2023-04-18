@@ -48,12 +48,16 @@
    :flex-direction :row})
 
 (defn dynamic-progress-bar
-  [width]
-  (reanimated/apply-animations-to-style
-   {:width width}
-   {:height        2
-    :border-radius 4
-    :overflow      :hidden}))
+  [width animate?]
+  (let [normal-style {:height        2
+                      :border-radius 4
+                      :overflow      :hidden
+                      :width         width}]
+    (if animate?
+      (reanimated/apply-animations-to-style
+       {:width width}
+       normal-style)
+      normal-style)))
 
 (defn progress-bar-container
   [progress-bar-width status-bar-height]
@@ -63,11 +67,15 @@
    :top         (+ 12 status-bar-height)})
 
 (defn carousel-container
-  [left]
-  (reanimated/apply-animations-to-style
-   {:left left}
-   {:position       :absolute
-    :right          0
-    :top            0
-    :bottom         0
-    :flex-direction :row}))
+  [left animate?]
+  (let [normal-style {:position       :absolute
+                      :right          0
+                      :top            0
+                      :bottom         0
+                      :flex-direction :row
+                      :left           left}]
+    (if animate?
+      (reanimated/apply-animations-to-style
+       {:left left}
+       normal-style)
+      normal-style)))
