@@ -8,6 +8,7 @@
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
+            [status-im2.common.theme.core :as theme]
             [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
@@ -26,7 +27,8 @@
    (if (= @state/root-id :multiaccounts-stack)
      (re-frame/dispatch-sync [:set-multiaccount-root])
      (when @state/root-id
-       (navigation/set-root (get (roots/roots) @state/root-id))
+       (reset! theme/device-theme (rn/get-color-scheme))
+       (re-frame/dispatch [:init-root @state/root-id])
        (re-frame/dispatch [::login-core/check-last-chat])))
    (rn/hide-splash-screen)))
 
