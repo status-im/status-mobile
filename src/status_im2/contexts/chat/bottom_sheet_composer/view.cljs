@@ -122,7 +122,7 @@
                  :style                    (style/input @(:maximized? state)
                                                         @(:saved-emoji-kb-extra-height props))
                  :accessibility-label      :chat-message-input}]
-               [gradients/view props state animations dimensions]]
+               [gradients/view props state animations (utils/show-bottom-gradient? state dimensions)]]
               [images/images-list]
               [actions/view props state animations window-height insets (seq images)]]]))]))])
 

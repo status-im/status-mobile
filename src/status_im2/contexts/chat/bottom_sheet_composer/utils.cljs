@@ -40,6 +40,10 @@
    (<= y constants/line-height)
    (= (reanimated/get-shared-value gradient-opacity) 1)))
 
+(defn show-bottom-gradient?
+  [{:keys [text-value focused?]} {:keys [lines]}]
+  (and (not-empty @text-value) (not @focused?) (> lines 2)))
+
 (defn show-background?
   [saved-height max-height new-height]
   (or (= (reanimated/get-shared-value saved-height) max-height)

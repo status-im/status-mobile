@@ -8,14 +8,14 @@
 
 (defn view
   [{:keys [input-ref]}
-   {:keys [gradient-z-index text-value focused?]}
+   {:keys [gradient-z-index]}
    {:keys [gradient-opacity]}
-   {:keys [lines]}]
+   show-bottom-gradient?]
   [:f>
    (fn []
      [:<>
       [reanimated/linear-gradient (style/top-gradient gradient-opacity @gradient-z-index)]
-      (when (and (not-empty @text-value) (not @focused?) (> lines 2))
+      (when show-bottom-gradient?
         [rn/touchable-without-feedback
          {:on-press            #(when @input-ref (.focus ^js @input-ref))
           :accessibility-label :bottom-gradient}
