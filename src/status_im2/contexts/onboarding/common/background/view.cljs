@@ -9,14 +9,15 @@
   [dark-overlay?]
   [:f>
    (fn []
-     (carousel.animation/initialize-animation)
-     [rn/view
-      {:style style/background-container}
-      [carousel/view dark-overlay?]
-      (when dark-overlay?
-        [blur/view
-         {:style         style/background-blur-overlay
-          :blur-amount   30
-          :blur-radius   25
-          :blur-type     :transparent
-          :overlay-color :transparent}])])])
+     (let [animate? (not dark-overlay?)]
+       (when animate? (carousel.animation/initialize-animation))
+       [rn/view
+        {:style style/background-container}
+        [carousel/view animate?]
+        (when dark-overlay?
+          [blur/view
+           {:style         style/background-blur-overlay
+            :blur-amount   30
+            :blur-radius   25
+            :blur-type     :transparent
+            :overlay-color :transparent}])]))])
