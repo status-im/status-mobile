@@ -811,7 +811,7 @@ class ChatView(BaseView):
         self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',
                                                  suffix='/following-sibling::android.view.ViewGroup')
         self.confirm_create_in_community_button = Button(self.driver, translation_id="create")
-        self.mentions_list = BaseElement(self.driver, xpath="//*[@content-desc='user-list']")
+        self.mentions_list = BaseElement(self.driver, accessibility_id="user-list")
 
         # New UI
         self.pinned_messages_count = Button(self.driver,
@@ -1139,10 +1139,8 @@ class ChatView(BaseView):
         self.chat_message_input.click_inside()
         self.chat_message_input.send_keys("@")
         try:
-            self.mentions_list.wait_for_element()
-            user_in_list = BaseElement(self.driver, xpath="%s//*[@text='%s']" % (self.mentions_list.locator, user_name))
-            user_in_list.click_until_presence_of_element(self.send_message_button)
-
+            mentions_list = self.mentions_list.wait_for_element()
+            mentions_list.find_element(MobileBy.XPATH, "//*[@text='%s']" % user_name).click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 
