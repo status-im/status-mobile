@@ -107,10 +107,10 @@
                  :on-focus                 #(handler/focus props state animations dimensions)
                  :on-blur                  #(handler/blur state animations dimensions images)
                  :on-content-size-change   #(handler/content-size-change %
-                                                                        state
-                                                                        animations
-                                                                        dimensions
-                                                                        keyboard-shown)
+                                                                         state
+                                                                         animations
+                                                                         dimensions
+                                                                         keyboard-shown)
                  :on-scroll                #(handler/scroll % state animations dimensions)
                  :on-change-text           #(handler/change-text % props state)
                  :on-selection-change      #(handler/selection-change % state)

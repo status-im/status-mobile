@@ -55,7 +55,7 @@
                              (when-not (= @z-index 0)
                                (reanimated/animate btn-opacity 0)
                                (js/setTimeout #(reset! z-index 0) 300))))
-                         [@text-value])
+                         [(and (empty? @text-value) (not images?))])
           [reanimated/view
            {:style (style/send-button btn-opacity @z-index)}
            [quo/button

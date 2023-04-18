@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.keyboard
   (:require [oops.core :as oops]
-            [react-native.async-storage :as async-storage]
+            [status-im.async-storage.core :as async-storage]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
@@ -14,7 +14,7 @@
 (defn store-kb-height
   [{:keys [kb-default-height]} keyboard-height]
   (when (and (not @kb-default-height) (pos? keyboard-height))
-    (async-storage/set-item :kb-default-height (str keyboard-height))))
+    (async-storage/set-item! :kb-default-height (str keyboard-height))))
 
 (defn handle-emoji-kb-ios
   [e

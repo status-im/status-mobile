@@ -6,8 +6,8 @@
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]))
 
 (defn bounded-val
-  [f min max]
-  (Math/max min (Math/min f max)))
+  [val min-val max-val]
+  (max min-val (min val max-val)))
 
 (defn get-min-height
   [lines]

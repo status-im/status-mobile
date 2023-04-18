@@ -8,19 +8,19 @@
     [utils.re-frame :as rf]))
 
 (defn set-opacity
-  [e opacity translation expanding? min-height max-height new-height saved-height]
-  (let [remaining-height     (if @expanding?
+  [velocity opacity translation expanding? min-height max-height new-height saved-height]
+  (let [remaining-height     (if expanding?
                                (- max-height (reanimated/get-shared-value saved-height))
                                (- (reanimated/get-shared-value saved-height) min-height))
         progress             (if (= new-height min-height) 1 (/ translation remaining-height))
-        currently-expanding? (neg? (oops/oget e "velocityY"))
+        currently-expanding? (neg? velocity)
         max-opacity?         (and currently-expanding? (= (reanimated/get-shared-value opacity) 1))
         min-opacity?         (and (not currently-expanding?)
                                   (= (reanimated/get-shared-value opacity) 0))]
     (if (>= translation 0)
-      (when (and (not @expanding?) (not min-opacity?))
+      (when (and (not expanding?) (not min-opacity?))
         (reanimated/set-shared-value opacity (- 1 progress)))
-      (when (and @expanding? (not max-opacity?))
+      (when (and expanding? (not max-opacity?))
         (reanimated/set-shared-value opacity (Math/abs progress))))))
 
 (defn maximize
@@ -60,45 +60,44 @@
    keyboard-shown]
   (let [expanding?       (atom true)
         starting-opacity (reanimated/get-shared-value opacity)]
-    (->
-      (gesture/gesture-pan)
-      (gesture/enabled @gesture-enabled?)
-      (gesture/on-start (fn [e]
-                          (if-not keyboard-shown
-                            (do ; focus and end
-                              (when (< (oops/oget e "velocityY") c/velocity-threshold)
-                                (reanimated/set-shared-value container-opacity 1)
-                                (reanimated/set-shared-value last-height max-height))
-                              (when @input-ref
-                                (.focus ^js @input-ref))
-                              (reset! gesture-enabled? false))
-                            (do ; else, will start gesture
-                              (reanimated/set-shared-value background-y 0)
-                              (reset! expanding? (neg? (oops/oget e "velocityY")))))))
-      (gesture/on-update (fn [e]
-                           (let [translation (oops/oget e "translationY")
-                                 min-height  (utils/get-min-height lines)
-                                 new-height  (- (reanimated/get-shared-value saved-height) translation)
-                                 new-height  (utils/bounded-val new-height min-height max-height)]
-                             (when keyboard-shown
-                               (reanimated/set-shared-value height new-height)
-                               (set-opacity e
-                                            opacity
-                                            translation
-                                            expanding?
-                                            min-height
-                                            max-height
-                                            new-height
-                                            saved-height)))))
-      (gesture/on-end (fn []
-                        (let [diff (- (reanimated/get-shared-value height)
-                                      (reanimated/get-shared-value saved-height))]
-                          (if @gesture-enabled?
-                            (if (>= diff 0)
-                              (if (> diff c/drag-threshold)
-                                (maximize state animations dimensions)
-                                (bounce-back animations dimensions starting-opacity))
-                              (if (> (Math/abs diff) c/drag-threshold)
-                                (minimize props)
-                                (bounce-back animations dimensions starting-opacity)))
-                            (reset! gesture-enabled? true))))))))
+    (-> (gesture/gesture-pan)
+        (gesture/enabled @gesture-enabled?)
+        (gesture/on-start (fn [e]
+                            (if-not keyboard-shown
+                              (do ; focus and end
+                                (when (< (oops/oget e "velocityY") c/velocity-threshold)
+                                  (reanimated/set-shared-value container-opacity 1)
+                                  (reanimated/set-shared-value last-height max-height))
+                                (when @input-ref
+                                  (.focus ^js @input-ref))
+                                (reset! gesture-enabled? false))
+                              (do ; else, will start gesture
+                                (reanimated/set-shared-value background-y 0)
+                                (reset! expanding? (neg? (oops/oget e "velocityY")))))))
+        (gesture/on-update (fn [e]
+                             (let [translation (oops/oget e "translationY")
+                                   min-height  (utils/get-min-height lines)
+                                   new-height  (- (reanimated/get-shared-value saved-height) translation)
+                                   new-height  (utils/bounded-val new-height min-height max-height)]
+                               (when keyboard-shown
+                                 (reanimated/set-shared-value height new-height)
+                                 (set-opacity (oops/oget e "velocityY")
+                                              opacity
+                                              translation
+                                              @expanding?
+                                              min-height
+                                              max-height
+                                              new-height
+                                              saved-height)))))
+        (gesture/on-end (fn []
+                          (let [diff (- (reanimated/get-shared-value height)
+                                        (reanimated/get-shared-value saved-height))]
+                            (if @gesture-enabled?
+                              (if (>= diff 0)
+                                (if (> diff c/drag-threshold)
+                                  (maximize state animations dimensions)
+                                  (bounce-back animations dimensions starting-opacity))
+                                (if (> (Math/abs diff) c/drag-threshold)
+                                  (minimize props)
+                                  (bounce-back animations dimensions starting-opacity)))
+                              (reset! gesture-enabled? true))))))))

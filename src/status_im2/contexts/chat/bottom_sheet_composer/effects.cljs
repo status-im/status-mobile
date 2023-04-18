@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.effects
   (:require
-    [react-native.async-storage :as async-storage]
+    [status-im.async-storage.core :as async-storage]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as c]
