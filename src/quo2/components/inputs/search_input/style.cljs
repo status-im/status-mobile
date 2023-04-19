@@ -24,7 +24,7 @@
    :height          20
    :width           20})
 
-(defn clear-icon-bg-color
+(defn clear-icon
   [blur? override-theme]
   (if blur?
     (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
