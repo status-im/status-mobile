@@ -1,10 +1,11 @@
 (ns status-im2.contexts.contacts.events
   (:require
-    [utils.re-frame :as rf]
-    [taoensso.timbre :as log]
-    [status-im.utils.types :as types]
     [oops.core :as oops]
-    [status-im2.constants :as constants]))
+    [status-im.utils.types :as types]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn <-rpc-js
   [^js js-contact]
@@ -82,7 +83,7 @@
     {:json-rpc/call
      [{:method      "wakuext_sendContactRequest"
        :js-response true
-       :params      [{:id id :message "Please add me to your contacts"}]
+       :params      [{:id id :message (i18n/label :t/add-me-to-your-contacts)}]
        :on-error    (fn [error]
                       (log/error "Failed to send contact request"
                                  {:error error
