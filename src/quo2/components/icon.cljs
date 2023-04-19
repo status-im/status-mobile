@@ -7,7 +7,9 @@
 
 (defn- valid-color?
   [color]
-  (and (string? color) (not (string/blank? color))))
+  (or (keyword? color)
+      (and (string? color)
+           (not (string/blank? color)))))
 
 (defn- append-to-keyword
   [k & xs]
@@ -18,28 +20,18 @@
 (defn memo-icon-fn
   ([icon-name] (memo-icon-fn icon-name nil))
   ([icon-name
-    {:keys [color no-color
-            background-color foreground-color
+    {:keys [color color-2 no-color
             container-style size accessibility-label]
      :or   {accessibility-label :icon}}]
    (let [size (or size 20)]
      ^{:key icon-name}
      (if-let [svg-icon (get icons.svg/icons (append-to-keyword icon-name "-" size))]
-       (let [foreground-color (cond
-                                (valid-color? foreground-color)
-                                foreground-color
-
-                                (valid-color? color)
-                                color
-
-                                :else
-                                (colors/theme-colors colors/neutral-100 colors/white))]
-         [svg-icon
-          {:size                size
-           :background-color    background-color
-           :foreground-color    foreground-color
-           :accessibility-label accessibility-label
-           :style               container-style}])
+       [svg-icon
+        {:size                size
+         :color               (when (valid-color? color) color)
+         :color-2             (when (valid-color? color-2) color-2)
+         :accessibility-label accessibility-label
+         :style               container-style}]
        [rn/image
         {:style
          (merge {:width  size

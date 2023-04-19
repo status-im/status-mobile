@@ -39,9 +39,8 @@
     :hit-slop            {:top 3 :right 3 :bottom 3 :left 3}
     :accessibility-label :button-clear-preview}
    [icon/icon :i/clear
-    {:size             20
-     :background-color (colors/theme-colors colors/neutral-50 colors/neutral-60)
-     :foreground-color colors/white}]])
+    {:size  20
+     :color (colors/theme-colors colors/neutral-50 colors/neutral-60)}]])
 
 (defn view
   [{:keys [title body logo on-clear loading? loading-message container-style]}]
