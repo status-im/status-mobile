@@ -141,6 +141,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
    {:ClipPath #js {:render identity}
     :Circle   #js {:render identity}
     :Defs     #js {:render identity}
+    :G        #js {:render identity}
     :Path     #js {:render identity}
     :Rect     #js {:render identity}
     :SvgUri   #js {:render identity}
