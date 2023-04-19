@@ -83,7 +83,7 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}
-                show-bottom-gradient? (utils/show-bottom-gradient? state dimensions)]
+                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)]
             (effects/initialize props
                                 state
                                 animations
