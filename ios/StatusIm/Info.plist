@@ -72,6 +72,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSMotionUsageDescription</key>
+	<string>Status uses motion to do cool effects.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Status uses camera to take pictures and scan QR codes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -117,6 +119,7 @@
 	<string>launch-image-universal</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
+	    <string>gyroscope</string>
 		<string>armv7</string>
 	</array>
 	<key>UIStatusBarStyle</key>

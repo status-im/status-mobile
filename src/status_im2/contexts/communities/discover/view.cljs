@@ -12,7 +12,8 @@
             [status-im.ui.components.react :as react]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.discover.style :as style]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.parallax.view :as parallax]))
 
 (def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
   {:data {:community-color "#0052FF"
@@ -97,7 +98,7 @@
       [rn/view
        {:style     style/featured-list-container
         :on-layout #(swap! view-size
-                      (fn []
+                      (fn [_]
                         (- (oops/oget % "nativeEvent.layout.width") 40)))}
        (when-not (= @view-size 0)
          [rn/flat-list
@@ -229,11 +230,44 @@
         featured-communities
         @view-type]])))
 
-(defn discover
+(defonce motion-permission-granted (reagent/atom false))
+
+(defn f-discover
   []
-  (let [featured-communities (rf/sub [:communities/featured-communities])]
-    [rn/view
-     {:style (style/discover-screen-container (colors/theme-colors
-                                               colors/white
-                                               colors/neutral-95))}
-     [discover-screen-content featured-communities]]))
+  (let [request-motion-permission (fn []
+                                    (rf/dispatch
+                                     [:request-permissions
+                                      {:permissions [:motion]
+                                       :on-allowed  #(reset! motion-permission-granted true)
+                                       :on-denied   #(rf/dispatch
+                                                      [:toasts/upsert
+                                                       {:icon           :i/info
+                                                        :icon-color     colors/danger-50
+                                                        :override-theme :light
+                                                        :text           "motion denied"}])}]))]
+
+    (fn []
+      [rn/view
+       {:top      144
+        :left     0
+        :right    0
+        :bottom   0
+        :position :absolute}
+       (if @motion-permission-granted
+         [parallax/video
+          {:layers [(resources/get-video :biometrics-01-v-low)
+                    (resources/get-video :biometrics-02-v-low)
+                    (resources/get-video :biometrics-03-v-low)
+                    (resources/get-video :biometrics-04-v-low)]}]
+         [quo/button
+          {:before              :i/camera
+           :type                :primary
+           :size                32
+           :accessibility-label :request-motion-permission
+           :override-theme      :dark
+           :on-press            request-motion-permission}
+          "enable motion"])])))
+
+(defn discover
+  [props]
+  [:f> f-discover props])

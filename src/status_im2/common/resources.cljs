@@ -9,11 +9,14 @@
    :ethereum-address        (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard             (js/require "../resources/images/ui2/keycard.png")
    :onboarding-illustration (js/require "../resources/images/ui2/onboarding_illustration.png")
-   :qr-code                 (js/require "../resources/images/ui2/qr-code.png")
-  })
+   :qr-code                 (js/require "../resources/images/ui2/qr-code.png")})
 
 (def mock-images
-  {:coinbase             (js/require "../resources/images/mock2/coinbase.png")
+  {:01                   (js/require "../resources/images/mock2/01.png")
+   :02                   (js/require "../resources/images/mock2/02.png")
+   :03                   (js/require "../resources/images/mock2/03.png")
+   :04                   (js/require "../resources/images/mock2/04.png")
+   :coinbase             (js/require "../resources/images/mock2/coinbase.png")
    :collectible          (js/require "../resources/images/mock2/collectible.png")
    :community-banner     (js/require "../resources/images/mock2/community-banner.png")
    :community-logo       (js/require "../resources/images/mock2/community-logo.png")
@@ -31,6 +34,20 @@
    :user-picture-female2 (js/require "../resources/images/mock2/user_picture_female2.png")
    :user-picture-male4   (js/require "../resources/images/mock2/user_picture_male4.png")
    :user-picture-male5   (js/require "../resources/images/mock2/user_picture_male5.png")})
+
+(def videos
+  {:biometrics-01       (js/require "../resources/videos/biometrics_01.mp4")
+   :biometrics-02       (js/require "../resources/videos/biometrics_02.mp4")
+   :biometrics-03       (js/require "../resources/videos/biometrics_03.mp4")
+   :biometrics-04       (js/require "../resources/videos/biometrics_04.mp4")
+   :biometrics-01-low   (js/require "../resources/videos/biometrics_1_low.mp4")
+   :biometrics-02-low   (js/require "../resources/videos/biometrics_2_low.mp4")
+   :biometrics-03-low   (js/require "../resources/videos/biometrics_3_low.mp4")
+   :biometrics-04-low   (js/require "../resources/videos/biometrics_4_low.mp4")
+   :biometrics-01-v-low (js/require "../resources/videos/Biometrics_Layers_v1_01_2.mp4")
+   :biometrics-02-v-low (js/require "../resources/videos/Biometrics_Layers_v1_02_2.mp4")
+   :biometrics-03-v-low (js/require "../resources/videos/Biometrics_Layers_v1_03_2.mp4")
+   :biometrics-04-v-low (js/require "../resources/videos/Biometrics_Layers_v1_04_2.mp4")})
 
 (def tokens
   {:eth  (js/require "../resources/images/tokens/mainnet/ETH.png")
@@ -53,3 +70,7 @@
 (defn get-token
   [k]
   (get tokens k))
+
+(defn get-video
+  [k]
+  (get videos k))

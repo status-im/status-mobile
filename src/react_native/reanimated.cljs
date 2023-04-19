@@ -4,20 +4,22 @@
             ["react-native-fast-image" :as FastImage]
             ["@react-native-community/blur" :as blur]
             ["react-native-reanimated" :default reanimated :refer
-             (useSharedValue useAnimatedStyle
-                             withTiming
-                             withDelay
-                             withSpring
-                             withRepeat
-                             withSequence
-                             withDecay
-                             Easing
-                             Keyframe
-                             cancelAnimation
-                             SlideInUp
-                             SlideOutUp
-                             LinearTransition
-                             runOnJS)]
+             (useSharedValue
+              useAnimatedStyle
+              useAnimatedSensor
+              withTiming
+              withDelay
+              withSpring
+              withRepeat
+              withSequence
+              withDecay
+              Easing
+              Keyframe
+              cancelAnimation
+              SlideInUp
+              SlideOutUp
+              LinearTransition
+              runOnJS)]
             [reagent.core :as reagent]
             ["react-native-redash" :refer (withPause)]
             [react-native.flat-list :as rn-flat-list]
@@ -52,6 +54,7 @@
 
 ;; Hooks
 (def use-shared-value useSharedValue)
+(def use-animated-sensor useAnimatedSensor)
 (def use-animated-style useAnimatedStyle)
 
 ;; Animations

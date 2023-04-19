@@ -10,6 +10,8 @@
    :camera                 (cond
                              platform/android? (.-CAMERA (.-ANDROID PERMISSIONS))
                              platform/ios?     (.-CAMERA (.-IOS PERMISSIONS)))
+   :motion                 (cond platform/ios? (.-MOTION (.-IOS PERMISSIONS)))
+
    :record-audio           (cond
                              platform/android? (.-RECORD_AUDIO (.-ANDROID PERMISSIONS))
                              platform/ios?     (.-MICROPHONE (.-IOS PERMISSIONS)))})

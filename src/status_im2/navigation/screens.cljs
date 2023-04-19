@@ -9,19 +9,18 @@
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.onboarding.intro.view :as intro]
+    ;; [status-im2.contexts.onboarding.intro.view :as intro]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im2.contexts.onboarding.identifiers.view :as identifiers]
-    [status-im2.contexts.onboarding.welcome.view :as welcome]
-    [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
+    ;; [status-im2.contexts.onboarding.welcome.view :as welcome]
+    ;; [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.syncing.syncing-devices.view :as syncing-devices]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.onboarding.profiles.view :as profiles]
+    ;; [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
@@ -37,7 +36,7 @@
    (old-screens/screens)
 
    [{:name      :intro
-     :component intro/view}
+     :component communities.discover/discover}
 
     {:name      :activity-center
      :options   options/transparent-screen-options
@@ -91,10 +90,10 @@
 
     ;; Onboarding
     {:name      :profiles
-     :component profiles/views}
+     :component communities.discover/discover}
 
     {:name      :new-to-status
-     :component new-to-status/new-to-status}
+     :component communities.discover/discover}
 
     {:name      :create-profile
      :component create-profile/create-profile}
@@ -121,12 +120,6 @@
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
 
-    {:name      :identifiers
-     :component identifiers/view
-     :options   {:popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}}
-
     {:name      :sign-in
      :component sign-in/view}
 
@@ -134,7 +127,7 @@
      :component syncing-devices/syncing-devices}
 
     {:name      :welcome
-     :component welcome/view}]
+     :component communities.discover/discover}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
