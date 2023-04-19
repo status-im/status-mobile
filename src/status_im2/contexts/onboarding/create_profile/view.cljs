@@ -5,25 +5,15 @@
             [status-im2.contexts.onboarding.create-profile.style :as style]
             [utils.i18n :as i18n]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
             [utils.re-frame :as rf]
             [oops.core :as oops]
             [react-native.blur :as blur]
             [status-im2.constants :as c]))
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:container-style {:padding-horizontal 0}
-     :align-mid?      true
-     :mid-section     {:type :text-only :main-text ""}
-     :left-section    {:type                :blur-bg
-                       :icon                :i/arrow-left
-                       :icon-override-theme :dark
-                       :on-press            #(rf/dispatch [:navigate-back])}}]])
 
 (def emoji-regex
   (new
@@ -66,19 +56,20 @@
      children]))
 
 (defn page
-  [{:keys [image-path display-name color]}]
+  [{:keys [onboarding-profile-data navigation-bar-top]}]
   [:f>
    (fn []
-     (let [full-name             (reagent/atom display-name)
-           keyboard-shown?       (reagent/atom false)
-           validation-msg        (reagent/atom (validation-message @full-name))
-           on-change-text        (fn [s]
-                                   (reset! validation-msg (validation-message s))
-                                   (reset! full-name (string/trim s)))
-           custom-color          (reagent/atom (or color c/profile-default-color))
-           profile-pic           (reagent/atom image-path)
-           on-change-profile-pic #(reset! profile-pic %)
-           on-change             #(reset! custom-color %)]
+     (let [{:keys [image-path display-name color]} onboarding-profile-data
+           full-name                               (reagent/atom display-name)
+           keyboard-shown?                         (reagent/atom false)
+           validation-msg                          (reagent/atom (validation-message @full-name))
+           on-change-text                          (fn [s]
+                                                     (reset! validation-msg (validation-message s))
+                                                     (reset! full-name (string/trim s)))
+           custom-color                            (reagent/atom (or color c/profile-default-color))
+           profile-pic                             (reagent/atom image-path)
+           on-change-profile-pic                   #(reset! profile-pic %)
+           on-change                               #(reset! custom-color %)]
        (fn []
          (rn/use-effect
           (let [will-show-listener (oops/ocall rn/keyboard
@@ -95,13 +86,13 @@
                 (oops/ocall will-hide-listener "remove"))))
           [])
          [rn/view {:style style/page-container}
+          [navigation-bar/navigation-bar {:top navigation-bar-top}]
           [rn/scroll-view
            {:keyboard-should-persist-taps :always
             :content-container-style      {:flex-grow 1}}
            [rn/view {:style style/page-container}
             [rn/view
              {:style style/content-container}
-             [navigation-bar]
              [quo/text
               {:size   :heading-1
                :weight :semi-bold
@@ -159,7 +150,12 @@
 
 (defn create-profile
   []
-  (let [onboarding-profile-data (rf/sub [:onboarding-2/profile])]
-    [:<>
-     [background/view true]
-     [page onboarding-profile-data]]))
+  [:f>
+   (fn []
+     (let [{:keys [top]}           (safe-area/use-safe-area)
+           onboarding-profile-data (rf/sub [:onboarding-2/profile])]
+       [:<>
+        [background/view true]
+        [page
+         {:navigation-bar-top      top
+          :onboarding-profile-data onboarding-profile-data}]]))])
