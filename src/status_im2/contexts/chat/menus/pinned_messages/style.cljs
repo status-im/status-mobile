@@ -6,7 +6,7 @@
 
 (def heading-container
   {:flex-direction    :row
-   :background-color  (colors/theme-colors colors/neutral-30 colors/neutral-80)
+   :background-color  (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :border-radius     20
    :align-items       :center
    :align-self        :flex-start
