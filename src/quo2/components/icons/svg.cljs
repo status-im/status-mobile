@@ -34,5 +34,15 @@
        "M9.15142 9.99998L7.07566 12.0757L7.9242 12.9243L9.99994 10.8485L12.0757 12.9242L12.9242 12.0757L10.8485 9.99998L12.9242 7.92421L12.0757 7.07568L9.99994 9.15145L7.92421 7.07572L7.07568 7.92425L9.15142 9.99998Z"
        :fill color-2}]]))
 
-(def icons
+(def ^:private icons
   {:i/clear-20 clear-20})
+
+(defn- append-to-keyword
+  [k & xs]
+  (keyword (apply str
+                  (subs (str k) 1)
+                  xs)))
+
+(defn get-icon
+  [icon-name size]
+  (get icons (append-to-keyword icon-name "-" size)))
