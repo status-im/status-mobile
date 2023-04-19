@@ -1,7 +1,6 @@
 (ns status-im2.subs.search
   (:require [clojure.string :as string])
   (:require [clojure.string :as string]
-            [status-im.utils.gfycat.core :as gfycat]
             [re-frame.core :as re-frame]
             [status-im.utils.currency :as currency]))
 
@@ -35,41 +34,6 @@
     (if sort?
       (sort-by-timestamp results)
       results)))
-
-(defn filter-chat
-  [contacts search-filter {:keys [group-chat alias name chat-id]}]
-  (let [alias    (if-not group-chat
-                   (string/lower-case (or alias
-                                          (get-in contacts [chat-id :alias])
-                                          (gfycat/generate-gfy chat-id)))
-                   "")
-        nickname (get-in contacts [chat-id :nickname])]
-    (or
-     (string/includes? (string/lower-case (str name)) search-filter)
-     (string/includes? (string/lower-case alias) search-filter)
-     (when nickname
-       (string/includes? (string/lower-case nickname) search-filter))
-     (and
-      (get-in contacts [chat-id :ens-verified])
-      (string/includes? (string/lower-case
-                         (str (get-in contacts [chat-id :name])))
-                        search-filter)))))
-
-(re-frame/reg-sub
- :search/filtered-chats
- :<- [:chats/home-list-chats]
- :<- [:contacts/contacts]
- :<- [:search/home-filter]
- (fn [[chats contacts search-filter]]
-   ;; Short-circuit if search-filter is empty
-   (let [filtered-chats (if (seq search-filter)
-                          (filter
-                           (partial filter-chat
-                                    contacts
-                                    (string/lower-case search-filter))
-                           chats)
-                          chats)]
-     (sort-by :timestamp > filtered-chats))))
 
 (defn extract-currency-attributes
   [currency]

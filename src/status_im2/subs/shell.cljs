@@ -103,11 +103,18 @@
                  #(re-frame/dispatch [:chat/navigate-to-chat channel-id])
                  100))}))
 
+(def memo-shell-cards (atom nil))
+
 (re-frame/reg-sub
  :shell/sorted-switcher-cards
  :<- [:shell/switcher-cards]
- (fn [stacks]
-   (sort-by :clock > (map val stacks))))
+ :<- [:view-id]
+ (fn [[stacks view-id]]
+   (if (= view-id :shell)
+     (let [sorted-shell-cards (sort-by :clock > (map val stacks))]
+       (reset! memo-shell-cards sorted-shell-cards)
+       sorted-shell-cards)
+     @memo-shell-cards)))
 
 (re-frame/reg-sub
  :shell/shell-pass-through?

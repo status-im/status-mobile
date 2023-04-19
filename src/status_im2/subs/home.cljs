@@ -1,38 +1,20 @@
 (ns status-im2.subs.home
   (:require [re-frame.core :as re-frame]))
 
-(def memo-home-items (atom nil))
+(def memo-chats-stack-items (atom nil))
 
 (re-frame/reg-sub
- :home-items
- :<- [:search/home-filter]
- :<- [:search/filtered-chats]
- :<- [:communities/communities]
+ :chats-stack-items
+ :<- [:chats/home-list-chats]
  :<- [:view-id]
  :<- [:home-items-show-number]
- (fn [[search-filter filtered-chats communities view-id home-items-show-number]]
-   (if (= view-id :shell-stack)
-     (let [communities-count          (count communities)
-           chats-count                (count filtered-chats)
-           ;; If we have both communities & chats we want to display
-           ;; a separator between them
-
-           communities-with-separator (if (and (pos? communities-count)
-                                               (pos? chats-count))
-                                        (update communities
-                                                (dec communities-count)
-                                                assoc
-                                                :last?
-                                                true)
-                                        communities)
-           res                        {:search-filter search-filter
-                                       :items         (concat communities-with-separator
-                                                              (take home-items-show-number
-                                                                    filtered-chats))}]
-       (reset! memo-home-items res)
+ (fn [[chats view-id home-items-show-number]]
+   (if (= view-id :chats-stack)
+     (let [res (take home-items-show-number chats)]
+       (reset! memo-chats-stack-items res)
        res)
      ;;we want to keep data unchanged so react doesn't change component when we leave screen
-     @memo-home-items)))
+     @memo-chats-stack-items)))
 
 (re-frame/reg-sub
  :hide-home-tooltip?
