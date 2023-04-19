@@ -16,6 +16,7 @@
     mention
     reply
     contact-request
+    community-request
     admin
     contact-verification})
 
