@@ -30,8 +30,6 @@
    :left     0
    :right    0})
 
-(def navigation-bar {:height 56})
-
 (def info-message
   {:margin-top 8})
 
