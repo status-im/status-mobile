@@ -24,42 +24,33 @@
       author-name]]))
 
 (defn system-message
-  [{:keys [from in-popover? timestamp-str chat-id] :as message}]
-  (let [response-to  (:response-to (:content message))
-        default-size 36]
-    [rn/touchable-opacity
-     {:on-press       (fn []
-                        (rf/dispatch [:dismiss-keyboard])
-                        (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))
-      :active-opacity 1
-      :style          (merge {:flex-direction :row :margin-vertical 8}
-                             (old-style/message-wrapper message))}
-     [rn/view
-      {:style               {:width            default-size
-                             :height           default-size
-                             :margin-right     16
-                             :border-radius    default-size
-                             :justify-content  :center
-                             :align-items      :center
-                             :background-color colors/primary-50-opa-10}
-       :accessibility-label :content-type-pin-icon}
-      [quo/icon :i/pin {:color colors/primary-50 :size 16}]]
-     [rn/view
-      [rn/view {:style {:flex-direction :row :align-items :center}}
-       [rn/touchable-opacity
-        {:style    old-style/message-author-touchable
-         :disabled in-popover?
-         :on-press #(rf/dispatch [:chat.ui/show-profile from])}
-        [old-message/message-author-name from {} 20]]
-       [quo/text
-        {:size  :label
-         :style (style/pinned-message-text)}
-        (str " " (i18n/label :t/pinned-a-message))]
-       [rn/text
-        {:style               (merge
-                               {:padding-left 5
-                                :margin-top   2}
-                               (old-style/message-timestamp-text))
-         :accessibility-label :message-timestamp}
-        timestamp-str]]
-      [old-message/quoted-message {:message-id response-to :chat-id chat-id} true]]]))
+  [{:keys [from in-popover? quoted-message timestamp-str chat-id] :as message}]
+  [rn/touchable-opacity
+   {:on-press       (fn []
+                      (rf/dispatch [:dismiss-keyboard])
+                      (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))
+    :active-opacity 1
+    :style          (merge style/system-message-container
+                           (old-style/message-wrapper message))}
+   [rn/view
+    {:style               style/system-message-inner-container
+     :accessibility-label :content-type-pin-icon}
+    [quo/icon :i/pin {:color colors/primary-50 :size 16}]]
+   [rn/view
+    [rn/view {:style style/system-message-author-container}
+     [rn/touchable-opacity
+      {:style    old-style/message-author-touchable
+       :disabled in-popover?
+       :on-press #(rf/dispatch [:chat.ui/show-profile from])}
+      [old-message/message-author-name from {} 20]]
+     [quo/text
+      {:size  :label
+       :style (style/pinned-message-text)}
+      (str " " (i18n/label :t/pinned-a-message))]
+     [rn/text
+      {:style               (merge
+                             style/system-message-timestamp-container
+                             (old-style/message-timestamp-text))
+       :accessibility-label :message-timestamp}
+      timestamp-str]]
+    [old-message/quoted-message quoted-message true]]])

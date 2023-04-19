@@ -13,9 +13,13 @@
 (def ^:const content-type-community 9)
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
-(def ^:const content-type-gif 12)
-(def ^:const content-type-link 13)
-(def ^:const content-type-album 14)
+(def ^:const content-type-system-pinned-message 14)
+
+;; Not implemented in status-go, only used for testing/ui work
+(def ^:const content-type-gif 100)
+(def ^:const content-type-link 101)
+(def ^:const content-type-album 102)
+
 
 (def ^:const contact-request-state-none 0)
 (def ^:const contact-request-state-mutual 1)

@@ -11,7 +11,6 @@
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
-    [status-im.data-store.messages :as data-store.messages]
     [status-im.data-store.reactions :as data-store.reactions]
     [status-im.group-chats.core :as models.group]
     [status-im.multiaccounts.login.core :as multiaccounts.login]
@@ -44,7 +43,7 @@
         ^js removed-chats              (.-removedChats response-js)
         ^js activity-notifications     (.-activityCenterNotifications response-js)
         ^js activity-center-state      (.-activityCenterState response-js)
-        ^js pin-messages               (.-pinMessages response-js)
+        ^js pin-messages-js            (.-pinMessages response-js)
         ^js removed-messages           (.-removedMessages response-js)
         ^js visibility-status-updates  (.-statusUpdates response-js)
         ^js current-visibility-status  (.-currentStatus response-js)
@@ -109,12 +108,12 @@
                   (process-next response-js sync-handler)
                   (browser/handle-bookmarks bookmarks-clj)))
 
-      (seq pin-messages)
-      (let [pin-messages (types/js->clj pin-messages)]
+      (seq pin-messages-js)
+      (do
         (js-delete response-js "pinMessages")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (messages.pin/receive-signal (map data-store.messages/<-rpc pin-messages))))
+                  (messages.pin/receive-signal pin-messages-js)))
 
       (seq removed-chats)
       (let [removed-chats-clj (types/js->clj removed-chats)]

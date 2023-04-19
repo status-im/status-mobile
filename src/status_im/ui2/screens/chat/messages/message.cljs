@@ -31,7 +31,9 @@
 
 (defn system-text?
   [content-type]
-  (= content-type constants/content-type-system-text))
+  (or
+   (= content-type constants/content-type-system-text)
+   (= content-type constants/content-type-system-pinned-message)))
 
 (defn mention-element
   [from]
@@ -142,11 +144,9 @@
             (:parsed-text content))))
 
 (defn quoted-message
-  [{:keys [message-id chat-id]} pin?]
-  (let [quoted-message (get @(re-frame/subscribe [:chats/chat-messages chat-id])
-                            message-id)]
-    [rn/view {:style (when-not pin? (style/quoted-message-container))}
-     [components.reply/reply-message quoted-message false pin?]]))
+  [quoted-message pin?]
+  [rn/view {:style (when-not pin? (style/quoted-message-container))}
+   [components.reply/reply-message quoted-message false pin?]])
 
 (defn message-not-sent-text
   [chat-id message-id]

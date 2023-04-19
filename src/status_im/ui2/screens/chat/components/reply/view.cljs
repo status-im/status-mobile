@@ -9,7 +9,7 @@
             [status-im2.constants :as constants]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.photos :as photos]
+            [status-im2.contexts.chat.messages.avatar.view :as avatar]
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.components.reply.style :as style]
             [react-native.linear-gradient :as linear-gradient]))
@@ -65,9 +65,9 @@
     (i18n/label :t/message-deleted)]])
 
 (defn reply-from
-  [{:keys [from identicon contact-name current-public-key]}]
+  [{:keys [from contact-name current-public-key]}]
   [rn/view {:style style/reply-from}
-   [photos/member-photo from identicon 16]
+   [avatar/avatar from :xxxs]
    [quo2.text/text
     {:weight          :semi-bold
      :size            :paragraph-2

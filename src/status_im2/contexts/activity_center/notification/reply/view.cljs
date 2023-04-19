@@ -23,11 +23,17 @@
 (defn- get-message-content
   [{:keys [content-type] :as message}]
   (case content-type
-    constants/content-type-text        (get-in message [:content :text])
+    constants/content-type-text [quo/text {:style style/tag-text}
+                                 (get-in message [:content :text])]
 
-    constants/content-type-image       [old-message/message-content-image message]
+    constants/content-type-image [old-message/message-content-image message]
 
-    constants/content-type-sticker     [old-message/sticker message]
+    constants/content-type-sticker [old-message/sticker message]
+
+    constants/content-type-system-pinned-message
+    [not-implemented/not-implemented
+     [quo/text {:style style/tag-text}
+      (get-in message [:content :text])]]
 
     ;; NOTE: The following type (system-text) doesn't have a design yet.
     ;; https://github.com/status-im/status-mobile/issues/14915
