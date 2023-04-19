@@ -71,6 +71,7 @@
      :component album-selector/album-selector}
 
     {:name      :new-contact
+     :options   {:sheet? true}
      :component add-new-contact/new-contact}
 
     {:name      :discover-communities
