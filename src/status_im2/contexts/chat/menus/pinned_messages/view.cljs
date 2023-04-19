@@ -40,12 +40,11 @@
                 :style  style/heading}
                (i18n/label :t/pinned-messages)]
               (when community
-                [rn/view
-                 {:style style/heading-container}
+                [rn/view {:style style/heading-container}
                  [rn/text {:style style/heading-text} (:name community)]
                  [quo/icon
                   :i/chevron-right
-                  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                  {:color (colors/theme-colors colors/neutral-60 colors/neutral-30)
                    :size  12}]
                  [rn/text
                   {:style style/chat-name-text}
