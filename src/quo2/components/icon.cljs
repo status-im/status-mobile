@@ -9,6 +9,12 @@
   [color]
   (and (string? color) (not (string/blank? color))))
 
+(defn- append-to-keyword
+  [k & xs]
+  (keyword (apply str
+                  (subs (str k) 1)
+                  xs)))
+
 (defn memo-icon-fn
   ([icon-name] (memo-icon-fn icon-name nil))
   ([icon-name
@@ -18,7 +24,7 @@
      :or   {accessibility-label :icon}}]
    (let [size (or size 20)]
      ^{:key icon-name}
-     (if-let [svg-icon (get icons.svg/icons icon-name)]
+     (if-let [svg-icon (get icons.svg/icons (append-to-keyword icon-name "-" size))]
        (let [foreground-color (cond
                                 (valid-color? foreground-color)
                                 foreground-color
