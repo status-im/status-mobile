@@ -185,11 +185,11 @@
 
 (defn create-password
   []
-  (let [scroll-view-ref  (atom nil)
-        scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
-    (fn []
-      [safe-area/consumer
-       (fn [{:keys [top]}]
+  [:f>
+   (let [scroll-view-ref  (atom nil)
+         scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
+     (fn []
+       (let [{:keys [top]} (safe-area/use-safe-area)]
          [:<>
           [background/view true]
           [rn/scroll-view
@@ -202,4 +202,4 @@
                                       :icon                :i/info
                                       :icon-override-theme :dark
                                       :on-press            #(js/alert "Info pressed")}]}]
-           [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])])))
+           [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])))])

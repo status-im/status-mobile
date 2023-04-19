@@ -56,10 +56,10 @@
 
 (defn new-to-status
   []
-  (fn []
-    [safe-area/consumer
-     (fn [{:keys [top]}]
-       [rn/view {:style {:flex 1}}
+  [:f>
+   (fn []
+     (let [{:keys [top]} (safe-area/use-safe-area)]
+       [:<>
         [background/view true]
         [rn/view {:style style/content-container}
          [navigation-bar/navigation-bar
@@ -68,4 +68,4 @@
                                     :icon                :i/info
                                     :icon-override-theme :dark
                                     :on-press            #(js/alert "Info pressed")}]}]
-         [sign-in-options]]])]))
+         [sign-in-options]]]))])

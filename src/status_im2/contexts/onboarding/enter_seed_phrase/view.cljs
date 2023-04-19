@@ -65,9 +65,9 @@
 
 (defn enter-seed-phrase
   []
-  (fn []
-    [safe-area/consumer
-     (fn [{:keys [top]}]
+  [:f>
+   (fn []
+     (let [{:keys [top]} (safe-area/use-safe-area)]
        [rn/view {:style {:flex 1}}
         [background/view true]
-        [page {:navigation-bar-top top}]])]))
+        [page {:navigation-bar-top top}]]))])

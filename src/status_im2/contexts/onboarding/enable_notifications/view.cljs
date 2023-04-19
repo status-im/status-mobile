@@ -46,13 +46,14 @@
 
 (defn enable-notifications
   []
-  [safe-area/consumer
-   (fn [insets]
-     [rn/view {:style (style/page-container insets)}
-      [background/view true]
-      [navigation-bar/navigation-bar {:disable-back-button? true}]
-      [page-title]
-      [rn/view {:style style/page-illustration}
-       [quo/text
-        "Illustration here"]]
-      [enable-notification-buttons {:insets insets}]])])
+  [:f>
+   (fn []
+     (let [insets (safe-area/use-safe-area)]
+       [rn/view {:style (style/page-container insets)}
+        [background/view true]
+        [navigation-bar/navigation-bar {:disable-back-button? true}]
+        [page-title]
+        [rn/view {:style style/page-illustration}
+         [quo/text
+          "Illustration here"]]
+        [enable-notification-buttons {:insets insets}]]))])

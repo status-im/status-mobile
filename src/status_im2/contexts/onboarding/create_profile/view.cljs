@@ -150,12 +150,12 @@
 
 (defn create-profile
   []
-  (fn []
-    (let [onboarding-profile-data (rf/sub [:onboarding-2/profile])]
-      [safe-area/consumer
-       (fn [{:keys [top]}]
-         [:<>
-          [background/view true]
-          [page
-           {:navigation-bar-top      top
-            :onboarding-profile-data onboarding-profile-data}]])])))
+  [:f>
+   (fn []
+     (let [{:keys [top]}           (safe-area/use-safe-area)
+           onboarding-profile-data (rf/sub [:onboarding-2/profile])]
+       [:<>
+        [background/view true]
+        [page
+         {:navigation-bar-top      top
+          :onboarding-profile-data onboarding-profile-data}]]))])
