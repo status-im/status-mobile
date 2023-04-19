@@ -24,11 +24,11 @@
    :height          20
    :width           20})
 
-(defn clear-icon
+(defn clear-icon-bg-color
   [blur? override-theme]
   (if blur?
     (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
-    (colors/theme-colors colors/neutral-40 colors/neutral-50 override-theme)))
+    (colors/theme-colors colors/neutral-40 colors/neutral-60 override-theme)))
 
 (defn cursor
   [customization-color override-theme]

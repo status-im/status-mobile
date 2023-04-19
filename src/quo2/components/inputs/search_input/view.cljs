@@ -19,8 +19,9 @@
    {:style    style/clear-icon-container
     :on-press on-press}
    [icon/icon :i/clear
-    {:color (style/clear-icon blur? override-theme)
-     :size  20}]])
+    {:foreground-color style/clear-icon-fg-color
+     :background-color (style/clear-icon-bg-color blur? override-theme)
+     :size             20}]])
 
 (defn- handle-backspace
   [event ^js/Object scroll-view-ref]
