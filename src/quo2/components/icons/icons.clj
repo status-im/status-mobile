@@ -2,9 +2,9 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]))
 
-(def icon-path "./resources/images/icons2/")
+(def ^:private icon-path "./resources/images/icons2/")
 
-(defn require-icon
+(defn- require-icon
   [size path]
   (fn [el]
     (let [s (str "." path el ".png")
@@ -15,7 +15,7 @@
                 (str size))]
       [k `(js/require ~s)])))
 
-(defn get-files
+(defn- get-files
   [path]
   (->> (io/file path)
        file-seq
@@ -23,7 +23,7 @@
        (map #(first (string/split (.getName %) #"@")))
        distinct))
 
-(defn get-icons
+(defn- get-icons
   [size]
   (let [path (str icon-path size "x" size "/")]
     (into {} (map (require-icon size path) (get-files path)))))
