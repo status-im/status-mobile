@@ -36,6 +36,50 @@ Pay special attention to:
 
 ## Dos and don'ts
 
+### Hiccup
+
+Never use anonymous inline function in hiccup, this will lead to reinitialization of component on each render of parent component
+
+```clojure
+;; bad
+(defn checkbox-view
+  [{:keys [size]}]
+  [rn/view
+   [(fn [] [rn/view])]])
+
+;; good
+(defn comp []
+  [rn/view])
+
+(defn checkbox-view
+  [{:keys [size]}]
+  [rn/view
+   [comp]])
+```
+
+This mistake mostly happens with functional components
+
+```clojure
+;; bad
+(fn []
+  (let [atom (rf/sub [:sub])]
+    (fn []
+      [:f>
+       (fn []
+         [rn/text atom]
+
+;; good
+(defn f-comp [atom]
+ [rn/text atom])
+         
+(fn []
+ (let [atom (rf/sub [:sub])]
+   (fn []
+     [:f> f-comp atom]))) 
+```
+
+it's important to name functional components with `f-` prefix
+
 ### Component styles
 
 Prefer to define styles in a separate file named `style.cljs`, colocated with
@@ -90,14 +134,41 @@ their styles in the top-level of the properties map, prefer to add them inside t
  ]
 ```
 
-### Always apply animated styles in the style file
+Also its fine to keep one liner styles in view
 
-When implementing styles for reanimated views, we should always define
-them in the style file and apply animations with reanimated/apply-animations-to-style
-in the style definition.
+```clojure
+;; ok
+[rn/view {:style {:flex 1 :padding-top 5}}]
+```
+
+### Don't define properties in styles ns
+
+Properties must be set on view level 
 
 ```clojure
 ;; bad
+{:style         {:position         :absolute
+                 :left             0
+                 :right            0
+                 :bottom           0}
+ :blur-amount   30
+ :blur-radius   25
+ :blur-type     :transparent
+ :overlay-color :transparent}
+
+;; good
+{:position         :absolute
+ :left             0
+ :right            0
+ :bottom           0}
+```
+
+
+### Never apply animated styles in the style file
+
+
+```clojure
+;; good
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
@@ -105,7 +176,7 @@ in the style definition.
                               {:opacity opacity}
                               style/circle-container)}]))
 
-;; good
+;; bad
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
