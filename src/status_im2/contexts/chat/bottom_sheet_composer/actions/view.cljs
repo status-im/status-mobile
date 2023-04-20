@@ -15,7 +15,7 @@
 
 (defn send-message
   [{:keys [input-ref]}
-   {:keys [text-value focused?]}
+   {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height]
   (reanimated/animate height constants/input-height)
@@ -30,6 +30,7 @@
   (rf/dispatch [:chat.ui/send-current-message])
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
+  (reset! maximized? false)
   (reset! text-value "")
   (when @input-ref
     (.clear ^js @input-ref))
