@@ -22,7 +22,7 @@
 
 @implementation StatusImTests
 
-- (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
+- (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
   if (test(view)) {
     return YES;
@@ -42,10 +42,11 @@
   BOOL foundElement = NO;
 
   __block NSString *redboxError = nil;
-  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
-    if (level >= RCTLogLevelError) {
-      redboxError = message;
-    }
+  RCTSetLogFunction(
+      ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+        if (level >= RCTLogLevelError) {
+         redboxError = message;
+        }
   });
 
   while ([date timeIntervalSinceNow] > 0 && !foundElement && !redboxError) {
