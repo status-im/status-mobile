@@ -33,6 +33,7 @@
     [status-im.native-module.core :as status]
     status-im.network.net-info
     status-im.pairing.core
+    [status-im.popover.core :as popover]
     status-im.profile.core
     status-im.search.core
     status-im.signals.core
@@ -163,7 +164,9 @@
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]
-  {:db (assoc db :app-in-background-since now)})
+  (rf/merge
+   {:db (assoc db :app-in-background-since now)}
+   (popover/hide-popover)))
    ;; event not implemented
    ;; :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]
 
