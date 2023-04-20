@@ -11,7 +11,7 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
+            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.user.edit-picture :as edit]
             [status-im.ui.screens.profile.user.styles :as styles]

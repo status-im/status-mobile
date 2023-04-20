@@ -6,7 +6,7 @@
             [status-im.ethereum.eip681 :as eip681]
             [utils.i18n :as i18n]
             [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
+            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 

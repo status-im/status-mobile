@@ -255,7 +255,7 @@
   (* 1000 sec))
 
 (defn ms-to-duration
-  "milisecods to mm:ss format"
+  "miliseconds to mm:ss format"
   [ms]
   (let [sec (quot ms 1000)]
     (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))

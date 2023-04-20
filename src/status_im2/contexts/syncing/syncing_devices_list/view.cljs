@@ -1,10 +1,9 @@
-(ns status-im2.contexts.syncing.view
+(ns status-im2.contexts.syncing.syncing-devices-list.view
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.syncing.sheets.sync-device-notice.view :as sync-device-notice]
-            [status-im2.contexts.syncing.style :as style]
+            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
             [status-im2.common.not-implemented :as not-implemented]
             [utils.re-frame :as rf]))
 
@@ -15,7 +14,7 @@
    [quo/page-nav
     {:align-mid?   true
      :mid-section  {:type :text-only :main-text ""}
-     :left-section {:type                :blur-bg
+     :left-section {:type                :grey
                     :icon                :i/arrow-left
                     :icon-override-theme :dark
                     :on-press            #(rf/dispatch [:navigate-back])}}]])
@@ -64,10 +63,7 @@
      [quo/button
       {:size     32
        :icon     true
-       :on-press #(rf/dispatch [:show-bottom-sheet
-                                {:show-handle? false
-                                 :content      (fn []
-                                                 [sync-device-notice/sheet])}])}
+       :on-press #(rf/dispatch [:navigate-to :settings-setup-syncing])}
       :i/add]]
     [rn/view {:style style/devices-container}
      [render-device
