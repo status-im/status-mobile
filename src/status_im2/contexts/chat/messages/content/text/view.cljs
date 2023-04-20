@@ -8,6 +8,9 @@
     [utils.re-frame :as rf]
     [utils.i18n :as i18n]))
 
+(defn- pad-text
+  [text]
+  (str " " text " ")) ; Text inside Text doesn't support padding, so we need to add a space on each side to mimic that effect
 
 (defn render-inline
   [units {:keys [type literal destination]} chat-id]
@@ -40,13 +43,16 @@
     :mention
     (conj
      units
-     [rn/touchable-opacity
-      {:active-opacity 1
-       :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
-       :style          (merge style/block {:background-color colors/primary-50-opa-10})}
-      [quo/text
-       {:weight :medium
-        :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
+     [quo/text
+      {:weight                :medium
+       :on-press              #(rf/dispatch [:chat.ui/show-profile literal])
+       :selection-color       :transparent
+       :suppress-highlighting true
+       :style                 (merge style/block
+                                     {:color            (colors/theme-colors colors/primary-50
+                                                                             colors/primary-60)
+                                      :background-color colors/primary-50-opa-10})}
+      [pad-text
        (rf/sub [:messages/resolve-mention literal])]])
 
     :edited
