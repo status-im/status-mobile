@@ -291,6 +291,8 @@
     "counter-99-plus": "99+",
     "create": "Create",
     "create-profile": "Create profile",
+    "create-profile-password-info-box-title": "About your profile password",
+    "create-profile-password-info-box-description": "Your Status keys are the foundation of your self-sovereign identity in Web3. You have complete control over these keys, which you can use to sign transactions, access your data, and interact with Web3 services.\n\nYour keys are always securely stored on your device and protected by your Status profile password. Status doesn't know your password and can't reset it for you. If you forget your password, you may lose access to your Status profile and wallet funds.\n\nRemember your Status password and don't share it with anyone.",
     "create-a-pin": "Create a 6-digit passcode",
     "create-a-puk": "Create a 12-digit PUK",
     "create-group-chat": "Create group chat",
