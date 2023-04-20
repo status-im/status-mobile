@@ -39,6 +39,7 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
@@ -185,6 +186,9 @@
                            {:name      :profile-input
                             :insets    {:top false}
                             :component profile-input/preview-profile-input}
+                           {:name      :recovery-phrase-input
+                            :insets    {:top false}
+                            :component recovery-phrase-input/preview-recovery-phrase-input}
                            {:name      :search-input
                             :insets    {:top false}
                             :component search-input/preview-search-input}
