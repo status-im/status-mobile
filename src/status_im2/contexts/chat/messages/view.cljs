@@ -73,8 +73,7 @@
      (fn [insets]
        [rn/keyboard-avoiding-view
         {:style                  {:position :relative :flex 1}
-         :keyboardVerticalOffset (- (:bottom insets))
-         }
+         :keyboardVerticalOffset (- (:bottom insets))}
         [page-nav]
         [pin.banner/banner chat-id]
         [messages.list/messages-list chat insets]
