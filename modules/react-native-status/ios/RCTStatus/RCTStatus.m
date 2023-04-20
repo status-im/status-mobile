@@ -1,4 +1,5 @@
 #import "RCTStatus.h"
+#import "ReactNativeConfig.h"
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"

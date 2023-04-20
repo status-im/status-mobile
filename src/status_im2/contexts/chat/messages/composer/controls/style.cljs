@@ -4,6 +4,7 @@
 (defn controls
   [bottom-inset]
   {:padding-horizontal 20
+   :elevation          4
    :z-index            3
    :position           :absolute
    :background-color   (colors/theme-colors colors/white colors/neutral-90)

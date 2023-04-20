@@ -72,7 +72,6 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
     quo2.components.list-items.user-list))
 
 (def toast quo2.components.notifications.toast/toast)
@@ -193,9 +192,6 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
-
-;;;; TITLE
-(def title quo2.components.text-combinations.title.view/title)
 
 ;;;; LINKS
 (def url-preview quo2.components.links.url-preview.view/view)

@@ -4,7 +4,6 @@
     [utils.i18n :as i18n]
     [reagent.core :as reagent]
     [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.link-preview.events]
     [status-im2.contexts.chat.messages.link-preview.style :as style]
@@ -124,7 +123,7 @@
               (when-not (string/blank? thumbnail-url)
                 [:<>
                  [rn/view (style/separator)]
-                 [fast-image/fast-image
+                 [rn/image
                   {:source              {:uri thumbnail-url}
                    :style               (style/image (select-keys preview-data [:height :width]))
                    :accessibility-label :member-photo}]])]]))))}))

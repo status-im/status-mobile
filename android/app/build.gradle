@@ -92,10 +92,6 @@ project.ext.react = [
      *       to guard against a hang in the UI thread after invoking status-go.
      * Also a clean and rebuild is required when changing this. */
     enableHermes: !disableHermes,
-    /* FIXME: Workaround for crash caused by missing libhermes-executor-release.so.
-     * https://github.com/facebook/react-native/issues/32928 */
-    deleteDebugFilesForVariant: { false },
-    enableVmCleanup: false,
     /* Disable 'The first definition was here.' warnings */
     hermesFlagsRelease: ["-w"],
     bundleInPr: true,
@@ -135,12 +131,6 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
-
-/**
- * Architectures to build native code for in debug.
- */
-def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
-
 
 def getCommitHash = { ->
     if (project.hasProperty("commitHash")) {
@@ -193,8 +183,6 @@ def getEnvOrConfig = { varName ->
 }
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -276,11 +264,6 @@ android {
             versionNameSuffix   "-SNAPSHOT"
             resValue "string", "build_config_package", "im.status.ethereum"
             signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
-            }
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
@@ -324,7 +307,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.facebook.soloader:soloader:0.10.1+"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
@@ -366,7 +348,7 @@ dependencies {
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'com.facebook.fresco:fresco:2.2.0'
     implementation 'com.facebook.fresco:animated-gif:2.2.0'
-    implementation "com.squareup.okhttp3:okhttp-tls:4.9.1"
+    implementation "com.squareup.okhttp3:okhttp-tls:3.12.12"
 }
 
 def getLocalNDKDir = { ->

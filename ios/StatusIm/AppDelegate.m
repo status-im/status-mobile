@@ -11,7 +11,7 @@
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 
 #import <asl.h>
-#import "RNCConfig.h"
+#import "ReactNativeConfig.h"
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RNSplashScreen.h"
@@ -72,7 +72,7 @@ static void InitializeFlipper(UIApplication *application) {
   NSURL *jsCodeLocation;
 
   /* Set logging level from React Native */
-  NSString *logLevel = [RNCConfig envFor:@"LOG_LEVEL"];
+  NSString *logLevel = [ReactNativeConfig envFor:@"LOG_LEVEL"];
   if([logLevel isEqualToString:@"error"]){
     RCTSetLogThreshold(RCTLogLevelError);
   }
