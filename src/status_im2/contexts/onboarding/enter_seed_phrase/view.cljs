@@ -1,18 +1,17 @@
 (ns status-im2.contexts.onboarding.enter-seed-phrase.view
-  (:require [quo2.core :as quo]
-            [quo.core :as quo1]
-            [clojure.string :as string]
-            [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im2.constants :as constants]
-            [utils.security.core :as security]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
+            [reagent.core :as reagent]
+            [status-im.ethereum.mnemonic :as mnemonic]
+            [status-im2.constants :as constants]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [utils.i18n :as i18n]))
+            [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
+            [utils.security.core :as security]))
 
 (def button-disabled?
   (comp not constants/seed-phrase-valid-length mnemonic/words-count))
@@ -40,20 +39,22 @@
          (i18n/label :t/use-recovery-phrase)]
         [quo/text
          (i18n/label-pluralize (mnemonic/words-count @seed-phrase) :t/words-n)]
-        [:<>
-         [quo1/text-input
+        [rn/view
+         {:style {:height            120
+                  :margin-horizontal -20}}
+         [quo/recovery-phrase-input
           {:on-change-text      (fn [t]
                                   (reset! seed-phrase (clean-seed-phrase t))
                                   (reset! error-message ""))
+           :mark-errors?        true
+           ; TODO(@ulisesmac): error-pred must return true if a word is marked as wrong
+           :error-pred          (constantly false)
+           :word-limit          24
            :auto-focus          true
            :accessibility-label :passphrase-input
            :placeholder         (i18n/label :t/seed-phrase-placeholder)
-           :show-cancel         false
-           :bottom-value        40
-           :multiline           true
-           :auto-correct        false
-           :keyboard-type       :visible-password
-           :monospace           true}]]
+           :auto-correct        false}
+          @seed-phrase]]
         [quo/button
          {:disabled (button-disabled? @seed-phrase)
           :on-press #(rf/dispatch [:onboarding-2/seed-phrase-entered
