@@ -5,9 +5,9 @@
     [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
-    [status-im2.contexts.onboarding.new-to-status.style :as style]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+    [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -54,6 +54,42 @@
         :image    (resources/get-image :use-keycard)
         :on-press #(rf/dispatch [::keycard/recover-with-keycard-pressed])}]]]))
 
+(defn getting-started-doc
+  []
+  [quo/documentation-drawers
+   {:title  (i18n/label :t/getting-started-with-status)
+    :shell? true}
+   [rn/view
+    [quo/text
+     {:size  :paragraph-2
+      :style style/title}
+     (i18n/label
+      :t/getting-started-description)]
+    [quo/text
+     {:size   :paragraph-1
+      :weight :semi-bold}
+     (i18n/label :t/generate-keys)]
+    [quo/text
+     {:size  :paragraph-2
+      :style style/subtitle}
+     (i18n/label :t/getting-started-generate-keys-description)]
+    [quo/text
+     {:size   :paragraph-1
+      :weight :semi-bold}
+     (i18n/label :t/getting-started-generate-keys-from-recovery-phrase)]
+    [quo/text
+     {:size  :paragraph-2
+      :style style/subtitle}
+     (i18n/label :t/getting-started-generate-keys-from-recovery-phrase-description)]
+    [quo/text
+     {:size   :paragraph-1
+      :weight :semi-bold}
+     (i18n/label :t/getting-started-generate-keys-on-keycard)]
+    [quo/text
+     {:size  :paragraph-2
+      :style style/subtitle}
+     (i18n/label :t/getting-started-generate-keys-on-keycard-description)]]])
+
 (defn new-to-status
   []
   (let [{:keys [top]} (safe-area/get-insets)]
@@ -65,5 +101,8 @@
         :right-section-buttons [{:type                :blur-bg
                                  :icon                :i/info
                                  :icon-override-theme :dark
-                                 :on-press            #(js/alert "Info pressed")}]}]
+                                 :on-press            #(rf/dispatch
+                                                        [:show-bottom-sheet
+                                                         {:content getting-started-doc
+                                                          :shell?  true}])}]}]
       [sign-in-options]]]))
