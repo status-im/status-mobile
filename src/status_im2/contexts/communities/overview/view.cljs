@@ -186,8 +186,7 @@
      (when (and (not locked?) id)
        {:on-press (fn []
                     (rf/dispatch [:dismiss-keyboard])
-                    (rf/dispatch [:chat/navigate-to-chat (str community-id id)])
-                    (rf/dispatch [:search/home-filter-changed nil]))}))))
+                    (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))}))))
 
 (defn add-on-press-handler-to-chats
   [community-id chats]

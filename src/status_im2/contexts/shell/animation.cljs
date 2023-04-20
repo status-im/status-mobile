@@ -51,6 +51,7 @@
                                    (calculate-home-stack-state-value stack-id))]
     (reset! selected-stack-id stack-id)
     (reset! home-stack-state home-stack-state-value)
+    (rf/dispatch [:set-view-id (or stack-id :shell)])
     (when store?
       (async-storage/set-item! :selected-stack-id stack-id))))
 

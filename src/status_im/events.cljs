@@ -59,7 +59,8 @@
     status-im2.contexts.shell.events
     status-im2.contexts.onboarding.events
     status-im.chat.models.gaps
-    [status-im2.navigation.events :as navigation]))
+    [status-im2.navigation.events :as navigation]
+    status-im2.contexts.chat.home.events))
 
 (re-frame/reg-fx
  :dismiss-keyboard

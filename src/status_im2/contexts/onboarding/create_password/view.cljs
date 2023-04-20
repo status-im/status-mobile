@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
@@ -184,14 +185,21 @@
 
 (defn create-password
   []
-  (let [scroll-view-ref  (atom nil)
-        scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
-    (fn []
-      [:<>
-       [background/view true]
-       [rn/scroll-view
-        {:ref                     #(reset! scroll-view-ref %)
-         :style                   style/overlay
-         :content-container-style style/content-style}
-        [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
-        [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])))
+  [:f>
+   (let [scroll-view-ref  (atom nil)
+         scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
+     (fn []
+       (let [{:keys [top]} (safe-area/use-safe-area)]
+         [:<>
+          [background/view true]
+          [rn/scroll-view
+           {:ref                     #(reset! scroll-view-ref %)
+            :style                   style/overlay
+            :content-container-style style/content-style}
+           [navigation-bar/navigation-bar
+            {:top                   top
+             :right-section-buttons [{:type                :blur-bg
+                                      :icon                :i/info
+                                      :icon-override-theme :dark
+                                      :on-press            #(js/alert "Info pressed")}]}]
+           [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])))])
