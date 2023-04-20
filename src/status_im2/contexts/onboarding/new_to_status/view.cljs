@@ -2,6 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
@@ -55,8 +56,16 @@
 
 (defn new-to-status
   []
-  [:<>
-   [background/view true]
-   [rn/view {:style style/content-container}
-    [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
-    [sign-in-options]]])
+  [:f>
+   (fn []
+     (let [{:keys [top]} (safe-area/use-safe-area)]
+       [:<>
+        [background/view true]
+        [rn/view {:style style/content-container}
+         [navigation-bar/navigation-bar
+          {:top                   top
+           :right-section-buttons [{:type                :blur-bg
+                                    :icon                :i/info
+                                    :icon-override-theme :dark
+                                    :on-press            #(js/alert "Info pressed")}]}]
+         [sign-in-options]]]))])

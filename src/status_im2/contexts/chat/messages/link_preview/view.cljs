@@ -89,45 +89,54 @@
 
 (defn link-preview-loader
   [link _]
-  (reagent/create-class
-   {:component-did-mount
-    (fn []
-      (rf/dispatch [:chat.ui/load-link-preview-data link]))
-    :component-did-update
-    (fn [this [_ previous-props]]
-      (let [[_ props]      (.-argv (.-props ^js this))
-            refresh-photo? (not= previous-props props)]
-        (when refresh-photo?
-          (rf/dispatch [:chat.ui/load-link-preview-data props]))))
-    :reagent-render
-    (fn [link {:keys [on-long-press]}]
-      (let [cached-preview-data (rf/sub [:link-preview/cache link])]
-        (when-let [{:keys [site title thumbnail-url error] :as preview-data} cached-preview-data]
-          (when (and (not error) site title)
-            [rn/touchable-opacity
-             {:style         (when-not (is-gif? thumbnail-url)
-                               {:align-self :stretch})
-              :on-press      #(when (security/safe-link? link)
-                                (rf/dispatch [:browser.ui/message-link-pressed link]))
-              :on-long-press on-long-press}
-             [rn/view (style/wrapper)
-              (when-not (is-gif? thumbnail-url)
-                [:<>
-                 [rn/view (style/title-wrapper)
-                  [rn/image {:style (style/title-site-image)}]
-                  [rn/text {:style (style/title-text)}
-                   site]]
-                 [rn/text {:style (style/main-text)}
-                  title]
-                 [rn/text {:style (style/extra-text)}
-                  link]])
-              (when-not (string/blank? thumbnail-url)
-                [:<>
-                 [rn/view (style/separator)]
-                 [fast-image/fast-image
-                  {:source              {:uri thumbnail-url}
-                   :style               (style/image (select-keys preview-data [:height :width]))
-                   :accessibility-label :member-photo}]])]]))))}))
+  (let [measured-width  (reagent/atom 0)
+        measured-height (reagent/atom 0)]
+    (reagent/create-class
+     {:component-did-mount
+      (fn []
+        (rf/dispatch [:chat.ui/load-link-preview-data link]))
+      :component-did-update
+      (fn [this [_ previous-props]]
+        (let [[_ props]      (.-argv (.-props ^js this))
+              refresh-photo? (not= previous-props props)]
+          (when refresh-photo?
+            (rf/dispatch [:chat.ui/load-link-preview-data props]))))
+      :reagent-render
+      (fn [link {:keys [on-long-press]}]
+        (let [cached-preview-data (rf/sub [:link-preview/cache link])]
+          (when-let [{:keys [site title thumbnail-url error]} cached-preview-data]
+            (when (and (not error) site title)
+              [rn/touchable-opacity
+               {:style         (when-not (is-gif? thumbnail-url)
+                                 {:align-self :stretch})
+                :on-press      #(when (security/safe-link? link)
+                                  (rf/dispatch [:browser.ui/message-link-pressed link]))
+                :on-long-press on-long-press}
+               [rn/view (style/wrapper)
+                (when-not (is-gif? thumbnail-url)
+                  [:<>
+                   [rn/view (style/title-wrapper)
+                    [rn/image {:style (style/title-site-image)}]
+                    [rn/text {:style (style/title-text)}
+                     site]]
+                   [rn/text {:style (style/main-text)}
+                    title]
+                   [rn/text {:style (style/extra-text)}
+                    link]])
+                (when-not (string/blank? thumbnail-url)
+                  [:<>
+                   [rn/view (style/separator)]
+                   [fast-image/fast-image
+                    {:source              {:uri thumbnail-url}
+                     :on-load             (fn [e]
+                                            (let [{:keys [width height]} (js->clj (.-nativeEvent e)
+                                                                                  :keywordize-keys
+                                                                                  true)]
+                                              (reset! measured-width width)
+                                              (reset! measured-height height)))
+                     :style               (style/image {:width  @measured-width
+                                                        :height @measured-height})
+                     :accessibility-label :member-photo}]])]]))))})))
 
 (defn link-preview-enable-request
   []

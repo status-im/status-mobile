@@ -3,18 +3,6 @@
             [react-native.platform :as platform]
             [quo2.foundations.typography :as typography]))
 
-(defn container-kbd
-  []
-  {:style                  {:flex 1}
-   :keyboardVerticalOffset 60})
-
-(def container-image
-  {:style {:flex           1
-           :flex-direction :row}})
-
-(def image
-  {:flex 1})
-
 (defn container-outer
   []
   {:style {:flex             (if platform/ios? 4.5 5)
@@ -41,7 +29,8 @@
   []
   {:size   :heading-1
    :weight :semi-bold
-   :style  {:margin-bottom 6
+   :style  {:margin-top    32
+            :margin-bottom 6
             :color         (colors/theme-colors
                             colors/neutral-100
                             colors/white)}})
@@ -127,11 +116,8 @@
    :accessibility-label       :new-contact-close-button
    :size                      32
    :override-background-color (colors/theme-colors
-                               colors/white-opa-60
-                               colors/neutral-80-opa-60)
-   :style                     {:position :absolute
-                               :left     20
-                               :top      20}})
+                               colors/neutral-10
+                               colors/neutral-90)})
 
 (def button-qr
   {:type :outline
