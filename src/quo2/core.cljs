@@ -32,6 +32,7 @@
     quo2.components.info.information-box
     quo2.components.inputs.input.view
     quo2.components.inputs.profile-input.view
+    quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
     quo2.components.links.url-preview-list.view
@@ -150,8 +151,9 @@
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
-(def search-input quo2.components.inputs.search-input.view/search-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
+(def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
+(def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; LIST ITEMS
