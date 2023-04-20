@@ -37,10 +37,9 @@
 
 (defn chats
   [selected-tab top]
-  (let [{:keys [items search-filter]} (rf/sub [:home-items])
-        items                         (filter-items-by-tab selected-tab items)]
-    (if (and (empty? items)
-             (empty? search-filter))
+  (let [unfiltered-items (rf/sub [:chats-stack-items])
+        items            (filter-items-by-tab selected-tab unfiltered-items)]
+    (if (empty? items)
       [welcome-blank-chats]
       [rn/flat-list
        {:key-fn                            #(or (:chat-id %) (:public-key %) (:id %))

@@ -14,8 +14,7 @@
   [chat-id]
   (fn []
     (rf/dispatch [:dismiss-keyboard])
-    (rf/dispatch [:chat/navigate-to-chat chat-id])
-    (rf/dispatch [:search/home-filter-changed nil])))
+    (rf/dispatch [:chat/navigate-to-chat chat-id])))
 
 (defn truncate-literal
   [literal]

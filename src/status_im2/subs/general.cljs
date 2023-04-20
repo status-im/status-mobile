@@ -146,12 +146,6 @@
    (get-in animations [type item-id :delete-swiped])))
 
 (re-frame/reg-sub
- :search/home-filter
- :<- [:ui/search]
- (fn [search]
-   (get search :home-filter)))
-
-(re-frame/reg-sub
  :search/recipient-filter
  :<- [:ui/search]
  (fn [search]
