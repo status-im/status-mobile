@@ -6,6 +6,7 @@
 (def ^:const mention 3)
 (def ^:const reply 4)
 (def ^:const contact-request 5)
+(def ^:const community-request 7)
 (def ^:const admin 8)
 (def ^:const contact-verification 10)
 
@@ -15,6 +16,7 @@
     mention
     reply
     contact-request
+    community-request
     admin
     contact-verification})
 
@@ -26,4 +28,5 @@
   "Membership is like a logical group of notifications with different types, i.e.
   it doesn't have a corresponding type in the backend. Think of the collection
   as a composite key of actual types."
-  #{private-group-chat})
+  #{private-group-chat
+    community-request})
