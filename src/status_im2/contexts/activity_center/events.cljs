@@ -532,29 +532,33 @@
   [{:keys [db]} new-notifications]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
     (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
-              (cond
-                (and (not= author my-public-key)
-                     (= type types/contact-request)
-                     (not accepted)
-                     (not dismissed))
-                (toasts/upsert cofx
-                               {:icon       :placeholder
-                                :icon-color colors/primary-50-opa-40
-                                :title      (i18n/label :t/contact-request-sent-toast
-                                                        {:name name})
-                                :text       (get-in message [:content :text])})
+              (let [user-avatar {:full-name         name
+                                 :status-indicator? true
+                                 :online?           nil
+                                 :size              :small
+                                 :ring?             false}]
+                (cond
+                  (and (not= author my-public-key)
+                       (= type types/contact-request)
+                       (not accepted)
+                       (not dismissed))
+                  (toasts/upsert cofx
+                                 {:user       user-avatar
+                                  :icon-color colors/primary-50-opa-40
+                                  :title      (i18n/label :t/contact-request-sent-toast
+                                                          {:name name})
+                                  :text       (get-in message [:content :text])})
 
-                (and (= author my-public-key) ;; we show it for user who sent the request
-                     (= type types/contact-request)
-                     accepted
-                     (not dismissed))
-                (toasts/upsert cofx
-                               {:icon       :placeholder
-                                :icon-color colors/primary-50-opa-40
-                                :title      (i18n/label :t/contact-request-accepted-toast
-                                                        {:name (or name (:alias message))})})
-
-                :else
-                cofx))
+                  (and (= author my-public-key) ;; we show it for user who sent the request
+                       (= type types/contact-request)
+                       accepted
+                       (not dismissed))
+                  (toasts/upsert cofx
+                                 {:user       user-avatar
+                                  :icon-color colors/success-50-opa-40
+                                  :title      (i18n/label :t/contact-request-accepted-toast
+                                                          {:name (or name (:alias message))})})
+                  :else
+                  cofx)))
             {:db db}
             new-notifications)))
