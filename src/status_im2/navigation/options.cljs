@@ -30,22 +30,26 @@
                    :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}}))
 
 (defn navbar
-  []
-  {:navigationBar {:backgroundColor (colors/theme-colors colors/white colors/neutral-100)}})
+  ([dark?]
+   {:navigationBar {:backgroundColor (if (or dark? colors/dark?) colors/neutral-100 colors/white)}})
+  ([] (navbar nil)))
 
 (defn statusbar
-  []
-  (if platform/android?
-    {:statusBar {:translucent     true
-                 :backgroundColor :transparent
-                 :drawBehind      true
-                 :style           (if (colors/dark?) :light :dark)}}
-    {:statusBar {:style (if (colors/dark?) :light :dark)}}))
+  ([dark?]
+   (let [style (if (or dark? colors/dark?) :light :dark)]
+     (if platform/android?
+       {:statusBar {:translucent     true
+                    :backgroundColor :transparent
+                    :drawBehind      true
+                    :style           style}}
+       {:statusBar {:style style}})))
+  ([] (statusbar nil)))
 
 
 (defn statusbar-and-navbar
-  []
-  (merge (navbar) (statusbar)))
+  ([dark?]
+   (merge (navbar dark?) (statusbar dark?)))
+  ([] (statusbar-and-navbar nil)))
 
 (defn topbar-options
   []

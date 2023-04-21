@@ -410,6 +410,7 @@
               (get-node-config)
               (communities/fetch)
               (communities/fetch-collapsed-community-categories)
+              (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)

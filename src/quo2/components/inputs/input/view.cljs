@@ -132,8 +132,9 @@
               :text             text}])]]))))
 
 (defn- password-input
-  [_]
-  (let [password-shown? (reagent/atom false)]
+  [{:keys [default-shown?]
+    :or   {default-shown? false}}]
+  (let [password-shown? (reagent/atom default-shown?)]
     (fn [props]
       [base-input
        (assoc props
@@ -161,6 +162,7 @@
   - :label - A string to set as label for this input.
   - :char-limit - A number to set a maximum char limit for this input.
   - :on-char-limit-reach - Function executed each time char limit is reached or exceeded.
+  - :default-shown? - boolean to show password input initially
   and supports the usual React Native's TextInput properties to control its behaviour:
   - :value
   - :default-value

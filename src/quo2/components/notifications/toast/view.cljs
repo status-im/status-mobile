@@ -1,5 +1,6 @@
 (ns quo2.components.notifications.toast.view
-  (:require [quo2.components.icon :as icon]
+  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
+            [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.count-down-circle :as count-down-circle]
             [quo2.components.notifications.toast.style :as style]
@@ -60,13 +61,16 @@
 
 (defn toast
   [{:keys [icon icon-color title text action undo-duration undo-on-press container-style
-           override-theme]}]
+           override-theme user]}]
   [toast-container
-   {:left            (when icon
-                       [icon/icon icon
-                        (cond-> (style/icon override-theme)
-                          icon-color
-                          (assoc :color icon-color))])
+   {:left            (cond icon
+                           [icon/icon icon
+                            (cond-> (style/icon override-theme)
+                              icon-color
+                              (assoc :color icon-color))]
+
+                           user
+                           [user-avatar/user-avatar user])
     :title           title
     :text            text
     :right           (if undo-duration
