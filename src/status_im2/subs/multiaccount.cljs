@@ -5,8 +5,9 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
-            [status-im.utils.image-server :as image-server]
-            [utils.security.core :as security]))
+            [utils.image-server :as image-server]
+            [utils.security.core :as security]
+            [quo2.theme :as theme]))
 
 (re-frame/reg-sub
  :multiaccount/public-key
@@ -208,7 +209,8 @@
 (defn- replace-multiaccount-image-uri
   [multiaccount port]
   (let [public-key   (:public-key multiaccount)
-        identicon    (image-server/get-identicons-uri port public-key)
+        theme        (theme/get-theme)
+        identicon    (image-server/get-identicons-uri port public-key theme)
         multiaccount (assoc multiaccount :identicon identicon)
         images       (:images multiaccount)
         images       (reduce (fn [acc current]
@@ -217,7 +219,8 @@
                                      uri        (image-server/get-account-image-uri port
                                                                                     public-key
                                                                                     image-name
-                                                                                    key-uid)]
+                                                                                    key-uid
+                                                                                    theme)]
                                  (conj acc (assoc current :uri uri))))
                              []
                              images)]
