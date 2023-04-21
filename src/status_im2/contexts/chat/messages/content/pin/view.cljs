@@ -53,7 +53,7 @@
         [old-message/message-author-name from {} 20]]
        [quo/text
         {:size  :label
-         :style style/pinned-message-text}
+         :style (style/pinned-message-text)}
         (str " " (i18n/label :t/pinned-a-message))]
        [rn/text
         {:style               (merge

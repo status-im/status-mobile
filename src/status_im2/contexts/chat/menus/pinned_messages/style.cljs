@@ -4,7 +4,8 @@
 (def heading
   {:margin-horizontal 20})
 
-(def heading-container
+(defn heading-container
+  []
   {:flex-direction    :row
    :background-color  (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :border-radius     20
@@ -14,15 +15,17 @@
    :padding           4
    :margin-top        8})
 
-(def heading-text
+(defn heading-text
+  []
   {:margin-left  6
    :margin-right 4
-   :color        (colors/theme-colors colors/neutral-60 colors/neutral-30)})
+   :color        (colors/theme-colors colors/neutral-60 colors/neutral-20)})
 
-(def chat-name-text
+(defn chat-name-text
+  []
   {:margin-left  4
    :margin-right 8
-   :color        (colors/theme-colors colors/neutral-60 colors/neutral-30)})
+   :color        (colors/theme-colors colors/neutral-60 colors/neutral-20)})
 
 (defn list-footer
   [bottom-inset]

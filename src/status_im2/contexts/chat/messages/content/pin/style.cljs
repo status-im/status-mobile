@@ -13,5 +13,6 @@
   {:color  colors/primary-50
    :bottom 2})
 
-(def pinned-message-text
+(defn pinned-message-text
+  []
   {:color (colors/theme-colors colors/neutral-100 colors/white)})
