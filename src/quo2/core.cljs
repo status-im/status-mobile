@@ -18,6 +18,7 @@
     quo2.components.community.icon
     quo2.components.community.token-gating
     quo2.components.counter.counter
+    quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
     quo2.components.dividers.new-messages
@@ -83,7 +84,6 @@
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
 (def separator quo2.components.separator/separator)
-(def counter quo2.components.counter.counter/counter)
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
@@ -136,6 +136,10 @@
 (def discover-card quo2.components.community.discover-card/discover-card)
 (def token-gating quo2.components.community.token-gating/token-gating)
 (def community-icon quo2.components.community.icon/community-icon)
+
+;;;; COUNTER
+(def counter quo2.components.counter.counter/counter)
+(def step quo2.components.counter.step.view/step)
 
 ;;;; DIVIDERS
 (def divider-label quo2.components.dividers.divider-label/divider-label)
