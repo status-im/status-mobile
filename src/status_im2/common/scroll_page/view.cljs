@@ -24,7 +24,7 @@
     (max minimum)
     (min maximum)))
 
-(defn scroll-page-header
+(defn f-scroll-page-header
   [scroll-height height name page-nav logo sticky-header top-nav title-colum navigate-back?]
   (let [input-range         (if platform/ios? [-47 10] [0 10])
         output-range        (if platform/ios? [-208 0] [-208 -45])
@@ -88,7 +88,7 @@
       sticky-header]]))
 
 
-(defn display-picture
+(defn f-display-picture
   [scroll-height cover]
   (let [input-range (if platform/ios? [-67 10] [0 150])
         y           (reanimated/use-shared-value scroll-height)
@@ -115,7 +115,7 @@
          sticky-header
          children]
       [:<>
-       [:f> scroll-page-header @scroll-height height name page-nav-right-section-buttons
+       [:f> f-scroll-page-header @scroll-height height name page-nav-right-section-buttons
         logo sticky-header top-nav title-colum navigate-back?]
        [rn/scroll-view
         {:content-container-style         (style/scroll-view-container
@@ -144,5 +144,5 @@
             :border-radius    (diff-with-max-min @scroll-height 16 0)
             :background-color background-color}
            (when cover-image
-             [:f> display-picture @scroll-height logo])
+             [:f> f-display-picture @scroll-height logo])
            children])]])))

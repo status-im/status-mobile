@@ -102,32 +102,31 @@
   []
   (fn []
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)]
-      [safe-area/consumer
-       (fn [{:keys [top]}]
-         [:<>
-          (if (= selected-tab :tab/contacts)
-            [contacts pending-contact-requests top]
-            [chats selected-tab top])
-          [rn/view
-           {:style (style/blur-container top)}
-           [blur/view
-            {:blur-amount (if platform/ios? 20 10)
-             :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-             :style       style/blur}]
-           [common.home/top-nav]
-           [common.home/title-column
-            {:label               (i18n/label :t/messages)
-             :handler             #(rf/dispatch [:show-bottom-sheet
-                                                 {:content home.sheet/new-chat-bottom-sheet}])
-             :accessibility-label :new-chat-button}]
-           [quo/discover-card
-            {:title       (i18n/label :t/invite-friends-to-status)
-             :description (i18n/label :t/share-invite-link)}]
-           [quo/tabs
-            {:style          style/tabs
-             :size           32
-             :on-change      (fn [tab]
-                               (rf/dispatch [:messages-home/select-tab tab]))
-             :default-active selected-tab
-             :data           (get-tabs-data (pos? (count pending-contact-requests)))}]]])])))
+          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+          top                      (safe-area/get-top)]
+      [:<>
+       (if (= selected-tab :tab/contacts)
+         [contacts pending-contact-requests top]
+         [chats selected-tab top])
+       [rn/view
+        {:style (style/blur-container top)}
+        [blur/view
+         {:blur-amount (if platform/ios? 20 10)
+          :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :style       style/blur}]
+        [common.home/top-nav]
+        [common.home/title-column
+         {:label               (i18n/label :t/messages)
+          :handler             #(rf/dispatch [:show-bottom-sheet
+                                              {:content home.sheet/new-chat-bottom-sheet}])
+          :accessibility-label :new-chat-button}]
+        [quo/discover-card
+         {:title       (i18n/label :t/invite-friends-to-status)
+          :description (i18n/label :t/share-invite-link)}]
+        [quo/tabs
+         {:style          style/tabs
+          :size           32
+          :on-change      (fn [tab]
+                            (rf/dispatch [:messages-home/select-tab tab]))
+          :default-active selected-tab
+          :data           (get-tabs-data (pos? (count pending-contact-requests)))}]]])))

@@ -45,6 +45,16 @@
     pass-through? colors/white-opa-40
     :else         colors/neutral-50))
 
+(defn- f-bottom-tab
+  [state selected? pass-through?]
+  (let [icon-color-anim (reanimated/use-shared-value colors/white)]
+    (reanimated/set-shared-value
+     icon-color-anim
+     (get-icon-color selected? pass-through?))
+    [quo2/bottom-nav-tab
+     (merge state {:icon-color-anim icon-color-anim})
+     (:value state)]))
+
 (defn cool-preview
   []
   (let [state         (reagent/atom {:icon                   :i/communities
@@ -54,21 +64,14 @@
                                      :preview-label-color    colors/white})
         selected?     (reagent/cursor state [:selected?])
         pass-through? (reagent/cursor state [:pass-through?])]
-    [:f>
-     (fn []
-       (let [icon-color-anim (reanimated/use-shared-value colors/white)]
-         (reanimated/set-shared-value
-          icon-color-anim
-          (get-icon-color @selected? @pass-through?))
-         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-          [rn/view {:padding-bottom 150}
-           [preview/customizer state descriptor]
-           [rn/view
-            {:padding-vertical 60
-             :align-items      :center}
-            [quo2/bottom-nav-tab
-             (merge @state {:icon-color-anim icon-color-anim})
-             (:value @state)]]]]))]))
+    (fn []
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view
+         {:padding-vertical 60
+          :align-items      :center}
+         [:f> f-bottom-tab @state @selected? @pass-through?]]]])))
 
 (defn preview-bottom-nav-tab
   []

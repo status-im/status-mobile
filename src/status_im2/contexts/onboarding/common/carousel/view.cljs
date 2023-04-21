@@ -53,46 +53,41 @@
    [rn/view {:style (style/progress-bar-item static? false)}]
    [rn/view {:style (style/progress-bar-item static? true)}]])
 
-(defn dynamic-progress-bar
+(defn f-dynamic-progress-bar
   [progress-bar-width animate?]
-  [:f>
-   (fn []
-     (let [width          (animation/dynamic-progress-bar-width progress-bar-width animate?)
-           container-view (if animate? reanimated/view rn/view)]
-       [container-view {:style (style/dynamic-progress-bar width animate?)}
-        [progress-bar
-         {:static?            false
-          :progress-bar-width progress-bar-width}]]))])
+  (let [width          (animation/dynamic-progress-bar-width progress-bar-width animate?)
+        container-view (if animate? reanimated/view rn/view)]
+    [container-view {:style (style/dynamic-progress-bar width animate?)}
+     [progress-bar
+      {:static?            false
+       :progress-bar-width progress-bar-width}]]))
 
-(defn view
+(defn f-view
   [animate?]
-  [:f>
-   (fn []
-     (let [window-width       (rf/sub [:dimensions/window-width])
-           view-id            (rf/sub [:view-id])
-           status-bar-height  (:status-bar-height @navigation/constants)
-           progress-bar-width (- window-width 40)
-           carousel-left      (animation/carousel-left-position window-width animate?)
-           container-view     (if animate? reanimated/view rn/view)]
-       (when animate?
-         (rn/use-effect
-          (fn []
-            (reanimated/set-shared-value @animation/paused (not= view-id :intro)))
-          [view-id]))
-       [:<>
-        [container-view {:style (style/carousel-container carousel-left animate?)}
-         (for [index (range 2)]
-           ^{:key index}
-           [content-view
-            {:window-width      window-width
-             :status-bar-height status-bar-height
-             :index             index}])]
-        [rn/view
-         {:style (style/progress-bar-container
-                  progress-bar-width
-                  status-bar-height)}
-         [progress-bar
-          {:static?            true
-           :progress-bar-width progress-bar-width}]
-         [dynamic-progress-bar progress-bar-width animate?]]]))])
-
+  (let [window-width       (rf/sub [:dimensions/window-width])
+        view-id            (rf/sub [:view-id])
+        status-bar-height  (:status-bar-height @navigation/constants)
+        progress-bar-width (- window-width 40)
+        carousel-left      (animation/carousel-left-position window-width animate?)
+        container-view     (if animate? reanimated/view rn/view)]
+    (when animate?
+      (rn/use-effect
+       (fn []
+         (reanimated/set-shared-value @animation/paused (not= view-id :intro)))
+       [view-id]))
+    [:<>
+     [container-view {:style (style/carousel-container carousel-left animate?)}
+      (for [index (range 2)]
+        ^{:key index}
+        [content-view
+         {:window-width      window-width
+          :status-bar-height status-bar-height
+          :index             index}])]
+     [rn/view
+      {:style (style/progress-bar-container
+               progress-bar-width
+               status-bar-height)}
+      [progress-bar
+       {:static?            true
+        :progress-bar-width progress-bar-width}]
+      [:f> f-dynamic-progress-bar progress-bar-width animate?]]]))

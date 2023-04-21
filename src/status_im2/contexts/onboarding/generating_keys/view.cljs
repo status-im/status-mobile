@@ -21,9 +21,7 @@
 
 (defn generating-keys
   []
-  [:f>
-   (fn []
-     (let [{:keys [top]} (safe-area/use-safe-area)]
-       [rn/view {:style {:flex 1}}
-        [background/view true]
-        [page {:navigation-bar-top top}]]))])
+  (let [{:keys [top]} (safe-area/get-insets)]
+    [rn/view {:style {:flex 1}}
+     [background/view true]
+     [page {:navigation-bar-top top}]]))

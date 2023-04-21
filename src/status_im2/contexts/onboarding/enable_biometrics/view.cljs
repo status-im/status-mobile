@@ -38,13 +38,11 @@
 
 (defn enable-biometrics
   []
-  [:f>
-   (fn []
-     (let [insets (safe-area/use-safe-area)]
-       [rn/view {:style (style/page-container insets)}
-        [navigation-bar/navigation-bar {:disable-back-button? true}]
-        [page-title]
-        [rn/view {:style style/page-illustration}
-         [quo/text
-          "Illustration here"]]
-        [enable-biometrics-buttons {:insets insets}]]))])
+  (let [insets (safe-area/get-insets)]
+    [rn/view {:style (style/page-container insets)}
+     [navigation-bar/navigation-bar {:disable-back-button? true}]
+     [page-title]
+     [rn/view {:style style/page-illustration}
+      [quo/text
+       "Illustration here"]]
+     [enable-biometrics-buttons {:insets insets}]]))

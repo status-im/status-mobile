@@ -65,10 +65,10 @@
       18 ;; ~ 9 is char width, 18 is width used in Figma.
       (* 9 max-line-digits font-scale))))
 
-(defn- native-renderer
+(defn- f-native-renderer
   [{:keys [rows max-lines on-copy-press]
     :or   {max-lines ##Inf}}]
-  (let [font-scale          (:font-scale (rn/use-window-dimensions))
+  (let [font-scale          (:font-scale (rn/get-window))
         total-rows          (count rows)
         number-rows-to-show (min (count rows) max-lines)
         line-number-width   (calc-line-number-width font-scale number-rows-to-show)
@@ -100,7 +100,7 @@
    {:language          language
     :renderer          (fn [^js/Object props]
                          (reagent/as-element
-                          [:f> native-renderer
+                          [:f> f-native-renderer
                            {:rows          (-> props .-rows bean/->clj)
                             :on-copy-press #(when on-copy-press (on-copy-press children))
                             :max-lines     max-lines}]))

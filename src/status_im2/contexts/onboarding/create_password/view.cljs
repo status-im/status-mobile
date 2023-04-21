@@ -186,21 +186,20 @@
 
 (defn create-password
   []
-  [:f>
-   (let [scroll-view-ref  (atom nil)
-         scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
-     (fn []
-       (let [{:keys [top]} (safe-area/use-safe-area)]
-         [:<>
-          [background/view true]
-          [rn/scroll-view
-           {:ref                     #(reset! scroll-view-ref %)
-            :style                   style/overlay
-            :content-container-style style/content-style}
-           [navigation-bar/navigation-bar
-            {:top                   top
-             :right-section-buttons [{:type                :blur-bg
-                                      :icon                :i/info
-                                      :icon-override-theme :dark
-                                      :on-press            #(js/alert "Info pressed")}]}]
-           [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])))])
+  (let [scroll-view-ref  (atom nil)
+        scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
+    (fn []
+      (let [{:keys [top]} (safe-area/get-insets)]
+        [:<>
+         [background/view true]
+         [rn/scroll-view
+          {:ref                     #(reset! scroll-view-ref %)
+           :style                   style/overlay
+           :content-container-style style/content-style}
+          [navigation-bar/navigation-bar
+           {:top                   top
+            :right-section-buttons [{:type                :blur-bg
+                                     :icon                :i/info
+                                     :icon-override-theme :dark
+                                     :on-press            #(js/alert "Info pressed")}]}]
+          [password-form {:scroll-to-end-fn scroll-to-end-fn}]]]))))

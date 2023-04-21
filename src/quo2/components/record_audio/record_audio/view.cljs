@@ -86,71 +86,68 @@
       (or ignore-min-y? (>= location-y y))
       (or ignore-max-y? (<= location-y max-y))))))
 
-(defn- recording-bar
+(defn- f-recording-bar
   [recording-length-ms ready-to-delete?]
-  [:f>
-   (fn []
-     (let [fill-percentage (/ (* recording-length-ms 100) max-audio-duration-ms)]
-       [rn/view {:style (style/recording-bar-container)}
-        [rn/view {:style (style/recording-bar fill-percentage ready-to-delete?)}]]))])
+  (let [fill-percentage (/ (* recording-length-ms 100) max-audio-duration-ms)]
+    [rn/view {:style (style/recording-bar-container)}
+     [rn/view {:style (style/recording-bar fill-percentage ready-to-delete?)}]]))
 
-(defn- time-counter
+(defn- f-time-counter
   [recording? recording-length-ms ready-to-delete? reviewing-audio? audio-current-time-ms]
-  [:f>
-   (fn []
-     (let [s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
-           time-str (gstring/format "%02d:%02d" (quot s 60) (mod s 60))]
-       [rn/view {:style (style/timer-container reviewing-audio?)}
-        (when-not reviewing-audio?
-          [rn/view {:style (style/timer-circle)}])
-        [text/text
-         (merge
-          {:size   :label
-           :weight :semi-bold}
-          (when ready-to-delete?
-            {:style (style/timer-text)}))
-         time-str]]))])
+  (let [s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
+        time-str (gstring/format "%02d:%02d" (quot s 60) (mod s 60))]
+    [rn/view {:style (style/timer-container reviewing-audio?)}
+     (when-not reviewing-audio?
+       [rn/view {:style (style/timer-circle)}])
+     [text/text
+      (merge
+       {:size   :label
+        :weight :semi-bold}
+       (when ready-to-delete?
+         {:style (style/timer-text)}))
+      time-str]]))
 
-(defn- play-button
+(defn- f-play-button
   [playing-audio? player-ref playing-timer audio-current-time-ms seeking-audio?]
-  [:f>
-   (fn []
-     (let [on-play  (fn []
-                      (reset! playing-audio? true)
-                      (reset! playing-timer
-                        (js/setInterval
-                         (fn []
-                           (let [current-time (audio/get-player-current-time @player-ref)
-                                 player-state (audio/get-state @player-ref)
-                                 playing?     (= player-state audio/PLAYING)]
-                             (when (and playing? (not @seeking-audio?) (> current-time 0))
-                               (reset! audio-current-time-ms current-time))))
-                         100)))
-           on-pause (fn []
-                      (reset! playing-audio? false)
-                      (when @playing-timer
-                        (js/clearInterval @playing-timer)
-                        (reset! playing-timer nil))
-                      (log/debug "[record-audio] toggle play / pause - success"))
-           on-press (fn []
-                      (audio/toggle-playpause-player
-                       @player-ref
-                       on-play
-                       on-pause
-                       #(log/error "[record-audio] toggle play / pause - error: " %)))]
-       [rn/touchable-opacity
-        {:style    (style/play-button)
-         :on-press on-press}
-        [icons/icon
-         (if @playing-audio? :i/pause :i/play)
-         {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))])
+  (let [on-play  (fn []
+                   (reset! playing-audio? true)
+                   (reset! playing-timer
+                     (js/setInterval
+                      (fn []
+                        (let [current-time (audio/get-player-current-time @player-ref)
+                              player-state (audio/get-state @player-ref)
+                              playing?     (= player-state audio/PLAYING)]
+                          (when (and playing? (not @seeking-audio?) (> current-time 0))
+                            (reset! audio-current-time-ms current-time))))
+                      100)))
+        on-pause (fn []
+                   (reset! playing-audio? false)
+                   (when @playing-timer
+                     (js/clearInterval @playing-timer)
+                     (reset! playing-timer nil))
+                   (log/debug "[record-audio] toggle play / pause - success"))
+        on-press (fn []
+                   (audio/toggle-playpause-player
+                    @player-ref
+                    on-play
+                    on-pause
+                    #(log/error "[record-audio] toggle play / pause - error: " %)))]
+    [rn/touchable-opacity
+     {:style    (style/play-button)
+      :on-press on-press}
+     [icons/icon
+      (if @playing-audio? :i/pause :i/play)
+      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
 
-(defn view
+(defn record-audio
   [{:keys [on-init on-start-recording on-send on-cancel on-reviewing-audio
            record-audio-permission-granted
            on-request-record-audio-permission on-check-audio-permissions
            audio-file]}]
   [:f>
+   ;; TODO we need to refactor this, and use :f> with defined function, currenly state is reseted each
+   ;; time parent component
+   ;; is re-rendered
    (fn []
      (let [recording? (reagent/atom false)
            locked? (reagent/atom false)
@@ -524,16 +521,17 @@
            :pointer-events :box-none}
           (when @reviewing-audio?
             [:<>
-             [play-button playing-audio? player-ref playing-timer audio-current-time-ms seeking-audio?]
-             [soundtrack/soundtrack
+             [:f> f-play-button playing-audio? player-ref playing-timer audio-current-time-ms
+              seeking-audio?]
+             [:f> soundtrack/f-soundtrack
               {:audio-current-time-ms audio-current-time-ms
                :player-ref            player-ref
                :seeking-audio?        seeking-audio?}]])
           (when (or @recording? @reviewing-audio?)
-            [time-counter @recording? @recording-length-ms @ready-to-delete? @reviewing-audio?
+            [:f> f-time-counter @recording? @recording-length-ms @ready-to-delete? @reviewing-audio?
              @audio-current-time-ms])
           (when @recording?
-            [recording-bar @recording-length-ms @ready-to-delete?])
+            [:f> f-recording-bar @recording-length-ms @ready-to-delete?])
           [rn/view
            {:test-ID                       "record-audio"
             :style                         style/button-container
@@ -545,11 +543,12 @@
             :on-start-should-set-responder on-start-should-set-responder
             :on-responder-move             on-responder-move
             :on-responder-release          on-responder-release}
-           [delete-button/delete-button recording? ready-to-delete? reviewing-audio?
+           [:f> delete-button/f-delete-button recording? ready-to-delete? reviewing-audio?
             @force-show-controls?]
-           [lock-button/lock-button recording? ready-to-lock? locked?]
-           [send-button/send-button recording? ready-to-send? reviewing-audio? @force-show-controls?]
-           [record-button-big/record-button-big
+           [:f> lock-button/f-lock-button recording? ready-to-lock? locked?]
+           [:f> send-button/f-send-button recording? ready-to-send? reviewing-audio?
+            @force-show-controls?]
+           [:f> record-button-big/f-record-button-big
             recording?
             ready-to-send?
             ready-to-lock?
@@ -567,6 +566,4 @@
             idle?
             on-send
             on-cancel]
-           [record-button/record-button recording? reviewing-audio?]]])))])
-
-(def record-audio view)
+           [:f> record-button/f-record-button recording? reviewing-audio?]]])))])

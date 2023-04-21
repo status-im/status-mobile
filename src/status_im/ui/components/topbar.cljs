@@ -1,7 +1,8 @@
 (ns status-im.ui.components.topbar
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo2.foundations.colors :as quo2.colors]
+            [react-native.safe-area :as safe-area]))
 
 (def default-button-width 48)
 
@@ -32,18 +33,16 @@
   (let [navigation (if (= navigation :none)
                      nil
                      [(default-navigation modal? navigation)])]
-    [quo/safe-area-consumer
-     (fn [insets]
-       [quo/header
-        (merge {:left-accessories navigation
-                :title-component  content
-                :insets           (when use-insets insets)
-                :left-width       (when navigation
-                                    default-button-width)
-                :border-bottom    border-bottom?}
-               props
-               (when (seq right-accessories)
-                 {:right-accessories right-accessories})
-               (when new-ui?
-                 {:background (quo2.colors/theme-colors quo2.colors/neutral-5
-                                                        quo2.colors/neutral-95)}))])]))
+    [quo/header
+     (merge {:left-accessories navigation
+             :title-component  content
+             :insets           (when use-insets (safe-area/get-insets))
+             :left-width       (when navigation
+                                 default-button-width)
+             :border-bottom    border-bottom?}
+            props
+            (when (seq right-accessories)
+              {:right-accessories right-accessories})
+            (when new-ui?
+              {:background (quo2.colors/theme-colors quo2.colors/neutral-5
+                                                     quo2.colors/neutral-95)}))]))

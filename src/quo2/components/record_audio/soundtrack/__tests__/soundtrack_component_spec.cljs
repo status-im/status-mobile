@@ -18,7 +18,7 @@
     (with-redefs [audio/get-player-duration (fn [] 2000)]
       (let [player-ref            (reagent/atom {})
             audio-current-time-ms (reagent/atom 0)]
-        (h/render [soundtrack/soundtrack
+        (h/render [:f> soundtrack/f-soundtrack
                    {:player-ref            player-ref
                     :audio-current-time-ms audio-current-time-ms}])
         (-> (h/expect (h/get-by-test-id "soundtrack"))
@@ -29,7 +29,7 @@
       (let [seeking-audio?        (reagent/atom false)
             player-ref            (reagent/atom {})
             audio-current-time-ms (reagent/atom 0)]
-        (h/render [soundtrack/soundtrack
+        (h/render [:f> soundtrack/f-soundtrack
                    {:seeking-audio?        seeking-audio?
                     :player-ref            player-ref
                     :audio-current-time-ms audio-current-time-ms}])
@@ -45,7 +45,7 @@
       (let [seeking-audio?        (reagent/atom false)
             player-ref            (reagent/atom {})
             audio-current-time-ms (reagent/atom 0)]
-        (h/render [soundtrack/soundtrack
+        (h/render [:f> soundtrack/f-soundtrack
                    {:seeking-audio?        seeking-audio?
                     :player-ref            player-ref
                     :audio-current-time-ms audio-current-time-ms}])
@@ -67,7 +67,7 @@
       (let [seeking-audio?        (reagent/atom false)
             player-ref            (reagent/atom {})
             audio-current-time-ms (reagent/atom 0)]
-        (h/render [soundtrack/soundtrack
+        (h/render [:f> soundtrack/f-soundtrack
                    {:seeking-audio?        seeking-audio?
                     :player-ref            player-ref
                     :audio-current-time-ms audio-current-time-ms}])

@@ -9,11 +9,9 @@
 (defn browser-stack
   []
   (let [screen-id (rf/sub [:browser/screen-id])]
-    [safe-area/consumer
-     (fn [{:keys [top]}]
-       [rn/view {:padding-top top :flex 1}
-        (case screen-id
-          :empty-tab    [empty-tab/empty-tab]
-          :browser      [browser/browser]
-          :browser-tabs [tabs/tabs]
-          [empty-tab/empty-tab])])]))
+    [rn/view {:padding-top (safe-area/get-top) :flex 1}
+     (case screen-id
+       :empty-tab    [empty-tab/empty-tab]
+       :browser      [browser/browser]
+       :browser-tabs [tabs/tabs]
+       [empty-tab/empty-tab])]))

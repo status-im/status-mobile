@@ -40,55 +40,52 @@
       :z-index          999999999999999999}]))
 
 (defn wrapped-screen-style
-  [{:keys [top? bottom?]} insets background-color]
+  [{:keys [top? bottom?]} background-color]
   (merge
    {:flex             1
     :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
    (when bottom?
-     {:padding-bottom (:bottom insets)})
+     {:padding-bottom (safe-area/get-bottom)})
    (when top?
-     {:padding-top (:top insets)})))
+     {:padding-top (safe-area/get-top)})))
 
 (defn screen
   [key]
-  (reagent.core/reactify-component
-   (fn []
-     (let [{:keys [component options]}
-           (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
-           {:keys [insets sheet?]} options
-           background-color (or (get-in options [:layout :backgroundColor])
-                                (when sheet? :transparent))]
+  (let [{:keys [component options]}
+        (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
+        {:keys [insets sheet?]} options
+        background-color (or (get-in options [:layout :backgroundColor])
+                             (when sheet? :transparent))]
+    (reagent.core/reactify-component
+     (fn []
        ^{:key (str "root" key @reloader/cnt)}
-       [safe-area/provider
-        [safe-area/consumer
-         (fn [safe-insets]
-           [rn/view
-            {:style (wrapped-screen-style insets safe-insets background-color)}
-            [inactive]
-            (if sheet?
-              [bottom-sheet-screen/view component]
-              [component])])]
+       [:<>
+        [rn/view
+         {:style (wrapped-screen-style insets background-color)}
+         [inactive]
+         (if sheet?
+           [:f> bottom-sheet-screen/f-view component]
+           [component])]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     ^{:key (str "sheet" @reloader/cnt)}
-     [safe-area/provider
-      [inactive]
-      [safe-area/consumer
-       (fn [insets]
-         (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-               sheet                  (last sheets)]
-           [rn/keyboard-avoiding-view
-            {:style                    {:position :relative :flex 1}
-             :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
-            (when sheet
-              [:f>
-               bottom-sheet/view
-               {:insets insets :hide? hide?}
-               sheet])]))]])))
+     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
+           sheet                  (last sheets)
+           insets                 (safe-area/get-insets)]
+       ^{:key (str "sheet" @reloader/cnt)}
+       [:<>
+        [inactive]
+        [rn/keyboard-avoiding-view
+         {:style                    {:position :relative :flex 1}
+          :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
+         (when sheet
+           [:f>
+            bottom-sheet/view
+            {:insets insets :hide? hide?}
+            sheet])]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))
 
@@ -97,7 +94,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "popover" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [popover/popover]
       (when js/goog.DEBUG
@@ -107,7 +104,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "visibility-status-popover" @reloader/cnt)}
-     [safe-area/provider
+     [rn/view
       [inactive]
       [visibility-status-views/visibility-status-popover]
       (when js/goog.DEBUG
@@ -117,7 +114,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "sheet-old" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [bottom-sheets-old/bottom-sheet]])))
 
@@ -125,7 +122,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "signing-sheet" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [signing/signing]
       (when js/goog.DEBUG
@@ -135,7 +132,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "select-acc-sheet" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [wallet.send.views/select-account]
       (when js/goog.DEBUG
@@ -145,7 +142,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [wallet-connect/wallet-connect-proposal-sheet]
       (when js/goog.DEBUG
@@ -155,7 +152,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [wallet-connect/wallet-connect-success-sheet-view]
       (when js/goog.DEBUG
@@ -165,7 +162,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
-     [safe-area/provider
+     [:<>
       [inactive]
       [wallet-connect/wallet-connect-app-management-sheet-view]
       (when js/goog.DEBUG

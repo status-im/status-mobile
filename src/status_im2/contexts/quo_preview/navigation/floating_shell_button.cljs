@@ -43,20 +43,23 @@
     (= scroll-type :scroll-to-bottom)
     (assoc :scroll-to-bottom {:on-press #()})))
 
+(defn- f-shell-button
+  [state]
+  [quo2/floating-shell-button (mock-data state)
+   nil (reanimated/use-shared-value 1)])
+
 (defn cool-preview
   []
   (let [state (reagent/atom {:show-jump-to? true
                              :scroll-type   :notification-down})]
-    [:f>
-     (fn []
-       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-        [rn/view {:padding-bottom 150}
-         [preview/customizer state descriptor]
-         [rn/view
-          {:padding-vertical 60
-           :align-items      :center}
-          [quo2/floating-shell-button (mock-data @state)
-           nil (reanimated/use-shared-value 1)]]]])]))
+    (fn []
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view
+         {:padding-vertical 60
+          :align-items      :center}
+         [:f> f-shell-button @state]]]])))
 
 (defn preview-floating-shell-button
   []

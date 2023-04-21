@@ -50,7 +50,7 @@
     (- (oops/oget e "nativeEvent.layout.width")
        (* 2 horizontal-spacing))))
 
-(defn- view-component
+(defn- f-view
   []
   (let [preview-width (reagent/atom 0)
         flat-list-ref (atom nil)]
@@ -83,4 +83,4 @@
 
 (defn view
   [props]
-  [:f> view-component props])
+  [:f> f-view props])

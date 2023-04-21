@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.chat.image.preview.views
   (:require ["react-native-image-viewing" :default image-viewing]
-            [quo.components.safe-area :as safe-area]
             [quo.design-system.colors :as colors]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
@@ -9,7 +8,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.utils.share :as share]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [react-native.safe-area :as safe-area]))
 
 (defn share
   [path]
@@ -53,29 +53,27 @@
 
 (defn header
   [{:keys [on-close] :as props}]
-  [safe-area/consumer
-   (fn [insets]
+  [react/view
+   {:style {:padding-horizontal 15
+            :padding-top        (+ (safe-area/get-bottom) 50)}}
+   [react/view {:style {:justify-content :center}}
+    [react/touchable-opacity
+     {:on-press            on-close
+      :style               {:padding-vertical 11
+                            :border-radius    44}
+      :accessibility-label :close-button}
      [react/view
-      {:style {:padding-horizontal 15
-               :padding-top        (+ (:bottom insets) 50)}}
-      [react/view {:style {:justify-content :center}}
-       [react/touchable-opacity
-        {:on-press            on-close
-         :style               {:padding-vertical 11
-                               :border-radius    44}
-         :accessibility-label :close-button}
-        [react/view
-         {:style {:background-color colors/black-transparent-86
-                  :border-radius    20
-                  :width            40
-                  :height           40
-                  :justify-content  :center
-                  :align-items      :center}}
-         [icons/icon :main-icons/close
-          {:container-style {:width  24
-                             :height 24}
-           :color           colors/white-persist}]]]
-       [header-options props]]])])
+      {:style {:background-color colors/black-transparent-86
+               :border-radius    20
+               :width            40
+               :height           40
+               :justify-content  :center
+               :align-items      :center}}
+      [icons/icon :main-icons/close
+       {:container-style {:width  24
+                          :height 24}
+        :color           colors/white-persist}]]]
+    [header-options props]]])
 
 (defn preview-image
   [{{:keys [content] :as message} :message

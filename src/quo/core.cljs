@@ -8,7 +8,6 @@
             [quo.components.list.header :as list-header]
             [quo.components.list.index :as list-index]
             [quo.components.list.item :as list-item]
-            [quo.components.safe-area :as safe-area]
             [quo.components.separator :as separator]
             [quo.components.text :as text]
             [quo.components.text-input :as text-input]
@@ -29,8 +28,5 @@
 (def switch controls/switch)
 (def radio controls/radio)
 (def checkbox controls/checkbox)
-(def safe-area-provider safe-area/provider)
-(def safe-area-consumer safe-area/consumer)
-(def safe-area-view safe-area/view)
 (def separator separator/separator)
 (def get-color colors/get-color)

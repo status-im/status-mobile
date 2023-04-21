@@ -299,39 +299,36 @@
 (defn accounts-overview
   []
   (let [mnemonic              @(re-frame/subscribe [:mnemonic])
-        ;mainnet? @(re-frame/subscribe [:mainnet?])
         selected-account-atom (reagent/atom nil)]
     (fn []
-      [safe-area/consumer
-       (fn [{:keys [top]}]
-         [react/view
-          {:style {:flex             1
-                   :padding-top      top
-                   :background-color (quo2.colors/theme-colors quo2.colors/neutral-5
-                                                               quo2.colors/neutral-95)}}
-          [react/view {:padding-horizontal 20}
-           [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
-            [quo2.button/button
-             {:icon                true
-              :size                32
-              :type                :grey
-              :accessibility-label :accounts-qr-code
-              :on-press            #(re-frame/dispatch
-                                     [::qr-scanner/scan-code
-                                      {:handler :wallet.send/qr-scanner-result}])}
-             :i/placeholder]
-            [react/view {:width 12}]
-            [quo2.button/button
-             {:icon                true
-              :size                32
-              :type                :grey
-              :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
-                                                        {:content (sheets/accounts-options mnemonic)}])
-              :accessibility-label :accounts-more-options}
-             :i/placeholder]]
-           [total-value]
-           [accounts selected-account-atom]]
-          [account.views/account-new @selected-account-atom]])])))
+      [react/view
+       {:style {:flex             1
+                :padding-top      (safe-area/get-top)
+                :background-color (quo2.colors/theme-colors quo2.colors/neutral-5
+                                                            quo2.colors/neutral-95)}}
+       [react/view {:padding-horizontal 20}
+        [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
+         [quo2.button/button
+          {:icon                true
+           :size                32
+           :type                :grey
+           :accessibility-label :accounts-qr-code
+           :on-press            #(re-frame/dispatch
+                                  [::qr-scanner/scan-code
+                                   {:handler :wallet.send/qr-scanner-result}])}
+          :i/placeholder]
+         [react/view {:width 12}]
+         [quo2.button/button
+          {:icon                true
+           :size                32
+           :type                :grey
+           :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+                                                     {:content (sheets/accounts-options mnemonic)}])
+           :accessibility-label :accounts-more-options}
+          :i/placeholder]]
+        [total-value]
+        [accounts selected-account-atom]]
+       [account.views/account-new @selected-account-atom]])))
 
 (defn accounts-overview-old
   []

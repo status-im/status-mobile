@@ -9,29 +9,27 @@
   [contact-list-item/contact-list-item
    {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])} user])
 
-(defn mentions
+(defn f-mentions
   [{:keys [refs suggestions max-y]} bottom-inset]
-  [:f>
-   (fn []
-     (let [translate-y (reanimated/use-shared-value 0)]
-       (rn/use-effect
-        (fn []
-          (reanimated/set-shared-value translate-y
-                                       (reanimated/with-timing (if (seq suggestions) 0 200)))))
-       [reanimated/view
-        {:style (reanimated/apply-animations-to-style
-                 {:transform [{:translateY translate-y}]}
-                 {:bottom     (or bottom-inset 0)
-                  :position   :absolute
-                  :left       0
-                  :right      0
-                  :z-index    5
-                  :elevation  5
-                  :max-height (/ max-y 2)})}
-        [rn/flat-list
-         {:keyboard-should-persist-taps :always
-          :data                         (vals suggestions)
-          :key-fn                       :key
-          :render-fn                    mention-item
-          :render-data                  (:text-input-ref refs)
-          :accessibility-label          :mentions-list}]]))])
+  (let [translate-y (reanimated/use-shared-value 0)]
+    (rn/use-effect
+     (fn []
+       (reanimated/set-shared-value translate-y
+                                    (reanimated/with-timing (if (seq suggestions) 0 200)))))
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style
+              {:transform [{:translateY translate-y}]}
+              {:bottom     (or bottom-inset 0)
+               :position   :absolute
+               :left       0
+               :right      0
+               :z-index    5
+               :elevation  5
+               :max-height (/ max-y 2)})}
+     [rn/flat-list
+      {:keyboard-should-persist-taps :always
+       :data                         (vals suggestions)
+       :key-fn                       :key
+       :render-fn                    mention-item
+       :render-data                  (:text-input-ref refs)
+       :accessibility-label          :mentions-list}]]))
