@@ -3,7 +3,6 @@
             [quo2.core :as quo]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
@@ -24,7 +23,7 @@
 
 (defn filter-items-by-tab
   [tab items]
-  (if (= tab :groups)
+  (if (= tab :tab/groups)
     (filter :group-chat items)
     (filter :chat-id items)))
 
@@ -92,42 +91,43 @@
 
 (defn get-tabs-data
   [dot?]
-  [{:id :recent :label (i18n/label :t/recent) :accessibility-label :tab-recent}
-   {:id :groups :label (i18n/label :t/groups) :accessibility-label :tab-groups}
-   {:id                  :contacts
+  [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :tab-recent}
+   {:id :tab/groups :label (i18n/label :t/groups) :accessibility-label :tab-groups}
+   {:id                  :tab/contacts
     :label               (i18n/label :t/contacts)
     :accessibility-label :tab-contacts
     :notification-dot?   dot?}])
 
 (defn home
   []
-  (let [selected-tab (reagent/atom :recent)]
-    (fn []
-      (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])]
-        [safe-area/consumer
-         (fn [{:keys [top]}]
-           [:<>
-            (if (= @selected-tab :contacts)
-              [contacts pending-contact-requests top]
-              [chats @selected-tab top])
-            [rn/view
-             {:style (style/blur-container top)}
-             [blur/view
-              {:blur-amount (if platform/ios? 20 10)
-               :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-               :style       style/blur}]
-             [common.home/top-nav]
-             [common.home/title-column
-              {:label               (i18n/label :t/messages)
-               :handler             #(rf/dispatch [:show-bottom-sheet
-                                                   {:content home.sheet/new-chat-bottom-sheet}])
-               :accessibility-label :new-chat-button}]
-             [quo/discover-card
-              {:title       (i18n/label :t/invite-friends-to-status)
-               :description (i18n/label :t/share-invite-link)}]
-             [quo/tabs
-              {:style          style/tabs
-               :size           32
-               :on-change      #(reset! selected-tab %)
-               :default-active @selected-tab
-               :data           (get-tabs-data (pos? (count pending-contact-requests)))}]]])]))))
+  (fn []
+    (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
+          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)]
+      [safe-area/consumer
+       (fn [{:keys [top]}]
+         [:<>
+          (if (= selected-tab :tab/contacts)
+            [contacts pending-contact-requests top]
+            [chats selected-tab top])
+          [rn/view
+           {:style (style/blur-container top)}
+           [blur/view
+            {:blur-amount (if platform/ios? 20 10)
+             :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+             :style       style/blur}]
+           [common.home/top-nav]
+           [common.home/title-column
+            {:label               (i18n/label :t/messages)
+             :handler             #(rf/dispatch [:show-bottom-sheet
+                                                 {:content home.sheet/new-chat-bottom-sheet}])
+             :accessibility-label :new-chat-button}]
+           [quo/discover-card
+            {:title       (i18n/label :t/invite-friends-to-status)
+             :description (i18n/label :t/share-invite-link)}]
+           [quo/tabs
+            {:style          style/tabs
+             :size           32
+             :on-change      (fn [tab]
+                               (rf/dispatch [:messages-home/select-tab tab]))
+             :default-active selected-tab
+             :data           (get-tabs-data (pos? (count pending-contact-requests)))}]]])])))

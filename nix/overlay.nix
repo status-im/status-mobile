@@ -44,6 +44,18 @@ in {
     });
   };
 
+  # Fix for missing libarclite_macosx.a in Xcode 14.3.
+  # https://github.com/ios-control/ios-deploy/issues/580
+  ios-deploy = super.darwin.ios-deploy.overrideAttrs (old: rec {
+    version = "1.12.2";
+    src = super.fetchFromGitHub {
+      owner = "ios-control";
+      repo = "ios-deploy";
+      rev = version;
+      sha256 = "sha256-TVGC+f+1ow3b93CK3PhIL70le5SZxxb2ug5OkIg8XCA";
+    };
+  });
+
   # Package version adjustments
   gradle = super.gradle_6;
   nodejs = super.nodejs-18_x;

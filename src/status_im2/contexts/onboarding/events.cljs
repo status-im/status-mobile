@@ -105,7 +105,10 @@
                          :previewPrivacy           config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
-     :db       (assoc db :onboarding-2/new-account? true)}))
+     :db       (-> db
+                   (dissoc :multiaccounts/login)
+                   (dissoc :auth-method)
+                   (assoc :onboarding-2/new-account? true))}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}

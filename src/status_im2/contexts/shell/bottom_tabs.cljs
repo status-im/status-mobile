@@ -6,7 +6,8 @@
             [status-im2.contexts.shell.style :as style]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
-            [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
+            [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]
+            [react-native.gesture :as gesture]))
 
 (defn blur-overlay-params
   [style]
@@ -32,13 +33,18 @@
   []
   [:f>
    (fn []
-     (let [notifications-data (rf/sub [:shell/bottom-tabs-notifications-data])
-           pass-through?      (rf/sub [:shell/shell-pass-through?])
-           shared-values      @animation/shared-values-atom
-           original-style     (style/bottom-tabs-container pass-through?)
-           animated-style     (reanimated/apply-animations-to-style
-                               {:height (:bottom-tabs-height shared-values)}
-                               original-style)]
+     (let [notifications-data          (rf/sub [:shell/bottom-tabs-notifications-data])
+           pass-through?               (rf/sub [:shell/shell-pass-through?])
+           shared-values               @animation/shared-values-atom
+           original-style              (style/bottom-tabs-container pass-through?)
+           animated-style              (reanimated/apply-animations-to-style
+                                        {:height (:bottom-tabs-height shared-values)}
+                                        original-style)
+           messages-double-tap-gesture (-> (gesture/gesture-tap)
+                                           (gesture/number-of-taps 2)
+                                           (gesture/on-start
+                                            (fn [_event]
+                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
        (animation/load-stack @animation/selected-stack-id)
        (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
        [reanimated/view {:style animated-style}
@@ -46,6 +52,7 @@
           [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
         [rn/view {:style (style/bottom-tabs)}
          [bottom-tab :i/communities :communities-stack shared-values notifications-data]
-         [bottom-tab :i/messages :chats-stack shared-values notifications-data]
+         [gesture/gesture-detector {:gesture messages-double-tap-gesture}
+          [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
          [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
          [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))])

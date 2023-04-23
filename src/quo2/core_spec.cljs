@@ -5,6 +5,7 @@
     [quo2.components.buttons.--tests--.buttons-component-spec]
     [quo2.components.colors.color-picker.component-spec]
     [quo2.components.counter.--tests--.counter-component-spec]
+    [quo2.components.counter.step.component-spec]
     [quo2.components.dividers.--tests--.divider-label-component-spec]
     [quo2.components.dividers.strength-divider.component-spec]
     [quo2.components.drawers.action-drawers.component-spec]

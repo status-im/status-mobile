@@ -1,6 +1,5 @@
 (ns status-im2.contexts.syncing.events
   (:require [status-im.native-module.core :as status]
-            [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
@@ -62,15 +61,12 @@
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
-  [{:keys [db]} entered-password]
+  [{:keys [db]} entered-password set-code]
   (let [valid-password? (>= (count entered-password) constants/min-password-length)
         show-sheet      (fn [connection-string]
-                          (rf/dispatch
-                           [:show-bottom-sheet
-                            {:content (fn []
-                                        [sheet/qr-code-view-with-connection-string
-                                         connection-string])}])
-                          (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender]))]
+                          (set-code connection-string)
+                          (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
+                          (rf/dispatch [:bottom-sheet/hide]))]
     (if valid-password?
       (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
             key-uid    (get-in db [:multiaccount :key-uid])
