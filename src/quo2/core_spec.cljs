@@ -17,6 +17,7 @@
     [quo2.components.inputs.title-input.component-spec]
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
+    [quo2.components.links.link-preview.component-spec]
     [quo2.components.markdown.--tests--.text-component-spec]
     [quo2.components.notifications.notification.component-spec]
     [quo2.components.onboarding.small-option-card.component-spec]

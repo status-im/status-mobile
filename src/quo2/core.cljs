@@ -38,6 +38,7 @@
     quo2.components.inputs.title-input.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
+    quo2.components.links.link-preview.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
@@ -210,3 +211,4 @@
 ;;;; LINKS
 (def url-preview quo2.components.links.url-preview.view/view)
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
+(def link-preview quo2.components.links.link-preview.view/view)

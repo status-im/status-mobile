@@ -45,6 +45,7 @@
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
+    [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
@@ -200,7 +201,10 @@
                             :component url-preview/preview}
                            {:name      :url-preview-list
                             :options   {:insets {:top? true}}
-                            :component url-preview-list/preview}]
+                            :component url-preview-list/preview}
+                           {:name      :link-preview
+                            :options   {:insets {:top? true}}
+                            :component link-preview/preview}]
    :list-items            [{:name      :channel
                             :insets    {:top false}
                             :component channel/preview-channel}
