@@ -73,10 +73,10 @@
      (fn [insets]
        [rn/keyboard-avoiding-view
         {:style                  {:position :relative :flex 1}
-         :keyboardVerticalOffset (- (max 20 (:bottom insets)))}
+         :keyboardVerticalOffset (- (:bottom insets))}
         [page-nav]
         [pin.banner/banner chat-id]
-        [messages.list/messages-list chat]
+        [messages.list/messages-list chat insets]
         (if-not able-to-send-message?
           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
           [composer/composer chat-id insets])])]))
