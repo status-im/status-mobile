@@ -110,28 +110,19 @@
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll]}]
   [:f>
-<<<<<<< HEAD
-   (let [{:keys [insets]}   (rf/sub [:get-screen-params]) ; TODO:
-         ; https://github.com/status-im/status-mobile/issues/15535
-         temporary-selected (reagent/atom [])] ; used when switching albums
-     (fn []
-       (let [selected        (reagent/atom []) ; currently selected
-             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
-=======
    (let [temporary-selected (reagent/atom [])
          {:keys [insets]}   (rf/sub [:get-screen-params])] ; used when switching albums
      (fn []
        (let [selected        (reagent/atom []) ; currently selected
              selected-images (rf/sub [:chats/sending-image])
->>>>>>> 51e0d0859 (feat: gesture section list)
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
-          (fn []
-            (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
-            (if (seq selected-images)
-              (reset! selected (vec (vals selected-images)))
-              (reset! selected @temporary-selected)))
-          [selected-album])
+           (fn []
+             (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+             (if (seq selected-images)
+               (reset! selected (vec (vals selected-images)))
+               (reset! selected @temporary-selected)))
+           [selected-album])
          [:f>
           (fn []
             (let [window-width       (:width (rn/get-window))
@@ -159,8 +150,3 @@
                                                          selected-album loading?
                                                          has-next-page?])}]
                [bottom-gradient selected-images insets selected]]))])))])
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 51e0d0859 (feat: gesture section list)
