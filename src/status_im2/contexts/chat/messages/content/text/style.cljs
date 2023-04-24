@@ -20,6 +20,23 @@
    :padding-left      10
    :border-left-color colors/neutral-40})
 
+(defn mention-tag-wrapper
+  []
+  {:flex-direction :row
+   :align-items    :center})
+
+(def mention-tag
+  {:background-color   colors/primary-50-opa-10
+   :padding-horizontal 3
+   :border-radius      6
+   :margin-bottom      -3})
+
+(def mention-tag-text
+  {:color                 (colors/theme-colors colors/primary-50
+                                               colors/primary-60)
+   :selection-color       :transparent
+   :suppress-highlighting true})
+
 (defn code
   []
   {:background-color (colors/theme-colors colors/neutral-5 colors/white-opa-5)
