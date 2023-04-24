@@ -20,7 +20,9 @@
                 :left   5
                 :top    10
                 :bottom 10}}
-    [quo/icon :i/close {:color colors/white :size 12}]]])
+    [quo/icon :i/clear
+     {:size  20
+      :color (colors/theme-colors colors/neutral-50 colors/neutral-60)}]]])
 
 (defn images-list
   [images]

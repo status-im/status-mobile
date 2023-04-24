@@ -9,3 +9,4 @@
 (def defs (reagent/adapt-react-class Svg/Defs))
 (def circle (reagent/adapt-react-class Svg/Circle))
 (def svgxml (reagent/adapt-react-class Svg/SvgXml))
+(def g (reagent/adapt-react-class Svg/G))
