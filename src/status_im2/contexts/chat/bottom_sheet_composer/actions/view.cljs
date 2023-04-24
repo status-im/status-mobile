@@ -30,6 +30,7 @@
   (rf/dispatch [:chat.ui/send-current-message])
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
+  (rf/dispatch [:chat.ui/set-chat-input-text nil])
   (reset! maximized? false)
   (reset! text-value "")
   (when @input-ref
