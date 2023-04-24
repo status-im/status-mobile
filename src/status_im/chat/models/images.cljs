@@ -284,7 +284,6 @@
                  (not (some #(= (:uri image) (:uri %)) images)))
         {::image-selected [image current-chat-id]}))))
 
-
 (rf/defn camera-roll-select-album
   {:events [:chat.ui/camera-roll-select-album]}
   [{:keys [db]} album]
