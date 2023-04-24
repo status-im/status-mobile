@@ -51,7 +51,10 @@
          :disabled in-popover?
          :on-press #(rf/dispatch [:chat.ui/show-profile from])}
         [old-message/message-author-name from {} 20]]
-       [rn/text {:style {:font-size 13}} (str " " (i18n/label :t/pinned-a-message))]
+       [quo/text
+        {:size  :label
+         :style (style/pinned-message-text)}
+        (str " " (i18n/label :t/pinned-a-message))]
        [rn/text
         {:style               (merge
                                {:padding-left 5
