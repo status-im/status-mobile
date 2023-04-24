@@ -5,7 +5,7 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.bottom-sheet-composer.view :as bottom-sheet-composer]
+            [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
@@ -79,7 +79,7 @@
         [messages.list/messages-list chat insets]
         (if-not able-to-send-message?
           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-          [bottom-sheet-composer/bottom-sheet-composer insets])])]))
+          [composer/composer chat-id insets])])]))
 
 (defn chat
   []
