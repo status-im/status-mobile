@@ -7,9 +7,10 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.image-server :as image-server]
+            [utils.image-server :as image-server]
             [utils.collection]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [quo2.theme :as theme]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -32,7 +33,8 @@
 
 (defn- replace-contact-image-uri
   [contact port identity]
-  (let [identicon      (image-server/get-identicons-uri port identity)
+  (let [theme          (theme/get-theme)
+        identicon      (image-server/get-identicons-uri port identity theme)
         contact-images (:images contact)
         contact-images (reduce (fn [acc image]
                                  (let [image-name (:type image)
@@ -42,7 +44,8 @@
                                        uri        (image-server/get-contact-image-uri port
                                                                                       identity
                                                                                       image-name
-                                                                                      clock)]
+                                                                                      clock
+                                                                                      theme)]
                                    (assoc-in acc [(keyword image-name) :uri] uri)))
                                contact-images
                                (vals contact-images))]
