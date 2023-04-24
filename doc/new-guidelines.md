@@ -164,11 +164,11 @@ Properties must be set on view level
 ```
 
 
-### Never apply animated styles in the style file
+### Apply animated styles in the style file
 
 
 ```clojure
-;; good
+;; bad
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
@@ -176,7 +176,7 @@ Properties must be set on view level
                               {:opacity opacity}
                               style/circle-container)}]))
 
-;; bad
+;; good
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
