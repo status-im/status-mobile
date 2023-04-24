@@ -18,6 +18,7 @@
     quo2.components.community.icon
     quo2.components.community.token-gating
     quo2.components.counter.counter
+    quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
     quo2.components.dividers.new-messages
@@ -32,6 +33,7 @@
     quo2.components.info.information-box
     quo2.components.inputs.input.view
     quo2.components.inputs.profile-input.view
+    quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
     quo2.components.links.url-preview-list.view
@@ -83,7 +85,6 @@
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
 (def separator quo2.components.separator/separator)
-(def counter quo2.components.counter.counter/counter)
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
@@ -137,6 +138,10 @@
 (def token-gating quo2.components.community.token-gating/token-gating)
 (def community-icon quo2.components.community.icon/community-icon)
 
+;;;; COUNTER
+(def counter quo2.components.counter.counter/counter)
+(def step quo2.components.counter.step.view/step)
+
 ;;;; DIVIDERS
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
@@ -150,8 +155,9 @@
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
-(def search-input quo2.components.inputs.search-input.view/search-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
+(def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
+(def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; LIST ITEMS

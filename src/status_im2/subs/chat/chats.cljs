@@ -7,11 +7,12 @@
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.image-server :as image-server]
+            [utils.image-server :as image-server]
             [status-im2.config :as config]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.events :as chat.events]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [quo2.theme :as theme]))
 
 (re-frame/reg-sub
  :chats/chat
@@ -289,7 +290,7 @@
                        multiaccount)
                      (get contacts id))]
      (if (nil? contact)
-       (image-server/get-identicons-uri port id)
+       (image-server/get-identicons-uri port id (theme/get-theme))
        (multiaccounts/displayed-photo contact)))))
 
 (re-frame/reg-sub

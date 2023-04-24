@@ -26,6 +26,7 @@
     [status-im2.contexts.quo-preview.community.discover-card :as discover-card]
     [status-im2.contexts.quo-preview.community.token-gating :as token-gating]
     [status-im2.contexts.quo-preview.counter.counter :as counter]
+    [status-im2.contexts.quo-preview.counter.step :as step]
     [status-im2.contexts.quo-preview.dividers.date :as divider-date]
     [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
@@ -38,7 +39,9 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
+    [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
@@ -81,7 +84,6 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
-    [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
@@ -144,7 +146,10 @@
                             :component token-gating/preview-token-gating}]
    :counter               [{:name      :counter
                             :insets    {:top false}
-                            :component counter/preview-counter}]
+                            :component counter/preview-counter}
+                           {:name      :step
+                            :insets    {:top false}
+                            :component step/preview-step}]
    :dividers              [{:name      :divider-label
                             :inset     {:top false}
                             :component divider-label/preview-divider-label}
@@ -181,6 +186,9 @@
                            {:name      :profile-input
                             :insets    {:top false}
                             :component profile-input/preview-profile-input}
+                           {:name      :recovery-phrase-input
+                            :insets    {:top false}
+                            :component recovery-phrase-input/preview-recovery-phrase-input}
                            {:name      :search-input
                             :insets    {:top false}
                             :component search-input/preview-search-input}

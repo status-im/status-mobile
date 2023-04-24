@@ -4,7 +4,7 @@
     [quo2.foundations.colors :as colors]
     [quo2.theme :as theme]
     [react-native.core :as rn]
-    [utils.number :as utils-number]))
+    [utils.number]))
 
 (def themes
   {:light {:default   colors/primary-50
@@ -31,7 +31,7 @@
                             (= type :default))
                          colors/white
                          colors/neutral-100))
-        value      (utils-number/parse-int value)
+        value      (utils.number/parse-int value)
         label      (if (> value max-value)
                      (str max-value "+")
                      (str value))
