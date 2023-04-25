@@ -54,20 +54,23 @@
    {:max-height max-height
     :overflow   :hidden}))
 
-(defn input
+(defn input-view
   [{:keys [saved-emoji-kb-extra-height]}
    {:keys [focused? recording?]}]
+  {:z-index    1
+   :position   (if @saved-emoji-kb-extra-height :relative :absolute)
+   :top        0
+   :left       0
+   :right      (when (or focused? platform/ios?) 0)
+   :flex       1
+   :display    (if @recording? :none :flex)
+   :min-height constants/input-height})
+
+(defn input-text
+  []
   (merge typography/paragraph-1
-         {:min-height          constants/input-height
-          :color               (colors/theme-colors :black :white)
-          :text-align-vertical :top
-          :flex                1
-          :z-index             1
-          :position            (if @saved-emoji-kb-extra-height :relative :absolute)
-          :top                 0
-          :left                0
-          :right               (when (or focused? platform/ios?) 0)
-          :display             (if @recording? :none :flex)}))
+         {:color               (colors/theme-colors :black :white)
+          :text-align-vertical :top}))
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style

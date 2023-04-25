@@ -6,7 +6,6 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
@@ -102,17 +101,14 @@
   "Sets reference to previous chat message and focuses on input"
   {:events [:chat.ui/edit-message]}
   [{:keys [db] :as cofx} message]
-  (let [current-chat-id (:current-chat-id db)
-        text            (get-in message [:content :text])]
-    {:db       (-> db
-                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                             message)
-                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                   (update-in [:chat/inputs current-chat-id :metadata]
-                              dissoc
-                              :sending-image))
-     :dispatch (when-not config/new-composer-enabled?
-                 [:mention/to-input-field text current-chat-id])}))
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (-> db
+             (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                       message)
+             (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+             (update-in [:chat/inputs current-chat-id :metadata]
+                        dissoc
+                        :sending-image))}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -184,8 +180,6 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
-              (when-not config/new-composer-enabled?
-                {:set-text-input-value [current-chat-id ""]})
               (clean-input current-chat-id)
               (mentions/clear-mentions))))
 

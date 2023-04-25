@@ -1,11 +1,13 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.effects
   (:require
+    [react-native.platform :as platform]
     [status-im.async-storage.core :as async-storage]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
-    [utils.number :as utils.number]))
+    [utils.number :as utils.number]
+    [oops.core :as oops]))
 
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -103,7 +105,7 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
-(defn initialize
+(defn max-height
   [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
    edit audio]
   (rn/use-effect
@@ -120,3 +122,15 @@
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
    [max-height]))
+
+(defn did-mount
+  [{:keys [selectable-input-ref input-ref selection-manager]}]
+  (rn/use-effect
+   (fn []
+     (when platform/android?
+       (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
+             text-input-handle            (rn/find-node-handle @input-ref)]
+         (oops/ocall selection-manager
+                     :setupMenuItems
+                     selectable-text-input-handle
+                     text-input-handle))))))
