@@ -336,3 +336,5 @@
 (def ^:const auth-method-biometric "biometric")
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
+
+(def ^:const new-composer-enabled? true)

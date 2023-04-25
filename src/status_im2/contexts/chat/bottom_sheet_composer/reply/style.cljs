@@ -7,11 +7,10 @@
    :flex-direction :row})
 
 (defn quoted-message
-  [pin? in-chat-input?]
+  [pin?]
   (merge {:flex-direction :row
           :flex           1
-          :align-items    :center
-          :width          (if in-chat-input? "100%" "45%")}
+          :align-items    :center}
          (when-not pin?
            {:left         22
             :margin-right 22})))
@@ -35,5 +34,10 @@
    :top      0
    :bottom   0
    :width    "50%"})
+
+(def reply-deleted-message
+  {:text-transform :none
+   :margin-left    4
+   :margin-top     2})
 
 
