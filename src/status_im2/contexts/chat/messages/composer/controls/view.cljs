@@ -43,6 +43,7 @@
   [insets]
   [quo/button
    {:on-press (fn []
+                (rf/dispatch [:dismiss-keyboard])
                 (permissions/request-permissions
                  {:permissions [:read-external-storage :write-external-storage]
                   :on-allowed  #(rf/dispatch [:open-modal :photo-selector {:insets insets}])
