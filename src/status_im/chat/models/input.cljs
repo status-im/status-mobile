@@ -239,10 +239,7 @@
                        :on-error    #(log/error "failed to edit message " %)
                        :on-success  (fn [result]
                                       (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                          result])
-                                      (when pinned-message
-                                        (re-frame/dispatch [:pin-message/load-pin-messages
-                                                            chat-id])))}]}
+                                                          result]))}]}
      (cancel-message-edit))))
 
 (rf/defn send-current-message

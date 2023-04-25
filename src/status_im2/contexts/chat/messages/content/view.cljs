@@ -12,6 +12,7 @@
             [status-im2.contexts.chat.messages.content.status.view :as status]
             [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
             [status-im2.contexts.chat.messages.content.album.view :as album]
+            [status-im2.contexts.chat.messages.avatar.view :as avatar]
             [status-im2.contexts.chat.messages.content.image.view :as image]
             [quo2.core :as quo]
             [utils.re-frame :as rf]
@@ -23,35 +24,24 @@
 
 (def delivery-state-showing-time-ms 3000)
 
-(defn avatar
-  [{:keys [content last-in-group? pinned quoted-message from]}]
+(defn avatar-container
+  [{:keys [content last-in-group? pinned-by quoted-message from]}]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
-          pinned)
-    (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-          contact      (rf/sub [:contacts/contact-by-address from])
-          photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
-          online?      (rf/sub [:visibility-status-updates/online? from])]
-      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
-       [rn/view {:padding-top 2 :width 32}
-        [quo/user-avatar
-         {:full-name         display-name
-          :profile-picture   photo-path
-          :status-indicator? true
-          :online?           online?
-          :size              :small}]]])
+          pinned-by)
+    [avatar/avatar from :small]
     [rn/view {:padding-top 2 :width 32}]))
 
 (defn author
   [{:keys [response-to
            compressed-key
            last-in-group?
-           pinned
+           pinned-by
            quoted-message
            from
            timestamp]}]
-  (when (or (and (seq response-to) quoted-message) last-in-group? pinned)
+  (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
@@ -65,17 +55,18 @@
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
-    [not-implemented/not-implemented [pin/system-message message-data]]
+    [pin/system-message message-data]
     (case content-type
 
-      constants/content-type-system-text     [not-implemented/not-implemented
-                                              [system.text/text-content message-data]]
+      constants/content-type-system-text           [system.text/text-content message-data]
 
-      constants/content-type-community       [not-implemented/not-implemented
-                                              [old-message/community message-data]]
+      constants/content-type-system-pinned-message [system.text/text-content message-data]
 
-      constants/content-type-contact-request [not-implemented/not-implemented
-                                              [old-message/system-contact-request message-data]])))
+      constants/content-type-community             [not-implemented/not-implemented
+                                                    [old-message/community message-data]]
+
+      constants/content-type-contact-request       [not-implemented/not-implemented
+                                                    [old-message/system-contact-request message-data]])))
 
 (defn on-long-press
   [message-data context]
@@ -87,7 +78,7 @@
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
-         {:keys [chat-id] :as context}
+         context
          keyboard-shown]
       (let [first-image     (first (:album message-data))
             outgoing-status (if (= content-type constants/content-type-album)
@@ -117,11 +108,11 @@
           :on-long-press       #(on-long-press message-data context)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
-            [old-message/quoted-message {:message-id response-to :chat-id chat-id}])
+            [old-message/quoted-message quoted-message])
           [rn/view
            {:style {:padding-horizontal 12
                     :flex-direction     :row}}
-           [avatar message-data]
+           [avatar-container message-data]
            [rn/view
             {:style {:margin-left 8
                      :flex        1}}
@@ -159,6 +150,7 @@
    (when pinned-by
      [pin/pinned-by-view pinned-by])
    (if (#{constants/content-type-system-text constants/content-type-community
+          constants/content-type-system-pinned-message
           constants/content-type-contact-request}
         content-type)
      [system-message-content message-data]

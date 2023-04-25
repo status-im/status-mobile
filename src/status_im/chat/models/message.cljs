@@ -32,16 +32,30 @@
   ;; TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
   (message-list/rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
 
+(defn add-pinned-message
+  [acc chat-id message-id message]
+  (let [{:keys [pinned-by pinned-at] :as pinned-message}
+        (get-in acc [:db :pin-messages chat-id message-id])]
+    (if pinned-message
+      (assoc-in acc
+       [:db :pin-messages chat-id message-id]
+       (assoc
+        message
+        :pinned-by pinned-by
+        :pinned-at pinned-at))
+      acc)))
+
 (defn add-message
   [{:keys [db] :as acc} message-js chat-id message-id cursor-clock-value]
   (let [{:keys [replace from clock-value] :as message}
-        (data-store.messages/<-rpc (types/js->clj message-js))]
+        (data-store.messages/<-rpc (types/js->clj message-js))
+        acc-with-pinned-message (add-pinned-message acc chat-id message-id message)]
     (if (message-loaded? db chat-id message-id)
       ;; If the message is already loaded, it means it's an update, that
       ;; happens when a message that was missing a reply had the reply
       ;; coming through, in which case we just insert the new message
-      (assoc-in acc [:db :messages chat-id message-id] message)
-      (cond-> acc
+      (assoc-in acc-with-pinned-message [:db :messages chat-id message-id] message)
+      (cond-> acc-with-pinned-message
         ;;add new message to db
         :always
         (update-in [:db :messages chat-id] assoc message-id message)

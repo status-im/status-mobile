@@ -258,8 +258,9 @@
   (merge
    (when in-popover? {:number-of-lines 2})
    (cond
-     (= content-type constants/content-type-system-text) (system-text-style)
-     :else                                               (default-text-style))))
+     (= content-type constants/content-type-system-text)           (system-text-style)
+     (= content-type constants/content-type-system-pinned-message) (system-text-style)
+     :else                                                         (default-text-style))))
 
 (defn emph-text-style
   []
