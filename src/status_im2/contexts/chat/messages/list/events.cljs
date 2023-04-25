@@ -17,7 +17,6 @@
   [{:keys [message-id
            clock-value
            message-type
-           album-id
            from
            outgoing
            whisper-timestamp
@@ -37,7 +36,7 @@
        :type              :message
        :message-id        message-id
        :outgoing          (boolean outgoing)
-       :albumize?         (if (and album-id outgoing) true albumize?)}
+       :albumize?         albumize?}
       add-datemark
       add-timestamp))
 
