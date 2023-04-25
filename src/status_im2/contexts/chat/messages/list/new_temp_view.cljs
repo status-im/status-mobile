@@ -4,11 +4,13 @@
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
@@ -103,6 +105,42 @@
           [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
+(defn calc-shell-position
+  [y]
+  (let [{:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
+        lines                                   (utils/calc-lines input-content-height)]
+    (if (not focused?)
+      (if (> lines 1) -18 0)
+      (if (> lines 12)
+        (reanimated/get-shared-value y)
+        (if (> lines 1) (- (- input-content-height composer.constants/input-height)) 0)))))
+
+(defn shell-button
+  [insets]
+  (let [y              (reanimated/use-shared-value 0)
+        shell-position (calc-shell-position y)]
+    (rn/use-effect (fn []
+                     (reanimated/animate y shell-position))
+                   [shell-position])
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style
+              {:transform [{:translate-y y}]}
+              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
+               :position :absolute
+               :left     0
+               :right    0})}
+     [quo/floating-shell-button
+      (merge {:jump-to
+              {:on-press #(do
+                            (rf/dispatch [:chat/close true])
+                            (rf/dispatch [:shell/navigate-to-jump-to]))
+               :label    (i18n/label :t/jump-to)
+               :style    {:align-self :center}}}
+             (when @show-floating-scroll-down-button
+               {:scroll-to-bottom {:on-press scroll-to-bottom}}))
+      {}]]))
+
+
 (defn messages-list-content
   [{:keys [chat-id] :as chat} insets keyboard-shown]
   (fn []
@@ -139,16 +177,8 @@
          :inverted                     (when platform/ios? true)
          :style                        (when platform/android? {:scaleY -1})
          :on-layout                    on-messages-view-layout}]
-       [quo/floating-shell-button
-        (merge {:jump-to
-                {:on-press #(do
-                              (rf/dispatch [:chat/close true])
-                              (rf/dispatch [:shell/navigate-to-jump-to]))
-                 :label    (i18n/label :t/jump-to)}}
-               (when @show-floating-scroll-down-button
-                 {:scroll-to-bottom {:on-press scroll-to-bottom}}))
-        {:position :absolute
-         :bottom   (+ (:bottom insets) composer.constants/composer-default-height 6)}]])))
+       [:f> shell-button insets]])))
+
 
 (defn use-keyboard-visibility
   []

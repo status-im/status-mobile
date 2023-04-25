@@ -159,4 +159,4 @@
 
 (def default-kdf-iterations 3200)
 
-(def ^:const new-composer-enabled? false)
+(def ^:const new-composer-enabled? true)

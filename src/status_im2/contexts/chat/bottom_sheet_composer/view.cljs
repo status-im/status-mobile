@@ -11,6 +11,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.images.view :as images]
     [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
     [utils.re-frame :as rf]
+    [status-im2.contexts.chat.bottom-sheet-composer.edit.view :as edit]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.actions.view :as actions]
@@ -32,7 +33,8 @@
                   :emoji-kb-extra-height       (atom nil)
                   :saved-emoji-kb-extra-height (atom nil)
                   :replying?                   (atom nil)
-                  :sending-images?             (atom nil)}
+                  :sending-images?             (atom nil)
+                  :editing?                    (atom nil)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -47,6 +49,7 @@
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
                 reply                                    (rf/sub [:chats/reply-message])
+                edit                                     (rf/sub [:chats/edit-message])
                 {:keys [input-text input-content-height]
                  :as   chat-input}                       (rf/sub [:chats/current-chat-input])
                 content-height                           (reagent/atom (or input-content-height
@@ -58,7 +61,8 @@
                                                                                 kb-height
                                                                                 insets
                                                                                 (seq images)
-                                                                                reply)
+                                                                                reply
+                                                                                edit)
                 lines                                    (utils/calc-lines @content-height)
                 max-lines                                (utils/calc-lines max-height)
                 initial-height                           (if (> lines 1)
@@ -90,7 +94,10 @@
                                                           :lines          lines
                                                           :max-lines      max-lines}
                 show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
-                android-elevation?                       (utils/android-elevation? lines images reply)]
+                android-elevation?                       (utils/android-elevation? lines
+                                                                                   images
+                                                                                   reply
+                                                                                   edit)]
             (effects/initialize props
                                 state
                                 animations
@@ -98,7 +105,8 @@
                                 chat-input
                                 keyboard-height
                                 (seq images)
-                                reply)
+                                reply
+                                edit)
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
@@ -107,7 +115,8 @@
                                                  android-elevation?)
                :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
-              [reply/view]
+              [reply/view reply]
+              [edit/view edit #(utils/cancel-edit-message state animations)]
               [reanimated/touchable-opacity
                {:active-opacity      1
                 :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
@@ -122,7 +131,7 @@
                                                                          state
                                                                          animations
                                                                          dimensions
-                                                                         keyboard-shown)
+                                                                         (or keyboard-shown edit))
                  :on-scroll                #(handler/scroll % state animations dimensions)
                  :on-change-text           #(handler/change-text % props state)
                  :on-selection-change      #(handler/selection-change % state)
@@ -138,16 +147,18 @@
               [images/images-list]
               [actions/view props state animations window-height insets (seq images)]]]))]))])
 
+(defn f-bottom-sheet-composer
+  [insets]
+  (let [window-height (rf/sub [:dimensions/window-height])
+        opacity       (reanimated/use-shared-value 0)
+        background-y  (reanimated/use-shared-value (- window-height))
+        blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
+                                                      (:bottom insets)))]
+    [rn/view
+     [reanimated/view {:style (style/background opacity background-y window-height)}]
+     [sub-view/blur-view blur-height]
+     [sheet insets window-height blur-height opacity background-y]]))
+
 (defn bottom-sheet-composer
   [insets]
-  [:f>
-   (fn []
-     (let [window-height (rf/sub [:dimensions/window-height])
-           opacity       (reanimated/use-shared-value 0)
-           background-y  (reanimated/use-shared-value (- window-height))
-           blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
-                                                         (:bottom insets)))]
-       [rn/view
-        [reanimated/view {:style (style/background opacity background-y window-height)}]
-        [sub-view/blur-view blur-height]
-        [sheet insets window-height blur-height opacity background-y]]))])
+  [:f> f-bottom-sheet-composer insets])
