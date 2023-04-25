@@ -7,11 +7,12 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
     [status-im2.contexts.chat.bottom-sheet-composer.style :as style]
     [status-im2.contexts.chat.bottom-sheet-composer.images.view :as images]
     [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
-    [utils.re-frame :as rf]
     [status-im2.contexts.chat.bottom-sheet-composer.edit.view :as edit]
+    [status-im2.contexts.chat.bottom-sheet-composer.mentions.view :as mentions]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.actions.view :as actions]
@@ -36,7 +37,8 @@
                   :sending-images?             (atom nil)
                   :editing?                    (atom nil)
                   :record-permission?          (atom nil)
-                  :record-reset-fn             (atom nil)}
+                  :record-reset-fn             (atom nil)
+                  :scroll-y                    (atom 0)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -98,7 +100,10 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}
-                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)]
+                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
+                cursor-pos                               (utils/cursor-y-position-relative-to-container
+                                                          props
+                                                          state)]
             (effects/initialize props
                                 state
                                 animations
@@ -109,42 +114,46 @@
                                 reply
                                 edit
                                 audio)
-            [gesture/gesture-detector
-             {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
-             [reanimated/view
-              {:style     (style/sheet-container insets state animations)
-               :on-layout #(handler/layout % state blur-height)}
-              [sub-view/bar]
-              [reply/view state]
-              [edit/view edit #(utils/cancel-edit-message state animations)]
-              [reanimated/touchable-opacity
-               {:active-opacity      1
-                :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
-                :style               (style/input-container (:height animations) max-height)
-                :accessibility-label :message-input-container}
-               [rn/text-input
-                {:ref                      #(reset! (:input-ref props) %)
-                 :default-value            @(:text-value state)
-                 :on-focus                 #(handler/focus props state animations dimensions)
-                 :on-blur                  #(handler/blur state animations dimensions images reply)
-                 :on-content-size-change   #(handler/content-size-change %
-                                                                         state
-                                                                         animations
-                                                                         dimensions
-                                                                         (or keyboard-shown edit))
-                 :on-scroll                #(handler/scroll % state animations dimensions)
-                 :on-change-text           #(handler/change-text % props state)
-                 :on-selection-change      #(handler/selection-change % state)
-                 :max-height               max-height
-                 :max-font-size-multiplier 1
-                 :multiline                true
-                 :placeholder              (i18n/label :t/type-something)
-                 :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-                 :style                    (style/input props state)
-                 :accessibility-label      :chat-message-input}]
-               [gradients/view props state animations show-bottom-gradient?]]
-              [images/images-list]
-              [actions/view props state animations window-height insets (seq images)]]]))]))])
+            (utils/update-input props state input-text)
+            [:<>
+             [mentions/view state animations max-height cursor-pos]
+             [gesture/gesture-detector
+              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
+              [reanimated/view
+               {:style     (style/sheet-container insets state animations)
+                :on-layout #(handler/layout % state blur-height)}
+               [sub-view/bar]
+               [reply/view state]
+               [edit/view edit #(utils/cancel-edit-message state animations)]
+               [reanimated/touchable-opacity
+                {:active-opacity      1
+                 :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+                 :style               (style/input-container (:height animations) max-height)
+                 :accessibility-label :message-input-container}
+                [rn/text-input
+                 {:ref                      #(reset! (:input-ref props) %)
+                  :default-value            @(:text-value state)
+                  :on-focus                 #(handler/focus props state animations dimensions)
+                  :on-blur                  #(handler/blur state animations dimensions images reply)
+                  :on-content-size-change   #(handler/content-size-change %
+                                                                          state
+                                                                          animations
+                                                                          dimensions
+                                                                          (or keyboard-shown edit))
+                  :on-scroll                #(handler/scroll % props state animations dimensions)
+                  :on-change-text           #(handler/change-text % props state)
+                  :on-selection-change      #(handler/selection-change % state)
+                  :max-height               max-height
+                  :max-font-size-multiplier 1
+                  :multiline                true
+                  :placeholder              (i18n/label :t/type-something)
+                  :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
+                  :style                    (style/input props state)
+                  :accessibility-label      :chat-message-input}]
+                [gradients/view props state animations show-bottom-gradient?]]
+               [images/images-list]
+               [actions/view props state animations window-height insets (seq images)]]]]))]))])
+
 
 (defn f-bottom-sheet-composer
   [insets]

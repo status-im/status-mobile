@@ -1,11 +1,12 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.handlers
-  (:require [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [oops.core :as oops]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
-            [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
-            [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
-            [utils.re-frame :as rf]))
+  (:require
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [oops.core :as oops]
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+    [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
+    [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
+    [utils.re-frame :as rf]))
 
 (defn focus
   [{:keys [input-ref] :as props}
@@ -70,7 +71,8 @@
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
-        (reset! maximized? true))
+        (reset! maximized? true)
+        (rf/dispatch [:chat.ui/set-input-maximized true]))
       (if (utils/show-background? saved-height max-height new-height)
         (do
           (reanimated/set-shared-value background-y 0)
@@ -82,10 +84,12 @@
 
 (defn scroll
   [event
+   {:keys [scroll-y]}
    {:keys [gradient-z-index focused?]}
    {:keys [gradient-opacity]}
    {:keys [lines max-lines]}]
   (let [y (oops/oget event "nativeEvent.contentOffset.y")]
+    (reset! scroll-y y)
     (when (utils/show-top-gradient? y lines max-lines gradient-opacity focused?)
       (reset! gradient-z-index 1)
       (js/setTimeout #(reanimated/animate gradient-opacity 1) 0))
@@ -105,7 +109,8 @@
   (when @recording?
     (@record-reset-fn)
     (reset! recording? false))
-  (rf/dispatch [:chat.ui/set-chat-input-text text]))
+  (rf/dispatch [:chat.ui/set-chat-input-text text])
+  (rf/dispatch [:mention/on-change-text text]))
 
 (defn selection-change
   [event {:keys [lock-selection? cursor-position]}]
@@ -118,3 +123,4 @@
    blur-height]
   (when (utils/update-blur-height? event lock-layout? blur-height)
     (reanimated/set-shared-value blur-height (oops/oget event "nativeEvent.layout.height"))))
+
