@@ -30,7 +30,7 @@
   [customization-color blur? override-theme]
   (if blur?
     (colors/theme-colors colors/neutral-100 colors/white override-theme)
-    (colors/custom-color customization-color (if (or (= :dark override-theme) colors/dark?) 60 50))))
+    (colors/custom-color customization-color (if (or (= :dark override-theme) (colors/dark?)) 60 50))))
 
 (def text-input-container {:flex 1})
 
