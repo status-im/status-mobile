@@ -80,41 +80,41 @@
       (inc (utils/first-index #(= (:uri item) (:uri %)) @selected))])])
 
 (defn album-title
-  [photos? selected-album]
+  [photos? selected temporary-selected insets]
   (fn []
-    [rn/touchable-opacity
-     {:style               (style/title-container)
-      :active-opacity      1
-      :accessibility-label :album-title
-      :on-press            (fn []
-                             ;; TODO: album-selector issue:
-                             ;; https://github.com/status-im/status-mobile/issues/15398
-                             (js/alert "currently disabled"))}
-     ;(if photos?
-     ;  (do
-     ;    (reset! temporary-selected @selected)
-     ;    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
-     ;  (rf/dispatch [:navigate-back]))
+    (let [selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+      [rn/touchable-opacity
+       {:style               (style/title-container)
+        :active-opacity      1
+        :accessibility-label :album-title
+        :on-press            (fn []
+                               ;; TODO: album-selector issue:
+                               ;; https://github.com/status-im/status-mobile/issues/15398
+                               (if photos?
+                                 (do
+                                   (reset! temporary-selected @selected)
+                                   (rf/dispatch [:open-modal :album-selector {:insets insets}]))
+                                 (rf/dispatch [:navigate-back])))}
 
-     [quo/text
-      {:weight          :medium
-       :ellipsize-mode  :tail
-       :number-of-lines 1
-       :style           {:max-width 150}}
-      selected-album]
-     [rn/view {:style (style/chevron-container)}
-      [quo/icon (if photos? :i/chevron-down :i/chevron-up)
-       {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]))
+
+       [quo/text
+        {:weight          :medium
+         :ellipsize-mode  :tail
+         :number-of-lines 1
+         :style           {:max-width 150}}
+        selected-album]
+       [rn/view {:style (style/chevron-container)}
+        [quo/icon (if photos? :i/chevron-down :i/chevron-up)
+         {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])))
 
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll]}]
   [:f>
-   (let [{:keys [insets]}   (rf/sub [:get-screen-params]) ; TODO:
-         ; https://github.com/status-im/status-mobile/issues/15535
-         temporary-selected (reagent/atom [])] ; used when switching albums
+   (let [temporary-selected (reagent/atom [])
+         {:keys [insets]}   (rf/sub [:get-screen-params])] ; used when switching albums
      (fn []
        (let [selected        (reagent/atom []) ; currently selected
-             selected-images (rf/sub [:chats/sending-image]) ; already selected and dispatched
+             selected-images (rf/sub [:chats/sending-image])
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
           (fn []
@@ -130,10 +130,10 @@
                   end-cursor         (rf/sub [:camera-roll/end-cursor])
                   loading?           (rf/sub [:camera-roll/loading-more])
                   has-next-page?     (rf/sub [:camera-roll/has-next-page])]
-              [:<>
+              [rn/view {:style {:flex 1}}
                [rn/view
                 {:style style/buttons-container}
-                [album-title true selected-album selected temporary-selected]
+                [album-title true selected temporary-selected insets]
                 [clear-button selected]]
                [gesture/flat-list
                 {:key-fn                  identity
@@ -145,7 +145,7 @@
                                            :padding-bottom (+ (:bottom insets) 100)
                                            :padding-top    64}
                  :on-scroll               on-scroll
-                 :scroll-enabled          scroll-enabled
+                 :scroll-enabled          @scroll-enabled
                  :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor
                                                          selected-album loading?
                                                          has-next-page?])}]

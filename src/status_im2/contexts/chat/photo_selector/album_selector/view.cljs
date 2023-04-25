@@ -2,6 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [quo2.foundations.colors :as colors]
@@ -50,7 +51,7 @@
   (str (:title item) index))
 
 (defn album-selector
-  []
+  [{:keys [scroll-enabled on-scroll]}]
   [:f>
    (fn []
      (let [albums         (rf/sub [:camera-roll/albums])
@@ -60,8 +61,8 @@
           (rf/dispatch [:chat.ui/camera-roll-get-albums])
           js/undefined))
        [rn/view {:style {:padding-top 20}}
-        [album-title false selected-album]
-        [rn/section-list
+        [album-title false]
+        [gesture/section-list
          {:data                           albums
           :render-fn                      album
           :render-data                    selected-album
@@ -70,4 +71,6 @@
           :render-section-header-fn       section-header
           :style                          {:margin-top 12}
           :content-container-style        {:padding-bottom 40}
-          :key-fn                         key-fn}]]))])
+          :key-fn                         key-fn
+          :scroll-enabled                 @scroll-enabled
+          :on-scroll                      on-scroll}]]))])

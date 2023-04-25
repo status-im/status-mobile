@@ -76,3 +76,22 @@
   [gesture-flat-list (rn-flat-list/base-list-props props)])
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
+
+
+;;; Custom gesture section-list
+(defn- flatten-sections
+  [sections]
+  (mapcat (fn [{:keys [title data]}]
+            (into [{:title title :header? true}] data))
+   sections))
+
+(defn section-list
+  [{:keys [sections render-section-header-fn render-fn] :as props}]
+  (let [data (flatten-sections sections)]
+    [flat-list
+     (merge props
+            {:data      data
+             :render-fn (fn [item]
+                          (if (:header? item)
+                            (render-section-header-fn item)
+                            (render-fn item)))})]))

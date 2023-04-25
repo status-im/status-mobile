@@ -3,6 +3,7 @@
             [quo2.core :as quo2]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
+            [react-native.gesture :as gesture]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [react-native.core :as rn]
@@ -58,7 +59,7 @@
        item])))
 
 (defn contact-selection-list
-  []
+  [{:keys [scroll-enabled on-scroll]}]
   [:f>
    (fn []
      (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
@@ -97,13 +98,15 @@
          {:style {:flex 1}}
          (if no-contacts?
            [no-contacts-view]
-           [rn/section-list
+           [gesture/section-list
             {:key-fn                         :title
              :sticky-section-headers-enabled false
              :sections                       (rf/sub [:contacts/filtered-active-sections])
              :render-section-header-fn       contact-list/contacts-section-header
              :content-container-style        {:padding-bottom 70}
-             :render-fn                      contact-item-render}])]
+             :render-fn                      contact-item-render
+             :scroll-enabled                 @scroll-enabled
+             :on-scroll                      on-scroll}])]
         (when contacts-selected?
           [button/button
            {:type                :primary

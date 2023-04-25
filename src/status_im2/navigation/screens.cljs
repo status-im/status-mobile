@@ -1,6 +1,5 @@
 (ns status-im2.navigation.screens
   (:require
-    [react-native.platform :as platform]
     [status-im2.config :as config]
     [status-im2.contexts.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -67,7 +66,7 @@
      :component photo-selector/photo-selector}
 
     {:name      :album-selector
-     :options   {:modalPresentationStyle (if platform/ios? :overCurrentContext :none)}
+     :options   {:sheet? true}
      :component album-selector/album-selector}
 
     {:name      :new-contact
