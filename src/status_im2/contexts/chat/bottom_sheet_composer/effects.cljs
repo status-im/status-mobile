@@ -5,7 +5,6 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
-    [utils.re-frame :as rf]
     [utils.number :as utils.number]))
 
 (defn reenter-screen-effect
