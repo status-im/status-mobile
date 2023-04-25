@@ -1,11 +1,13 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.handlers
   (:require
+    [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [oops.core :as oops]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
+    [status-im2.contexts.chat.bottom-sheet-composer.selection :as selection]
     [utils.re-frame :as rf]))
 
 (defn focus
@@ -113,9 +115,25 @@
   (rf/dispatch [:mention/on-change-text text]))
 
 (defn selection-change
-  [event {:keys [lock-selection? cursor-position]}]
-  (when-not @lock-selection?
-    (reset! cursor-position (oops/oget event "nativeEvent.selection.end"))))
+  [event
+   {:keys [input-ref selection-event selection-manager]}
+   {:keys [lock-selection? cursor-position first-level menu-items]}]
+  (let [start             (oops/oget event "nativeEvent.selection.start")
+        end               (oops/oget event "nativeEvent.selection.end")
+        selection?        (not= start end)
+        text-input-handle (rn/find-node-handle @input-ref)]
+    (when-not @lock-selection?
+      (reset! cursor-position end))
+    (when (and selection? (not @first-level))
+      (js/setTimeout #(oops/ocall selection-manager :startActionMode text-input-handle) 500))
+
+    (when (and (not selection?) (not @first-level))
+      (oops/ocall selection-manager :hideLastActionMode)
+      (selection/reset-to-first-level-menu first-level menu-items))
+    (when @selection-event
+      (let [{:keys [start end text-input-handle]} @selection-event]
+        (selection/update-selection text-input-handle start end)
+        (reset! selection-event nil)))))
 
 (defn layout
   [event
