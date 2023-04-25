@@ -32,9 +32,9 @@
 
 (defn format-author
   [contact-name]
-  (let [author (if (or (= (aget contact-name 0) "@")
+  (let [author (if (or (= (first contact-name) "@")
                        ;; in case of replies
-                       (= (aget contact-name 1) "@"))
+                       (= (second contact-name) "@"))
                  (or (stateofus/username contact-name)
                      (subs contact-name 0 81))
                  contact-name)]
@@ -57,9 +57,7 @@
      :size                :label
      :weight              :regular
      :accessibility-label :quoted-message
-     :style               {:text-transform :none
-                           :margin-left    4
-                           :margin-top     2}}
+     :style               style/reply-deleted-message}
     (i18n/label :t/message-deleted)]])
 
 (defn reply-from
@@ -98,9 +96,9 @@
           :color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
           :container-style {:position :absolute :left 0 :bottom -4 :width 16 :height 16}}])
       (if (or deleted? deleted-for-me?)
-        [rn/view {:style (style/quoted-message pin? in-chat-input?)}
+        [rn/view {:style (style/quoted-message pin?)}
          [reply-deleted-message]]
-        [rn/view {:style (style/quoted-message pin? in-chat-input?)}
+        [rn/view {:style (style/quoted-message pin?)}
          [reply-from
           {:from               from
            :identicon          identicon
@@ -141,13 +139,14 @@
          :end    {:x 0.7 :y 0}
          :style  style/gradient}])]))
 
+(defn- f-view
+  []
+  (let [reply  (rf/sub [:chats/reply-message])
+        height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
+    (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
+    [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
+     (when reply [reply-message reply true false false])]))
+
 (defn view
   []
-  [:f>
-   (fn []
-     (let [reply  (rf/sub [:chats/reply-message])
-           height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
-       (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
-       [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-        (when reply [reply-message reply true false false])]))])
-
+  [:f> f-view])

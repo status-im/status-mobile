@@ -150,22 +150,27 @@
         {:position :absolute
          :bottom   (+ (:bottom insets) composer.constants/composer-default-height 6)}]])))
 
+(defn use-keyboard-visibility
+  []
+  (let [show-listener (atom nil)
+        hide-listener (atom nil)
+        shown?        (atom nil)]
+    (rn/use-effect
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
+    {:shown? shown?}))
+
+(defn- f-messages-list
+  [chat insets]
+  (let [{keyboard-shown? :shown?} (use-keyboard-visibility)]
+    [messages-list-content chat insets keyboard-shown?]))
+
 (defn messages-list
   [chat insets]
-  [:f>
-   (fn []
-     (let [keyboard-show-listener (atom nil)
-           keyboard-hide-listener (atom nil)
-           keyboard-shown         (atom false)]
-       (rn/use-effect
-        (fn []
-          (reset! keyboard-show-listener (.addListener rn/keyboard
-                                                       "keyboardWillShow"
-                                                       #(reset! keyboard-shown true)))
-          (reset! keyboard-hide-listener (.addListener rn/keyboard
-                                                       "keyboardWillHide"
-                                                       #(reset! keyboard-shown false)))
-          (fn []
-            (.remove ^js @keyboard-show-listener)
-            (.remove ^js @keyboard-hide-listener))))
-       [messages-list-content chat insets keyboard-shown]))])
+  [:f> f-messages-list chat insets])
