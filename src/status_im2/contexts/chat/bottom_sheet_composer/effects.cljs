@@ -29,13 +29,6 @@
     (reanimated/set-shared-value saved-height max-height)
     (reanimated/set-shared-value last-height max-height)))
 
-(defn refocus-effect
-  [{:keys [input-ref]}
-   {:keys [input-refocus?]}]
-  (when (and input-refocus? @input-ref)
-    (.focus ^js @input-ref)
-    (rf/dispatch [:chat.ui/set-input-refocus false])))
-
 (defn layout-effect
   [{:keys [lock-layout?]}]
   (when-not @lock-layout?
@@ -56,17 +49,29 @@
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
 
-(defn images-effect
+(defn images-or-reply-effect
   [{:keys [container-opacity]}
-   images?]
-  (when images?
-    (reanimated/animate container-opacity 1)))
+   {:keys [replying? sending-images? input-ref]}
+   images? reply?]
+  (when (or images? reply?)
+    (reanimated/animate container-opacity 1))
+  (when (and (not @sending-images?) images? @input-ref)
+    (.focus ^js @input-ref)
+    (reset! sending-images? true))
+  (when (and (not @replying?) reply? @input-ref)
+    (.focus ^js @input-ref)
+    (reset! replying? true))
+  (when-not images?
+    (reset! sending-images? false))
+  (when-not reply?
+    (reset! replying? false)))
 
 (defn empty-effect
   [{:keys [text-value maximized? focused?]}
    {:keys [container-opacity]}
-   images?]
-  (when (and (empty? @text-value) (not images?) (not @maximized?) (not @focused?))
+   images?
+   reply?]
+  (when (and (empty? @text-value) (not images?) (not reply?) (not @maximized?) (not @focused?))
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -76,17 +81,16 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images?]
+  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
-     (refocus-effect props chat-input)
      (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
-     (images-effect animations images?)
-     (empty-effect state animations images?)
+     (images-or-reply-effect animations props images? reply?)
+     (empty-effect state animations images? reply?)
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
    [max-height]))

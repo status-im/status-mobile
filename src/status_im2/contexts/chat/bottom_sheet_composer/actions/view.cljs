@@ -94,11 +94,8 @@
   (permissions/request-permissions
    {:permissions [:read-external-storage :write-external-storage]
     :on-allowed  (fn []
-                   (when platform/android?
-                     (when @focused?
-                       (rf/dispatch [:chat.ui/set-input-refocus true]))
-                     (when @input-ref
-                       (.blur ^js @input-ref)))
+                   (when (and platform/android? @input-ref)
+                     (.blur ^js @input-ref))
                    (rf/dispatch [:chat.ui/set-input-content-height
                                  (reanimated/get-shared-value height)])
                    (rf/dispatch [:open-modal :photo-selector {:insets insets}]))

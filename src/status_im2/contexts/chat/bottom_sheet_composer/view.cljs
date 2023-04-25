@@ -9,6 +9,7 @@
     [utils.i18n :as i18n]
     [status-im2.contexts.chat.bottom-sheet-composer.style :as style]
     [status-im2.contexts.chat.bottom-sheet-composer.images.view :as images]
+    [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
@@ -29,7 +30,9 @@
                   :keyboard-frame-listener     (atom nil)
                   :keyboard-hide-listener      (atom nil)
                   :emoji-kb-extra-height       (atom nil)
-                  :saved-emoji-kb-extra-height (atom nil)}
+                  :saved-emoji-kb-extra-height (atom nil)
+                  :replying?                   (atom nil)
+                  :sending-images?             (atom nil)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -43,6 +46,7 @@
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
+                reply                                    (rf/sub [:chats/reply-message])
                 {:keys [input-text input-content-height]
                  :as   chat-input}                       (rf/sub [:chats/current-chat-input])
                 content-height                           (reagent/atom (or input-content-height
@@ -53,7 +57,8 @@
                 max-height                               (utils/calc-max-height window-height
                                                                                 kb-height
                                                                                 insets
-                                                                                images)
+                                                                                (seq images)
+                                                                                reply)
                 lines                                    (utils/calc-lines @content-height)
                 max-lines                                (utils/calc-lines max-height)
                 initial-height                           (if (> lines 1)
@@ -64,7 +69,8 @@
                                                           :container-opacity (reanimated/use-shared-value
                                                                               (if (utils/empty-input?
                                                                                    input-text
-                                                                                   images)
+                                                                                   images
+                                                                                   reply)
                                                                                 0.7
                                                                                 1))
                                                           :height            (reanimated/use-shared-value
@@ -83,20 +89,25 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}
-                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)]
+                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
+                android-elevation?                       (utils/android-elevation? lines images reply)]
             (effects/initialize props
                                 state
                                 animations
                                 dimensions
                                 chat-input
                                 keyboard-height
-                                (seq images))
+                                (seq images)
+                                reply)
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
-              {:style     (style/sheet-container insets (:container-opacity animations) lines)
+              {:style     (style/sheet-container insets
+                                                 (:container-opacity animations)
+                                                 android-elevation?)
                :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
+              [reply/view]
               [reanimated/touchable-opacity
                {:active-opacity      1
                 :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
@@ -106,7 +117,7 @@
                 {:ref                      #(reset! (:input-ref props) %)
                  :default-value            @(:text-value state)
                  :on-focus                 #(handler/focus props state animations dimensions)
-                 :on-blur                  #(handler/blur state animations dimensions images)
+                 :on-blur                  #(handler/blur state animations dimensions images reply)
                  :on-content-size-change   #(handler/content-size-change %
                                                                          state
                                                                          animations
