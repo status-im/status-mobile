@@ -55,18 +55,19 @@
     :overflow   :hidden}))
 
 (defn input
-  [focused? saved-keyboard-height]
+  [{:keys [saved-emoji-kb-extra-height]}
+   {:keys [focused? recording?]}]
   (merge typography/paragraph-1
          {:min-height          constants/input-height
           :color               (colors/theme-colors :black :white)
           :text-align-vertical :top
           :flex                1
           :z-index             1
-          :position            (if saved-keyboard-height :relative :absolute)
+          :position            (if @saved-emoji-kb-extra-height :relative :absolute)
           :top                 0
           :left                0
-          :right               (when (or focused? platform/ios?) 0)}))
-
+          :right               (when (or focused? platform/ios?) 0)
+          :display             (if @recording? :none :flex)}))
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style

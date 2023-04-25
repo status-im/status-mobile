@@ -57,6 +57,12 @@
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
 
+(rf/defn set-input-audio
+  {:events [:chat.ui/set-input-audio]}
+  [{db :db} audio chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :audio] audio)}))
+
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
   [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match public-key] :as user}]

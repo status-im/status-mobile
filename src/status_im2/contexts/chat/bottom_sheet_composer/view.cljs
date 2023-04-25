@@ -34,7 +34,10 @@
                   :saved-emoji-kb-extra-height (atom nil)
                   :replying?                   (atom nil)
                   :sending-images?             (atom nil)
-                  :editing?                    (atom nil)}
+                  :editing?                    (atom nil)
+                  :record-permission?          (atom nil)
+                  :audio-file                  (atom nil)
+                  :record-init-fn              (atom nil)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -44,10 +47,12 @@
                   :lock-selection?       (reagent/atom true)
                   :focused?              (reagent/atom false)
                   :lock-layout?          (reagent/atom false)
-                  :maximized?            (reagent/atom false)}]
+                  :maximized?            (reagent/atom false)
+                  :recording?            (reagent/atom false)}]
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
+                audio                                    (rf/sub [:chats/sending-audio])
                 reply                                    (rf/sub [:chats/reply-message])
                 edit                                     (rf/sub [:chats/edit-message])
                 {:keys [input-text input-content-height]
@@ -102,7 +107,8 @@
                                 keyboard-height
                                 (seq images)
                                 reply
-                                edit)
+                                edit
+                                audio)
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
@@ -134,8 +140,7 @@
                  :multiline                true
                  :placeholder              (i18n/label :t/type-something)
                  :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-                 :style                    (style/input @(:focused? state)
-                                                        @(:saved-emoji-kb-extra-height props))
+                 :style                    (style/input props state)
                  :accessibility-label      :chat-message-input}]
                [gradients/view props state animations show-bottom-gradient?]]
               [images/images-list]
