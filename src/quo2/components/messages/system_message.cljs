@@ -172,31 +172,33 @@
           :style {:color (get-color :time)}}
          (utils/truncate-str (:info content) 24)])]]]])
 
-(defn system-message
+(defn- f-system-message
   [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
-  [:f>
-   (fn []
-     (let [sv-color (reanimated/use-shared-value
-                     (get-color :bg (if animate-landing? :landed :default) type))]
-       (when animate-landing?
-         (reanimated/animate-shared-value-with-delay
-          sv-color
-          (get-color :bg :default type)
-          0
-          :linear
-          1000))
-       [reanimated/touchable-opacity
-        {:on-press      #(when-not non-pressable?
-                           (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
-         :on-long-press on-long-press
-         :style         (reanimated/apply-animations-to-style
-                         {:background-color sv-color}
-                         (merge
-                          {:flex-direction     :row
-                           :flex               1
-                           :border-radius      16
-                           :padding-vertical   9
-                           :padding-horizontal 11
-                           :background-color   sv-color}
-                          style))}
-        [sm-render message labels]]))])
+  (let [sv-color (reanimated/use-shared-value
+                  (get-color :bg (if animate-landing? :landed :default) type))]
+    (when animate-landing?
+      (reanimated/animate-shared-value-with-delay
+       sv-color
+       (get-color :bg :default type)
+       0
+       :linear
+       1000))
+    [reanimated/touchable-opacity
+     {:on-press      #(when-not non-pressable?
+                        (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
+      :on-long-press on-long-press
+      :style         (reanimated/apply-animations-to-style
+                      {:background-color sv-color}
+                      (merge
+                       {:flex-direction     :row
+                        :flex               1
+                        :border-radius      16
+                        :padding-vertical   9
+                        :padding-horizontal 11
+                        :background-color   sv-color}
+                       style))}
+     [sm-render message labels]]))
+
+(defn system-message
+  [message]
+  [:f> f-system-message message])

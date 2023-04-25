@@ -37,14 +37,6 @@
 
 (def dismiss-keyboard! #(.dismiss keyboard))
 
-(defn use-window-dimensions
-  []
-  (let [window ^js (react-native/useWindowDimensions)]
-    {:font-scale (.-fontScale window)
-     :height     (.-height window)
-     :scale      (.-scale window)
-     :width      (.-width window)}))
-
 (defn hide-splash-screen
   []
   (.hide ^js (-> react-native .-NativeModules .-SplashScreen)))
@@ -63,17 +55,15 @@
   [handler]
   (.addChangeListener appearance handler))
 
-(defn get-window
-  []
-  (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
+(def get-window
+  (memoize
+   (fn []
+     (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))))
 
-(def status-bar (.-StatusBar ^js react-native))
-
-(def style-sheet (.-StyleSheet ^js react-native))
-
-(defn status-bar-height
-  []
-  (.-currentHeight ^js status-bar))
+(def get-screen
+  (memoize
+   (fn []
+     (js->clj (.get (.-Dimensions ^js react-native) "screen") :keywordize-keys true))))
 
 (defn hw-back-add-listener
   [callback]

@@ -40,35 +40,34 @@
             selected-items                  (case @selected-tab
                                               :joined  joined
                                               :pending pending
-                                              :opened  opened)]
-        [safe-area/consumer
-         (fn [{:keys [top]}]
-           [:<>
-            [rn/flat-list
-             {:key-fn                            :id
-              :content-inset-adjustment-behavior :never
-              :header                            [rn/view {:height (+ 245 top)}]
-              :render-fn                         item-render
-              :data                              selected-items}]
-            [rn/view
-             {:style (style/blur-container top)}
-             [blur/view
-              {:blur-amount (if platform/ios? 20 10)
-               :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-               :style       style/blur}]
-             [common.home/top-nav]
-             [common.home/title-column
-              {:label               (i18n/label :t/communities)
-               :handler             #(rf/dispatch [:bottom-sheet/show-sheet-old :add-new {}])
-               :accessibility-label :new-chat-button}]
-             [quo/discover-card
-              {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-               :title               (i18n/label :t/discover)
-               :description         (i18n/label :t/whats-trending)
-               :accessibility-label :communities-home-discover-card}]
-             [quo/tabs
-              {:size           32
-               :style          style/tabs
-               :on-change      #(reset! selected-tab %)
-               :default-active @selected-tab
-               :data           tabs-data}]]])]))))
+                                              :opened  opened)
+            top                             (safe-area/get-top)]
+        [:<>
+         [rn/flat-list
+          {:key-fn                            :id
+           :content-inset-adjustment-behavior :never
+           :header                            [rn/view {:height (+ 245 top)}]
+           :render-fn                         item-render
+           :data                              selected-items}]
+         [rn/view
+          {:style (style/blur-container top)}
+          [blur/view
+           {:blur-amount (if platform/ios? 20 10)
+            :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+            :style       style/blur}]
+          [common.home/top-nav]
+          [common.home/title-column
+           {:label               (i18n/label :t/communities)
+            :handler             #(rf/dispatch [:bottom-sheet/show-sheet-old :add-new {}])
+            :accessibility-label :new-chat-button}]
+          [quo/discover-card
+           {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+            :title               (i18n/label :t/discover)
+            :description         (i18n/label :t/whats-trending)
+            :accessibility-label :communities-home-discover-card}]
+          [quo/tabs
+           {:size           32
+            :style          style/tabs
+            :on-change      #(reset! selected-tab %)
+            :default-active @selected-tab
+            :data           tabs-data}]]]))))

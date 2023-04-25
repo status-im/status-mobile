@@ -56,16 +56,14 @@
 
 (defn new-to-status
   []
-  [:f>
-   (fn []
-     (let [{:keys [top]} (safe-area/use-safe-area)]
-       [:<>
-        [background/view true]
-        [rn/view {:style style/content-container}
-         [navigation-bar/navigation-bar
-          {:top                   top
-           :right-section-buttons [{:type                :blur-bg
-                                    :icon                :i/info
-                                    :icon-override-theme :dark
-                                    :on-press            #(js/alert "Info pressed")}]}]
-         [sign-in-options]]]))])
+  (let [{:keys [top]} (safe-area/get-insets)]
+    [:<>
+     [background/view true]
+     [rn/view {:style style/content-container}
+      [navigation-bar/navigation-bar
+       {:top                   top
+        :right-section-buttons [{:type                :blur-bg
+                                 :icon                :i/info
+                                 :icon-override-theme :dark
+                                 :on-press            #(js/alert "Info pressed")}]}]
+      [sign-in-options]]]))

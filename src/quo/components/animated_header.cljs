@@ -2,10 +2,10 @@
   (:require [oops.core :refer [oget]]
             [quo.animated :as animated]
             [quo.components.header :as header]
-            [quo.components.safe-area :as safe-area]
             [quo.design-system.colors :as colors]
             [quo.platform :as platform]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [react-native.safe-area :as safe-area]))
 
 (defn header-wrapper-style
   [{:keys [value offset]}]
@@ -95,11 +95,9 @@
 (defn header
   [{:keys [use-insets] :as props} & children]
   (if use-insets
-    [safe-area/consumer
-     (fn [insets]
-       [header-container
-        (-> props
-            (dissoc :use-insets)
-            (assoc :insets insets))
-        children])]
+    [header-container
+     (-> props
+         (dissoc :use-insets)
+         (assoc :insets (safe-area/get-insets)))
+     children]
     [header-container props children]))

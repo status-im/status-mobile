@@ -1,23 +1,30 @@
 (ns react-native.safe-area
-  (:require ["react-native-safe-area-context" :as safe-area-context :refer
-             (SafeAreaProvider SafeAreaInsetsContext useSafeAreaInsets)]
-            [reagent.core :as reagent]))
+  (:require ["react-native-static-safe-area-insets" :default StaticSafeAreaInsets]
+            [oops.core :as oops]
+            [react-native.platform :as platform]
+            [react-native.navigation :as navigation]))
 
-(def ^:private consumer-raw (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
-
-(def provider (reagent/adapt-react-class SafeAreaProvider))
-
-(defn consumer
-  [component]
-  [consumer-raw
-   (fn [^js insets]
-     (reagent/as-element
-      [component (js->clj insets :keywordize-keys true)]))])
-
-(defn use-safe-area
+(defn- get-static-top
   []
-  (let [insets ^js (useSafeAreaInsets)]
-    {:top    (.-top insets)
-     :bottom (.-bottom insets)
-     :left   (.-left insets)
-     :right  (.-right insets)}))
+  (oops/oget StaticSafeAreaInsets "safeAreaInsetsTop"))
+
+(defn- get-static-bottom
+  []
+  (oops/oget StaticSafeAreaInsets "safeAreaInsetsBottom"))
+
+(defn get-top
+  []
+  (if platform/ios?
+    (get-static-top)
+    (navigation/status-bar-height)))
+
+(defn get-bottom
+  []
+  (if platform/ios?
+    (get-static-bottom)
+    0))
+
+(defn get-insets
+  []
+  {:top    (get-top)
+   :bottom (get-bottom)})

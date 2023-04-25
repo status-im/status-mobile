@@ -29,30 +29,32 @@
           :on-press            #(animation/bottom-tab-on-press stack-id)
           :accessibility-label (str (name stack-id) "-tab"))])
 
+(defn- f-bottom-tabs
+  []
+  (let [notifications-data          (rf/sub [:shell/bottom-tabs-notifications-data])
+        pass-through?               (rf/sub [:shell/shell-pass-through?])
+        shared-values               @animation/shared-values-atom
+        original-style              (style/bottom-tabs-container pass-through?)
+        animated-style              (reanimated/apply-animations-to-style
+                                     {:height (:bottom-tabs-height shared-values)}
+                                     original-style)
+        messages-double-tap-gesture (-> (gesture/gesture-tap)
+                                        (gesture/number-of-taps 2)
+                                        (gesture/on-start
+                                         (fn [_event]
+                                           (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
+    (animation/load-stack @animation/selected-stack-id)
+    (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
+    [reanimated/view {:style animated-style}
+     (when pass-through?
+       [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
+     [rn/view {:style (style/bottom-tabs)}
+      [bottom-tab :i/communities :communities-stack shared-values notifications-data]
+      [gesture/gesture-detector {:gesture messages-double-tap-gesture}
+       [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
+      [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+      [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))
+
 (defn bottom-tabs
   []
-  [:f>
-   (fn []
-     (let [notifications-data          (rf/sub [:shell/bottom-tabs-notifications-data])
-           pass-through?               (rf/sub [:shell/shell-pass-through?])
-           shared-values               @animation/shared-values-atom
-           original-style              (style/bottom-tabs-container pass-through?)
-           animated-style              (reanimated/apply-animations-to-style
-                                        {:height (:bottom-tabs-height shared-values)}
-                                        original-style)
-           messages-double-tap-gesture (-> (gesture/gesture-tap)
-                                           (gesture/number-of-taps 2)
-                                           (gesture/on-start
-                                            (fn [_event]
-                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
-       (animation/load-stack @animation/selected-stack-id)
-       (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
-       [reanimated/view {:style animated-style}
-        (when pass-through?
-          [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
-        [rn/view {:style (style/bottom-tabs)}
-         [bottom-tab :i/communities :communities-stack shared-values notifications-data]
-         [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-          [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
-         [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
-         [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))])
+  [:f> f-bottom-tabs])

@@ -10,7 +10,7 @@
             [quo2.components.profile.profile-card.style :as style]
             [quo2.components.avatars.user-avatar.view :as user-avatar]))
 
-(defn- profile-card-component
+(defn- f-profile-card-component
   [{:keys [keycard-account? profile-picture name hash
            customization-color emoji-hash on-options-press
            show-emoji-hash? show-options-button? show-user-hash?
@@ -25,7 +25,7 @@
            last-item?           false
            card-style           {:padding-horizontal 20
                                  :flex               1}}}]
-  (let [{:keys [width]}      (rn/use-window-dimensions)
+  (let [{:keys [width]}      (rn/get-window)
         padding-bottom       (cond
                                login-card?      38
                                show-emoji-hash? 12
@@ -104,4 +104,4 @@
 
 (defn profile-card
   [props]
-  [:f> profile-card-component props])
+  [:f> f-profile-card-component props])

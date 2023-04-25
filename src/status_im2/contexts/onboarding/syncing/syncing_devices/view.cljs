@@ -32,9 +32,6 @@
 
 (defn syncing-devices
   []
-  (fn []
-    [safe-area/consumer
-     (fn [{:keys [top]}]
-       [rn/view {:style {:flex 1}}
-        [background/view true]
-        [page {:navigation-bar-top top}]])]))
+  [rn/view {:style {:flex 1}}
+   [background/view true]
+   [page {:navigation-bar-top (safe-area/get-top)}]])

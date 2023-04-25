@@ -42,6 +42,10 @@
      connection-string
      constants/local-pairing-connection-string-identifier)))
 
+(defn f-use-interval
+  [clock cleanup-clock delay]
+  (hooks/use-interval clock cleanup-clock delay))
+
 (defn view
   []
   (let [valid-for-ms  (reagent/atom code-valid-for-ms)
@@ -67,82 +71,78 @@
                         (reset! code nil)
                         (reset! timestamp nil)
                         (reset! valid-for-ms code-valid-for-ms))]
-    [:f>
-     (fn []
-       (hooks/use-interval clock
-                           cleanup-clock
-                           @delay)
-       [safe-area/consumer
-        (fn [{:keys [top]}]
-          [rn/view {:style (style/container-main top)}
-           [rn/scroll-view {}
-            [navigation-bar]
-            [rn/view {:style style/page-container}
-             [rn/view {:style style/title-container}
+
+    (fn []
+      [:f> f-use-interval clock cleanup-clock @delay]
+      [rn/view {:style (style/container-main (safe-area/get-top))}
+       [rn/scroll-view {}
+        [navigation-bar]
+        [rn/view {:style style/page-container}
+         [rn/view {:style style/title-container}
+          [quo/text
+           {:size   :heading-1
+            :weight :semi-bold
+            :style  {:color colors/white}}
+           (i18n/label :t/setup-syncing)]]
+         [rn/view {:style (style/qr-container (valid-cs? @code))}
+          (if (valid-cs? @code)
+            [qr-code-viewer/qr-code-view 331 @code]
+            [quo/qr-code
+             {:source (resources/get-image :qr-code)
+              :height 220
+              :width  "100%"}])
+          (when-not (valid-cs? @code)
+            [quo/button
+             {:on-press (fn []
+                          ;TODO https://github.com/status-im/status-mobile/issues/15570
+                          ;remove old bottom sheet when Authentication process design is created.
+                          (rf/dispatch [:bottom-sheet/hide-old])
+                          (rf/dispatch [:bottom-sheet/show-sheet-old
+                                        {:content (fn []
+                                                    [enter-password/sheet set-code])}]))
+              :size     40
+              :style    style/generate-button
+              :before   :i/reveal} (i18n/label :t/reveal-sync-code)])
+          (when (valid-cs? @code)
+            [rn/view
+             {:style style/valid-cs-container}
+             [rn/view
+              {:style style/sub-text-container}
               [quo/text
-               {:size   :heading-1
-                :weight :semi-bold
-                :style  {:color colors/white}}
-               (i18n/label :t/setup-syncing)]]
-             [rn/view {:style (style/qr-container (valid-cs? @code))}
-              (if (valid-cs? @code)
-                [qr-code-viewer/qr-code-view 331 @code]
-                [quo/qr-code
-                 {:source (resources/get-image :qr-code)
-                  :height 220
-                  :width  "100%"}])
-              (when-not (valid-cs? @code)
-                [quo/button
-                 {:on-press (fn []
-                              ;TODO https://github.com/status-im/status-mobile/issues/15570
-                              ;remove old bottom sheet when Authentication process design is created.
-                              (rf/dispatch [:bottom-sheet/hide-old])
-                              (rf/dispatch [:bottom-sheet/show-sheet-old
-                                            {:content (fn []
-                                                        [enter-password/sheet set-code])}]))
-                  :size     40
-                  :style    style/generate-button
-                  :before   :i/reveal} (i18n/label :t/reveal-sync-code)])
-              (when (valid-cs? @code)
-                [rn/view
-                 {:style style/valid-cs-container}
-                 [rn/view
-                  {:style style/sub-text-container}
-                  [quo/text
-                   {:size  :paragraph-2
-                    :style {:color colors/white-opa-40}}
-                   (i18n/label :t/sync-code)]
-                  [quo/text
-                   {:size  :paragraph-2
-                    :style {:color (if (< @valid-for-ms one-min-ms)
-                                     colors/danger-60
-                                     colors/white-opa-40)}}
-                   (i18n/label :t/valid-for-time {:valid-for (datetime/ms-to-duration @valid-for-ms)})]]
-                 [quo/input
-                  {:default-value  @code
-                   :type           :password
-                   :override-theme :dark
-                   :default-shown? true
-                   :editable       false}]
-                 [quo/button
-                  {:on-press       (fn []
-                                     (clipboard/set-string @code)
-                                     (rf/dispatch [:toasts/upsert
-                                                   {:icon       :correct
-                                                    :icon-color colors/success-50
-                                                    :text       (i18n/label
-                                                                 :t/sharing-copied-to-clipboard)}]))
-                   :override-theme :dark
-                   :type           :grey
-                   :style          {:margin-top 12}
-                   :before         :i/copy}
-                  (i18n/label :t/copy-qr)]])]]
-            [rn/view {:style style/sync-code}
-             [quo/divider-label
-              {:label                 (i18n/label :t/have-a-sync-code?)
-               :increase-padding-top? true}]
-             [quo/action-drawer
-              [[{:icon           :i/scan
-                 :override-theme :dark
-                 :on-press       #(js/alert "to be implemented")
-                 :label          (i18n/label :t/Scan-or-enter-sync-code)}]]]]]])])]))
+               {:size  :paragraph-2
+                :style {:color colors/white-opa-40}}
+               (i18n/label :t/sync-code)]
+              [quo/text
+               {:size  :paragraph-2
+                :style {:color (if (< @valid-for-ms one-min-ms)
+                                 colors/danger-60
+                                 colors/white-opa-40)}}
+               (i18n/label :t/valid-for-time {:valid-for (datetime/ms-to-duration @valid-for-ms)})]]
+             [quo/input
+              {:default-value  @code
+               :type           :password
+               :override-theme :dark
+               :default-shown? true
+               :editable       false}]
+             [quo/button
+              {:on-press       (fn []
+                                 (clipboard/set-string @code)
+                                 (rf/dispatch [:toasts/upsert
+                                               {:icon       :correct
+                                                :icon-color colors/success-50
+                                                :text       (i18n/label
+                                                             :t/sharing-copied-to-clipboard)}]))
+               :override-theme :dark
+               :type           :grey
+               :style          {:margin-top 12}
+               :before         :i/copy}
+              (i18n/label :t/copy-qr)]])]]
+        [rn/view {:style style/sync-code}
+         [quo/divider-label
+          {:label                 (i18n/label :t/have-a-sync-code?)
+           :increase-padding-top? true}]
+         [quo/action-drawer
+          [[{:icon           :i/scan
+             :override-theme :dark
+             :on-press       #(js/alert "to be implemented")
+             :label          (i18n/label :t/Scan-or-enter-sync-code)}]]]]]])))

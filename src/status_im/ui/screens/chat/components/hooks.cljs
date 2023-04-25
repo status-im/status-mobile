@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.chat.components.hooks
-  (:require [quo.components.safe-area :refer [use-safe-area]]
-            [quo.platform :as platform]
+  (:require [quo.platform :as platform]
             [quo.react :as react]
-            [quo.react-native :refer [use-window-dimensions] :as rn]))
+            [quo.react-native :refer [use-window-dimensions] :as rn]
+            [react-native.safe-area :as safe-area]))
 
 (def ^:private keyboard-change-event (if platform/android? "keyboardDidShow" "keyboardWillChangeFrame"))
 
@@ -12,7 +12,7 @@
 (defn use-keyboard-dimension
   []
   (let [{:keys [height]}  (use-window-dimensions)
-        {:keys [bottom]}  (use-safe-area)
+        bottom            (safe-area/get-bottom)
         keyboard-listener (atom nil)
         keyboard          (react/state
                            {:height       0

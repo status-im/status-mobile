@@ -86,19 +86,18 @@
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
-  (let [status-bar-height (rn/status-bar-height)]
-    [rn/view
-     {:style     style/qr-view-finder
-      :on-layout (fn [event]
-                   (let [layout      (transforms/js->clj (oops/oget event "nativeEvent.layout"))
-                         width       (:width layout)
-                         y           (if platform/android?
-                                       (+ status-bar-height (:y layout))
-                                       (:y layout))
-                         view-finder (-> layout
-                                         (assoc :height width)
-                                         (assoc :y y))]
-                     (reset! qr-view-finder view-finder)))}]))
+  [rn/view
+   {:style     style/qr-view-finder
+    :on-layout (fn [event]
+                 (let [layout      (transforms/js->clj (oops/oget event "nativeEvent.layout"))
+                       width       (:width layout)
+                       y           (if platform/android?
+                                     (+ (safe-area/get-top) (:y layout))
+                                     (:y layout))
+                       view-finder (-> layout
+                                       (assoc :height width)
+                                       (assoc :y y))]
+                   (reset! qr-view-finder view-finder)))}])
 
 
 (defn- border
@@ -168,9 +167,12 @@
                      :override-theme :light
                      :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
-(defn view
+(defn f-view
   []
-  (let [active-tab                (reagent/atom 1)
+  (let [camera-ref                (atom nil)
+        read-qr-once?             (atom false)
+        insets                    (safe-area/get-insets)
+        active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
         {:keys [height width]}    (rf/sub [:dimensions/window])
         request-camera-permission (fn []
@@ -185,55 +187,55 @@
                                                         :override-theme :light
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
-    [:f>
-     (fn []
-       (let [insets            (safe-area/use-safe-area)
-             camera-ref        (atom nil)
-             read-qr-once?     (atom false)
-             holes             (merge @qr-view-finder {:borderRadius 16})
-             scan-qr-code-tab? (= @active-tab 1)
-             show-camera?      (and scan-qr-code-tab? @camera-permission-granted?)
-             show-holes?       (and show-camera?
-                                    (boolean (not-empty @qr-view-finder)))
-             on-read-code      (fn [data]
-                                 (when-not @read-qr-once?
-                                   (reset! read-qr-once? true)
-                                   (js/setTimeout (fn []
-                                                    (reset! read-qr-once? false))
-                                                  3000)
-                                   (check-qr-code-data data)))
-             hole-view-wrapper (if show-camera?
-                                 [hole-view/hole-view
-                                  {:style style/absolute-fill
-                                   :holes (if show-holes?
-                                            [holes]
-                                            [])}]
-                                 [:<>])]
-         (rn/use-effect
-          (fn []
-            (when-not @camera-permission-granted?
-              (permissions/permission-granted? :camera
-                                               #(reset! camera-permission-granted? %)
-                                               #(reset! camera-permission-granted? false)))))
-         [rn/view {:style (style/root-container (:top insets))}
-          (if show-camera?
-            [camera-kit/camera
-             {:ref            #(reset! camera-ref %)
-              :style          (merge style/absolute-fill {:height height :width width})
-              :camera-options {:zoomMode :off}
-              :scan-barcode   true
-              :on-read-code   on-read-code}]
-            [background/view true])
-          (conj hole-view-wrapper
-                [blur/view
-                 {:style         style/absolute-fill
-                  :overlay-color colors/neutral-80-opa-80
-                  :blur-type     :dark
-                  :blur-amount   (if platform/ios? 15 5)}])
-          [header active-tab read-qr-once?]
-          (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder request-camera-permission]
-            2 [enter-sync-code-tab]
-            nil)
-          [rn/view {:style style/flex-spacer}]
-          [bottom-view insets]]))]))
+    (fn []
+      (let [holes             (merge @qr-view-finder {:borderRadius 16})
+            scan-qr-code-tab? (= @active-tab 1)
+            show-camera?      (and scan-qr-code-tab? @camera-permission-granted?)
+            show-holes?       (and show-camera?
+                                   (boolean (not-empty @qr-view-finder)))
+            on-read-code      (fn [data]
+                                (when-not @read-qr-once?
+                                  (reset! read-qr-once? true)
+                                  (js/setTimeout (fn []
+                                                   (reset! read-qr-once? false))
+                                                 3000)
+                                  (check-qr-code-data data)))
+            hole-view-wrapper (if show-camera?
+                                [hole-view/hole-view
+                                 {:style style/absolute-fill
+                                  :holes (if show-holes?
+                                           [holes]
+                                           [])}]
+                                [:<>])]
+        (rn/use-effect
+         (fn []
+           (when-not @camera-permission-granted?
+             (permissions/permission-granted? :camera
+                                              #(reset! camera-permission-granted? %)
+                                              #(reset! camera-permission-granted? false)))))
+        [rn/view {:style (style/root-container (:top insets))}
+         (if show-camera?
+           [camera-kit/camera
+            {:ref            #(reset! camera-ref %)
+             :style          (merge style/absolute-fill {:height height :width width})
+             :camera-options {:zoomMode :off}
+             :scan-barcode   true
+             :on-read-code   on-read-code}]
+           [background/view true])
+         (conj hole-view-wrapper
+               [blur/view
+                {:style         style/absolute-fill
+                 :overlay-color colors/neutral-80-opa-80
+                 :blur-type     :dark
+                 :blur-amount   (if platform/ios? 15 5)}])
+         [header active-tab read-qr-once?]
+         (case @active-tab
+           1 [scan-qr-code-tab qr-view-finder request-camera-permission]
+           2 [enter-sync-code-tab]
+           nil)
+         [rn/view {:style style/flex-spacer}]
+         [bottom-view insets]]))))
+
+(defn view
+  []
+  [:f> f-view])

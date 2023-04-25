@@ -60,62 +60,60 @@
 
 (defn contact-selection-list
   [{:keys [scroll-enabled on-scroll]}]
-  [:f>
-   (fn []
-     (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
-           selected-contacts-count           (rf/sub [:selected-contacts-count])
-           selected-contacts                 (rf/sub [:group/selected-contacts])
-           one-contact-selected?             (= selected-contacts-count 1)
-           contacts-selected?                (pos? selected-contacts-count)
-           {:keys [primary-name public-key]} (when one-contact-selected?
-                                               (rf/sub [:contacts/contact-by-identity
-                                                        (first selected-contacts)]))
-           no-contacts?                      (empty? contacts)]
-       [:<>
-        [quo2/button
-         {:type                      :grey
-          :icon                      true
-          :on-press                  #(rf/dispatch [:navigate-back])
-          :style                     style/contact-selection-close
-          :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
-                                                               quo2.colors/neutral-90)}
-         :i/close]
-        [rn/view style/contact-selection-heading
-         [quo2/text
-          {:weight :semi-bold
-           :size   :heading-1
-           :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}}
-          (i18n/label :t/new-chat)]
-         (when-not no-contacts?
-           [quo2/text
-            {:size   :paragraph-2
-             :weight :regular
-             :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)}}
-            (i18n/label :t/selected-count-from-max
-                        {:selected selected-contacts-count
-                         :max      constants/max-group-chat-participants})])]
-        [rn/view
-         {:style {:flex 1}}
-         (if no-contacts?
-           [no-contacts-view]
-           [gesture/section-list
-            {:key-fn                         :title
-             :sticky-section-headers-enabled false
-             :sections                       (rf/sub [:contacts/filtered-active-sections])
-             :render-section-header-fn       contact-list/contacts-section-header
-             :content-container-style        {:padding-bottom 70}
-             :render-fn                      contact-item-render
-             :scroll-enabled                 @scroll-enabled
-             :on-scroll                      on-scroll}])]
-        (when contacts-selected?
-          [button/button
-           {:type                :primary
-            :style               style/chat-button
-            :accessibility-label :next-button
-            :on-press            (fn []
-                                   (if one-contact-selected?
-                                     (rf/dispatch [:chat.ui/start-chat public-key])
-                                     (rf/dispatch [:navigate-to :new-group])))}
-           (if one-contact-selected?
-             (i18n/label :t/chat-with {:selected-user primary-name})
-             (i18n/label :t/setup-group-chat))])]))])
+  (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+        selected-contacts-count           (rf/sub [:selected-contacts-count])
+        selected-contacts                 (rf/sub [:group/selected-contacts])
+        one-contact-selected?             (= selected-contacts-count 1)
+        contacts-selected?                (pos? selected-contacts-count)
+        {:keys [primary-name public-key]} (when one-contact-selected?
+                                            (rf/sub [:contacts/contact-by-identity
+                                                     (first selected-contacts)]))
+        no-contacts?                      (empty? contacts)]
+    [:<>
+     [quo2/button
+      {:type                      :grey
+       :icon                      true
+       :on-press                  #(rf/dispatch [:navigate-back])
+       :style                     style/contact-selection-close
+       :override-background-color (quo2.colors/theme-colors quo2.colors/neutral-10
+                                                            quo2.colors/neutral-90)}
+      :i/close]
+     [rn/view style/contact-selection-heading
+      [quo2/text
+       {:weight :semi-bold
+        :size   :heading-1
+        :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}}
+       (i18n/label :t/new-chat)]
+      (when-not no-contacts?
+        [quo2/text
+         {:size   :paragraph-2
+          :weight :regular
+          :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)}}
+         (i18n/label :t/selected-count-from-max
+                     {:selected selected-contacts-count
+                      :max      constants/max-group-chat-participants})])]
+     [rn/view
+      {:style {:flex 1}}
+      (if no-contacts?
+        [no-contacts-view]
+        [gesture/section-list
+         {:key-fn                         :title
+          :sticky-section-headers-enabled false
+          :sections                       (rf/sub [:contacts/filtered-active-sections])
+          :render-section-header-fn       contact-list/contacts-section-header
+          :content-container-style        {:padding-bottom 70}
+          :render-fn                      contact-item-render
+          :scroll-enabled                 @scroll-enabled
+          :on-scroll                      on-scroll}])]
+     (when contacts-selected?
+       [button/button
+        {:type                :primary
+         :style               style/chat-button
+         :accessibility-label :next-button
+         :on-press            (fn []
+                                (if one-contact-selected?
+                                  (rf/dispatch [:chat.ui/start-chat public-key])
+                                  (rf/dispatch [:navigate-to :new-group])))}
+        (if one-contact-selected?
+          (i18n/label :t/chat-with {:selected-user primary-name})
+          (i18n/label :t/setup-group-chat))])]))

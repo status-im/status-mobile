@@ -30,7 +30,7 @@
     (reanimated/set-shared-value scroll-y current-y)))
 
 (defn header
-  [{:keys [theme-color display-picture-comp cover-uri title-comp]} top-inset scroll-y]
+  [{:keys [theme-color f-display-picture-comp cover-uri title-comp]} top-inset scroll-y]
   (let [input-range        [0 (* threshold 0.33)]
         picture-scale-down 0.4
         size-animation     (interpolate scroll-y input-range [80 (* 80 picture-scale-down)])
@@ -48,50 +48,49 @@
      [reanimated/view {:style (style/header-bottom-part border-animation)}
       [title-comp]]
      [reanimated/view {:style (style/entity-picture size-animation)}
-      [display-picture-comp image-animation]]]))
+      [:f> f-display-picture-comp image-animation]]]))
+
+(defn- f-animated-header-list
+  [{:keys [header-comp main-comp back-button-on-press] :as params}]
+  (let [window-height           (:height (rn/get-window))
+        {:keys [top bottom]}    (safe-area/get-insets)
+        ;; view height calculation is different because window height is different on iOS and Android:
+        view-height             (if platform/ios?
+                                  (- window-height bottom)
+                                  (+ window-height top))
+        initial-y               (if platform/ios? (- top) 0)
+        scroll-y                (reanimated/use-shared-value initial-y)
+        opacity-animation       (interpolate scroll-y
+                                             [(* threshold 0.33) (* threshold 0.66)]
+                                             [0 1])
+        translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [100 56])
+        title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
+    [rn/view {:style (style/container-view view-height)}
+     [rn/touchable-opacity
+      {:active-opacity 1
+       :on-press       back-button-on-press
+       :style          (style/button-container {:left 20})}
+      [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+     [rn/touchable-opacity
+      {:active-opacity 1
+       :style          (style/button-container {:right 20})}
+      [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+     [reanimated/blur-view
+      {:blurAmount   32
+       :blurType     :light
+       :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
+       :style        (style/blur-view opacity-animation)}
+      [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
+       [header-comp]]]
+     [reanimated/flat-list
+      {:data                  [nil]
+       :render-fn             main-comp
+       :key-fn                str
+       :header                (reagent/as-element (header params top scroll-y))
+       ;; TODO: https://github.com/status-im/status-mobile/issues/14924
+       :scroll-event-throttle 8
+       :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))
 
 (defn animated-header-list
-  [{:keys [header-comp main-comp back-button-on-press] :as parameters}]
-  [safe-area/consumer
-   (fn [insets]
-     (let [window-height     (:height (rn/get-window))
-           status-bar-height (rn/status-bar-height)
-           bottom-inset      (:bottom insets)
-           ;; view height calculation is different because window height is different on iOS and Android:
-           view-height       (if platform/ios?
-                               (- window-height bottom-inset)
-                               (+ window-height status-bar-height))
-           initial-y         (if platform/ios? (- (:top insets)) 0)]
-       [:f>
-        (fn []
-          (let [scroll-y                (reanimated/use-shared-value initial-y)
-                opacity-animation       (interpolate scroll-y
-                                                     [(* threshold 0.33) (* threshold 0.66)]
-                                                     [0 1])
-                translate-animation     (interpolate scroll-y [(* threshold 0.66) threshold] [100 56])
-                title-opacity-animation (interpolate scroll-y [(* threshold 0.66) threshold] [0 1])]
-            [rn/view {:style (style/container-view view-height)}
-             [rn/touchable-opacity
-              {:active-opacity 1
-               :on-press       back-button-on-press
-               :style          (style/button-container {:left 20})}
-              [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-             [rn/touchable-opacity
-              {:active-opacity 1
-               :style          (style/button-container {:right 20})}
-              [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-             [reanimated/blur-view
-              {:blurAmount   32
-               :blurType     :light
-               :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
-               :style        (style/blur-view opacity-animation)}
-              [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
-               [header-comp]]]
-             [reanimated/flat-list
-              {:data                  [nil]
-               :render-fn             main-comp
-               :key-fn                str
-               :header                (reagent/as-element (header parameters (:top insets) scroll-y))
-               ;; TODO: https://github.com/status-im/status-mobile/issues/14924
-               :scroll-event-throttle 8
-               :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))]))])
+  [params]
+  [:f> f-animated-header-list params])

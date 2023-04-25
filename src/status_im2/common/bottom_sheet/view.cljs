@@ -50,7 +50,7 @@
 
 (defn view
   [{:keys [hide? insets]} {:keys [content override-theme selected-item]}]
-  (let [{window-height :height} (rn/use-window-dimensions)
+  (let [{window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)
         translate-y             (reanimated/use-shared-value window-height)
         sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height)]

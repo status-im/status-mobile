@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.chat.components.accessory
   (:require [cljs-bean.core :as bean]
             [quo.animated :as animated]
-            [quo.components.safe-area :refer [use-safe-area]]
             [quo.design-system.colors :as colors]
             [quo.platform :as platform]
             [quo.react :as react]
             [quo.react-native :as rn]
             [reagent.core :as reagent]
             [status-im.ui.components.tabbar.core :as tabbar]
-            [status-im.ui.screens.chat.components.hooks :refer [use-keyboard-dimension]]))
+            [status-im.ui.screens.chat.components.hooks :refer [use-keyboard-dimension]]
+            [react-native.safe-area :as safe-area]))
 
 (def duration 250)
 
@@ -51,7 +51,7 @@
              keyboard-max-height   :max-height
              keyboard-end-position :end-position}
             (use-keyboard-dimension)
-            {:keys [bottom]} (use-safe-area)
+            bottom (safe-area/get-bottom)
             {on-layout  :on-layout
              bar-height :height}
             (rn/use-layout)
@@ -121,7 +121,7 @@
              children        :children}
             (bean/bean props)
             {keyboard-max-height :max-height} (use-keyboard-dimension)
-            {:keys [bottom]} (use-safe-area)
+            bottom (safe-area/get-bottom)
             {on-layout  :on-layout
              bar-height :height}
             (rn/use-layout)

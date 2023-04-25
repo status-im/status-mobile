@@ -14,40 +14,42 @@
       :style               style
       :customization-color customization-color}]))
 
+(defn- f-floating-shell-button
+  [dynamic-buttons style opacity-anim]
+  (let [original-style (merge {:flex-direction    :row
+                               :margin-horizontal 12
+                               :pointer-events    :box-none}
+                              style)
+        animated-style (reanimated/apply-animations-to-style
+                        (if opacity-anim
+                          {:opacity opacity-anim}
+                          {})
+                        original-style)]
+    [reanimated/view {:style animated-style}
+     ;; Left Section
+     [rn/view {:style {:flex 1}}
+      [dynamic-button-view :search dynamic-buttons
+       {:position :absolute
+        :right    8}]]
+     ;; Mid Section (jump-to)
+     [dynamic-button-view :jump-to dynamic-buttons nil]
+     ;; Right Section
+     [rn/view {:style {:flex 1}}
+      [rn/view
+       {:style {:position       :absolute
+                :flex-direction :row
+                :right          0}}
+       [dynamic-button-view :mention dynamic-buttons {:margin-left 8}]
+       [dynamic-button-view :notification-down dynamic-buttons {:margin-left 8}]
+       [dynamic-button-view :notification-up dynamic-buttons {:margin-left 8}]
+       [dynamic-button-view :scroll-to-bottom dynamic-buttons {:margin-left 8}]]]]))
+
 (defn floating-shell-button
   "[floating-shell-button dynamic-buttons style opacity-anim pointer-anim]
   dynamic-buttons {:button-type {:on-press on-press :count count}}
   style           override style
   opacity-anim    reanimated value (optional)"
-  ([dynamic-button style]
-   (floating-shell-button dynamic-button style nil))
+  ([dynamic-buttons style]
+   [:f> f-floating-shell-button dynamic-buttons style nil])
   ([dynamic-buttons style opacity-anim]
-   [:f>
-    (fn []
-      (let [original-style (merge {:flex-direction    :row
-                                   :margin-horizontal 12
-                                   :pointer-events    :box-none}
-                                  style)
-            animated-style (reanimated/apply-animations-to-style
-                            (if opacity-anim
-                              {:opacity opacity-anim}
-                              {})
-                            original-style)]
-        [reanimated/view {:style animated-style}
-         ;; Left Section
-         [rn/view {:style {:flex 1}}
-          [dynamic-button-view :search dynamic-buttons
-           {:position :absolute
-            :right    8}]]
-         ;; Mid Section (jump-to)
-         [dynamic-button-view :jump-to dynamic-buttons nil]
-         ;; Right Section
-         [rn/view {:style {:flex 1}}
-          [rn/view
-           {:style {:position       :absolute
-                    :flex-direction :row
-                    :right          0}}
-           [dynamic-button-view :mention dynamic-buttons {:margin-left 8}]
-           [dynamic-button-view :notification-down dynamic-buttons {:margin-left 8}]
-           [dynamic-button-view :notification-up dynamic-buttons {:margin-left 8}]
-           [dynamic-button-view :scroll-to-bottom dynamic-buttons {:margin-left 8}]]]]))]))
+   [:f> f-floating-shell-button dynamic-buttons style opacity-anim]))

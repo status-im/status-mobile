@@ -153,7 +153,7 @@
 ;; `keyboard-hiding?` flag
 ;; 4) we store input content height in `input/input-text-content-heights` atom , we need it when chat
 ;; screen is reopened
-(defn composer
+(defn f-composer
   [_ _]
   (let [text-input-ref (rn/create-ref)
         send-ref       (rn/create-ref)
@@ -162,82 +162,80 @@
                         :text-input-ref text-input-ref
                         :record-ref     record-ref}]
     (fn [chat-id insets]
-      [:f>
-       (fn []
-         (let [reply (rf/sub [:chats/reply-message])
-               edit (rf/sub [:chats/edit-message])
-               suggestions (rf/sub [:chat/mention-suggestions])
-               images (rf/sub [:chats/sending-image])
+      (let [reply (rf/sub [:chats/reply-message])
+            edit (rf/sub [:chats/edit-message])
+            suggestions (rf/sub [:chat/mention-suggestions])
+            images (rf/sub [:chats/sending-image])
 
-               bottom-inset (max 20 (:bottom insets))
-               {window-height :height} (rn/use-window-dimensions)
-               {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-               translate-y (reanimated/use-shared-value 0)
-               bg-opacity (reanimated/use-shared-value 0)
-               bg-bottom (reanimated/use-shared-value (- window-height))
+            bottom-inset (max 20 (:bottom insets))
+            {window-height :height} (rn/get-window)
+            {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
+            translate-y (reanimated/use-shared-value 0)
+            bg-opacity (reanimated/use-shared-value 0)
+            bg-bottom (reanimated/use-shared-value (- window-height))
 
-               suggestions? (and (seq suggestions)
-                                 keyboard-shown
-                                 (not @keyboard-hiding?))
+            suggestions? (and (seq suggestions)
+                              keyboard-shown
+                              (not @keyboard-hiding?))
 
-               max-y (- window-height
-                        (- (if (> keyboard-height 0)
-                             keyboard-height
-                             360)
-                           bottom-inset)
-                        46)
+            max-y (- window-height
+                     (- (if (> keyboard-height 0)
+                          keyboard-height
+                          360)
+                        bottom-inset)
+                     46)
 
-               min-y (+ 108
-                        bottom-inset
-                        (if suggestions?
-                          (min (/ max-y 2)
-                               (+ 16
-                                  (* 46 (dec (count suggestions)))))
-                          (+ 0
-                             (when (and
-                                    (or edit reply)
-                                    (not @input/recording-audio?))
-                               38)
-                             (when (seq images) 80))))
+            min-y (+ 108
+                     bottom-inset
+                     (if suggestions?
+                       (min (/ max-y 2)
+                            (+ 16
+                               (* 46 (dec (count suggestions)))))
+                       (+ 0
+                          (when (and
+                                 (or edit reply)
+                                 (not @input/recording-audio?))
+                            38)
+                          (when (seq images) 80))))
 
-               parent-height (reanimated/use-shared-value min-y)
-               max-parent-height (Math/abs (- max-y 110 bottom-inset))
+            parent-height (reanimated/use-shared-value min-y)
+            max-parent-height (Math/abs (- max-y 110 bottom-inset))
 
-               params
-               (prepare-params
-                [refs window-height translate-y bg-opacity bg-bottom min-y max-y parent-height
-                 max-parent-height chat-id suggestions reply edit images keyboard-shown])
+            params
+            (prepare-params
+             [refs window-height translate-y bg-opacity bg-bottom min-y max-y parent-height
+              max-parent-height chat-id suggestions reply edit images keyboard-shown])
 
-               input-content-change (get-input-content-change params)
-               bottom-sheet-gesture (get-bottom-sheet-gesture params)]
-           (effect! params)
-           [reanimated/view
-            {:style (reanimated/apply-animations-to-style
-                     {:height parent-height}
-                     {})}
-            ;;;;input
-            [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-             [reanimated/view
-              {:style (reanimated/apply-animations-to-style
-                       {:transform [{:translateY translate-y}]}
-                       (style/input-bottom-sheet window-height))}
-              [rn/view {:style (style/bottom-sheet-handle)}]
-              [edit/edit-message-auto-focus-wrapper text-input-ref edit #(clean-and-minimize params)]
-              [reply/reply-message-auto-focus-wrapper text-input-ref reply]
-              [rn/view
-               {:style {:height (- max-y (- min-y 38))}}
-               [input/text-input
-                {:chat-id                chat-id
-                 :on-content-size-change input-content-change
-                 :sending-image          (seq images)
-                 :refs                   refs}]]]]
-            (if suggestions?
-              [mentions/mentions (select-keys params [:refs :suggestions :max-y]) bottom-inset]
-              [controls/view send-ref record-ref params bottom-inset chat-id images
-               edit #(clean-and-minimize params)])
-            ;;;;black background
-            [reanimated/view
-             {:style (reanimated/apply-animations-to-style
-                      {:opacity   bg-opacity
-                       :transform [{:translateY bg-bottom}]}
-                      (style/bottom-sheet-background window-height))}]]))])))
+            input-content-change (get-input-content-change params)
+            bottom-sheet-gesture (get-bottom-sheet-gesture params)]
+        (effect! params)
+        [reanimated/view
+         {:style (reanimated/apply-animations-to-style
+                  {:height parent-height}
+                  {})}
+         ;;;;input
+         [gesture/gesture-detector {:gesture bottom-sheet-gesture}
+          [reanimated/view
+           {:style (reanimated/apply-animations-to-style
+                    {:transform [{:translateY translate-y}]}
+                    (style/input-bottom-sheet window-height))}
+           [rn/view {:style (style/bottom-sheet-handle)}]
+           [edit/edit-message-auto-focus-wrapper text-input-ref edit #(clean-and-minimize params)]
+           [reply/reply-message-auto-focus-wrapper text-input-ref reply]
+           [rn/view
+            {:style {:height (- max-y (- min-y 38))}}
+            [input/text-input
+             {:chat-id                chat-id
+              :on-content-size-change input-content-change
+              :sending-image          (seq images)
+              :refs                   refs}]]]]
+         (if suggestions?
+           [:f> mentions/f-mentions (select-keys params [:refs :suggestions :max-y]) bottom-inset]
+           [controls/view send-ref record-ref params bottom-inset chat-id images
+            edit #(clean-and-minimize params)])
+         ;;;;black background
+         [reanimated/view
+          {:style (reanimated/apply-animations-to-style
+                   {:opacity   bg-opacity
+                    :transform [{:translateY bg-bottom}]}
+                   (style/bottom-sheet-background window-height))}]]))))

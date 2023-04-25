@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.constants
-  (:require [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [utils.re-frame :as rf]))
+  (:require [react-native.platform :as platform]
+            [utils.re-frame :as rf]
+            [react-native.safe-area :as safe-area]))
 
 (def shell-animation-time 200)
 
@@ -15,7 +15,7 @@
 
 (defn status-bar-offset
   []
-  (if platform/android? (rn/status-bar-height) 0))
+  (if platform/android? (safe-area/get-top) 0))
 
 ;; status bar height is not included in : the dimensions/window for devices with a notch
 ;; https://github.com/facebook/react-native/issues/23693#issuecomment-662860819
