@@ -28,16 +28,16 @@
   []
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]} (rf/sub [:chats/current-chat])
-        display-name        (if (= chat-type constants/one-to-one-chat-type)
-                              (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                              (str emoji " " chat-name))
-        online?             (rf/sub [:visibility-status-updates/online? chat-id])
-        contact             (when-not group-chat
-                              (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path          (rf/sub [:chats/photo-path chat-id])
-        avatar-image-key    (if (seq (:images contact))
-                              :profile-picture
-                              :ring-background)]
+        display-name     (if (= chat-type constants/one-to-one-chat-type)
+                           (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                           (str emoji " " chat-name))
+        online?          (rf/sub [:visibility-status-updates/online? chat-id])
+        contact          (when-not group-chat
+                           (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path       (rf/sub [:chats/photo-path chat-id])
+        avatar-image-key (if (seq (:images contact))
+                           :profile-picture
+                           :ring-background)]
     [quo/page-nav
      {:align-mid?            true
       :mid-section           (if group-chat
@@ -68,7 +68,6 @@
   []
   (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id contact-request-state group-chat able-to-send-message?] :as chat}
-<<<<<<< HEAD
         (rf/sub [:chats/current-chat-chat-view])
         insets (safe-area/get-insets)]
     [rn/keyboard-avoiding-view
@@ -79,28 +78,14 @@
      [messages.list/messages-list chat insets]
      (if-not able-to-send-message?
        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-       [:f> composer/f-composer chat-id insets])]))
-=======
-        (rf/sub [:chats/current-chat-chat-view])]
-    [safe-area/consumer
-     (fn [insets]
-       [rn/keyboard-avoiding-view
-        {:style                  {:position :relative :flex 1}
-         :keyboardVerticalOffset (- (:bottom insets))}
-        [page-nav]
-        [pin.banner/banner chat-id]
-        [messages.list/messages-list chat insets]
-        (if-not able-to-send-message?
-          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-          [bottom-sheet-composer/bottom-sheet-composer insets])])]))
+       [bottom-sheet-composer/bottom-sheet-composer insets])]))
 
->>>>>>> 7a153f9a3 (composer reply)
 
 (defn chat
   []
   (reagent/create-class
-   {:component-did-mount    (fn []
-                              (rn/hw-back-remove-listener navigate-back-handler)
-                              (rn/hw-back-add-listener navigate-back-handler))
-    :component-will-unmount (fn [] (rn/hw-back-remove-listener navigate-back-handler))
-    :reagent-render         chat-render}))
+    {:component-did-mount    (fn []
+                               (rn/hw-back-remove-listener navigate-back-handler)
+                               (rn/hw-back-add-listener navigate-back-handler))
+     :component-will-unmount (fn [] (rn/hw-back-remove-listener navigate-back-handler))
+     :reagent-render         chat-render}))
