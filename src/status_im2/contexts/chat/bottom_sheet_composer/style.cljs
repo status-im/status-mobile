@@ -6,16 +6,16 @@
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
 
 (defn shadow
-  [lines]
+  [elevation?]
   (if platform/ios?
     {:shadow-radius  20
      :shadow-opacity (colors/theme-colors 0.1 0.7)
      :shadow-color   colors/neutral-100
      :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
-    {:elevation (if (> lines 1) 10 0)}))
+    {:elevation (if elevation? 10 0)}))
 
 (defn sheet-container
-  [insets opacity lines]
+  [insets opacity elevation?]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    (merge
@@ -29,7 +29,7 @@
      :background-color        (colors/theme-colors colors/white colors/neutral-95)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
-    (shadow lines))))
+    (shadow elevation?))))
 
 (def bar-container
   {:height          constants/bar-container-height
