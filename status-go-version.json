@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.148.3",
-    "commit-sha1": "8608aecdb495b59176afa2609c6c8efb6284cef7",
-    "src-sha256": "0wai1cq0mwrc6757kiyismd08fv1xzjiw99r8y31x7nrfyfl5x6l"
+    "version": "feature/wallet-config-mobile",
+    "commit-sha1": "3c152a56c5383a2f8f27ee65bb1d128aeef93405",
+    "src-sha256": "0b6044ra763cvw5n6yp41vjgwraqa99lm6s3wja89mn1irdswryx"
 }

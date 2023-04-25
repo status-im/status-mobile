@@ -54,6 +54,7 @@
                                    test-helpers.component]}
          :closure-defines
          {status-im2.config/POKT_TOKEN      #shadow/env "POKT_TOKEN"
+          status-im2.config/INFURA_TOKEN      #shadow/env "INFURA_TOKEN"
           status-im2.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
          :compiler-options {:output-feature-set :es5
                             :closure-defines

@@ -101,6 +101,7 @@
                          :verifyTransactionChainID config/verify-transaction-chain-id
                          :upstreamConfig           config/default-network-rpc-url
                          :networkId                config/default-network-id
+                         :poktToken                config/POKT_TOKEN
                          :currentNetwork           config/default-network
                          :previewPrivacy           config/blank-preview?}]
     {effect    request
