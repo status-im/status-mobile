@@ -88,7 +88,6 @@
 
 (defn open-photo-selector
   [{:keys [input-ref]}
-   {:keys [focused?]}
    {:keys [height]}
    insets]
   (permissions/request-permissions
@@ -105,9 +104,9 @@
                                       :t/external-storage-denied)))}))
 
 (defn image-button
-  [props state animations insets]
+  [props animations insets]
   [quo/button
-   {:on-press #(open-photo-selector props state animations insets)
+   {:on-press #(open-photo-selector props animations insets)
     :icon     true
     :type     :outline
     :size     32
@@ -138,7 +137,7 @@
   [rn/view {:style style/actions-container}
    [rn/view {:style {:flex-direction :row}}
     [camera-button]
-    [image-button props state animations insets]
+    [image-button props animations insets]
     [reaction-button]
     [format-button]]
    [send-button props state animations window-height images?]
