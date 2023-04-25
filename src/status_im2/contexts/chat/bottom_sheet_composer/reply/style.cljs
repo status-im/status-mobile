@@ -39,5 +39,3 @@
   {:text-transform :none
    :margin-left    4
    :margin-top     2})
-
-
