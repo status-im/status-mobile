@@ -32,7 +32,8 @@
                   :emoji-kb-extra-height       (atom nil)
                   :saved-emoji-kb-extra-height (atom nil)
                   :replying?                   (atom nil)
-                  :sending-images?             (atom nil)}
+                  :sending-images?             (atom nil)
+                  :editing?                    (atom nil)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -90,7 +91,8 @@
                                                           :lines          lines
                                                           :max-lines      max-lines}
                 show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
-                android-elevation?                       (utils/android-elevation? lines images reply)]
+                android-elevation?                       (utils/android-elevation? lines images reply)
+                edit-text (get-in chat-input [:metadata :editing-message :content :text])]
             (effects/initialize props
                                 state
                                 animations
@@ -99,6 +101,15 @@
                                 keyboard-height
                                 (seq images)
                                 reply)
+            (rn/use-effect
+              (fn []
+                (when (and (not @(:editing? props)) edit-text @(:input-ref props))
+                  (reset! (:editing? props) true)
+                  (reset! (:text-value state) edit-text)
+                  (reset! (:saved-cursor-position state) (count edit-text))
+                  (.focus ^js @(:input-ref props)))
+                (when-not edit-text
+                  (reset! (:editing? props) false))) [edit-text])
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view

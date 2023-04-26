@@ -6,6 +6,7 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
@@ -100,7 +101,8 @@
                        (update-in [:chat/inputs current-chat-id :metadata]
                                   dissoc
                                   :sending-image))}
-              (input/set-input-text text current-chat-id))))
+              (input/set-input-text text current-chat-id)
+              )))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -175,7 +177,8 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
-              {:set-text-input-value [current-chat-id ""]}
+              (when-not config/new-composer-enabled?
+                {:set-text-input-value [current-chat-id ""]})
               (clean-input current-chat-id)
               (mentions/clear-mentions))))
 
@@ -219,7 +222,6 @@
 
 (rf/defn send-edited-message
   [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
-  (let [pinned-message (get-in db [:pin-messages chat-id message-id])]
     (rf/merge
      cofx
      {:json-rpc/call [{:method      "wakuext_editMessage"
@@ -234,7 +236,8 @@
                        :on-success  (fn [result]
                                       (re-frame/dispatch [:sanitize-messages-and-process-response
                                                           result]))}]}
-     (cancel-message-edit))))
+     (cancel-message-edit)
+     ))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
@@ -263,6 +266,7 @@
               :new-text        new-text})
   (rf/merge cofx
             (if editing-message
+              ;(js/alert "send edited message")
               (send-edited-message new-text editing-message)
               (send-messages new-text current-chat-id))))
 

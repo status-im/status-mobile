@@ -14,7 +14,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.actions.style :as style]))
 
 (defn send-message
-  [{:keys [input-ref]}
+  [{:keys [input-ref editing?]}
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height]
@@ -31,6 +31,7 @@
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/set-chat-input-text nil])
+  (reset! editing? false)
   (reset! maximized? false)
   (reset! text-value "")
   (when @input-ref
