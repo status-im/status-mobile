@@ -101,8 +101,8 @@
                        (update-in [:chat/inputs current-chat-id :metadata]
                                   dissoc
                                   :sending-image))}
-              (input/set-input-text text current-chat-id)
-    )))
+              (when-not config/new-composer-enabled?
+                (input/set-input-text text current-chat-id)))))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -236,8 +236,7 @@
                      :on-success  (fn [result]
                                     (re-frame/dispatch [:sanitize-messages-and-process-response
                                                         result]))}]}
-   (cancel-message-edit)
-  ))
+   (cancel-message-edit)))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
@@ -266,7 +265,6 @@
               :new-text        new-text})
   (rf/merge cofx
             (if editing-message
-              ;(js/alert "send edited message")
               (send-edited-message new-text editing-message)
               (send-messages new-text current-chat-id))))
 

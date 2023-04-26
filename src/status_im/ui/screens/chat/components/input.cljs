@@ -213,8 +213,7 @@
         method "wakuext_chatMentionToInputField"]
     {:json-rpc/call [{:method     method
                       :params     params
-                      ;:on-success #(rf/dispatch [:mention/on-to-input-field-success %])
-                      :on-success #(println "SUCCESSS")
+                      :on-success #(rf/dispatch [:mention/on-to-input-field-success %])
                       :on-error   #(rf/dispatch [:mention/on-error
                                                  {:method method
                                                   :params params} %])}]}))
