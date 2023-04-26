@@ -1,5 +1,5 @@
-(ns status-im2.contexts.chat.messages.pin.banner.view-test
-  (:require [status-im2.contexts.chat.messages.pin.banner.view :as view]
+(ns status-im2.utils.message-resolver-test
+  (:require [status-im2.utils.message-resolver :as resolver]
             [cljs.test :as t]
             [utils.re-frame :as rf]))
 
@@ -29,6 +29,6 @@
 (t/deftest test-resolve-message
   (with-redefs [rf/sub sub]
     (t/testing ""
-      (let [text (view/resolve-message parsed-text)]
+      (let [text (resolver/resolve-message parsed-text)]
         (t/is (= text
                  "foobar i just mention you here to debug this issue https://foo.bar , no worries"))))))

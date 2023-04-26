@@ -1,29 +1,8 @@
 (ns status-im2.contexts.chat.messages.pin.banner.view
   (:require [quo2.core :as quo]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
-
-(defn resolve-message
-  [parsed-text]
-  (reduce
-   (fn [acc {:keys [type literal destination] :as some-text}]
-     (str acc
-          (case type
-            "paragraph"
-            (resolve-message (:children some-text))
-
-            "mention"
-            (rf/sub [:messages/resolve-mention literal])
-
-            "status-tag"
-            (str "#" literal)
-
-            "link"
-            destination
-
-            literal)))
-   ""
-   parsed-text))
+            [utils.re-frame :as rf]
+            [status-im2.utils.message-resolver :as resolver]))
 
 (defn banner
   [chat-id]
@@ -35,7 +14,7 @@
         latest-pin-text
         (cond deleted?        (i18n/label :t/message-deleted-for-everyone)
               deleted-for-me? (i18n/label :t/message-deleted-for-you)
-              :else           (resolve-message latest-pin-text))]
+              :else           (resolver/resolve-message latest-pin-text))]
     [quo/banner
      {:latest-pin-text latest-pin-text
       :pins-count      pins-count

@@ -21,7 +21,7 @@
          (constants/content-type-text
           constants/content-type-emoji)
          {:content-type constants/content-type-text
-          :data         (get-in last-message [:content :text])}
+          :data         (get last-message :content)}
 
          ;; Currently mock image is used as placeholder,
          ;; as last-message don't have image
