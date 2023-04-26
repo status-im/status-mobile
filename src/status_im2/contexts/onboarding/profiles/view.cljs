@@ -7,7 +7,7 @@
             [react-native.core :as rn]
             [utils.transforms :as types]
             [utils.security.core :as security]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im2.contexts.onboarding.profiles.style :as style]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.contexts.onboarding.common.background.view :as background]))
@@ -45,7 +45,7 @@
     :close-button-text   (i18n/label :t/cancel)
     :on-press            #(do
                             (rf/dispatch [:hide-bottom-sheet])
-                            (status/delete-multiaccount
+                            (native-module/delete-multiaccount
                              key-uid
                              (fn [result]
                                (let [{:keys [error]} (types/json->clj result)]

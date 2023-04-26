@@ -1,7 +1,7 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
@@ -9,19 +9,19 @@
 (re-frame/reg-fx
  ::hash-transaction
  (fn [{:keys [transaction on-completed]}]
-   (status/hash-transaction (types/clj->json transaction) on-completed)))
+   (native-module/hash-transaction (types/clj->json transaction) on-completed)))
 
 (re-frame/reg-fx
  ::hash-message
  (fn [{:keys [message on-completed]}]
-   (status/hash-message message on-completed)))
+   (native-module/hash-message message on-completed)))
 
 (re-frame/reg-fx
  ::hash-typed-data
  (fn [{:keys [v4 data on-completed]}]
    (if v4
-     (status/hash-typed-data-v4 data on-completed)
-     (status/hash-typed-data data on-completed))))
+     (native-module/hash-typed-data-v4 data on-completed)
+     (native-module/hash-typed-data data on-completed))))
 
 (defn prepare-transaction
   [{:keys [gas gasPrice data nonce tx-obj] :as params}]
@@ -37,17 +37,17 @@
       maxPriorityFeePerGas
       (assoc :maxPriorityFeePerGas
              (str "0x"
-                  (status/number-to-hex
+                  (native-module/number-to-hex
                    (js/parseInt maxPriorityFeePerGas))))
       maxFeePerGas
       (assoc :maxFeePerGas
              (str "0x"
-                  (status/number-to-hex
+                  (native-module/number-to-hex
                    (js/parseInt maxFeePerGas))))
       gas
-      (assoc :gas (str "0x" (status/number-to-hex gas)))
+      (assoc :gas (str "0x" (native-module/number-to-hex gas)))
       gasPrice
-      (assoc :gasPrice (str "0x" (status/number-to-hex gasPrice)))
+      (assoc :gasPrice (str "0x" (native-module/number-to-hex gasPrice)))
       data
       (assoc :data data)
       nonce

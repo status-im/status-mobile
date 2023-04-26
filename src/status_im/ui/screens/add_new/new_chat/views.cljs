@@ -20,7 +20,7 @@
     [status-im.ui.components.react :as react]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.chat.photos :as photos]
-    [status-im2.utils.validators :as validators]
+    [utils.validators :as validators]
     [status-im.utils.gfycat.core :as gfycat]
     [status-im.utils.identicon :as identicon]
     [status-im.utils.utils :as utils]

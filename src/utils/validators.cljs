@@ -1,4 +1,4 @@
-(ns status-im2.utils.validators)
+(ns utils.validators)
 
 (defn valid-public-key?
   [s]

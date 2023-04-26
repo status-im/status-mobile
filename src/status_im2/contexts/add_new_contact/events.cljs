@@ -6,11 +6,12 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im2.navigation.events :as navigation]
-            [status-im2.utils.validators :as validators]
+            [utils.validators :as validators]
             [status-im2.contexts.contacts.events :as data-store.contacts]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im2.constants :as constants]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).
@@ -124,8 +125,9 @@
 (re-frame/reg-fx
  :contacts/decompress-public-key
  (fn [{:keys [compressed-key on-success on-error]}]
-   (status/compressed-key->public-key
+   (native-module/compressed-key->public-key
     compressed-key
+    constants/deserialization-key
     (fn [resp]
       (let [{:keys [error]} (types/json->clj resp)]
         (if error

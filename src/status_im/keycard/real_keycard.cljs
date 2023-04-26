@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
@@ -296,7 +296,7 @@
 
 (defn save-multiaccount-and-login
   [{:keys [key-uid multiaccount-data password settings node-config accounts-data chat-key]}]
-  (status/save-multiaccount-and-login-with-keycard
+  (native-module/save-multiaccount-and-login-with-keycard
    key-uid
    (types/clj->json multiaccount-data)
    password
@@ -307,15 +307,15 @@
 
 (defn login
   [args]
-  (status/login-with-keycard args))
+  (native-module/login-with-keycard args))
 
 (defn send-transaction-with-signature
   [{:keys [transaction signature on-completed]}]
-  (status/send-transaction-with-signature transaction signature on-completed))
+  (native-module/send-transaction-with-signature transaction signature on-completed))
 
 (defn delete-multiaccount-before-migration
   [{:keys [key-uid on-success on-error]}]
-  (status/delete-multiaccount
+  (native-module/delete-multiaccount
    key-uid
    (fn [result]
      (let [{:keys [error]} (types/json->clj result)]

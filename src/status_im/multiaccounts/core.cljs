@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.native-module.core :as native-module]
+            [native-module.core :as native-module]
             [utils.re-frame :as rf]
             [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]

@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.utils.keychain.core :as keychain]
             [status-im2.common.json-rpc.events]
             [status-im2.common.theme.core :as theme]
@@ -25,7 +25,7 @@
 (re-frame/reg-fx
  :setup/open-multiaccounts
  (fn [callback]
-   (status/open-accounts callback)))
+   (native-module/open-accounts callback)))
 
 (re-frame/reg-fx
  :setup/init-theme

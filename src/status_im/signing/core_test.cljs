@@ -1,15 +1,15 @@
 (ns status-im.signing.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.signing.core :as signing]))
 
 (deftest signing-test
   (testing "showing sheet"
     (let [to          "0x2f88d65f3cb52605a54a833ae118fb1363acccd2"
           contract    "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
-          amount1-hex (str "0x" (status/number-to-hex "10000000000000000000"))
-          amount2-hex (str "0x" (status/number-to-hex "100000000000000000000"))
-          data        (status/encode-transfer to amount2-hex)
+          amount1-hex (str "0x" (native-module/number-to-hex "10000000000000000000"))
+          amount2-hex (str "0x" (native-module/number-to-hex "100000000000000000000"))
+          data        (native-module/encode-transfer to amount2-hex)
           first-tx    {:tx-obj {:to    to
                                 :from  nil
                                 :value amount1-hex}}

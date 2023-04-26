@@ -14,7 +14,7 @@
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.multiaccounts.key-storage.core :as key-storage]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.ui.components.list-selection :as list-selection]
     [utils.re-frame :as rf]
     [status-im.utils.hex :as hex]
@@ -74,7 +74,7 @@
     (let [{:keys [id error]} (types/json->clj value)]
       (if error
         (re-frame/dispatch [::new-account-error :password-error error])
-        (status/multiaccount-derive-addresses
+        (native-module/multiaccount-derive-addresses
          id
          [path]
          (fn [derived]
@@ -82,7 +82,7 @@
              (if (some #(= derived-address (get % :address)) accounts)
                (re-frame/dispatch [::new-account-error :account-error
                                    (i18n/label :t/account-exists-title)])
-               (status/multiaccount-store-derived
+               (native-module/multiaccount-store-derived
                 id
                 key-uid
                 [path]
@@ -110,7 +110,7 @@
         (re-frame/dispatch [::new-account-error
                             (if (= error pass-error) :password-error :account-error)
                             error])
-        (status/multiaccount-store-account
+        (native-module/multiaccount-store-account
          id
          key-uid
          hashed-password
@@ -119,7 +119,7 @@
 (re-frame/reg-fx
  ::verify-password
  (fn [{:keys [address hashed-password]}]
-   (status/verify
+   (native-module/verify
     address
     hashed-password
     #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password]))))
@@ -128,7 +128,7 @@
  ::generate-account
  (fn [{:keys [derivation-info hashed-password accounts key-uid]}]
    (let [{:keys [address path]} derivation-info]
-     (status/multiaccount-load-account
+     (native-module/multiaccount-load-account
       address
       hashed-password
       (derive-and-store-account key-uid path hashed-password :generated accounts)))))
@@ -136,7 +136,7 @@
 (re-frame/reg-fx
  ::import-account-seed
  (fn [{:keys [passphrase hashed-password accounts key-uid]}]
-   (status/multiaccount-import-mnemonic
+   (native-module/multiaccount-import-mnemonic
     (mnemonic/sanitize-passphrase (security/unmask passphrase))
     ""
     (derive-and-store-account key-uid constants/path-default-wallet hashed-password :seed accounts))))
@@ -144,7 +144,7 @@
 (re-frame/reg-fx
  ::import-account-private-key
  (fn [{:keys [private-key hashed-password key-uid]}]
-   (status/multiaccount-import-private-key
+   (native-module/multiaccount-import-private-key
     (string/trim (security/unmask private-key))
     (store-account key-uid constants/path-default-wallet hashed-password :key))))
 

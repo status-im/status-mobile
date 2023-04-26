@@ -10,7 +10,7 @@
             status-im.keycard.fx
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [utils.datetime :as datetime]
@@ -250,14 +250,14 @@
 (re-frame/reg-fx
  ::finish-migration
  (fn [[account settings password encryption-pass login-params]]
-   (status/convert-to-keycard-account
+   (native-module/convert-to-keycard-account
     account
     settings
     password
     encryption-pass
     #(let [{:keys [error]} (types/json->clj %)]
        (if (string/blank? error)
-         (status/login-with-keycard login-params)
+         (native-module/login-with-keycard login-params)
          (throw
           (js/Error.
            "Please shake the phone to report this error and restart the app. Migration failed unexpectedly.")))))))

@@ -1,23 +1,23 @@
 (ns status-im.ethereum.core
   (:require [clojure.string :as string]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.native-module.core :as status]))
+            [native-module.core :as native-module]))
 
 (defn sha3
   [s]
   (when s
-    (status/sha3 (str s))))
+    (native-module/sha3 (str s))))
 
 (defn utf8-to-hex
   [s]
-  (let [hex (status/utf8-to-hex (str s))]
+  (let [hex (native-module/utf8-to-hex (str s))]
     (if (empty? hex)
       nil
       hex)))
 
 (defn hex-to-utf8
   [s]
-  (let [utf8 (status/hex-to-utf8 s)]
+  (let [utf8 (native-module/hex-to-utf8 s)]
     (if (empty? utf8)
       nil
       utf8)))
@@ -118,7 +118,7 @@
 (defn address?
   [s]
   (when s
-    (status/address? s)))
+    (native-module/address? s)))
 
 (defn network->chain-id
   [network]

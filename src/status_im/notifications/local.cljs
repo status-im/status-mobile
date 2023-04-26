@@ -11,9 +11,9 @@
             [status-im.notifications.android :as pn-android]
             [utils.re-frame :as rf]
             [status-im.utils.money :as money]
-            [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [react-native.core :as rn]))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -56,7 +56,7 @@
                        (fn [notification]
                          (handle-notification-press {:userInfo (bean/bean (.getData ^js
                                                                                     notification))})))
-    (.addListener ^js react-native-utils/device-event-emitter
+    (.addListener ^js rn/device-event-emitter
                   notification-event-android
                   (fn [^js data]
                     (when (and data (.-dataJSON data))

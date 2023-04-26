@@ -37,6 +37,8 @@
 
 (def dismiss-keyboard! #(.dismiss keyboard))
 
+(def device-event-emitter (.-DeviceEventEmitter ^js react-native))
+
 (defn hide-splash-screen
   []
   (.hide ^js (-> react-native .-NativeModules .-SplashScreen)))

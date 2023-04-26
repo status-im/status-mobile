@@ -30,7 +30,7 @@
     status-im.multiaccounts.logout.core
     [status-im.multiaccounts.model :as multiaccounts.model]
     status-im.multiaccounts.update.core
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     status-im.network.net-info
     status-im.pairing.core
     status-im.profile.core
@@ -88,7 +88,7 @@
 (re-frame/reg-fx
  :ui/close-application
  (fn [_]
-   (status/close-application)))
+   (native-module/close-application)))
 
 (re-frame/reg-fx
  ::app-state-change-fx
@@ -97,7 +97,7 @@
      ;; Change the app theme if the ios device theme was updated when the app was in the background
      ;; https://github.com/status-im/status-mobile/issues/15708
      (theme/change-device-theme (rn/get-color-scheme)))
-   (status/app-state-change state)))
+   (native-module/app-state-change state)))
 
 (re-frame/reg-fx
  :ui/listen-to-window-dimensions-change

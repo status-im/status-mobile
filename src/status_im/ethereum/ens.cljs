@@ -1,6 +1,6 @@
 (ns status-im.ethereum.ens
   (:require [clojure.string :as string]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im2.common.json-rpc.events :as json-rpc]))
 
 ;; this is the addresses of ens registries for the different networks
@@ -66,7 +66,7 @@
                   :params     [chain-id ens-name]
                   :on-success
                   ;;NOTE: returns a timestamp in s and we want ms
-                  #(cb (* (js/Number (status/hex-to-number %)) 1000))}))
+                  #(cb (* (js/Number (native-module/hex-to-number %)) 1000))}))
 
 (defn register-prepare-tx
   [chain-id from ens-name pubkey cb]

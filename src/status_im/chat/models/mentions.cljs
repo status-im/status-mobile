@@ -6,7 +6,7 @@
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]))
+            [native-module.core :as native-module]))
 
 (defn- transfer-input-segments
   [segments]
@@ -56,8 +56,8 @@
                                      :ensVerified   :ens-verified
                                      :added         :added?
                                      :displayName   :display-name
-                                     :searchedText  :searched-text
-                                    })))
+                                     :searchedText  :searched-text})))
+
           {}
           mentionable-users))
 (defn- transfer-mention-result
@@ -237,7 +237,7 @@
  ::reset-text-input-cursor
  (fn [[ref cursor]]
    (when ref
-     (status/reset-keyboard-input
+     (native-module/reset-keyboard-input
       (rn/find-node-handle (react/current-ref ref))
       cursor))))
 
