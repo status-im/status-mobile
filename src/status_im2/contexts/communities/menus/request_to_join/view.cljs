@@ -6,7 +6,8 @@
             [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.requests :as requests]))
+            [utils.requests :as requests]
+            [react-native.gesture :as gesture]))
 
 (defn request-to-join-text
   [is-open?]
@@ -28,7 +29,7 @@
             pending?                       (rf/sub [:communities/my-pending-request-to-join id])
             is-open?                       (not= 3 (:access permissions))]
         [rn/view {:flex 1 :margin-top 40}
-         [rn/scroll-view {:style {:flex 1}}
+         [gesture/scroll-view {:style {:flex 1}}
           [rn/view style/page-container
            [rn/view
             {:style style/title-container}
