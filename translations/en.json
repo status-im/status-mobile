@@ -2079,5 +2079,7 @@
     "community-request-not-accepted-body-text-prefix": "Your request to join",
     "community-request-not-accepted-body-text-suffix": "hasn't been accepted",
     "community-request-pending": "Request pending",
-    "community-request-pending-body-text": "You requested to join"
+    "community-request-pending-body-text": "You requested to join",
+    "community-kicked-heading": "Kicked from community",
+    "community-kicked-body": "You were kicked from"
 }
