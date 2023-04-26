@@ -16,7 +16,7 @@
     :accessibility-label :edit-message}
    [rn/view {:style style/content-container}
     [quo/icon
-     :i/connector
+     :i/connector-dotted
      {:size            16
       :color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
       :container-style style/icon-container}]
