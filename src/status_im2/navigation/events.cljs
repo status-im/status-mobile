@@ -70,7 +70,6 @@
   {:events [:hide-bottom-sheet]}
   [{:keys [db]}]
   (let [{:keys [hide? sheets]} (:bottom-sheet db)]
-    (println :hide-bottom-sheet (not hide?) (seq sheets))
     (when (and (not hide?) (seq sheets))
       {:db (assoc-in db [:bottom-sheet :hide?] true)})))
 
@@ -140,3 +139,11 @@
                                            key-uid
                                            :keycard-pairing]))]
     {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
+
+(rf/defn dismiss-all-overlays
+  {:events [:dissmiss-all-overlays]}
+  [{:keys [db]}]
+  {:dissmiss-all-overlays-fx nil
+   :db                       (-> db
+                                 (dissoc :popover/popover)
+                                 (dissoc :visibility-status-popover/popover))})

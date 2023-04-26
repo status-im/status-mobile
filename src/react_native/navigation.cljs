@@ -41,6 +41,10 @@
   [comp]
   (.catch (.dismissOverlay Navigation comp) #()))
 
+(defn dissmiss-all-overlays
+  []
+  (.catch (.dismissAllOverlays Navigation) #()))
+
 (defn reg-app-launched-listener
   [handler]
   (.registerAppLaunchedListener ^js (.events ^js Navigation) handler))
