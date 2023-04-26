@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.bottom-sheet-composer.view :as bottom-sheet-composer]
             [status-im2.contexts.chat.messages.composer.view :as composer]
@@ -77,12 +78,12 @@
       :keyboardVerticalOffset (- (:bottom insets))}
      [page-nav]
      [pin.banner/banner chat-id]
-     (if constants/new-composer-enabled?
+     (if config/new-composer-enabled?
        [messages.list.new/messages-list chat insets]
        [messages.list/messages-list chat insets])
      (if-not able-to-send-message?
        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-       (if constants/new-composer-enabled?
+       (if config/new-composer-enabled?
          [bottom-sheet-composer/bottom-sheet-composer insets]
          [:f> composer/f-composer chat-id insets]))]))
 
