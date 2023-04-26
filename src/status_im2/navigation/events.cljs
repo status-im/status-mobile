@@ -70,7 +70,6 @@
   {:events [:hide-bottom-sheet]}
   [{:keys [db]}]
   (let [{:keys [hide? sheets]} (:bottom-sheet db)]
-    (println :hide-bottom-sheet (not hide?) (seq sheets))
     (when (and (not hide?) (seq sheets))
       {:db (assoc-in db [:bottom-sheet :hide?] true)})))
 
