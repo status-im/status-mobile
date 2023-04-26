@@ -10,7 +10,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.edit.style :as style]))
 
 (defn edit-message
-  [on-cancel]
+  [cancel]
   [rn/view
    {:style               style/container
     :accessibility-label :edit-message}
@@ -30,7 +30,7 @@
      :size                24
      :accessibility-label :reply-cancel-button
      :on-press            #(do
-                             ;(on-cancel)
+                             (cancel)
                              (rf/dispatch [:chat.ui/cancel-message-edit]))
      :type                :outline}
     [quo/icon :i/close
@@ -38,13 +38,12 @@
       :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]]])
 
 (defn- f-view
-  [edit]
+  [edit cancel]
   (let [height (reanimated/use-shared-value (if edit constants/edit-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if edit constants/edit-container-height 0)) [edit])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when edit [edit-message edit true false false])]))
+     (when edit [edit-message cancel])]))
 
 (defn view
-  [edit]
-  [:f> f-view edit])
-
+  [edit cancel]
+  [:f> f-view edit cancel])

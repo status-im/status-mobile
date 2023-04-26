@@ -14,8 +14,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.actions.style :as style]))
 
 (defn send-message
-  [{:keys [input-ref editing?]}
-   {:keys [text-value focused? maximized?]}
+  [{:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height]
   (reanimated/animate height constants/input-height)
@@ -31,16 +30,12 @@
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/set-chat-input-text nil])
-  (reset! editing? false)
   (reset! maximized? false)
   (reset! text-value "")
-  (when @input-ref
-    (.clear ^js @input-ref))
   (messages.list/scroll-to-bottom))
 
 (defn send-button
-  [props
-   {:keys [text-value] :as state}
+  [{:keys [text-value] :as state}
    animations
    window-height
    images?]
@@ -65,7 +60,7 @@
             {:icon                true
              :size                32
              :accessibility-label :send-message-button
-             :on-press            #(send-message props state animations window-height)}
+             :on-press            #(send-message state animations window-height)}
             :i/arrow-up]])]))])
 
 (defn audio-button
@@ -141,5 +136,5 @@
     [image-button props animations insets]
     [reaction-button]
     [format-button]]
-   [send-button props state animations window-height images?]
+   [send-button state animations window-height images?]
    [audio-button]])

@@ -102,7 +102,7 @@
                                   dissoc
                                   :sending-image))}
               (input/set-input-text text current-chat-id)
-              )))
+    )))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -222,22 +222,22 @@
 
 (rf/defn send-edited-message
   [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
-    (rf/merge
-     cofx
-     {:json-rpc/call [{:method      "wakuext_editMessage"
-                       :params      [{:id           message-id
-                                      :text         text
-                                      :content-type (if (message-content/emoji-only-content?
-                                                         {:text text :response-to quoted-message})
-                                                      constants/content-type-emoji
-                                                      constants/content-type-text)}]
-                       :js-response true
-                       :on-error    #(log/error "failed to edit message " %)
-                       :on-success  (fn [result]
-                                      (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                          result]))}]}
-     (cancel-message-edit)
-     ))
+  (rf/merge
+   cofx
+   {:json-rpc/call [{:method      "wakuext_editMessage"
+                     :params      [{:id           message-id
+                                    :text         text
+                                    :content-type (if (message-content/emoji-only-content?
+                                                       {:text text :response-to quoted-message})
+                                                    constants/content-type-emoji
+                                                    constants/content-type-text)}]
+                     :js-response true
+                     :on-error    #(log/error "failed to edit message " %)
+                     :on-success  (fn [result]
+                                    (re-frame/dispatch [:sanitize-messages-and-process-response
+                                                        result]))}]}
+   (cancel-message-edit)
+  ))
 
 (rf/defn send-current-message
   "Sends message from current chat input"

@@ -59,6 +59,7 @@
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
+  (println "qqq" (oops/oget event "nativeEvent.contentSize.height") keyboard-shown)
   (when keyboard-shown
     (let [content-size (+ (oops/oget event "nativeEvent.contentSize.height")
                           constants/extra-content-offset)
