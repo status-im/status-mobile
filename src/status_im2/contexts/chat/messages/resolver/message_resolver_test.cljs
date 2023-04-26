@@ -1,5 +1,5 @@
-(ns status-im2.utils.message-resolver-test
-  (:require [status-im2.utils.message-resolver :as resolver]
+(ns status-im2.contexts.chat.messages.resolver.message-resolver-test
+  (:require [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
             [cljs.test :as t]
             [utils.re-frame :as rf]))
 
