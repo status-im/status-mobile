@@ -146,4 +146,5 @@
   {:dissmiss-all-overlays-fx nil
    :db                       (-> db
                                  (dissoc :popover/popover)
-                                 (dissoc :visibility-status-popover/popover))})
+                                 (dissoc :visibility-status-popover/popover)
+                                 (assoc-in [:bottom-sheet :hide?] true))})
