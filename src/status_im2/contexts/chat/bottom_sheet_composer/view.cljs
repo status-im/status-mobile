@@ -11,6 +11,7 @@
     [status-im2.contexts.chat.bottom-sheet-composer.images.view :as images]
     [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
     [utils.re-frame :as rf]
+    [status-im2.contexts.chat.bottom-sheet-composer.edit.view :as edit]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [status-im2.contexts.chat.bottom-sheet-composer.actions.view :as actions]
@@ -46,53 +47,54 @@
                   :maximized?            (reagent/atom false)}]
        [:f>
         (fn []
-          (let [images                                   (rf/sub [:chats/sending-image])
-                reply                                    (rf/sub [:chats/reply-message])
+          (let [images                (rf/sub [:chats/sending-image])
+                reply                 (rf/sub [:chats/reply-message])
+                edit                  (rf/sub [:chats/edit-message])
                 {:keys [input-text input-content-height]
-                 :as   chat-input}                       (rf/sub [:chats/current-chat-input])
-                content-height                           (reagent/atom (or input-content-height
-                                                                           constants/input-height))
+                 :as   chat-input} (rf/sub [:chats/current-chat-input])
+                content-height        (reagent/atom (or input-content-height
+                                                        constants/input-height))
                 {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-                kb-height                                (kb/get-kb-height keyboard-height
-                                                                           @(:kb-default-height state))
-                max-height                               (utils/calc-max-height window-height
-                                                                                kb-height
-                                                                                insets
-                                                                                (seq images)
-                                                                                reply)
-                lines                                    (utils/calc-lines @content-height)
-                max-lines                                (utils/calc-lines max-height)
-                initial-height                           (if (> lines 1)
-                                                           constants/multiline-minimized-height
-                                                           constants/input-height)
-                animations                               {:gradient-opacity  (reanimated/use-shared-value
-                                                                              0)
-                                                          :container-opacity (reanimated/use-shared-value
-                                                                              (if (utils/empty-input?
-                                                                                   input-text
-                                                                                   images
-                                                                                   reply)
-                                                                                0.7
-                                                                                1))
-                                                          :height            (reanimated/use-shared-value
-                                                                              initial-height)
-                                                          :saved-height      (reanimated/use-shared-value
-                                                                              initial-height)
-                                                          :last-height       (reanimated/use-shared-value
-                                                                              (utils/bounded-val
-                                                                               @content-height
-                                                                               constants/input-height
-                                                                               max-height))
-                                                          :opacity           opacity
-                                                          :background-y      background-y}
-                dimensions                               {:content-height content-height
-                                                          :max-height     max-height
-                                                          :window-height  window-height
-                                                          :lines          lines
-                                                          :max-lines      max-lines}
-                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
-                android-elevation?                       (utils/android-elevation? lines images reply)
-                edit-text (get-in chat-input [:metadata :editing-message :content :text])]
+                kb-height             (kb/get-kb-height keyboard-height
+                                                        @(:kb-default-height state))
+                max-height            (utils/calc-max-height window-height
+                                                             kb-height
+                                                             insets
+                                                             (seq images)
+                                                             reply)
+                lines                 (utils/calc-lines @content-height)
+                max-lines             (utils/calc-lines max-height)
+                initial-height        (if (> lines 1)
+                                        constants/multiline-minimized-height
+                                        constants/input-height)
+                animations            {:gradient-opacity  (reanimated/use-shared-value
+                                                            0)
+                                       :container-opacity (reanimated/use-shared-value
+                                                            (if (utils/empty-input?
+                                                                  input-text
+                                                                  images
+                                                                  reply)
+                                                              0.7
+                                                              1))
+                                       :height            (reanimated/use-shared-value
+                                                            initial-height)
+                                       :saved-height      (reanimated/use-shared-value
+                                                            initial-height)
+                                       :last-height       (reanimated/use-shared-value
+                                                            (utils/bounded-val
+                                                              @content-height
+                                                              constants/input-height
+                                                              max-height))
+                                       :opacity           opacity
+                                       :background-y      background-y}
+                dimensions            {:content-height content-height
+                                       :max-height     max-height
+                                       :window-height  window-height
+                                       :lines          lines
+                                       :max-lines      max-lines}
+                show-bottom-gradient? (utils/show-bottom-gradient? state dimensions)
+                android-elevation?    (utils/android-elevation? lines images reply)
+                edit-text             (get-in chat-input [:metadata :editing-message :content :text])]
             (effects/initialize props
                                 state
                                 animations
@@ -118,7 +120,8 @@
                                                  android-elevation?)
                :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
-              [reply/view]
+              [reply/view reply]
+              [edit/view edit]
               [reanimated/touchable-opacity
                {:active-opacity      1
                 :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
