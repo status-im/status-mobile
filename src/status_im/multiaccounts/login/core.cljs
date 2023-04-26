@@ -20,7 +20,7 @@
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.node.core :as node]
     [status-im.notifications.core :as notifications]
     [status-im.popover.core :as popover]
@@ -58,22 +58,22 @@
 (re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
-   (status/login-with-config key-uid account-data hashed-password node/login-node-config)))
+   (native-module/login-with-config key-uid account-data hashed-password node/login-node-config)))
 
 (re-frame/reg-fx
  ::export-db
  (fn [[key-uid account-data hashed-password callback]]
-   (status/export-db key-uid account-data hashed-password callback)))
+   (native-module/export-db key-uid account-data hashed-password callback)))
 
 (re-frame/reg-fx
  ::import-db
  (fn [[key-uid account-data hashed-password]]
-   (status/import-db key-uid account-data hashed-password)))
+   (native-module/import-db key-uid account-data hashed-password)))
 
 (re-frame/reg-fx
  ::enable-local-notifications
  (fn []
-   (status/start-local-notifications)))
+   (native-module/start-local-notifications)))
 
 (re-frame/reg-fx
  ::initialize-wallet-connect
@@ -363,7 +363,7 @@
 
 (rf/defn get-node-config
   [_]
-  (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
+  (native-module/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
 
 (rf/defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"

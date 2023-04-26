@@ -1,4 +1,4 @@
-(ns status-im2.utils.message-resolver
+(ns status-im2.contexts.chat.messages.resolver.message-resolver
   (:require [utils.re-frame :as rf]))
 
 (defn resolve-message

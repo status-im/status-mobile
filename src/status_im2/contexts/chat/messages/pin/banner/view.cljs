@@ -2,7 +2,7 @@
   (:require [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.utils.message-resolver :as resolver]))
+            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn banner
   [chat-id]

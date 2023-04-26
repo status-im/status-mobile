@@ -11,7 +11,7 @@
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.native-module.core :as native-module]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]

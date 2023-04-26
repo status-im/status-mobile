@@ -5,7 +5,7 @@
             [react-native.mail :as react-native-mail]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [utils.i18n :as i18n]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
             [status-im.utils.build :as build]
@@ -20,7 +20,7 @@
 (re-frame/reg-fx
  :logs/archive-logs
  (fn [[db-json callback-handler]]
-   (status/send-logs
+   (native-module/send-logs
     db-json
     (string/join "\n" (log/get-logs-queue))
     #(re-frame/dispatch [callback-handler %]))))

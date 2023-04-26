@@ -3,7 +3,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
@@ -17,7 +17,7 @@
 
 ;;; android blacklist based on device info:
 
-(def deviceinfo (status/get-device-model-info))
+(def deviceinfo (native-module/get-device-model-info))
 
 ;; {:model     ?
 ;;   :brand     "Xiaomi"

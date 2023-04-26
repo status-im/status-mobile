@@ -15,7 +15,7 @@
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]))
+            [native-module.core :as native-module]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -88,7 +88,7 @@
 
 (rf/defn handle-desktop-community
   [cofx {:keys [community-id]}]
-  (status/deserialize-and-compress-key
+  (native-module/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
      (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile cofx (str deserialized-key)]))))

@@ -8,7 +8,7 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.shell.cards.style :as style]
             [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.utils.message-resolver :as resolver]))
+            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn content-container
   [type

@@ -6,7 +6,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [utils.i18n :as i18n]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.node.core :as node]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
@@ -44,7 +44,7 @@
 (re-frame/reg-fx
  ::store-multiaccount
  (fn [[id key-uid hashed-password callback]]
-   (status/multiaccount-store-derived
+   (native-module/multiaccount-store-derived
     id
     key-uid
     [constants/path-wallet-root
@@ -69,7 +69,7 @@
       (fn [result]
         (let [derived-data (normalize-derived-data-keys (types/json->clj result))
               public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-          (status/gfycat-identicon-async
+          (native-module/gfycat-identicon-async
            public-key
            (fn [name identicon]
              (let [derived-whisper       (derived-data constants/path-whisper-keyword)
@@ -81,7 +81,7 @@
 (re-frame/reg-fx
  :multiaccount-generate-and-derive-addresses
  (fn []
-   (status/multiaccount-generate-and-derive-addresses
+   (native-module/multiaccount-generate-and-derive-addresses
     5
     12
     [constants/path-whisper
@@ -127,7 +127,7 @@
 (re-frame/reg-fx
  ::save-account-and-login
  (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
-   (status/save-account-and-login
+   (native-module/save-account-and-login
     key-uid
     multiaccount-data
     hashed-password

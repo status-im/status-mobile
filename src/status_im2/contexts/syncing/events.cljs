@@ -1,5 +1,5 @@
 (ns status-im2.contexts.syncing.events
-  (:require [status-im.native-module.core :as status]
+  (:require [native-module.core :as native-module]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
@@ -51,13 +51,13 @@
                                                           :settingCurrentNetwork config/default-network
                                                           :deviceType utils.platform/os}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
-            (status/input-connection-string-for-bootstrapping
+            (native-module/input-connection-string-for-bootstrapping
              connection-string
              config-map
              #(log/info "Initiated local pairing"
                         {:response %
                          :event    :syncing/input-connection-string-for-bootstrapping}))))]
-    (status/prepare-dir-and-update-config "" default-node-config-string callback)))
+    (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
@@ -68,7 +68,7 @@
                           (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
                           (rf/dispatch [:bottom-sheet/hide]))]
     (if valid-password?
-      (let [sha3-pwd   (status/sha3 (str (security/safe-unmask-data entered-password)))
+      (let [sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
             key-uid    (get-in db [:multiaccount :key-uid])
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
@@ -76,7 +76,7 @@
                                                             :password     sha3-pwd
                                                             :deviceType   utils.platform/os}
                                              :serverConfig {:timeout 0}}))]
-        (status/get-connection-string-for-bootstrapping-another-device
+        (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
          #(show-sheet %)))
       (show-sheet ""))))

@@ -1,19 +1,19 @@
-(ns status-im.native-module.core
+(ns native-module.core
   (:require ["react-native" :as react-native]
-            [re-frame.core :as re-frame]
-            [status-im2.utils.validators :as validators]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.react-native :as react-native-utils]
-            [status-im.utils.types :as types]
+            [utils.validators :as validators]
             [taoensso.timbre :as log]
-            [status-im2.constants :as constants]))
+            [react-native.platform :as platform]
+            [react-native.core :as rn]
+            [utils.transforms :as types]))
 
 (defn status
   []
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))
 
-(def adjust-resize 16)
+(defn init
+  [handler]
+  (.addListener ^js rn/device-event-emitter "gethEvent" #(handler (.-jsonEvent ^js %))))
 
 (defn clear-web-data
   []
@@ -72,15 +72,6 @@
      accounts-data
      chat-key)))
 
-(defn login
-  "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid account-data hashed-password]
-  (log/debug "[native-module] login")
-  (clear-web-data)
-  (init-keystore
-   key-uid
-   #(.login ^js (status) account-data hashed-password)))
-
 (defn login-with-config
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid account-data hashed-password config]
@@ -123,11 +114,6 @@
   (clear-web-data)
   (.logout ^js (status)))
 
-(defonce listener
-  (.addListener ^js react-native-utils/device-event-emitter
-                "gethEvent"
-                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
-
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
 
@@ -140,14 +126,6 @@
                             (types/clj->json {:address  address
                                               :password hashed-password})
                             callback))
-
-(defn multiaccount-reset
-  "TODO: this function is not used anywhere
-   if usage isn't planned, remove"
-  [callback]
-  (log/debug "[native-module]  multiaccount-reset")
-  (.multiAccountReset ^js (status)
-                      callback))
 
 (defn multiaccount-derive-addresses
   "NOTE: this should be named derive-accounts
@@ -298,43 +276,13 @@
              :key key})
   (.deserializeAndCompressKey ^js (status) key callback))
 
-
-(defn public-key->compressed-key
-  "Provides public key to status-go and gets back a compressed key via serialization"
-  [public-key callback]
-  (let [serialization-key constants/serialization-key
-        multi-code-prefix constants/multi-code-prefix
-        multi-code-key    (str multi-code-prefix (subs public-key 2))]
-    (log/info "[native-module] Serializing public key"
-              {:fn             :public-key->compressed-key
-               :public-key     public-key
-               :multi-code-key multi-code-key})
-    (.multiformatSerializePublicKey ^js (status) multi-code-key serialization-key callback)))
-
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
-  [public-key callback]
-  (let [deserialization-key constants/deserialization-key]
-    (log/info "[native-module] Deserializing compressed key"
-              {:fn         :compressed-key->public-key
-               :public-key public-key})
-    (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback)))
-
-(defn decompress-public-key
-  "Provides compressed key to status-go and gets back the uncompressed public key"
-  [public-key callback]
-  (log/info "[native-module] Decompressing public key"
-            {:fn         :decompress-public-key
+  [public-key deserialization-key callback]
+  (log/info "[native-module] Deserializing compressed key"
+            {:fn         :compressed-key->public-key
              :public-key public-key})
-  (.decompressPublicKey ^js (status) public-key callback))
-
-(defn compress-public-key
-  "Provides a public key to status-go and gets back a 33bit compressed key back"
-  [public-key callback]
-  (log/info "[native-module] Compressing public key"
-            {:fn         :compress-public-key
-             :public-key public-key})
-  (.compressPublicKey ^js (status) public-key callback))
+  (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback))
 
 (defn hash-typed-data
   "used for keycard"
@@ -388,11 +336,6 @@
   (log/debug "[native-module] send-logs")
   (.sendLogs ^js (status) dbJson js-logs callback))
 
-(defn add-peer
-  [enode on-result]
-  (log/debug "[native-module] add-peer")
-  (.addPeer ^js (status) enode on-result))
-
 (defn close-application
   []
   (log/debug "[native-module] close-application")
@@ -407,11 +350,6 @@
   [state]
   (log/debug "[native-module] app-state-change")
   (.appStateChange ^js (status) state))
-
-(defn stop-local-notifications
-  []
-  (log/debug "[native-module] stop-local-notifications")
-  (.stopLocalNotifications ^js (status)))
 
 (defn start-local-notifications
   []
@@ -433,25 +371,10 @@
      :build-id  (.-buildId status)
      :device-id (.-deviceId status)}))
 
-(defn extract-group-membership-signatures
-  [signature-pairs callback]
-  (log/debug "[native-module] extract-group-membership-signatures")
-  (.extractGroupMembershipSignatures ^js (status) signature-pairs callback))
-
-(defn sign-group-membership
-  [content callback]
-  (log/debug "[native-module] sign-group-membership")
-  (.signGroupMembership ^js (status) content callback))
-
 (defn get-node-config
   [callback]
   (log/debug "[native-module] get-node-config")
   (.getNodeConfig ^js (status) callback))
-
-(defn update-mailservers
-  [enodes on-result]
-  (log/debug "[native-module] update-mailservers")
-  (.updateMailservers ^js (status) enodes on-result))
 
 (defn toggle-webview-debug
   [on]
@@ -483,12 +406,6 @@
   (when (validators/valid-public-key? public-key)
     (.generateAlias ^js (status) public-key)))
 
-(defn generate-gfycat-async
-  "Generate a 3 words random name based on the user public-key, asynchronously"
-  [public-key callback]
-  (when (validators/valid-public-key? public-key)
-    (.generateAliasAsync ^js (status) public-key callback)))
-
 (defn identicon
   "Generate a icon based on a string, synchronously"
   [seed]
@@ -499,11 +416,6 @@
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
   (.encodeTransfer ^js (status) to-norm amount-hex))
-
-(defn encode-function-call
-  [method params]
-  (log/debug "[native-module] encode-function-call")
-  (.encodeFunctionCall ^js (status) method (types/clj->json params)))
 
 (defn decode-parameters
   [bytes-string types]
@@ -555,11 +467,6 @@
   (log/debug "[native-module] to-checksum-address")
   (.toChecksumAddress ^js (status) address))
 
-(defn identicon-async
-  "Generate a icon based on a string, asynchronously"
-  [seed callback]
-  (.identiconAsync ^js (status) seed callback))
-
 (defn gfycat-identicon-async
   "Generate an icon based on a string and 3 words random name asynchronously"
   [seed callback]
@@ -584,16 +491,6 @@
   [key-uid address hashed-password callback]
   (log/debug "[native-module] delete-imported-key")
   (.deleteImportedKey ^js (status) key-uid address hashed-password callback))
-
-(defn activate-keep-awake
-  []
-  (log/debug "[native-module] activateKeepAwake")
-  (.activateKeepAwake ^js (status)))
-
-(defn deactivate-keep-awake
-  []
-  (log/debug "[native-module] deactivateKeepAwake")
-  (.deactivateKeepAwake ^js (status)))
 
 (defn reset-keyboard-input
   [input selection]

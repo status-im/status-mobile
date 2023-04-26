@@ -1,6 +1,6 @@
-(ns status-im2.utils.validators-test
+(ns utils.validators-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [status-im2.utils.validators :refer [valid-compressed-key?]]))
+            [utils.validators :refer [valid-compressed-key?]]))
 
 (deftest test-valid-compressed-key
   (testing "valid"

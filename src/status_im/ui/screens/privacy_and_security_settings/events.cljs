@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
@@ -21,7 +21,7 @@
          (-> masked-password
              security/safe-unmask-data
              ethereum/sha3)]
-     (status/verify
+     (native-module/verify
       address
       hashed-password
       (fn [result]
@@ -29,7 +29,7 @@
           (log/info "[delete-profile] verify-password" result error)
           (if-not (safe-blank? error)
             (callback :wrong-password nil)
-            (status/delete-multiaccount
+            (native-module/delete-multiaccount
              key-uid
              (fn [result]
                (let [{:keys [error]} (types/json->clj result)]

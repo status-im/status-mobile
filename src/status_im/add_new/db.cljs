@@ -1,7 +1,7 @@
 (ns status-im.add-new.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.ethereum.ens :as ens]
-            [status-im2.utils.validators :as validators]))
+            [utils.validators :as validators]))
 
 (defn own-public-key?
   [{:keys [multiaccount]} public-key]

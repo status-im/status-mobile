@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
@@ -62,4 +62,4 @@
 (re-frame/reg-fx
  ::logout
  (fn []
-   (status/logout)))
+   (native-module/logout)))

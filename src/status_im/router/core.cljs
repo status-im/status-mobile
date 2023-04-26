@@ -9,9 +9,9 @@
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.utils.types :as types]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im2.utils.validators :as validators]
+            [utils.validators :as validators]
             [status-im.utils.http :as http]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
@@ -83,8 +83,9 @@
                  :ens-name   ens-name})
 
       valid-compressed-key?
-      (status/compressed-key->public-key
+      (native-module/compressed-key->public-key
        user-id
+       constants/deserialization-key
        (fn [response]
          (let [{:keys [error]} (types/json->clj response)]
            (when-not error

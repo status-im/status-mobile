@@ -12,11 +12,11 @@ status-im.chat.models.message-content/actions
 status-im.chat.models.message-content/blank-string
 status-im.chat.models.message-content/sorted-ranges
 status-im.ethereum.mnemonic/words->passphrase
-status-im.native-module.core/listener
-status-im.native-module.core/multiaccount-reset
-status-im.native-module.core/extract-group-membership-signatures
-status-im.native-module.core/sign-group-membership
-status-im.native-module.core/update-mailservers
+native-module.core/listener
+native-module.core/multiaccount-reset
+native-module.core/extract-group-membership-signatures
+native-module.core/sign-group-membership
+native-module.core/update-mailservers
 status-im.ethereum.abi-spec/bytes-to-hex
 status-im.android.core/init
 status-im.chat.models.message/transport-keys

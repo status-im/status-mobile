@@ -2,7 +2,7 @@
   (:require ["@react-native-community/netinfo" :default net-info]
             [re-frame.core :as re-frame]
             [status-im.mobile-sync-settings.core :as mobile-network]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]))
@@ -59,4 +59,4 @@
 (re-frame/reg-fx
  :network/notify-status-go
  (fn [[network-type expensive?]]
-   (status/connection-change network-type expensive?)))
+   (native-module/connection-change network-type expensive?)))
