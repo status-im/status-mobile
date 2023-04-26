@@ -30,8 +30,7 @@
 (re-frame/reg-fx
  :setup/init-theme
  (fn []
-   (theme/add-device-theme-change-listener
-    #(re-frame/dispatch [:system-theme-mode-changed %]))))
+   (theme/add-device-theme-change-listener)))
 
 (rf/defn initialize-views
   {:events [:setup/initialize-view]}

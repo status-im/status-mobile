@@ -60,6 +60,9 @@
     status-im2.contexts.onboarding.events
     status-im.chat.models.gaps
     [status-im2.navigation.events :as navigation]
+    [status-im2.common.theme.core :as theme]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
     status-im2.contexts.chat.home.events))
 
 (re-frame/reg-fx
@@ -90,6 +93,10 @@
 (re-frame/reg-fx
  ::app-state-change-fx
  (fn [state]
+   (when (and platform/ios? (= state "active"))
+     ;; Change the app theme if the ios device theme was updated when the app was in the background
+     ;; https://github.com/status-im/status-mobile/issues/15708
+     (theme/change-device-theme (rn/get-color-scheme)))
    (status/app-state-change state)))
 
 (re-frame/reg-fx

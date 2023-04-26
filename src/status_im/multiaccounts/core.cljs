@@ -150,6 +150,7 @@
      (re-frame/dispatch [:change-shell-status-bar-style
                          (if (shell.animation/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
+       (rf/dispatch [:dissmiss-all-overlays])
        (hot-reload/reload)
        (when-not (= view-id :shell-stack)
          (re-frame/dispatch [:change-shell-nav-bar-color nav-bar-color]))))))

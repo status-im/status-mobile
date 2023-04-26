@@ -160,6 +160,8 @@
 ;; OVERLAY
 (def dissmiss-overlay navigation/dissmiss-overlay)
 
+(def dissmiss-all-overlays navigation/dissmiss-all-overlays)
+
 (defn show-overlay
   ([comp] (show-overlay comp {}))
   ([comp opts]
@@ -172,6 +174,8 @@
                                             :orientation              :portrait}
                                   :overlay {:interceptTouchOutside true}}
                                  opts)}})))
+
+(re-frame/reg-fx :dissmiss-all-overlays-fx dissmiss-all-overlays)
 
 ;; toast
 (navigation/register-component "toasts" (fn [] views/toasts) js/undefined)
