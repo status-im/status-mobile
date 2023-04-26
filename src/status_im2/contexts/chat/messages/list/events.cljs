@@ -16,6 +16,7 @@
 (defn prepare-message
   [{:keys [message-id
            clock-value
+           album-id
            message-type
            from
            outgoing
@@ -36,7 +37,8 @@
        :type              :message
        :message-id        message-id
        :outgoing          (boolean outgoing)
-       :albumize?         albumize?}
+       ;; always albumize outgoing (image already loaded) messages
+       :albumize?         (if (and album-id outgoing) true albumize?)}
       add-datemark
       add-timestamp))
 
