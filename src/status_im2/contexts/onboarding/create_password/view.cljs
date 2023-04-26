@@ -166,7 +166,7 @@
           [rn/view {:style style/disclaimer-container}
            [quo/disclaimer
             {:blur?     true
-             :on-change #(reset! accepts-disclaimer? %)
+             :on-change #(swap! accepts-disclaimer? not)
              :checked?  @accepts-disclaimer?}
             (i18n/label :t/password-creation-disclaimer)]]
 
