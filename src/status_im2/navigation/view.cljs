@@ -51,13 +51,13 @@
 
 (defn screen
   [key]
-  (let [{:keys [component options]}
-        (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
-        {:keys [insets sheet?]} options
-        background-color (or (get-in options [:layout :backgroundColor])
-                             (when sheet? :transparent))]
-    (reagent.core/reactify-component
-     (fn []
+  (reagent.core/reactify-component
+   (fn []
+     (let [{:keys [component options]}
+           (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
+           {:keys [insets sheet?]} options
+           background-color (or (get-in options [:layout :backgroundColor])
+                                (when sheet? :transparent))]
        ^{:key (str "root" key @reloader/cnt)}
        [:<>
         [rn/view

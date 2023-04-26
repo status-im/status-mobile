@@ -92,247 +92,250 @@
 
 (def screens-categories
   {:foundations           [{:name      :shadows
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component shadows/preview-shadows}]
    :animated-list         [{:name      :animated-header-list
                             :options   {:topBar {:visible false}}
                             :component animated-header-list/mock-screen}]
    :avatar                [{:name      :group-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component group-avatar/preview-group-avatar}
                            {:name      :icon-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component icon-avatar/preview-icon-avatar}
                            {:name      :user-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component user-avatar/preview-user-avatar}
                            {:name      :wallet-user-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component wallet-user-avatar/preview-wallet-user-avatar}
                            {:name      :channel-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component channel-avatar/preview-channel-avatar}
                            {:name      :account-avatar
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component account-avatar/preview-account-avatar}]
    :banner                [{:name      :banner
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component banner/preview-banner}]
    :buttons               [{:name      :button
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component button/preview-button}
                            {:name      :dynamic-button
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component dynamic-button/preview-dynamic-button}]
    :code                  [{:name      :snippet
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component code-snippet/preview-code-snippet}]
    :colors                [{:name      :color-picker
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component color-picker/preview-color-picker}]
    :community             [{:name      :community-card-view
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component community-card/preview-community-card}
                            {:name      :community-list-view
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component community-list-view/preview-community-list-view}
                            {:name      :community-membership-list-view
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component community-membership-list-view/preview-community-list-view}
                            {:name      :discover-card
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component discover-card/preview-discoverd-card}
                            {:name      :token-gating
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component token-gating/preview-token-gating}]
    :counter               [{:name      :counter
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component counter/preview-counter}
                            {:name      :step
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component step/preview-step}]
    :dividers              [{:name      :divider-label
-                            :inset     {:top false}
+                            :options   {:topBar {:visible true}}
                             :component divider-label/preview-divider-label}
                            {:name      :new-messages
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component new-messages/preview-new-messages}
                            {:name      :divider-date
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component divider-date/preview-divider-date}
                            {:name      :strength-divider
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component strength-divider/preview-strength-divider}]
    :drawers               [{:name      :action-drawers
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component action-drawers/preview-action-drawers}
                            {:name      :drawer-buttons
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component drawer-buttons/preview-drawer-buttons}
                            {:name      :permission-drawers
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component permission-drawers/preview-permission-drawers}]
    :dropdowns             [{:name      :dropdown
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component dropdown/preview-dropdown}]
    :info                  [{:name      :info-message
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component info-message/preview-info-message}
                            {:name      :information-box
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component information-box/preview-information-box}]
    :inputs                [{:name      :input
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component input/preview-input}
                            {:name      :profile-input
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component profile-input/preview-profile-input}
                            {:name      :recovery-phrase-input
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component recovery-phrase-input/preview-recovery-phrase-input}
                            {:name      :search-input
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component search-input/preview-search-input}
                            {:name      :title-input
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component title-input/preview-title-input}]
    :links                 [{:name      :url-preview
-                            :options   {:insets {:top? true}}
+                            :options   {:insets {:top? true}
+                                        :topBar {:visible true}}
                             :component url-preview/preview}
                            {:name      :url-preview-list
-                            :options   {:insets {:top? true}}
+                            :options   {:insets {:top? true}
+                                        :topBar {:visible true}}
                             :component url-preview-list/preview}
                            {:name      :link-preview
-                            :options   {:insets {:top? true}}
+                            :options   {:insets {:top? true}
+                                        :topBar {:visible true}}
                             :component link-preview/preview}]
    :list-items            [{:name      :channel
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component channel/preview-channel}
                            {:name      :preview-lists
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component preview-lists/preview-preview-lists}
                            {:name      :user-list
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component user-list/preview-user-list}]
    :markdown              [{:name      :texts
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component text/preview-text}]
    :messages              [{:name      :gap
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component messages-gap/preview-messages-gap}
                            {:name      :system-messages
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component system-message/preview-system-message}
                            {:name      :author
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component messages-author/preview-author}]
    :navigation            [{:name      :bottom-nav-tab
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component bottom-nav-tab/preview-bottom-nav-tab}
                            {:name      :top-nav
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component top-nav/preview-top-nav}
                            {:name      :page-nav
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component page-nav/preview-page-nav}
                            {:name      :floating-shell-button
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component floating-shell-button/preview-floating-shell-button}]
    :notifications         [{:name      :activity-logs
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component activity-logs/preview-activity-logs}
                            {:name      :toast
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component toast/preview-toasts}
                            {:name      :notification
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component notification/preview-notification}]
    :onboarding            [{:name      :small-option-card
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component small-option-card/preview-small-option-card}]
    :posts-and-attachments [{:name      :messages-skeleton
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component messages-skeleton/preview-messages-skeleton}]
    :password              [{:name      :tips
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component tips/preview-tips}]
    :profile               [{:name      :profile-card
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component profile-card/preview-profile-card}
                            {:name      :collectible
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component collectible/preview-collectible}
                            {:name      :select-profile
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component select-profile/preview-select-profile}]
    :reactions             [{:name      :react
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component react/preview-react}]
    :record-audio          [{:name      :record-audio
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component record-audio/preview-record-audio}]
    :switcher              [{:name      :switcher-cards
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component switcher-cards/preview-switcher-cards}]
    :selectors             [{:name      :disclaimer
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component disclaimer/preview-disclaimer}
                            {:name      :filter
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component filter/preview}
                            {:name      :selectors
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component selectors/preview-selectors}]
    :settings              [{:name      :privacy-option
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component privacy-option/preview-options}
                            {:name      :accounts
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component accounts/preview-accounts}]
    :share                 [{:name      :qr-code
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component qr-code/preview-qr-code}
                            {:name      :share-qr-code
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component share-qr-code/preview-share-qr-code}]
    :tabs                  [{:name      :segmented
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component segmented/preview-segmented}
                            {:name      :tabs
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component tabs/preview-tabs}
                            {:name      :account-selector
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component account-selector/preview-this}]
    :tags                  [{:name      :context-tags
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component context-tags/preview-context-tags}
                            {:name      :tags
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component tags/preview-tags}
                            {:name      :permission-tag
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component permission-tag/preview-permission-tag}
                            {:name      :status-tags
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component status-tags/preview-status-tags}
                            {:name      :token-tag
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component token-tag/preview-token-tag}]
    :text-combinations     [{:name      :title
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component title/preview-title}]
    :wallet                [{:name      :lowest-price
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component lowest-price/preview-lowest-price}
                            {:name      :token-overview
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component token-overview/preview-token-overview}
                            {:name      :network-breakdown
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component network-breakdown/preview-network-breakdown}
                            {:name      :network-amount
-                            :insets    {:top false}
+                            :options   {:topBar {:visible true}}
                             :component network-amount/preview}]})
 
 (def screens (flatten (map val screens-categories)))
@@ -374,5 +377,5 @@
 
 (def main-screens
   [{:name      :quo2-preview
-    :insets    {:top false}
+    :options   {:topBar {:visible true}}
     :component main-screen}])
