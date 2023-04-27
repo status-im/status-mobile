@@ -36,17 +36,17 @@
    :wallet-stack      :wallet-stack-opacity
    :browser-stack     :browser-stack-opacity})
 
-(def stacks-pointer-keywords
-  {:communities-stack :communities-stack-pointer
-   :chats-stack       :chats-stack-pointer
-   :wallet-stack      :wallet-stack-pointer
-   :browser-stack     :browser-stack-pointer})
-
 (def tabs-icon-color-keywords
   {:communities-stack :communities-tab-icon-color
    :chats-stack       :chats-tab-icon-opacity
    :wallet-stack      :wallet-tab-icon-opacity
    :browser-stack     :browser-tab-icon-opacity})
+
+(def stacks-z-index-keywords
+  {:communities-stack :communities-stack-z-index
+   :chats-stack       :chats-stack-z-index
+   :wallet-stack      :wallet-stack-z-index
+   :browser-stack     :browser-stack-z-index})
 
 ;; Home stack states
 

@@ -93,13 +93,13 @@
        (fn [acc id]
          (let [tabs-icon-color-keyword (get shell.constants/tabs-icon-color-keywords id)
                stack-opacity-keyword   (get shell.constants/stacks-opacity-keywords id)
-               stack-pointer-keyword   (get shell.constants/stacks-pointer-keywords id)]
+               stack-z-index-keyword   (get shell.constants/stacks-z-index-keywords id)]
            (assoc
             acc
             stack-opacity-keyword
             (worklets.shell/stack-opacity (name id) selected-stack-id-sv)
-            stack-pointer-keyword
-            (worklets.shell/stack-pointer (name id) selected-stack-id-sv)
+            stack-z-index-keyword
+            (worklets.shell/stack-z-index (name id) selected-stack-id-sv)
             tabs-icon-color-keyword
             (worklets.shell/bottom-tab-icon-color
              (name id)

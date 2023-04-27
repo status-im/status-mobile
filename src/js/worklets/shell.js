@@ -18,11 +18,11 @@ export function stackOpacity (stackId, selectedStackId) {
   );
 }
 
-export function stackPointer (stackId, selectedStackId) {
+export function stackZIndex (stackId, selectedStackId) {
   return useDerivedValue(
     function () {
       'worklet'
-      return selectedStackId.value == stackId ? "auto" : "none";
+      return selectedStackId.value == stackId ? 10 : 9;
     }
   );
 }

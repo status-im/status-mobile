@@ -18,14 +18,12 @@
 
 (defn- f-stack-view
   [stack-id shared-values]
-  ;; TODO lazy loading doesn't work with functional components with hoocks (when (load-stack? stack-id))
-  ;; Error: Rendered more hooks than during the previous render.
   [reanimated/view
    {:style (reanimated/apply-animations-to-style
-            {:opacity        (get shared-values
-                                  (get shell.constants/stacks-opacity-keywords stack-id))
-             :pointer-events (get shared-values
-                                  (get shell.constants/stacks-pointer-keywords stack-id))}
+            {:opacity (get shared-values
+                           (get shell.constants/stacks-opacity-keywords stack-id))
+             :z-index (get shared-values
+                           (get shell.constants/stacks-z-index-keywords stack-id))}
             {:position            :absolute
              :top                 0
              :bottom              0
@@ -37,6 +35,11 @@
      :chats-stack       [chat/home]
      :wallet-stack      [wallet.accounts/accounts-overview]
      :browser-stack     [browser.stack/browser-stack])])
+
+(defn lazy-screen
+  [stack-id shared-values]
+  (when (load-stack? stack-id)
+    [:f> f-stack-view stack-id shared-values]))
 
 (defn f-home-stack
   []
@@ -50,7 +53,7 @@
                                     :transform      [{:scale (:home-stack-scale shared-values)}]}
                                    home-stack-original-style)]
     [reanimated/view {:style home-stack-animated-style}
-     [:f> f-stack-view :communities-stack shared-values]
-     [:f> f-stack-view :chats-stack shared-values]
-     [:f> f-stack-view :browser-stack shared-values]
-     [:f> f-stack-view :wallet-stack shared-values]]))
+     [lazy-screen :communities-stack shared-values]
+     [lazy-screen :chats-stack shared-values]
+     [lazy-screen :browser-stack shared-values]
+     [lazy-screen :wallet-stack shared-values]]))
