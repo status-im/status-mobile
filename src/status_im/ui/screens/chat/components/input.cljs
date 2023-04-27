@@ -198,11 +198,7 @@
     (when platform/android?
       (reset! last-text-change (js/Date.now)))
 
-    (on-text-change text chat-id)
-    ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
-    ;; that's why mention suggestions are calculated on `on-change`
-    (when platform/ios?
-      (re-frame/dispatch [:mention/calculate-suggestions]))))
+    (on-text-change text chat-id)))
 
 (rf/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
@@ -220,26 +216,10 @@
 
 (defn on-text-input
   [chat-id args]
-  (let [native-event  (.-nativeEvent ^js args)
-        text          (.-text ^js native-event)
-        previous-text (.-previousText ^js native-event)
-        range         (.-range ^js native-event)
-        start         (.-start ^js range)
-        end           (.-end ^js range)]
+  (let [native-event (.-nativeEvent ^js args)
+        text         (.-text ^js native-event)]
     (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
-      (swap! mentions-enabled assoc chat-id true))
-
-    (re-frame/dispatch
-     [:mention/on-text-input
-      {:new-text      text
-       :previous-text previous-text
-       :start         start
-       :end           end}])
-    ;; NOTE(rasom): on Android `on-text-input` is dispatched after
-    ;; `on-change`, that's why mention suggestions are calculated
-    ;; on `on-change`
-    (when platform/android?
-      (re-frame/dispatch [:mention/calculate-suggestions]))))
+      (swap! mentions-enabled assoc chat-id true))))
 
 (defn text-input
   [{:keys [set-active-panel refs chat-id sending-image]}]
