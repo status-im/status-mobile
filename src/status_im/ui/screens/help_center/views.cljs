@@ -11,8 +11,7 @@
     :title (i18n/label :t/faq)
     :accessibility-label :faq-button
     :on-press
-    #(.openURL ^js react/linking
-               constants/faq)
+    #(.openURL ^js react/linking constants/faq)
     :chevron true}
    {:size :small
     :title (i18n/label :t/glossary)
@@ -25,13 +24,6 @@
     :accessibility-label :submit-bug-button
     :on-press
     #(re-frame/dispatch [:open-modal :bug-report])
-    :chevron true}
-   {:size :small
-    :title (i18n/label :t/request-feature)
-    :accessibility-label :request-a-feature-button
-    :on-press
-    #(re-frame/dispatch [:chat.ui/start-public-chat
-                         "support"])
     :chevron true}])
 
 (defn help-center

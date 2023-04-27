@@ -7,7 +7,6 @@
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.biometric.views :as biometric]
-            [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.multiaccounts.key-storage.views :as multiaccounts.key-storage]
@@ -166,9 +165,6 @@
 
                   (= :blocked-card view)
                   [keycard.views/blocked-card-popover]
-
-                  (= :export-community view)
-                  [communities/export-community]
 
                   (= :seed-key-uid-mismatch view)
                   [multiaccounts.key-storage/seed-key-uid-mismatch-popover]

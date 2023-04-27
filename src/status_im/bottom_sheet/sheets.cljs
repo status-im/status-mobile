@@ -1,7 +1,6 @@
 (ns status-im.bottom-sheet.sheets
   (:require [utils.re-frame :as rf]
             [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
@@ -26,9 +25,6 @@
 
           (= view :mobile-network-offline)
           (merge mobile-network-settings/offline-sheet)
-
-          (= view :add-new)
-          (merge home.sheet/add-new)
 
           (= view :keycard.login/more)
           (merge keycard/more-sheet)

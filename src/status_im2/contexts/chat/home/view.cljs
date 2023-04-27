@@ -15,7 +15,7 @@
             [react-native.blur :as blur]
             [status-im2.contexts.chat.home.style :as style]
             [react-native.platform :as platform]
-            [status-im2.contexts.chat.sheets.view :as home.sheet]))
+            [status-im2.contexts.chat.actions.view :as home.sheet]))
 
 (defn get-item-layout
   [_ index]
@@ -117,8 +117,7 @@
         [common.home/top-nav]
         [common.home/title-column
          {:label               (i18n/label :t/messages)
-          :handler             #(rf/dispatch [:show-bottom-sheet
-                                              {:content home.sheet/new-chat-bottom-sheet}])
+          :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])
           :accessibility-label :new-chat-button}]
         [quo/discover-card
          {:title       (i18n/label :t/invite-friends-to-status)

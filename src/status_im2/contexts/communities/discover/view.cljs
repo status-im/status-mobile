@@ -7,7 +7,7 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
-            [status-im2.contexts.communities.menus.community-options.view :as options]
+            [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.components.react :as react]
             [status-im2.common.scroll-page.view :as scroll-page]

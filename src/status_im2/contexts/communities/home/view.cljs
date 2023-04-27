@@ -4,13 +4,14 @@
             [reagent.core :as reagent]
             [react-native.core :as rn]
             [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.communities.menus.community-options.view :as options]
+            [status-im2.contexts.communities.actions.community-options.view :as options]
             [utils.re-frame :as rf]
             [react-native.safe-area :as safe-area]
             [react-native.blur :as blur]
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.communities.home.style :as style]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -58,7 +59,7 @@
           [common.home/top-nav]
           [common.home/title-column
            {:label               (i18n/label :t/communities)
-            :handler             #(rf/dispatch [:bottom-sheet/show-sheet-old :add-new {}])
+            :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
             :accessibility-label :new-chat-button}]
           [quo/discover-card
            {:on-press            #(rf/dispatch [:navigate-to :discover-communities])

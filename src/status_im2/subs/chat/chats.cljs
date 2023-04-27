@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as db]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
@@ -10,7 +9,6 @@
             [utils.image-server :as image-server]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.events :as chat.events]
-            [utils.i18n :as i18n]
             [quo2.theme :as theme]))
 
 (re-frame/reg-sub

@@ -505,7 +505,7 @@
             (handle-response response-js)))
 
 (rf/defn open-create-community
-  {:events [::open-create-community]}
+  {:events [:legacy-only-for-e2e/open-create-community]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (assoc db :communities/create {:membership constants/community-no-membership-access})}

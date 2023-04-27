@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.menus.generic-menu.style)
+(ns status-im2.contexts.communities.actions.generic-menu.style)
 
 (def container
   {:flex          1

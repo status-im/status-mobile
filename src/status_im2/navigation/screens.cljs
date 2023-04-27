@@ -28,7 +28,7 @@
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
-    [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]
+    [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]))
 
 (defn screens

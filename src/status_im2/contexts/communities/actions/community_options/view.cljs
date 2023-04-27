@@ -1,9 +1,9 @@
-(ns status-im2.contexts.communities.menus.community-options.view
+(ns status-im2.contexts.communities.actions.community-options.view
   (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [status-im2.contexts.communities.menus.see-rules.view :as see-rules]
-            [status-im2.contexts.communities.menus.leave.view :as leave-menu]))
+            [status-im2.contexts.communities.actions.see-rules.view :as see-rules]
+            [status-im2.contexts.communities.actions.leave.view :as leave-menu]))
 
 (defn hide-sheet-and-dispatch
   [event]

@@ -1,8 +1,8 @@
-(ns status-im2.contexts.communities.menus.request-to-join.view
+(ns status-im2.contexts.communities.actions.request-to-join.view
   (:require [react-native.core :as rn]
-            [status-im2.contexts.communities.menus.community-rules-list.view :as community-rules]
+            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
             [reagent.core :as reagent]
-            [status-im2.contexts.communities.menus.request-to-join.style :as style]
+            [status-im2.contexts.communities.actions.request-to-join.style :as style]
             [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]

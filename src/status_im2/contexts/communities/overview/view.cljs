@@ -10,7 +10,7 @@
             [status-im2.constants :as constants]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.overview.style :as style]
-            [status-im2.contexts.communities.menus.community-options.view :as options]
+            [status-im2.contexts.communities.actions.community-options.view :as options]
             [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.re-frame :as rf]))

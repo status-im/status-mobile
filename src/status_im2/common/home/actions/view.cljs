@@ -433,15 +433,6 @@
     (notification-actions item inside-chat?)
     (destructive-actions item)]])
 
-(defn public-chat-actions
-  [{:keys [chat-id] :as item} inside-chat?]
-  [quo/action-drawer
-   [[(group-details-entry chat-id)
-     (when inside-chat?
-       (add-members-entry))]
-    (notification-actions item inside-chat?)
-    (destructive-actions item)]])
-
 (defn private-group-chat-actions
   [item inside-chat?]
   [quo/action-drawer
@@ -470,8 +461,6 @@
   (case chat-type
     constants/one-to-one-chat-type
     [one-to-one-actions item inside-chat?]
-    constants/public-chat-type
-    [public-chat-actions item inside-chat?]
     constants/private-group-chat-type
     [private-group-chat-actions item inside-chat?]))
 

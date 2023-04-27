@@ -4,10 +4,8 @@
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
-            [status-im.utils.universal-links.utils :as universal-links]))
+            [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -35,41 +33,6 @@
        :accessibility-label :mark-all-read-button
        :icon                :main-icons/check
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :negative
-       :title               (i18n/label :t/delete-chat)
-       :accessibility-label :delete-chat-button
-       :icon                :main-icons/delete
-       :on-press            #(re-frame/dispatch [:chat.ui/show-remove-confirmation chat-id])}]]))
-
-(defn public-chat-accents
-  [chat-id]
-  (let [link    (universal-links/generate-link :public-chat :external chat-id)
-        message (i18n/label :t/share-public-chat-text {:link link})]
-    [react/view
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/share-chat)
-       :accessibility-label :share-chat-button
-       :icon                :main-icons/share
-       :on-press            (fn []
-                              (re-frame/dispatch [:bottom-sheet/hide-old])
-                              ;; https://github.com/facebook/react-native/pull/26839
-                              (js/setTimeout
-                               #(list-selection/open-share {:message message})
-                               250))}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/mark-all-read)
-       :accessibility-label :mark-all-read-button
-       :icon                :main-icons/check
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/clear-history)
-       :accessibility-label :clear-history-button
-       :icon                :main-icons/close
-       :on-press            #(re-frame/dispatch [:chat.ui/show-clear-history-confirmation chat-id])}]
      [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/delete-chat)
@@ -150,11 +113,6 @@
   [{:keys [chat-type chat-id]
     :as   current-chat}]
   (cond
-    (#{constants/public-chat-type
-       constants/profile-chat-type
-       constants/timeline-chat-type}
-     chat-type)
-    [public-chat-accents chat-id]
 
     (= chat-type constants/community-chat-type)
     [community-chat-accents current-chat]
