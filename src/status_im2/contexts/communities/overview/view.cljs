@@ -13,47 +13,23 @@
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [status-im2.contexts.communities.overview.utils :as utils]
+            [status-im2.common.password-authentication.view :as password-authentication]
             [utils.re-frame :as rf]))
 
 (defn preview-user-list
   [user-list]
-  [rn/view style/preview-user
-   [quo/preview-list
-    {:type      :user
-     :list-size (count user-list)
-     :size      24}
-    user-list]
-   [quo/text
-    {:accessibility-label :communities-screen-title
-     :style               {:margin-left 8}
-     :size                :label}
-    (utils/join-existing-users-string user-list)]])
-
-(defn channel-token-gating-details
-  [name token-gating emoji channel-color]
-  [rn/view {:height 350 :margin-top 20}
-   [quo/token-gating
-    {:channel {:name                   name
-               :community-color        channel-color
-               :emoji                  emoji
-               :emoji-background-color channel-color
-               :on-enter-channel       (fn []
-                                         (js/alert
-                                          "Entered channel"
-                                          "Wuhuu!! You successfully entered the channel :)"))
-               :gates                  token-gating}}]])
-
-(defn open-channel-token-gating-details
-  [name token-gating emoji channel-color]
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:content
-     (fn []
-       [channel-token-gating-details name token-gating emoji channel-color])}]))
-
-(defn layout-y
-  [event]
-  (oops/oget event "nativeEvent.layout.y"))
+  (when (seq user-list)
+    [rn/view style/preview-user
+     [quo/preview-list
+      {:type      :user
+       :list-size (count user-list)
+       :size      24}
+      user-list]
+     [quo/text
+      {:accessibility-label :communities-screen-title
+       :style               {:margin-left 8}
+       :size                :label}
+      (utils/join-existing-users-string user-list)]]))
 
 (defn add-category-height
   [categories-heights category height]
@@ -65,17 +41,18 @@
   [community-id category-id collapsed?]
   (rf/dispatch [:communities/toggle-collapsed-category community-id category-id (not collapsed?)]))
 
+(defn layout-y
+  [event]
+  (oops/oget event "nativeEvent.layout.y"))
+
 (defn channel-list-component
-  [{:keys [on-category-layout
-           community-id
-           on-first-channel-height-changed]}
+  [{:keys [on-category-layout community-id on-first-channel-height-changed]}
    channels-list]
   [rn/view
-   {:on-layout #(on-first-channel-height-changed (+ (if platform/ios?
-                                                      0
-                                                      38)
-                                                    (int (Math/ceil (layout-y %))))
-                                                 (into #{} (map (comp :name second) channels-list)))
+   {:on-layout #(on-first-channel-height-changed
+                 (+ (if platform/ios? 0 38)
+                    (int (Math/ceil (layout-y %))))
+                 (into #{} (map (comp :name second) channels-list)))
     :style     {:margin-top 20 :flex 1}}
    (map
     (fn [[category-id {:keys [chats name collapsed?]}]]
@@ -123,10 +100,68 @@
     constants/community-on-request-access      :request-access
     :unknown-access))
 
+(defn join-gated-community
+  [id]
+  (rf/dispatch [:password-authentication/show
+                {:content (fn [] [password-authentication/view])}
+                {:label    (i18n/label :t/join-open-community)
+                 :on-press #(rf/dispatch [:communities/request-to-join-with-password id %])}]))
+
+(defn info-button
+  []
+  [rn/touchable-without-feedback
+   {:on-press
+    #(rf/dispatch
+      [:show-bottom-sheet
+       {:content
+        (fn []
+          [quo/documentation-drawers
+           {:title        (i18n/label :t/token-gated-communities)
+            :show-button? true
+            :button-label (i18n/label :t/read-more)
+            :button-icon  :info}
+           [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+   [rn/view
+    [quo/icon :i/info {:no-color true}]]])
+
+(defn token-gates
+  [{:keys [id]}]
+  (rf/dispatch [:communities/check-permissions-to-join-community id])
+  (fn [{:keys [id community-color]}]
+    (let [{:keys [can-request-access?
+                  number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
+      [rn/view {:style (style/token-gated-container)}
+       [rn/view
+        {:style {:padding-horizontal 12
+                 :flex-direction     :row
+                 :align-items        :center
+                 :justify-content    :space-between
+                 :flex               1}}
+        [quo/text {:weight :medium}
+         (if can-request-access?
+           (i18n/label :t/you-eligible-to-join)
+           (i18n/label :t/you-not-eligible-to-join))]
+        [info-button]]
+       [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
+        (if can-request-access?
+          (i18n/label :t/you-hold-number-of-hold-tokens-of-these
+                      {:number-of-hold-tokens number-of-hold-tokens})
+          (i18n/label :t/you-must-hold))]
+       [quo/token-requirement-list
+        {:tokens   tokens
+         :padding? true}]
+       [quo/button
+        {:on-press                  #(join-gated-community id)
+         :accessibility-label       :join-community-button
+         :override-background-color community-color
+         :style                     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :disabled                  (not can-request-access?)
+         :before                    (if can-request-access? :i/unlocked :i/locked)}
+        (i18n/label :t/join-open-community)]])))
+
 (defn join-community
-  [{:keys [joined can-join?
-           community-color permissions]
-    :as   community} pending?]
+  [{:keys [joined can-join? community-color permissions token-permissions] :as community}
+   pending?]
   (let [access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)
@@ -134,15 +169,16 @@
         node-offline?   (and can-join? (not joined) pending?)]
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
-       [quo/button
-        {:on-press                  #(rf/dispatch [:open-modal :community-requests-to-join community])
-         :accessibility-label       :show-request-to-join-screen-button
-         :override-background-color community-color
-         :style                     style/join-button
-         :before                    :i/communities}
-        (request-to-join-text is-open?)])
+       (if token-permissions
+         [token-gates community]
+         [quo/button
+          {:on-press                  #(rf/dispatch [:open-modal :community-requests-to-join community])
+           :accessibility-label       :show-request-to-join-screen-button
+           :override-background-color community-color
+           :before                    :i/communities}
+          (request-to-join-text is-open?)]))
 
-     (when (and (not (or joined pending?)) (not (or is-open? node-offline?)))
+     (when (and (not (or joined pending? token-permissions)) (not (or is-open? node-offline?)))
        [quo/text
         {:size  :paragraph-2
          :style style/review-notice}
@@ -155,38 +191,24 @@
          :style {:margin-top 12}}
         (i18n/label :t/request-processed-after-node-online)])]))
 
-(defn get-tag
-  [joined]
-  [quo/status-tag
-   {:status {:type (if joined :positive :pending)}
-    :label  (if joined
-              (i18n/label :t/joined)
-              (i18n/label :t/pending))}])
-
-(defn community-token-gating-details
-  [name thumbnail-image tokens]
-  [rn/view {:height 200 :margin-top 20}
-   [quo/token-gating
-    {:community {:name                     name
-                 :community-color          colors/primary-50
-                 :community-avatar-img-src thumbnail-image
-                 :gates                    tokens}}]])
+(defn status-tag
+  [pending? joined]
+  (when (or pending? joined)
+    [rn/view {:position :absolute :top 12 :right 12}
+     [quo/status-tag
+      {:status {:type (if joined :positive :pending)}
+       :label  (if joined
+                 (i18n/label :t/joined)
+                 (i18n/label :t/pending))}]]))
 
 (defn add-on-press-handler
-  [community-id {:keys [name emoji id locked? token-gating] :or {locked? false} :as chat}]
+  [community-id {:keys [id locked?] :or {locked? false} :as chat}]
   (merge
    chat
-   (if (and locked? token-gating)
-     {:on-press #(open-channel-token-gating-details
-                  name
-                  token-gating
-                  emoji
-                  (colors/custom-color :pink 50))}
-
-     (when (and (not locked?) id)
-       {:on-press (fn []
-                    (rf/dispatch [:dismiss-keyboard])
-                    (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))}))))
+   (when (and (not locked?) id)
+     {:on-press (fn []
+                  (rf/dispatch [:dismiss-keyboard])
+                  (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))})))
 
 (defn add-on-press-handler-to-chats
   [community-id chats]
@@ -206,7 +228,8 @@
     :number-of-lines     1
     :ellipsize-mode      :tail
     :weight              :semi-bold
-    :size                :heading-1}
+    :size                :heading-1
+    :style               {:margin-top 56}}
    name])
 
 (defn community-description
@@ -221,49 +244,20 @@
    description])
 
 (defn community-content
-  [{:keys [name description locked joined images
-           status tokens tags id]
+  [{:keys [name description joined tags id]
     :as   community}
    pending?
-   {:keys [on-category-layout
-           on-first-channel-height-changed]}]
-  (let [thumbnail-image   (:thumbnail images)
-        chats-by-category (rf/sub [:communities/categorized-channels id])
-        users             (rf/sub [:communities/users id])]
-    [rn/view
+   {:keys [on-category-layout on-first-channel-height-changed]}]
+  (let [chats-by-category (rf/sub [:communities/categorized-channels id])]
+    [:<>
      [rn/view {:padding-horizontal 20}
-      (when (and (not joined)
-                 (not pending?)
-                 (= status :gated))
-        [rn/view
-         {:position :absolute
-          :top      8
-          :right    8}
-         [quo/permission-tag-container
-          {:locked   locked
-           :status   status
-           :tokens   tokens
-           :on-press #(rf/dispatch
-                       [:show-bottom-sheet
-                        {:content
-                         (fn []
-                           [community-token-gating-details
-                            name
-                            thumbnail-image
-                            tokens])}])}]])
-      (when (or pending? joined)
-        [rn/view
-         {:position :absolute
-          :top      12
-          :right    12}
-         [get-tag joined]])
-      [rn/view {:margin-top 56}
-       [community-header name]]
+      [status-tag pending? joined]
+      [community-header name]
       [community-description description]
-      [quo/community-stats-column :card-view]
+      ;; [quo/community-stats-column :card-view] not implemented
       [rn/view {:margin-top 12}]
       [quo/community-tags tags]
-      [preview-user-list users]
+      ;;[preview-user-list users] not implemented
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout

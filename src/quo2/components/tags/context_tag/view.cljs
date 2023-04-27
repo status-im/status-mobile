@@ -47,23 +47,24 @@
         empty-photo?      (empty? photo)
         avatar-size       :xxs
         avatar-outer-size (get-in user-avatar-style/sizes [avatar-size :outer])]
-    [base-tag (assoc-in params [:style :padding-left] 3)
-     (if (and empty-photo? no-avatar-placeholder?)
-       [rn/view {:style {:width avatar-outer-size}}]
-       [user-avatar/user-avatar
-        {:full-name         name
-         :profile-picture   photo
-         :size              avatar-size
-         :status-indicator? false}])
-     [rn/view {:style style/context-tag-text-container}
-      [text/text text-params (str " " name)]
-      (when channel-name
-        [:<>
-         [icons/icon
-          :i/chevron-right
-          {:color (style/context-tag-icon-color blur?)
-           :size  16}]
-         [text/text text-params (str "# " channel-name)]])]]))
+    [rn/view {:flex-direction :row}
+     [base-tag (assoc-in params [:style :padding-left] 3)
+      (if (and empty-photo? no-avatar-placeholder?)
+        [rn/view {:style {:width avatar-outer-size}}]
+        [user-avatar/user-avatar
+         {:full-name         name
+          :profile-picture   photo
+          :size              avatar-size
+          :status-indicator? false}])
+      [rn/view {:style style/context-tag-text-container}
+       [text/text text-params (str " " name)]
+       (when channel-name
+         [:<>
+          [icons/icon
+           :i/chevron-right
+           {:color (style/context-tag-icon-color blur?)
+            :size  16}]
+          [text/text text-params (str "# " channel-name)]])]]]))
 
 (defn user-avatar-tag
   [params username photo]

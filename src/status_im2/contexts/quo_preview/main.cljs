@@ -150,7 +150,8 @@
                             :options   {:topBar {:visible true}}
                             :component discover-card/preview-discoverd-card}
                            {:name      :token-gating
-                            :options   {:topBar {:visible true}}
+                            :options   {:insets {:bottom? true}
+                                        :topBar {:visible true}}
                             :component token-gating/preview-token-gating}]
    :counter               [{:name      :counter
                             :options   {:topBar {:visible true}}

@@ -1447,7 +1447,7 @@
     "view-details": "View Details",
     "view-signing": "View signing phrase",
     "view-superrare": "View in SuperRare",
-    "view-token-gating": "View token gating",
+    "view-token-gating": "View token requirements",
     "vote-to-feature": "Vote to feature this community",
     "waiting-for-wifi": "No Wi-fi, message syncing disabled.",
     "waiting-for-wifi-change": "Settings",
@@ -2168,5 +2168,11 @@
     "sync-devices-error-sub-title":"Make sure both devices are powered on and connected to the internet.",
     "sync-devices-complete-title": "Device sync complete!",
     "sync-devices-complete-sub-title": "Your devices are now in sync",
-    "sync-with": "Synced with"
+    "sync-with": "Synced with",
+    "you-eligible-to-join": "You’re eligible to join",
+    "you-not-eligible-to-join": "You’re not eligible to join",
+    "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
+    "token-gated-communities": "Token gated communities",
+    "read-more": "Read more",
+    "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it."
 }

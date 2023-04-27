@@ -32,3 +32,10 @@
    :left     0
    :right    0
    :bottom   0})
+
+(defn token-gated-container
+  []
+  {:border-radius 16
+   :border-color  (colors/theme-colors colors/neutral-20 colors/neutral-80)
+   :border-width  1
+   :padding-top   10})

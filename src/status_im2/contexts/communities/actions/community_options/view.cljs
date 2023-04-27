@@ -3,7 +3,8 @@
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [status-im2.contexts.communities.actions.see-rules.view :as see-rules]
-            [status-im2.contexts.communities.actions.leave.view :as leave-menu]))
+            [status-im2.contexts.communities.actions.leave.view :as leave-menu]
+            [status-im2.contexts.communities.actions.token-gating.view :as token-gating]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -29,10 +30,11 @@
 
 (defn view-token-gating
   [id]
-  {:icon                :i/bullet-list
-   :right-icon          :i/token
+  {:icon                :i/token
+   :right-icon          :i/chevron-right
    :accessibility-label :view-token-gating
-   :on-press            #(js/alert (str "implement action" id))
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content (fn [] [token-gating/token-requirements id])}])
    :label               (i18n/label :t/view-token-gating)})
 
 (defn mark-as-read
@@ -152,15 +154,15 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [{:keys [token-gated? admin joined
+  (let [{:keys [token-permissions admin joined
                 muted banList]} (rf/sub [:communities/community id])
         request-id              (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-      admin      (owner-options id token-gated? muted)
-      joined     (joined-options id token-gated? muted)
-      request-id (join-request-sent-options id token-gated? request-id)
-      banList    (banned-options id token-gated?)
-      :else      (not-joined-options id token-gated?))))
+      admin      (owner-options id token-permissions muted)
+      joined     (joined-options id token-permissions muted)
+      request-id (join-request-sent-options id token-permissions request-id)
+      banList    (banned-options id token-permissions)
+      :else      (not-joined-options id token-permissions))))
 
 (defn community-options-bottom-sheet
   [id]

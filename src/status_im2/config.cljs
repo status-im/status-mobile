@@ -8,7 +8,12 @@
 
 (defn enabled? [v] (= "1" v))
 
+(goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
+(goog-define ALCHEMY_ARBITRUM_GOERLI_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
 (goog-define OPENSEA_API_KEY "")
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))

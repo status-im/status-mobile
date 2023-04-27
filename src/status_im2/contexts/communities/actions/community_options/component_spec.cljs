@@ -37,8 +37,8 @@
 
   (h/test "joined options - Token Gated"
     (setup-subs {:communities/my-pending-request-to-join nil
-                 :communities/community                  {:joined       true
-                                                          :token-gated? true}})
+                 :communities/community                  {:joined            true
+                                                          :token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :view-members))
         (.toBeTruthy))
@@ -86,8 +86,8 @@
 
   (h/test "admin options - Token Gated"
     (setup-subs {:communities/my-pending-request-to-join nil
-                 :communities/community                  {:admin        true
-                                                          :token-gated? true}})
+                 :communities/community                  {:admin             true
+                                                          :token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :view-members))
         (.toBeTruthy))
@@ -127,7 +127,7 @@
 
   (h/test "request sent options - Token Gated"
     (setup-subs {:communities/my-pending-request-to-join "mock-id"
-                 :communities/community                  {:token-gated? true}})
+                 :communities/community                  {:token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -157,8 +157,8 @@
 
   (h/test "banned options - Token Gated"
     (setup-subs {:communities/my-pending-request-to-join nil
-                 :communities/community                  {:banList      100
-                                                          :token-gated? true}})
+                 :communities/community                  {:banList           100
+                                                          :token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -171,8 +171,8 @@
 
   (h/test "banned options - Token Gated"
     (setup-subs {:communities/my-pending-request-to-join nil
-                 :communities/community                  {:banList      100
-                                                          :token-gated? true}})
+                 :communities/community                  {:banList           100
+                                                          :token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -185,11 +185,9 @@
 
   (h/test "joined and muted community"
     (setup-subs {:communities/my-pending-request-to-join nil
-                 :communities/community                  {:joined       true
-                                                          :muted        true
-                                                          :token-gated? true}})
+                 :communities/community                  {:joined            true
+                                                          :muted             true
+                                                          :token-permissions []}})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (-> (h/expect (h/get-by-translation-text :unmute-community))
         (.toBeTruthy))))
-
-

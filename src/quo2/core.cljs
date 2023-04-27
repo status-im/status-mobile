@@ -145,8 +145,8 @@
 (def community-title quo2.components.community.community-view/community-title)
 (def permission-tag-container quo2.components.community.community-view/permission-tag-container)
 (def discover-card quo2.components.community.banner.view/view)
-(def token-gating quo2.components.community.token-gating/token-gating)
 (def community-icon quo2.components.community.icon/community-icon)
+(def token-requirement-list quo2.components.community.token-gating/token-requirement-list)
 
 ;;;; COUNTER
 (def counter quo2.components.counter.counter/counter)

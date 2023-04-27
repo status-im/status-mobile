@@ -74,6 +74,7 @@
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 (reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
+(reg-root-key-sub :password-authentication :password-authentication)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network

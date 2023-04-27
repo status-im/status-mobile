@@ -263,16 +263,32 @@
      categories-and-chats)))
 
 (re-frame/reg-sub
- :communities/users
- :<- [:communities]
- (fn [_ [_ _]]
-   [{:full-name "Alicia K"}
-    {:full-name "Marcus C"}
-    {:full-name "MNO PQR"}
-    {:full-name "STU VWX"}]))
-
-(re-frame/reg-sub
  :communities/collapsed-categories-for-community
  :<- [:communities/collapsed-categories]
  (fn [collapsed-categories [_ community-id]]
    (get collapsed-categories community-id)))
+
+(re-frame/reg-sub
+ :community/token-gated-overview
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [token-permissions-check token-permissions checking-permissions? token-images]}] _]
+   {:can-request-access?   (:satisfied token-permissions-check)
+    :number-of-hold-tokens (reduce
+                            (fn [acc [_ {:keys [criteria]}]]
+                              (reduce #(+ %1 (if %2 1 0)) acc criteria))
+                            0
+                            (:permissions token-permissions-check))
+    :tokens                (map (fn [[perm-key {:keys [token_criteria]}]]
+                                  (let [check-criteria (get-in token-permissions-check
+                                                               [:permissions perm-key :criteria])]
+                                    (map
+                                     (fn [{:keys [symbol amount]} sufficient?]
+                                       {:symbol      symbol
+                                        :sufficient? (when (seq check-criteria) sufficient?)
+                                        :loading?    checking-permissions?
+                                        :amount      amount
+                                        :img-src     (get token-images symbol)})
+                                     token_criteria
+                                     (or check-criteria token_criteria))))
+                                token-permissions)}))

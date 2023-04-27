@@ -226,9 +226,8 @@
   [_ _]
   (let [pressed (reagent/atom false)]
     (fn
-      [{:keys [on-press disabled type size community-color community-text-color before after above
-               width customization-color
-               override-theme override-background-color
+      [{:keys [on-press disabled type size before after above
+               width customization-color override-theme override-background-color
                on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
         :or   {type                :primary
                size                40
@@ -247,18 +246,13 @@
         [rn/touchable-without-feedback
          (merge {:test-ID             test-ID
                  :disabled            disabled
-                 :accessibility-label accessibility-label}
+                 :accessibility-label accessibility-label
+                 :on-press-in         #(reset! pressed true)
+                 :on-press-out        #(reset! pressed nil)}
                 (when on-press
-                  {:on-press (fn []
-                               (on-press))})
+                  {:on-press on-press})
                 (when on-long-press
-                  {:on-long-press (fn []
-                                    (on-long-press))})
-                {:on-press-in (fn []
-                                (reset! pressed true))}
-                {:on-press-out (fn []
-                                 (reset! pressed nil))})
-
+                  {:on-long-press on-long-press}))
          [rn/view
           {:style (merge
                    (shape-style-container type icon size)
@@ -277,11 +271,7 @@
                      width
                      before
                      after)
-                    (when
-                      (community-themed? type community-color)
-                      (merge
-                       {:background-color community-color}
-                       (when (= state :pressed) {:opacity 0.9})))
+                    (when (= state :pressed) {:opacity 0.9})
                     inner-style)}
            (when above
              [rn/view
@@ -309,12 +299,7 @@
                {:size            (when (#{56 24} size) :paragraph-2)
                 :weight          :medium
                 :number-of-lines 1
-                :style           {:color (if
-                                           (and
-                                            (community-themed? type community-color)
-                                            (string? community-text-color))
-                                           community-text-color
-                                           label-color)}}
+                :style           {:color label-color}}
 
                children]
 

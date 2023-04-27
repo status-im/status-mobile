@@ -79,29 +79,38 @@
         effect          (if seed-phrase
                           :multiaccount/restore-account-and-login
                           :multiaccount/create-account-and-login)
-        request         {:displayName              display-name
-                         :password                 (ethereum/sha3 (security/safe-unmask-data password))
-                         :mnemonic                 (when seed-phrase
-                                                     (security/safe-unmask-data seed-phrase))
-                         :imagePath                (strip-file-prefix image-path)
-                         :customizationColor       color
-                         :backupDisabledDataDir    (native-module/backup-disabled-data-dir)
-                         :rootKeystoreDir          (native-module/keystore-dir)
+        request         {:displayName                 display-name
+                         :password                    (ethereum/sha3 (security/safe-unmask-data
+                                                                      password))
+                         :mnemonic                    (when seed-phrase
+                                                        (security/safe-unmask-data seed-phrase))
+                         :imagePath                   (strip-file-prefix image-path)
+                         :customizationColor          color
+                         :backupDisabledDataDir       (native-module/backup-disabled-data-dir)
+                         :rootKeystoreDir             (native-module/keystore-dir)
                          ;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is
                          ;; resolved
-                         :wakuV2Nameserver         "1.1.1.1"
-                         :logLevel                 (when log-enabled? config/log-level)
-                         :logEnabled               log-enabled?
-                         :logFilePath              (native-module/log-file-directory)
-                         :openseaAPIKey            config/opensea-api-key
-                         :verifyTransactionURL     config/verify-transaction-url
-                         :verifyENSURL             config/verify-ens-url
-                         :verifyENSContractAddress config/verify-ens-contract-address
-                         :verifyTransactionChainID config/verify-transaction-chain-id
-                         :upstreamConfig           config/default-network-rpc-url
-                         :networkId                config/default-network-id
-                         :currentNetwork           config/default-network
-                         :previewPrivacy           config/blank-preview?}]
+                         :wakuV2Nameserver            "1.1.1.1"
+                         :logLevel                    (when log-enabled? config/log-level)
+                         :logEnabled                  log-enabled?
+                         :logFilePath                 (native-module/log-file-directory)
+                         :openseaAPIKey               config/opensea-api-key
+                         :verifyTransactionURL        config/verify-transaction-url
+                         :verifyENSURL                config/verify-ens-url
+                         :verifyENSContractAddress    config/verify-ens-contract-address
+                         :verifyTransactionChainID    config/verify-transaction-chain-id
+                         :upstreamConfig              config/default-network-rpc-url
+                         :networkId                   config/default-network-id
+                         :poktToken                   config/POKT_TOKEN
+                         :infuraToken                 config/INFURA_TOKEN
+
+                         :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
+                         :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
+                         :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
+                         :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN
+
+                         :currentNetwork              config/default-network
+                         :previewPrivacy              config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
      :db       (-> db

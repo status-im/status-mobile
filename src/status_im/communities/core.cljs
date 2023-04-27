@@ -74,13 +74,19 @@
                         :canJoin                     :can-join?
                         :requestedToJoinAt           :requested-to-join-at
                         :isMember                    :is-member?
-                        :adminSettings               :admin-settings})
+                        :adminSettings               :admin-settings
+                        :tokenPermissions            :token-permissions
+                        :communityTokensMetadata     :tokens-metadata})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
       (update :members walk/stringify-keys)
       (update :chats <-chats-rpc)
-      (update :categories <-categories-rpc)))
+      (update :categories <-categories-rpc)
+      (assoc :token-images
+             (reduce (fn [acc {:keys [symbol image]}] (assoc acc symbol image))
+                     {}
+                     (:communityTokensMetadata c)))))
 
 (defn- fetch-community-id-input
   [{:keys [db]}]
@@ -174,6 +180,7 @@
   (let [community-name (aget response-js "communities" 0 "name")]
     (rf/merge cofx
               (handle-response cofx response-js)
+              (navigation/hide-bottom-sheet)
               (toasts/upsert {:icon       :correct
                               :icon-color (:positive-01 @colors/theme)
                               :text       (i18n/label
@@ -215,14 +222,12 @@
 
 (rf/defn join
   {:events [:communities/join]}
-  [cofx community-id]
+  [_ community-id]
   {:json-rpc/call [{:method      "wakuext_joinCommunity"
                     :params      [community-id]
                     :js-response true
                     :on-success  #(re-frame/dispatch [::joined %])
-                    :on-error    #(do
-                                    (log/error "failed to join community" community-id %)
-                                    (re-frame/dispatch [::failed-to-join %]))}]})
+                    :on-error    #(log/error "failed to join community" community-id %)}]})
 
 (rf/defn request-to-join
   {:events [:communities/request-to-join]}
@@ -231,9 +236,24 @@
                     :params      [{:communityId community-id}]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:communities/requested-to-join %])
-                    :on-error    (fn []
-                                   (log/error "failed to request to join community" community-id)
-                                   (re-frame/dispatch [::failed-to-request-to-join]))}]})
+                    :on-error    #(log/error "failed to request to join community" community-id)}]})
+
+(rf/defn requested-to-join-with-password-error
+  {:events [:communities/requested-to-join-with-password-error]}
+  [{:keys [db]} error]
+  {:db (assoc-in db [:password-authentication :error] error)})
+
+(rf/defn request-to-join-with-password
+  {:events [:communities/request-to-join-with-password]}
+  [_ community-id password]
+  {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
+                    :params      [{:communityId community-id :password password}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:communities/requested-to-join %])
+                    :on-error    (fn [error]
+                                   (log/error "failed to request to join community" community-id error)
+                                   (re-frame/dispatch [:communities/requested-to-join-with-password-error
+                                                       error]))}]})
 
 (rf/defn get-user-requests-to-join
   {:events [:communities/get-user-requests-to-join]}

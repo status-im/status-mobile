@@ -20,6 +20,7 @@
 
 (def context-tag-text-container
   {:align-items    :center
+   :margin-left    4
    :flex-direction :row})
 
 (def audio-tag-container

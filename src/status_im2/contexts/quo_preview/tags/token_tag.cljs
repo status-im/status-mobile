@@ -27,19 +27,11 @@
                :value "1000"}
               {:key   10000
                :value "10000"}]}
-
-   {:label   "Community Color:"
-    :key     :border-color
-    :type    :select
-    :options [{:key   "#00a191"
-               :value "green"}
-              {:key   "red"
-               :value "red"}]}
-   {:label "Is Required:"
-    :key   :is-required
+   {:label "Is Sufficient:"
+    :key   :sufficient?
     :type  :boolean}
    {:label "Is Purchasable:"
-    :key   :is-purchasable
+    :key   :purchasable?
     :type  :boolean}
    {:label   "Token:"
     :key     :token
@@ -54,7 +46,7 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:size :big :value 10 :token "ETH" :is-required true :is-purchasable false})]
+  (let [state (reagent/atom {:size :big :value 10 :token "ETH" :sufficient? false :purchasable? false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

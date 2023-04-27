@@ -26,7 +26,6 @@
     [status-im.ui.screens.communities.membership :as membership]
     [status-im.ui.screens.communities.profile :as community.profile]
     [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
-    [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
     [status-im.ui.screens.communities.select-category :as select-category]
     [status-im.ui.screens.contacts-list.views :as contacts-list]
     [status-im.ui.screens.currency-settings.views :as currency-settings]
@@ -229,10 +228,6 @@
     ;;TODO custom subtitle
     :options   {:insets {:top? true}}
     :component members/members-container}
-   {:name      :community-requests-to-join
-    ;;TODO custom subtitle
-    :options   {:insets {:top? true}}
-    :component requests-to-join/requests-to-join-container}
    {:name      :create-community-channel
     :options   {:topBar {:title {:text (i18n/label :t/create-channel-title)}}
                 :insets {:bottom? true

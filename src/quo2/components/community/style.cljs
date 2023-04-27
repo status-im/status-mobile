@@ -112,3 +112,39 @@
   {:position :absolute
    :top      8
    :right    8})
+
+(def token-tag-spacing
+  {:margin-top   10
+   :margin-right 8})
+
+(defn token-row
+  [padding?]
+  (merge
+   {:flex-direction :row
+    :flex-wrap      :wrap
+    :align-items    :center}
+   (when padding?
+     {:padding-horizontal 12})))
+
+(def token-row-container
+  {:flex-direction :row
+   :align-items    :center
+   :margin-bottom  12})
+
+(defn token-row-or-text
+  [padding?]
+  (merge
+   {:margin-top 4
+    :color      (colors/theme-colors
+                 colors/neutral-50
+                 colors/neutral-40)}
+   (when padding?
+     {:padding-left 12})))
+
+(defn token-row-or-border
+  []
+  {:height           1
+   :background-color (colors/theme-colors
+                      colors/neutral-20
+                      colors/neutral-80)})
+

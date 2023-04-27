@@ -39,8 +39,9 @@
     :overlay child-elements
     }"
   [_ _]
-  (fn [{:keys [size token-img-src token-img-style border-color overlay]
-        :or   {size :small}} label]
+  (fn [{:keys [size img-src img-style border-color overlay]
+        :or   {size :small}}
+       label]
     [rn/view
      {:style (when border-color
                {:border-color  border-color
@@ -49,13 +50,13 @@
      [rn/view
       {:style (merge (tag-container size) (get themes (theme/get-theme)))}
       [rn/image
-       {:source token-img-src
-        :style  (merge
-                 {:height       (get-value-from-size size 28 20)
-                  :width        (get-value-from-size size 28 20)
-                  :margin-left  2
-                  :margin-right (get-value-from-size size 8 6)}
-                 token-img-style)}]
+       {:src   img-src
+        :style (merge
+                {:height       (get-value-from-size size 28 20)
+                 :width        (get-value-from-size size 28 20)
+                 :margin-left  2
+                 :margin-right (get-value-from-size size 8 6)}
+                img-style)}]
       [text/text
        {:weight :medium
         :number-of-lines 1
@@ -64,38 +65,58 @@
         :size (get-value-from-size size :paragraph-2 :label)} label]
       overlay]]))
 
+(defn loading-icon
+  []
+  [rn/view
+   {:style {:align-items     :center
+            :justify-content :center
+            :position        :absolute
+            :right           -8
+            :top             -8}}
+   [icons/icon :t/checktoken
+    {:no-color true
+     :size     20}]])
+
+(defn icon
+  [size border-color sufficient?]
+  [rn/view
+   {:style (merge
+            icon-container-styles
+            {:background-color border-color
+             :border-color     (if (= (theme/get-theme) :dark) colors/neutral-100 colors/white)
+             :border-width     1
+             :right            (get-value-from-size size -3.75 -5.75)
+             :bottom           (get-value-from-size size (- 32 7.75 4) (- 24 7.75 2))})}
+   [icons/icon (if sufficient? :i/hold :i/add)
+    {:no-color true
+     :size     12}]])
+
 (defn token-tag
   "[token-tag opts]
    opts
    {
-    :token string
+    :symbol string
     :value string
     :size :small/:big
     :token-img-src :token-img-src
     :border-color :color
-    :is-required true/false
-    :is-purchasable true/false
+    :sufficient? true/false
+    :purchasable? true/false
+    :loading? true/false
     }"
   [_ _]
-  (fn [{:keys [token value size token-img-src border-color is-required is-purchasable]
+  (fn [{:keys [symbol value size img-src border-color purchasable? sufficient? loading?]
         :or
-        {size :small border-color (colors/custom-color-by-theme :purple 50 60)}}]
-
-    [tag
-     {:size size
-      :token-img-src token-img-src
-      :border-color (when is-required border-color)
-      :overlay
-      (when (or is-required is-purchasable)
-        [rn/view
-         {:style (merge
-                  icon-container-styles
-                  {:background-color border-color
-                   :border-color     (if (= (theme/get-theme) :dark) colors/neutral-100 colors/white)
-                   :border-width     1
-                   :right            (get-value-from-size size -3.75 -5.75)
-                   :bottom           (get-value-from-size size (- 32 7.75 4) (- 24 7.75 2))})}
-         [icons/icon (if is-required :i/hold :i/add)
-          {:no-color true
-           :size     12}]])}
-     (str value " " token)]))
+        {size :small}}]
+    (let [sufficient?  (when-not loading? sufficient?)
+          border-color (if sufficient? colors/success-50 border-color)]
+      [tag
+       {:size size
+        :img-src img-src
+        :border-color (if sufficient? colors/success-50 border-color)
+        :overlay
+        (if loading?
+          [loading-icon]
+          (when (or purchasable? sufficient?)
+            [icon size border-color sufficient?]))}
+       (str value " " symbol)])))
