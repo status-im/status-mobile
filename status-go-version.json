@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "fix/remove-member-on-cancel-request",
+    "commit-sha1": "207d77e31bb02f41e133d92ab61ddebbec1e0603",
+    "src-sha256": "1zpbzbakqzh4m6cv8pzmxw600s9jvyak4xiiipi914f8q8bv1fcf"
+}
