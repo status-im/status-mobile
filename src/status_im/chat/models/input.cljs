@@ -10,8 +10,7 @@
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.ui.screens.chat.components.input :as input]))
+            [taoensso.timbre :as log]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -92,15 +91,14 @@
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)
         text            (get-in message [:content :text])]
-    (rf/merge cofx
-              {:db (-> db
-                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                                 message)
-                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                       (update-in [:chat/inputs current-chat-id :metadata]
-                                  dissoc
-                                  :sending-image))}
-              (input/set-input-text text current-chat-id))))
+    {:db       (-> db
+                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                             message)
+                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                   (update-in [:chat/inputs current-chat-id :metadata]
+                              dissoc
+                              :sending-image))
+     :dispatch [:mention/to-input-field text current-chat-id]}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -270,13 +268,12 @@
   {:events [:contacts/send-contact-request]}
   [{:keys [db] :as cofx} public-key message]
   (rf/merge cofx
-            {:chat.ui/clear-inputs     nil
-             :chat.ui/clear-inputs-old nil
-             :json-rpc/call            [{:method      "wakuext_sendContactRequest"
-                                         :js-response true
-                                         :params      [{:id public-key :message message}]
-                                         :on-error    #(log/warn "failed to send a contact request" %)
-                                         :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
+            {:chat.ui/clear-inputs nil
+             :json-rpc/call        [{:method      "wakuext_sendContactRequest"
+                                     :js-response true
+                                     :params      [{:id public-key :message message}]
+                                     :on-error    #(log/warn "failed to send a contact request" %)
+                                     :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (clean-input (:current-chat-id db))))
 

@@ -16,7 +16,6 @@
     (rf/merge cofx
               {:set-root                             :progress
                :chat.ui/clear-inputs                 nil
-               :chat.ui/clear-inputs-old             nil
                :shell/reset-bottom-tabs              nil
                :hide-popover                         nil
                ::logout                              nil
