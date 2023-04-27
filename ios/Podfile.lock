@@ -267,8 +267,6 @@ PODS:
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
-  - react-native-safe-area-context (2.0.0):
-    - React
   - react-native-shake (3.4.0):
     - React
   - react-native-slider (3.0.0):
@@ -424,6 +422,8 @@ PODS:
     - Yoga
   - RNShare (7.0.1):
     - React-Core
+  - RNStaticSafeAreaInsets (2.2.0):
+    - React-Core
   - RNSVG (9.13.6):
     - React
   - SDWebImage (5.11.1):
@@ -481,7 +481,6 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
-  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-status (from `../modules/react-native-status`)
@@ -516,6 +515,7 @@ DEPENDENCIES:
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNShare (from `../node_modules/react-native-share`)
+  - RNStaticSafeAreaInsets (from `../node_modules/react-native-static-safe-area-insets`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
   - SQLCipher (~> 3.0)
@@ -606,8 +606,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-orientation-locker"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
-  react-native-safe-area-context:
-    :path: "../node_modules/react-native-safe-area-context"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
   react-native-slider:
@@ -676,6 +674,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNShare:
     :path: "../node_modules/react-native-share"
+  RNStaticSafeAreaInsets:
+    :path: "../node_modules/react-native-static-safe-area-insets"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   secp256k1:
@@ -735,7 +735,6 @@ SPEC CHECKSUMS:
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
-  react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
@@ -770,6 +769,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 6d3dc023cec9fd29950baf8cc5f4d0592a623c01
   RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
+  RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
