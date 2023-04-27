@@ -14,6 +14,7 @@
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.identifiers.view :as identifiers]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
@@ -119,6 +120,12 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
+
+    {:name      :identifiers
+     :component identifiers/view
+     :options   {:popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}}
 
     {:name      :sign-in
      :component sign-in/view}
