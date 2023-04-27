@@ -17,7 +17,7 @@
   ;; TODO (flexsurfer) probably we don't want reactions here
   (if (or deleted? deleted-for-me?)
     [content.deleted/deleted-message message context]
-    [message/message-with-reactions message context]))
+    [message/message-with-reactions message context (atom false)]))
 
 (defn pinned-messages
   [chat-id]
