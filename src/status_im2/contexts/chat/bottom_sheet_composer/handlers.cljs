@@ -34,7 +34,8 @@
            maximized?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
    {:keys [lines content-height max-height window-height]}
-   images]
+   images
+   reply]
   (let [min-height    (utils/get-min-height lines)
         reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
     (reset! focused? false)
@@ -43,7 +44,7 @@
     (reanimated/set-shared-value saved-height min-height)
     (reanimated/animate opacity 0)
     (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
-    (when (and (empty? @text-value) (empty? images))
+    (when (utils/empty-input? @text-value images reply)
       (reanimated/animate container-opacity constants/empty-opacity))
     (reanimated/animate gradient-opacity 0)
     (reset! lock-selection? true)

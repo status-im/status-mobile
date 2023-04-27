@@ -158,3 +158,5 @@
    ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.waku.nodes.status.im"]})
 
 (def default-kdf-iterations 3200)
+
+(def ^:const new-composer-enabled? false)

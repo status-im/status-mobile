@@ -60,17 +60,21 @@
     (if platform/ios? lines (dec lines))))
 
 (defn calc-max-height
-  [window-height kb-height insets images]
+  [window-height kb-height insets images? reply?]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
-                      constants/actions-container-height)]
-    (if (seq images)
-      (- max-height constants/images-container-height)
-      max-height)))
+                      constants/actions-container-height)
+        max-height (if images? (- max-height constants/images-container-height) max-height)
+        max-height (if reply? (- max-height constants/reply-container-height) max-height)]
+    max-height))
 
 (defn empty-input?
-  [input-text images]
-  (and (nil? input-text) (empty? images)))
+  [text images reply?]
+  (and (empty? text) (empty? images) (not reply?)))
+
+(defn android-elevation?
+  [lines images reply?]
+  (or (> lines 1) (seq images) reply?))

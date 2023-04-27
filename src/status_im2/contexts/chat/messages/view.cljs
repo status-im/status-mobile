@@ -4,11 +4,14 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.bottom-sheet-composer.view :as bottom-sheet-composer]
             [status-im2.contexts.chat.messages.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
+            [status-im2.contexts.chat.messages.list.new-temp-view :as messages.list.new]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
@@ -75,10 +78,15 @@
       :keyboardVerticalOffset (- (:bottom insets))}
      [page-nav]
      [pin.banner/banner chat-id]
-     [messages.list/messages-list chat insets]
+     (if config/new-composer-enabled?
+       [messages.list.new/messages-list chat insets]
+       [messages.list/messages-list chat insets])
      (if-not able-to-send-message?
        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-       [:f> composer/f-composer chat-id insets])]))
+       (if config/new-composer-enabled?
+         [bottom-sheet-composer/bottom-sheet-composer insets]
+         [:f> composer/f-composer chat-id insets]))]))
+
 
 (defn chat
   []
