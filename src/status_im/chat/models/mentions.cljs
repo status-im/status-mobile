@@ -236,5 +236,3 @@
      (native-module/reset-keyboard-input
       (rn/find-node-handle (react/current-ref ref))
       cursor))))
-
-
