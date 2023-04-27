@@ -22,6 +22,10 @@
       :size                :paragraph-1
       :style               style/text}
      (i18n/label :t/leave-community-message)]
+    [quo/text
+     {:size  :paragraph-1
+      :style style/text}
+     (i18n/label :t/leave-community-note)]
     [rn/view
      {:style style/button-container}
      [quo/button
@@ -30,7 +34,7 @@
        :style    style/cancel-button}
       (i18n/label :t/cancel)]
      [quo/button
-      {:on-press #(hide-sheet-and-dispatch [:communities/leave id])
+      {:on-press #(hide-sheet-and-dispatch [:communities/request-to-leave id])
        :style    style/action-button}
       (i18n/label :t/leave-community)]]]])
 

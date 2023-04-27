@@ -273,6 +273,27 @@
                                                               community-id)
                                                    (re-frame/dispatch [::failed-to-leave]))}]}))
 
+(rf/defn request-to-leave-success
+  {:events [:communities/request-to-leave-success]}
+  [{:keys [db] :as cofx} community-id]
+  (let [community-name (get-in db [:communities community-id :name])]
+    (rf/merge cofx
+              (toasts/upsert {:icon       :i/correct
+                              :icon-color (:positive-01 @colors/theme)
+                              :text       (i18n/label :t/request-to-leave-community
+                                                      {:community community-name})}))))
+
+(rf/defn request-to-leave
+  {:events [:communities/request-to-leave]}
+  [{:keys [db]} community-id]
+  {:json-rpc/call [{:method     "wakuext_requestToLeaveCommunity"
+                    :params     [community-id]
+                    :on-success #(re-frame/dispatch [:communities/request-to-leave-success community-id])
+                    :on-error   #(log/info
+                                  "failed to request to leave community"
+                                  {:error %
+                                   :event :communities/request-to-leave})}]})
+
 (rf/defn status-tag-pressed
   {:events [:communities/status-tag-pressed]}
   [{:keys [db] :as cofx} community-id literal]
