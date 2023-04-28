@@ -41,8 +41,7 @@
 (defn browser-options
   [url account empty-tab name]
   (fn []
-    (let [topic       (http/topic-from-url url)
-          bookmarks   @(re-frame/subscribe [:bookmarks/active])
+    (let [bookmarks   @(re-frame/subscribe [:bookmarks/active])
           permissions @(re-frame/subscribe [:dapps/permissions])
           fav?        (get bookmarks url)
           connected?  (some #{constants/dapp-permission-web3}
@@ -85,15 +84,6 @@
                                    (js/setTimeout
                                     #(browser/share-link url)
                                     200))}]
-          [quo/list-item
-           {:icon                [chat-icon/custom-icon-view-list
-                                  topic
-                                  (rand-nth colors/chat-colors)]
-            :accessibility-label :open-chat
-            :title               (str "#" topic)
-            :subtitle            (i18n/label :t/open-chat)
-            :on-press            #(hide-sheet-and-dispatch [:chat.ui/start-public-chat topic])
-            :chevron             true}]
           [components/separator]])
        (if connected?
          [quo/list-item

@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.menus.request-to-join.style
+(ns status-im2.contexts.communities.actions.request-to-join.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def page-container

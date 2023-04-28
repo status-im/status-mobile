@@ -1,8 +1,8 @@
 
-(ns status-im2.contexts.communities.menus.community-options.component-spec
+(ns status-im2.contexts.communities.actions.community-options.component-spec
   (:require [re-frame.core :as re-frame]
             [test-helpers.component :as h]
-            [status-im2.contexts.communities.menus.community-options.view :as options]))
+            [status-im2.contexts.communities.actions.community-options.view :as options]))
 
 (defn setup-subs
   [subs]

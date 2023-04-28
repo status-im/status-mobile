@@ -1,6 +1,6 @@
-(ns status-im2.contexts.communities.menus.community-rules-list.view
+(ns status-im2.contexts.communities.actions.community-rules-list.view
   (:require [react-native.core :as rn]
-            [status-im2.contexts.communities.menus.community-rules-list.style :as style]
+            [status-im2.contexts.communities.actions.community-rules-list.style :as style]
             [quo2.core :as quo]))
 
 ;; TODO: update with real data

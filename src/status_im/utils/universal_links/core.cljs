@@ -2,8 +2,6 @@
   (:require [clojure.string :as string]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as new-chat.db]
-            [status-im.chat.models :as chat]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
@@ -26,8 +24,7 @@
    :internal "status-im:/"})
 
 (def links
-  {:public-chat        "%s/%s"
-   :private-chat       "%s/p/%s"
+  {:private-chat       "%s/p/%s"
    :community-requests "%s/cr/%s"
    :community          "%s/c/%s"
    :group-chat         "%s/g/%s"
@@ -60,11 +57,15 @@
   (log/info "universal-links: handling group" params)
   (group-chats/create-from-link cofx params))
 
+(defn own-public-key?
+  [{:keys [multiaccount]} public-key]
+  (= (:public-key multiaccount) public-key))
+
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
-    (if-not (new-chat.db/own-public-key? db chat-id)
+    (if-not (own-public-key? db chat-id)
       {:dispatch [:chat.ui/start-chat chat-id]}
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
@@ -98,17 +99,11 @@
   (log/info "universal-links: handling community chat" chat-id)
   {:dispatch [:chat/navigate-to-chat chat-id]})
 
-(rf/defn handle-public-chat
-  [cofx {:keys [topic]}]
-  (log/info "universal-links: handling public chat" topic)
-  (when (seq topic)
-    (chat/start-public-chat cofx topic)))
-
 (rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (log/info "universal-links: handling view profile" public-key)
   (cond
-    (and public-key (new-chat.db/own-public-key? db public-key))
+    (and public-key (own-public-key? db public-key))
     (rf/merge cofx
               {:pop-to-root-fx :shell-stack}
               (navigation/navigate-to :my-profile nil))
@@ -153,7 +148,6 @@
   [cofx url {:keys [type] :as data}]
   (case type
     :group-chat         (handle-group-chat cofx data)
-    :public-chat        (handle-public-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
     :community-requests (handle-community-requests cofx data)
     :community          (handle-community cofx data)

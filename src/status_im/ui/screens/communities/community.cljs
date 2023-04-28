@@ -19,10 +19,10 @@
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.chat.photos :as photos]
     [status-im.ui.screens.chat.sheets :as sheets]
-    [status-im.ui.screens.home.views.inner-item :as inner-item]
     [status-im.utils.core :as utils]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.ui.screens.home.views.inner-item :as inner-item]))
 
 (def request-cooldown-ms (* 24 60 60 1000))
 

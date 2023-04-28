@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as db]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
@@ -10,7 +9,6 @@
             [utils.image-server :as image-server]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.events :as chat.events]
-            [utils.i18n :as i18n]
             [quo2.theme :as theme]))
 
 (re-frame/reg-sub
@@ -331,14 +329,6 @@
  :<- [:chats/timeline-chat-input]
  (fn [{:keys [metadata]}]
    (:sending-image metadata)))
-
-(re-frame/reg-sub
- :public-chat.new/topic-error-message
- :<- [:public-group-topic]
- (fn [topic]
-   (when-not (or (empty? topic)
-                 (db/valid-topic? topic))
-     (i18n/label :topic-name-error))))
 
 (defn filter-selected-contacts
   [selected-contacts contacts]

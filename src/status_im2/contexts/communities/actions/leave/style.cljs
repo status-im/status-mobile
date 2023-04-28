@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.menus.leave.style)
+(ns status-im2.contexts.communities.actions.leave.style)
 
 (def button-container
   {:margin-top      20

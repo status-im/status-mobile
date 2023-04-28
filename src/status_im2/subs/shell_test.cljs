@@ -5,17 +5,6 @@
             [cljs.test :refer [is testing]]
             [status-im2.constants :as constants]))
 
-(def public-profile-timeline-chats
-  {"0xpublic-chat"   {:chat-type               constants/public-chat-type
-                      :unviewed-messages-count 5
-                      :unviewed-mentions-count 6}
-   "0xprofile-chat"  {:chat-type               constants/profile-chat-type
-                      :unviewed-messages-count 5
-                      :unviewed-mentions-count 6}
-   "0xtimeline-chat" {:chat-type               constants/timeline-chat-type
-                      :unviewed-messages-count 5
-                      :unviewed-mentions-count 6}})
-
 (def expected-notification-data-for-public-profile-timeline-chats
   {:communities-stack {:new-notifications?     false
                        :notification-indicator :unread-dot
@@ -66,10 +55,6 @@
 
 (h/deftest-sub :shell/bottom-tabs-notifications-data
   [sub-name]
-  (testing "public, profile and timeline chats should not affect shell bottom tab indicator"
-    (swap! rf-db/app-db assoc :chats public-profile-timeline-chats)
-    (is (= (rf/sub [sub-name]) expected-notification-data-for-public-profile-timeline-chats)))
-
   (testing "chats with only unviewed-messages, without unviewed-mentions count should use unread-dot"
     (swap! rf-db/app-db assoc :chats one-to-one-group-community-chats1)
     (is (= (rf/sub [sub-name]) expected-notification-data-for-one-to-one-group-community-chats1)))

@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.menus.community-rules-list.style
+(ns status-im2.contexts.communities.actions.community-rules-list.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def community-rule

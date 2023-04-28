@@ -9,8 +9,7 @@
 (defn rpc->type
   [{:keys [chat-type name] :as chat}]
   (cond
-    (or (= constants/public-chat-type chat-type)
-        (= constants/profile-chat-type chat-type)
+    (or (= constants/profile-chat-type chat-type)
         (= constants/timeline-chat-type chat-type))
     (assoc chat
            :chat-name  (str "#" name)
@@ -39,10 +38,6 @@
 (defn- unmarshal-members
   [{:keys [members chat-type] :as chat}]
   (cond
-    (= constants/public-chat-type chat-type) (assoc chat
-                                                    :contacts       #{}
-                                                    :admins         #{}
-                                                    :members-joined #{})
     (= constants/private-group-chat-type chat-type) (merge chat
                                                            (reduce members-reducer
                                                                    {:admins         #{}

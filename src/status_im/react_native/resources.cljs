@@ -65,11 +65,3 @@
            k
            (get ui k))
          k)))
-
-(def reactions-old
-  {:love        (js/require "../resources/images/reactions/love.png")
-   :angry       (js/require "../resources/images/reactions/angry.png")
-   :sad         (js/require "../resources/images/reactions/sad.png")
-   :laugh       (js/require "../resources/images/reactions/laugh.png")
-   :thumbs-up   (js/require "../resources/images/reactions/thumbs-up.png")
-   :thumbs-down (js/require "../resources/images/reactions/thumbs-down.png")})

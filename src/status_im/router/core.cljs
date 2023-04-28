@@ -2,7 +2,6 @@
   (:require [bidi.bidi :as bidi]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as public-chat.db]
             [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
@@ -20,8 +19,6 @@
 (def ethereum-scheme "ethereum:")
 
 (def uri-schemes ["status-im://" "status-im:"])
-
-(def wallet-connect-scheme "wc:")
 
 (def web-prefixes ["https://" "http://" "https://www." "http://wwww."])
 
@@ -48,9 +45,7 @@
 
 (def routes
   [""
-   {handled-schemes {["" :chat-id]         :public-chat
-                     "chat"                {["/public/" :chat-id] :public-chat}
-                     "b/"                  browser-extractor
+   {handled-schemes {"b/"                  browser-extractor
                      "browser/"            browser-extractor
                      ["p/" :chat-id]       :private-chat
                      ["cr/" :community-id] :community-requests
@@ -106,14 +101,6 @@
       :else
       (callback {:type  :contact
                  :error :not-found}))))
-
-(defn match-public-chat
-  [{:keys [chat-id]}]
-  (if (public-chat.db/valid-topic? chat-id)
-    {:type  :public-chat
-     :topic chat-id}
-    {:type  :public-chat
-     :error :invalid-topic}))
 
 (defn match-group-chat
   [chats {:strs [a a1 a2]}]
@@ -225,8 +212,6 @@
   (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
-      (= handler :public-chat)
-      (cb (match-public-chat route-params))
 
       (= handler :browser)
       (cb (match-browser uri route-params))
