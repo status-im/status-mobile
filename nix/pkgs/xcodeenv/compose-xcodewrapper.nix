@@ -8,6 +8,9 @@ assert stdenv.isDarwin;
 
 stdenv.mkDerivation {
   name = "xcode-wrapper-${version}${if allowHigher then "-plus" else ""}";
+  # Fix 'xcodebuild: Operation not permitted' when 'sandbox=relaxed' is used.
+  # https://github.com/NixOS/nixpkgs/pull/228696
+  __noChroot = stdenv.isDarwin;
   buildCommand = ''
     mkdir -p $out/bin
     cd $out/bin
