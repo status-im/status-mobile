@@ -80,6 +80,19 @@
   (log/error "[mentions] on-error"
              {:context context
               :error   error}))
+
+(rf/defn to-input-field
+  {:events [:mention/to-input-field]}
+  [_ text chat-id]
+  (let [params [chat-id text]
+        method "wakuext_chatMentionToInputField"]
+    (log/debug "[mentions] to-input-field" {:params params})
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-to-input-field-success %])
+                      :on-error   #(rf/dispatch [:mention/on-error
+                                                 {:method method
+                                                  :params params} %])}]}))
 (rf/defn on-to-input-field-success
   {:events [:mention/on-to-input-field-success]}
   [{:keys [db]} result]

@@ -8,7 +8,6 @@
             [status-im.group-chats.db :as group-chats.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [utils.image-server :as image-server]
-            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.events :as chat.events]
             [utils.i18n :as i18n]
@@ -328,50 +327,10 @@
    (:editing-message metadata)))
 
 (re-frame/reg-sub
- :chats/sending-contact-request
- :<- [:chats/current-chat-input]
- (fn [{:keys [metadata]}]
-   (:sending-contact-request metadata)))
-
-(re-frame/reg-sub
  :chats/timeline-sending-image
  :<- [:chats/timeline-chat-input]
  (fn [{:keys [metadata]}]
    (:sending-image metadata)))
-
-(re-frame/reg-sub
- :chats/chat-toolbar
- :<- [:multiaccounts/login]
- :<- [:chats/sending-image]
- :<- [:mainnet?]
- :<- [:current-chat/one-to-one-chat?]
- :<- [:current-chat/metadata]
- :<- [:chats/reply-message]
- :<- [:chats/edit-message]
- :<- [:chats/sending-contact-request]
- (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit
-       sending-contact-request]]
-   (let [sending-image (seq sending-image)]
-     {:send          (not processing)
-      :stickers      (and (or config/stickers-test-enabled? mainnet?)
-                          (not sending-image)
-                          (not sending-contact-request)
-                          (not reply))
-      :image         (and (not reply)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not public?))
-      :extensions    (and one-to-one-chat?
-                          (or config/commands-enabled? mainnet?)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not reply))
-      :audio         (and (not sending-image)
-                          (not reply)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not public?))
-      :sending-image sending-image})))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message
