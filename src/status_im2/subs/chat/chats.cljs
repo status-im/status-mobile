@@ -330,14 +330,6 @@
  (fn [{:keys [metadata]}]
    (:sending-image metadata)))
 
-(re-frame/reg-sub
- :public-chat.new/topic-error-message
- :<- [:public-group-topic]
- (fn [topic]
-   (when-not (or (empty? topic)
-                 (db/valid-topic? topic))
-     (i18n/label :topic-name-error))))
-
 (defn filter-selected-contacts
   [selected-contacts contacts]
   (filter #(:added? (contacts %)) selected-contacts))
