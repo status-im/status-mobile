@@ -25,13 +25,14 @@
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:accessibility-label       :enable-biometrics-button
-       :on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics])
+       :on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics]) ;; Complete biometric auth and navigate to enable notificstions screen
        :before                    :i/face-id
        :override-background-color (colors/custom-color profile-color 50)}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label       :maybe-later-button
-       :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
+      ;;  :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login]) ;; Normal flow
+       :on-press                   #(rf/dispatch [:navigate-to :enable-notifications]) ;; Sync flow
        :override-background-color colors/white-opa-5
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))

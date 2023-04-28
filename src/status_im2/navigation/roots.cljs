@@ -111,6 +111,11 @@
                                             :id      :profiles
                                             :options (options/default-root)}}]}}}
 
+          ;; :enable-biometrics
+          ;; {:root {:stack {:children [{:component {:name    :enable-biometrics
+          ;;                                         :id      :enable-biometrics
+          ;;                                         :options (options/default-root)}}]}}}
+
           :enable-notifications
           {:root {:stack {:children [{:component {:name    :enable-notifications
                                                   :id      :enable-notifications

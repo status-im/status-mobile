@@ -17,7 +17,7 @@
     (merge
      {:db (dissoc db :syncing)}
      (when receiver?
-       {:dispatch [:init-root :enable-notifications]}))))
+       {:dispatch [:navigate-to :enable-biometrics]}))))
 
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}
