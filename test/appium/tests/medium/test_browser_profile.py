@@ -185,7 +185,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702159)
     def test_profile_invite_friends(self):
-        chat_key = self.home.get_public_key_and_username()
+        chat_key = self.home.get_public_key()
         self.home.home_button.double_click()
 
         self.home.just_fyi("Check it via 'Invite friends' on home view")

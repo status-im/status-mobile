@@ -18,7 +18,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.drivers[1]), SignInView(self.drivers[2])
         self.home_1 = self.device_1.create_user()
 
-        self.public_key_1, self.username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.public_key_1, self.username_1 = self.home_1.get_public_key()
 
         self.profile_1 = self.home_1.profile_button.click()
         self.profile_1.privacy_and_security_button.click()
@@ -29,7 +29,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_1.home_button.click()
         self.device_2.put_app_to_background_and_back()
         self.home_3 = self.device_3.create_user()
-        self.public_key_3, self.username_3 = self.home_3.get_public_key_and_username(return_username=True)
+        self.public_key_3, self.username_3 = self.home_3.get_public_key()
         self.device_3.home_button.click()
         self.device_1.put_app_to_background_and_back()
         self.comm_before_sync_name, self.channel, self.message = 'b-%s' % self.home_1.get_random_chat_name(), 'some-rand-chann', 'comm_message'

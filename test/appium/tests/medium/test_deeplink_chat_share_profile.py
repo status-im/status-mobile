@@ -16,7 +16,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.home = self.sign_in.create_user()
-        self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
+        self.public_key, self.default_username = self.home.get_public_key()
         self.home.home_button.click()
         self.public_chat_name = 'pubchat'
         self.nickname = 'dummy_user'
@@ -343,7 +343,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 #         self.drivers, self.loop = create_shared_drivers(1)
 #         self.sign_in = SignInView(self.drivers[0])
 #         self.home = self.sign_in.create_user()
-#         self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
+#         self.public_key, self.default_username = self.home.get_public_key()
 #         self.home.click_system_back_button_until_element_is_shown()
 #         self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
 #

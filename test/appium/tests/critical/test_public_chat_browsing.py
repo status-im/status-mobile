@@ -312,7 +312,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_name = 'general'
         self.community = self.home.create_community(name=self.community_name, description='test description')
 
-        self.home.jump_to_communities_home()
         self.home.get_chat(self.community_name, community=True).click()
         community_view = self.home.get_community_view()
         self.channel = community_view.get_channel(self.channel_name).click()
@@ -330,6 +329,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
     @marks.testrail_id(702742)
+    @marks.xfail(reason='flaky test; sometimes can not be copied through appium')
     def test_community_copy_and_paste_message_in_chat_input(self):
         message_texts = ['mmmeowesage_text', 'https://status.im']
 
@@ -359,50 +359,42 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
-                                                      (self.device_2.create_user,))))
-        self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.username_1, self.username_2 = "user_1", "user_2"
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_1}),
+                                                      (self.device_2.create_user, {'username': self.username_2}))))
+        self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
-        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
-        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
+        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        [home.chats_tab.click() for home in self.homes]
         self.home_1.add_contact(self.public_key_2)
-        self.home_2.handle_contact_request(self.default_username_1)
+        self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
-        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.chat_2.send_message(self.text_message)
-        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
+        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
         self.community_name = self.home_1.get_random_chat_name()
         self.channel_name = 'general'
         self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
-        self.home_1.jump_to_communities_home()
-        self.home_1.get_chat(self.community_name, community=True).click()
-        community_view = self.home_1.get_community_view()
-        self.channel_1 = community_view.get_channel(self.channel_name).click()
+        self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
         self.channel_1.send_message(self.text_message)
-        self.community_1 = CommunityView(self.drivers[0])
-        self.community_1.send_invite_to_community(self.community_name, self.default_username_2)
 
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
+        self.community_1.send_invite_to_community(self.community_name, self.username_2)
+        self.home_1.get_to_community_channel_from_home(self.community_name)
+
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.chat_2.element_by_text_part('View').click()
-        self.community_2 = CommunityView(self.drivers[1])
         self.community_2.join_community()
-
-        self.home_1.just_fyi("Reopen community view to use new interface")
-        for home in (self.home_1, self.home_2):
-            home.jump_to_communities_home()
-            home.get_chat(self.community_name, community=True).click()
-            community_view = home.get_community_view()
-            community_view.get_channel(self.channel_name).click()
-        self.channel_2 = self.home_2.get_chat_view()
+        self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702838)
     @marks.xfail(reason="blocked by 14797")
@@ -416,7 +408,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                    (", ".join(sent_time_variants), timestamp))
         for channel in self.channel_1, self.channel_2:
             channel.verify_message_is_under_today_text(message, self.errors)
-        if self.channel_2.chat_element_by_text(message).username.text != self.default_username_1:
+        if self.channel_2.chat_element_by_text(message).username.text != self.username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
@@ -456,6 +448,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
+    @marks.xfail(reason='flaky test; sometimes can not be copied through appium')
     def test_community_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -561,7 +554,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702894)
     def test_community_contact_block_unblock_offline(self):
-        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in self.homes]
         self.channel_1.send_message('message to get avatar of user 2 visible in next message')
 
         self.channel_2.just_fyi("Sending message before block")
@@ -579,7 +572,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if self.chat_1.chat_element_by_text(message_to_disappear).is_element_displayed():
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.jump_to_messages_home()
-        if self.home_1.element_by_text(self.default_username_2).is_element_displayed():
+        if self.home_1.element_by_text(self.username_2).is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed!")
         self.chat_1.toggle_airplane_mode()
 
@@ -602,7 +595,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1.profile_button.click()
         profile_1.contacts_button.wait_and_click()
         profile_1.blocked_users_button.wait_and_click()
-        profile_1.element_by_text(self.default_username_2).click()
+        profile_1.element_by_text(self.username_2).click()
         self.chat_1.unblock_contact_button.click()
         self.chat_1.close_button.click()
         self.chat_1.click_system_back_button_until_element_is_shown()
@@ -613,44 +606,43 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
             self.errors.append("Message was not received in public chat after user unblock!")
 
-        # TODO: 15279 - user is not removed from contacts mutually
-        # self.home_2.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
-        # chat_element = self.channel_1.chat_element_by_text(message_unblocked)
-        # chat_element.find_element()
-        # chat_element.member_photo.click()
-        # self.channel_1.profile_add_to_contacts_button.click()
-        # self.channel_1.profile_send_message_button.click()
-        # self.chat_1.send_message("piy")
-        #
-        # self.home_2.just_fyi("Check message in 1-1 chat after unblock")
-        # self.home_2.jump_to_messages_home()
-        # self.home_2.get_chat(self.default_username_1).click()
-        # self.chat_2.send_message(message_unblocked)
-        # # self.home_1.get_chat(self.default_username_2, wait_time=30).click()
-        # if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
-        #     self.errors.append("Message was not received in 1-1 chat after user unblock!")
+        self.home_2.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
+        chat_element = self.channel_1.chat_element_by_text(message_unblocked)
+        chat_element.find_element()
+        chat_element.member_photo.click()
+        self.channel_1.profile_add_to_contacts_button.click()
+        self.home_2.jump_to_messages_home()
+        self.home_2.handle_contact_request(self.username_1)
+        self.channel_1.profile_send_message_button.wait_and_click()
+        self.chat_1.send_message("piy")
+
+        self.home_2.just_fyi("Check message in 1-1 chat after unblock")
+        self.home_2.get_chat(self.username_1).click()
+        self.chat_2.send_message(message_unblocked)
+        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+            self.errors.append("Message was not received in 1-1 chat after user unblock!")
         self.errors.verify_no_errors()
 
-    # @marks.testrail_id(702842)
-    # Skipped until implemented in NEW UI
-    # def test_community_mark_all_messages_as_read(self):
-    #     self.channel_1.jump_to_communities_home()
-    #     self.home_1.get_chat(self.community_name, community=True).click()
-    #     self.channel_2.send_message(self.text_message)
-    #     #self.home_1.get_chat(self.community_name).click()
-    #     channel_1_element = self.community_1.get_channel(self.channel_name)
-    #     if not channel_1_element.new_messages_public_chat.is_element_displayed():
-    #         self.errors.append('New messages counter is not shown in public chat')
-    #     mark_as_read_button = self.community_1.mark_all_messages_as_read_button
-    #     channel_1_element.long_press_until_element_is_shown(mark_as_read_button)
-    #     mark_as_read_button.click()
-    #     if channel_1_element.new_messages_public_chat.is_element_displayed():
-    #         self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
+    @marks.testrail_id(703086)
+    def test_community_mark_all_messages_as_read(self):
+        self.channel_1.jump_to_communities_home()
+        self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
+        self.channel_2.send_message(self.text_message)
+        community_1_element = self.community_1.get_chat(self.community_name)
+        if not community_1_element.new_messages_public_chat.is_element_displayed(90):
+            self.errors.append('New messages counter is not shown in home > Commmunity element')
+        mark_as_read_button = self.community_1.mark_all_messages_as_read_button
+        community_1_element.long_press_until_element_is_shown(mark_as_read_button)
+        mark_as_read_button.click()
+        if community_1_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
+    # TODO: there should be one more check for community channel, which is still not ready
+
     #     self.community_1.click_system_back_button_until_element_is_shown()
     #     community_1_element = self.home_1.get_chat(self.community_name, community=True)
     #     if community_1_element.new_messages_community.is_element_displayed():
     #         self.errors.append('New messages community badge is shown on community after marking messages as read')
-    #     self.errors.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702786)
     def test_community_mentions_push_notification(self):
@@ -663,14 +655,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.send_message("hi")
-        self.channel_2.mention_user(self.default_username_1)
+        self.channel_2.mention_user(self.username_1)
         self.channel_2.send_message_button.click()
 
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
         self.device_1.open_notification_bar()
-        if self.home_1.get_pn(self.default_username_1):
-            self.device_1.click_upon_push_notification_by_text(self.default_username_1)
-            if not self.channel_1.chat_element_by_text(self.default_username_1).is_element_displayed():
+        if self.home_1.get_pn(self.username_1):
+            self.device_1.click_upon_push_notification_by_text(self.username_1)
+            if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
                 else:
@@ -681,13 +673,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         # ToDo: this part is skipped because of an issue - sent messages stuck without any status for a long time
         # and can not be edited during that time
         # self.device_2.just_fyi("Sender edits the message with a mention")
-        # self.channel_2.chat_element_by_text(self.default_username_1).long_press_element_by_coordinate(rel_y=0)
+        # self.channel_2.chat_element_by_text(self.username_1).wait_for_sent_state()
+        # self.channel_2.chat_element_by_text(self.username_1).long_press_element_by_coordinate(rel_y=0)
         # try:
         #     self.channel_2.element_by_translation_id("edit-message").click()
         #     for i in range(29, 32):
         #         self.channel_2.driver.press_keycode(i)
         #     self.channel_2.send_message_button.click()
-        #     edited_message = self.default_username_1 + " abc"
+        #     edited_message = self.username_1 + " abc"
         #     if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
         #         self.errors.append("Edited message is not shown correctly for the sender")
         #     if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
@@ -704,14 +697,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         #     self.community_1.get_channel(self.channel_name).click()
         #
         # self.device_1.just_fyi("Admin sends a message with a mention")
-        # self.channel_1.mention_user(self.default_username_2)
+        # self.channel_1.mention_user(self.username_2)
         # self.channel_1.send_message_button.click()
         # self.device_2.just_fyi("Invited member gets push notification with the mention and tap it")
         # self.device_2.open_notification_bar()
-        # if not self.home_2.get_pn(self.default_username_2):
+        # if not self.home_2.get_pn(self.username_2):
         #     self.device_2.driver.fail("Push notification with the mention was not received by the invited member")
-        # self.device_2.click_upon_push_notification_by_text(self.default_username_2)
-        # if not self.channel_2.chat_element_by_text(self.default_username_2).is_element_displayed():
+        # self.device_2.click_upon_push_notification_by_text(self.username_2)
+        # if not self.channel_2.chat_element_by_text(self.username_2).is_element_displayed():
         #     if self.channel_2.chat_message_input.is_element_displayed():
         #         self.device_2.driver.fail("Message with the mention is not shown in the chat for the invited member")
         #     else:

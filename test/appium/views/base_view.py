@@ -367,6 +367,10 @@ class BaseView(object):
         self.driver.info('# STEP: %s' % some_str, device=False)
         self.driver.execute_script("sauce:context=STEP: %s" % some_str)
 
+    def hide_keyboard_if_shown(self):
+        if self.driver.is_keyboard_shown():
+            self.driver.hide_keyboard()
+
     def click_system_back_button(self, times=1):
         self.driver.info('Click system back button')
         for _ in range(times):
@@ -616,17 +620,15 @@ class BaseView(object):
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
         time.sleep(3)
 
-    def get_public_key_and_username(self, return_username=False):
-        self.driver.info("Get public key and username, return_username '%s'" % str(return_username))
+    def get_public_key(self):
+        self.driver.info("Get public key")
         profile_view = self.get_profile_view()
         self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
-        default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element(20)
         public_key = profile_view.public_key_text.text
         self.click_system_back_button()
-        user_data = (public_key, default_username) if return_username else public_key
-        return user_data
+        return public_key
 
     def tap_mutual_cr_switcher(self):
         profile_view = self.profile_button.click()

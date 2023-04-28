@@ -146,7 +146,6 @@ class ChatElementByText(Text):
 
     @property
     def timestamp_command_message(self):
-
         class TimeStampText(Button):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
@@ -182,6 +181,11 @@ class ChatElementByText(Text):
         element = Text(self.driver, prefix=self.locator,
                        xpath="//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
+
+    def wait_for_sent_state(self, wait_time=30):
+        return BaseElement(self.driver, prefix=self.locator,
+                           xpath="//*[@content-desc='message-sent']").is_element_displayed(wait_time)
+
 
     @property
     def uncollapse(self) -> bool:
@@ -1098,7 +1102,7 @@ class ChatView(BaseView):
             "%I:%M %p")
         timestamp_obj = datetime.strptime(timestamp, '%I:%M %p')
         possible_timestamps_obj = [timestamp_obj + timedelta(0, 0, 0, 0, 1), timestamp_obj,
-                                   timestamp_obj - timedelta(0, 0, 0, 0, 1)]
+                                   timestamp_obj - timedelta(0, 0, 0, 0, 1),  timestamp_obj - timedelta(0, 0, 0, 0, 2)]
         timestamps = list(map(lambda x: x.strftime("%I:%M %p"), possible_timestamps_obj))
         final_timestamps = [t[1:] if t[0] == '0' else t for t in timestamps]
         return final_timestamps
@@ -1139,8 +1143,8 @@ class ChatView(BaseView):
         self.chat_message_input.click_inside()
         self.chat_message_input.send_keys("@")
         try:
-            mentions_list = self.mentions_list.wait_for_element()
-            mentions_list.find_element(MobileBy.XPATH, "//*[@text='%s']" % user_name).click()
+            self.mentions_list.wait_for_element()
+            self.driver.find_element(MobileBy.XPATH, "//*[@content-desc='user-list']//*[@text='%s']" % user_name).click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 

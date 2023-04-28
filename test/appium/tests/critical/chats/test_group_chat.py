@@ -20,7 +20,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             sign_in = SignInView(self.drivers[key])
             self.homes[key] = sign_in.create_user(enable_notifications=True)
             SignInView(self.drivers[2]).put_app_to_background_and_back()
-            self.public_keys[key], self.usernames[key] = sign_in.get_public_key_and_username(True)
+            self.public_keys[key], self.usernames[key] = sign_in.get_public_key(True)
             sign_in.home_button.click()
             SignInView(self.drivers[0]).put_app_to_background_and_back()
         self.chat_name = self.homes[0].get_random_chat_name()
@@ -150,30 +150,28 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.message_to_admin = 'Hey, admin!'
         self.public_keys, self.usernames, self.chats = {}, {}, {}
         sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
+        self.usernames = ('user admin', 'member_1', 'member_2')
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (sign_in_views[0].create_user, {'enable_notifications': True}),
-                    (sign_in_views[1].create_user, {'enable_notifications': True, 'username': "test user1"}),
-                    (sign_in_views[2].create_user, {'enable_notifications': True, 'username': "test user2"})
+                    (sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
+                    (sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
+                    (sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
                 )
             )
         )
         self.homes = [sign_in.get_home_view() for sign_in in sign_in_views]
-        users = self.loop.run_until_complete(
+        self.public_keys = self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (self.homes[0].get_public_key_and_username, {'return_username': True}),
-                    (self.homes[1].get_public_key_and_username, {'return_username': True}),
-                    (self.homes[2].get_public_key_and_username, {'return_username': True})
+                    (self.homes[0].get_public_key,),
+                    (self.homes[1].get_public_key,),
+                    (self.homes[2].get_public_key,)
                 )
             )
         )
 
         self.homes[0].just_fyi('Admin adds future members to contacts')
-
-        for i in range(3):
-            self.public_keys[i], self.usernames[i] = users[i]
 
         for i in range(3):
             self.homes[i].click_system_back_button_until_element_is_shown()
@@ -198,8 +196,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chat_name = self.homes[0].get_random_chat_name()
         self.homes[0].chats_tab.click()
         self.chats[0] = self.homes[0].create_group_chat(user_names_to_add=[self.usernames[1], self.usernames[2]],
-                                                        group_chat_name=self.chat_name,
-                                                        new_ui=True)
+                                                        group_chat_name=self.chat_name)
         for i in range(1, 3):
             self.chats[i] = ChatView(self.drivers[i])
 

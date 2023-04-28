@@ -206,7 +206,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check username and relogin')
         profile = sign_in.get_profile_view()
-        public_key, real_username = profile.get_public_key_and_username(return_username=True)
+        public_key, real_username = profile.get_public_key()
         if real_username != username:
             self.errors.append('Username was changed after interruption of creating account')
         profile.logout()
@@ -244,7 +244,7 @@ class TestChatManagement(SingleDeviceTestCase):
             element.wait_for_visibility_of_element(30)
             element.click()
         sign_in.profile_button.wait_for_visibility_of_element(30)
-        public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
+        public_key, default_username = sign_in.get_public_key()
         profile_view = sign_in.get_profile_view()
         if public_key != basic_user['public_key']:
             self.errors.append('Public key %s does not match expected' % public_key)
@@ -986,7 +986,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.start_button.click()
 
         sign_in.just_fyi('Delete 2nd multiaccount')
-        public_key, username = sign_in.get_public_key_and_username(return_username=True)
+        public_key, username = sign_in.get_public_key()
         profile.privacy_and_security_button.click()
         profile.delete_my_profile_button.scroll_and_click()
         for text in (username, delete_alert_warning):
@@ -1115,7 +1115,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.address = self.wallet.get_wallet_address()
         w3.donate_testnet_eth(self.address, 0.1)
         self.wallet.wait_balance_is_changed()
-        self.chat_key = self.home.get_public_key_and_username()
+        self.chat_key = self.home.get_public_key()
 
         self.wallet.just_fyi("Get required STT")
         self.wallet.get_test_assets(token=True)

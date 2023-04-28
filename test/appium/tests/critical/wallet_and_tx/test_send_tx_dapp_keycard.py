@@ -301,7 +301,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(700768)
     def test_keycard_relogin_after_restore(self):
         self.sign_in.just_fyi('Check that username and public key match expected')
-        public_key, default_username = self.sign_in.get_public_key_and_username(return_username=True)
+        public_key, default_username = self.sign_in.get_public_key()
         profile = self.sign_in.get_profile_view()
         if public_key != self.user['public_key']:
             self.errors.append('Public key %s does not match expected' % public_key)
@@ -431,7 +431,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.profile_button.wait_for_visibility_of_element(30)
         wallet_1 = self.sign_in.wallet_button.click()
         wallet_address = wallet_1.get_wallet_address()
-        public_key, default_username = self.sign_in.get_public_key_and_username(return_username=True)
+        public_key, default_username = self.sign_in.get_public_key()
         profile_1 = self.sign_in.get_profile_view()
         profile_1.logout()
 
@@ -469,7 +469,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet_2.wallet_button.double_click()
         if wallet_address != wallet_address_2:
             self.errors.append('Wallet address on restored multiaccount is not equal to created keycard multiaccount')
-        public_key_2, default_username_2 = self.sign_in.get_public_key_and_username(return_username=True)
+        public_key_2, default_username_2 = self.sign_in.get_public_key()
         if public_key != public_key_2:
             self.errors.append('Public key on restored multiaccount is not equal to created keycard multiaccount')
         if default_username_2 != default_username:

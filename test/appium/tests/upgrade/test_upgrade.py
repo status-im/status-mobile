@@ -253,7 +253,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_2_home = device_2.create_user()
-        device_2_public_key = device_2_home.get_public_key_and_username()
+        device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
         user = upgrade_users['chats']
         seed = user['passphrase']
@@ -492,7 +492,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         home_1 = device_1.import_db(seed_phrase=user['passphrase'], import_db_folder_name='group/admin')
         home_2 = device_2.create_user()
         profile_2 = home_2.profile_button.click()
-        public_key_2, username_2 = profile_2.get_public_key_and_username(return_username=True)
+        public_key_2, username_2 = profile_2.get_public_key(e)
 
         device_1.just_fyi("Activity centre: send message to 1-1 and invite member to group chat")
         chat_1 = home_1.add_contact(public_key_2, add_in_contacts=False)
