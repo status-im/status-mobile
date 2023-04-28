@@ -143,8 +143,14 @@
 (rf/defn dismiss-all-overlays
   {:events [:dissmiss-all-overlays]}
   [{:keys [db]}]
-  {:dissmiss-all-overlays-fx nil
-   :db                       (-> db
-                                 (dissoc :popover/popover)
-                                 (dissoc :visibility-status-popover/popover)
-                                 (assoc-in [:bottom-sheet :hide?] true))})
+  {:dispatch-n [[:hide-popover]
+                [:hide-visibility-status-popover]
+                [:hide-bottom-sheet]
+                [:bottom-sheet-hidden]
+                [:hide-wallet-connect-sheet]
+                [:hide-wallet-connect-success-sheet]
+                [:hide-wallet-connect-app-management-sheet]
+                [:hide-signing-sheet]
+                [:hide-select-acc-sheet]
+                [:bottom-sheet/hide-old-navigation-overlay]
+                [:toasts/close-all-toasts]]})
