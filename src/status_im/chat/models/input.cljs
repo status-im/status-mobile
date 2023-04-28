@@ -98,7 +98,6 @@
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)
         text            (get-in message [:content :text])]
-<<<<<<< HEAD
     {:db       (-> db
                    (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
                              message)
@@ -106,19 +105,8 @@
                    (update-in [:chat/inputs current-chat-id :metadata]
                               dissoc
                               :sending-image))
-     :dispatch [:mention/to-input-field text current-chat-id]}))
-=======
-    (rf/merge cofx
-              {:db (-> db
-                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                                 message)
-                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                       (update-in [:chat/inputs current-chat-id :metadata]
-                                  dissoc
-                                  :sending-image))}
-              (when-not config/new-composer-enabled?
-                (input/set-input-text text current-chat-id)))))
->>>>>>> 3375abeaf (feat: composer - edit message)
+     :dispatch (when-not config/new-composer-enabled?
+                 [:mention/to-input-field text current-chat-id])}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
