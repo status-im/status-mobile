@@ -124,6 +124,7 @@
 
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
+  ^{:key (:parsed-text content)}
   [rn/view {:style style/parsed-text-block}
    (reduce (fn [acc e]
              (render-block acc e chat-id))
