@@ -55,7 +55,7 @@
     :overflow   :hidden}))
 
 (defn input
-  [maximized? saved-keyboard-height]
+  [focused? saved-keyboard-height]
   (merge typography/paragraph-1
          {:min-height          constants/input-height
           :color               (colors/theme-colors :black :white)
@@ -65,7 +65,7 @@
           :position            (if saved-keyboard-height :relative :absolute)
           :top                 0
           :left                0
-          :right               (when (or maximized? platform/ios?) 0)}))
+          :right               (when (or focused? platform/ios?) 0)}))
 
 (defn background
   [opacity background-y window-height]

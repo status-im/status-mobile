@@ -134,7 +134,7 @@
                  :multiline                true
                  :placeholder              (i18n/label :t/type-something)
                  :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-                 :style                    (style/input @(:maximized? state)
+                 :style                    (style/input @(:focused? state)
                                                         @(:saved-emoji-kb-extra-height props))
                  :accessibility-label      :chat-message-input}]
                [gradients/view props state animations show-bottom-gradient?]]
