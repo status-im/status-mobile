@@ -6,18 +6,18 @@
             [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
 
 (defn shadow
-  [elevation?]
+  [focused?]
   (if platform/ios?
     {:shadow-radius  20
      :shadow-opacity (colors/theme-colors 0.1 0.7)
      :shadow-color   colors/neutral-100
      :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
-    {:elevation (if elevation? 10 0)}))
+    {:elevation (if @focused? 10 0)}))
 
 (defn sheet-container
-  [insets opacity elevation?]
+  [insets {:keys [focused?]} {:keys [container-opacity]}]
   (reanimated/apply-animations-to-style
-   {:opacity opacity}
+   {:opacity container-opacity}
    (merge
     {:border-top-left-radius  20
      :border-top-right-radius 20
@@ -29,7 +29,7 @@
      :background-color        (colors/theme-colors colors/white colors/neutral-95)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
-    (shadow elevation?))))
+    (shadow focused?))))
 
 (def bar-container
   {:height          constants/bar-container-height

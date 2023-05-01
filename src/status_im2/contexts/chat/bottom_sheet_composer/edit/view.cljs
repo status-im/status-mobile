@@ -28,7 +28,7 @@
    [quo/button
     {:width               24
      :size                24
-     :accessibility-label :reply-cancel-button
+     :accessibility-label :edit-cancel-button
      :on-press            (fn []
                             (cancel)
                             (rf/dispatch [:chat.ui/cancel-message-edit]))

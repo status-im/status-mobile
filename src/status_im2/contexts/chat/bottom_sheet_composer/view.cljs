@@ -93,11 +93,7 @@
                                                           :window-height  window-height
                                                           :lines          lines
                                                           :max-lines      max-lines}
-                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
-                android-elevation?                       (utils/android-elevation? lines
-                                                                                   images
-                                                                                   reply
-                                                                                   edit)]
+                show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)]
             (effects/initialize props
                                 state
                                 animations
@@ -110,9 +106,7 @@
             [gesture/gesture-detector
              {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
              [reanimated/view
-              {:style     (style/sheet-container insets
-                                                 (:container-opacity animations)
-                                                 android-elevation?)
+              {:style     (style/sheet-container insets state animations)
                :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
               [reply/view reply]
