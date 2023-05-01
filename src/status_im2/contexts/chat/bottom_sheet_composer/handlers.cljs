@@ -14,6 +14,7 @@
     :as   animations}
    {:keys [max-height] :as dimensions}]
   (reset! focused? true)
+  (rf/dispatch [:chat.ui/set-input-focused true])
   (reanimated/animate height (reanimated/get-shared-value last-height))
   (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
   (reanimated/animate container-opacity 1)
@@ -39,6 +40,7 @@
   (let [min-height    (utils/get-min-height lines)
         reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
     (reset! focused? false)
+    (rf/dispatch [:chat.ui/set-input-focused false])
     (reanimated/set-shared-value last-height reopen-height)
     (reanimated/animate height min-height)
     (reanimated/set-shared-value saved-height min-height)

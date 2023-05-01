@@ -3,7 +3,8 @@
     [oops.core :as oops]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
+    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+    [utils.re-frame :as rf]))
 
 (defn bounded-val
   [val min-val max-val]
@@ -60,7 +61,7 @@
     (if platform/ios? lines (dec lines))))
 
 (defn calc-max-height
-  [window-height kb-height insets images? reply?]
+  [window-height kb-height insets images? reply? edit?]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
@@ -68,7 +69,8 @@
                       constants/bar-container-height
                       constants/actions-container-height)
         max-height (if images? (- max-height constants/images-container-height) max-height)
-        max-height (if reply? (- max-height constants/reply-container-height) max-height)]
+        max-height (if reply? (- max-height constants/reply-container-height) max-height)
+        max-height (if edit? (- max-height constants/edit-container-height) max-height)]
     max-height))
 
 (defn empty-input?
@@ -76,5 +78,15 @@
   (and (empty? text) (empty? images) (not reply?)))
 
 (defn android-elevation?
-  [lines images reply?]
-  (or (> lines 1) (seq images) reply?))
+  [lines images reply? edit?]
+  (or (> lines 1) (seq images) reply? edit?))
+
+(defn cancel-edit-message
+  [{:keys [text-value maximized?]}
+   {:keys [height saved-height last-height]}]
+  (when-not @maximized?
+    (reanimated/animate height constants/input-height)
+    (reanimated/set-shared-value saved-height constants/input-height)
+    (reanimated/set-shared-value last-height constants/input-height))
+  (reset! text-value "")
+  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
