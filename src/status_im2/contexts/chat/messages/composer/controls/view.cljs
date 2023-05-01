@@ -10,7 +10,9 @@
             [status-im.ui2.screens.chat.composer.images.view :as composer-images]
             [status-im.utils.utils :as utils-old]
             [status-im.ui2.screens.chat.composer.input :as input]
-            [react-native.permissions :as permissions]))
+            [status-im2.common.alert.events :as alert]
+            [react-native.permissions :as permissions]
+            [quo.react :as quo.react]))
 
 (defn send-button
   [send-ref {:keys [chat-id images]} on-send]
@@ -63,15 +65,50 @@
     :pointer-events :box-none}
    [quo/record-audio
     {:record-audio-permission-granted    @input/record-audio-permission-granted
-     :on-init                            #(println "on-init")
-     :on-start-recording                 #(println "on-start-recording")
+     :on-init                            (fn [init-fn]
+                                           (reset! input/record-audio-reset-fn init-fn)
+                                           (reset! input/recording-audio?
+                                             (some? (get @input/reviewing-audio-filepath chat-id)))
+                                           (when (seq (get @input/input-texts chat-id))
+                                             (js/setTimeout #(quo.react/set-native-props
+                                                              record-ref
+                                                              #js {:right nil :left -1000}))))
+     :on-start-recording                 #(reset! input/recording-audio? true)
      :audio-file                         (get @input/reviewing-audio-filepath chat-id)
-     :on-reviewing-audio                 #(println "on-reviewing-audio")
-     :on-send                            #(println "on-send")
-     :on-cancel                          #(println "on-cancel")
-     :on-check-audio-permissions         #(println "on-check-audio-permissions")
-     :on-request-record-audio-permission #(println "on-request-record-audio-permission")}]])
-
+     :on-reviewing-audio                 (fn [audio-file]
+                                           (swap! input/reviewing-audio-filepath assoc
+                                             chat-id
+                                             audio-file)
+                                           (reset! input/reviewing-audio? true))
+     :on-send                            (fn
+                                           [{:keys [file-path duration]}]
+                                           (rf/dispatch [:chat/send-audio file-path duration])
+                                           (reset! input/recording-audio? false)
+                                           (reset! input/reviewing-audio? false)
+                                           (swap! input/reviewing-audio-filepath dissoc chat-id))
+     :on-cancel                          (fn []
+                                           (reset! input/recording-audio? false)
+                                           (reset! input/reviewing-audio? false)
+                                           (swap! input/reviewing-audio-filepath dissoc chat-id))
+     :on-check-audio-permissions         (fn []
+                                           (permissions/permission-granted?
+                                            :record-audio
+                                            #(reset! input/record-audio-permission-granted %)
+                                            #(reset! input/record-audio-permission-granted false)))
+     :on-request-record-audio-permission (fn []
+                                           (rf/dispatch
+                                            [:request-permissions
+                                             {:permissions [:record-audio]
+                                              :on-allowed
+                                              #(reset! input/record-audio-permission-granted true)
+                                              :on-denied
+                                              #(js/setTimeout
+                                                (fn []
+                                                  (alert/show-popup
+                                                   (i18n/label :t/audio-recorder-error)
+                                                   (i18n/label
+                                                    :t/audio-recorder-permissions-error)))
+                                                50)}]))}]])
 
 (defn view
   [send-ref record-ref params bottom-inset chat-id images edit on-send]
