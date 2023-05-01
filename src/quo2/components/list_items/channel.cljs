@@ -4,7 +4,6 @@
             [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
             [react-native.core :as rn]
             [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]))
 
