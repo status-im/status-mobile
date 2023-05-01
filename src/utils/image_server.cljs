@@ -6,6 +6,7 @@
 (def ^:const contact-images-action "/contactImages")
 (def ^:const generate-qr-action "/GenerateQRCode")
 (def ^:const status-profile-base-url "https://join.status.im/u/")
+(def ^:const status-profile-base-url-without-https "join.status.im/u/")
 
 (defn timestamp [] (datetime/timestamp))
 

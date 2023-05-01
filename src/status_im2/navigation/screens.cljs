@@ -31,7 +31,8 @@
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
-    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]))
+    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
+    [status-im2.contexts.share.view :as share]))
 
 (defn screens
   []
@@ -41,6 +42,10 @@
    [{:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
+
+    {:name      :share-shell
+     :options   options/transparent-screen-options
+     :component share/view}
 
     {:name      :shell-stack
      :component shell/shell-stack}

@@ -2152,5 +2152,9 @@
     "user-shared-a-community": "{{user}} shared a community",
     "you-deleted-a-message": "You deleted a message",
     "this-message-was-deleted": "This message was deleted",
-    "user-deleted-a-message": "{{user}} deleted a message"
+    "user-deleted-a-message": "{{user}} deleted a message",
+    "link-to-profile": "Link to profile",
+    "emoji-hash": "Emoji Hash",
+    "emoji-hash-copied":"Emojihash copied to clipboard",
+    "link-to-profile-copied":"Link to Profile copied to clipboard"
 }
