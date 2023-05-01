@@ -8,7 +8,7 @@
 
 (defn hide-sheet-and-dispatch
   [event]
-  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch event))
 
 (defn mute-chat-drawer

@@ -2200,5 +2200,9 @@
     "token-gated-communities": "Token gated communities",
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
-    "dont-yell-at-me": "Don’t yell at me"
+    "dont-yell-at-me": "Don’t yell at me",
+    "view-channel-members-and-details": "View channel members and details",
+    "unmute-channel": "Unmute channel",
+    "share-channel": "Share channel",
+    "all-messages": "All messages"
 }

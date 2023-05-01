@@ -213,28 +213,30 @@
    full-chats-data]
   (fn [acc
        [_ {:keys [name categoryID position id emoji can-post?]}]]
-    (let [category-id                       (if (seq categoryID) categoryID constants/empty-category-id)
+    (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
-                  unviewed-mentions-count]} (get full-chats-data
-                                                 (str community-id id))
-          acc-with-category                 (if (get acc category-id)
-                                              acc
-                                              (assoc acc
-                                                     category-id
-                                                     (assoc
-                                                      (or (get categories category-id)
-                                                          {:name (i18n/label :t/none)})
-                                                      :collapsed? (get collapsed-categories
-                                                                       category-id)
-                                                      :chats      [])))
-          chat                              {:name             name
-                                             :emoji            emoji
-                                             :unread-messages? (pos? unviewed-messages-count)
-                                             :position         position
-                                             :mentions-count   (or unviewed-mentions-count 0)
-                                             :locked?          (or (not joined)
-                                                                   (not can-post?))
-                                             :id               id}]
+                  unviewed-mentions-count
+                  muted]}   (get full-chats-data
+                                 (str community-id id))
+          acc-with-category (if (get acc category-id)
+                              acc
+                              (assoc acc
+                                     category-id
+                                     (assoc
+                                      (or (get categories category-id)
+                                          {:name (i18n/label :t/none)})
+                                      :collapsed? (get collapsed-categories
+                                                       category-id)
+                                      :chats      [])))
+          chat              {:name             name
+                             :emoji            emoji
+                             :muted?           muted
+                             :unread-messages? (pos? unviewed-messages-count)
+                             :position         position
+                             :mentions-count   (or unviewed-mentions-count 0)
+                             :locked?          (or (not joined)
+                                                   (not can-post?))
+                             :id               id}]
       (update-in acc-with-category [category-id :chats] conj chat))))
 
 (re-frame/reg-sub
