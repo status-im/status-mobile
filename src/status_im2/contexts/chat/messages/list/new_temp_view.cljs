@@ -108,12 +108,17 @@
 (defn calc-shell-position
   [y]
   (let [{:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
-        lines                                   (utils/calc-lines input-content-height)]
+        reply                                   (rf/sub [:chats/reply-message])
+        edit                                    (rf/sub [:chats/edit-message])
+        lines                                   (utils/calc-lines input-content-height)
+        base                                    (if (or reply edit)
+                                                  (- composer.constants/edit-container-height)
+                                                  0)]
     (if (not focused?)
-      (if (> lines 1) -18 0)
+      (if (> lines 1) (+ -18 base) base)
       (if (> lines 12)
         (reanimated/get-shared-value y)
-        (if (> lines 1) (- (- input-content-height composer.constants/input-height)) 0)))))
+        (if (> lines 1) (- (- input-content-height composer.constants/input-height base)) base)))))
 
 (defn shell-button
   [insets]
