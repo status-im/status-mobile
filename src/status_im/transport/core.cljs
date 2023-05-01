@@ -45,11 +45,13 @@
   {:events [::messenger-started]}
   [{:keys [db] :as cofx} {:keys [mailservers] :as response}]
   (log/info "Messenger started")
-  (rf/merge cofx
-            {:db (-> db
-                     (assoc :messenger/started? true)
-                     (add-mailservers mailservers))}
-            (fetch-node-info-fx)
-            (pairing/init)
-            (stickers/load-packs)
-            (universal-links/process-stored-event)))
+  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+    (rf/merge cofx
+              {:db (-> db
+                       (assoc :messenger/started? true)
+                       (add-mailservers mailservers))}
+              (fetch-node-info-fx)
+              (pairing/init)
+              (stickers/load-packs)
+              (when-not new-account?
+                (universal-links/process-stored-event)))))
