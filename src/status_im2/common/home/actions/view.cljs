@@ -306,7 +306,7 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
+;; TODO(OmarBasem): to be implemented.chat/check-channel-muted?
 (defn share-group-entry
   []
   (entry {:icon                :i/share

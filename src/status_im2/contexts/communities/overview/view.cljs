@@ -212,12 +212,12 @@
 
 (defn add-handlers
   [community-id
-   {:keys [id locked? token-gating]
+   {:keys [id locked?]
     :or   {locked? false}
     :as   chat}]
   (merge
    chat
-   (if (and locked? token-gating)
+   (when (and (not locked?) id)
      {:on-press      (fn []
                        (rf/dispatch [:dismiss-keyboard])
                        (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))
@@ -225,17 +225,7 @@
                        [:show-bottom-sheet
                         {:content (fn []
                                     [channel-options/channel-options-bottom-sheet community-id id])}])
-      :community-id  community-id}
-
-     (when (and (not locked?) id)
-       {:on-press      (fn []
-                         (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))
-        :on-long-press #(rf/dispatch
-                         [:show-bottom-sheet
-                          {:content (fn []
-                                      [channel-options/channel-options-bottom-sheet community-id id])}])
-        :community-id  community-id}))))
+      :community-id  community-id})))
 
 (defn add-handlers-to-chats
   [community-id chats]
