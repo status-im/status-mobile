@@ -32,4 +32,3 @@
    :right            -20
    :bottom           0
    :height           constants/composer-default-height})
-
