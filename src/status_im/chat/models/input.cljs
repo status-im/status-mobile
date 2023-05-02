@@ -6,6 +6,7 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
@@ -49,6 +50,12 @@
   [{db :db} maximized? chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :input-maximized?] maximized?)}))
+
+(rf/defn set-input-focused
+  {:events [:chat.ui/set-input-focused]}
+  [{db :db} focused? chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
@@ -98,7 +105,8 @@
                    (update-in [:chat/inputs current-chat-id :metadata]
                               dissoc
                               :sending-image))
-     :dispatch [:mention/to-input-field text current-chat-id]}))
+     :dispatch (when-not config/new-composer-enabled?
+                 [:mention/to-input-field text current-chat-id])}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -173,7 +181,8 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
-              {:set-text-input-value [current-chat-id ""]}
+              (when-not config/new-composer-enabled?
+                {:set-text-input-value [current-chat-id ""]})
               (clean-input current-chat-id)
               (mentions/clear-mentions))))
 
@@ -217,22 +226,21 @@
 
 (rf/defn send-edited-message
   [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
-  (let [pinned-message (get-in db [:pin-messages chat-id message-id])]
-    (rf/merge
-     cofx
-     {:json-rpc/call [{:method      "wakuext_editMessage"
-                       :params      [{:id           message-id
-                                      :text         text
-                                      :content-type (if (message-content/emoji-only-content?
-                                                         {:text text :response-to quoted-message})
-                                                      constants/content-type-emoji
-                                                      constants/content-type-text)}]
-                       :js-response true
-                       :on-error    #(log/error "failed to edit message " %)
-                       :on-success  (fn [result]
-                                      (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                          result]))}]}
-     (cancel-message-edit))))
+  (rf/merge
+   cofx
+   {:json-rpc/call [{:method      "wakuext_editMessage"
+                     :params      [{:id           message-id
+                                    :text         text
+                                    :content-type (if (message-content/emoji-only-content?
+                                                       {:text text :response-to quoted-message})
+                                                    constants/content-type-emoji
+                                                    constants/content-type-text)}]
+                     :js-response true
+                     :on-error    #(log/error "failed to edit message " %)
+                     :on-success  (fn [result]
+                                    (re-frame/dispatch [:sanitize-messages-and-process-response
+                                                        result]))}]}
+   (cancel-message-edit)))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
