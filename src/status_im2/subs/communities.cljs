@@ -165,9 +165,12 @@
 
 (defn calculate-unviewed-counts
   [chats]
-  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
-            {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
-             :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
+  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count muted]}]
+            {:unviewed-messages-count (if-not muted
+                                        (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
+                                        0)
+             :unviewed-mentions-count (if-not muted
+                                        (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0)) 0)})
           {:unviewed-messages-count 0
            :unviewed-mentions-count 0}
           chats))
