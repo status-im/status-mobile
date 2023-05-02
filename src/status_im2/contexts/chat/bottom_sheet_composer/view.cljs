@@ -36,8 +36,7 @@
                   :sending-images?             (atom nil)
                   :editing?                    (atom nil)
                   :record-permission?          (atom nil)
-                  :audio-file                  (atom nil)
-                  :record-init-fn              (atom nil)}
+                  :record-reset-fn             (atom nil)}
            state {:text-value            (reagent/atom "")
                   :cursor-position       (reagent/atom 0)
                   :saved-cursor-position (reagent/atom 0)
@@ -48,7 +47,8 @@
                   :focused?              (reagent/atom false)
                   :lock-layout?          (reagent/atom false)
                   :maximized?            (reagent/atom false)
-                  :recording?            (reagent/atom false)}]
+                  :recording?            (reagent/atom false)
+                  :audio-file            (reagent/atom nil)}]
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])
@@ -79,7 +79,8 @@
                                                                               (if (utils/empty-input?
                                                                                    input-text
                                                                                    images
-                                                                                   reply)
+                                                                                   reply
+                                                                                   audio)
                                                                                 0.7
                                                                                 1))
                                                           :height            (reanimated/use-shared-value
@@ -115,7 +116,7 @@
               {:style     (style/sheet-container insets state animations)
                :on-layout #(handler/layout % state blur-height)}
               [sub-view/bar]
-              [reply/view reply]
+              [reply/view state]
               [edit/view edit #(utils/cancel-edit-message state animations)]
               [reanimated/touchable-opacity
                {:active-opacity      1

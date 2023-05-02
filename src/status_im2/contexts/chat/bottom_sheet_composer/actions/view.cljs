@@ -64,56 +64,60 @@
             :i/arrow-up]])]))])
 
 (defn audio-button
-  [{:keys [record-permission? audio-file]}
-   {:keys [recording? gesture-enabled?]}
+  [{:keys [record-permission? record-reset-fn]}
+   {:keys [recording? gesture-enabled? audio-file]}
    {:keys [container-opacity]}]
-  [rn/view
-   {:style          (style/record-audio-container)
-    :pointer-events :box-none}
-   [quo/record-audio
-    {:record-audio-permission-granted    record-permission?
-     :on-start-recording                 (fn []
-                                           (reset! recording? true)
-                                           (reset! gesture-enabled? false)
-                                           (reanimated/animate container-opacity 1))
-     :audio-file                         @audio-file
-     :on-reviewing-audio                 (fn [file]
-                                           (rf/dispatch [:chat.ui/set-input-audio file])
-                                           (reset! audio-file file))
-     :on-send                            (fn [{:keys [file-path duration]}]
-                                           (reset! recording? false)
-                                           (reset! gesture-enabled? true)
-                                           (rf/dispatch [:chat/send-audio file-path duration])
-                                           (reanimated/animate container-opacity constants/empty-opacity)
-                                           (rf/dispatch [:chat.ui/set-input-audio nil])
-                                           (reset! audio-file nil))
-     :on-cancel                          (fn []
-                                           (when @recording?
+  (let [audio (rf/sub [:chats/sending-audio])]
+    [rn/view
+     {:style          (style/record-audio-container)
+      :pointer-events :box-none}
+     [quo/record-audio
+      {:record-audio-permission-granted    record-permission?
+       :on-init                            (fn [reset-fn]
+                                             (reset! record-reset-fn reset-fn))
+       :on-start-recording                 (fn []
+                                             (reset! recording? true)
+                                             (reset! gesture-enabled? false)
+                                             (reanimated/animate container-opacity 1))
+       :audio-file                         audio
+       :on-reviewing-audio                 (fn [file]
+                                             (rf/dispatch [:chat.ui/set-input-audio file])
+                                             (reset! audio-file file))
+       :on-send                            (fn [{:keys [file-path duration]}]
                                              (reset! recording? false)
                                              (reset! gesture-enabled? true)
+                                             (rf/dispatch [:chat/send-audio file-path duration])
                                              (reanimated/animate container-opacity
                                                                  constants/empty-opacity)
                                              (rf/dispatch [:chat.ui/set-input-audio nil])
-                                             (reset! audio-file nil)))
-     :on-check-audio-permissions         (fn []
-                                           (permissions/permission-granted?
-                                            :record-audio
-                                            #(reset! record-permission? %)
-                                            #(reset! record-permission? false)))
-     :on-request-record-audio-permission (fn []
-                                           (rf/dispatch
-                                            [:request-permissions
-                                             {:permissions [:record-audio]
-                                              :on-allowed
-                                              #(reset! record-permission? true)
-                                              :on-denied
-                                              #(js/setTimeout
-                                                (fn []
-                                                  (alert/show-popup
-                                                   (i18n/label :t/audio-recorder-error)
-                                                   (i18n/label
-                                                    :t/audio-recorder-permissions-error)))
-                                                50)}]))}]])
+                                             (reset! audio-file nil))
+       :on-cancel                          (fn []
+                                             (when @recording?
+                                               (reset! recording? false)
+                                               (reset! gesture-enabled? true)
+                                               (reanimated/animate container-opacity
+                                                                   constants/empty-opacity)
+                                               (rf/dispatch [:chat.ui/set-input-audio nil])
+                                               (reset! audio-file nil)))
+       :on-check-audio-permissions         (fn []
+                                             (permissions/permission-granted?
+                                              :record-audio
+                                              #(reset! record-permission? %)
+                                              #(reset! record-permission? false)))
+       :on-request-record-audio-permission (fn []
+                                             (rf/dispatch
+                                              [:request-permissions
+                                               {:permissions [:record-audio]
+                                                :on-allowed
+                                                #(reset! record-permission? true)
+                                                :on-denied
+                                                #(js/setTimeout
+                                                  (fn []
+                                                    (alert/show-popup
+                                                     (i18n/label :t/audio-recorder-error)
+                                                     (i18n/label
+                                                      :t/audio-recorder-permissions-error)))
+                                                  50)}]))}]]))
 
 
 (defn camera-button
