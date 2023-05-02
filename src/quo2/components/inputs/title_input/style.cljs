@@ -1,5 +1,6 @@
 (ns quo2.components.inputs.title-input.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn get-focused-placeholder-color
   [blur? override-theme]
@@ -28,9 +29,11 @@
 
 (defn get-selection-color
   [customization-color blur? override-theme]
-  (if blur?
-    (colors/theme-colors colors/neutral-100 colors/white override-theme)
-    (colors/custom-color customization-color (if (or (= :dark override-theme) (colors/dark?)) 60 50))))
+  (colors/alpha (if blur?
+                  (colors/theme-colors colors/neutral-100 colors/white override-theme)
+                  (colors/custom-color customization-color
+                                       (if (or (= :dark override-theme) colors/dark?) 60 50)))
+                (if platform/ios? 1 0.2)))
 
 (def text-input-container {:flex 1})
 
