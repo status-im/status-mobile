@@ -170,7 +170,8 @@
                                         (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
                                         0)
              :unviewed-mentions-count (if-not muted
-                                        (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0)) 0)})
+                                        (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))
+                                        0)})
           {:unviewed-messages-count 0
            :unviewed-mentions-count 0}
           chats))
