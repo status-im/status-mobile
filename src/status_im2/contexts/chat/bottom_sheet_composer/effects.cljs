@@ -79,11 +79,10 @@
       (reset! editing? false))))
 
 (defn audio-effect
-  [{:keys [recording? gesture-enabled? audio-file]}
+  [{:keys [recording? gesture-enabled?]}
    {:keys [container-opacity]}
    audio]
   (when (and audio (not @recording?))
-    (reset! audio-file audio)
     (reset! recording? true)
     (reset! gesture-enabled? false)
     (reanimated/animate container-opacity 1)))

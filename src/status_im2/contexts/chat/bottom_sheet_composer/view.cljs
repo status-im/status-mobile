@@ -47,8 +47,7 @@
                   :focused?              (reagent/atom false)
                   :lock-layout?          (reagent/atom false)
                   :maximized?            (reagent/atom false)
-                  :recording?            (reagent/atom false)
-                  :audio-file            (reagent/atom nil)}]
+                  :recording?            (reagent/atom false)}]
        [:f>
         (fn []
           (let [images                                   (rf/sub [:chats/sending-image])

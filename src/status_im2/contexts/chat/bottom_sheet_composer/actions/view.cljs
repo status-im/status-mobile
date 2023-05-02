@@ -65,7 +65,7 @@
 
 (defn audio-button
   [{:keys [record-permission? record-reset-fn]}
-   {:keys [recording? gesture-enabled? audio-file]}
+   {:keys [recording? gesture-enabled?]}
    {:keys [container-opacity]}]
   (let [audio (rf/sub [:chats/sending-audio])]
     [rn/view
@@ -81,24 +81,21 @@
                                              (reanimated/animate container-opacity 1))
        :audio-file                         audio
        :on-reviewing-audio                 (fn [file]
-                                             (rf/dispatch [:chat.ui/set-input-audio file])
-                                             (reset! audio-file file))
+                                             (rf/dispatch [:chat.ui/set-input-audio file]))
        :on-send                            (fn [{:keys [file-path duration]}]
                                              (reset! recording? false)
                                              (reset! gesture-enabled? true)
                                              (rf/dispatch [:chat/send-audio file-path duration])
                                              (reanimated/animate container-opacity
                                                                  constants/empty-opacity)
-                                             (rf/dispatch [:chat.ui/set-input-audio nil])
-                                             (reset! audio-file nil))
+                                             (rf/dispatch [:chat.ui/set-input-audio nil]))
        :on-cancel                          (fn []
                                              (when @recording?
                                                (reset! recording? false)
                                                (reset! gesture-enabled? true)
                                                (reanimated/animate container-opacity
                                                                    constants/empty-opacity)
-                                               (rf/dispatch [:chat.ui/set-input-audio nil])
-                                               (reset! audio-file nil)))
+                                               (rf/dispatch [:chat.ui/set-input-audio nil])))
        :on-check-audio-permissions         (fn []
                                              (permissions/permission-granted?
                                               :record-audio
