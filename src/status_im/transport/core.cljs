@@ -45,7 +45,7 @@
   {:events [::messenger-started]}
   [{:keys [db] :as cofx} {:keys [mailservers] :as response}]
   (log/info "Messenger started")
-  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+  (let [new-account? (get db :onboarding-2/new-account?)]
     (rf/merge cofx
               {:db (-> db
                        (assoc :messenger/started? true)
