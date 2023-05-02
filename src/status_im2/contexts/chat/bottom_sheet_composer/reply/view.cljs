@@ -126,11 +126,14 @@
             (get-quoted-text-with-mentions (or parsed-text (:parsed-text content))))]])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
-        {:icon     true
-         :type     :outline
-         :size     24
-         :on-press #(rf/dispatch [:chat.ui/cancel-message-reply])}
-        :i/close])
+        {:width               24
+         :size                24
+         :accessibility-label :reply-cancel-button
+         :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
+         :type                :outline}
+        [quo/icon :i/close
+         {:size  16
+          :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]])
      (when (and in-chat-input? recording-audio?)
        [linear-gradient/linear-gradient
         {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-90-opa-0)

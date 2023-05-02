@@ -45,3 +45,11 @@
             (update-in [:db :toasts] assoc :hide-toasts-timer-set true)
             (assoc :dispatch-later [{:ms 500 :dispatch [:toasts/hide-with-check]}]))
         effect))))
+
+(rf/defn close-all-toasts
+  {:events [:toasts/close-all-toasts]}
+  [{:keys [db]}]
+  {:dispatch-n (reduce (fn [acc toast]
+                         (conj acc [:toasts/close (key toast)]))
+                       []
+                       (get-in db [:toasts :toasts]))})

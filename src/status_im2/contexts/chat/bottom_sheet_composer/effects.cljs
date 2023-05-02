@@ -65,6 +65,19 @@
   (when-not reply?
     (reset! replying? false)))
 
+(defn edit-effect
+  [{:keys [text-value saved-cursor-position]}
+   {:keys [editing? input-ref]}
+   edit]
+  (let [edit-text (get-in edit [:content :text])]
+    (when (and (not @editing?) edit @input-ref)
+      (.focus ^js @input-ref)
+      (reset! editing? true)
+      (reset! text-value edit-text)
+      (reset! saved-cursor-position (count edit-text)))
+    (when-not edit-text
+      (reset! editing? false))))
+
 (defn empty-effect
   [{:keys [text-value maximized? focused?]}
    {:keys [container-opacity]}
@@ -80,7 +93,8 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?]
+  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
+   edit]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -89,6 +103,7 @@
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (images-or-reply-effect animations props images? reply?)
+     (edit-effect state props edit)
      (empty-effect state animations images? reply?)
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
