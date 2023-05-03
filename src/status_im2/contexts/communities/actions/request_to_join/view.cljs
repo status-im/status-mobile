@@ -56,7 +56,8 @@
            [quo/disclaimer
             {:accessibility-label :rules-disclaimer-checkbox
              :container-style     {:margin-top 20}
-             :on-change           #(swap! agreed-to-rules? not)}
+             :on-change           #(swap! agreed-to-rules? not)
+             :checked?            @agreed-to-rules?}
             (i18n/label :t/accept-community-rules)]
            [rn/view {:style (style/bottom-container)}
             [quo/button
