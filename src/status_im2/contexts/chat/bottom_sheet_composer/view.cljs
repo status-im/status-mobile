@@ -66,7 +66,7 @@
                 max-height                               (utils/calc-max-height window-height
                                                                                 kb-height
                                                                                 insets
-                                                                                (seq images)
+                                                                                (boolean (seq images))
                                                                                 reply
                                                                                 edit)
                 lines                                    (utils/calc-lines @content-height)
@@ -110,7 +110,7 @@
                                 dimensions
                                 chat-input
                                 keyboard-height
-                                (seq images)
+                                (boolean (seq images))
                                 reply
                                 edit
                                 audio)
@@ -152,8 +152,8 @@
                   :accessibility-label      :chat-message-input}]
                 [gradients/view props state animations show-bottom-gradient?]]
                [images/images-list]
-               [actions/view props state animations window-height insets (seq images)]]]]))]))])
-
+               [actions/view props state animations window-height insets
+                (boolean (seq images))]]]]))]))])
 
 (defn f-bottom-sheet-composer
   [insets]

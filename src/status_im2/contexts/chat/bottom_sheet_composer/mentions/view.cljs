@@ -1,6 +1,8 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.mentions.view
   (:require
+    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [utils.re-frame :as rf]
@@ -9,30 +11,42 @@
     [status-im2.common.contact-list-item.view :as contact-list-item]
     [status-im2.contexts.chat.bottom-sheet-composer.mentions.style :as style]))
 
+(defn update-cursor
+  [user {:keys [cursor-position input-ref]}]
+  (when platform/android?
+    (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position)]
+      (reset! cursor-position new-cursor-pos)
+      (reagent/next-tick #(when @input-ref
+                            (.setNativeProps ^js @input-ref
+                                             (clj->js {:selection {:start new-cursor-pos
+                                                                   :end
+                                                                   new-cursor-pos}})))))))
+
 (defn mention-item
-  [user _ _ {:keys [cursor-position input-ref]}]
+  [user _ _ render-data]
   [contact-list-item/contact-list-item
    {:on-press (fn []
-                (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position)]
-                  (rf/dispatch [:chat.ui/select-mention nil user])
-                  (when platform/android?
-                    (reset! cursor-position new-cursor-pos)
-                    (reagent/next-tick #(when @input-ref
-                                          (.setNativeProps ^js @input-ref
-                                                           (clj->js {:selection {:start new-cursor-pos
-                                                                                 :end
-                                                                                 new-cursor-pos}})))))))}
+                (rf/dispatch [:chat.ui/select-mention nil user])
+                (update-cursor user render-data))}
    user])
 
 (defn- f-view
-  [suggestions suggestions-atom props state animations max-height cursor-pos]
-  (let [opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
-        mentions-pos
-        (utils/calc-suggestions-position cursor-pos state animations max-height (count suggestions))]
+  [suggestions-atom props state animations max-height cursor-pos]
+  (let [{:keys [keyboard-height]} (hooks/use-keyboard)
+        suggestions (rf/sub [:chat/mention-suggestions])
+        opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
+        count (count suggestions)
+        data {:keyboard-height keyboard-height
+              :insets          (safe-area/get-insets)
+              :curr-height     (reanimated/get-shared-value (:height animations))
+              :window-height   (rf/sub [:dimensions/window-height])
+              :reply           (rf/sub [:chats/reply-message])
+              :edit            (rf/sub [:chats/edit-message])}
+        mentions-pos (utils/calc-suggestions-position cursor-pos max-height count state data)]
     (rn/use-effect
      (fn []
        (if (seq suggestions)
-         (reagent/next-tick #(reset! suggestions-atom suggestions))
+         (reset! suggestions-atom suggestions)
          (js/setTimeout #(reset! suggestions-atom suggestions) 300))
        (reanimated/animate opacity (if (seq suggestions) 1 0)))
      [(seq suggestions)])
@@ -49,6 +63,5 @@
 
 (defn view
   [props state animations max-height cursor-pos]
-  (let [suggestions      (rf/sub [:chat/mention-suggestions])
-        suggestions-atom (reagent/atom {})]
-    [:f> f-view suggestions suggestions-atom props state animations max-height cursor-pos]))
+  (let [suggestions-atom (reagent/atom {})]
+    [:f> f-view suggestions-atom props state animations max-height cursor-pos]))

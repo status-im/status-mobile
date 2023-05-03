@@ -120,26 +120,22 @@
     (* sub-text-lines-in-view constants/line-height)))
 
 (defn calc-suggestions-position
-  [cursor-pos {:keys [maximized?]} {:keys [height]} max-height count]
-  (let [{:keys [keyboard-height]} (hooks/use-keyboard)
-        insets                    (safe-area/get-insets)
-        curr-height               (reanimated/get-shared-value height)
-        window-height             (rf/sub [:dimensions/window-height])
-        reply                     (rf/sub [:chats/reply-message])
-        edit                      (rf/sub [:chats/edit-message])
-        base                      (+ constants/composer-default-height (:bottom insets) 8)
-        base                      (+ base (- curr-height constants/input-height))
-        base                      (if edit
-                                    (+ base constants/edit-container-height)
-                                    base)
-        base                      (if reply
-                                    (+ base constants/reply-container-height)
-                                    base)
-        view-height               (- window-height keyboard-height (:top insets))
-        container-height          (bounded-val
-                                   (* (/ constants/mentions-max-height 4) count)
-                                   (/ constants/mentions-max-height 4)
-                                   constants/mentions-max-height)]
+  [cursor-pos max-height count
+   {:keys [maximized?]}
+   {:keys [insets curr-height window-height keyboard-height edit reply]}]
+  (let [base             (+ constants/composer-default-height (:bottom insets) 8)
+        base             (+ base (- curr-height constants/input-height))
+        base             (if edit
+                           (+ base constants/edit-container-height)
+                           base)
+        base             (if reply
+                           (+ base constants/reply-container-height)
+                           base)
+        view-height      (- window-height keyboard-height (:top insets))
+        container-height (bounded-val
+                          (* (/ constants/mentions-max-height 4) count)
+                          (/ constants/mentions-max-height 4)
+                          constants/mentions-max-height)]
     (if @maximized?
       (if (< (+ cursor-pos container-height) max-height)
         (+ constants/actions-container-height (:bottom insets))
