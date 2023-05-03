@@ -331,7 +331,6 @@
  (fn [[chat-id inputs]]
    (get-in inputs [chat-id :audio])))
 
-
 (re-frame/reg-sub
  :chats/timeline-sending-image
  :<- [:chats/timeline-chat-input]

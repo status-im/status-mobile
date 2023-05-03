@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.mentions.view
   (:require
+    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
     [utils.re-frame :as rf]
@@ -9,12 +10,22 @@
     [status-im2.contexts.chat.bottom-sheet-composer.mentions.style :as style]))
 
 (defn mention-item
-  [user]
+  [user _ _ {:keys [cursor-position input-ref]}]
   [contact-list-item/contact-list-item
-   {:on-press #(rf/dispatch [:chat.ui/select-mention nil user])} user])
+   {:on-press (fn []
+                (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position)]
+                  (rf/dispatch [:chat.ui/select-mention nil user])
+                  (when platform/android?
+                    (reset! cursor-position new-cursor-pos)
+                    (reagent/next-tick #(when @input-ref
+                                          (.setNativeProps ^js @input-ref
+                                                           (clj->js {:selection {:start new-cursor-pos
+                                                                                 :end
+                                                                                 new-cursor-pos}})))))))}
+   user])
 
 (defn- f-view
-  [suggestions suggestions-atom state animations max-height cursor-pos]
+  [suggestions suggestions-atom props state animations max-height cursor-pos]
   (let [opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
         mentions-pos
         (utils/calc-suggestions-position cursor-pos state animations max-height (count suggestions))]
@@ -32,10 +43,12 @@
        :data                         (vals @suggestions-atom)
        :key-fn                       :key
        :render-fn                    mention-item
+       :render-data                  {:cursor-position (:cursor-position state)
+                                      :input-ref       (:input-ref props)}
        :accessibility-label          :mentions-list}]]))
 
 (defn view
-  [state animations max-height cursor-pos]
+  [props state animations max-height cursor-pos]
   (let [suggestions      (rf/sub [:chat/mention-suggestions])
         suggestions-atom (reagent/atom {})]
-    [:f> f-view suggestions suggestions-atom state animations max-height cursor-pos]))
+    [:f> f-view suggestions suggestions-atom props state animations max-height cursor-pos]))

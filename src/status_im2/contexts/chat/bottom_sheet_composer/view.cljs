@@ -116,7 +116,7 @@
                                 audio)
             (utils/update-input props state input-text)
             [:<>
-             [mentions/view state animations max-height cursor-pos]
+             [mentions/view props state animations max-height cursor-pos]
              [gesture/gesture-detector
               {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
               [reanimated/view
