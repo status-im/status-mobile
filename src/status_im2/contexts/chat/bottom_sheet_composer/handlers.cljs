@@ -46,7 +46,7 @@
     (reanimated/set-shared-value saved-height min-height)
     (reanimated/animate opacity 0)
     (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
-    (when (utils/empty-input? @text-value images reply)
+    (when (utils/empty-input? @text-value images reply nil)
       (reanimated/animate container-opacity constants/empty-opacity))
     (reanimated/animate gradient-opacity 0)
     (reset! lock-selection? true)
@@ -95,13 +95,16 @@
 
 (defn change-text
   [text
-   {:keys [input-ref]}
-   {:keys [text-value cursor-position]}]
+   {:keys [input-ref record-reset-fn]}
+   {:keys [text-value cursor-position recording?]}]
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref
                                          (clj->js {:selection {:start @cursor-position
                                                                :end   @cursor-position}}))))
+  (when @recording?
+    (@record-reset-fn)
+    (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text]))
 
 (defn selection-change

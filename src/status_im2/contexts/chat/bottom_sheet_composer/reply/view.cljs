@@ -143,13 +143,13 @@
          :style  style/gradient}])]))
 
 (defn- f-view
-  []
+  [recording?]
   (let [reply  (rf/sub [:chats/reply-message])
         height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when reply [reply-message reply true false false])]))
+     (when reply [reply-message reply true false recording?])]))
 
 (defn view
-  []
-  [:f> f-view])
+  [{:keys [recording?]}]
+  [:f> f-view @recording?])

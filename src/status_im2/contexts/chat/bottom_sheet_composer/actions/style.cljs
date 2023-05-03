@@ -18,4 +18,17 @@
    {:position         :absolute
     :right            0
     :z-index          z-index
-    :background-color (colors/theme-colors colors/white colors/neutral-95)}))
+    :background-color (colors/theme-colors colors/white colors/neutral-95)
+    :padding-vertical 3
+    :padding-left     2}))
+
+(defn record-audio-container
+  []
+  {:align-items      :center
+   :background-color :transparent
+   :flex-direction   :row
+   :position         :absolute
+   :left             -20
+   :right            -20
+   :bottom           0
+   :height           constants/composer-default-height})
