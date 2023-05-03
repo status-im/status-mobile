@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.community.discover-card
   (:require [quo.previews.preview :as preview]
             [quo.react-native :as rn]
-            [quo2.components.community.discover-card :as discover-card]
+            [quo2.components.community.discover.view :as discover-card]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
@@ -27,7 +27,7 @@
          [discover-card/discover-card
           {:joined?     (:joined? @state)
            :title       (i18n/label :t/discover)
-           :description (i18n/label :t/whats-trending)}]]]])))
+           :description (i18n/label :t/favorite-communities)}]]]])))
 
 (defn preview-discoverd-card
   []

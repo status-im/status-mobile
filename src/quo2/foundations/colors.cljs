@@ -262,7 +262,7 @@
      (custom-color color suffix-dark opacity-dark)
      (custom-color color suffix-light opacity-light))))
 
-(def shadow "rgba(9,16,28,0.04)")
+(def shadow "rgba(9,16,28,0.08)")
 
 ;;General
 

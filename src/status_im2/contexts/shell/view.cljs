@@ -112,7 +112,8 @@
 
 (defn f-shell-stack
   []
-  (let [shared-values (animation/calculate-shared-values)]
+  (let [shared-values       (animation/calculate-shared-values)
+        profile-color       (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view
      {:style {:flex 1}}
      [shell]
@@ -120,8 +121,9 @@
      [:f> home-stack/f-home-stack]
      [quo/floating-shell-button
       {:jump-to {:on-press #(animation/close-home-stack true)
-                 :label    (i18n/label :t/jump-to)}}
-      {:position :absolute
+                 :label    (i18n/label :t/jump-to)
+                 :customization-color profile-color}}
+      {:position :absolute 
        :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
                                                                        ;; 5(padding on button)
       (:home-stack-opacity shared-values)]]))

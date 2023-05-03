@@ -32,6 +32,20 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
+(defn empty-state []
+  [rn/view {:style  style/empty-state-container}
+   [rn/view {:style style/empty-state-placeholder}]
+   [quo/text
+    {:accessibility-label :communities-rule-index
+     :weight              :semi-bold
+     :size                :paragraph-1}
+    (i18n/label :t/no-communities)]
+   [quo/text
+    {:accessibility-label :communities-rule-index
+     :weight              :regular
+     :size                :paragraph-2}
+    (i18n/label  :t/no-communities-sub-title)]])
+
 (defn home
   []
   (fn []
