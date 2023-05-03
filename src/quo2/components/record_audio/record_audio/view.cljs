@@ -154,12 +154,12 @@
            ready-to-send? (reagent/atom false)
            ready-to-lock? (reagent/atom false)
            ready-to-delete? (reagent/atom false)
-           reviewing-audio? (reagent/atom false)
+           reviewing-audio? (reagent/atom (some? audio-file))
            playing-audio? (reagent/atom false)
            recording-length-ms (reagent/atom 0)
            audio-current-time-ms (reagent/atom 0)
            seeking-audio? (reagent/atom false)
-           force-show-controls? (reagent/atom false)
+           force-show-controls? (reagent/atom (some? audio-file))
            clear-timeout (atom nil)
            record-button-at-initial-position? (atom true)
            record-button-is-animating? (atom false)
@@ -169,7 +169,7 @@
            touch-active? (atom false)
            recording-timer (atom nil)
            playing-timer (atom nil)
-           output-file (atom nil)
+           output-file (atom audio-file)
            reached-max-duration? (atom false)
            touch-timestamp (atom nil)
            disabled? (atom false)
@@ -512,10 +512,7 @@
                          (on-init reset-recorder))
                        (when audio-file
                          (let [filename (last (string/split audio-file "/"))]
-                           (reload-player filename)
-                           (reset! output-file audio-file)
-                           (reset! reviewing-audio? true)
-                           (reset! force-show-controls? true)))))
+                           (reload-player filename)))))
          [rn/view
           {:style          style/bar-container
            :pointer-events :box-none}

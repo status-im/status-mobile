@@ -74,8 +74,8 @@
     max-height))
 
 (defn empty-input?
-  [text images reply?]
-  (and (empty? text) (empty? images) (not reply?)))
+  [text images reply? audio?]
+  (and (empty? text) (empty? images) (not reply?) (not audio?)))
 
 (defn android-elevation?
   [lines images reply? edit?]
