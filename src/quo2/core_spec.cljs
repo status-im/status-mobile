@@ -9,6 +9,7 @@
     [quo2.components.dividers.--tests--.divider-label-component-spec]
     [quo2.components.dividers.strength-divider.component-spec]
     [quo2.components.drawers.action-drawers.component-spec]
+    [quo2.components.drawers.documentation-drawers.component-spec]
     [quo2.components.drawers.drawer-buttons.component-spec]
     [quo2.components.drawers.permission-context.component-spec]
     [quo2.components.inputs.input.component-spec]

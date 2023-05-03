@@ -24,6 +24,7 @@
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
+    quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
@@ -151,6 +152,7 @@
 
 ;;;; DRAWERS
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
+(def documentation-drawers quo2.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
