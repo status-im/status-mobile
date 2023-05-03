@@ -78,12 +78,23 @@
     (when-not edit-text
       (reset! editing? false))))
 
+(defn audio-effect
+  [{:keys [recording? gesture-enabled?]}
+   {:keys [container-opacity]}
+   audio]
+  (when (and audio (not @recording?))
+    (reset! recording? true)
+    (reset! gesture-enabled? false)
+    (reanimated/animate container-opacity 1)))
+
 (defn empty-effect
   [{:keys [text-value maximized? focused?]}
    {:keys [container-opacity]}
    images?
-   reply?]
-  (when (and (empty? @text-value) (not images?) (not reply?) (not @maximized?) (not @focused?))
+   reply?
+   audio]
+  (when
+    (and (empty? @text-value) (not images?) (not reply?) (not @maximized?) (not @focused?) (not audio))
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -94,7 +105,7 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
-   edit]
+   edit audio]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -104,7 +115,8 @@
      (background-effect state animations dimensions chat-input)
      (images-or-reply-effect animations props images? reply?)
      (edit-effect state props edit)
-     (empty-effect state animations images? reply?)
+     (audio-effect state animations audio)
+     (empty-effect state animations images? reply? audio)
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
    [max-height]))
