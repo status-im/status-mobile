@@ -168,18 +168,20 @@
         cursor                           (+ at-sign-idx (count primary-name) 2)]
     (rf/merge
      cofx
-     {:db       (-> db
-                    (assoc-in [:chats/mention-suggestions chat-id] nil))
-      :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}
-     ;; NOTE(rasom): Some keyboards do not react on selection property passed to
-     ;; text input (specifically Samsung keyboard with predictive text set on).
-     ;; In this case, if the user continues typing after the programmatic change,
-     ;; the new text is added to the last known cursor position before
-     ;; programmatic change. By calling `reset-text-input-cursor` we force the
-     ;; keyboard's cursor position to be changed before the next input.
-     (when-not config/new-composer-enabled?
-       {:set-text-input-value [chat-id new-text text-input-ref]}
-       (reset-text-input-cursor text-input-ref cursor))
+     (let [common {:db       (-> db
+                                 (assoc-in [:chats/mention-suggestions chat-id] nil))
+                   :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}
+           extra  (if (not config/new-composer-enabled?)
+                    ;; NOTE(rasom): Some keyboards do not react on selection property passed to
+                    ;; text input (specifically Samsung keyboard with predictive text set on).
+                    ;; In this case, if the user continues typing after the programmatic change,
+                    ;; the new text is added to the last known cursor position before
+                    ;; programmatic change. By calling `reset-text-input-cursor` we force the
+                    ;; keyboard's cursor position to be changed before the next input.
+                    {:set-text-input-value    [chat-id new-text text-input-ref]
+                     :reset-text-input-cursor (reset-text-input-cursor text-input-ref cursor)}
+                    {})]
+       (merge common extra))
      (recheck-at-idxs public-key))))
 
 (rf/defn clear-suggestions

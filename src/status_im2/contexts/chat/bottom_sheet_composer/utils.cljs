@@ -2,10 +2,8 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
     [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
     [utils.re-frame :as rf]))
 
