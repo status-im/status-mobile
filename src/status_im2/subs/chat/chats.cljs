@@ -331,11 +331,6 @@
  (fn [[chat-id inputs]]
    (get-in inputs [chat-id :audio])))
 
-(re-frame/reg-sub
- :chats/sending-contact-request
- :<- [:chats/current-chat-input]
- (fn [{:keys [metadata]}]
-   (:sending-contact-request metadata)))
 
 (re-frame/reg-sub
  :chats/timeline-sending-image

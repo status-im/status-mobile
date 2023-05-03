@@ -123,4 +123,3 @@
    blur-height]
   (when (utils/update-blur-height? event lock-layout? blur-height)
     (reanimated/set-shared-value blur-height (oops/oget event "nativeEvent.layout.height"))))
-
