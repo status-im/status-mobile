@@ -114,6 +114,7 @@
 
 (defn selection-change
   [event {:keys [lock-selection? cursor-position]}]
+  (println "selectionc ahnge")
   (when-not @lock-selection?
     (reset! cursor-position (oops/oget event "nativeEvent.selection.end"))))
 
