@@ -4,7 +4,9 @@
 * Project-wide gradle configuration properties for use by all modules
 */
 ext {
-    RNNKotlinVersion    = "1.4.31"
+    kotlin_version      = project.kotlinVersion
+    RNNKotlinVersion    = project.kotlinVersion
+    RNGH_kotlinVersion  = project.kotlinVersion
     buildToolsVersion   = project.buildToolsVersion
     minSdkVersion       = Integer.valueOf(project.minSdkVersion)
     compileSdkVersion   = Integer.valueOf(project.compileSdkVersion)
@@ -29,7 +31,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinPluginVersion}"
+        //classpath "org.jetbrains.kotlin:kotlin-android-extensions:${project.ext.kotlinVersion}"
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
         // WARNING: Do not place your application dependencies here!
         //          They belong in the individual module build.gradle files.
