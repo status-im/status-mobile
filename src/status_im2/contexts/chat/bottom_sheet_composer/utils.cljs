@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.bottom-sheet-composer.utils
   (:require
+    [clojure.string :as string]
     [oops.core :as oops]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -90,3 +91,53 @@
     (reanimated/set-shared-value last-height constants/input-height))
   (reset! text-value "")
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
+
+(defn update-input
+  [{:keys [input-ref]}
+   {:keys [text-value]}
+   input-text]
+  (when (and input-text (not= @text-value input-text))
+    (reset! text-value input-text)
+    (when @input-ref
+      (.setNativeProps ^js @input-ref (clj->js {:text input-text})))))
+
+(defn count-lines
+  [s]
+  (-> s
+      (string/split #"\n" -1)
+      (butlast)
+      count))
+
+(defn cursor-y-position-relative-to-container
+  [{:keys [scroll-y]}
+   {:keys [cursor-position text-value]}]
+  (let [sub-text               (subs @text-value 0 @cursor-position)
+        sub-text-lines         (count-lines sub-text)
+        scrolled-lines         (Math/round (/ @scroll-y constants/line-height))
+        sub-text-lines-in-view (- sub-text-lines scrolled-lines)]
+    (* sub-text-lines-in-view constants/line-height)))
+
+(defn calc-suggestions-position
+  [cursor-pos max-height size
+   {:keys [maximized?]}
+   {:keys [insets curr-height window-height keyboard-height edit reply]}]
+  (let [base             (+ constants/composer-default-height (:bottom insets) 8)
+        base             (+ base (- curr-height constants/input-height))
+        base             (if edit
+                           (+ base constants/edit-container-height)
+                           base)
+        base             (if reply
+                           (+ base constants/reply-container-height)
+                           base)
+        view-height      (- window-height keyboard-height (:top insets))
+        container-height (bounded-val
+                          (* (/ constants/mentions-max-height 4) size)
+                          (/ constants/mentions-max-height 4)
+                          constants/mentions-max-height)]
+    (if @maximized?
+      (if (< (+ cursor-pos container-height) max-height)
+        (+ constants/actions-container-height (:bottom insets))
+        (+ constants/actions-container-height (:bottom insets) (- max-height cursor-pos) 18))
+      (if (< (+ base container-height) view-height)
+        base
+        (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
