@@ -886,6 +886,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-co
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.3.8/kotlinx-coroutines-core-1.3.8.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-metadata-jvm/0.1.0/kotlinx-metadata-jvm-0.1.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.4.31/kotlin-android-extensions-runtime-1.4.31.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.6.20/kotlin-android-extensions-runtime-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions/1.3.50/kotlin-android-extensions-1.3.50.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions/1.4.31/kotlin-android-extensions-1.4.31.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions/1.5.20/kotlin-android-extensions-1.5.20.pom
@@ -960,6 +961,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.20/kotlin-stdlib-common-1.5.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.30/kotlin-stdlib-common-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.21/kotlin-stdlib-common-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.8.0/kotlin-stdlib-common-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.2.71/kotlin-stdlib-jdk7-1.2.71.pom
@@ -999,6 +1001,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.10/k
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.20/kotlin-stdlib-1.5.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.30/kotlin-stdlib-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.31/kotlin-stdlib-1.5.31.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.20/kotlin-stdlib-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.21/kotlin-stdlib-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.0/kotlin-stdlib-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-metadata/1.5.20/kotlin-tooling-metadata-1.5.20.pom

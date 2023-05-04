@@ -12724,6 +12724,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-android-extensions-runtime-1.6.20.pom": {
+        "sha1": "ebb28a424c03b500fec21a389cb8e5211abc4199",
+        "sha256": "0a94x70cl8j4s8j5gqiyawg2h00dn6b4lcqx457qg9lqqvpn15k8"
+      },
+      "kotlin-android-extensions-runtime-1.6.20.jar": {
+        "sha1": "e0d69c8bf97c1f31ef152fb1d53507d9c2ee6b0c",
+        "sha256": "0jv3r0mqa0pvwlfg5rvji71nsgdivrz6mcddl3lfsyqkvyhjz2dc"
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-android-extensions/1.3.50",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13834,6 +13849,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-common-1.6.20.pom": {
+        "sha1": "2f237c62ee4a898a4c3a5904988a90c4408e06e4",
+        "sha256": "1j4rg188hvp032ji04srwg3yp53f7xrzhq608lmc9knma69wq11y"
+      },
+      "kotlin-stdlib-common-1.6.20.jar": {
+        "sha1": "27b4562b6713d70f458c6d7ea39aadacb8e6a92b",
+        "sha256": "00dyyrj6zyxh8c1pxhs6wfihhbg84hyyjvqp288cn3fk40jhm94d"
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.21",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14414,6 +14444,21 @@
       "kotlin-stdlib-1.5.31.jar": {
         "sha1": "6628d61d0f5603568e72d2d5915d2c034b4f1c55",
         "sha256": "0s3y58i395qvpga35fjfxb8yl62kwfw58w88kaavj2zcnancw028"
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-1.6.20.pom": {
+        "sha1": "a7c1d39b812c8867eca579245d797bbfa16a27c9",
+        "sha256": "16bg2vdj87y8y8q7bix13srxsxk48hkda8nyfyc5167jn3f873m0"
+      },
+      "kotlin-stdlib-1.6.20.jar": {
+        "sha1": "6cedc143badbb4f1c6b7f5a340b04edff1743208",
+        "sha256": "16dp5hga717xxwy7c189i4c9g17c8j04zg6hh7yk6qmjcwmirdgf"
       }
     }
   },
