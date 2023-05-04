@@ -46,8 +46,7 @@
             (i18n/label :t/delete-profile)]]
           [quo/list-item
            {:title (multiaccounts/displayed-name multiaccount)
-            :icon  [chat-icon.screen/contact-icon-contacts-tab
-                    (multiaccounts/displayed-photo multiaccount)]}]
+            :icon  [chat-icon.screen/contact-icon-contacts-tab multiaccount]}]
           (when keycard?
             [react/view
              [quo/list-header (i18n/label :t/actions)]

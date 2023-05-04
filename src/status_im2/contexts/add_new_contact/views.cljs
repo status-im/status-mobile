@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.clipboard :as clipboard]
     [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im.utils.utils :as utils]
     [status-im2.contexts.add-new-contact.style :as style]
@@ -14,12 +15,8 @@
 
 (defn found-contact
   [public-key]
-  (let [{:keys [primary-name
-                compressed-key
-                identicon
-                images]} (rf/sub [:contacts/contact-by-identity public-key])
-        profile-picture  (-> (or (:thumbnail images) (:large images) (first images))
-                             (get :uri identicon))]
+  (let [{:keys [primary-name compressed-key]
+         :as   contact} (rf/sub [:contacts/contact-by-identity public-key])]
     (when primary-name
       [rn/view style/found-user
        [quo/text (style/text-description)
@@ -27,7 +24,7 @@
        [rn/view (style/found-user-container)
         [quo/user-avatar
          {:full-name         primary-name
-          :profile-picture   profile-picture
+          :profile-picture   (multiaccounts/displayed-photo contact)
           :size              :small
           :status-indicator? false}]
         [rn/view style/found-user-text

@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [quo.react-native :as rn]
+            [quo2.core :as quo]
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.styles :as styles]
@@ -13,16 +14,16 @@
 
 (def get-name-first-char
   (memoize
-   (fn [name]
-     ;; TODO: for now we check if the first letter is a #
-     ;; which means it is most likely a public chat and
-     ;; use the second letter if that is the case
-     ;; a broader refactoring should clean up upstream params
-     ;; for default-chat-icon
-     (string/capitalize (if (and (= "#" (first name))
-                                 (< 1 (count name)))
-                          (second name)
-                          (first name))))))
+    (fn [name]
+      ;; TODO: for now we check if the first letter is a #
+      ;; which means it is most likely a public chat and
+      ;; use the second letter if that is the case
+      ;; a broader refactoring should clean up upstream params
+      ;; for default-chat-icon
+      (string/capitalize (if (and (= "#" (first name))
+                                  (< 1 (count name)))
+                           (second name)
+                           (first name))))))
 
 (defn default-chat-icon
   [name styles]
@@ -47,19 +48,13 @@
 
 (defn profile-photo-plus-dot-view
   [{:keys [public-key photo-container photo-path community?]}]
-  (let [photo-path              (if (nil? photo-path)
-                                  @(re-frame.core/subscribe [:chats/photo-path public-key])
-                                  photo-path)
-        photo-container         (if (nil? photo-container)
-                                  styles/container-chat-list
-                                  photo-container)
-        size                    (:width photo-container)
-        identicon?              (and photo-path
-                                     (string/starts-with? photo-path "data:image/png;base64,"))
-        dot-styles              (visibility-status-utils/icon-visibility-status-dot
-                                 public-key
-                                 size
-                                 identicon?)
+  (let [photo-container (if (nil? photo-container)
+                          styles/container-chat-list
+                          photo-container)
+        size (:width photo-container)
+        dot-styles (visibility-status-utils/icon-visibility-status-dot
+                     public-key
+                     size)
         dot-accessibility-label (:accessibility-label dot-styles)]
     [rn/view
      {:style               photo-container
@@ -147,9 +142,13 @@
    [photos/photo (multiaccounts/displayed-photo contact) styles]])
 
 (defn contact-icon-contacts-tab
-  [photo-path]
+  [{:keys [primary-name] :as contact}]
   [rn/view styles/container-chat-list
-   [photos/photo photo-path {:size 40}]])
+   [quo/user-avatar
+    {:full-name         primary-name
+     :profile-picture   (multiaccounts/displayed-photo contact)
+     :size              :small
+     :status-indicator? false}]])
 
 (defn dapp-icon-permission
   [contact size]
@@ -195,9 +194,10 @@
          :public-key      public-key
          :photo-container (:container styles)
          :community?      community?}]
-       (if (string/blank? emoji)
-         [default-chat-icon name styles]
-         [emoji-chat-icon emoji styles]))
+       [rn/view {:accessibility-label :chat-icon}
+        (if (string/blank? emoji)
+          [default-chat-icon name styles]
+          [emoji-chat-icon emoji styles])])
      (when edit?
        [rn/view {:style (styles/chat-icon-profile-edit)}
         [icons/tiny-icon :tiny-icons/tiny-edit {:color colors/white-persist}]])]))

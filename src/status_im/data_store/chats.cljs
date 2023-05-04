@@ -79,7 +79,6 @@
        :emoji                   (.-emoji chat)
        :timestamp               (.-timestamp chat)
        :alias                   (.-alias chat)
-       :identicon               (.-identicon chat)
        :muted                   (.-muted chat)
        :joined                  (.-joined chat)
        :muted-till              (.-mutetill chat)

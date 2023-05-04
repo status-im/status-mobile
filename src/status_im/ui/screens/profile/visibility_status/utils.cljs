@@ -94,20 +94,16 @@
     :online-profile-photo-dot
     :offline-profile-photo-dot))
 
-(defn icon-dot-margin
-  [_ _]
-  -2)
-
 (defn icon-dot-size
   [container-size]
   (/ container-size 2.4))
 
 (defn icon-visibility-status-dot
-  [public-key container-size identicon?]
+  [public-key container-size]
   (let [my-icon?                 (my-icon? public-key)
         visibility-status-update (visibility-status-update public-key my-icon?)
         size                     (icon-dot-size container-size)
-        margin                   (icon-dot-margin size identicon?)
+        margin                   -2
         dot-color                (icon-dot-color visibility-status-update)
         new-ui?                  true]
     (merge (styles/visibility-status-dot {:color   dot-color

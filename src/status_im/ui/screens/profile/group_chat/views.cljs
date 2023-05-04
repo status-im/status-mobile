@@ -23,8 +23,7 @@
   [react/view
    [quo/list-item
     {:theme               :accent
-     :icon                [chat-icon/contact-icon-contacts-tab
-                           (multiaccounts/displayed-photo member)]
+     :icon                [chat-icon/contact-icon-contacts-tab member]
      :title               (:primary-name member)
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
@@ -59,8 +58,7 @@
       {:title               primary-name
        :subtitle            secondary-name
        :accessibility-label :member-item
-       :icon                [chat-icon/contact-icon-contacts-tab
-                             (multiaccounts/displayed-photo member)]
+       :icon                [chat-icon/contact-icon-contacts-tab member]
        :on-press            (when (not= public-key current-user-identity)
                               #(re-frame/dispatch [:chat.ui/show-profile public-key]))}
       (when (:admin? member)
@@ -140,8 +138,7 @@
   (let [contact (or @(re-frame/subscribe [:contacts/contact-by-identity from]) {:public-key from})]
     [quo/list-item
      {:title    (multiaccounts/displayed-name contact)
-      :icon     [chat-icon/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo contact)]
+      :icon     [chat-icon/contact-icon-contacts-tab contact]
       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content (fn []
                                                  [invitation-sheet invitation contact])}])}]))

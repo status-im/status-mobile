@@ -268,12 +268,9 @@
                   public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
               (native-module/gfycat-identicon-async
                public-key
-               (fn [name photo-path]
+               (fn [name _]
                  (let [derived-data-extended
-                       (update derived-data
-                               constants/path-whisper-keyword
-                               merge
-                               {:name name :identicon photo-path})]
+                       (update derived-data constants/path-whisper-keyword assoc :name name)]
                    (reset! derived-acc
                      {:root-key root-data
                       :derived  derived-data-extended})))))))))))

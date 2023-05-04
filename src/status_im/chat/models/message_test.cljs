@@ -20,7 +20,6 @@
                                :clock       clock-value
                                :alias       "alias"
                                :name        "name"
-                               :identicon   "identicon"
                                :from        "from"}]
       ;; <- cursor
       ;; <- message
@@ -107,7 +106,6 @@
                           :clock       (- clock-value 2)
                           :alias       "alias"
                           :name        "name"
-                          :identicon   "identicon"
                           :from        "from"}
                 result  (dissoc (message/receive-many
                                  cofx

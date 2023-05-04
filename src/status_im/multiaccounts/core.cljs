@@ -9,7 +9,6 @@
             [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
             [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as theme]
             [taoensso.timbre :as log]
@@ -48,23 +47,11 @@
            (gfycat/generate-gfy identity))]
       [(:primary-name contact) (:secondary-name contact)])))
 
-(def photo-quality-thumbnail :thumbnail)
-(def photo-quality-large :large)
-
 (defn displayed-photo
-  "If a photo, a image or an images array is set use it, otherwise fallback on identicon or generate"
-  [{:keys [images identicon public-key]}]
-  (cond
-    (pos? (count images))
-    (:uri (or (photo-quality-thumbnail images)
-              (photo-quality-large images)
-              (first images)))
-
-    (not (string/blank? identicon))
-    identicon
-
-    :else
-    (identicon/identicon public-key)))
+  [{:keys [images]}]
+  (or (:thumbnail images)
+      (:large images)
+      (first images)))
 
 (re-frame/reg-fx
  ::webview-debug-changed

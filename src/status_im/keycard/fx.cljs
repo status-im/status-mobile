@@ -200,7 +200,7 @@
    (.remove listener)))
 
 (re-frame/reg-fx
- :keycard/generate-name-and-photo
+ :keycard/generate-name
  (fn [{:keys [public-key on-success]}]
    (native-module/gfycat-identicon-async
     public-key

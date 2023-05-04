@@ -7,7 +7,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
@@ -98,8 +97,7 @@
                  (some-> ^js @scroll-view-ref
                          (.scrollTo #js {:x 0 :animated true}))
                  (re-frame/dispatch [:wallet.recipient/address-changed name]))
-    :icon     [chat-icon/contact-icon-contacts-tab
-               (multiaccounts/displayed-photo contact)]}])
+    :icon     [chat-icon/contact-icon-contacts-tab contact]}])
 
 (defn empty-items
   [icon title]

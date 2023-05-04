@@ -108,12 +108,9 @@
                  public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
              (native-module/gfycat-identicon-async
               public-key
-              (fn [name identicon]
+              (fn [name _]
                 (let [derived-data-extended
-                      (update derived-data
-                              constants/path-whisper-keyword
-                              merge
-                              {:name name :identicon identicon})]
+                      (update derived-data constants/path-whisper-keyword assoc :name name)]
                   (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
 
 (rf/defn show-existing-multiaccount-alert

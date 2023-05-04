@@ -205,10 +205,8 @@
   [_ _]
   (reagent/create-class
    {:should-component-update
-    (fn [_ [_ old-account] [_ new-account]]
-      (and (not (nil? new-account))
-           (and (not (:identicon old-account))
-                (nil? (:identicon new-account)))))
+    (fn [_ [_ _] [_ new-account]]
+      (not (nil? new-account)))
 
     :reagent-render
     (fn [account small-screen?]

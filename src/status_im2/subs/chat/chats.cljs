@@ -6,10 +6,8 @@
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.multiaccounts.core :as multiaccounts]
-            [utils.image-server :as image-server]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.events :as chat.events]
-            [quo2.theme :as theme]))
+            [status-im2.contexts.chat.events :as chat.events]))
 
 (re-frame/reg-sub
  :chats/chat
@@ -282,13 +280,9 @@
  :<- [:contacts/contacts]
  :<- [:profile/multiaccount]
  :<- [:mediaserver/port]
- (fn [[contacts {:keys [public-key] :as multiaccount} port] [_ id]]
-   (let [contact (or (when (= id public-key)
-                       multiaccount)
-                     (get contacts id))]
-     (if (nil? contact)
-       (image-server/get-identicons-uri port id (theme/get-theme))
-       (multiaccounts/displayed-photo contact)))))
+ (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
+   (multiaccounts/displayed-photo (or (when (= id public-key) multiaccount)
+                                      (get contacts id)))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number

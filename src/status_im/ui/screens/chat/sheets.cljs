@@ -14,13 +14,12 @@
 
 (defn one-to-one-chat-accents
   [chat-id]
-  (let [photo        @(re-frame/subscribe [:chats/photo-path chat-id])
-        contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id])]
+  (let [{:keys [primary-name] :as contact} @(re-frame/subscribe [:contacts/contact-by-identity chat-id])]
     [react/view
      [quo/list-item
       {:theme               :accent
-       :icon                [chat-icon/contact-icon-contacts-tab photo]
-       :title               contact-name
+       :icon                [chat-icon/contact-icon-contacts-tab contact]
+       :title               primary-name
        :subtitle            (i18n/label :t/view-profile)
        :accessibility-label :view-chat-details-button
        :chevron             true
