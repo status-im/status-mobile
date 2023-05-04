@@ -35,14 +35,14 @@
   (let [{:keys [keyboard-height]} (hooks/use-keyboard)
         suggestions (rf/sub [:chat/mention-suggestions])
         opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
-        count (count suggestions)
+        size (count suggestions)
         data {:keyboard-height keyboard-height
               :insets          (safe-area/get-insets)
               :curr-height     (reanimated/get-shared-value (:height animations))
               :window-height   (rf/sub [:dimensions/window-height])
               :reply           (rf/sub [:chats/reply-message])
               :edit            (rf/sub [:chats/edit-message])}
-        mentions-pos (utils/calc-suggestions-position cursor-pos max-height count state data)]
+        mentions-pos (utils/calc-suggestions-position cursor-pos max-height size state data)]
     (rn/use-effect
      (fn []
        (if (seq suggestions)

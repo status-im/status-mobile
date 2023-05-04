@@ -118,7 +118,7 @@
     (* sub-text-lines-in-view constants/line-height)))
 
 (defn calc-suggestions-position
-  [cursor-pos max-height count
+  [cursor-pos max-height size
    {:keys [maximized?]}
    {:keys [insets curr-height window-height keyboard-height edit reply]}]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
@@ -131,7 +131,7 @@
                            base)
         view-height      (- window-height keyboard-height (:top insets))
         container-height (bounded-val
-                          (* (/ constants/mentions-max-height 4) count)
+                          (* (/ constants/mentions-max-height 4) size)
                           (/ constants/mentions-max-height 4)
                           constants/mentions-max-height)]
     (if @maximized?
