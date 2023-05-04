@@ -11,7 +11,7 @@
             :inner                   44
             :status-indicator        12
             :status-indicator-border 2
-            :font-size               :paragraph-1}
+            :font-size               :heading-2}
    :small  {:outer                   32
             :inner                   28
             :status-indicator        12
