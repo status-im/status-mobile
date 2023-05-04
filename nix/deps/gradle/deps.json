@@ -11886,6 +11886,21 @@
   },
 
   {
+    "path": "org/checkerframework/checker-qual/2.11.1",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "checker-qual-2.11.1.pom": {
+        "sha1": "ebc1b44da8503640e2ed42627b299272c8c72824",
+        "sha256": "1777gnj3byakppcpjsnsslxnclwhfc4sd3i599glamzpv280qbng"
+      },
+      "checker-qual-2.11.1.jar": {
+        "sha1": "8c43bf8f99b841d23aadda6044329dad9b63c185",
+        "sha256": "0f2rkkfd3h2sqjgicf1hwqhfmkrrgpdd8wrj0pdfcvfwn6j28lh1"
+      }
+    }
+  },
+
+  {
     "path": "org/checkerframework/checker-qual/3.32.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
