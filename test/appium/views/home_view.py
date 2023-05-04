@@ -15,6 +15,7 @@ class ChatButton(Button):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+
 class ActivityTabButton(Button):
     def __init__(self, driver, **kwargs):
         super().__init__(driver, **kwargs)
@@ -212,7 +213,8 @@ class HomeView(BaseView):
                                                           accessibility_id="accept-and-add-activity-center")
         self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
                                                                   "@content-desc='checkbox-off'])[1]")
-        # Tabs and elements on Messages view
+
+        # Tabs and elements on messages home view
         self.recent_tab = Button(self.driver, accessibility_id="tab-recent")
         self.groups_tab = Button(self.driver, accessibility_id="tab-groups")
         self.contacts_tab = Button(self.driver, accessibility_id="tab-contacts")
@@ -220,6 +222,10 @@ class HomeView(BaseView):
         self.pending_contact_request_button = Button(self.driver, accessibility_id="open-activity-center-contact-requests")
         self.pending_contact_request_text = Text(self.driver, xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
 
+        # Tabs and elements on community home view
+        self.pending_communities_tab = Button(self.driver, accessibility_id="pending-tab")
+        self.joined_communities_tab = Button(self.driver, accessibility_id="joined-tab")
+        self.opened_communities_tab = Button(self.driver, accessibility_id="opened-tab")
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")

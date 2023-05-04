@@ -609,11 +609,12 @@ class BaseView(object):
         self.jump_to_button.click()
         self.element_by_text(text).click()
 
-    def reopen_app(self, password=common_password):
+    def reopen_app(self, password=common_password, sign_in=True):
         self.driver.close_app()
         self.driver.launch_app()
-        sign_in_view = self.get_sign_in_view()
-        sign_in_view.sign_in(password)
+        if sign_in:
+            sign_in_view = self.get_sign_in_view()
+            sign_in_view.sign_in(password)
 
     def close_share_popup(self):
         self.driver.info("Closing share popup")
