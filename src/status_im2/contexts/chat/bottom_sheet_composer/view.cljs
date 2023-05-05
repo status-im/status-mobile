@@ -31,6 +31,7 @@
         audio                                    (rf/sub [:chats/sending-audio])
         reply                                    (rf/sub [:chats/reply-message])
         edit                                     (rf/sub [:chats/edit-message])
+        input-with-mentions (rf/sub [:chat/input-with-mentions])
         {:keys [input-text input-content-height]
          :as   chat-input}                       (rf/sub [:chats/current-chat-input])
         content-height                           (reagent/atom (or input-content-height
@@ -88,7 +89,8 @@
                         edit
                         audio)
     (effects/setup-selection props)
-    (utils/update-input props state input-text)
+    (effects/edit-mentions props state input-with-mentions)
+    (effects/update-input-mention props state input-text)
     [:<>
      [mentions/view props state animations max-height cursor-pos]
      [gesture/gesture-detector
