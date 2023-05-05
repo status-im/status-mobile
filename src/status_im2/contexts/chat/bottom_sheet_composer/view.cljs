@@ -77,8 +77,7 @@
         show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
         cursor-pos                               (utils/cursor-y-position-relative-to-container props
                                                                                                 state)]
-    (effects/did-mount props)
-    (effects/max-height props
+    (effects/initialize props
                         state
                         animations
                         dimensions
@@ -88,6 +87,7 @@
                         reply
                         edit
                         audio)
+    (effects/setup-selection props)
     (utils/update-input props state input-text)
     [:<>
      [mentions/view props state animations max-height cursor-pos]
