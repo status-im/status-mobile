@@ -2,7 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.components.reply.view :as components.reply]
+            [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
@@ -47,7 +47,7 @@
               (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
-                   (components.reply/get-quoted-text-with-mentions
+                   (reply/get-quoted-text-with-mentions
                     (get content :parsed-text)))
        :label    (i18n/label :t/copy-text)
        :icon     :i/copy
