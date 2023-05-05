@@ -10,6 +10,7 @@
     quo2.components.banners.banner.view
     quo2.components.buttons.button
     quo2.components.buttons.dynamic-button
+    quo2.components.buttons.predictive-keyboard.view
     quo2.components.colors.color-picker.view
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
@@ -83,8 +84,6 @@
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view))
 
-(def button quo2.components.buttons.button/button)
-(def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
 (def separator quo2.components.separator/separator)
@@ -119,6 +118,11 @@
 
 ;;;; BANNER
 (def banner quo2.components.banners.banner.view/banner)
+
+;;;; BUTTONS
+(def button quo2.components.buttons.button/button)
+(def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
+(def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
