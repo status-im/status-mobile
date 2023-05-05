@@ -1575,6 +1575,21 @@
   },
 
   {
+    "path": "androidx/transition/transition/1.1.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "transition-1.1.0.pom": {
+        "sha1": "0c354a924354ceed91673412fb5b6ce326735a63",
+        "sha256": "0paa8lci1xhkd631ak7knk87fbxbxi255clphhb3dy9kqvla2k2x"
+      },
+      "transition-1.1.0.aar": {
+        "sha1": "ee403adc3ae340af6461cdd8151b4518c9f5c1b0",
+        "sha256": "0y7kx238yghsrh06ywgw9xm9zaw0izjcgkmxjngnalc78by4r3mx"
+      }
+    }
+  },
+
+  {
     "path": "androidx/transition/transition/1.2.0-rc01",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -1890,21 +1905,6 @@
   },
 
   {
-    "path": "com/android/databinding/baseLibrary/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "baseLibrary-3.1.4.pom": {
-        "sha1": "b48baeaef73d7763fa92b847c4140f0e0ff71d99",
-        "sha256": "16c6wpphs4b8373w7jdiynv48lgl8sj8sy5gp16cf3qgqgmai4qv"
-      },
-      "baseLibrary-3.1.4.jar": {
-        "sha1": "df1e7638ba852152abe964e86f60fa4ce12e6a6a",
-        "sha256": "0cn50bas33hndr7snlgwpj4vgr66dazkg7ybb04hgc0czdgl9adb"
-      }
-    }
-  },
-
-  {
     "path": "com/android/databinding/baseLibrary/3.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2005,21 +2005,6 @@
       "compilerCommon-3.0.1.jar": {
         "sha1": "7f51b3e1636063e491131a0b0436512131cb1bdc",
         "sha256": "0c3g3wz4fbz4ay82a0w2d5yx932gf3p8m037gf21w12b4rf96978"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/databinding/compilerCommon/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "compilerCommon-3.1.4.pom": {
-        "sha1": "0fd23d31fe5e40ac6d203734dcc6b16328ba714c",
-        "sha256": "0sb36alvbmxv05amnc02csm73cg6aib8s16fipjlgqri58cn5yd9"
-      },
-      "compilerCommon-3.1.4.jar": {
-        "sha1": "11005423fee93309c0cd512a8783647702c20c27",
-        "sha256": "0kxd2js2yk7bisiiy1j5i5zgd9h124qac10dan68y8swiddd4hlb"
       }
     }
   },
@@ -2460,21 +2445,6 @@
   },
 
   {
-    "path": "com/android/tools/analytics-library/protos/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "protos-26.1.4.pom": {
-        "sha1": "0c9e7fe6c7c2b0156a87aa626f5463af34669f99",
-        "sha256": "11wnpnlb0ixck525g1qi6lgrjcsca9281kpmwkm3m3r8y1fnl86c"
-      },
-      "protos-26.1.4.jar": {
-        "sha1": "dc5876bb894d87d2088b0a4447b13fdc13ad82fc",
-        "sha256": "1dy9pd8sjkhhip8xqz681i9q66m43iigmnwhdkmk6xm33j0d6cf7"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/analytics-library/protos/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2575,21 +2545,6 @@
       "shared-26.0.1.jar": {
         "sha1": "5cfc3811c2fd6cddfce2ec1bb5fbbec87e0fc462",
         "sha256": "0laz70kx25p8223vixw7sknzq0c3lilsam66rqjfkpi9120sb9z7"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/analytics-library/shared/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "shared-26.1.4.pom": {
-        "sha1": "18ef89a0e8844559433bf6c085b4b86faecb87b6",
-        "sha256": "1m4g32q62mjwmg0z23fvzf40gaf4dgm0jb5cbcv4j36jpgp0yrmm"
-      },
-      "shared-26.1.4.jar": {
-        "sha1": "02a285c67f4b421145e47849d4114f7534707156",
-        "sha256": "08h7w0fwky1mr5j7v4yb4afa3kvvw56bnj4926m4zi62p1qfdxsn"
       }
     }
   },
@@ -2700,21 +2655,6 @@
   },
 
   {
-    "path": "com/android/tools/analytics-library/tracker/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "tracker-26.1.4.pom": {
-        "sha1": "0949ee22e49c32374aa3227b76efdf6b69a85cb0",
-        "sha256": "0077291y8qj555nwqg1ssykdg7cjqgf8866hz9y7rw6sj95h9flw"
-      },
-      "tracker-26.1.4.jar": {
-        "sha1": "fd48066d6c78b78abf5baa335dc2124060e8371c",
-        "sha256": "1yggkx8f5a3w3z924rmc01y06vn4ppz5541s88y6qkd0xbxbdmb6"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/analytics-library/tracker/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2820,21 +2760,6 @@
   },
 
   {
-    "path": "com/android/tools/annotations/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "annotations-26.1.4.pom": {
-        "sha1": "d5e8ea57c56cd1f5b6e1e676ab0d489d88b59826",
-        "sha256": "1i6qhh6b5nppvbc465hzjd29ip8j698cs1873yv42dhakc325cyz"
-      },
-      "annotations-26.1.4.jar": {
-        "sha1": "817d5238d9ea07b4b26d04e29e9bada2aacb7245",
-        "sha256": "102r2z2wh3pmaar7f0d3nxksk265m5plbd8cjjvbgll9jkw972k0"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/annotations/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2905,21 +2830,6 @@
       "annotations-30.3.1.jar": {
         "sha1": "bf7c0de4844ebdce4eec08b202d24d8f1f7ac520",
         "sha256": "0ajgvfbg3xjmv0qbbgifaf5ydq7f97q482bzk1g3qa7wr9mikrbp"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/aapt2-proto/0.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "aapt2-proto-0.1.0.pom": {
-        "sha1": "d3492c6cfb99d5d556cf4840c2efd63493ce2ac1",
-        "sha256": "1h9vlambl1k51nx86qm0yfyavpf9qfrh7gja1q3qsqj10jinb8kc"
-      },
-      "aapt2-proto-0.1.0.jar": {
-        "sha1": "d1eb93a21a8d3590c3bfac574a8b6dffb2dbd21c",
-        "sha256": "1x69zbk977hyc97hpc3bxmh19yiiq3hkl3hadjmwps08z4g13990"
       }
     }
   },
@@ -3070,21 +2980,6 @@
       "apksig-3.0.1.jar": {
         "sha1": "535b9323a1bd47e3a9c860d11f4e11a80db13f2b",
         "sha256": "08yky2gjrk4y5hd1q3jh2vyprs13ipd3v2lk63kirdr09nbpqbbi"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/apksig/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "apksig-3.1.4.pom": {
-        "sha1": "a0d953c40691088ad3336fca80b5e2cd3fbd05ec",
-        "sha256": "1jfg6giv1mkg7j72g3w7h5gjvbmpalb03ra7lbdwk350lz76jq23"
-      },
-      "apksig-3.1.4.jar": {
-        "sha1": "e0c4d0059e68e9f64606dfa01e066f86dd07c6cb",
-        "sha256": "0xa5hzkmfymz5pqnrgw7bx9h13rbfnwy3h7nmmnqcrbrlqvc7bar"
       }
     }
   },
@@ -3270,21 +3165,6 @@
   },
 
   {
-    "path": "com/android/tools/build/builder-model/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "builder-model-3.1.4.pom": {
-        "sha1": "2cd8e9360a4114089d33a0ef98927f14d36c8562",
-        "sha256": "0in1yb8n7m28ppj91k5hxclq60qc9141lwm4hyllqsjl2qdns5ys"
-      },
-      "builder-model-3.1.4.jar": {
-        "sha1": "f026c31b8228a84b62bb2fe0ac0544143e9ab27d",
-        "sha256": "0gqa2immwkl4kvg4c233ndxp2bg33ypdbmp6jah5ab0c5azqr3bf"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/build/builder-model/3.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -3385,21 +3265,6 @@
       "builder-test-api-3.0.1.jar": {
         "sha1": "05f084a2888a7f638c4c89c3278760345b1fb4c8",
         "sha256": "0kc9g0sz59qy65m5mw3qxr4iclf20kjkks2p0h8l6j6vi8ja2rz7"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/builder-test-api/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "builder-test-api-3.1.4.pom": {
-        "sha1": "e9843c965bd3ec945ad5e94feebbfe1d47aa5a3b",
-        "sha256": "0adip5p8lvbhcqxhqrpahws9ia9f9q12dkzchf5kj44vgl0r7mbf"
-      },
-      "builder-test-api-3.1.4.jar": {
-        "sha1": "e48338f64f1c8fbef8329eb6d899fb6378fca604",
-        "sha256": "1qjgvj3jmwa7gxc910vfa56rijzin33zymqpb4ikfpsvhk7g2kqz"
       }
     }
   },
@@ -3510,21 +3375,6 @@
   },
 
   {
-    "path": "com/android/tools/build/builder/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "builder-3.1.4.pom": {
-        "sha1": "d33573f1d53514989682eaf85d2c2b98f37aeae2",
-        "sha256": "064y4z05s3r7x74rlb26c8m7aq5pharw5l1yk1ca76h9k0lafslp"
-      },
-      "builder-3.1.4.jar": {
-        "sha1": "afbcd4b7002c61fe898b1b4c50ed9e62386125d8",
-        "sha256": "02wmahn5ibgnxqrk7nqzwdgc4j80iml01g17lmlghdhdmks3y9zy"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/build/builder/3.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -3595,21 +3445,6 @@
       "builder-7.3.1.jar": {
         "sha1": "3e23401ece1637cecbae6be5c02cc18ab7e452e5",
         "sha256": "1y74bbv8gcpcvxghbm73lnlv0mrqiznihxh79561gzs2rdi5brak"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/bundletool/0.1.0-alpha01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "bundletool-0.1.0-alpha01.pom": {
-        "sha1": "834b735a36a399e2bb0276842ce97c55f6d6c072",
-        "sha256": "1271sgv8jxdgsf60chx8yjc0jsfs38xd2jhdmdv8d8h4iwrpcrvc"
-      },
-      "bundletool-0.1.0-alpha01.jar": {
-        "sha1": "f7c303e37818223bd98566fcbea29aa0964c4d06",
-        "sha256": "05bgc6sh1cz4l8mbw6jyx78pq275szq011z5cgpjdkdbpzq5dnrv"
       }
     }
   },
@@ -3720,21 +3555,6 @@
   },
 
   {
-    "path": "com/android/tools/build/gradle-api/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "gradle-api-3.1.4.pom": {
-        "sha1": "e18ab0b7eee6fc63e65158b4f88bf5c7ce207524",
-        "sha256": "0rjnchkvy8j8k3f12l060p4yg9c784l8j7ngdbphy6jwipvxfz2j"
-      },
-      "gradle-api-3.1.4.jar": {
-        "sha1": "eb41dfb5596afd8933c804595ca8596952fad450",
-        "sha256": "0qqsqjrgnamvzll97ylzw34f75hcp3cmh65dzksqhxgwcfcp9sni"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/build/gradle-api/3.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -3840,21 +3660,6 @@
   },
 
   {
-    "path": "com/android/tools/build/gradle-core/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "gradle-core-3.1.4.pom": {
-        "sha1": "38efeb43831cda5d758c52cd62817c3c53ac4722",
-        "sha256": "1kiij87ybp97q5m3w81pr9gy94fpf5jm59jp67ia9h7cz9dj0kv1"
-      },
-      "gradle-core-3.1.4.jar": {
-        "sha1": "4c846d065331c2a11ed605619613833a842a7b8d",
-        "sha256": "1nhx6sjfxfqq63yr59i5j09yvkm383fim93fcfkp6s711ma54pma"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/build/gradle/3.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -3880,21 +3685,6 @@
       "gradle-3.0.1.jar": {
         "sha1": "cfa107d4db0c11c11f445a11e768adf61c72ce06",
         "sha256": "0ahm0ks11x14yxzakpwbpbr8kq7j8dfxm4qbhqlk92d39sx7rmzw"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/gradle/3.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "gradle-3.1.4.pom": {
-        "sha1": "920f69e56d872f11136254d329ccc6825ced29a1",
-        "sha256": "1cs4sqfpwg0fhdhyqdpzq70gkyq9cy9xm11bmvpanfls2wcwyqi5"
-      },
-      "gradle-3.1.4.jar": {
-        "sha1": "08f9a726f69c0c8fa3f447566717a21e6b394ed9",
-        "sha256": "1dxp32ncbrvi8qd9pij9r0mzcn3l6qm7jr0rk86nq5xi0k06ak0g"
       }
     }
   },
@@ -4155,21 +3945,6 @@
   },
 
   {
-    "path": "com/android/tools/build/manifest-merger/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "manifest-merger-26.1.4.pom": {
-        "sha1": "8b025ca5a54d8e27600470f841f87a77d0a93f56",
-        "sha256": "0xxjj1frb9fqyv6d6kmfhxsy7xqjas8nkv7y0hpk1726q0kqi81v"
-      },
-      "manifest-merger-26.1.4.jar": {
-        "sha1": "ddb4dcb3bb44c7053fa583967dfa9030f43f1c01",
-        "sha256": "1cccgadv0varzj48cpwbk3c0y7hpkl5nxa7v7sds9xd2smkv8q9x"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/build/manifest-merger/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -4270,21 +4045,6 @@
       "common-26.0.1.jar": {
         "sha1": "38e362a43a905b6745d609bea37faddb0c5bffab",
         "sha256": "0xvwx56xn3dvzj85vw3g5vv57af9147hqj5cy27vx5ws4sfvnyxj"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/common/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "common-26.1.4.pom": {
-        "sha1": "0ba42432d38a56a205e7a5f39a67701277c6d818",
-        "sha256": "0xdgznbm17brc3x99p9y4jc082ql0svvxcm36yzlr840iywcl5iy"
-      },
-      "common-26.1.4.jar": {
-        "sha1": "b70b6ef7188fe5a6ad6186f0efb22e536e483b9b",
-        "sha256": "0irdsr5kppk7mw0wjnfpj8h5lixh2p7v4v1ly8z0np95wd6mfnrx"
       }
     }
   },
@@ -4395,21 +4155,6 @@
   },
 
   {
-    "path": "com/android/tools/ddms/ddmlib/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "ddmlib-26.1.4.pom": {
-        "sha1": "e18f8f2897b429a9246e9a622608a8b347f73b94",
-        "sha256": "0bq9rr7zwfssz1m6f9qs39s88chqy3siq3hgbfp7f7jc4hgfi1mr"
-      },
-      "ddmlib-26.1.4.jar": {
-        "sha1": "c11fa14b583412aaa9262461299318207439156d",
-        "sha256": "0zzzhjjsrry77yksjdvv5k3a1nhccpnwh9k6vfv51i8mh9mi58x3"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/ddms/ddmlib/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -4510,21 +4255,6 @@
       "dvlib-26.0.1.jar": {
         "sha1": "46f3eeaf812811374b4ea2c49ad52687a7ff6a87",
         "sha256": "1bhxs4y9xib2jpg6rcr30xdsif027basfl6z3ns1f0q4yvf5ii3h"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/dvlib/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "dvlib-26.1.4.pom": {
-        "sha1": "49d0672a46075d55b83d2e59e8a7c4af90c4e9f0",
-        "sha256": "1xxdi7fb5ixv850zfjd340ww8gx8vkmlx9jm18ib9w5gj77w4w2s"
-      },
-      "dvlib-26.1.4.jar": {
-        "sha1": "5d443b51ad041e9599cfdb278cd2f6c9d2ccdf28",
-        "sha256": "1kh85j1spdpbd5bwcf2155hjyv7psn3b9qxry7lw0i4cldi862n5"
       }
     }
   },
@@ -4635,36 +4365,6 @@
   },
 
   {
-    "path": "com/android/tools/external/com-intellij/intellij-core/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "intellij-core-27.1.0.pom": {
-        "sha1": "531c269977bc4653dcfa1dcf22667da3c1ed9146",
-        "sha256": "00k5kcs3142jbg829dqib0yrplkqmr9wghm3h38355zc9nrj6f2i"
-      },
-      "intellij-core-27.1.0.jar": {
-        "sha1": "ef19136f906ec7e5b3ef423644b5bc69b9b842ff",
-        "sha256": "07fi1fx84ywkbmg5chqi1hf31a39zin5dxx0z8xjrkzagk86ws9x"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/external/com-intellij/kotlin-compiler/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "kotlin-compiler-27.1.0.pom": {
-        "sha1": "71dc0410fad64a6c48681f131aaaca4ed57535ae",
-        "sha256": "0fb2y6jwxp5sikifz3l1r7618is6xn4nykrj7h8nav57a5jx5rk0"
-      },
-      "kotlin-compiler-27.1.0.jar": {
-        "sha1": "5c7ddb5f363866ef4d13c8c3b537c9226db7f62e",
-        "sha256": "1arb6pxbg43j6hbfcwvzk98wx8053nfphqb5apdkb640gmx6psfs"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/external/org-jetbrains/uast/26.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -4695,21 +4395,6 @@
   },
 
   {
-    "path": "com/android/tools/external/org-jetbrains/uast/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "uast-27.1.0.pom": {
-        "sha1": "5d4167357e594a35dd627aa2427c2587c4cbf58b",
-        "sha256": "0fyjl3r8fj6iw6ybbw9pxlclp32f3swl487l3xkzywrhsyfpjji3"
-      },
-      "uast-27.1.0.jar": {
-        "sha1": "d00013a95ac0b35d43be9d0f225ad54d3e853ce9",
-        "sha256": "1gkhi40mqnxkxm4p08mi5fqrhd7m6mqa1kl1nml99qqcai9b6igg"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/layoutlib/layoutlib-api/26.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -4735,21 +4420,6 @@
       "layoutlib-api-26.0.1.jar": {
         "sha1": "4eb1f46803873ff996f2457d1dd64c5c305818d8",
         "sha256": "0qdqy7gqs4xfcbqbjnfbb20q65gcdrc7chxy0i682p1sl48xjnkb"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/layoutlib/layoutlib-api/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "layoutlib-api-26.1.4.pom": {
-        "sha1": "de645341e6b3b77554bd2510f13fd04513d66324",
-        "sha256": "09229jd3448xaci0xh740v902w1g8xgzrkq1py6949jidzfm814n"
-      },
-      "layoutlib-api-26.1.4.jar": {
-        "sha1": "dad1158a9fc38b711339960b82fd9dcf32009e46",
-        "sha256": "1a5zqp4y43jlqbdnqjw7sis2f4sqa3iixkcj31fq9s72gknwj4fr"
       }
     }
   },
@@ -4860,21 +4530,6 @@
   },
 
   {
-    "path": "com/android/tools/lint/lint-api/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lint-api-27.1.0.pom": {
-        "sha1": "d5be66392fdc0ced90e6cdf098252af142eca558",
-        "sha256": "0ys2p371jgqmbcc9q7ncgyn5y0ly4r9qz1znm0l9ng6hp5n39xdp"
-      },
-      "lint-api-27.1.0.jar": {
-        "sha1": "b4529b38bf4ef06fda9da455abb5c09c13a79693",
-        "sha256": "1m7vxgf4j53ll2sbyrdsfhpmj4cqzzh9778whcwlrwj8n3i190b2"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/lint/lint-checks/26.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -4900,36 +4555,6 @@
       "lint-checks-26.0.1.jar": {
         "sha1": "a5df32c64598e190808accaa03820fb9db9f8201",
         "sha256": "1jv651slb64v6sbq08d8lzklxkndd21g6ah8i4rm98081h14d4ll"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/lint/lint-checks/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lint-checks-27.1.0.pom": {
-        "sha1": "bc2e5e1b455ef32bfec87551ac113211f7b53af5",
-        "sha256": "1g535p3qg8k275489ly78p4ynjiji4yv2wy24jb2yxahh139ywy2"
-      },
-      "lint-checks-27.1.0.jar": {
-        "sha1": "71b40e2f3f21f1b383ee8e67eb52c16b1806be9f",
-        "sha256": "0qwwqlw8lb6wwmn2y581aqcqwfkhv4il6fh1rgnkpz17k3b3qw2y"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/lint/lint-gradle-api/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lint-gradle-api-26.1.4.pom": {
-        "sha1": "8bc04a18da7f891ab4c13a010d422a14f99d8d6d",
-        "sha256": "0b8z7fsfpba2bhx2m0jaca297jgyasy5zhfsx61s40dcp80j89ff"
-      },
-      "lint-gradle-api-26.1.4.jar": {
-        "sha1": "cbc00782604b7d0ad50e9c50b84b074af79394f0",
-        "sha256": "0nipwpq92wvzxnn2wzdff69v8ps9rznwcrj0xagwqfwd85hdkil6"
       }
     }
   },
@@ -4990,21 +4615,6 @@
       "lint-gradle-api-27.1.0.jar": {
         "sha1": "2ed2e2ea08ef9bc4705153e5742209edc81344fd",
         "sha256": "18rrq0jx5mxi7m0vrkl9b7if5i7j0im8jhidb1y79hdqq89fxzvf"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/lint/lint-gradle/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lint-gradle-27.1.0.pom": {
-        "sha1": "e93e0eb82d016a9127df3d1b3241f99cadf19d7b",
-        "sha256": "00mika07rsq7qjannfj9vlsny35mmklyw79nzc1j7bf8zcp1jb8k"
-      },
-      "lint-gradle-27.1.0.jar": {
-        "sha1": "c588300beb92506dc67b81a632e15fa09e52fc0c",
-        "sha256": "0fypy2980d8k9vid6y58kvh9sv914n86mxmhj0p101xdvw706sf7"
       }
     }
   },
@@ -5085,21 +4695,6 @@
   },
 
   {
-    "path": "com/android/tools/lint/lint/27.1.0",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lint-27.1.0.pom": {
-        "sha1": "f19f96faed3c1bd50b8ec47a8337f0d9311f352e",
-        "sha256": "0r6gy35p1gyp2kdz2bg2ng1h51ldz37zwd4p44yhmidxj4sgi6iq"
-      },
-      "lint-27.1.0.jar": {
-        "sha1": "36d7646eb329a1d0f4eb699e28ff1bd01df89aeb",
-        "sha256": "0j1xlgiavr3bh8axj49z5pd2sqn9kjv007dnx67gg841n99vw4zr"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/repository/26.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -5125,21 +4720,6 @@
       "repository-26.0.1.jar": {
         "sha1": "bc0dfe02af8d075f6b7ad63a202ed4c63a6a647d",
         "sha256": "1301sjifc5qcpilybgq7k0mj6c7a212j30dj65qxcyqi7a9vllkg"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/repository/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "repository-26.1.4.pom": {
-        "sha1": "1b4c88b0253140647c018cce242b688d2ff98cc3",
-        "sha256": "1yinybbnmqlkcw43bqpxi6pq5lwr7ppj8xxfwkx264jqni5phipa"
-      },
-      "repository-26.1.4.jar": {
-        "sha1": "349dfc72ae53dedc32a17f5d47440838fe2527f1",
-        "sha256": "0mskx9a3qm6499415mn0nzir9jvn807pnfwaf8wpymz4gsbfh45l"
       }
     }
   },
@@ -5250,21 +4830,6 @@
   },
 
   {
-    "path": "com/android/tools/sdklib/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "sdklib-26.1.4.pom": {
-        "sha1": "0e7ef3a225517e60891160d63467bc3572de7e58",
-        "sha256": "00bgvi6pq59js519i0xi4zsz3pvvfn1l6dmi50b6k428jhdcljzh"
-      },
-      "sdklib-26.1.4.jar": {
-        "sha1": "7424640f2bd3ca3faccb6f656e29547430cd464a",
-        "sha256": "02p8gsmqk7azzvvnmjnhpc8n49v83yf3pfia2py89j1h5fy7x2bs"
-      }
-    }
-  },
-
-  {
     "path": "com/android/tools/sdklib/26.2.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -5365,21 +4930,6 @@
       "sdk-common-26.0.1.jar": {
         "sha1": "9ddd2fa552e7b49548c421c0be4e65dc9a245f69",
         "sha256": "1zcwbcglf3rj1qvr5cm065pv82hwgy1m825892nnvjxxh6idr2vy"
-      }
-    }
-  },
-
-  {
-    "path": "com/android/tools/sdk-common/26.1.4",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "sdk-common-26.1.4.pom": {
-        "sha1": "03b3158f1e0d5eb281d5a6a67435b97dc2d76c21",
-        "sha256": "0a6jjz7fcbky2w2bv0v5qksppgr51nd7lhawr9lva3wg2gpk36mv"
-      },
-      "sdk-common-26.1.4.jar": {
-        "sha1": "5dbdefb2dc6cb5ba1b4b059bf11c964a830c5755",
-        "sha256": "1awy7i7q22avjs8lxys3i0k3b6qdi0kzvs03p2pxvwbm7lckv7bq"
       }
     }
   },
@@ -5980,6 +5530,21 @@
       "commons-codec-1.10.jar": {
         "sha1": "4b95f4897fa13f2cd904aee711aeafc0c5295cd8",
         "sha256": "0scm6321zz76dc3bs8sy2qyami755lz4lq5455gl67bi9slxyha2"
+      }
+    }
+  },
+
+  {
+    "path": "commons-codec/commons-codec/1.11",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "commons-codec-1.11.pom": {
+        "sha1": "093ee1760aba62d6896d578bd7d247d0fa52f0e7",
+        "sha256": "044sxv1kw8bch3wla7rijw9582xc8ia3q7mw50sxz3za3l6i9ry1"
+      },
+      "commons-codec-1.11.jar": {
+        "sha1": "3acb4705652e16236558f0f4f2192cc33c3bd189",
+        "sha256": "0zbv3psvznwx23iwirphvy0qhkpsdmz958in47s4ialpiqqxb6g5"
       }
     }
   },
@@ -6930,6 +6495,96 @@
   },
 
   {
+    "path": "com/diffplug/durian/durian-collect/1.2.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "durian-collect-1.2.0.pom": {
+        "sha1": "0bd196532b47f195e61a179ea7be66ca4e5b12d8",
+        "sha256": "1wwzq1r7hjxh7gvk0mlssnhsyqs7fif91grv8ykd4kqad8465dwb"
+      },
+      "durian-collect-1.2.0.jar": {
+        "sha1": "eee2085a0f894527ac841b05b442656115e2877c",
+        "sha256": "1k28kazxpfb7pb479jsvmxsy27rckks7dp6145n13k11h2wc155i"
+      }
+    }
+  },
+
+  {
+    "path": "com/diffplug/durian/durian-core/1.2.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "durian-core-1.2.0.pom": {
+        "sha1": "ca659370ff47a81844e968ffc4d001f2d56911cd",
+        "sha256": "0qmny24l5pgfa52mavrlf25yw7gx4njips3gg40indsm0zlj00w7"
+      },
+      "durian-core-1.2.0.jar": {
+        "sha1": "ddf0b08f6dccae07bcb993645a7634cbe8f9b2f8",
+        "sha256": "1bjx9l8rpi54silpvd5j00lg7546mpgbns116cin7hd3nfn0mv8p"
+      }
+    }
+  },
+
+  {
+    "path": "com/diffplug/durian/durian-io/1.2.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "durian-io-1.2.0.pom": {
+        "sha1": "eeeb5dbc5add4ef406c597b785e91986787ea17c",
+        "sha256": "1zigjbjddldlm5h8ls95577ch2m9wsya2byw7l57bqi48d11j29m"
+      },
+      "durian-io-1.2.0.jar": {
+        "sha1": "fc9c103d454d04f7c5b78b437190ea3bd15fb72c",
+        "sha256": "1i7a2rg17wjy52gdw2cbg4i6flpfas0h36p31czhg348fzfd2pq9"
+      }
+    }
+  },
+
+  {
+    "path": "com/diffplug/spotless/spotless-lib-extra/2.30.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "spotless-lib-extra-2.30.0.pom": {
+        "sha1": "f12c6c0a73e7db1b2e00d671741512c5ff6bbfc5",
+        "sha256": "1pawc78ishq10cb0vkra7fsdcznjxpkdkvkzi7jpcssxgg2579px"
+      },
+      "spotless-lib-extra-2.30.0.jar": {
+        "sha1": "4f3fe4e991b2e386be0bc9753fc5018f5fe08beb",
+        "sha256": "1axs45b8hb05lig7x6cgf6z1ilvqx1wrlvgya1ccgnzmlj5fjk4v"
+      }
+    }
+  },
+
+  {
+    "path": "com/diffplug/spotless/spotless-lib/2.30.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "spotless-lib-2.30.0.pom": {
+        "sha1": "5fa9d7789f4c24053fd1df6050f4e3a93297e1c9",
+        "sha256": "0gj275p4411yi1b75v1ddnwarkcdalz51d3c6bjvymbb8ahyl7j2"
+      },
+      "spotless-lib-2.30.0.jar": {
+        "sha1": "8aa538fd70f8a141e8cc6ca288f05445548ad058",
+        "sha256": "18gh4iyhrpgy8frajnnxyyyakqclv3krqqlyy91dmyib0gydgx11"
+      }
+    }
+  },
+
+  {
+    "path": "com/diffplug/spotless/spotless-plugin-gradle/6.11.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "spotless-plugin-gradle-6.11.0.pom": {
+        "sha1": "8c83606c3d3f5b1005c519a50e7531f0d9c4a6c1",
+        "sha256": "1p1d8k7m6mn6mx83gx9dy2y2xl3fw7hgwgvw4hw3mnjhq52gjcjr"
+      },
+      "spotless-plugin-gradle-6.11.0.jar": {
+        "sha1": "4bace71cc3201f9de81752b32f94532004bdaa4b",
+        "sha256": "07sff55bjfxxmimv024ypykcsrmlms8bp410fwai30hb2y33naal"
+      }
+    }
+  },
+
+  {
     "path": "com/drewnoakes/metadata-extractor/2.9.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -6979,6 +6634,21 @@
   },
 
   {
+    "path": "com/facebook/fbjni/fbjni-java-only/0.3.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "fbjni-java-only-0.3.0.pom": {
+        "sha1": "9e10bbe5559c3bf3b0edc1c60768d4db5f36b471",
+        "sha256": "1cdkvybpi6vx6d0zrw7xvzww1dvqfggsxsbs387d0b469w44ywbd"
+      },
+      "fbjni-java-only-0.3.0.jar": {
+        "sha1": "19ffb4a960abb25cc6b346748504b2aa5ffb9d1a",
+        "sha256": "0gp70kw40lpnrrp4xfr9mlzpk469jbqxzs8rsn2n419m7wldmha0"
+      }
+    }
+  },
+
+  {
     "path": "com/facebook/fbjni/fbjni/0.0.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -6989,6 +6659,21 @@
       "fbjni-0.0.2.aar": {
         "sha1": "d9e1b6ebbe55fe25f6ee6257ef64588e0f8a8db0",
         "sha256": "0pjfj4p14wq8ya40awnlm389ynavbnx9l890vj0i917fzbc8i7h3"
+      }
+    }
+  },
+
+  {
+    "path": "com/facebook/fbjni/fbjni/0.3.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "fbjni-0.3.0.pom": {
+        "sha1": "bf4bf68c915ef1ee5e22e945e6c27c2f28c388fe",
+        "sha256": "17sn87z6w38fkiw6mllcv3gwdkshd8vgmijl0yirjkpan3lmq23f"
+      },
+      "fbjni-0.3.0.aar": {
+        "sha1": "17fe26833dbdcebabc70764ded55c4f60665f486",
+        "sha256": "1zbmycrcyh457ygvqks14j4nclqqvc36icjdxdcabcg038qxjwz5"
       }
     }
   },
@@ -7504,6 +7189,21 @@
   },
 
   {
+    "path": "com/facebook/soloader/nativeloader/0.10.3",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "nativeloader-0.10.3.pom": {
+        "sha1": "05a2d26157377c5bd8e1c77bcd00ba34f07dd488",
+        "sha256": "17sqni46gc6hig7jf79mbyz28477ccgk961i84x8c01bzc2xa0wy"
+      },
+      "nativeloader-0.10.3.jar": {
+        "sha1": "171783d0f3f525fb9e18eb3af758c0b3aaeaed69",
+        "sha256": "0i173j7zri6wsbkj9ag5h2kwc3lygkv3jbk6fsmcl93rybynqb27"
+      }
+    }
+  },
+
+  {
     "path": "com/facebook/soloader/soloader/0.8.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -7698,6 +7398,51 @@
       "semver4j-0.16.4-nodeps.jar": {
         "sha1": "273cc1869ddf7ebbac8176402e29f41b1c83d7df",
         "sha256": "1w4a2ak60r46wiy8yl00yy8v397qa2zja5jmsd7wsk1p2sjyqn9z"
+      }
+    }
+  },
+
+  {
+    "path": "com/googlecode/concurrent-trees/concurrent-trees/2.6.1",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "concurrent-trees-2.6.1.pom": {
+        "sha1": "ffd029b087e3132fb021f64841e103e4e813944d",
+        "sha256": "0wd971sv9ah71hjv6mlpgms24pcj8h4z29sq58gms1g78aqvkhj3"
+      },
+      "concurrent-trees-2.6.1.jar": {
+        "sha1": "9b647240522ab67c003de9b6702ca81ac0c15efc",
+        "sha256": "198zfqwybkg30iq3llr159fkqgdxlmra7kq6avswp9g2hi4p5qq4"
+      }
+    }
+  },
+
+  {
+    "path": "com/googlecode/javaewah/JavaEWAH/1.1.13",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "JavaEWAH-1.1.13.pom": {
+        "sha1": "c0e2224902ce244ef82d72c9287f933394255452",
+        "sha256": "1x0pzklgbd2bf3wkka6li2sc90hhx8al9f0bfmvxj438kkzb29cp"
+      },
+      "JavaEWAH-1.1.13.jar": {
+        "sha1": "32cd724a42dc73f99ca08453d11a4bb83e0034c7",
+        "sha256": "04bidmlmv4ghinwngbmaq0887i1b1g3kckijxbbm0xri3lmxl3sc"
+      }
+    }
+  },
+
+  {
+    "path": "com/googlecode/javaewah/JavaEWAH/1.2.3",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "JavaEWAH-1.2.3.pom": {
+        "sha1": "24485416d388ffe422bbbbc8ffbc742eb35e2b70",
+        "sha256": "08vgz4x9fag5n47drh6vagbq7g3wmkh9yr9076cnydi0jrk6rvg4"
+      },
+      "JavaEWAH-1.2.3.jar": {
+        "sha1": "13a27c856e0c8808cee9a64032c58eee11c3adc9",
+        "sha256": "1hjlv6rkchwypbmrhhvnjdpk3c77cw8wahagg0dcdi0kjya2clnn"
       }
     }
   },
@@ -8117,21 +7862,6 @@
   },
 
   {
-    "path": "com/google/errorprone/error_prone_annotations/2.1.2",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "error_prone_annotations-2.1.2.pom": {
-        "sha1": "44f5d3b9781c31822991ff9f948d6cbfb8cdf055",
-        "sha256": "04894gp1inj1cpgp68cjh0rzpv0svfzhv2spak2prvdlp25mh2hq"
-      },
-      "error_prone_annotations-2.1.2.jar": {
-        "sha1": "6dcc08f90f678ac33e5ef78c3c752b6f59e63e0c",
-        "sha256": "0akq6zj7fd6i0abyz5c0q5aikp7lldrbind4lbvn0q60blxqfg6y"
-      }
-    }
-  },
-
-  {
     "path": "com/google/errorprone/error_prone_annotations/2.2.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -8228,17 +7958,6 @@
       "error_prone_parent-2.0.18.pom": {
         "sha1": "16ffdb67ed91d9d87a943a3127da3900d83cc81d",
         "sha256": "1i46saxm7vx68cdl9drxswqfjsaa2v0qayc13vqx81wv4xarj56g"
-      }
-    }
-  },
-
-  {
-    "path": "com/google/errorprone/error_prone_parent/2.1.2",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "error_prone_parent-2.1.2.pom": {
-        "sha1": "ae2dd256d508d2ffc9d77fbec0414ee695973a8a",
-        "sha256": "0hx1cf07n7kwcl2pwiab628fm8fmymgy7bwdkvr3nswgvcfxddn6"
       }
     }
   },
@@ -9334,6 +9053,17 @@
   },
 
   {
+    "path": "com/sun/activation/all/1.2.1",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "all-1.2.1.pom": {
+        "sha1": "efca912f55f71e63ab2eb82552519b66dd123f98",
+        "sha256": "15b71qbj1yy8f6la0lqdcwddsdima3v85wmqc7qwwvj8cjzq621n"
+      }
+    }
+  },
+
+  {
     "path": "com/sun/activation/javax.activation/1.2.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9379,16 +9109,16 @@
   },
 
   {
-    "path": "com/sun/istack/istack-commons-runtime/4.1.1",
+    "path": "com/sun/istack/istack-commons-runtime/3.0.8",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "istack-commons-runtime-4.1.1.pom": {
-        "sha1": "35c136c863b9591c4d5374b76c724e871cbc57aa",
-        "sha256": "17nvihq7f24xrvlqkzxq23qkb4g5f9sl0pq7wsvspl78gbv4ciq1"
+      "istack-commons-runtime-3.0.8.pom": {
+        "sha1": "fd5dfcff9a1f1e7e4371c6a998b74ee0e52bdc4a",
+        "sha256": "074gf16x28f4yv67wcx751115905qd2nr634s23x4kmq9k9i9q62"
       },
-      "istack-commons-runtime-4.1.1.jar": {
-        "sha1": "9b3769c76235bc283b060da4fae2318c6d53f07e",
-        "sha256": "1lyw30wh3w1xazp0kzb4j5zvz01fz1rihk2kqkwfcnjxpz2li0by"
+      "istack-commons-runtime-3.0.8.jar": {
+        "sha1": "d6a97364045aa6b99bf2d3c566a3f98599c2d296",
+        "sha256": "1vq5amymnsx7635gggnzi15qsc5nl9zwf84f77j0ajj5pq3bpyjg"
       }
     }
   },
@@ -9431,12 +9161,12 @@
   },
 
   {
-    "path": "com/sun/istack/istack-commons/4.1.1",
+    "path": "com/sun/istack/istack-commons/3.0.8",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "istack-commons-4.1.1.pom": {
-        "sha1": "645608b459500510bd8d75686cd4b3a9e9ee36a0",
-        "sha256": "0303sa2xi5ln0ypnwpqizs6zrni8s0dr7wj0d41nkbrg6152fxnf"
+      "istack-commons-3.0.8.pom": {
+        "sha1": "3835dae3b9e529039b70bce883a1c7438713c295",
+        "sha256": "1rgbqz0ghbk6vhwmcrbdv31d18v6clpw35c2gg6gpw0jhmz53w50"
       }
     }
   },
@@ -9596,6 +9326,17 @@
   },
 
   {
+    "path": "com/sun/xml/bind/mvn/jaxb-txw-parent/2.3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "jaxb-txw-parent-2.3.2.pom": {
+        "sha1": "1f872b3cb7c49c35501651aab063659a9775f06a",
+        "sha256": "190lnc0nyhvlkfx9w21xfca37y80nv67hb7960x4i3qmkgx3wpdm"
+      }
+    }
+  },
+
+  {
     "path": "com/sun/xml/bind/mvn/jaxb-txw-parent/4.0.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9637,6 +9378,21 @@
   },
 
   {
+    "path": "com/sun/xml/fastinfoset/FastInfoset/1.2.16",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "FastInfoset-1.2.16.pom": {
+        "sha1": "e4d2eed02e0e0a9f4c892e6d43bdf3dfdc1fa2ee",
+        "sha256": "0c78121if8xyw7djih69z1c7av3f1r055acr0pvr2rkfmdcd4iz1"
+      },
+      "FastInfoset-1.2.16.jar": {
+        "sha1": "4eb6a0adad553bf759ffe86927df6f3b848c8bea",
+        "sha256": "04f5a391j1s05p2465ff7wgs5saqby02dz3as4gg42a42hg3lvq5"
+      }
+    }
+  },
+
+  {
     "path": "com/sun/xml/fastinfoset/FastInfoset/2.1.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9669,6 +9425,17 @@
       "fastinfoset-project-1.2.15.pom": {
         "sha1": "a40c0d8a2f104dd9ae803f086014ed0c010ca5f7",
         "sha256": "0gm75vv45z8viqsfi7bvjh1l8xhq2yzldqfbrbc5xl0d9jnwvf6g"
+      }
+    }
+  },
+
+  {
+    "path": "com/sun/xml/fastinfoset/fastinfoset-project/1.2.16",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "fastinfoset-project-1.2.16.pom": {
+        "sha1": "86113f7ee9a5d995429bf75294b57b31f0a17d29",
+        "sha256": "1fljc9j2zmbbbq6n4yayman2a4lkfd8vkbrd6r0hpx61mljj8n4h"
       }
     }
   },
@@ -9782,36 +9549,6 @@
   },
 
   {
-    "path": "de/undercouch/gradle-download-task/3.4.3",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "gradle-download-task-3.4.3.pom": {
-        "sha1": "5de056d460c87dda189856743e9bb6708bc1b1b0",
-        "sha256": "1rd9g541fx9bw8yq2a039mh7qzpn0rpsg22smrg0y96jd6zhyc68"
-      },
-      "gradle-download-task-3.4.3.jar": {
-        "sha1": "87aa1c57a1dd0da91488afe630058efb5d8068b1",
-        "sha256": "0gnl604csyb7kqzbwdwglw9icbligvwarcn7nwi524889c2kfdj5"
-      }
-    }
-  },
-
-  {
-    "path": "de/undercouch/gradle-download-task/4.0.2",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "gradle-download-task-4.0.2.pom": {
-        "sha1": "b10fd2808b4fb28de573daecd9231d4db3bd205e",
-        "sha256": "01ql9iq9bypkdf3j3n4kfzc2lj60fi4y75byfbzbq07mdskwaq81"
-      },
-      "gradle-download-task-4.0.2.jar": {
-        "sha1": "2aaf2b081cd0dd5b3cf25fde69a20b043dd46fbd",
-        "sha256": "0yp86iysar3x116x87a4b29862dg92k5pk15b75yrgi1bz6byb4m"
-      }
-    }
-  },
-
-  {
     "path": "de/undercouch/gradle-download-task/4.1.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9822,6 +9559,21 @@
       "gradle-download-task-4.1.1.jar": {
         "sha1": "7a57e30e285bd972cd73e91c0ad16155e29b18ee",
         "sha256": "1ffsaj4xwc03md91cps524mylffl2jb982p70mkn9m08wiqba27b"
+      }
+    }
+  },
+
+  {
+    "path": "de/undercouch/gradle-download-task/5.0.1",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "gradle-download-task-5.0.1.pom": {
+        "sha1": "ca19885c858f0239c57c36e67c8bc3f4f987250e",
+        "sha256": "0zq1n89ssilp68q635k39vs5pxxm993gisg3fgi0qmip7g1kp2ry"
+      },
+      "gradle-download-task-5.0.1.jar": {
+        "sha1": "0625245c5e761ee3eb64ff91aad6fdb60b1985aa",
+        "sha256": "1is5gcznm9m76z1mpj3hw8z0jbnic12ni4f0a660zfnipdf8slzd"
       }
     }
   },
@@ -9932,6 +9684,21 @@
   },
 
   {
+    "path": "io/netty/netty-buffer/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-buffer-4.1.52.Final.pom": {
+        "sha1": "533ef2b7c0e36272b5ca855e1df36e78f8ba735c",
+        "sha256": "0q00zvg36an4j03c0avhrm6bck8cbw6sf04k43zf6iz1yv5ncljq"
+      },
+      "netty-buffer-4.1.52.Final.jar": {
+        "sha1": "fdf681985f50d84fac625df52f34b6d6cb699bda",
+        "sha256": "0xcncf7ybrg4zn0sqi67zbkcd8js19hsgl4pflbziq76mqsi1jj1"
+      }
+    }
+  },
+
+  {
     "path": "io/netty/netty-buffer/5.0.0.Alpha2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9962,6 +9729,21 @@
   },
 
   {
+    "path": "io/netty/netty-codec-http/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-codec-http-4.1.52.Final.pom": {
+        "sha1": "05c384973b385aa25231a8e84239ce63b265b261",
+        "sha256": "02qc314v2sx2sj1avlivj3d49dwfkjvy5lc23iw4qdw0ww524z2c"
+      },
+      "netty-codec-http-4.1.52.Final.jar": {
+        "sha1": "e0d75d03edf6e4d0682c85e8b26762bcde34697d",
+        "sha256": "0368fgcsglgxj10l29ib63r8wa21mx7mxkqs279hg2w7xb82inmm"
+      }
+    }
+  },
+
+  {
     "path": "io/netty/netty-codec-http/5.0.0.Alpha2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -9972,6 +9754,21 @@
       "netty-codec-http-5.0.0.Alpha2.jar": {
         "sha1": "8bdccec21ddb3db3a5804af120ee94061df6b6c8",
         "sha256": "0cfkys2gdkavj16sxkqk0m7xlz37ll1idkiw36s458hnk0ghvbz9"
+      }
+    }
+  },
+
+  {
+    "path": "io/netty/netty-codec-socks/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-codec-socks-4.1.52.Final.pom": {
+        "sha1": "abcfd50101ed27c92d1cf93f6629784819527512",
+        "sha256": "1y9rrrkp4nfsrw925ybyaamk1bi7gfjrwpnp9qya0r2yx4d955hx"
+      },
+      "netty-codec-socks-4.1.52.Final.jar": {
+        "sha1": "93170f664ae83ec70c35752b91cb733f9b80bf90",
+        "sha256": "19sf3maplrfrjncvvpw0mcb1v4bjw5p89hfgd1kiswmp1dz5gk7y"
       }
     }
   },
@@ -9992,6 +9789,21 @@
   },
 
   {
+    "path": "io/netty/netty-codec/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-codec-4.1.52.Final.pom": {
+        "sha1": "2260f6195e4194153168a3b4bdea5b7d850c3715",
+        "sha256": "0m7scrlparxfbai3s3nvxayjlsqjwvzfq5vfdzgbw2431j5sfjiy"
+      },
+      "netty-codec-4.1.52.Final.jar": {
+        "sha1": "d98ad5bb86707c3c1a7105a346119dac332bdf23",
+        "sha256": "0llfh8mphaa2zsf8iakfp17dvkdm38jjrfkxmj33sdbyrvf7hziw"
+      }
+    }
+  },
+
+  {
     "path": "io/netty/netty-codec/5.0.0.Alpha2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -10002,6 +9814,21 @@
       "netty-codec-5.0.0.Alpha2.jar": {
         "sha1": "01cb2a913926418fe973af72046ae40b3728083b",
         "sha256": "14ijcy6razmza1s20gpw4r68vg3b5xy70dy8nj0wlh6np6v59874"
+      }
+    }
+  },
+
+  {
+    "path": "io/netty/netty-common/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-common-4.1.52.Final.pom": {
+        "sha1": "bdd347dea9b3fcc5f7f8f5be1b78df7e30bcbc0b",
+        "sha256": "19rs1zrmwymc9k53k4x3dx64a9qjgap2n8pfmxcjnrx455wynn1n"
+      },
+      "netty-common-4.1.52.Final.jar": {
+        "sha1": "715bfadb9f3bf86da38fa12b97b4aaa9828b4789",
+        "sha256": "05y76i3hvj6hzsnkysxvb7q501swv5bvvjnp0knk1mdp9lg107qd"
       }
     }
   },
@@ -10032,6 +9859,21 @@
       "netty-handler-proxy-4.1.52.Final.jar": {
         "sha1": "e5701741e851d83b5ef15738f84c825ba2c0688e",
         "sha256": "1p1gni0yj4hqsbb6l02d5lxhy3v5r0rdb8amw834igdlrripil78"
+      }
+    }
+  },
+
+  {
+    "path": "io/netty/netty-handler/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-handler-4.1.52.Final.pom": {
+        "sha1": "e984652e31a81af5e1e67f96db139c41b2a08e72",
+        "sha256": "0iri2vmjvp4v0p6fn64z1jlc2mvlmh9s1cggvgk2ycd6pjhbnx5k"
+      },
+      "netty-handler-4.1.52.Final.jar": {
+        "sha1": "eb7d4fa554f4fdc8dacb80dce7e3f806fd1dc2db",
+        "sha256": "1ham5brzrp0rjc3idcpgylcgcl9zr5wrf0r9b7440jg0zbxj3p1c"
       }
     }
   },
@@ -10074,6 +9916,21 @@
   },
 
   {
+    "path": "io/netty/netty-resolver/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-resolver-4.1.52.Final.pom": {
+        "sha1": "bc49f9619f5d4ada316b574b45e6e7e1b4721de2",
+        "sha256": "0lh1a5var5mk0bk3h4iqa02ck7xp03kjqw66ma21lwgjy9ajw24v"
+      },
+      "netty-resolver-4.1.52.Final.jar": {
+        "sha1": "1fd5a58ff5df4dc9bb3027a6fbf114767d9278d5",
+        "sha256": "19h9pbnbn3f6xyqh7a7q1iycachklk2lcvad1ddv974p6fi75svf"
+      }
+    }
+  },
+
+  {
     "path": "io/netty/netty-resolver/5.0.0.Alpha2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -10084,6 +9941,21 @@
       "netty-resolver-5.0.0.Alpha2.jar": {
         "sha1": "917a91bf0f44fe73ce0d15651afb909c1b11b0f5",
         "sha256": "16abz81j7bgvlk5ik47y7andlas2w92y5h1cc3w3jgx01nnn5cvy"
+      }
+    }
+  },
+
+  {
+    "path": "io/netty/netty-transport/4.1.52.Final",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "netty-transport-4.1.52.Final.pom": {
+        "sha1": "aca4eccbb984a9e4e5b7815415b8ed0f144e69dc",
+        "sha256": "0zxkvlc89q3896cpx2vxx8mih4f7qk48wk6f8q06d5bdaskama2q"
+      },
+      "netty-transport-4.1.52.Final.jar": {
+        "sha1": "970ee3790f504452bd32692f6b208a590c51f0ee",
+        "sha256": "0ha51g72psxlw0mdz1i1wsaa7v4p2xwgw47an4z3dpjm1s66ygls"
       }
     }
   },
@@ -10149,16 +10021,42 @@
   },
 
   {
-    "path": "jakarta/activation/jakarta.activation-api/2.1.1",
+    "path": "jakarta/activation/jakarta.activation-api/1.2.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jakarta.activation-api-2.1.1.pom": {
-        "sha1": "0c6e1dbee7b7faf7c9c8b7274a8b6279415cac6a",
-        "sha256": "006awx3sv5lc6ngsnrvgij6m9dhhrxqwy1gkkf3p9agdxzw5jck9"
+      "jakarta.activation-api-1.2.1.pom": {
+        "sha1": "b9c1b2502949970360efe8d75ec5268d87d38a82",
+        "sha256": "0cfd0gznkrgv89lx3lvslr3a4i0r0r00jppb0jm26zysgnq5qn22"
       },
-      "jakarta.activation-api-2.1.1.jar": {
-        "sha1": "88c774ab863a21fb2fc4219af95379fafe499a31",
-        "sha256": "010s9784kcs97whlpyy7pd2dp71m62hh5n41zix5mfrdy7qf7fik"
+      "jakarta.activation-api-1.2.1.jar": {
+        "sha1": "562a587face36ec7eff2db7f2fc95425c6602bc1",
+        "sha256": "0nv4v6qg4q8r7vpagqzjmlfs9ykfhvnn7811351wa1cbz990y2lb"
+      }
+    }
+  },
+
+  {
+    "path": "jakarta/activation/jakarta.activation-api/2.1.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "jakarta.activation-api-2.1.2.pom": {
+        "sha1": "233dabc7d6b1784679925cbbfebd2e3dec692591",
+        "sha256": "1phfr3r5gy10si0k7r750fbkvg1rdhxg62c3xv5mscfri87b189c"
+      },
+      "jakarta.activation-api-2.1.2.jar": {
+        "sha1": "640c0d5aff45dbff1e1a1bc09673ff3a02b1ba12",
+        "sha256": "1fwz95v2iygy0bcmvffw4d0zparqkb2ibqm4jp0p0hgbs26mfgzm"
+      }
+    }
+  },
+
+  {
+    "path": "jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "jakarta.xml.bind-api-parent-2.3.2.pom": {
+        "sha1": "7be72e8345e33f747d5d813e313abd8df25f259e",
+        "sha256": "1yvdibflf4lzsaxpcbqhyrgzcnf0jypx4a5dmrq9k7vwadymp98m"
       }
     }
   },
@@ -10170,6 +10068,21 @@
       "jakarta.xml.bind-api-parent-4.0.0.pom": {
         "sha1": "858b9345f7027aa676178d259ddc09081fbbbd0b",
         "sha256": "1409w657g09lzmzjwgs1pw5bjwnamv6vmiyiy2ydr2hyavfvhmg2"
+      }
+    }
+  },
+
+  {
+    "path": "jakarta/xml/bind/jakarta.xml.bind-api/2.3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "jakarta.xml.bind-api-2.3.2.pom": {
+        "sha1": "6142021e7186bf29f5f7639b968cfe250ce086dd",
+        "sha256": "1mhs2fmhw4skdv7plmil2x9p5mi4873v0bwx1dlw0k5bvf4b6dxm"
+      },
+      "jakarta.xml.bind-api-2.3.2.jar": {
+        "sha1": "8d49996a4338670764d7ca4b85a1c4ccf7fe665d",
+        "sha256": "1sj2szm98lwr102whfs4li5wrcqrkww3jfxfq2gyvplv0w2665b9"
       }
     }
   },
@@ -10757,17 +10670,6 @@
   },
 
   {
-    "path": "org/antlr/antlr4-master/4.5.2-1",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "antlr4-master-4.5.2-1.pom": {
-        "sha1": "4e87b0d0b499acf795e1304a58dc68bcdd8ed614",
-        "sha256": "0x5ngrv4xiay1ks3kjp7gfbhzd03sqqp5z6pmxbsnm95v1wb8n2k"
-      }
-    }
-  },
-
-  {
     "path": "org/antlr/antlr4-master/4.5.3",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -10785,21 +10687,6 @@
       "antlr4-master-4.12.0.pom": {
         "sha1": "5cd9d694d06e046886a7a8e54d70b22bc03af4a3",
         "sha256": "0x3rhw76nrzh35d8liq9wffm74rshxwg944xc55c3qlcwlxg3xj2"
-      }
-    }
-  },
-
-  {
-    "path": "org/antlr/antlr4-runtime/4.5.2-1",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "antlr4-runtime-4.5.2-1.pom": {
-        "sha1": "6c4013c6b772dd3e8cc00837ccf5edd7619e8d21",
-        "sha256": "07k6rflqc5yc7sxh80dzrr1ybjx8h8kj8hzd0jcmakbipjvckflk"
-      },
-      "antlr4-runtime-4.5.2-1.jar": {
-        "sha1": "7fe31fde811943a1970cc97359557c57747026ef",
-        "sha256": "1603ap9qds5wggwadf5pfi4vrahxgf97b8f32pcxgvmw0hq42cg8"
       }
     }
   },
@@ -11220,6 +11107,17 @@
   },
 
   {
+    "path": "org/apache/commons/commons-parent/42",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "commons-parent-42.pom": {
+        "sha1": "35d45eda74fe511d3d60b68e1dac29ed55043354",
+        "sha256": "175h0kv7jm3nxda26007z2cfac5kk0baywk94pn87d3hqsa38cfd"
+      }
+    }
+  },
+
+  {
     "path": "org/apache/commons/commons-parent/48",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -11282,21 +11180,6 @@
       "httpclient-4.5.2.jar": {
         "sha1": "733db77aa8d9b2d68015189df76ab06304406e50",
         "sha256": "0ms00zc28pwqk83nwwbafhq6p8zci9mrjzbqalpn6v0d80hwdzqd"
-      }
-    }
-  },
-
-  {
-    "path": "org/apache/httpcomponents/httpclient/4.5.3",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "httpclient-4.5.3.pom": {
-        "sha1": "27f5d747aad49d36750ef3dffa30687963b4ddcd",
-        "sha256": "171ckzc8ga4vkcqw29g55s6cbls3f9lq3nfh830vlyy0141pbrfd"
-      },
-      "httpclient-4.5.3.jar": {
-        "sha1": "d1577ae15f01ef5438c5afc62162457c00a34713",
-        "sha256": "0d9i4r4j7m8yakmhb3lv34v0j3ig9s2n3bbpfpa5lpka5mn1ngfv"
       }
     }
   },
@@ -11391,17 +11274,6 @@
   },
 
   {
-    "path": "org/apache/httpcomponents/httpcomponents-client/4.5.3",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "httpcomponents-client-4.5.3.pom": {
-        "sha1": "238c16d8fd6e8ac85f603d981f5c20efae9dac01",
-        "sha256": "1p138vyf6iiy5izd92lb9y4z38a9ymvki2h5rw0bn98ibabx5is3"
-      }
-    }
-  },
-
-  {
     "path": "org/apache/httpcomponents/httpcomponents-client/4.5.6",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -11463,17 +11335,6 @@
       "httpcomponents-core-4.4.5.pom": {
         "sha1": "020c728c32a780a0a41ce5ba6e61891aadf25cf1",
         "sha256": "1p0w158nih5h93cq292v8v0ga6syrky8kbcb6zalh26884sj9n8q"
-      }
-    }
-  },
-
-  {
-    "path": "org/apache/httpcomponents/httpcomponents-core/4.4.6",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "httpcomponents-core-4.4.6.pom": {
-        "sha1": "b5cd50c09bc253701c1b38d00582920b99ec229e",
-        "sha256": "1glnvm9pfwvjxdjbbxiv4ljlckzqbzfpwc40y3rz6qyxs0rbag1a"
       }
     }
   },
@@ -11574,21 +11435,6 @@
       "httpcore-4.4.5.jar": {
         "sha1": "e7501a1b34325abb00d17dde96150604a0658b54",
         "sha256": "1hyfh02rwrwbhxwb91lpba25646am6lh3jv5f05f9dyafhw4bmb4"
-      }
-    }
-  },
-
-  {
-    "path": "org/apache/httpcomponents/httpcore/4.4.6",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "httpcore-4.4.6.pom": {
-        "sha1": "d14da1e1f5682c8055b81dc87de20f97536a1d06",
-        "sha256": "0mgn11f98cz9f0wzm4msc828pqph9gsr837jh5dvaksmxz7qb0ir"
-      },
-      "httpcore-4.4.6.jar": {
-        "sha1": "e3fd8ced1f52c7574af952e2e6da0df8df08eb82",
-        "sha256": "1ys5ly7xp7gisqfgy5mxjw96rdcykfrma26kjdrb103nx3g57y6p"
       }
     }
   },
@@ -11901,31 +11747,16 @@
   },
 
   {
-    "path": "org/checkerframework/checker-qual/3.32.0",
+    "path": "org/checkerframework/checker-qual/3.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "checker-qual-3.32.0.pom": {
-        "sha1": "69d7d01436d892d55b202ccec8a7066f0ac41f98",
-        "sha256": "1kvxly5fpws3prsar57rmjqq6hcy2a0b5fpx60fgmpkf59jqhnkr"
+      "checker-qual-3.5.0.pom": {
+        "sha1": "408a4451ff5bdef60400a49657867db100ea0f83",
+        "sha256": "08apndxq787glqdn6r0734nizck7qw7yd4imh2hk3nwflywb6di8"
       },
-      "checker-qual-3.32.0.jar": {
-        "sha1": "54ebd61f46b58b862c779e034073a93489ab3faf",
-        "sha256": "1k9wsy7wvh5304aaqb51hlgpfciahg5avzgmnzq8bgx6l1fh4vmn"
-      }
-    }
-  },
-
-  {
-    "path": "org/checkerframework/checker-qual/3.33.0",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "checker-qual-3.33.0.pom": {
-        "sha1": "6d43e2eacef053cffd73da56734e9a8a138b52be",
-        "sha256": "00zn1ndmnjpsiam8c363x9f6mv1zzs5hsnm17s5xv3x74wh94npm"
-      },
-      "checker-qual-3.33.0.jar": {
-        "sha1": "de2b60b62da487644fc11f734e73c8b0b431238f",
-        "sha256": "1q9d5jl9ir28nqfljg59cqmcncrbpddbh52k2q6yb7ydpxdja5p3"
+      "checker-qual-3.5.0.jar": {
+        "sha1": "2f50520c8abea66fbd8d26e481d3aef5c673b510",
+        "sha256": "19556pzrqcwwmavx3yrbnm6b9kcbjnv3cf2pq9pn15cay6rr16bj"
       }
     }
   },
@@ -11957,16 +11788,31 @@
   },
 
   {
-    "path": "org/codehaus/groovy/groovy-all/2.4.15",
+    "path": "org/codehaus/groovy/groovy-xml/3.0.10",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "groovy-all-2.4.15.pom": {
-        "sha1": "c67938b8f20e75a4c025b9519b78c138bd17a758",
-        "sha256": "0yinfr31ybi8c8h0ppf62gqpghrm5a72w71jc82sjz6vgdfm63gw"
+      "groovy-xml-3.0.10.pom": {
+        "sha1": "365e519c10d64937dbec5aa2d81cef99eefb31b6",
+        "sha256": "0abxzyliidymdih90b9lrm0wlc6qw7989bpvfd0irq6fb0xzj1v7"
       },
-      "groovy-all-2.4.15.jar": {
-        "sha1": "423a17aeb2f64bc6f76e8e44265a548bec80fd42",
-        "sha256": "1w2siawsbap3aqvp06jynw7ki79majc4k2ci4ds5ds422zkw9mji"
+      "groovy-xml-3.0.10.jar": {
+        "sha1": "5367241b0c5d4638c0e8371028a2d19a0af35156",
+        "sha256": "11cycbdhwy8dwrzll5w22x10a5c93cglg9hdcnxsk8wn6l8xaamw"
+      }
+    }
+  },
+
+  {
+    "path": "org/codehaus/groovy/groovy/3.0.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "groovy-3.0.10.pom": {
+        "sha1": "9b1123b5959b49abeb8a90ec110f3ee9b7b8c9f6",
+        "sha256": "1akr5ckp8al232g1v1xkv0kjlv2yhaag8g5yn1khbif6lvsav0j9"
+      },
+      "groovy-3.0.10.jar": {
+        "sha1": "b92c72a758f468e64b55e38abe06afa873decdba",
+        "sha256": "0k78608hrw6wva55yjjz50yl8ydn1wrc05am0gjmp1llhbdgmznz"
       }
     }
   },
@@ -12213,27 +12059,38 @@
   },
 
   {
-    "path": "org/eclipse/angus/angus-activation-project/2.0.0",
+    "path": "org/eclipse/angus/angus-activation-project/2.0.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "angus-activation-project-2.0.0.pom": {
-        "sha1": "6fafee47a73b1ee5dc0f533bcaebc55743bbee84",
-        "sha256": "17ffihwphiw6vzwxb3gkrxbjcsby640wmadj43rbcfamn6icwrjx"
+      "angus-activation-project-2.0.1.pom": {
+        "sha1": "24682c09b455ad140ee080bd86752f0bf1957c55",
+        "sha256": "1ddiingflsp4wdyaw1az6fm02iacn63imnkg82xnxh8ximcns5y3"
       }
     }
   },
 
   {
-    "path": "org/eclipse/angus/angus-activation/2.0.0",
+    "path": "org/eclipse/angus/angus-activation/2.0.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "angus-activation-2.0.0.pom": {
-        "sha1": "87500cdbfdcb4758ece7ca2267469a590e2d9fb9",
-        "sha256": "1sb92gyb9fk3fqysrsr021wdan191i6wgq845gkf4lnk4rbgcqsr"
+      "angus-activation-2.0.1.pom": {
+        "sha1": "b0b59e5f8caaf5afe94cde78d4e98aa1c0a50505",
+        "sha256": "1vs0w1m3hqa0piqq144x3d9jl3bywzzdl0lg34dfl9gmyw7ypib7"
       },
-      "angus-activation-2.0.0.jar": {
-        "sha1": "72369f4e2314d38de2dcbb277141ef0226f73151",
-        "sha256": "0iwi0y1ksir12z47gc0q7y7bfxnylf9yxdprix2sjnpkl0hx64is"
+      "angus-activation-2.0.1.jar": {
+        "sha1": "eaafaf4eb71b400e4136fc3a286f50e34a68ecb7",
+        "sha256": "0cf1nhrkjqz0nihp0l484y627asl5mnixmy1cj4xz3l62lc7c9mj"
+      }
+    }
+  },
+
+  {
+    "path": "org/eclipse/ee4j/project/1.0.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "project-1.0.2.pom": {
+        "sha1": "5730bedee1faaeeb62b0afc4ed1c4571f87a8eb4",
+        "sha256": "0gw7vhfh7n1j9s7a27r969gca7wbplhp9a617cyf923yg5xa15bl"
       }
     }
   },
@@ -12312,6 +12169,32 @@
       "ecj-4.6.1.jar": {
         "sha1": "5555607add54eb79c5a0729134e663fe2e6300c2",
         "sha256": "1q5dxv28izkg23wrfiyzazvd15z8ldhpnkplffg4dd51yisxmpcw"
+      }
+    }
+  },
+
+  {
+    "path": "org/eclipse/jgit/org.eclipse.jgit-parent/5.13.1.202206130422-r",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.eclipse.jgit-parent-5.13.1.202206130422-r.pom": {
+        "sha1": "b1ddb45d726f9720db298988b67d8654fc707aef",
+        "sha256": "10xwy6ga3fmigjy4fspa7zp5akrxvhc4j5pfhmvsai4gxmvgqrfy"
+      }
+    }
+  },
+
+  {
+    "path": "org/eclipse/jgit/org.eclipse.jgit/5.13.1.202206130422-r",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.eclipse.jgit-5.13.1.202206130422-r.pom": {
+        "sha1": "849ac18b1db0534ab42bf842a0efd144b9d01dd6",
+        "sha256": "05c5hx4w1ay8q7xy5l2gln9rkn0jm6r4zlmnwbm7hrckkjzvxi1w"
+      },
+      "org.eclipse.jgit-5.13.1.202206130422-r.jar": {
+        "sha1": "841d1ae74e4bc77ac7d4b106f15d0468dc7ac7f2",
+        "sha256": "0p05nlp24nxs2sa7andnvil3yhv5axg9y281cx4w2mcfdid3cyfn"
       }
     }
   },
@@ -12466,6 +12349,21 @@
   },
 
   {
+    "path": "org/glassfish/jaxb/txw2/2.3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "txw2-2.3.2.pom": {
+        "sha1": "22d24b523eb02a955e8bfa7af6572207a3490482",
+        "sha256": "1sikzlbx1gs4imyp2r0fgsw07hb85sz3a9ka53zq7083zc1d17d7"
+      },
+      "txw2-2.3.2.jar": {
+        "sha1": "ce5be7da2e442c25ec14c766cb60cb802741727b",
+        "sha256": "1zj8bylvrpafn221igwkg5cw0x4bbdl8r8m93aw63m486d49ysja"
+      }
+    }
+  },
+
+  {
     "path": "org/glassfish/jaxb/txw2/4.0.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12537,6 +12435,55 @@
   },
 
   {
+    "path": "org/jacoco/org.jacoco.agent/0.8.7",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.agent-0.8.7.pom": {
+        "sha1": "ea782b5dd63854e0691c3e62a450af8474a907f9",
+        "sha256": "0bvjaw1rjkzanfgmg263x54bfl4yw1dpgc9il8ww4srsvz9cvcp7"
+      },
+      "org.jacoco.agent-0.8.7.jar": {
+        "sha1": "e7a0e1e605965e2fd8e92d8ddc9d4a29800c1cb7",
+        "sha256": "0hxi51xsgi0xgn1zdrr4n5g0w83g47azgy7iiykj3s7vw23ckg4w"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.agent/0.8.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.agent-0.8.10.pom": {
+        "sha1": "b6b7ec3dc4487082d5c90d4cf9efec66e0a95176",
+        "sha256": "1mqw1cc72ypk4xmlk8z48xvvp1jwl62b4wshn0cs6sqa3vbgaf7h"
+      },
+      "org.jacoco.agent-0.8.10.jar": {
+        "sha1": "ffdd953dfe502cd7678743c75905bc3304ae2eb7",
+        "sha256": "0w0k70j06k1j5vm36dgnb6sv3ci2q53scl57484ga8x3q08j5mij"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.ant/0.8.7",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.ant-0.8.7.pom": {
+        "sha1": "1c4e310f75590765d5590c5a510bf626003fb247",
+        "sha256": "1f0z3f1ldyarh3x2iwbn37wmxa8fp4zggmbjhgrfkxswfa44a256"
+      },
+      "org.jacoco.ant-0.8.7.jar": {
+        "sha1": "8afbdbd23f72862a80b603a0cc744d1949f2d987",
+        "sha256": "01cnwin81i0gxmnafx2p02w0r8s26xn4wk7bv123mwn3hairdjlp"
+      },
+      "org.jacoco.ant-0.8.7-nodeps.jar": {
+        "sha1": "5906620b2dc9253da4f661038fe8c4a4f54b5446",
+        "sha256": "19935csdqrlb324xrwllmmlxgnl2glgnzbplwy215r40fpxlnabn"
+      }
+    }
+  },
+
+  {
     "path": "org/jacoco/org.jacoco.build/0.7.4.201502262128",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12548,12 +12495,23 @@
   },
 
   {
-    "path": "org/jacoco/org.jacoco.build/0.8.8",
+    "path": "org/jacoco/org.jacoco.build/0.8.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "org.jacoco.build-0.8.8.pom": {
-        "sha1": "b1ec2ce6fa11aa065c5c8cea04be7fa745c9fcbc",
-        "sha256": "1vrarvwmzb8gg8k7fmpxx3fh8n9ik1r8ahigfxngq97xhl90pkpl"
+      "org.jacoco.build-0.8.7.pom": {
+        "sha1": "492fd345ea752983327442fe383590995e40a7aa",
+        "sha256": "10xpy6zcpbmmg4dn9hbhlh7xi0zbfnmsfzb4nylq65hfjc3q2h43"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.build/0.8.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.build-0.8.10.pom": {
+        "sha1": "a129ae2c1a5138a8bdfcfaecde3d1c74cb6d4f23",
+        "sha256": "0fvcpmk09b92985xsry4pdz2ii8jja0h68iw759i9apbipcv1mz3"
       }
     }
   },
@@ -12574,16 +12532,31 @@
   },
 
   {
-    "path": "org/jacoco/org.jacoco.core/0.8.8",
+    "path": "org/jacoco/org.jacoco.core/0.8.7",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "org.jacoco.core-0.8.8.pom": {
-        "sha1": "887670d63e8ac0302fde83422824b5e39736e262",
-        "sha256": "09g2zsc854m5qxy2byqfh20rpk384c1jcl531qybh8zqinjbbypm"
+      "org.jacoco.core-0.8.7.pom": {
+        "sha1": "a26a78c73750f93915a98daac900c5e7a37e4494",
+        "sha256": "09bqhrgnwlv8gxszfq7xjcv1ip9vl6x67pkgcjpp2q6dv18wfck8"
       },
-      "org.jacoco.core-0.8.8.jar": {
-        "sha1": "fb1257ce77ec2fe326aad639b2253e76f481ea2e",
-        "sha256": "0hqnc5jh8ga60d44hxp59f80ycwxnyng1nyz2d3r524xh0pphk27"
+      "org.jacoco.core-0.8.7.jar": {
+        "sha1": "2c2dc2b720a7fb33afcf4f45b05db2eb5b4ffa10",
+        "sha256": "0g51q5qnxffidcrhzwgi2b82xj2dsm7dglzai8dalsarzfskjxxd"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.core/0.8.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.core-0.8.10.pom": {
+        "sha1": "e4acd57d7b22eab888cf7a5bac94a2798f6a23cb",
+        "sha256": "12gaf5yl7p4328hvncsgph4ni40lg60k9gplca7b7vww2kayv84k"
+      },
+      "org.jacoco.core-0.8.10.jar": {
+        "sha1": "669a338279c3f40b154a64c624bab625664a00e6",
+        "sha256": "020fv0bdhl459nr9jqjl7gdcq6wspkxy92lpxqw3jl57jdynd2g7"
       }
     }
   },
@@ -12599,6 +12572,36 @@
       "org.jacoco.report-0.7.4.201502262128.jar": {
         "sha1": "5c6bb5f95ae695dc4510b95f7d5ad0397e4881ad",
         "sha256": "02gzckmh8hhs3zp2sbry6px4811z4ib4c25i4giyg2700p358dbs"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.report/0.8.7",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.report-0.8.7.pom": {
+        "sha1": "e54f4220d1b60811466439dbc463dfa126048d1c",
+        "sha256": "1fn4a0llk65wdarc0y4v7rwqhybajafq5yif4ni93mqx7jgc3frg"
+      },
+      "org.jacoco.report-0.8.7.jar": {
+        "sha1": "be3926576212ef4cbf317fbadd0cc372cc205ab6",
+        "sha256": "0nqf09pvmyvyz4qm8g8qvav7cn3q52skq5cj4n9nq2kh4f32b2fc"
+      }
+    }
+  },
+
+  {
+    "path": "org/jacoco/org.jacoco.report/0.8.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "org.jacoco.report-0.8.10.pom": {
+        "sha1": "c4cede35c1a1e94287a159e3d9f9715ef19664bc",
+        "sha256": "1qmsy8nm8q25n6l8hqc2gpavksc6010xz60gvvpmhmw7mcvb11ba"
+      },
+      "org.jacoco.report-0.8.10.jar": {
+        "sha1": "c361019431d1c88e7004ba5a722e7c3f7c22194b",
+        "sha256": "036mvpfyrvdv16ch164y86gp79akw1p0ikq4ps6wiiskg17w2d9y"
       }
     }
   },
@@ -12679,21 +12682,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlinx/kotlinx-coroutines-core-common/1.1.1",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlinx-coroutines-core-common-1.1.1.pom": {
-        "sha1": "a0ba9577538052b46751b2e43d23f610b4e4aa9c",
-        "sha256": "0ji3i14vnwk85mjwfl8z33x9aq2ch6f0kirj40f4mb6cwsiima56"
-      },
-      "kotlinx-coroutines-core-common-1.1.1.jar": {
-        "sha1": "7ed04382bdf0c89c5d87ac462aa4935ae8e85243",
-        "sha256": "1rvjhpw1f7ychlm3hnc4mrp564xf0q8k5542g1yqm9nkiwb34dq3"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12724,36 +12712,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlinx/kotlinx-coroutines-core/1.1.1",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlinx-coroutines-core-1.1.1.pom": {
-        "sha1": "050d1d23e091a12b5aa20f4cbd03c95dcd1a202e",
-        "sha256": "0bw7cklnvl7z1b5x5s53vq6wp3lh8mfn3jlvw8gmd49zgzlmgzl2"
-      },
-      "kotlinx-coroutines-core-1.1.1.jar": {
-        "sha1": "3d2b7321cdef9ebf9cb7729ea4f75a6f6457df86",
-        "sha256": "0i3q3yffc9gzbnba30miia61my3i04nghvv9552ygd541a53yhmc"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlinx/kotlinx-coroutines-core/1.3.8",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlinx-coroutines-core-1.3.8.pom": {
-        "sha1": "4e6547ff543d0b040169fb1c19a03cd6b78504f2",
-        "sha256": "1z87920fjdmi9ds7awy0m780sjaaf6rqzrxjkhs97n5pvxdsdzr4"
-      },
-      "kotlinx-coroutines-core-1.3.8.jar": {
-        "sha1": "f62be6d4cbf27781c2969867b4ed952f38378492",
-        "sha256": "1vklc71fi550k8d9w6ca4b9wqkhxkm9lajg9wlw5wmsabm4bgj7q"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlinx/kotlinx-metadata-jvm/0.1.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12769,21 +12727,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-android-extensions-runtime-1.4.31.pom": {
-        "sha1": "3a662d24eb03491a1dcec96bcf35462989f93b34",
-        "sha256": "067mg332kiw4d0xavmm4zqcas329rh4lq1j4342h6wzi5spjh3an"
-      },
-      "kotlin-android-extensions-runtime-1.4.31.jar": {
-        "sha1": "14b0c658501829245368d2b8fdef72171e7e3d17",
-        "sha256": "0xvghalwncbxcna079nccfy7qf2s19jwjjz8yfi6j3lpaz55jlrw"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12794,51 +12737,6 @@
       "kotlin-android-extensions-runtime-1.6.20.jar": {
         "sha1": "e0d69c8bf97c1f31ef152fb1d53507d9c2ee6b0c",
         "sha256": "0jv3r0mqa0pvwlfg5rvji71nsgdivrz6mcddl3lfsyqkvyhjz2dc"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-android-extensions/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-android-extensions-1.3.50.pom": {
-        "sha1": "5cfefec65dc3b5acaf56ef1beb64b564308c3795",
-        "sha256": "12qnb5kfmhk1waw07dlayd8sjgkcm9h09aj55jsggxxn3di2z6a3"
-      },
-      "kotlin-android-extensions-1.3.50.jar": {
-        "sha1": "f16428b9ce307d0f5842bd8ed9af1e43a141edd3",
-        "sha256": "01ykg2yi4w893qcdvk6v1lfh2rb1cnv8h0sfzjflypiwp507ydbj"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-android-extensions/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-android-extensions-1.4.31.pom": {
-        "sha1": "e8daca9188d01ff779a7cba95ec9a31ed8d939d8",
-        "sha256": "05nqxyxjbjaw5f1s95a4pf4gmzbxp17fg6w4bvb06s4slh3xvv79"
-      },
-      "kotlin-android-extensions-1.4.31.jar": {
-        "sha1": "5837534e7d15215c816bccc74543737b2c0e82ce",
-        "sha256": "145pw71g42xxli27krir2dl1siqwl6l0awpm4yfwdc8gss7f1ms8"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-android-extensions/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-android-extensions-1.5.20.pom": {
-        "sha1": "658a5b4a516d9bd5e84116c5a81a79057956c4fa",
-        "sha256": "0g33kl3wvk6w3kxikrlcx28gsrprgkfvb2x8z66ajvwrqr4c5l2r"
-      },
-      "kotlin-android-extensions-1.5.20.jar": {
-        "sha1": "bff9973581fc12c04f586dcc04fe295562dc8f8d",
-        "sha256": "0bnprpnpd7h66wdphdsxr0yj5xc848ayb42cgmlyxqd7yxs98vhs"
       }
     }
   },
@@ -12874,51 +12772,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-annotation-processing-gradle/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-annotation-processing-gradle-1.3.50.pom": {
-        "sha1": "a17a412371cb1d25bbaa94afe391f5f8d6256abb",
-        "sha256": "1f4bdm36pxrbqhniv34fmrl4zjyf24bq3as82vh0vkih4blndfga"
-      },
-      "kotlin-annotation-processing-gradle-1.3.50.jar": {
-        "sha1": "18038b8fd60abf3a80f127596c9ad985b8857edf",
-        "sha256": "1n9n8jgdfy94n8cq6bjnsy7i4x3843in7yvr4lh41dd2vavilm4k"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-annotation-processing-gradle/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-annotation-processing-gradle-1.4.31.pom": {
-        "sha1": "edff249688821d852797b15631212f6b3ad0d201",
-        "sha256": "10n3jhc7iap9i3cvbkrchlsirlcqzaz52m5f138zbpq9cqgqaj8s"
-      },
-      "kotlin-annotation-processing-gradle-1.4.31.jar": {
-        "sha1": "1d7a4a1aaafe06e8b62bfb5fc04f66c4afeb7281",
-        "sha256": "0vbh5cd9ilg4q85r2gxjd17ggs6y8q224jn15yxc4ydz7214fp8k"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-annotation-processing-gradle/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-annotation-processing-gradle-1.5.20.pom": {
-        "sha1": "49838acbde5128345fa230dd25f6003954f2ee21",
-        "sha256": "0mykr87dhrqfmcrg0vkyl7sy4hy8rgzyk3kqbg598s0ymaca0w53"
-      },
-      "kotlin-annotation-processing-gradle-1.5.20.jar": {
-        "sha1": "b198cea2a8ca7695b79d998110b88876051b5053",
-        "sha256": "1qrr9wi7dv5j0xqpkl8ag2yq399jz7wsd7grqv25qqs4gk44y5fc"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-annotation-processing-gradle/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12929,51 +12782,6 @@
       "kotlin-annotation-processing-gradle-1.6.20.jar": {
         "sha1": "73fcf577f3a5416bd2feec9145ff51e8f2735ebf",
         "sha256": "1fszrvq98k0hhn0q35jqs2jbpxkav4s6czmabwydl3br6ck1101y"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-build-common/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-build-common-1.3.50.pom": {
-        "sha1": "e5025ee2e0291696a6e239af10f0167d42b6593d",
-        "sha256": "1qdpx1ajwnjwljzhf9yxcflmfs1al2iq3nsqsgjin9g33iv8y50d"
-      },
-      "kotlin-build-common-1.3.50.jar": {
-        "sha1": "b64ece3ce7fad42f2d8fb74e4687c99ca030fe24",
-        "sha256": "0g2xqfnhrggjywq9xj6iyi7c6q9kfq49hdsrgchlvk9gy04afdzw"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-build-common/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-build-common-1.4.31.pom": {
-        "sha1": "130eaad44fe0e343fab6fe02edb86023e0eccd74",
-        "sha256": "0762q61w7bq56gmqhzskydlnf7rg9vpv6zgszif4m9fwbsk951hc"
-      },
-      "kotlin-build-common-1.4.31.jar": {
-        "sha1": "10e4800d84cb94d26de22ccb4db7aebe7aea1b38",
-        "sha256": "1d1ahrs6psi2vmfj9yzwmqhipzr2q325g0s33la24zdm5yaff1fq"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-build-common/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-build-common-1.5.20.pom": {
-        "sha1": "32d7a6eb0ac0ad0661b25e2cbec7491dcdb7874a",
-        "sha256": "08lppkja4aww867x2n5dj680zc1r5gm27a567v205gnj497m7p8a"
-      },
-      "kotlin-build-common-1.5.20.jar": {
-        "sha1": "933f40493b6ab83b5cd66f5df0fd457c80f57996",
-        "sha256": "0vz5gc4xddq6dxh5pmqyd0nqz7805zlpldhn7kh97c1s2flr5gpc"
       }
     }
   },
@@ -12994,51 +12802,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-embeddable/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-embeddable-1.3.50.pom": {
-        "sha1": "3c003f60a655f2393bb2b2ad4e9d0de610230448",
-        "sha256": "0m3pgllqhan2w8hb058wd99i258np85p4nx808hp98x90rcc31lv"
-      },
-      "kotlin-compiler-embeddable-1.3.50.jar": {
-        "sha1": "1251c1768e5769b06c2487d6f6cf8acf6efb8960",
-        "sha256": "1ynixbz6mixd87i16d9qr0a49c1a386zqw318za3kih83xp4ys00"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-embeddable/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-embeddable-1.4.31.pom": {
-        "sha1": "b2fc49c054b3c13fdbe0efe3c94635e3b3703ea6",
-        "sha256": "094b7364v1i8rbcxcysmbismrfryl0as2rgm83ijlhngy9kkhrqd"
-      },
-      "kotlin-compiler-embeddable-1.4.31.jar": {
-        "sha1": "06451ea797cef544e81f507b0d9959cd97ae09c0",
-        "sha256": "17irfc3nic63f2z3vnqnmjk0cyvfln27qc8lrpabr5pyfighwjjz"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-embeddable/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-embeddable-1.5.20.pom": {
-        "sha1": "818b911e8b5fcc03cc2cf970c7eda46f6cf3666f",
-        "sha256": "1h3mydvpdzcn3if7sg0pj0yfp9crxyvib51jll2dyy3xhk4vx45s"
-      },
-      "kotlin-compiler-embeddable-1.5.20.jar": {
-        "sha1": "1900e8b9aca0a9caffd45b99b36e3720a0a284f8",
-        "sha256": "1zrq5r4023wrrmg0n048cn8ka0ws6jj5kx7vssxapdbhxf3i1m8i"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-compiler-embeddable/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13049,51 +12812,6 @@
       "kotlin-compiler-embeddable-1.6.20.jar": {
         "sha1": "18f66cca4301c12893ebe4ef47d65c3d9d2bff9b",
         "sha256": "1y4ffgf4azfgbi82zphc33jxdr1kmdbkwn3dxyv1cs5mmym4yqxy"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-runner/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-runner-1.3.50.pom": {
-        "sha1": "1f24e1320c821eb12869f0f1d0cb9ac4b04122ce",
-        "sha256": "1cr2583lqhdk373ail3m216p4w81nwyga9zb45y99m7cisvwc9pp"
-      },
-      "kotlin-compiler-runner-1.3.50.jar": {
-        "sha1": "2a4774c753d76ad15d58f19e2382228358dbcd6d",
-        "sha256": "186icfszj2z6ywhdzzfmfpbcamzcc9ihcx49ak8cy1qybf3mrvwh"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-runner/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-runner-1.4.31.pom": {
-        "sha1": "30f2d65c9727e1f195fde3a700525dafb87714e3",
-        "sha256": "06sv8i5y68vkpk2b0pi1k8ny8r7f1mdby8v1q42jfx74rshna6b2"
-      },
-      "kotlin-compiler-runner-1.4.31.jar": {
-        "sha1": "8be54c7f3ff7e46e7585e6e756f86c780b3d5e1e",
-        "sha256": "1hcahwvxxvnffvidfgd2iwi3qdammjlr055j7sd65wy8vk9fgfk1"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-compiler-runner/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-compiler-runner-1.5.20.pom": {
-        "sha1": "0184763a6c77eacf3744b490f666d828ba7bf649",
-        "sha256": "03j6xybcwh2drqmffgc25xmxlkjzrhrjr1hy43yahzvdw26vskdq"
-      },
-      "kotlin-compiler-runner-1.5.20.jar": {
-        "sha1": "3d5be048275969d20c939524c78e6e468f6d9e10",
-        "sha256": "0csw1xdsgdx5951qpd7msr5icjf0f1ssa3f6vk3ahx8l2s8405sj"
       }
     }
   },
@@ -13114,51 +12832,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-client/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-client-1.3.50.pom": {
-        "sha1": "f5809e4f2b5ef27194557f36ae043760e2d06759",
-        "sha256": "1spw467qd3qi090l81f2a13cli012ahhidl31m5m0xl225779dd6"
-      },
-      "kotlin-daemon-client-1.3.50.jar": {
-        "sha1": "4a33801a3fdd652dc9c4d70ced2c16e0ac35f117",
-        "sha256": "1dpsi95w5f4klb9a1akx8r2cfwlj9wkp6nwiczf2q4kk5391nvxb"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-client/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-client-1.4.31.pom": {
-        "sha1": "8c777b323d956856c81ee461ef4e596acf109cab",
-        "sha256": "0g4byjklzq4cym8symyk5hjiaqymr0lk7cfq160q2kgsx65kdlkr"
-      },
-      "kotlin-daemon-client-1.4.31.jar": {
-        "sha1": "419157134d513c69d74693334c39f0550b53f546",
-        "sha256": "02b4xll0j891kx0dn9bn2sb0q33cq74g4rr40sy91p7ibbspw0kx"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-client/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-client-1.5.20.pom": {
-        "sha1": "25b92a0814c61bccc24afd646fd3ca30c9dcd156",
-        "sha256": "04rgbriny7z98xf4cgg2rpm9zxvpbp4zb19ibb2c01f3k83s847k"
-      },
-      "kotlin-daemon-client-1.5.20.jar": {
-        "sha1": "75bbd312b2ca6cf157ebb902b170444af10da76f",
-        "sha256": "0nfj09xqg27wr4wk1fkm1acndkg2cx7y4ygwifil7am76c1p21g3"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-daemon-client/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13169,51 +12842,6 @@
       "kotlin-daemon-client-1.6.20.jar": {
         "sha1": "d3a6f83d7a6557f2142eee48e0270e2681d86b37",
         "sha256": "02zd6d0c2p8lqpfpp52ydck20qd7krynpmb4qbq4hqr4fg9x9scs"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-embeddable/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-embeddable-1.3.50.pom": {
-        "sha1": "1bb8a473ec7550c26552b1612ed7752662644a6c",
-        "sha256": "1p23xdns85n31a4pj87297admms6ivzkgy2kyi2sxvgjs59n2waj"
-      },
-      "kotlin-daemon-embeddable-1.3.50.jar": {
-        "sha1": "5cb93bb33f4c6f833ead0beca4c831668e00cf52",
-        "sha256": "1yhiv7icvfrm1h9gk4xfidh016czlkl1sifhn77xyvsaw1rbicf7"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-embeddable/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-embeddable-1.4.31.pom": {
-        "sha1": "e3886390a4d23c318376d2d5b4d4562d5c988596",
-        "sha256": "1sz7wc0bxd2jmg5adajydq7rjbd67wgb5yvn2s28vlgbi6sjgpig"
-      },
-      "kotlin-daemon-embeddable-1.4.31.jar": {
-        "sha1": "10faf8ac3dd5975ed972b2bc395b4ffc7ffde246",
-        "sha256": "0dng745x3mk6id6vwspvfxw819ca97cgzmqykddb29gxnh25gp4p"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-daemon-embeddable/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-daemon-embeddable-1.5.20.pom": {
-        "sha1": "70f3b9a04e7b0824934a637e70af446dada234f9",
-        "sha256": "1yxrv3cqy0sv50zzxv7gpam6a4zlq7amn7p07zr39845inpv33j0"
-      },
-      "kotlin-daemon-embeddable-1.5.20.jar": {
-        "sha1": "36c38cda019834dcd2959cc33a12768adcd94256",
-        "sha256": "0jj2vlm2mahkdrzq8s6ic24yyn57pjk8wrlwncvxjc6id5l1wbjs"
       }
     }
   },
@@ -13234,51 +12862,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-api/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-api-1.3.50.pom": {
-        "sha1": "2515afe0bee6e31f0612fadb3e31f0ba7ff53b9f",
-        "sha256": "0nj5ad8pq1kkv5jypds530j2izxyx62cg6ljq2mdg1fkg0slj3zy"
-      },
-      "kotlin-gradle-plugin-api-1.3.50.jar": {
-        "sha1": "b6f3b92e68150198b8f23ffc813e9c6aae76dd49",
-        "sha256": "1ldir2h2s9kn9m4am5yig3gdqiqcwi7a02l7j2yprn6cqhh0cqqh"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-api/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-api-1.4.31.pom": {
-        "sha1": "79ca3be91c54d63dbc30cb740b5684bfb0b03067",
-        "sha256": "1ixwymagkcr2a3gjbjwci6s1wwrgblaphfjfbpq5k0vcgrli821j"
-      },
-      "kotlin-gradle-plugin-api-1.4.31.jar": {
-        "sha1": "63692dfe4484c4f989319cf3429b357c17f772ae",
-        "sha256": "0qp21lijl30w2rylk78ycd949cgl52i87sgazws66ph7np9qw2vw"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-api/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-api-1.5.20.pom": {
-        "sha1": "26ad631a44dfe550d1b989c3557386f021cc02d5",
-        "sha256": "0cfrg0p0drb5a319drbqp4fljygykm5jwn59h1mbf95fs5i19qrd"
-      },
-      "kotlin-gradle-plugin-api-1.5.20.jar": {
-        "sha1": "d64b1d77781bb8d9cd42bef02dff4c706b70fb7f",
-        "sha256": "11r6g0ymjhyrbxz43sppvy4vyn7jc89ckzhd0p2ms5w2rgjhq79k"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-api/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13289,51 +12872,6 @@
       "kotlin-gradle-plugin-api-1.6.20.jar": {
         "sha1": "bc3f9737d53e0f3a38162801e1c1e344a52dbc20",
         "sha256": "0lyzm7lyyp3i19qj3gn4wl5i47mz925afz72igszy84j5fy50k6x"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-model/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-model-1.3.50.pom": {
-        "sha1": "f733f06dc89a3f4ccd1fde77dd5ac95f4479bd17",
-        "sha256": "0nngb0fq5xbg7ns0h2m2bj4vns0ivsqf7mfr0lg2v8clcijzf87z"
-      },
-      "kotlin-gradle-plugin-model-1.3.50.jar": {
-        "sha1": "2c706770a3f5af1bb34496ecda4ca2b8a9bb7f86",
-        "sha256": "1pnybswr7j90pbkgf3n3r6wxlfyncgvkrm5jvn3g9p8vi7ckwa7w"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-model/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-model-1.4.31.pom": {
-        "sha1": "c434bc9afafce644a8a928ddd1862ee3e3329f1c",
-        "sha256": "1jx7ydh5gg2m9l9v9sia6ydyd3zli32l2nw9f2ylm1vyq6kdajz8"
-      },
-      "kotlin-gradle-plugin-model-1.4.31.jar": {
-        "sha1": "5ef6cc1555b3cafdc5d1edbb932a823289fd5a56",
-        "sha256": "1a96b746dr0v22ajdknxvh2ndipxpqsxj8nfv8l16skvwqnc017l"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin-model/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-model-1.5.20.pom": {
-        "sha1": "bb8215c9128e4e7e72ec171609ed38bf0f38ad00",
-        "sha256": "1x2181ha4ksf6872fw567ayjwkixgis7vzgvxyjf1wgycsfcz03x"
-      },
-      "kotlin-gradle-plugin-model-1.5.20.jar": {
-        "sha1": "6cfd1f66e93d740959cbaa2c6d3b9cdd493055a2",
-        "sha256": "0yvlgbydjzcy7a3na8a86zs24daq8fh0wbdw2b9dmzkbrbrr759d"
       }
     }
   },
@@ -13354,51 +12892,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-1.3.50.pom": {
-        "sha1": "89963a567f68092739e0e09bfdf8d2559a01a36b",
-        "sha256": "19a1nifvwb94wmf1w6akark71dbphnxd5ap8vv7mk589wv7wy082"
-      },
-      "kotlin-gradle-plugin-1.3.50.jar": {
-        "sha1": "64a7b2a2027c9ff272c09b24817149faa2b1d535",
-        "sha256": "09hzhxysaas396m3k7v9lgfhbsm14l4c84g6xb4kzifszr564pb3"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-1.4.31.pom": {
-        "sha1": "70c103233a7c9b2212d4b60e684ac4620dcfff92",
-        "sha256": "0gshvrknkkj5y5rbvv0l7g3w1l4psq7sjr4905azdjy2flxk076g"
-      },
-      "kotlin-gradle-plugin-1.4.31.jar": {
-        "sha1": "efd48d079489836346cff69c66c77c81e16985d4",
-        "sha256": "1kvx3pzld91vb32lrzgxqyh74l5c4x4vvczdx4gpk9g8vddh7jzw"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-gradle-plugin/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-gradle-plugin-1.5.20.pom": {
-        "sha1": "4d0d89c2f80b6ba22bfd6c8142faaf1537639dd1",
-        "sha256": "1qb6qlx5sqixh18iv1w35pn6gq06hz9hx3bkxrwccmkhxmxy7f9v"
-      },
-      "kotlin-gradle-plugin-1.5.20.jar": {
-        "sha1": "581e977e61884395f5a4580fcabfb4494d6f415a",
-        "sha256": "12bmc3z3p4mw9g7qv4hdl9g9hxk94znghqwallvbg4nh5h3ifkbc"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-gradle-plugin/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13409,21 +12902,6 @@
       "kotlin-gradle-plugin-1.6.20.jar": {
         "sha1": "f05dfcf414a9eea339cf52751abf8b9b1b6bc691",
         "sha256": "0ag19l63i55cdbp4j0rb9zs5jk42kirgpn81ny4y504qmmq7gysk"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-klib-commonizer-api/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-klib-commonizer-api-1.5.20.pom": {
-        "sha1": "802674e1728aeb514627b0f93795972e8152b128",
-        "sha256": "0gacja99f5gr87iqd48mq6ch9f19fy90nrk3cqxyxj4ixh6khi3b"
-      },
-      "kotlin-klib-commonizer-api-1.5.20.jar": {
-        "sha1": "3834d62061652359611fdb104161c6445ab372a6",
-        "sha256": "179dnalnq4cifflync9zsfxi502kw87dp4n1ra7jr5r2ignjdf67"
       }
     }
   },
@@ -13444,46 +12922,16 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-klib-commonizer-embeddable/1.4.31",
+    "path": "org/jetbrains/kotlin/kotlin-klib-commonizer-embeddable/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "kotlin-klib-commonizer-embeddable-1.4.31.pom": {
-        "sha1": "06f35542e31797d5b46d5c00eeb372d9bbb4bb60",
-        "sha256": "1ppssla9sg3zpszhlq9nzb8jx1wi3nrd76b18ffw7g1hdrpq429n"
+      "kotlin-klib-commonizer-embeddable-1.6.20.pom": {
+        "sha1": "058fa9af20677c4ef2d0fc85338117b09577ae4f",
+        "sha256": "1wwkmcndb9mrv0hy59hl7igza1jxyxszhmb9pm2i01xvagr4rvxf"
       },
-      "kotlin-klib-commonizer-embeddable-1.4.31.jar": {
-        "sha1": "73c17f8fdf8fe87f39f3c5ab859d4bf6d3c749a1",
-        "sha256": "1kx5rm78p22rla7q5jqz8f66g404jsyl4c28rqz4kvav9w5alczk"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-native-utils/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-native-utils-1.3.50.pom": {
-        "sha1": "e38a3bb6c5d9a662f529b1a52eeabf2c8fca67e6",
-        "sha256": "1pny15s2glhqniw6cqwjh5wylcxyskj5hjdzcwhyprw5q41xrr2f"
-      },
-      "kotlin-native-utils-1.3.50.jar": {
-        "sha1": "ecc710c0b7d2d6dac5efcff5e4861612b08f2e8f",
-        "sha256": "16zghz336sc9dimswl2c3nnzyzwj829p1nywz0j0qpnwr7d4ya9h"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-native-utils/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-native-utils-1.5.20.pom": {
-        "sha1": "19c73600928594452f6ba90e695be5bdde5309d5",
-        "sha256": "04kfid74his4lqzf5civy4vqjznfwd2b0ng6bkgb47snrf1pd8ls"
-      },
-      "kotlin-native-utils-1.5.20.jar": {
-        "sha1": "6747a7f3f7077b61e73b1e0c2becb0413df10522",
-        "sha256": "1qnrli1yrgdg4bwdxpkzqpxzx27phkwh6yhmllz2hmvyqrk7mv3r"
+      "kotlin-klib-commonizer-embeddable-1.6.20.jar": {
+        "sha1": "1dab5bc8a1034e77e2d01ccf507a2bf0d3df6ff9",
+        "sha256": "1b7rpzpgnbxphgr9kmzd8varcqbk76fmm4h5g7n416a8az53v8zr"
       }
     }
   },
@@ -13499,21 +12947,6 @@
       "kotlin-native-utils-1.6.20.jar": {
         "sha1": "5328907f59bbbd192589a3952fb897405527fcc3",
         "sha256": "07ldk4fddyxngfcxb73xzqkxn9ajjj6r062l45fizsx96c0nz2xm"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-project-model/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-project-model-1.5.20.pom": {
-        "sha1": "b27f0a884fa083d43cd86d609ec2ac97bee3d468",
-        "sha256": "1hlr1r3p59pzs25h3axxg6gyx57skclpy2bkyfq1fqwfixxbxc8w"
-      },
-      "kotlin-project-model-1.5.20.jar": {
-        "sha1": "e62d5b151b94b0c28cc7cb937acd146401d59bad",
-        "sha256": "10j7vf3zkbq4bm84gzn5ycflb9qsr7xr05nvmghl49czn4x2ygp0"
       }
     }
   },
@@ -13609,36 +13042,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-reflect/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-reflect-1.4.31.pom": {
-        "sha1": "5cfd82ac5a5ee1e1d60c94e7390070301f73853e",
-        "sha256": "15rnc1h2zymcnf2zpgyq468j7jm9572r1qw7bhqmz1fx8fwbljcf"
-      },
-      "kotlin-reflect-1.4.31.jar": {
-        "sha1": "63db9d66c3d20f7b8f66196e7ba86969daae8b8a",
-        "sha256": "1wi821w3l7p8wxnpqw9m88a6n5vff02iz9ih3s0xb9vl56sd1yli"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-reflect/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-reflect-1.5.20.pom": {
-        "sha1": "5544d71376b8b311ac30e0dbbfe6fe77205ceab2",
-        "sha256": "1wmklvhgk5dmbjrxnzid58wn8j2s78l2hl7q52panx08cgrdhzkh"
-      },
-      "kotlin-reflect-1.5.20.jar": {
-        "sha1": "063810951f09a27f7827977f1bc21094042a915e",
-        "sha256": "0nmbid6f30jw9d3jpdx4nkkf79s2997c7891halzy5ycig8q4rzx"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-reflect/1.5.31",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13669,51 +13072,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-common/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-common-1.3.50.pom": {
-        "sha1": "03c6c80b5f8055e045d6e827ecf17ca6427ff087",
-        "sha256": "0nj5nrkcy6ry6ydjqwf09q12z1iyb0yn0xd29vn03vb93xpswiq2"
-      },
-      "kotlin-scripting-common-1.3.50.jar": {
-        "sha1": "b8e0110c386c08f46a8c5e45b8c64aece1914867",
-        "sha256": "1z43r4f8qqx92n6l4pvxmmbx98czrhq2pwxp7kjz7w7jw8gdf5nx"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-common/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-common-1.4.31.pom": {
-        "sha1": "d998790077787c3eff5d835f7823b23eedaf9faa",
-        "sha256": "1ra08kfzq91svbb9xhvrksdihii1i9ikmnahysnijji45jfpz6s9"
-      },
-      "kotlin-scripting-common-1.4.31.jar": {
-        "sha1": "6c072554c2d163012478a93278b208c7228ad9a4",
-        "sha256": "0g3zjzq98rkwsxyjn60il9cvpj3b15y9s709phn2bcs19d5g8rpc"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-common/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-common-1.5.20.pom": {
-        "sha1": "99c6485505b624c171963237784cffa9681352b7",
-        "sha256": "1pmrplm96av3qnjigxjir6881fiz46jwi6p0galpv36447a6mh1a"
-      },
-      "kotlin-scripting-common-1.5.20.jar": {
-        "sha1": "5cb42f6dffcaa05963f604bf733c90ca8c766084",
-        "sha256": "1fjg6bxp763kwri43wlahfvn8yb16j8nn7y0jill6ngpcmldqk06"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-scripting-common/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13724,51 +13082,6 @@
       "kotlin-scripting-common-1.6.20.jar": {
         "sha1": "0c715651864e5e186405f60e034af3b65d0eebef",
         "sha256": "0nig2hphr4hf6g4iyg588ahdxz1d7lxhx2iwhl4z7sgw99ladx0g"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-embeddable/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-embeddable-1.3.50.pom": {
-        "sha1": "dfee0a437087798adea937ca54f6c826957fbdb1",
-        "sha256": "1dc7yq14nssc81qb2awp1j4djxqglzrblzjj4xs2d593zfn646rx"
-      },
-      "kotlin-scripting-compiler-embeddable-1.3.50.jar": {
-        "sha1": "8cf679fe2d8cd6fa57e9ca4ca46222d5477f077c",
-        "sha256": "1ica3kyhim3idpjyl3g68j512dssnwky7mn5i3y7y6qahkf6p9xs"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-embeddable/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-embeddable-1.4.31.pom": {
-        "sha1": "e6b41e94b17b8e106c629c5b7e73e8cdb5569b50",
-        "sha256": "05iifwrwwakjgha8kalr12lf8q6b7zjzsfcjq2mx3yvj9v3lrk6k"
-      },
-      "kotlin-scripting-compiler-embeddable-1.4.31.jar": {
-        "sha1": "f279e1c63640df6e24371ae9e009ddbe1ad8b723",
-        "sha256": "14kk723sl7362p9xj5jvhqc4vc7n9h68j0gcphksqiii8p18vpyj"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-embeddable/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-embeddable-1.5.20.pom": {
-        "sha1": "97bb1ef8cfeb9e5e43391fe5bd7a9530a0b899b7",
-        "sha256": "1ll8qycn57vlzpvqp83nzqi81flryr49vqpximms14f9hkj9vbmi"
-      },
-      "kotlin-scripting-compiler-embeddable-1.5.20.jar": {
-        "sha1": "67fa4b0c0f3a98738448062a6b94ae91d2d1ca96",
-        "sha256": "1dwlmniw4pzgin476s8inyrvy33mks7b483ysbr4ch37jn39gggc"
       }
     }
   },
@@ -13789,51 +13102,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-impl-embeddable/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-impl-embeddable-1.3.50.pom": {
-        "sha1": "5f9416038ec25cd4d07a8bf3a7b9000b0bb66816",
-        "sha256": "1r9w9sc424nk56w7jbiscavvwbff6s2al36kkm7wp5siza9898rs"
-      },
-      "kotlin-scripting-compiler-impl-embeddable-1.3.50.jar": {
-        "sha1": "cc87aae13b61cdcf296ac9416b464e44f27b6dc4",
-        "sha256": "03s99ryaagiy08p3cn7p3gi0g20gdw1rczkzfrnswq7z5g6arf2a"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-impl-embeddable/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-impl-embeddable-1.4.31.pom": {
-        "sha1": "fe7a6a6e0a4d4a57e9c165af822fe69edfd6e957",
-        "sha256": "0l85xgxghp3lir8ig8djvyhx868q9vps88mwrnwcp2bp6cs1snmz"
-      },
-      "kotlin-scripting-compiler-impl-embeddable-1.4.31.jar": {
-        "sha1": "12bd0e32075f54b774975d3e14715017fc7cb0c0",
-        "sha256": "01kwp9bw1bcgwzw2vm154kr03y0grbwd8f9jh42f60q3j9n0srm1"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-impl-embeddable/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-compiler-impl-embeddable-1.5.20.pom": {
-        "sha1": "67361371497006900070bbeafb8d9d98d1d59f77",
-        "sha256": "0i30pjysws820nz9gfxmhw0269v6ldlaw7wkr08035513yx5qfs0"
-      },
-      "kotlin-scripting-compiler-impl-embeddable-1.5.20.jar": {
-        "sha1": "a78c191cb669feda82f354cda18214cd89e55899",
-        "sha256": "1dbd1qr38495cm83lfa9vw8w5c37skz888nh4abh7g7gx420g08s"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-scripting-compiler-impl-embeddable/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13849,51 +13117,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-jvm/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-jvm-1.3.50.pom": {
-        "sha1": "c449dcaf9b8a6771adc38b8acfe8672ca57c21b8",
-        "sha256": "0hr4qlpyhwk2603arldbv08mpr7rsc7q7ickwhr6ks17v87mygs2"
-      },
-      "kotlin-scripting-jvm-1.3.50.jar": {
-        "sha1": "53f579e1bee3dab3df915d923ad1bb43bc37cd18",
-        "sha256": "1hn0hjkjclls2k2l5a6bwr6bc0vy4366fd8la3wydlz0iavs2vzs"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-jvm/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-jvm-1.4.31.pom": {
-        "sha1": "838a90b9a44c4caa7f3c84325bf60db7bcfd3a2d",
-        "sha256": "0a8zrgbym2h4fi0qp8ndn1rk0lljzzvab838nbsa22ca9wq3a1k7"
-      },
-      "kotlin-scripting-jvm-1.4.31.jar": {
-        "sha1": "90f94e43428b14e99123eea93411d2b8da9aa72c",
-        "sha256": "1apzrjrpixj5nxrgrcqj29qzkqjpl14nky679g4wjfh8bpx0y3gw"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-scripting-jvm/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-scripting-jvm-1.5.20.pom": {
-        "sha1": "f65441190d8659281c877dbd36c37d16536043b3",
-        "sha256": "11x951497d871v8phwsyfw8w105bjw1l7v9xnr35c3wgacn9q36a"
-      },
-      "kotlin-scripting-jvm-1.5.20.jar": {
-        "sha1": "2fc370670110e51e13dc9795c69ba82632b2fffe",
-        "sha256": "0m2w473s614g3cnp9balvms3vj234nnrpm7x0n04rzr0b3zafqps"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-scripting-jvm/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -13904,51 +13127,6 @@
       "kotlin-scripting-jvm-1.6.20.jar": {
         "sha1": "3d6e1b15fb9db1455136c932ade7d9df298c9274",
         "sha256": "02axzmsll5sjmlgnjrhwbkbghriivs33xhnrn27rli96jp620fmm"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-script-runtime/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-script-runtime-1.3.50.pom": {
-        "sha1": "66865d5ba1ee04d5194e38fb7cd247c56db34676",
-        "sha256": "12z9p0wlagggnfjh0lv13pqvbasyakgxkcpkpqs8786kc1lp9anx"
-      },
-      "kotlin-script-runtime-1.3.50.jar": {
-        "sha1": "59492b8dfb92522ba0ddb5dd1c4d0ef0a4fca1af",
-        "sha256": "0k3yzdb7w99p839839279b7v129bp6ln52g7l3hgnah6px90rxvz"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-script-runtime/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-script-runtime-1.4.31.pom": {
-        "sha1": "d74379b5051a6928a5417871683bb8a9ccd0d073",
-        "sha256": "11xk9vjsg41fa4y0j40lv1gsbarkd62lg4npj5gph6n82bvcsyq6"
-      },
-      "kotlin-script-runtime-1.4.31.jar": {
-        "sha1": "183616b52cfb8ddaa8a2a15bf926e87dfcddcde3",
-        "sha256": "1yfk92n3c3y7jsii5fs28bdpwijd0dazjsxwaw9nq9qmhf9zmy5p"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-script-runtime/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-script-runtime-1.5.20.pom": {
-        "sha1": "82e41b11beb62fcb6f852742c8dae7fb9d647fb7",
-        "sha256": "11fvl6avmvz15rmq7v7yppcz7fcqf4py315vybaxqvrcd5mvilz4"
-      },
-      "kotlin-script-runtime-1.5.20.jar": {
-        "sha1": "4381bb58d37b84d4d1afe55ec35542dd9b77e101",
-        "sha256": "03rq6rjn5p89l4yv2y33nyqj1kda6wg7k9fdnnmy8znwjmqlv978"
       }
     }
   },
@@ -14119,21 +13297,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-common-1.4.31.pom": {
-        "sha1": "d954657abc560bd88f1045a5aaa1f9349957ccd7",
-        "sha256": "11ri6m9nqb9ndcglbpcgqqxvmy4r3wy5f5g9na4vpz381c9sp0hm"
-      },
-      "kotlin-stdlib-common-1.4.31.jar": {
-        "sha1": "6dd50665802f54ba9bc3f70ecb20227d1bc81323",
-        "sha256": "02270i5smqqmwbnnk6ny0r92bihjhwm8180qh9knnx0s6x22z5jp"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14159,21 +13322,6 @@
       "kotlin-stdlib-common-1.5.10.jar": {
         "sha1": "06b84d926e28493be69daf673e40076f89492ef7",
         "sha256": "153r7v5annig3bbmyqa6a9yxnrj8h0951fczh9jzi1fspsacwn6r"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-common-1.5.20.pom": {
-        "sha1": "ff9efa52b84c931eae3642ff77c9a280685f328e",
-        "sha256": "1rjvmadqfwijz06a0ps1kcv0k24kw1kwcqf69lwq2hyszr0div28"
-      },
-      "kotlin-stdlib-common-1.5.20.jar": {
-        "sha1": "3d79dbd48bf605f4aac1e7028981a1953e245cbb",
-        "sha256": "0dhx6shmrbkwidvff28kqvwdi5fz4kl5mk9shpird4mz0jc546cq"
       }
     }
   },
@@ -14329,21 +13477,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-jdk7-1.4.31.pom": {
-        "sha1": "09ad248cfa8fe2534a9138aaac3c94a12443031c",
-        "sha256": "06114yfbm6cgb5ygzqmx41kxms4xylh5slhyslipx813pjz54zpn"
-      },
-      "kotlin-stdlib-jdk7-1.4.31.jar": {
-        "sha1": "84ce8e85f6e84270b2b501d44e9f0ba6ff64fa71",
-        "sha256": "0r16ym5biiycxna39njc10jldvpkw02cxzaa07bvgx3cx1a6x5hz"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14384,6 +13517,21 @@
       "kotlin-stdlib-jdk7-1.5.31.jar": {
         "sha1": "77e0f2568912e45d26c31fd417a332458508acdf",
         "sha256": "0py1sypb9rq10f6pzagvwxrk99r1sqbfbpmx7j29v2ffadrz8nx2"
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk7-1.6.20.pom": {
+        "sha1": "4476b8c551258e66dc12bd68eb03159b80c81f63",
+        "sha256": "08dxmrf4aj27jpw7d30szajsqi4g4vrlx2s20f7f51kh4f5dw6w8"
+      },
+      "kotlin-stdlib-jdk7-1.6.20.jar": {
+        "sha1": "f8629f336bad4001c89e9cffa5ef3d4b5d0f5e22",
+        "sha256": "083nsraii88sxb5v3xbq2ck45y01yjdid8kxv66xki2m2gla4bxa"
       }
     }
   },
@@ -14524,6 +13672,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk8-1.6.20.pom": {
+        "sha1": "6207ba2d7a89316eafea7f135ef1fc17e41c424b",
+        "sha256": "02f3lg4hli4s5cnn4zs2g41740l9knyvsa113b3y22sbc3wajihq"
+      },
+      "kotlin-stdlib-jdk8-1.6.20.jar": {
+        "sha1": "dab8089bca6ac0e394c37281ea8cff2f99acd421",
+        "sha256": "159n455n7asx76b14di9ly66pv14q3myk23qdnmygdg243qipazx"
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14534,36 +13697,6 @@
       "kotlin-stdlib-jdk8-1.8.0.jar": {
         "sha1": "ed04f49e186a116753ad70d34f0ac2925d1d8020",
         "sha256": "0ih9j00wliphn4r8wisqc95y5919fg7xbdxn40crl30v8h22idh5"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-jre7/1.2.0",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-jre7-1.2.0.pom": {
-        "sha1": "52d689e2aecf9c5ee2ca40c9512069ea77b4eb06",
-        "sha256": "0j3ka2lfxqxb37dmx4nzm07q88a77yf5wf1mrqs7gayk49y42xr0"
-      },
-      "kotlin-stdlib-jre7-1.2.0.jar": {
-        "sha1": "ec8b969e26fbcf2265a4d1a1539c4d1d4c5af380",
-        "sha256": "09i91z5r1ynll65sa6v61hqkz875q7vaz049zrx7jdyla6whz8n7"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-jre8/1.2.0",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-jre8-1.2.0.pom": {
-        "sha1": "dd37e31bef41f48317214e93134ff54372bad406",
-        "sha256": "0f5c4jjw8rs5jgyjb2d9j6h1nf5nqcj6aq61s7p5cw6546z78ykb"
-      },
-      "kotlin-stdlib-jre8-1.2.0.jar": {
-        "sha1": "505f55b9619bbc5f5e26c77427dd24a6a441eef1",
-        "sha256": "0an8j2wwpx0mapmpl179xqf242kvjbipxaqxrgvl26ggwvp28db3"
       }
     }
   },
@@ -14764,21 +13897,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-1.4.31.pom": {
-        "sha1": "578554985765fe941f4fab7874e27b62dc1918db",
-        "sha256": "0kmxvnhmicmsqc37rpndvh3a26ig8gmqh171gr901rsymkky66c5"
-      },
-      "kotlin-stdlib-1.4.31.jar": {
-        "sha1": "a58e0fb9812a6a93ca24b5da75e4b5a0cb89c957",
-        "sha256": "073zp526a6dx36x9lk3ip9939bf64akxmdkr134qlzhnigc9k9bn"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib/1.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14804,21 +13922,6 @@
       "kotlin-stdlib-1.5.10.jar": {
         "sha1": "da6a904b132f0402fa4d79169a3c1770598d4702",
         "sha256": "0bbj3mc4gfbg54cp3karp6sd646mk6bca0qq3y9n0bizrmac91ya"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-stdlib-1.5.20.pom": {
-        "sha1": "dbfd9bfb8048d59c62978d600dba7187491c5730",
-        "sha256": "0vlir0h87b2vnn2n9s379hvbnkdji778gh2czdqsi47zar7nfxnn"
-      },
-      "kotlin-stdlib-1.5.20.jar": {
-        "sha1": "9de35cc611bcecec8edce1d56d8e659953806751",
-        "sha256": "1a33p9lddzr7hss99nc8wv3967h64sryrq9dg0nxfimcdb17kkc0"
       }
     }
   },
@@ -14899,21 +14002,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-tooling-metadata/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-tooling-metadata-1.5.20.pom": {
-        "sha1": "acfb1eda1864ea68e20c88bd03f6348f4bfcf108",
-        "sha256": "16q5ymmbj5cg56dj6d835hbgc72sfnn7ifac6gkv6m40gl6d1sns"
-      },
-      "kotlin-tooling-metadata-1.5.20.jar": {
-        "sha1": "af29c69d65f98a26fe11910e9d1ecb58e8085d83",
-        "sha256": "0skw9lv4a0yik460ff1b7yr2a40px17wslvml8hlfywjhmcr3ch8"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-tooling-metadata/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14929,51 +14017,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-util-io/1.3.50",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-util-io-1.3.50.pom": {
-        "sha1": "6067fcb474e304327d3e63bf668c1aa57b81c9dc",
-        "sha256": "0wfkcccr37wzavpjni1sqbww7nsn2xxfwsrdqgiks21x0hc1jinh"
-      },
-      "kotlin-util-io-1.3.50.jar": {
-        "sha1": "6fdca94477606c2aa9e46cc6114d01b90b1282ff",
-        "sha256": "0kbhxmmg7qwi9xnnp23bj0cfpm1pv0ab5b2q8ki770gz4yzax7jl"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-util-io/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-util-io-1.4.31.pom": {
-        "sha1": "6ba56a96fd64b7239d55df3c2e88233b00fe65fa",
-        "sha256": "1mi2yba7wvpfhh1cl8kq0xmq70g3q0rcjk3mzxbhh0qqr7b9x5fh"
-      },
-      "kotlin-util-io-1.4.31.jar": {
-        "sha1": "b3c8349cb6c6f1ca2c82013d375ca7148337ee1d",
-        "sha256": "1h2w7a0jidfm3jg5cga05w594349dis23p6kf0fxwplzkwzqx3gg"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-util-io/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-util-io-1.5.20.pom": {
-        "sha1": "5fbe2006510236040586acd130d6589122028f78",
-        "sha256": "0h4x8qhjbcf1zi1ka1ppk17kpcv0sq093zslmsrq29ry0r5zaz8a"
-      },
-      "kotlin-util-io-1.5.20.jar": {
-        "sha1": "f4f6519fc2fc89c7ae7e6b6eb6f53d9e290c05db",
-        "sha256": "1zcyhsg56vkrqjm8bgf1f6klww87c5q45f3w28dpr27ysc0pbswf"
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlin/kotlin-util-io/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -14984,36 +14027,6 @@
       "kotlin-util-io-1.6.20.jar": {
         "sha1": "e8bae8d1093cf3445c97b337cbd3841e69b73c4f",
         "sha256": "0mlspcv9qn7qq4d2wa5fbnqia0l4jwh6vrvvklix033a6zsldbnv"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-util-klib/1.4.31",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-util-klib-1.4.31.pom": {
-        "sha1": "6d810bafc0d153c4ba839a4298da616744be502e",
-        "sha256": "0xzpcsx09j5g9nhgx1l727r6mkvfc1nmfb9bd7cirl0zrjfwfmz1"
-      },
-      "kotlin-util-klib-1.4.31.jar": {
-        "sha1": "2c545be047c9863ff560e292c37d00a68925d289",
-        "sha256": "0vfrdd66j307ln5z0jbpn50p3n7sv13fg3fnibgbd37s7ias3j1b"
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-util-klib/1.5.20",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlin-util-klib-1.5.20.pom": {
-        "sha1": "9e50c25e2f826a7392ad245b0a12735569fcfe27",
-        "sha256": "1zwxz5g5sqy4jqnmf0n5rv9lpzc0mp14w2dr36y5vrfaxiixyjic"
-      },
-      "kotlin-util-klib-1.5.20.jar": {
-        "sha1": "21b9208c962dace2a3449e2e383fad669f1dd05e",
-        "sha256": "1n15yd66sh5ra5xvdmm7lj9dic5nxhr4n9kcx7xsv2l3g5zkbnlw"
       }
     }
   },
@@ -15079,12 +14092,12 @@
   },
 
   {
-    "path": "org/junit/junit-bom/5.9.2",
+    "path": "org/junit/junit-bom/5.9.3",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "junit-bom-5.9.2.pom": {
-        "sha1": "645a08cbe455cad14d8bfb25a35d7f594c53cafd",
-        "sha256": "01gp6mpz7c4vcyrmm0drb05rvdan82d6qiw6d8rzacaihijpvl1f"
+      "junit-bom-5.9.3.pom": {
+        "sha1": "b1874b6a66656e4f5e4b492ab321249bcb749dc7",
+        "sha256": "1mrf6kf0y6bic98n30w8s9gnxykgzv5j8mx1bh745wkjkv6jj0sd"
       }
     }
   },
@@ -15100,6 +14113,21 @@
       "stax-ex-1.7.7.jar": {
         "sha1": "18bed5a0da27a6b43efe01282f2dc911b1cb3a72",
         "sha256": "1d1zh4ymilfc2shm51fcwb7c4i5f6nnmkvkzksqdxh33f7bzf7x3"
+      }
+    }
+  },
+
+  {
+    "path": "org/jvnet/staxex/stax-ex/1.8.1",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "stax-ex-1.8.1.pom": {
+        "sha1": "93132b1ebaf1c419ad3d2216924af39c68f43b51",
+        "sha256": "1mpfaaaa18z67rxb3n860ydacsbzk8ckhr9vi66cx9kdrqv4zj4g"
+      },
+      "stax-ex-1.8.1.jar": {
+        "sha1": "78011e483a21102fb4858f3e8f269a677e50aa23",
+        "sha256": "16h4zczliqh4sxkr82hbpq33v9a75rd482zg6nm517kf0m4jali0"
       }
     }
   },
@@ -15261,6 +14289,17 @@
       "asm-analysis-9.1.jar": {
         "sha1": "4f61b83b81d8b659958f4bcc48907e93ecea55a0",
         "sha256": "0d5yqddg5gwayvg4j31772ap0j3c0jc60r4ri9ddmgmqn50q1a41"
+      }
+    }
+  },
+
+  {
+    "path": "org/ow2/asm/asm-bom/9.5",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "asm-bom-9.5.pom": {
+        "sha1": "2b5d6f54150ef4cbef69c3b09b281353f42e1366",
+        "sha256": "1grm2s0pqc0s2kl79mhbv3l5zcwbgq3z803gh0wbczc3vlsnnxbi"
       }
     }
   },
@@ -15862,6 +14901,17 @@
       "slf4j-parent-2.0.7.pom": {
         "sha1": "3f97e066227cc2353d212b8c43440b0bf4c033f3",
         "sha256": "1rs55v9gqda5lks89dd81frps5c9g3zgxk832qyckw9srlvbp0n1"
+      }
+    }
+  },
+
+  {
+    "path": "org/sonatype/oss/oss-parent/5",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "oss-parent-5.pom": {
+        "sha1": "3ae20880ad3d5da6b1caec19e3de7e70dd2dd762",
+        "sha256": "0g8da9zsimg7drhsnzivb2c874jda96frbii05iqlpaq189d8y0n"
       }
     }
   },
