@@ -105,7 +105,7 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
-(defn max-height
+(defn initialize
   [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
    edit audio]
   (rn/use-effect
@@ -123,7 +123,7 @@
      #(component-will-unmount props))
    [max-height]))
 
-(defn did-mount
+(defn setup-selection
   [{:keys [selectable-input-ref input-ref selection-manager]}]
   (rn/use-effect
    (fn []
