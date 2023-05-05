@@ -17,6 +17,7 @@
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
+    [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
@@ -124,7 +125,10 @@
                             :component button/preview-button}
                            {:name      :dynamic-button
                             :options   {:topBar {:visible true}}
-                            :component dynamic-button/preview-dynamic-button}]
+                            :component dynamic-button/preview-dynamic-button}
+                           {:name      :predictive-keyboard
+                            :options   {:topBar {:visible true}}
+                            :component predictive-keyboard/preview-predictive-keyboard}]
    :code                  [{:name      :snippet
                             :options   {:topBar {:visible true}}
                             :component code-snippet/preview-code-snippet}]
