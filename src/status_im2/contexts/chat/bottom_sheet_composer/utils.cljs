@@ -92,15 +92,6 @@
   (reset! text-value "")
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
 
-(defn update-input
-  [{:keys [input-ref]}
-   {:keys [text-value]}
-   input-text]
-  (when (and input-text (not= @text-value input-text))
-    (reset! text-value input-text)
-    (when @input-ref
-      (.setNativeProps ^js @input-ref (clj->js {:text input-text})))))
-
 (defn count-lines
   [s]
   (-> s
