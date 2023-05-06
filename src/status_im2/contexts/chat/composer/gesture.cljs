@@ -1,10 +1,10 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.gesture
+(ns status-im2.contexts.chat.composer.gesture
   (:require
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
     [oops.core :as oops]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
-    [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
+    [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.utils :as utils]
     [utils.re-frame :as rf]))
 
 (defn set-opacity
@@ -35,10 +35,12 @@
   (rf/dispatch [:chat.ui/set-input-maximized true]))
 
 (defn minimize
-  [{:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}]
+  [{:keys [maximized?]}
+   {:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}]
   (when @emoji-kb-extra-height
     (reset! saved-emoji-kb-extra-height @emoji-kb-extra-height)
     (reset! emoji-kb-extra-height nil))
+  (reset! maximized? false)
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (when @input-ref
     (.blur ^js @input-ref)))
@@ -78,17 +80,22 @@
                              (let [translation (oops/oget event "translationY")
                                    min-height  (utils/get-min-height lines)
                                    new-height  (- (reanimated/get-shared-value saved-height) translation)
-                                   new-height  (utils/bounded-val new-height min-height max-height)]
+                                   bounded-height  (utils/bounded-val new-height min-height max-height)]
                                (when keyboard-shown
-                                 (reanimated/set-shared-value height new-height)
-                                 (set-opacity (oops/oget event "velocityY")
-                                              opacity
-                                              translation
-                                              @expanding?
-                                              min-height
-                                              max-height
-                                              new-height
-                                              saved-height)))))
+                                 (println new-height min-height)
+                                 (if (> new-height min-height)
+                                   (do ; expand sheet
+                                     (reanimated/set-shared-value height bounded-height)
+                                     (set-opacity (oops/oget event "velocityY")
+                                                  opacity
+                                                  translation
+                                                  @expanding?
+                                                  min-height
+                                                  max-height
+                                                  bounded-height
+                                                  saved-height))
+                                   (when @input-ref ; sheet at min-height, collapse keyboard
+                                     (.blur ^js @input-ref)))))))
         (gesture/on-end (fn []
                           (let [diff (- (reanimated/get-shared-value height)
                                         (reanimated/get-shared-value saved-height))]
@@ -98,6 +105,6 @@
                                   (maximize state animations dimensions)
                                   (bounce-back animations dimensions starting-opacity))
                                 (if (> (Math/abs diff) constants/drag-threshold)
-                                  (minimize props)
+                                  (minimize state props)
                                   (bounce-back animations dimensions starting-opacity)))
                               (reset! gesture-enabled? true))))))))

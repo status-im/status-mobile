@@ -1,10 +1,10 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.utils
+(ns status-im2.contexts.chat.composer.utils
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as constants]
     [utils.re-frame :as rf]))
 
 (defn bounded-val

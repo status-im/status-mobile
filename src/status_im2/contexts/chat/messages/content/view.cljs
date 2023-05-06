@@ -18,6 +18,7 @@
             [quo2.core :as quo]
             [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im2.contexts.chat.composer.reply.view :as reply]
             [status-im2.common.not-implemented :as not-implemented]
             [utils.datetime :as datetime]
             [reagent.core :as reagent]
@@ -109,7 +110,7 @@
           :on-long-press       #(on-long-press message-data context)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
-            [old-message/quoted-message quoted-message])
+            [reply/reply-message quoted-message])
           [rn/view
            {:style {:padding-horizontal 12
                     :flex-direction     :row}}

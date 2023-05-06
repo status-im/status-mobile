@@ -1,13 +1,13 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.handlers
+(ns status-im2.contexts.chat.composer.handlers
   (:require
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [oops.core :as oops]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
-    [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
-    [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
-    [status-im2.contexts.chat.bottom-sheet-composer.selection :as selection]
+    [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.keyboard :as kb]
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [status-im2.contexts.chat.composer.selection :as selection]
     [utils.re-frame :as rf]))
 
 (defn focus
@@ -56,7 +56,8 @@
     (reset! saved-cursor-position @cursor-position)
     (reset! gradient-z-index (if (= (reanimated/get-shared-value gradient-opacity) 1) -1 0))
     (when (not= reopen-height max-height)
-      (reset! maximized? false))))
+      (reset! maximized? false)
+      (rf/dispatch [:chat.ui/set-input-maximized false]))))
 
 (defn content-size-change
   [event
@@ -126,7 +127,6 @@
       (reset! cursor-position end))
     (when (and selection? (not @first-level))
       (js/setTimeout #(oops/ocall selection-manager :startActionMode text-input-handle) 500))
-
     (when (and (not selection?) (not @first-level))
       (oops/ocall selection-manager :hideLastActionMode)
       (selection/reset-to-first-level-menu first-level menu-items))

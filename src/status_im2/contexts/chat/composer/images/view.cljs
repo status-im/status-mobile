@@ -1,11 +1,11 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.images.view
+(ns status-im2.contexts.chat.composer.images.view
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.bottom-sheet-composer.images.style :as style]
+            [status-im2.contexts.chat.composer.images.style :as style]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
+            [status-im2.contexts.chat.composer.constants :as constants]))
 
 (defn image
   [item]

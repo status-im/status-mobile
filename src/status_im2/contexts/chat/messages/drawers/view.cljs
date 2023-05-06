@@ -2,7 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.ui.components.react :as react]
-            [status-im2.contexts.chat.bottom-sheet-composer.reply.view :as reply]
+            [status-im2.contexts.chat.composer.reply.view :as reply]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]

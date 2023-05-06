@@ -1,15 +1,15 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.mentions.view
+(ns status-im2.contexts.chat.composer.mentions.view
   (:require
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
+    [status-im2.contexts.chat.composer.utils :as utils]
     [utils.re-frame :as rf]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.common.contact-list-item.view :as contact-list-item]
-    [status-im2.contexts.chat.bottom-sheet-composer.mentions.style :as style]))
+    [status-im2.contexts.chat.composer.mentions.style :as style]))
 
 (defn update-cursor
   [user {:keys [cursor-position input-ref]}]

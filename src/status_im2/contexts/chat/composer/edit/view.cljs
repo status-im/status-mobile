@@ -1,13 +1,13 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.edit.view
+(ns status-im2.contexts.chat.composer.edit.view
   (:require
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as constants]
     [utils.i18n :as i18n]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [re-frame.core :as rf]
     [react-native.core :as rn]
-    [status-im2.contexts.chat.bottom-sheet-composer.edit.style :as style]))
+    [status-im2.contexts.chat.composer.edit.style :as style]))
 
 (defn edit-message
   [cancel]

@@ -34,9 +34,12 @@
   "Set input text for current-chat. Takes db and input text and cofx
          as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
-  [{db :db} new-input chat-id]
+  [{:keys [db] :as cofx} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
+    (rf/merge cofx
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}
+    (when-not new-input
+      (mentions/clear-mentions)))))
 
 (rf/defn set-input-content-height
   {:events [:chat.ui/set-input-content-height]}
