@@ -98,9 +98,9 @@
   [{:keys [db]} result]
   (log/debug "[mentions] on-to-input-field-success" {:result result})
   (let [{:keys [input-segments state chat-id new-text]} (transfer-mention-result result)]
-    {:db                   (-> db
-                               (assoc-in [:chats/mentions chat-id :mentions] state)
-                               (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+    {:db (-> db
+             (assoc-in [:chats/mentions chat-id :mentions] state)
+             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
 (rf/defn on-change-text
   {:events [:mention/on-change-text]}

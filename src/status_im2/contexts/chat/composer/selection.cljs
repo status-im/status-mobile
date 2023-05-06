@@ -23,20 +23,20 @@
 
 (defn update-selection
   [text-input-handle selection-start selection-end]
-  ;to avoid something like this
-  ;https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
-  ;use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
-  ;{:selection {:start selection-start :end selection-end}}))
+  ;; to avoid something like this
+  ;; https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
+  ;; use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
+  ;; {:selection {:start selection-start :end selection-end}}))
   (let [manager (rn/selectable-text-input-manager)]
-    (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
+    (oops/ocall manager :set-selection text-input-handle selection-start selection-end)))
 
 (defn reset-to-first-level-menu
-  [first-level menu-items]
-  (reset! first-level true)
+  [first-level? menu-items]
+  (reset! first-level? true)
   (reset! menu-items first-level-menu-items))
 
 (defn append-markdown-char
-  [{:keys [first-level menu-items content selection-start selection-end text-input-handle
+  [{:keys [first-level? menu-items content selection-start selection-end text-input-handle
            selection-event]
     :as   params} wrap-chars]
   (let [content         (str wrap-chars content wrap-chars)
@@ -44,13 +44,13 @@
         len-wrap-chars  (count wrap-chars)
         selection-start (+ selection-start len-wrap-chars)
         selection-end   (+ selection-end len-wrap-chars)]
-    ;don't update selection directly here, process it within on-selection-change instead
-    ;so that we can avoid java.lang.IndexOutOfBoundsException: setSpan..
+    ;; don't update selection directly here, process it within on-selection-change instead
+    ;; so that we can avoid java.lang.IndexOutOfBoundsException: setSpan..
     (reset! selection-event {:start             selection-start
                              :end               selection-end
                              :text-input-handle text-input-handle})
     (update-input-text params new-text)
-    (reset-to-first-level-menu first-level menu-items)))
+    (reset-to-first-level-menu first-level? menu-items)))
 
 (def first-level-menus
   {:cut               (fn [{:keys [content] :as params}]
@@ -68,9 +68,9 @@
                                            (update-input-text params new-text)))]
                           (clipboard/get-string callback)))
 
-   :biu               (fn [{:keys [first-level text-input-handle menu-items selection-start
+   :biu               (fn [{:keys [first-level? text-input-handle menu-items selection-start
                                    selection-end]}]
-                        (reset! first-level false)
+                        (reset! first-level? false)
                         (reset! menu-items second-level-menu-items)
                         (update-selection text-input-handle selection-start selection-end))})
 
@@ -85,8 +85,8 @@
 (def second-level-menu-items (map i18n/label (keys second-level-menus)))
 
 (defn on-menu-item-touched
-  [{:keys [first-level event-type] :as params}]
-  (let [menus         (if @first-level first-level-menus second-level-menus)
+  [{:keys [first-level? event-type] :as params}]
+  (let [menus         (if @first-level? first-level-menus second-level-menus)
         menu-item-key (nth (keys menus) event-type)
         action        (get menus menu-item-key)]
     (action params)))
@@ -94,13 +94,11 @@
 (defn on-selection
   [event
    {:keys [input-ref selection-event]}
-   {:keys [first-level menu-items]}]
-  (let [native-event           (.-nativeEvent event)
-        native-event           (transforms/js->clj native-event)
-        {:keys [eventType content selectionStart
-                selectionEnd]} native-event
+   {:keys [first-level? menu-items]}]
+  (let [{:strs [eventType content selectionStart
+                selectionEnd]} (js->clj (oops/oget event "nativeEvent"))
         full-text              (:input-text (rf/sub [:chats/current-chat-input]))]
-    (on-menu-item-touched {:first-level       first-level
+    (on-menu-item-touched {:first-level?      first-level?
                            :event-type        eventType
                            :content           content
                            :selection-start   selectionStart

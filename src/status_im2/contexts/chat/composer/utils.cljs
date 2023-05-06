@@ -83,12 +83,7 @@
   (or (> lines 1) (seq images) reply? edit?))
 
 (defn cancel-edit-message
-  [{:keys [text-value maximized?]}
-   {:keys [height saved-height last-height]}]
-  (when-not @maximized?
-    (reanimated/animate height constants/input-height)
-    (reanimated/set-shared-value saved-height constants/input-height)
-    (reanimated/set-shared-value last-height constants/input-height))
+  [{:keys [text-value]}]
   (reset! text-value "")
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
 
