@@ -16,12 +16,6 @@
    public-key))
 
 (re-frame/reg-sub
- :multiaccount/key-uid
- :<- [:multiaccount]
- (fn [{:keys [key-uid]}]
-   key-uid))
-
-(re-frame/reg-sub
  :multiaccount/contact
  :<- [:multiaccount]
  (fn [current-account]

@@ -48,7 +48,6 @@
 
 (defn home
   []
-<<<<<<< HEAD
   (fn []
     (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
           {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
@@ -88,48 +87,3 @@
                             (rf/dispatch [:communities/select-tab tab]))
           :default-active selected-tab
           :data           tabs-data}]]])))
-=======
-  (let [selected-tab (reagent/atom :joined)]
-    (fn []
-      (let [{:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-            color                 (rf/sub [:profile/customization-color])
-            selected-items                  (case @selected-tab
-                                              :joined  joined
-                                              :pending pending
-                                              :opened  opened)
-            top                             (safe-area/get-top)]
-        [:<>
-         (js/console.log (str "customization color " color))
-         (if (empty? selected-items) 
-           [empty-state]
-           [rn/flat-list
-            {:key-fn                            :id
-             :content-inset-adjustment-behavior :never
-             :header                            [rn/view {:height (+ 245 top)}]
-             :render-fn                         item-render
-             :data                              selected-items}])
-         [rn/view
-          {:style (style/blur-container top)}
-          [blur/view
-           {:blur-amount (if platform/ios? 20 10)
-            :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-            :style       style/blur}]
-          [common.home/top-nav 
-           {:type   :grey }]
-          [common.home/title-column
-           {:label               (i18n/label :t/communities)
-            :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
-            :accessibility-label :new-chat-button
-            :customization-color color}]
-          [quo/discover-card
-           {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-            :title               (i18n/label :t/discover)
-            :description         (i18n/label :t/favorite-communities)
-            :accessibility-label :communities-home-discover-card}]
-          [quo/tabs
-           {:size           32
-            :style          style/tabs
-            :on-change      #(reset! selected-tab %)
-            :default-active @selected-tab
-            :data           tabs-data}]]]))))
->>>>>>> cf8e69efb (removed green border color on status indicator)

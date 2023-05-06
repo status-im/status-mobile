@@ -34,7 +34,7 @@
      description]]])
 
 (defn discover-card
-  [{:keys [title description on-press accessibility-label]}]
+  [{:keys [title description on-press accessibility-label screen]}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
@@ -51,5 +51,7 @@
     [card-title-and-description title description]
     [rn/image
      {:style               style/discover-illustration
-      :source              (resources/get-image :discover)
+      :source              (resources/get-image (if (= screen :communities)
+                                                  :discover
+                                                  :invite-friends))
       :accessibility-label :discover-communities-illustration}]]])

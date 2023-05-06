@@ -59,8 +59,8 @@
 
 (defn inner-dot
   [size online?]
-  (let [background   (if online? colors/success-50 colors/neutral-40)
-        dimensions   (get-in sizes [size :status-indicator])]
+  (let [background (if online? colors/success-50 colors/neutral-40)
+        dimensions (get-in sizes [size :status-indicator])]
     {:width            (- dimensions 4)
      :height           (- dimensions 4)
      :border-radius    (- dimensions 4)

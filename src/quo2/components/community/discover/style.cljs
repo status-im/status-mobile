@@ -17,6 +17,6 @@
 
 
 (def discover-illustration
-  {:position   :absolute
-   :top        -4
-   :right      0})
+  {:position :absolute
+   :top      -4
+   :right    0})

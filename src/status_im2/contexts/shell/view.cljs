@@ -113,17 +113,18 @@
 (defn f-shell-stack
   []
   (let [shared-values       (animation/calculate-shared-values)
-        profile-color       (:color (rf/sub [:onboarding-2/profile]))]
+        {:keys [key-uid]}   (rf/sub [:multiaccount])
+        customization-color (rf/sub [:profile/customization-color key-uid])]
     [rn/view
      {:style {:flex 1}}
      [shell]
      [bottom-tabs/bottom-tabs]
      [:f> home-stack/f-home-stack]
      [quo/floating-shell-button
-      {:jump-to {:on-press #(animation/close-home-stack true)
-                 :label    (i18n/label :t/jump-to)
-                 :customization-color profile-color}}
-      {:position :absolute 
+      {:jump-to {:on-press            #(animation/close-home-stack true)
+                 :label               (i18n/label :t/jump-to)
+                 :customization-color customization-color}}
+      {:position :absolute
        :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
                                                                        ;; 5(padding on button)
       (:home-stack-opacity shared-values)]]))

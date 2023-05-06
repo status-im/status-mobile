@@ -19,8 +19,8 @@
    :keycard-chip-light            (js/require "../resources/images/ui2/keycard-chip-light.png")
    :keycard-chip-dark             (js/require "../resources/images/ui2/keycard-chip-dark.png")
    :keycard-watermark             (js/require "../resources/images/ui2/keycard-watermark.png")
-   :qr-code                       (js/require "../resources/images/ui2/qr-code.png") 
-   :discover                (js/require "../resources/images/ui2/discover.png")})
+   :discover                      (js/require "../resources/images/ui2/discover.png")
+   :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")})
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")

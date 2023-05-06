@@ -101,10 +101,19 @@
 (defn home
   []
   (fn []
+<<<<<<< HEAD
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
           selected-tab             (or (rf/sub [:messages-home/selected-tab])
                                        :tab/recent)
           top                      (safe-area/get-top)]
+=======
+    (let [pending-contact-requests     (rf/sub [:activity-center/pending-contact-requests])
+          selected-tab                 (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+          {:keys [public-key key-uid]} (rf/sub [:multiaccount])
+          photo-path                   (rf/sub [:chats/photo-path public-key])
+          customization-color          (rf/sub [:profile/customization-color key-uid])
+          top                          (safe-area/get-top)]
+>>>>>>> 936821677 (added accent color to plus button and jump-to button)
       [:<>
        (if (= selected-tab :tab/contacts)
          [contacts pending-contact-requests top]
@@ -115,13 +124,18 @@
          {:blur-amount (if platform/ios? 20 10)
           :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
           :style       style/blur}]
-        [common.home/top-nav]
+        [common.home/top-nav
+         {:type   :grey
+          :avatar {:profile-picture     photo-path
+                   :customization-color customization-color}}]
         [common.home/title-column
          {:label               (i18n/label :t/messages)
           :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])
-          :accessibility-label :new-chat-button}]
+          :accessibility-label :new-chat-button
+          :customization-color customization-color}]
         [quo/discover-card
-         {:title       (i18n/label :t/invite-friends-to-status)
+         {:screen      :messages
+          :title       (i18n/label :t/invite-friends-to-status)
           :description (i18n/label :t/share-invite-link)}]
         ^{:key (str "tabs-" selected-tab)}
         [quo/tabs
