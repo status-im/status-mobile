@@ -46,29 +46,16 @@
                                                                         edit)
         lines                                    (utils/calc-lines @content-height)
         max-lines                                (utils/calc-lines max-height)
-        initial-height                           (if (> lines 1)
-                                                   constants/multiline-minimized-height
-                                                   constants/input-height)
-        animations                               {:gradient-opacity  (reanimated/use-shared-value 0)
-                                                  :container-opacity (reanimated/use-shared-value
-                                                                      (if (utils/empty-input?
-                                                                           input-text
-                                                                           images
-                                                                           reply
-                                                                           audio)
-                                                                        0.7
-                                                                        1))
-                                                  :height            (reanimated/use-shared-value
-                                                                      initial-height)
-                                                  :saved-height      (reanimated/use-shared-value
-                                                                      initial-height)
-                                                  :last-height       (reanimated/use-shared-value
-                                                                      (utils/bounded-val
-                                                                       @content-height
-                                                                       constants/input-height
-                                                                       max-height))
-                                                  :opacity           opacity
-                                                  :background-y      background-y}
+        animations                               (utils/init-animations
+                                                  lines
+                                                  input-text
+                                                  images
+                                                  reply
+                                                  audio
+                                                  content-height
+                                                  max-height
+                                                  opacity
+                                                  background-y)
         dimensions                               {:content-height content-height
                                                   :max-height     max-height
                                                   :window-height  window-height
@@ -148,34 +135,8 @@
                        :blur-height   blur-height
                        :opacity       opacity
                        :background-y  background-y}
-        props         {:input-ref                   (atom nil)
-                       :selectable-input-ref        (atom nil)
-                       :keyboard-show-listener      (atom nil)
-                       :keyboard-frame-listener     (atom nil)
-                       :keyboard-hide-listener      (atom nil)
-                       :emoji-kb-extra-height       (atom nil)
-                       :saved-emoji-kb-extra-height (atom nil)
-                       :replying?                   (atom false)
-                       :sending-images?             (atom false)
-                       :editing?                    (atom false)
-                       :record-permission?          (atom false)
-                       :record-reset-fn             (atom nil)
-                       :scroll-y                    (atom 0)
-                       :selection-event             (atom nil)
-                       :selection-manager           (rn/selectable-text-input-manager)}
-        state         {:text-value            (reagent/atom "")
-                       :cursor-position       (reagent/atom 0)
-                       :saved-cursor-position (reagent/atom 0)
-                       :gradient-z-index      (reagent/atom 0)
-                       :kb-default-height     (reagent/atom nil)
-                       :gesture-enabled?      (reagent/atom true)
-                       :lock-selection?       (reagent/atom true)
-                       :focused?              (reagent/atom false)
-                       :lock-layout?          (reagent/atom false)
-                       :maximized?            (reagent/atom false)
-                       :recording?            (reagent/atom false)
-                       :first-level?          (reagent/atom true)
-                       :menu-items            (reagent/atom selection/first-level-menu-items)}]
+        props         (utils/init-props)
+        state         (utils/init-state)]
     [rn/view
      [reanimated/view {:style (style/background opacity background-y window-height)}]
      [sub-view/blur-view blur-height]

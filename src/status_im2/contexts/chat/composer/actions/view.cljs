@@ -45,7 +45,6 @@
            z-index     (reagent/atom 0)]
        [:f>
         (fn []
-          (println "qqq " (not-empty @text-value) images?)
           (rn/use-effect (fn []
                            (if (or (not-empty @text-value) images?)
                              (when-not (= @z-index 1)

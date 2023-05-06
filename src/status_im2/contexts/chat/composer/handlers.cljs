@@ -65,15 +65,12 @@
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
-  (println "content0")
   (when keyboard-shown
-    (println "content1")
     (let [content-size (+ (oops/oget event "nativeEvent.contentSize.height")
                           constants/extra-content-offset)
           new-height   (utils/bounded-val content-size constants/input-height max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
-        (println "content2" (reanimated/get-shared-value height) new-height)
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
@@ -107,7 +104,6 @@
   [text
    {:keys [input-ref record-reset-fn]}
    {:keys [text-value cursor-position recording?]}]
-  (println "change-text")
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref

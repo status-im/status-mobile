@@ -26,7 +26,6 @@
    {:keys [max-height]}
    {:keys [input-content-height]}]
   (when (or @maximized? (>= input-content-height max-height))
-    (println "maximized effet " max-height)
     (reanimated/animate height max-height)
     (reanimated/set-shared-value saved-height max-height)
     (reanimated/set-shared-value last-height max-height)))
@@ -48,7 +47,6 @@
    {:keys [max-height]}
    {:keys [input-content-height]}]
   (when (or @maximized? (>= input-content-height (* max-height constants/background-threshold)))
-    (println "BACKGROUND EFFECT")
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
 
