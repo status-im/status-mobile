@@ -57,10 +57,18 @@
 (def initials-avatar-text
   {:color colors/white-opa-70})
 
-(defn dot
-  [size online? ring?]
+(defn inner-dot
+  [size online?]
   (let [background   (if online? colors/success-50 colors/neutral-40)
-        dimensions   (get-in sizes [size :status-indicator])
+        dimensions   (get-in sizes [size :status-indicator])]
+    {:width            (- dimensions 4)
+     :height           (- dimensions 4)
+     :border-radius    (- dimensions 4)
+     :background-color background}))
+
+(defn dot
+  [size ring?]
+  (let [dimensions   (get-in sizes [size :status-indicator])
         border-width (get-in sizes [size :status-indicator-border])
         right        (case size
                        :big    2
@@ -73,11 +81,13 @@
                        :small  -2
                        0)]
     {:position         :absolute
+     :justify-content  :center
+     :align-items      :center
      :bottom           bottom
      :right            right
      :width            dimensions
      :height           dimensions
      :border-width     border-width
      :border-radius    dimensions
-     :border-color     (colors/theme-colors colors/white colors/neutral-100)
-     :background-color background}))
+     :background-color (colors/theme-colors colors/white colors/neutral-100)
+     :border-color     (colors/theme-colors colors/white colors/neutral-100)}))

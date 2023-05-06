@@ -62,4 +62,7 @@
      (when status-indicator?
        [rn/view
         {:accessibility-label :status-indicator
-         :style               (style/dot size online? draw-ring?)}])]))
+         :style               (style/dot size draw-ring?)}
+        [rn/view
+         {:accessibility-label :inner-status-indicator-dot
+          :style               (style/inner-dot size online?)}]])]))
