@@ -46,17 +46,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                                  (dec (oops/oget evt "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                            (dec (oops/oget evt "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -106,15 +106,11 @@
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
 (defn calc-shell-position
-  [y]
-  (let [{:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
-        reply  (rf/sub [:chats/reply-message])
-        edit   (rf/sub [:chats/edit-message])
-        images (rf/sub [:chats/sending-image])
-        lines  (utils/calc-lines input-content-height)
-        base   (if reply (- composer.constants/reply-container-height) 0)
-        base   (if edit (- composer.constants/edit-container-height) base)
-        base   (if (seq images) (- composer.constants/images-container-height) base)]
+  [y {:keys [input-content-height focused?]} reply edit images]
+  (let [lines (utils/calc-lines input-content-height)
+        base  (if reply (- composer.constants/reply-container-height) 0)
+        base  (if edit (- composer.constants/edit-container-height) base)
+        base  (if (seq images) (- composer.constants/images-container-height) base)]
     (if (not focused?)
       (if (> lines 1) (+ -18 base) base)
       (if (> lines 12)
@@ -124,28 +120,31 @@
 (defn shell-button
   [insets]
   (let [y              (reanimated/use-shared-value 0)
-        shell-position (calc-shell-position y)]
+        chat-input     (rf/sub [:chats/current-chat-input])
+        reply          (rf/sub [:chats/reply-message])
+        edit           (rf/sub [:chats/edit-message])
+        images         (rf/sub [:chats/sending-image])
+        shell-position (calc-shell-position y chat-input reply edit images)]
     (rn/use-effect (fn []
                      (reanimated/animate y shell-position))
                    [shell-position])
     [reanimated/view
      {:style (reanimated/apply-animations-to-style
-               {:transform [{:translate-y y}]}
-               {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
-                :position :absolute
-                :left     0
-                :right    0})}
+              {:transform [{:translate-y y}]}
+              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
+               :position :absolute
+               :left     0
+               :right    0})}
      [quo/floating-shell-button
       (merge {:jump-to
-              {:on-press #(do
-                            (rf/dispatch [:chat/close true])
-                            (rf/dispatch [:shell/navigate-to-jump-to]))
+              {:on-press (fn []
+                           (rf/dispatch [:chat/close true])
+                           (rf/dispatch [:shell/navigate-to-jump-to]))
                :label    (i18n/label :t/jump-to)
                :style    {:align-self :center}}}
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
       {}]]))
-
 
 (defn messages-list-content
   [{:keys [chat-id] :as chat} insets keyboard-shown]
@@ -185,7 +184,8 @@
          :on-layout                    on-messages-view-layout}]
        [:f> shell-button insets]])))
 
-;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown value
+;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown
+;; value
 ;; updates in the parent component, but does not get passed to the children.
 ;; When using listeners and resetting the value on an atom it works.
 (defn use-keyboard-visibility
@@ -194,14 +194,14 @@
         hide-listener (atom nil)
         shown?        (atom nil)]
     (rn/use-effect
-      (fn []
-        (reset! show-listener
-                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-        (reset! hide-listener
-                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-        (fn []
-          (.remove ^js @show-listener)
-          (.remove ^js @hide-listener))))
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn- f-messages-list

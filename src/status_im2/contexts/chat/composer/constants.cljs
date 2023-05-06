@@ -34,3 +34,5 @@
 (def ^:const background-threshold 0.75)
 
 (def ^:const line-height (:line-height typography/paragraph-1))
+
+(def ^:const max-text-size 4096)

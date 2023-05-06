@@ -65,12 +65,15 @@
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
+  (println "content0")
   (when keyboard-shown
+    (println "content1")
     (let [content-size (+ (oops/oget event "nativeEvent.contentSize.height")
                           constants/extra-content-offset)
           new-height   (utils/bounded-val content-size constants/input-height max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
+        (println "content2" (reanimated/get-shared-value height) new-height)
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
@@ -104,6 +107,7 @@
   [text
    {:keys [input-ref record-reset-fn]}
    {:keys [text-value cursor-position recording?]}]
+  (println "change-text")
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref
@@ -118,18 +122,18 @@
 (defn selection-change
   [event
    {:keys [input-ref selection-event selection-manager]}
-   {:keys [lock-selection? cursor-position first-level menu-items]}]
+   {:keys [lock-selection? cursor-position first-level? menu-items]}]
   (let [start             (oops/oget event "nativeEvent.selection.start")
         end               (oops/oget event "nativeEvent.selection.end")
         selection?        (not= start end)
         text-input-handle (rn/find-node-handle @input-ref)]
     (when-not @lock-selection?
       (reset! cursor-position end))
-    (when (and selection? (not @first-level))
+    (when (and selection? (not @first-level?))
       (js/setTimeout #(oops/ocall selection-manager :startActionMode text-input-handle) 500))
-    (when (and (not selection?) (not @first-level))
+    (when (and (not selection?) (not @first-level?))
       (oops/ocall selection-manager :hideLastActionMode)
-      (selection/reset-to-first-level-menu first-level menu-items))
+      (selection/reset-to-first-level-menu first-level? menu-items))
     (when @selection-event
       (let [{:keys [start end text-input-handle]} @selection-event]
         (selection/update-selection text-input-handle start end)

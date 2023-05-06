@@ -37,9 +37,9 @@
   [{:keys [db] :as cofx} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     (rf/merge cofx
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}
-    (when-not new-input
-      (mentions/clear-mentions)))))
+              {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}
+              (when (empty? new-input)
+                (mentions/clear-mentions)))))
 
 (rf/defn set-input-content-height
   {:events [:chat.ui/set-input-content-height]}
@@ -101,19 +101,19 @@
                         :sending-image))}))
 
 (rf/defn edit-message
-         "Sets reference to previous chat message and focuses on input"
-         {:events [:chat.ui/edit-message]}
-         [{:keys [db] :as cofx} message]
-         (let [current-chat-id (:current-chat-id db)
-               text            (get-in message [:content :text])]
-           {:db (-> db
-                    (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                              message)
-                    (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                    (update-in [:chat/inputs current-chat-id :metadata]
-                               dissoc
-                               :sending-image))
-            :dispatch  [:mention/to-input-field text current-chat-id]}))
+  "Sets reference to previous chat message and focuses on input"
+  {:events [:chat.ui/edit-message]}
+  [{:keys [db] :as cofx} message]
+  (let [current-chat-id (:current-chat-id db)
+        text            (get-in message [:content :text])]
+    {:db       (-> db
+                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                             message)
+                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                   (update-in [:chat/inputs current-chat-id :metadata]
+                              dissoc
+                              :sending-image))
+     :dispatch [:mention/to-input-field text current-chat-id]}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"

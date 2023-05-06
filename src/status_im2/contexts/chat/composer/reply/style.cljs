@@ -3,10 +3,10 @@
 
 (defn container
   [pin? in-chat-input?]
-  {:flex-direction      :row
-   :height              (when-not pin? 24)
-   :margin-left (when-not in-chat-input? 26)
-   :margin-bottom (when-not in-chat-input? 8)})
+  {:flex-direction :row
+   :height         (when-not pin? 24)
+   :margin-left    (when-not in-chat-input? 26)
+   :margin-bottom  (when-not in-chat-input? 8)})
 (defn reply-content
   [pin?]
   {:padding-right  (when-not pin? 10)
