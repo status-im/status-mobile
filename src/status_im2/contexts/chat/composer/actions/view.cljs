@@ -45,6 +45,7 @@
            z-index     (reagent/atom 0)]
        [:f>
         (fn []
+          (println "qqq " (not-empty @text-value) images?)
           (rn/use-effect (fn []
                            (if (or (not-empty @text-value) images?)
                              (when-not (= @z-index 1)
@@ -174,7 +175,7 @@
    :i/format])
 
 (defn view
-  [props state animations window-height insets images? audio]
+  [props state animations window-height insets edit? images?]
   [rn/view {:style style/actions-container}
    [rn/view
     {:style {:flex-direction :row
@@ -184,4 +185,5 @@
     [reaction-button]
     [format-button]]
    [send-button state animations window-height images?]
-   [audio-button props state animations audio]])
+   (when (and (not edit?) (not images?))
+     [audio-button props state animations])])

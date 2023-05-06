@@ -86,7 +86,7 @@
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
     [rn/view
-     {:style (style/container pin? in-chat-input?)
+     {:style               (style/container pin? in-chat-input?)
       :accessibility-label :reply-message}
      [rn/view {:style (style/reply-content pin?)}
       (when-not pin?

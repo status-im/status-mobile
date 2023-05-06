@@ -76,26 +76,28 @@
                               (do ; else, will start gesture
                                 (reanimated/set-shared-value background-y 0)
                                 (reset! expanding? (neg? (oops/oget event "velocityY")))))))
-        (gesture/on-update (fn [event]
-                             (let [translation (oops/oget event "translationY")
-                                   min-height  (utils/get-min-height lines)
-                                   new-height  (- (reanimated/get-shared-value saved-height) translation)
-                                   bounded-height  (utils/bounded-val new-height min-height max-height)]
-                               (when keyboard-shown
-                                 (println new-height min-height)
-                                 (if (> new-height min-height)
-                                   (do ; expand sheet
-                                     (reanimated/set-shared-value height bounded-height)
-                                     (set-opacity (oops/oget event "velocityY")
-                                                  opacity
-                                                  translation
-                                                  @expanding?
-                                                  min-height
-                                                  max-height
-                                                  bounded-height
-                                                  saved-height))
-                                   (when @input-ref ; sheet at min-height, collapse keyboard
-                                     (.blur ^js @input-ref)))))))
+        (gesture/on-update
+         (fn [event]
+           (let [translation    (oops/oget event "translationY")
+                 min-height     (utils/get-min-height lines)
+                 new-height     (- (reanimated/get-shared-value saved-height) translation)
+                 bounded-height (utils/bounded-val new-height min-height max-height)]
+             (when keyboard-shown
+               (println new-height min-height)
+               (if (> new-height min-height)
+                 (do ; expand sheet
+                   (println "wtff")
+                   (reanimated/set-shared-value height bounded-height)
+                   (set-opacity (oops/oget event "velocityY")
+                                opacity
+                                translation
+                                @expanding?
+                                min-height
+                                max-height
+                                bounded-height
+                                saved-height))
+                 (when @input-ref ; sheet at min-height, collapse keyboard
+                   (.blur ^js @input-ref)))))))
         (gesture/on-end (fn []
                           (let [diff (- (reanimated/get-shared-value height)
                                         (reanimated/get-shared-value saved-height))]

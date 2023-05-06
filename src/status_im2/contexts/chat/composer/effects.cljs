@@ -26,6 +26,7 @@
    {:keys [max-height]}
    {:keys [input-content-height]}]
   (when (or @maximized? (>= input-content-height max-height))
+    (println "maximized effet " max-height)
     (reanimated/animate height max-height)
     (reanimated/set-shared-value saved-height max-height)
     (reanimated/set-shared-value last-height max-height)))
@@ -110,32 +111,36 @@
   [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
    edit audio]
   (rn/use-effect
-    (fn []
-      (maximized-effect state animations dimensions chat-input)
-      (reenter-screen-effect state dimensions chat-input)
-      (layout-effect state)
-      (kb-default-height-effect state)
-      (background-effect state animations dimensions chat-input)
-      (images-or-reply-effect animations props images? reply?)
-      (edit-effect state props edit)
-      (audio-effect state animations audio)
-      (empty-effect state animations images? reply? audio)
-      (kb/add-kb-listeners props state animations dimensions keyboard-height)
-      #(component-will-unmount props))
-    [max-height]))
+   (fn []
+     (maximized-effect state animations dimensions chat-input)
+     (reenter-screen-effect state dimensions chat-input)
+     (layout-effect state)
+     (kb-default-height-effect state)
+     (background-effect state animations dimensions chat-input)
+     (images-or-reply-effect animations props images? reply?)
+     (edit-effect state props edit)
+     (audio-effect state animations audio)
+     (empty-effect state animations images? reply? audio)
+     (kb/add-kb-listeners props state animations dimensions keyboard-height)
+     #(component-will-unmount props))
+   [max-height]))
 
 
 (defn edit-mentions
   [{:keys [input-ref]} {:keys [text-value cursor-position]} input-with-mentions]
   (rn/use-effect (fn []
                    (let [input-text (reduce (fn [acc item]
-                                              (str acc (second item))) "" input-with-mentions)]
+                                              (str acc (second item)))
+                                            ""
+                                            input-with-mentions)]
                      (reset! text-value input-text)
                      (reset! cursor-position (count input-text))
                      (js/setTimeout #(when @input-ref
                                        (.setNativeProps ^js @input-ref
                                                         (clj->js {:selection {:start (count input-text)
-                                                                              :end   (count input-text)}}))) 300)))
+                                                                              :end   (count
+                                                                                      input-text)}})))
+                                    300)))
                  [(some #(= :mention (first %)) (seq input-with-mentions))]))
 
 (defn update-input-mention
@@ -143,20 +148,21 @@
    {:keys [text-value]}
    input-text]
   (rn/use-effect
-    (fn []
-      (when (and input-text (not= @text-value input-text))
-        (reset! text-value input-text)
-        (when @input-ref
-          (.setNativeProps ^js @input-ref (clj->js {:text input-text}))))) [input-text]))
+   (fn []
+     (when (and input-text (not= @text-value input-text))
+       (reset! text-value input-text)
+       (when @input-ref
+         (.setNativeProps ^js @input-ref (clj->js {:text input-text})))))
+   [input-text]))
 
 (defn setup-selection
   [{:keys [selectable-input-ref input-ref selection-manager]}]
   (rn/use-effect
-    (fn []
-      (when platform/android?
-        (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
-              text-input-handle            (rn/find-node-handle @input-ref)]
-          (oops/ocall selection-manager
-                      :setupMenuItems
-                      selectable-text-input-handle
-                      text-input-handle))))))
+   (fn []
+     (when platform/android?
+       (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
+             text-input-handle            (rn/find-node-handle @input-ref)]
+         (oops/ocall selection-manager
+                     :setupMenuItems
+                     selectable-text-input-handle
+                     text-input-handle))))))
