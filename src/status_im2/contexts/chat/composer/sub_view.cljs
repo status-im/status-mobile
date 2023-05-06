@@ -14,6 +14,5 @@
   [layout-height]
   [:f>
    (fn []
-     (println "blurview")
      [reanimated/view {:style (style/blur-container layout-height)}
       [blur/view (style/blur-view)]])])

@@ -2,9 +2,12 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.selection :as selection]
     [utils.re-frame :as rf]))
 
 (defn bounded-val
@@ -127,3 +130,63 @@
       (if (< (+ base container-height) view-height)
         base
         (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
+
+
+(defn init-props
+  []
+  {:input-ref                   (atom nil)
+   :selectable-input-ref        (atom nil)
+   :keyboard-show-listener      (atom nil)
+   :keyboard-frame-listener     (atom nil)
+   :keyboard-hide-listener      (atom nil)
+   :emoji-kb-extra-height       (atom nil)
+   :saved-emoji-kb-extra-height (atom nil)
+   :replying?                   (atom false)
+   :sending-images?             (atom false)
+   :editing?                    (atom false)
+   :record-permission?          (atom false)
+   :record-reset-fn             (atom nil)
+   :scroll-y                    (atom 0)
+   :selection-event             (atom nil)
+   :selection-manager           (rn/selectable-text-input-manager)})
+
+(defn init-state
+  []
+  {:text-value            (reagent/atom "")
+   :cursor-position       (reagent/atom 0)
+   :saved-cursor-position (reagent/atom 0)
+   :gradient-z-index      (reagent/atom 0)
+   :kb-default-height     (reagent/atom nil)
+   :gesture-enabled?      (reagent/atom true)
+   :lock-selection?       (reagent/atom true)
+   :focused?              (reagent/atom false)
+   :lock-layout?          (reagent/atom false)
+   :maximized?            (reagent/atom false)
+   :recording?            (reagent/atom false)
+   :first-level?          (reagent/atom true)
+   :menu-items            (reagent/atom selection/first-level-menu-items)})
+(defn init-animations
+  [lines input-text images reply audio content-height max-height opacity background-y]
+  (let [initial-height (if (> lines 1)
+                         constants/multiline-minimized-height
+                         constants/input-height)]
+    {:gradient-opacity  (reanimated/use-shared-value 0)
+     :container-opacity (reanimated/use-shared-value
+                         (if (empty-input?
+                              input-text
+                              images
+                              reply
+                              audio)
+                           0.7
+                           1))
+     :height            (reanimated/use-shared-value
+                         initial-height)
+     :saved-height      (reanimated/use-shared-value
+                         initial-height)
+     :last-height       (reanimated/use-shared-value
+                         (bounded-val
+                          @content-height
+                          constants/input-height
+                          max-height))
+     :opacity           opacity
+     :background-y      background-y}))
