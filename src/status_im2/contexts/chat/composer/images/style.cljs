@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.images.style
+(ns status-im2.contexts.chat.composer.images.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def image-container

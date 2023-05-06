@@ -1,9 +1,9 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.gradients.view
+(ns status-im2.contexts.chat.composer.gradients.view
   (:require
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.gradients.style :as style]))
+    [status-im2.contexts.chat.composer.gradients.style :as style]))
 
 
 (defn view

@@ -1,11 +1,11 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.effects
+(ns status-im2.contexts.chat.composer.effects
   (:require
     [react-native.platform :as platform]
     [status-im.async-storage.core :as async-storage]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
-    [status-im2.contexts.chat.bottom-sheet-composer.keyboard :as kb]
+    [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.keyboard :as kb]
     [utils.number :as utils.number]
     [oops.core :as oops]))
 
@@ -47,6 +47,7 @@
    {:keys [max-height]}
    {:keys [input-content-height]}]
   (when (or @maximized? (>= input-content-height (* max-height constants/background-threshold)))
+    (println "BACKGROUND EFFECT")
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
 
@@ -125,17 +126,17 @@
 
 
 (defn edit-mentions
-  [{:keys [input-ref]} {:keys [text-value]} input-with-mentions]
+  [{:keys [input-ref]} {:keys [text-value cursor-position]} input-with-mentions]
   (rn/use-effect (fn []
                    (let [input-text (reduce (fn [acc item]
                                               (str acc (second item))) "" input-with-mentions)]
                      (reset! text-value input-text)
-                     (when @input-ref
-                       (.setNativeProps ^js @input-ref (clj->js {:text input-text}))
-                       (.setNativeProps ^js @input-ref
-                                        (clj->js {:selection {:start (count input-text)
-                                                              :end   (count input-text)}})))))
-                 [input-with-mentions]))
+                     (reset! cursor-position (count input-text))
+                     (js/setTimeout #(when @input-ref
+                                       (.setNativeProps ^js @input-ref
+                                                        (clj->js {:selection {:start (count input-text)
+                                                                              :end   (count input-text)}}))) 300)))
+                 [(some #(= :mention (first %)) (seq input-with-mentions))]))
 
 (defn update-input-mention
   [{:keys [input-ref]}
