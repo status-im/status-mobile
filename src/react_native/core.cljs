@@ -105,14 +105,6 @@
 
 (def use-callback react/useCallback)
 
-(defn use-memo
-  [f deps]
-  (let [state     (reagent/atom nil)
-        prev-deps (reagent/atom nil)]
-    (when (or (not @prev-deps) (not= deps @prev-deps))
-      (reset! state (f))
-      (reset! prev-deps deps))
-    @state))
 
 (defn use-effect-once
   [effect-fn]
