@@ -1,15 +1,15 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.reply.view
+(ns status-im2.contexts.chat.composer.reply.view
   (:require [clojure.string :as string]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+            [status-im2.contexts.chat.composer.constants :as constants]
             [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [status-im2.constants :as constant]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.bottom-sheet-composer.reply.style :as style]
+            [status-im2.contexts.chat.composer.reply.style :as style]
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn get-quoted-text-with-mentions
@@ -86,9 +86,8 @@
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
     [rn/view
-     {:style {:flex-direction      :row
-              :height              (when-not pin? 24)
-              :accessibility-label :reply-message}}
+     {:style (style/container pin? in-chat-input?)
+      :accessibility-label :reply-message}
      [rn/view {:style (style/reply-content pin?)}
       (when-not pin?
         [quo/icon :i/connector

@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.gradients.style
+(ns status-im2.contexts.chat.composer.gradients.style
   (:require
     [quo2.foundations.colors :as colors]
     [quo2.foundations.typography :as typography]

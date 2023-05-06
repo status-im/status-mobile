@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.edit.style)
+(ns status-im2.contexts.chat.composer.edit.style)
 
 (def container
   {:flex-direction :row

@@ -10,13 +10,13 @@
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.bottom-sheet-composer.utils :as utils]
+            [status-im2.contexts.chat.composer.utils :as utils]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as composer.constants]))
+            [status-im2.contexts.chat.composer.constants :as composer.constants]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -46,17 +46,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                            (dec (oops/oget evt "viewableItems.length")))]
-        (let [index             (oops/oget last-visible-element "index")
-              ;; Get first not visible element, if it's a datemark/gap
-              ;; we might unnecessarely add messages on receiving as
-              ;; they do not have a clock value, but most of the times
-              ;; it will be a message
-              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-          (when (and first-not-visible
-                     (= :message (:type first-not-visible)))
-            first-not-visible))))))
+            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                                  (dec (oops/oget evt "viewableItems.length")))]
+              (let [index             (oops/oget last-visible-element "index")
+                    ;; Get first not visible element, if it's a datemark/gap
+                    ;; we might unnecessarely add messages on receiving as
+                    ;; they do not have a clock value, but most of the times
+                    ;; it will be a message
+                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+                (when (and first-not-visible
+                           (= :message (:type first-not-visible)))
+                  first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -108,12 +108,13 @@
 (defn calc-shell-position
   [y]
   (let [{:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
-        reply                                   (rf/sub [:chats/reply-message])
-        edit                                    (rf/sub [:chats/edit-message])
-        lines                                   (utils/calc-lines input-content-height)
-        base                                    (if (or reply edit)
-                                                  (- composer.constants/edit-container-height)
-                                                  0)]
+        reply  (rf/sub [:chats/reply-message])
+        edit   (rf/sub [:chats/edit-message])
+        images (rf/sub [:chats/sending-image])
+        lines  (utils/calc-lines input-content-height)
+        base   (if reply (- composer.constants/reply-container-height) 0)
+        base   (if edit (- composer.constants/edit-container-height) base)
+        base   (if (seq images) (- composer.constants/images-container-height) base)]
     (if (not focused?)
       (if (> lines 1) (+ -18 base) base)
       (if (> lines 12)
@@ -129,11 +130,11 @@
                    [shell-position])
     [reanimated/view
      {:style (reanimated/apply-animations-to-style
-              {:transform [{:translate-y y}]}
-              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
-               :position :absolute
-               :left     0
-               :right    0})}
+               {:transform [{:translate-y y}]}
+               {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
+                :position :absolute
+                :left     0
+                :right    0})}
      [quo/floating-shell-button
       (merge {:jump-to
               {:on-press #(do
@@ -184,21 +185,23 @@
          :on-layout                    on-messages-view-layout}]
        [:f> shell-button insets]])))
 
-
+;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown value
+;; updates in the parent component, but does not get passed to the children.
+;; When using listeners and resetting the value on an atom it works.
 (defn use-keyboard-visibility
   []
   (let [show-listener (atom nil)
         hide-listener (atom nil)
         shown?        (atom nil)]
     (rn/use-effect
-     (fn []
-       (reset! show-listener
-         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-       (reset! hide-listener
-         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-       (fn []
-         (.remove ^js @show-listener)
-         (.remove ^js @hide-listener))))
+      (fn []
+        (reset! show-listener
+                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+        (reset! hide-listener
+                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+        (fn []
+          (.remove ^js @show-listener)
+          (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn- f-messages-list

@@ -1,8 +1,8 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.mentions.style
+(ns status-im2.contexts.chat.composer.mentions.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
+            [status-im2.contexts.chat.composer.constants :as constants]))
 
 
 (defn shadow

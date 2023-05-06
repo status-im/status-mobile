@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.selection
+(ns status-im2.contexts.chat.composer.selection
   (:require
     [clojure.string :as string]
     [react-native.clipboard :as clipboard]

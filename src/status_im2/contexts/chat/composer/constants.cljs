@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.constants
+(ns status-im2.contexts.chat.composer.constants
   (:require
     [quo2.foundations.typography :as typography]
     [react-native.platform :as platform]))

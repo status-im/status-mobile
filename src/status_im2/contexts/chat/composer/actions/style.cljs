@@ -1,8 +1,8 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.actions.style
+(ns status-im2.contexts.chat.composer.actions.style
   (:require
     [quo2.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]))
+    [status-im2.contexts.chat.composer.constants :as constants]))
 
 (def actions-container
   {:height          constants/actions-container-height

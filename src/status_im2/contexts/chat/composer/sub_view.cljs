@@ -1,9 +1,9 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.sub-view
+(ns status-im2.contexts.chat.composer.sub-view
   (:require
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.bottom-sheet-composer.style :as style]))
+    [status-im2.contexts.chat.composer.style :as style]))
 
 (defn bar
   []
@@ -14,5 +14,6 @@
   [layout-height]
   [:f>
    (fn []
+     (println "blurview")
      [reanimated/view {:style (style/blur-container layout-height)}
       [blur/view (style/blur-view)]])])

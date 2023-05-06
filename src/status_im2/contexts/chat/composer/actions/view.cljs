@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.actions.view
+(ns status-im2.contexts.chat.composer.actions.view
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
@@ -7,11 +7,11 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.alert.events :as alert]
-    [status-im2.contexts.chat.bottom-sheet-composer.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.messages.list.view :as messages.list]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.bottom-sheet-composer.actions.style :as style]))
+    [status-im2.contexts.chat.composer.actions.style :as style]))
 
 (defn send-message
   [{:keys [text-value focused? maximized?]}
@@ -72,7 +72,7 @@
      {:style          (style/record-audio-container)
       :pointer-events :box-none}
      [quo/record-audio
-      {:record-audio-permission-granted    record-permission?
+      {:record-audio-permission-granted    @record-permission?
        :on-init                            (fn [reset-fn]
                                              (reset! record-reset-fn reset-fn))
        :on-start-recording                 (fn []

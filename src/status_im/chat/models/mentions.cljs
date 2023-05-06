@@ -98,8 +98,7 @@
   [{:keys [db]} result]
   (log/debug "[mentions] on-to-input-field-success" {:result result})
   (let [{:keys [input-segments state chat-id new-text]} (transfer-mention-result result)]
-    {:set-text-input-value [chat-id new-text]
-     :db                   (-> db
+    {:db                   (-> db
                                (assoc-in [:chats/mentions chat-id :mentions] state)
                                (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
@@ -165,8 +164,7 @@
   (let [{:keys [new-text chat-id]} (transfer-mention-result result)]
     (rf/merge
      cofx
-     {:db       (-> db
-                    (assoc-in [:chats/mention-suggestions chat-id] nil))
+     {:db       (assoc-in db [:chats/mention-suggestions chat-id] nil)
       :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}
      (recheck-at-idxs public-key))))
 

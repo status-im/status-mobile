@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.bottom-sheet-composer.keyboard
+(ns status-im2.contexts.chat.composer.keyboard
   (:require [oops.core :as oops]
             [status-im.async-storage.core :as async-storage]
             [react-native.core :as rn]
