@@ -21,6 +21,8 @@
 
 (def ^:const edit-container-height 32)
 
+(def ^:const mentions-max-height 240)
+
 (def ^:const extra-content-offset (if platform/ios? 6 0))
 
 (def ^:const content-change-threshold 10)

@@ -10,6 +10,7 @@
     quo2.components.banners.banner.view
     quo2.components.buttons.button
     quo2.components.buttons.dynamic-button
+    quo2.components.buttons.predictive-keyboard.view
     quo2.components.colors.color-picker.view
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
@@ -24,6 +25,7 @@
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
+    quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
@@ -62,6 +64,7 @@
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
     quo2.components.record-audio.record-audio.view
+    quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
     quo2.components.selectors.selectors.view
@@ -81,8 +84,6 @@
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view))
 
-(def button quo2.components.buttons.button/button)
-(def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
 (def separator quo2.components.separator/separator)
@@ -118,6 +119,11 @@
 ;;;; BANNER
 (def banner quo2.components.banners.banner.view/banner)
 
+;;;; BUTTONS
+(def button quo2.components.buttons.button/button)
+(def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
+(def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
+
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
 
@@ -151,6 +157,7 @@
 
 ;;;; DRAWERS
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
+(def documentation-drawers quo2.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
@@ -184,6 +191,7 @@
 
 ;;;; RECORD AUDIO
 (def record-audio quo2.components.record-audio.record-audio.view/record-audio)
+(def soundtrack quo2.components.record-audio.soundtrack.view/f-soundtrack)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)

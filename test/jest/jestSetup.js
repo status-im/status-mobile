@@ -70,6 +70,14 @@ jest.mock("i18n-js", () => ({
     t: (label) => `tx:${label}`
 }));
 
+jest.mock("react-native-blob-util", () => ({
+    default: {
+        config: jest.fn().mockReturnValue({
+            fetch: jest.fn()
+        })
+    }
+}));
+
 NativeModules.ReactLocalization = {
     language: 'en',
     locale: 'en',

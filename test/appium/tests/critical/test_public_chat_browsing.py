@@ -10,6 +10,7 @@ from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, common_
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.sign_in_view import SignInView
+from views.dbs.waku_backup import user as waku_user
 
 
 @pytest.mark.xdist_group(name="three_1")
@@ -305,8 +306,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
+        self.username = 'first user'
 
-        self.home = self.sign_in.create_user()
+        self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_button)
         self.community_name = self.home.get_random_chat_name()
         self.channel_name = 'general'
@@ -335,9 +337,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         message_input = self.channel.chat_message_input
         if not message_input.is_element_displayed():
-            self.home.communities_tab.double_click()
-            self.home.get_chat(self.community_name, community=True).click()
-            self.community.get_chat(self.channel_name).click()
+            self.home.click_system_back_button_until_element_is_shown()
+            self.home.get_to_community_channel_from_home(self.community_name)
 
         for message in message_texts:
             message_input.send_keys(message)
@@ -348,6 +349,56 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             if message_input.text != message:
                 self.errors.append('Message %s text was not copied in community channel' % message)
             message_input.clear()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703133)
+    def test_restore_multiaccount_with_waku_backup_remove_switch(self):
+        self.home.click_system_back_button_until_element_is_shown()
+        profile = self.home.profile_button.click()
+        profile.logout()
+        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
+
+        self.home.just_fyi("Restore user with predefined communities, check communities")
+        self.home.communities_tab.click()
+        for key in ['admin_open', 'member_open', 'admin_closed', 'member_closed']:
+            if not self.home.element_by_text(waku_user.communities[key]).is_element_displayed(30):
+                self.errors.append("%s was not restored from waku-backup!!" % key)
+        self.home.opened_communities_tab.click()
+        if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
+            self.errors.append("Pending community %s was not restored from waku-backup!" % waku_user.communities['member_pending'])
+
+        self.home.just_fyi("Check contacts/blocked users")
+        self.home.chats_tab.click()
+        self.home.contacts_tab.click()
+        for contact in waku_user.contacts:
+            if not self.home.element_by_text(contact).is_element_displayed(30):
+                self.errors.append("Contact %s was not restored from backup!" % contact)
+
+        self.home.just_fyi("Check that can login with different user")
+        self.home.reopen_app(sign_in=False)
+        self.sign_in.show_profiles_button.click()
+        self.sign_in.element_by_text(self.username).click()
+        self.sign_in.sign_in()
+        self.home.communities_tab.click()
+        if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
+            self.errors.append("Community of previous user is shown!")
+
+        self.home.just_fyi("Check that can remove user from logged out state")
+        self.home.reopen_app(sign_in=False)
+        self.sign_in.show_profiles_button.click()
+        user_card = self.sign_in.get_user(username=self.username)
+        user_card.open_user_options()
+        self.sign_in.remove_profile_button.click()
+        if not self.sign_in.element_by_translation_id("remove-profile-confirm-message").is_element_displayed(30):
+            self.errors.append("Warning is not shown on removing profile!")
+        self.sign_in.element_by_translation_id("remove").click()
+
+        self.home.just_fyi("Check that removed user is not shown in the list anymore")
+        self.home.reopen_app(sign_in=False)
+        self.sign_in.show_profiles_button.click()
+        if self.sign_in.element_by_text(self.username).is_element_displayed():
+            self.errors.append("Removed user is re-appeared after relogin!")
 
         self.errors.verify_no_errors()
 

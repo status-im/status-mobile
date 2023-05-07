@@ -522,7 +522,7 @@
               seeking-audio?]
              [:f> soundtrack/f-soundtrack
               {:audio-current-time-ms audio-current-time-ms
-               :player-ref            player-ref
+               :player-ref            @player-ref
                :seeking-audio?        seeking-audio?}]])
           (when (or @recording? @reviewing-audio?)
             [:f> f-time-counter @recording? @recording-length-ms @ready-to-delete? @reviewing-audio?
