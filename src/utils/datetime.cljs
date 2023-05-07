@@ -102,6 +102,14 @@
          (= (t/month now) (t/month datetime))
          (= (t/day now) (t/day datetime)))))
 
+(defn tomorrow?
+  [datetime]
+  (= (-> (t/now)
+         (t/plus
+          (t/days 1))
+         t/day)
+     (t/day datetime)))
+
 (defn within-last-n-days?
   "Returns true if `datetime` is within last `n` days (inclusive on both ends)."
   [datetime n]
@@ -259,3 +267,64 @@
   [ms]
   (let [sec (quot ms 1000)]
     (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))
+
+(def ^:private day-index-to-day-of-the-week
+  "Returns the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1 "monday"
+   2 "tuesday"
+   3 "wednesday"
+   4 "thursday"
+   5 "friday"
+   6 "saturday"
+   7 "sunday"})
+
+(def ^:private months
+  "Returns the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1  "january"
+   2  "february"
+   3  "march"
+   4  "april"
+   5  "may"
+   6  "june"
+   7  "july"
+   8  "august"
+   9  "september"
+   10 "october"
+   11 "november"
+   12 "december"})
+
+(def ^:const go-default-time
+  "Zero value for golang's time var"
+  "0001-01-01T00:00:00Z")
+
+(defn format-mute-till
+  [muted-till-string]
+  (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
+        hours-and-minutes (str (t/hour parsed-time)
+                               ":"
+                               (t/minute parsed-time))
+        when-to-unmute    (cond (= go-default-time
+                                   muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
+                                (today? parsed-time)    (str hours-and-minutes " today")
+                                (tomorrow? parsed-time) (str hours-and-minutes " tomorrow")
+                                :else                   (str hours-and-minutes
+                                                             " "
+                                                             (i18n/label
+                                                              (keyword "t"
+                                                                       (subs
+                                                                        (get day-index-to-day-of-the-week
+                                                                             (t/day-of-week parsed-time))
+                                                                        0
+                                                                        3)))
+                                                             " "
+                                                             (t/day parsed-time)
+                                                             " "
+                                                             (i18n/label
+                                                              (keyword "t"
+                                                                       (subs (get months
+                                                                                  (t/month parsed-time))
+                                                                             0
+                                                                             3)))))]
+    (str " " when-to-unmute)))

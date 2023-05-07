@@ -81,7 +81,7 @@
        :alias                   (.-alias chat)
        :muted                   (.-muted chat)
        :joined                  (.-joined chat)
-       :muted-till              (.-mutetill chat)
+       :muted-till              (.-muteTill chat)
        :chat-id                 (.-id chat)
        :community-id            (.-communityId chat)
        :synced-from             (.-syncedFrom chat)

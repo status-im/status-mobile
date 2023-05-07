@@ -16,7 +16,9 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.types :as types]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.foundations.colors :as colors]
+            [utils.datetime :as datetime]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -297,9 +299,37 @@
 
 (rf/defn mute-chat-toggled-successfully
   {:events [:chat/mute-successfully]}
-  [{:keys [db]} chat-id muted-till]
+  [{:keys [db]} chat-id muted-till mute-type muted?]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
-  {:db (assoc-in db [:chats chat-id :muted-till] muted-till)})
+  (let [time-string        (fn [duration-kw unmute-time]
+                             (str (i18n/label duration-kw) \newline (i18n/label :until) unmute-time))
+        mute-duration-text (fn [unmute-time]
+                             (if unmute-time
+                               (str (case mute-type
+                                      constants/mute-for-15-mins-type (time-string
+                                                                       :t/channel-muted-for-15-minutes
+                                                                       unmute-time)
+                                      constants/mute-for-1-hour-type  (time-string
+                                                                       :t/channel-muted-for-1-hour
+                                                                       unmute-time)
+                                      constants/mute-for-8-hours-type (time-string
+                                                                       :t/channel-muted-for-8-hours
+                                                                       unmute-time)
+                                      constants/mute-for-1-week       (time-string
+                                                                       :t/channel-muted-for-1-week
+                                                                       unmute-time)
+                                      constants/mute-till-unmuted     (time-string
+                                                                       :t/channel-muted-till-unmuted
+                                                                       unmute-time)))
+                               (i18n/label :t/chat-unmuted-successfully)))]
+    {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
+     :dispatch [:toasts/upsert
+                {:icon       :correct
+                 :icon-color (colors/theme-colors colors/success-60
+                                                  colors/success-50)
+                 :text       (mute-duration-text (when (some? muted-till)
+                                                   (datetime/format-mute-till
+                                                    muted-till)))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
@@ -310,7 +340,8 @@
      :json-rpc/call [{:method     method
                       :params     params
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
-                      :on-success #(rf/dispatch [:chat/mute-successfully chat-id %])}]}))
+                      :on-success #(rf/dispatch [:chat/mute-successfully chat-id % mute-type
+                                                 (not muted?)])}]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}

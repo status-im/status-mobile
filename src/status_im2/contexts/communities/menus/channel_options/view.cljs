@@ -2,7 +2,8 @@
   (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]))
+            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
+            [utils.datetime :as datetime]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -43,10 +44,12 @@
    :on-press            #()})
 
 (defn mute-channel
-  [id muted?]
+  [id muted? muted-till]
   {:icon                (if muted? :i/muted :i/activity-center)
    :accessibility-label (if muted? :unmute-channel :mute-channel)
    :label               (i18n/label (if muted? :t/unmute-channel :t/mute-channel))
+   :sub-label           (when (and muted? (some? muted-till))
+                          (str (i18n/label :t/muted-until) (datetime/format-mute-till muted-till)))
    :on-press            (if muted?
                           #(unmute-channel-action id)
                           #(mute-channel-action id))
@@ -99,13 +102,13 @@
 
 (defn channel-options-bottom-sheet
   [community-id id]
-  (let [{:keys [token-gated?]} (rf/sub [:communities/community id])
-        {:keys [muted]}        (rf/sub [:chat-by-id (str community-id id)])]
+  (let [{:keys [token-gated?]}     (rf/sub [:communities/community id])
+        {:keys [muted muted-till]} (rf/sub [:chat-by-id (str community-id id)])]
     [quo/action-drawer
      [[(view-members id)
        (when token-gated? (view-token-gating id))
        (mark-as-read id)
-       (mute-channel (str community-id id) muted)
+       (mute-channel (str community-id id) muted muted-till)
        (notifications)
        (fetch-messages)
        (invite-contacts id)
