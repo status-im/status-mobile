@@ -148,7 +148,8 @@
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
-  (let [app-in-background-since (get db :app-in-background-since)
+  (let [new-account?            (get db :onboarding-2/new-account?)
+        app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:multiaccount :signed-up?])
         biometric-auth?         (= (:auth-method db) "biometric")
         requires-bio-auth       (and
@@ -161,7 +162,8 @@
               {:db (dissoc db :app-in-background-since)}
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
-              (universal-links/process-stored-event)
+              (when-not new-account?
+                (universal-links/process-stored-event))
               #(when-let [chat-id (:current-chat-id db)]
                  {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth
