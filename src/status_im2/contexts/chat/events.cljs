@@ -148,8 +148,8 @@
   (rf/merge
    cofx
    {:db            (-> (if (get-in db [:chats chat-id :muted])
-                           (assoc-in db [:chats chat-id :active] false)
-                           (update db :chats dissoc chat-id))
+                         (assoc-in db [:chats chat-id :active] false)
+                         (update db :chats dissoc chat-id))
                        (update :chats-home-list disj chat-id)
                        (assoc :current-chat-id nil))
     :json-rpc/call [{:method     "wakuext_deactivateChat"
@@ -255,8 +255,6 @@
                       #(max (- % count) 0))
            (update-in [:chats chat-id :unviewed-mentions-count]
                       #(max (- % countWithMentions) 0)))})
-
-;;;; UI
 
 (rf/defn start-chat
   "Start a chat, making sure it exists"
