@@ -29,12 +29,10 @@
         images-count      (count (:album message))
         ;; album images are always square, except when we have 3 images, then they must be rectangular
         ;; (portrait or landscape)
-        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))
-        text              (:text (:content first-image))]
+        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
     (if (and albumize? (> images-count 1))
       [:<>
-       (when (not= text "placeholder")
-         [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]])
+       [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]]
        [rn/view
         {:style (style/album-container portrait?)}
         (map-indexed

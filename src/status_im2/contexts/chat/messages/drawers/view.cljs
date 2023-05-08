@@ -44,7 +44,6 @@
        :icon     :i/reply
        :id       :reply}])
    (when (and (not (or deleted? deleted-for-me?))
-              (not= (get content :text) "placeholder")
               (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
