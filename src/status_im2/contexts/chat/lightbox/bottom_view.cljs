@@ -56,8 +56,7 @@
          :start  {:x 0 :y 1}
          :end    {:x 0 :y 0}
          :style  (style/gradient-container insets animations derived)}
-        (when (not= text "placeholder")
-          [rn/text {:style style/text-style} text])
+        [rn/text {:style style/text-style} text]
         [rn/flat-list
          {:ref                               #(reset! (:small-list-ref atoms) %)
           :key-fn                            :message-id

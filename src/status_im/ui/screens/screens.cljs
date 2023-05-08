@@ -195,7 +195,7 @@
 
    ;;CHAT
    {:name      :start-a-new-chat
-    :options   {:sheet? true :insets {:top? true}}
+    :options   {:sheet? true}
     :component new-chat-aio/contact-selection-list}
 
    {:name      :group-chat-profile

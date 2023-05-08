@@ -164,10 +164,7 @@
              :image-path   (utils/safe-replace resized-uri #"file://" "")
              :image-width  width
              :image-height height
-             ;; TODO: message not received if text field is
-             ;; nil or empty, issue:
-             ;; https://github.com/status-im/status-mobile/issues/14754
-             :text         (or input-text "placeholder")
+             :text         input-text
              :response-to  message-id})
           images)))
 

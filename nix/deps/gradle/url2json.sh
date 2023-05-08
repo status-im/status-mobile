@@ -46,7 +46,7 @@ function fetch_and_template_file() {
     OBJ_URL="${REPO_URL}/${PKG_PATH}/${FILENAME}"
     if ! OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_URL}"); then
         echo " ! Failed to fetch: ${OBJ_URL}" >&2
-        exit 1
+        return 1
     fi
 
     OBJ_NAME="${FILENAME}"
@@ -56,6 +56,10 @@ function fetch_and_template_file() {
         \"sha1\": \"$(get_sha1 "${OBJ_PATH}")\",
         \"sha256\": \"$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")\"
       }"
+}
+
+function fetch_and_template_file_no_fail() {
+    fetch_and_template_file "${1}" 2>/dev/null || true
 }
 
 if [[ -z "${1}" ]]; then
@@ -111,7 +115,7 @@ echo -ne "
       }"
 
 # Some deps are just POMs, in which case there is no JAR to fetch.
-[[ "${OBJ_TYPE}" == "" ]]        && fetch_and_template_file "${PKG_NAME}.jar"
+[[ "${OBJ_TYPE}" == "" ]]        && fetch_and_template_file_no_fail "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" == "jar" ]]     && fetch_and_template_file "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" == "bundle" ]]  && fetch_and_template_file "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" =~ aar* ]]      && fetch_and_template_file "${PKG_NAME}.aar"
