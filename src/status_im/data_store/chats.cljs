@@ -91,10 +91,16 @@
        :chat-type               (.-chatType chat)
        :unviewed-messages-count (.-unviewedMessagesCount chat)
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
-       :last-message            {:content      {:text        (.-text chat)
-                                                :parsed-text (types/js->clj (.-parsedText chat))}
-                                 :content-type (.-contentType chat)
-                                 :community-id (.-contentCommunityId chat)}
+       :last-message            {:content            {:text        (.-text chat)
+                                                      :parsed-text (types/js->clj (.-parsedText chat))
+                                                      :response-to (.-responseTo chat)}
+                                 :content-type       (.-contentType chat)
+                                 :community-id       (.-contentCommunityId chat)
+                                 :outgoing           (boolean (.-outgoingStatus chat))
+                                 :album-images-count (.-albumImagesCount chat)
+                                 :from               (.-from chat)
+                                 :deleted?           (.-deleted chat)
+                                 :deleted-for-me?    (.-deletedForMe chat)}
        :last-clock-value        (.-lastClockValue chat)
        :profile-public-key      (.-profile chat)
        :highlight               (.-highlight chat)
