@@ -1,7 +1,8 @@
 (ns quo2.components.inputs.recovery-phrase.component-spec
-  (:require [quo2.components.inputs.recovery-phrase.view :as recovery-phrase]
-            [test-helpers.component :as h]
-            [oops.core :as oops]))
+  (:require [clojure.string :as string]
+            [oops.core :as oops]
+            [quo2.components.inputs.recovery-phrase.view :as recovery-phrase]
+            [test-helpers.component :as h]))
 
 (h/describe "Recovery phrase input"
   (h/test "Default render"
@@ -22,48 +23,35 @@
                  "Old text"])
       (h/fire-event :change-text (h/get-by-label-text :recovery-phrase-input) new-text)
       (h/is-equal (get-new-text (h/get-by-label-text :recovery-phrase-input)) new-text)
-      (h/was-called on-change-mock))))
+      (h/was-called on-change-mock)))
 
-#_(h/test "Renders specified text"
-    (let [text-expected "Custom text"]
-      (h/render [recovery-phrase/recovery-phrase-input {} text-expected])
-      ;; TODO: investigate how to get the children
-      (prn (js-keys (h/get-by-label-text :recovery-phrase-input)))))
+  (h/describe "Error text"
+    (h/test "Marked when words doesn't satisfy a predicate"
+      (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
+                                                        :error-pred   #(>= (count %) 5)}
+                 "Text with some error words that don't satisfy the predicate"])
+      (let [children-text-nodes (-> (h/get-by-label-text :recovery-phrase-input)
+                                    (oops/oget "props" "children" "props" "children")
+                                    (js->clj :keywordize-keys true))
+            {:keys [ok-words error-words]} (group-by #(if (string? %) :ok-words :error-words)
+                                                     children-text-nodes)]
+        (h/is-equal (apply str ok-words) "Text with some   that   the ")
+        (h/is-truthy (= (map #(-> % :props :argv second) error-words)
+                        ["error" "words" "don't" "satisfy" "predicate"]))))
 
-;(h/test "Text changes and dispatches on-change"
-;  (let [new-text       "New text"
-;        on-change-mock (h/mock-fn)]
-;    (h/render [recovery-phrase/recovery-phrase-input {:on-change-text on-change-mock}
-;               ""])
-;    (h/fire-event :change-text (h/get-by-label-text :recovery-phrase-input) new-text)
-;    #_(h/debug (h/get-by-label-text :recovery-phrase-input))
-;    #_(h/was-called on-change-mock)
-;
-;    #_(h/is-truthy (h/get-by-text new-text))))
-
-;(h/describe "Error text"
-;  (h/test "Marked when a word doesn't satisfy a predicate"
-;    (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
-;                                                      :error-pred   #(>= (count %) 5)}
-;               "Text with some words satisfying the predicate"])
-;    ;; TODO: filter result to only return the wrong-marked workds
-;    (prn (.children (.props (h/get-by-label-text :recovery-phrase-input)
-;                            (fn [node]
-;                              (string? (.-type node)))))))
-;
-;  #_(h/test "Not marked when `mark-errors?` false"
-;      (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? false
-;                                                        :error-pred   #(>= 4 count)}
-;                 "Text with some words satisfying the predicate"])
-;      ;; TODO: filter result and see that all ar regular words
-;      (h/get-by-label-text :recovery-phrase-input))
-;
-;  #_(h/test "Marked when words exceed the limit given"
-;      (let [ok-words    "Words within the limit"
-;            error-words "Words out of the limit"
-;            words       (str ok-words error-words)]
-;        (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
-;                                                          :word-limit   4}
-;                   words]))
-;      ;; TODO: filter result to only return the wrong-marked workds
-;      (h/get-by-label-text :recovery-phrase-input))
+    (h/test "Marked when words exceed the limit given"
+      (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
+                                                        :word-limit   4}
+                 "these are ok words, these words exceed the limit"])
+      (let [children-text-nodes (-> (h/get-by-label-text :recovery-phrase-input)
+                                    (oops/oget "props" "children" "props" "children")
+                                    (js->clj :keywordize-keys true))
+            {:keys [ok-words error-words]} (group-by #(if (string? %) :ok-words :error-words)
+                                                     children-text-nodes)]
+        (h/is-equal (string/trim (apply str ok-words))
+                    "these are ok words,")
+        (h/is-equal (->> error-words
+                         (map #(-> % :props :argv second))
+                         (interpose " ")
+                         (apply str))
+                    "these words exceed the limit")))))
