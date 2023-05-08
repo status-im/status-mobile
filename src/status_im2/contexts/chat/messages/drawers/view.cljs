@@ -54,7 +54,6 @@
        :id       :copy}])
    ;; pinning images are temporarily disabled
    (when (and message-pin-enabled
-              (not (or deleted? deleted-for-me?))
               (not= content-type constants/content-type-image))
      [{:type     :main
        :on-press #(pin-message message-data)
