@@ -16,8 +16,7 @@
 (defn image-message
   [index {:keys [content image-width image-height message-id] :as message} context on-long-press]
   (let [insets     (safe-area/get-insets)
-        dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))
-        text       (:text content)]
+        dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))]
     (fn []
       (let [shared-element-id (rf/sub [:shared-element-id])]
         [rn/touchable-opacity
