@@ -63,8 +63,8 @@
     [:f> f-send-button state animations window-height images? btn-opacity z-index]))
 
 (defn audio-button
-  [{:keys [record-permission? record-reset-fn]}
-   {:keys [recording? gesture-enabled?]}
+  [{:keys [record-reset-fn]}
+   {:keys [record-permission? recording? gesture-enabled?]}
    {:keys [container-opacity]}]
   (let [audio (rf/sub [:chats/sending-audio])]
     [rn/view
