@@ -35,8 +35,8 @@
   (rf/dispatch [:chat.ui/set-input-maximized true]))
 
 (defn minimize
-  [{:keys [maximized?]}
-   {:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}]
+  [{:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}
+   {:keys [maximized?]}]
   (when @emoji-kb-extra-height
     (reset! saved-emoji-kb-extra-height @emoji-kb-extra-height)
     (reset! emoji-kb-extra-height nil))
@@ -105,6 +105,6 @@
                                   (maximize state animations dimensions)
                                   (bounce-back animations dimensions starting-opacity))
                                 (if (> (Math/abs diff) constants/drag-threshold)
-                                  (minimize state props)
+                                  (minimize props state)
                                   (bounce-back animations dimensions starting-opacity)))
                               (reset! gesture-enabled? true))))))))
