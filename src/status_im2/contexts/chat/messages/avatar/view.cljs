@@ -9,8 +9,10 @@
         contact      (rf/sub [:contacts/contact-by-address public-key])
         photo-path   (when (seq (:images contact)) (rf/sub [:chats/photo-path public-key]))
         online?      (rf/sub [:visibility-status-updates/online? public-key])]
-    [rn/touchable-without-feedback {:on-press #(rf/dispatch [:chat.ui/show-profile public-key])}
-     [rn/view {:padding-top 2}
+    [rn/view {:style {:padding-top 2}}
+     [rn/touchable-opacity
+      {:active-opacity 1
+       :on-press       #(rf/dispatch [:chat.ui/show-profile public-key])}
       [quo/user-avatar
        {:full-name         display-name
         :profile-picture   photo-path
