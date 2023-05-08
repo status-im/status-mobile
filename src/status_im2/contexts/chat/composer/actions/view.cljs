@@ -34,34 +34,33 @@
   (reset! text-value "")
   (messages.list/scroll-to-bottom))
 
-(defn send-button
+(defn f-send-button
   [{:keys [text-value] :as state}
-   animations
-   window-height
-   images?]
-  [:f>
-   (fn []
-     (let [btn-opacity (reanimated/use-shared-value 0)
-           z-index     (reagent/atom 0)]
-       [:f>
-        (fn []
-          (rn/use-effect (fn []
-                           (if (or (not-empty @text-value) images?)
-                             (when-not (= @z-index 1)
-                               (reset! z-index 1)
-                               (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
-                             (when-not (= @z-index 0)
-                               (reanimated/animate btn-opacity 0)
-                               (js/setTimeout #(reset! z-index 0) 300))))
-                         [(and (empty? @text-value) (not images?))])
-          [reanimated/view
-           {:style (style/send-button btn-opacity @z-index)}
-           [quo/button
-            {:icon                true
-             :size                32
-             :accessibility-label :send-message-button
-             :on-press            #(send-message state animations window-height)}
-            :i/arrow-up]])]))])
+   animations window-height images?
+   btn-opacity z-index]
+  (rn/use-effect (fn []
+                   (if (or (not-empty @text-value) images?)
+                     (when-not (= @z-index 1)
+                       (reset! z-index 1)
+                       (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
+                     (when-not (= @z-index 0)
+                       (reanimated/animate btn-opacity 0)
+                       (js/setTimeout #(reset! z-index 0) 300))))
+                 [(and (empty? @text-value) (not images?))])
+  [reanimated/view
+   {:style (style/send-button btn-opacity @z-index)}
+   [quo/button
+    {:icon                true
+     :size                32
+     :accessibility-label :send-message-button
+     :on-press            #(send-message state animations window-height)}
+    :i/arrow-up]])
+
+(defn send-button
+  [state animations window-height images?]
+  (let [btn-opacity (reanimated/use-shared-value 0)
+        z-index     (reagent/atom 0)]
+    [:f> f-send-button state animations window-height images? btn-opacity z-index]))
 
 (defn audio-button
   [{:keys [record-permission? record-reset-fn]}
@@ -183,6 +182,6 @@
     [image-button props animations insets]
     [reaction-button]
     [format-button]]
-   [send-button state animations window-height images?]
+   [:f> send-button state animations window-height images?]
    (when (and (not edit?) (not images?))
      [audio-button props state animations])])
