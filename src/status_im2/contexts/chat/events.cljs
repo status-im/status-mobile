@@ -302,7 +302,12 @@
   [{:keys [db]} chat-id muted-till mute-type muted?]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
   (let [time-string        (fn [duration-kw unmute-time]
-                             (str (i18n/label duration-kw) \newline "(" (i18n/label :until) unmute-time ")"))
+                             (str (i18n/label duration-kw)
+                                  \newline
+                                  "("
+                                  (i18n/label :until)
+                                  unmute-time
+                                  ")"))
         mute-duration-text (fn [unmute-time]
                              (if unmute-time
                                (str (case mute-type
