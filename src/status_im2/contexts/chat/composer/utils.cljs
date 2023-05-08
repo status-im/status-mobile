@@ -161,7 +161,7 @@
    :focused?              (reagent/atom false)
    :lock-layout?          (reagent/atom false)
    :maximized?            (reagent/atom false)
-   :record-permission?    (reagent/atom false)
+   :record-permission?    (reagent/atom true)
    :recording?            (reagent/atom false)
    :first-level?          (reagent/atom true)
    :menu-items            (reagent/atom selection/first-level-menu-items)})
