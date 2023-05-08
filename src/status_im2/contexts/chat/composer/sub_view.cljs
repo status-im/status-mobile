@@ -10,9 +10,10 @@
   [rn/view {:style style/bar-container}
    [rn/view {:style (style/bar)}]])
 
+(defn f-blur-view
+  [layout-height]
+  [reanimated/view {:style (style/blur-container layout-height)}
+   [blur/view (style/blur-view)]])
 (defn blur-view
   [layout-height]
-  [:f>
-   (fn []
-     [reanimated/view {:style (style/blur-container layout-height)}
-      [blur/view (style/blur-view)]])])
+  [:f> f-blur-view layout-height])

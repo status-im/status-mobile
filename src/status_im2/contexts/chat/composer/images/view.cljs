@@ -22,20 +22,22 @@
                 :bottom 10}}
     [quo/icon :i/close {:color colors/white :size 12}]]])
 
+(defn f-images-list
+  []
+  (let [images (rf/sub [:chats/sending-image])
+        height (reanimated/use-shared-value (if (seq images) constants/images-container-height 0))]
+    (rn/use-effect (fn []
+                     (reanimated/animate height
+                                         (if (seq images) constants/images-container-height 0)))
+                   [images])
+    [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
+     [rn/flat-list
+      {:key-fn                       first
+       :render-fn                    image
+       :data                         images
+       :horizontal                   true
+       :keyboard-should-persist-taps :handled}]]))
+
 (defn images-list
   []
-  [:f>
-   (fn []
-     (let [images (rf/sub [:chats/sending-image])
-           height (reanimated/use-shared-value (if (seq images) constants/images-container-height 0))]
-       (rn/use-effect (fn []
-                        (reanimated/animate height
-                                            (if (seq images) constants/images-container-height 0)))
-                      [images])
-       [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-        [rn/flat-list
-         {:key-fn                       first
-          :render-fn                    image
-          :data                         images
-          :horizontal                   true
-          :keyboard-should-persist-taps :handled}]]))])
+  [:f> f-images-list])

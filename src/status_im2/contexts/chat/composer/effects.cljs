@@ -51,8 +51,8 @@
     (reanimated/animate opacity 1)))
 
 (defn images-or-reply-effect
-  [{:keys [container-opacity]}
-   {:keys [replying? sending-images? input-ref]}
+  [{:keys [replying? sending-images? input-ref]}
+   {:keys [container-opacity]}
    images? reply?]
   (when (or images? reply?)
     (reanimated/animate container-opacity 1))
@@ -68,8 +68,8 @@
     (reset! replying? false)))
 
 (defn edit-effect
-  [{:keys [text-value saved-cursor-position]}
-   {:keys [editing? input-ref]}
+  [{:keys [editing? input-ref]}
+   {:keys [text-value saved-cursor-position]}
    edit]
   (let [edit-text (get-in edit [:content :text])]
     (when (and (not @editing?) edit @input-ref)
@@ -115,8 +115,8 @@
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
-     (images-or-reply-effect animations props images? reply?)
-     (edit-effect state props edit)
+     (images-or-reply-effect props animations images? reply?)
+     (edit-effect props state edit)
      (audio-effect state animations audio)
      (empty-effect state animations images? reply? audio)
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
