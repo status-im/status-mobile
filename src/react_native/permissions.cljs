@@ -37,4 +37,4 @@
   [permission on-result on-error]
   (-> (check (get permissions-map permission))
       (.then #(on-result (not (#{(.-BLOCKED RESULTS) (.-DENIED RESULTS)} %))))
-      (.catch #(on-error %))))
+      (.catch #(on-error (#{(.-BLOCKED RESULTS) (.-DENIED RESULTS)} %)))))

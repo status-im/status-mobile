@@ -44,7 +44,7 @@
    :margin-top         20})
 
 (def scan-qr-code-container
-  {:margin-top 19})
+  {:margin-top   19})
 
 (def qr-view-finder
   {:margin-horizontal screen-padding
@@ -68,7 +68,9 @@
    :margin-horizontal screen-padding
    :background-color  colors/white-opa-5
    :border-color      colors/white-opa-10
+   :border-width      1
    :border-radius     12
+   :border-style      :dashed
    :align-items       :center
    :justify-content   :center})
 

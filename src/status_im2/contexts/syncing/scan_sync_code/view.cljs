@@ -53,7 +53,7 @@
       :accessibility-label :close-sign-in-by-syncing
       :override-theme      :dark
       :on-press            #(rf/dispatch [:navigate-back])}
-     :i/close]
+     :i/arrow-left]
     [quo/button
      {:before              :i/info
       :type                :blur-bg
