@@ -30,7 +30,7 @@
                                          {:messages [message]
                                           :index    0
                                           :insets   insets}])}
-         (when (and (not= text "placeholder") (= index 0))
+         (when (= index 0)
            [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
          [fast-image/fast-image
           {:source    {:uri (:image content)}
