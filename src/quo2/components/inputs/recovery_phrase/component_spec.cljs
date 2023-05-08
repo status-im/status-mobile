@@ -27,12 +27,13 @@
 
   (h/describe "Error text"
     (h/test "Marked when words doesn't satisfy a predicate"
-      (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
-                                                        :error-pred   #(>= (count %) 5)}
+      (h/render [recovery-phrase/recovery-phrase-input
+                 {:mark-errors? true
+                  :error-pred   #(>= (count %) 5)}
                  "Text with some error words that don't satisfy the predicate"])
-      (let [children-text-nodes (-> (h/get-by-label-text :recovery-phrase-input)
-                                    (oops/oget "props" "children" "props" "children")
-                                    (js->clj :keywordize-keys true))
+      (let [children-text-nodes            (-> (h/get-by-label-text :recovery-phrase-input)
+                                               (oops/oget "props" "children" "props" "children")
+                                               (js->clj :keywordize-keys true))
             {:keys [ok-words error-words]} (group-by #(if (string? %) :ok-words :error-words)
                                                      children-text-nodes)]
         (h/is-equal (apply str ok-words) "Text with some   that   the ")
@@ -40,12 +41,13 @@
                         ["error" "words" "don't" "satisfy" "predicate"]))))
 
     (h/test "Marked when words exceed the limit given"
-      (h/render [recovery-phrase/recovery-phrase-input {:mark-errors? true
-                                                        :word-limit   4}
+      (h/render [recovery-phrase/recovery-phrase-input
+                 {:mark-errors? true
+                  :word-limit   4}
                  "these are ok words, these words exceed the limit"])
-      (let [children-text-nodes (-> (h/get-by-label-text :recovery-phrase-input)
-                                    (oops/oget "props" "children" "props" "children")
-                                    (js->clj :keywordize-keys true))
+      (let [children-text-nodes            (-> (h/get-by-label-text :recovery-phrase-input)
+                                               (oops/oget "props" "children" "props" "children")
+                                               (js->clj :keywordize-keys true))
             {:keys [ok-words error-words]} (group-by #(if (string? %) :ok-words :error-words)
                                                      children-text-nodes)]
         (h/is-equal (string/trim (apply str ok-words))
