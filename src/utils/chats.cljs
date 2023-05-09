@@ -1,4 +1,4 @@
-(ns ^{:doc "Utils needed for chats related operations"}
+(ns ^{:doc "Utils needed for chat related operations"}
     utils.chats
   (:require [status-im2.constants :as constants]))
 

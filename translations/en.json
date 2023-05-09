@@ -2238,6 +2238,12 @@
     "channel-muted-for-8-hours": "Channel muted for 8 hours",
     "channel-muted-for-1-week": "Channel muted for 1 week",
     "channel-muted-till-unmuted": "Channel muted till unmuted",
+    "chat-muted-for-15-minutes": "Chat muted for 15 minutes",
+    "chat-muted-for-1-hour": "Chat muted for 1 hour",
+    "chat-muted-for-8-hours": "Chat muted for 8 hours",
+    "chat-muted-for-1-week": "Chat muted for 1 week",
+    "chat-muted-till-unmuted": "Chat muted till unmuted",
     "until": "until",
-    "chat-unmuted-successfully": "Chat unmuted successfully!"
+    "chat-unmuted-successfully": "Chat unmuted successfully!",
+    "channel-unmuted-successfully": "Channel unmuted successfully!"
 }
