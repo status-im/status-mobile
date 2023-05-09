@@ -4,7 +4,8 @@
             [react-native.core :as rn]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [status-im2.common.mute-chat-drawer.style :as style]))
+            [status-im2.common.mute-chat-drawer.style :as style]
+            [utils.chats :as chat-utils]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -12,12 +13,16 @@
   (rf/dispatch event))
 
 (defn mute-chat-drawer
-  [chat-id accessibility-label]
+  [chat-id accessibility-label chat-type]
   [rn/view {:accessibility-label accessibility-label}
    [quo/text
     {:weight :medium
      :size   :paragraph-2
-     :style  (style/header-text)} (i18n/label :t/mute-channel)]
+     :style  (style/header-text)}
+    (i18n/label
+     (if (chat-utils/not-community-chat? chat-type)
+       :t/mute-chat-capitialized
+       :t/mute-channel))]
    [quo/menu-item
     {:type                       :transparent
      :title                      (i18n/label :t/mute-for-15-mins)
