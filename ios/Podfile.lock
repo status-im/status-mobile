@@ -258,6 +258,10 @@ PODS:
     - React-Core
   - react-native-shake (3.4.0):
     - React
+  - react-native-skia (0.1.188):
+    - React
+    - React-callinvoker
+    - React-Core
   - react-native-slider (3.0.0):
     - React
   - react-native-status (1.0.0):
@@ -469,6 +473,7 @@ DEPENDENCIES:
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-shake (from `../node_modules/react-native-shake`)
+  - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-status (from `../modules/react-native-status`)
   - react-native-status-keycard (from `../node_modules/react-native-status-keycard`)
@@ -591,6 +596,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-randombytes"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
+  react-native-skia:
+    :path: "../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
   react-native-status:
@@ -717,6 +724,7 @@ SPEC CHECKSUMS:
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
+  react-native-skia: 8c68c437707fd47b25420ca4c8563fe3cfc52ada
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
   react-native-status-keycard: f1c1227b2d5984c10fb44db68e4bfd2937f31e98
