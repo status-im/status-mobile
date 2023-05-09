@@ -313,7 +313,6 @@
 
 (def ^:const theme-type-system 0)
 (def ^:const theme-type-light 1)
-(def ^:const theme-type-dark 2)
 (def ^:const bottom-sheet-animation-delay 450)
 
 (def ^:const local-pair-event-process-success "process-success")
@@ -335,11 +334,7 @@
 
 (def ^:const image-description-in-lightbox? false)
 (def ^:const int->weekday
-<<<<<<< HEAD
   "Maps the corresponding string representation of a weekday
-=======
-  "Returns the corresponding string representation of a weekday
->>>>>>> cd2482100 (Refactor)
    By it's numeric index as in cljs-time"
   {1 "mon"
    2 "tue"
