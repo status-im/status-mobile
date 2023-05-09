@@ -4,16 +4,19 @@
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.composer.utils :as utils]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.composer.constants :as composer.constants]))
 
 (defonce messages-list-ref (atom nil))
 
@@ -90,7 +93,7 @@
 
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
-   {:keys [keyboard-shown context]}]
+   {:keys [context keyboard-shown]}]
   [rn/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [quo/divider-date value]
@@ -102,47 +105,114 @@
           [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
-(defn messages-list
-  [{:keys [chat-id] :as chat}]
-  (let [context        (rf/sub [:chats/current-chat-message-list-view-context])
-        messages       (rf/sub [:chats/raw-chat-messages-stream chat-id])
-        keyboard-shown (atom false)
-        bottom-space   15]
-    [rn/view
-     {:style {:flex 1}}
-     ;; NOTE: DO NOT use anonymous functions for handlers
-     [rn/flat-list
-      {:key-fn                       list-key-fn
-       :ref                          list-ref
-       :header                       [list-header chat]
-       :footer                       [list-footer chat]
-       :data                         messages
-       :render-data                  {:context        context
-                                      :keyboard-shown keyboard-shown}
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               list-on-end-reached
-       :on-scroll-to-index-failed    identity ; don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 32)
-                                      :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space} ; iOS only
-       :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
-       :onMomentumScrollBegin        state/start-scrolling
-       :onMomentumScrollEnd          state/stop-scrolling
-       :scrollEventThrottle          16
-       :on-scroll                    on-scroll
-       ;; TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})
-       :on-layout                    on-messages-view-layout}]
+(defn calc-shell-position
+  [curr-pos input-content-height focused? reply edit images]
+  (let [lines (utils/calc-lines input-content-height)
+        base  (if reply (- composer.constants/reply-container-height) 0)
+        base  (if edit (- composer.constants/edit-container-height) base)
+        base  (if (seq images) (- composer.constants/images-container-height) base)]
+    (if (not focused?)
+      (if (> lines 1) (+ (- composer.constants/multiline-minimized-height) base) base)
+      (if (> lines 12)
+        curr-pos
+        (if (> lines 1) (- (- input-content-height composer.constants/input-height base)) base)))))
+
+(def memoized-calc-shell-position (memoize calc-shell-position))
+
+(defn shell-button
+  [insets]
+  (let [y (reanimated/use-shared-value 0)
+        {:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
+        reply (rf/sub [:chats/reply-message])
+        edit (rf/sub [:chats/edit-message])
+        images (rf/sub [:chats/sending-image])
+        curr-pos (reanimated/get-shared-value y)
+        shell-position
+        (memoized-calc-shell-position curr-pos input-content-height focused? reply edit images)]
+    (rn/use-effect (fn []
+                     (reanimated/animate y shell-position))
+                   [shell-position])
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style
+              {:transform [{:translate-y y}]}
+              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
+               :position :absolute
+               :left     0
+               :right    0})}
      [quo/floating-shell-button
       (merge {:jump-to
-              {:on-press #(do
-                            (rf/dispatch [:chat/close true])
-                            (rf/dispatch [:shell/navigate-to-jump-to]))
-               :label    (i18n/label :t/jump-to)}}
+              {:on-press (fn []
+                           (rf/dispatch [:chat/close true])
+                           (rf/dispatch [:shell/navigate-to-jump-to]))
+               :label    (i18n/label :t/jump-to)
+               :style    {:align-self :center}}}
              (when @show-floating-scroll-down-button
                {:scroll-to-bottom {:on-press scroll-to-bottom}}))
-      {:position :absolute
-       :bottom   6}]]))
+      {}]]))
+
+(defn messages-list-content
+  [{:keys [chat-id] :as chat} insets keyboard-shown]
+  (fn []
+    (let [context  (rf/sub [:chats/current-chat-message-list-view-context])
+          messages (rf/sub [:chats/raw-chat-messages-stream chat-id])]
+      [rn/view
+       {:style {:flex 1}}
+       ;; NOTE: DO NOT use anonymous functions for handlers
+       [rn/flat-list
+        {:key-fn                       list-key-fn
+         :ref                          list-ref
+         :header                       [list-header chat]
+         :footer                       [list-footer chat]
+         :data                         messages
+         :render-data                  {:context        context
+                                        :keyboard-shown keyboard-shown}
+         :render-fn                    render-fn
+         :on-viewable-items-changed    on-viewable-items-changed
+         :on-end-reached               list-on-end-reached
+         :on-scroll-to-index-failed    identity ; don't remove this
+         :content-container-style      {:padding-top    (+ composer.constants/composer-default-height
+                                                           (:bottom insets)
+                                                           32)
+                                        :padding-bottom 16}
+         :scroll-indicator-insets      {:top (+ composer.constants/composer-default-height
+                                                (:bottom insets))}
+         :keyboard-dismiss-mode        :interactive
+         :keyboard-should-persist-taps :handled
+         :on-momentum-scroll-begin     state/start-scrolling
+         :on-momentum-scroll-end       state/stop-scrolling
+         :scroll-event-throttle        16
+         :on-scroll                    on-scroll
+         ;; TODO https://github.com/facebook/react-native/issues/30034
+         :inverted                     (when platform/ios? true)
+         :style                        (when platform/android? {:scaleY -1})
+         :on-layout                    on-messages-view-layout}]
+       [:f> shell-button insets]])))
+
+;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown
+;; value
+;; updates in the parent component, but does not get passed to the children.
+;; When using listeners and resetting the value on an atom it works.
+(defn use-keyboard-visibility
+  []
+  (let [show-listener (atom nil)
+        hide-listener (atom nil)
+        shown?        (atom nil)]
+    (rn/use-effect
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
+    {:shown? shown?}))
+
+(defn- f-messages-list
+  [chat insets]
+  (let [{keyboard-shown? :shown?} (use-keyboard-visibility)]
+    [messages-list-content chat insets keyboard-shown?]))
+
+(defn messages-list
+  [chat insets]
+  [:f> f-messages-list chat insets])

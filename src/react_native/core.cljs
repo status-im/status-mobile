@@ -130,6 +130,9 @@
   (when (exists? (.-NativeModules ^js react-native))
     (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
 
+;; TODO: iOS native implementation https://github.com/status-im/status-mobile/issues/14137
 (defonce selectable-text-input
-  (reagent/adapt-react-class
-   (.requireNativeComponent ^js react-native "RNSelectableTextInput")))
+  (if platform/android?
+    (reagent/adapt-react-class
+     (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
+    view))
