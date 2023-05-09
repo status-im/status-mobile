@@ -102,7 +102,8 @@
   []
   (fn []
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+          selected-tab             (or (rf/sub [:messages-home/selected-tab])
+                                       :tab/recent)
           top                      (safe-area/get-top)]
       [:<>
        (if (= selected-tab :tab/contacts)
@@ -122,6 +123,7 @@
         [quo/discover-card
          {:title       (i18n/label :t/invite-friends-to-status)
           :description (i18n/label :t/share-invite-link)}]
+        ^{:key (str "tabs-" selected-tab)}
         [quo/tabs
          {:style          style/tabs
           :size           32
