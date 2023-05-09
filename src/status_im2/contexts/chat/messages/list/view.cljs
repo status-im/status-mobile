@@ -46,17 +46,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                                  (dec (oops/oget evt "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                            (dec (oops/oget evt "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -106,7 +106,7 @@
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
 (defn calc-shell-position
-  [y {:keys [input-content-height focused?]} reply edit images]
+  [curr-pos input-content-height focused? reply edit images]
   (let [lines (utils/calc-lines input-content-height)
         base  (if reply (- composer.constants/reply-container-height) 0)
         base  (if edit (- composer.constants/edit-container-height) base)
@@ -114,30 +114,31 @@
     (if (not focused?)
       (if (> lines 1) (+ -18 base) base)
       (if (> lines 12)
-        y
+        curr-pos
         (if (> lines 1) (- (- input-content-height composer.constants/input-height base)) base)))))
 
 (def memoized-calc-shell-position (memoize calc-shell-position))
 
 (defn shell-button
   [insets]
-  (let [y              (reanimated/use-shared-value 0)
-        chat-input     (rf/sub [:chats/current-chat-input])
-        reply          (rf/sub [:chats/reply-message])
-        edit           (rf/sub [:chats/edit-message])
-        images         (rf/sub [:chats/sending-image])
-        y-pos          (reanimated/get-shared-value y)
-        shell-position (memoized-calc-shell-position y-pos chat-input reply edit images)]
+  (let [y (reanimated/use-shared-value 0)
+        {:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
+        reply (rf/sub [:chats/reply-message])
+        edit (rf/sub [:chats/edit-message])
+        images (rf/sub [:chats/sending-image])
+        curr-pos (reanimated/get-shared-value y)
+        shell-position
+        (memoized-calc-shell-position curr-pos input-content-height focused? reply edit images)]
     (rn/use-effect (fn []
                      (reanimated/animate y shell-position))
                    [shell-position])
     [reanimated/view
      {:style (reanimated/apply-animations-to-style
-               {:transform [{:translate-y y}]}
-               {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
-                :position :absolute
-                :left     0
-                :right    0})}
+              {:transform [{:translate-y y}]}
+              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
+               :position :absolute
+               :left     0
+               :right    0})}
      [quo/floating-shell-button
       (merge {:jump-to
               {:on-press (fn []
@@ -197,14 +198,14 @@
         hide-listener (atom nil)
         shown?        (atom nil)]
     (rn/use-effect
-      (fn []
-        (reset! show-listener
-                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-        (reset! hide-listener
-                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-        (fn []
-          (.remove ^js @show-listener)
-          (.remove ^js @hide-listener))))
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn- f-messages-list

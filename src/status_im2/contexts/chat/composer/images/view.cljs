@@ -2,6 +2,7 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.composer.images.style :as style]
             [utils.re-frame :as rf]
@@ -30,13 +31,16 @@
                      (reanimated/animate height
                                          (if (seq images) constants/images-container-height 0)))
                    [images])
-    [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     [rn/flat-list
-      {:key-fn                       first
-       :render-fn                    image
-       :data                         images
-       :horizontal                   true
-       :keyboard-should-persist-taps :handled}]]))
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style {:height height} {:margin-horizontal -20})}
+     [gesture/flat-list
+      {:key-fn                            first
+       :render-fn                         image
+       :data                              images
+       :content-container-style           {:padding-horizontal 20}
+       :horizontal                        true
+       :shows-horizontal-scroll-indicator false
+       :keyboard-should-persist-taps      :handled}]]))
 
 (defn images-list
   []
