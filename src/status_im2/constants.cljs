@@ -334,3 +334,29 @@
 (def ^:const auth-method-none "none")
 
 (def ^:const image-description-in-lightbox? false)
+(def ^:const day-index-to-day-of-the-week
+  "Returns the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1 "mon"
+   2 "tue"
+   3 "wed"
+   4 "thu"
+   5 "fri"
+   6 "sat"
+   7 "sun"})
+
+(def ^:const months
+  "Returns the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1  "jan"
+   2  "feb"
+   3  "mar"
+   4  "apr"
+   5  "may"
+   6  "jun"
+   7  "jul"
+   8  "aug"
+   9  "sep"
+   10 "oct"
+   11 "nov"
+   12 "dec"})

@@ -5,7 +5,8 @@
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [utils.i18n-goog :as i18n-goog]))
+            [utils.i18n-goog :as i18n-goog]
+            [status-im2.constants :as constants]))
 
 (defn now [] (t/now))
 
@@ -268,33 +269,6 @@
   (let [sec (quot ms 1000)]
     (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))
 
-(def ^:private day-index-to-day-of-the-week
-  "Returns the corresponding string representation of a weekday
-   By it's numeric index as in cljs-time"
-  {1 "monday"
-   2 "tuesday"
-   3 "wednesday"
-   4 "thursday"
-   5 "friday"
-   6 "saturday"
-   7 "sunday"})
-
-(def ^:private months
-  "Returns the corresponding string representation of a weekday
-   By it's numeric index as in cljs-time"
-  {1  "january"
-   2  "february"
-   3  "march"
-   4  "april"
-   5  "may"
-   6  "june"
-   7  "july"
-   8  "august"
-   9  "september"
-   10 "october"
-   11 "november"
-   12 "december"})
-
 (def ^:const go-default-time
   "Zero value for golang's time var"
   "0001-01-01T00:00:00Z")
@@ -312,19 +286,12 @@
                                 :else                   (str hours-and-minutes
                                                              " "
                                                              (i18n/label
-                                                              (keyword "t"
-                                                                       (subs
-                                                                        (get day-index-to-day-of-the-week
-                                                                             (t/day-of-week parsed-time))
-                                                                        0
-                                                                        3)))
+                                                              (keyword "t" (get constants/day-index-to-day-of-the-week
+                                                                                (t/day-of-week parsed-time))))
                                                              " "
                                                              (t/day parsed-time)
                                                              " "
                                                              (i18n/label
-                                                              (keyword "t"
-                                                                       (subs (get months
-                                                                                  (t/month parsed-time))
-                                                                             0
-                                                                             3)))))]
+                                                              (keyword "t" (get constants/months
+                                                                                (t/month parsed-time))))))]
     (str " " when-to-unmute)))

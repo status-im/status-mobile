@@ -227,8 +227,7 @@
      (when (and (not locked?) id)
        {:on-press      (fn []
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:chat/navigate-to-chat (str community-id id)])
-                         (rf/dispatch [:search/home-filter-changed nil]))
+                         (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))
         :on-long-press #(rf/dispatch
                          [:show-bottom-sheet
                           {:content (fn []
