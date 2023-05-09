@@ -6,7 +6,6 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
@@ -35,9 +34,12 @@
   "Set input text for current-chat. Takes db and input text and cofx
          as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
-  [{db :db} new-input chat-id]
+  [{:keys [db] :as cofx} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
+    (rf/merge cofx
+              {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}
+              (when (empty? new-input)
+                (mentions/clear-mentions)))))
 
 (rf/defn set-input-content-height
   {:events [:chat.ui/set-input-content-height]}
@@ -111,8 +113,7 @@
                    (update-in [:chat/inputs current-chat-id :metadata]
                               dissoc
                               :sending-image))
-     :dispatch (when-not config/new-composer-enabled?
-                 [:mention/to-input-field text current-chat-id])}))
+     :dispatch [:mention/to-input-field text current-chat-id]}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -184,8 +185,6 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
-              (when-not config/new-composer-enabled?
-                {:set-text-input-value [current-chat-id ""]})
               (clean-input current-chat-id)
               (mentions/clear-mentions))))
 

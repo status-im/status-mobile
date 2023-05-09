@@ -184,6 +184,7 @@
 
 (rf/defn process-stored-event
   "Return an event description for processing a url if in the database"
+  {:events [:universal-links/process-stored-event]}
   [{:keys [db] :as cofx}]
   (when-let [url (:universal-links/url db)]
     (rf/merge cofx

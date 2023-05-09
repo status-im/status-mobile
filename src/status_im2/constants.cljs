@@ -263,7 +263,6 @@
    2 5000
    3 10000})
 
-(def ^:const max-text-size 4096)
 ;; any message that comes after this amount of ms will be grouped separately
 (def ^:const group-ms 300000)
 

@@ -46,7 +46,9 @@
        "Illustration here"]]
      [rn/view {:style (style/buttons insets)}
       [quo/button
-       {:on-press                  #(rf/dispatch [:init-root :shell-stack])
+       {:on-press                  (fn []
+                                     (rf/dispatch [:init-root :shell-stack])
+                                     (rf/dispatch [:universal-links/process-stored-event]))
         :type                      :primary
         :accessibility-label       :welcome-button
         :override-background-color (colors/custom-color profile-color 60)}

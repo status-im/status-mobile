@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.pin.view
   (:require [react-native.core :as rn]
+            [status-im2.contexts.chat.composer.reply.view :as reply]
             [status-im2.contexts.chat.messages.content.pin.style :as style]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
@@ -53,4 +54,4 @@
                              (old-style/message-timestamp-text))
        :accessibility-label :message-timestamp}
       timestamp-str]]
-    [old-message/quoted-message quoted-message true]]])
+    [reply/quoted-message quoted-message false true]]])

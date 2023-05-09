@@ -1,27 +1,29 @@
 (ns status-im2.contexts.chat.messages.content.view
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im2.contexts.chat.messages.content.style :as style]
-            [status-im2.contexts.chat.messages.content.pin.view :as pin]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-            [status-im2.contexts.chat.messages.content.text.view :as content.text]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
-            [status-im2.contexts.chat.messages.content.status.view :as status]
-            [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-            [status-im2.contexts.chat.messages.content.album.view :as album]
-            [status-im2.contexts.chat.messages.avatar.view :as avatar]
-            [status-im2.contexts.chat.messages.content.image.view :as image]
-            [status-im2.contexts.chat.messages.content.audio.view :as audio]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]
-            [reagent.core :as reagent]
-            [utils.address :as address]))
+  (:require
+    [react-native.core :as rn]
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [status-im2.contexts.chat.messages.content.style :as style]
+    [status-im2.contexts.chat.messages.content.pin.view :as pin]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+    [status-im2.contexts.chat.messages.content.text.view :as content.text]
+    [status-im2.contexts.chat.messages.drawers.view :as drawers]
+    [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
+    [status-im2.contexts.chat.messages.content.status.view :as status]
+    [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+    [status-im2.contexts.chat.messages.content.album.view :as album]
+    [status-im2.contexts.chat.messages.avatar.view :as avatar]
+    [status-im2.contexts.chat.messages.content.image.view :as image]
+    [status-im2.contexts.chat.messages.content.audio.view :as audio]
+    [quo2.core :as quo]
+    [utils.re-frame :as rf]
+    [status-im.ui2.screens.chat.messages.message :as old-message]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.common.not-implemented :as not-implemented]
+    [utils.datetime :as datetime]
+    [reagent.core :as reagent]
+    [utils.address :as address]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -109,7 +111,7 @@
           :on-long-press       #(on-long-press message-data context)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
-            [old-message/quoted-message quoted-message])
+            [reply/quoted-message quoted-message])
           [rn/view
            {:style {:padding-horizontal 12
                     :flex-direction     :row}}
