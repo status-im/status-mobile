@@ -302,7 +302,7 @@
 (defn format-mute-till
   [muted-till-string]
   (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
-        hours-and-minutes (str (t/hour parsed-time)
+        hours-and-minutes (str (t/hour (t/plus parsed-time time-zone-offset))
                                ":"
                                (t/minute parsed-time))
         when-to-unmute    (cond (= go-default-time
