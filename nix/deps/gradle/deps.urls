@@ -310,7 +310,7 @@ https://dl.google.com/dl/android/maven2/com/android/zipflinger/4.1.0/zipflinger-
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.0.0/material-1.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.2.0-alpha03/material-1.2.0-alpha03.pom
 https://dl.google.com/dl/android/maven2/com/google/test/platform/core-proto/0.0.2-dev/core-proto-0.0.2-dev.pom
-https://jitpack.io/com/github/Dimezis/BlurView/version-2.0.2/BlurView-version-2.0.2.pom
+https://jitpack.io/com/github/Dimezis/BlurView/version-2.0.3/BlurView-version-2.0.3.pom
 https://jitpack.io/com/github/status-im/function/0.0.1/function-0.0.1.pom
 https://jitpack.io/com/github/status-im/status-keycard-java/android/3.1.1/android-3.1.1.pom
 https://jitpack.io/com/github/status-im/status-keycard-java/lib/3.1.1/lib-3.1.1.pom
@@ -475,12 +475,12 @@ https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotatio
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.18.0/error_prone_annotations-2.18.0.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.19.0/error_prone_annotations-2.19.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.0.18/error_prone_parent-2.0.18.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.2.0/error_prone_parent-2.2.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.3.1/error_prone_parent-2.3.1.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.3.2/error_prone_parent-2.3.2.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.18.0/error_prone_parent-2.18.0.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.19.0/error_prone_parent-2.19.0.pom
 https://repo.maven.apache.org/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
 https://repo.maven.apache.org/maven2/com/google/google/1/google-1.pom
 https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.pom
