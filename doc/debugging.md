@@ -44,3 +44,21 @@ To do this:
 - in the opened window select "Open files and ports" and find the full path to `geth.log` (note that it won't appear until you login to Status app)
 
 ![geth.log path](images/debugging/geth-path.png)
+
+
+## Tips
+### From @ilmotta:
+
+Something I find extremely convenient for Android is to use `adb` to tail logs. I don't use macOS so I don't know if the iOS simulator offers a CLI interface with the same capabilities.
+
+But here's what I use for example:
+
+```
+ adb shell tail -n 10 -f /storage/emulated/0/Android/data/im.status.ethereum.debug/files/Download/geth.log | grep 'waku.relay'
+``` 
+
+Also to inspect logs in a more flexible manner, instead of the strict output from `make run-metro`, I prefer `adb logcat`. Combined with enabling status-mobile logs in debug by default plus filtering the logs to only what I care during development, I find this helps me inspect the app without running re-frisk because with the debug log level I can already see which events are dispatched (one of the features I like the most from re-frisk).
+
+```
+adb logcat | grep 'ReactNativeJS\|StatusModule\|GoLog'
+```
