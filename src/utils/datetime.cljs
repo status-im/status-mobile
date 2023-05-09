@@ -286,12 +286,15 @@
                                 :else                   (str hours-and-minutes
                                                              " "
                                                              (i18n/label
-                                                              (keyword "t" (get constants/int->weekday
-                                                                                (t/day-of-week parsed-time))))
+                                                              (keyword "t"
+                                                                       (get constants/int->weekday
+                                                                            (t/day-of-week
+                                                                             parsed-time))))
                                                              " "
                                                              (t/day parsed-time)
                                                              " "
                                                              (i18n/label
-                                                              (keyword "t" (get constants/months
-                                                                                (t/month parsed-time))))))]
+                                                              (keyword "t"
+                                                                       (get constants/months
+                                                                            (t/month parsed-time))))))]
     (str " " when-to-unmute)))
