@@ -39,13 +39,14 @@
    animations window-height images?
    btn-opacity z-index]
   (rn/use-effect (fn []
-                   (if (or (not (empty? @text-value)) images?)
+                   (if (or (seq @text-value) images?)
                      (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
                        (reset! z-index 1)
                        (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
                      (when (or (not= @z-index 0) (not= (reanimated/get-shared-value btn-opacity) 0))
                        (reanimated/animate btn-opacity 0)
-                       (js/setTimeout #(when (and (empty? @text-value) (not images?)) (reset! z-index 0)) 300))))
+                       (js/setTimeout #(when (and (empty? @text-value) (not images?)) (reset! z-index 0))
+                                      300))))
                  [(and (empty? @text-value) (not images?))])
   [reanimated/view
    {:style (style/send-button btn-opacity @z-index)}

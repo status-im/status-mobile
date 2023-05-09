@@ -7,7 +7,8 @@
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [utils.number :as utils.number]
-    [oops.core :as oops]))
+    [oops.core :as oops]
+    [utils.re-frame :as rf]))
 
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -67,24 +68,26 @@
    {:keys [text-value saved-cursor-position]}
    edit]
   (rn/use-effect
-    (fn []
-      (let [edit-text (get-in edit [:content :text])]
-        (when (and edit @input-ref)
-          (.focus ^js @input-ref)
-          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
-          (reset! text-value edit-text)
-          (reset! saved-cursor-position (count edit-text))))) [(:message-id edit)]))
+   (fn []
+     (let [edit-text (get-in edit [:content :text])]
+       (when (and edit @input-ref)
+         (.focus ^js @input-ref)
+         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
+         (reset! text-value edit-text)
+         (reset! saved-cursor-position (count edit-text)))))
+   [(:message-id edit)]))
 
 (defn reply-effect
   [{:keys [input-ref]}
    {:keys [container-opacity]}
    reply]
   (rn/use-effect
-    (fn []
-      (when reply
-        (reanimated/animate container-opacity 1))
-      (when (and reply @input-ref)
-        (.focus ^js @input-ref))) [(:message-id reply)]))
+   (fn []
+     (when reply
+       (reanimated/animate container-opacity 1))
+     (when (and reply @input-ref)
+       (.focus ^js @input-ref)))
+   [(:message-id reply)]))
 
 (defn audio-effect
   [{:keys [recording? gesture-enabled?]}
@@ -112,21 +115,21 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply? audio]
+  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
+   audio]
   (rn/use-effect
-    (fn []
-      (maximized-effect state animations dimensions chat-input)
-      (reenter-screen-effect state dimensions chat-input)
-      (layout-effect state)
-      (kb-default-height-effect state)
-      (background-effect state animations dimensions chat-input)
-      (images-effect props animations images?)
-      (audio-effect state animations audio)
-      (empty-effect state animations images? reply? audio)
-      (kb/add-kb-listeners props state animations dimensions keyboard-height)
-      #(component-will-unmount props))
-    [max-height]))
-
+   (fn []
+     (maximized-effect state animations dimensions chat-input)
+     (reenter-screen-effect state dimensions chat-input)
+     (layout-effect state)
+     (kb-default-height-effect state)
+     (background-effect state animations dimensions chat-input)
+     (images-effect props animations images?)
+     (audio-effect state animations audio)
+     (empty-effect state animations images? reply? audio)
+     (kb/add-kb-listeners props state animations dimensions keyboard-height)
+     #(component-will-unmount props))
+   [max-height]))
 
 (defn edit-mentions
   [{:keys [input-ref]} {:keys [text-value cursor-position]} input-with-mentions]
@@ -141,7 +144,7 @@
                                        (.setNativeProps ^js @input-ref
                                                         (clj->js {:selection {:start (count input-text)
                                                                               :end   (count
-                                                                                       input-text)}})))
+                                                                                      input-text)}})))
                                     300)))
                  [(some #(= :mention (first %)) (seq input-with-mentions))]))
 
@@ -150,21 +153,22 @@
    {:keys [text-value]}
    input-text]
   (rn/use-effect
-    (fn []
-      (when (and input-text (not= @text-value input-text))
-        (when @input-ref
-          (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
-        (reset! text-value input-text)))
-    [input-text]))
+   (fn []
+     (when (and input-text (not= @text-value input-text))
+       (when @input-ref
+         (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
+       (reset! text-value input-text)
+       (rf/dispatch [:mention/on-change-text input-text])))
+   [input-text]))
 
 (defn did-mount
   [{:keys [selectable-input-ref input-ref selection-manager]}]
   (rn/use-effect
-    (fn []
-      (when platform/android?
-        (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
-              text-input-handle            (rn/find-node-handle @input-ref)]
-          (oops/ocall selection-manager
-                      :setupMenuItems
-                      selectable-text-input-handle
-                      text-input-handle))))))
+   (fn []
+     (when platform/android?
+       (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
+             text-input-handle            (rn/find-node-handle @input-ref)]
+         (oops/ocall selection-manager
+                     :setupMenuItems
+                     selectable-text-input-handle
+                     text-input-handle))))))
