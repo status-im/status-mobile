@@ -335,7 +335,11 @@
 
 (def ^:const image-description-in-lightbox? false)
 (def ^:const int->weekday
+<<<<<<< HEAD
   "Maps the corresponding string representation of a weekday
+=======
+  "Returns the corresponding string representation of a weekday
+>>>>>>> cd2482100 (Refactor)
    By it's numeric index as in cljs-time"
   {1 "mon"
    2 "tue"
