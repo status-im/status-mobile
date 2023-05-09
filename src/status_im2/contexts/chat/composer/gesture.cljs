@@ -56,7 +56,7 @@
 
 (defn drag-gesture
   [{:keys [input-ref] :as props}
-   {:keys [gesture-enabled?] :as state}
+   {:keys [gesture-enabled? text-value] :as state}
    {:keys [height saved-height last-height opacity background-y container-opacity] :as animations}
    {:keys [max-height lines] :as dimensions}
    keyboard-shown]
@@ -67,6 +67,7 @@
         (gesture/on-start (fn [event]
                             (if-not keyboard-shown
                               (do ; focus and end
+                                (reset! text-value (str (oops/oget event "velocityY")))
                                 (when (< (oops/oget event "velocityY") constants/velocity-threshold)
                                   (reanimated/set-shared-value container-opacity 1)
                                   (reanimated/set-shared-value last-height max-height))
