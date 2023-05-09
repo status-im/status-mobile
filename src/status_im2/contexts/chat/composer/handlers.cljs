@@ -136,8 +136,6 @@
         (reset! selection-event nil)))))
 
 (defn layout
-  [event
-   {:keys [lock-layout?]}
-   blur-height]
-  (when (utils/update-blur-height? event lock-layout? blur-height)
+  [event state blur-height]
+  (when (utils/update-blur-height? event state blur-height)
     (reanimated/set-shared-value blur-height (oops/oget event "nativeEvent.layout.height"))))

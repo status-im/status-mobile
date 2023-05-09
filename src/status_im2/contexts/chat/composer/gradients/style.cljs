@@ -25,7 +25,7 @@
    :style  (top-gradient-style opacity z-index)})
 
 (def bottom-gradient-style
-  {:height   (if platform/ios? (:line-height typography/paragraph-1) 32)
+  {:height   (:line-height typography/paragraph-1)
    :position :absolute
    :bottom   0
    :left     0

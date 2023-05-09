@@ -5,7 +5,7 @@
 
 (def ^:const bar-container-height 20)
 
-(def ^:const input-height (if platform/ios? 32 42))
+(def ^:const input-height 32)
 
 (def ^:const actions-container-height 56)
 
@@ -23,7 +23,7 @@
 
 (def ^:const mentions-max-height 240)
 
-(def ^:const extra-content-offset (if platform/ios? 6 0))
+(def ^:const extra-content-offset (if platform/ios? 6 -10))
 
 (def ^:const content-change-threshold 10)
 

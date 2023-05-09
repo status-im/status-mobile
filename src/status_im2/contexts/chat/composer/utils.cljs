@@ -55,8 +55,9 @@
       (> new-height (* constants/background-threshold max-height))))
 
 (defn update-blur-height?
-  [event lock-layout? layout-height]
+  [event {:keys [lock-layout? focused?]} layout-height]
   (or (not @lock-layout?)
+      (not @focused?)
       (> (reanimated/get-shared-value layout-height) (oops/oget event "nativeEvent.layout.height"))))
 
 (defn calc-lines
