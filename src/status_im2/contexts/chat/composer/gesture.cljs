@@ -109,3 +109,5 @@
                                   (minimize props state)
                                   (bounce-back animations dimensions starting-opacity)))
                               (reset! gesture-enabled? true))))))))
+
+
