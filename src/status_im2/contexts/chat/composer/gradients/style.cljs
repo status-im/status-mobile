@@ -2,7 +2,6 @@
   (:require
     [quo2.foundations.colors :as colors]
     [quo2.foundations.typography :as typography]
-    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))
 
 (defn top-gradient-style
@@ -39,4 +38,3 @@
    :start  {:x 0 :y 1}
    :end    {:x 0 :y 0}
    :style  bottom-gradient-style})
-
