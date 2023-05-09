@@ -29,7 +29,7 @@
 
 (def ^:const drag-threshold 30)
 
-(def ^:const velocity-threshold -1000)
+(def ^:const velocity-threshold (if platform/ios? -1000 -500))
 
 (def ^:const background-threshold 0.75)
 
