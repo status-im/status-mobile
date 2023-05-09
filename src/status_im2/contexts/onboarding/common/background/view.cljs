@@ -3,7 +3,10 @@
             [react-native.blur :as blur]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+            [oops.core :refer [oget]]
             [status-im2.common.resources :as resources]
+            [status-im.async-storage.core :as async-storage]
+            [status-im2.contexts.shell.animation :as shell.animation]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.background.style :as style]
             [react-native.reanimated :as reanimated]
@@ -29,6 +32,27 @@
 (defonce progress (atom nil))
 (defonce paused (atom nil))
 
+(defn store-screen-height
+  [evt]
+  (let [window-height (rf/sub [:dimensions/window-height])
+        height        (or (oget evt "nativeEvent" "layout" "height") 0)
+        width         (or (oget evt "nativeEvent" "layout" "width") 0)]
+    ;; Layout height calculation
+    ;; 1. Make sure height is more than width, and on-layout is not fired while the
+    ;; screen is horizontal
+    ;; 2. Initialize values with 0 in case of nil
+    ;; 3. In the case of notch devices, the dimensions height will be smaller than
+    ;; on-layout,
+    ;; (without status bar height included)
+    ;; https://github.com/status-im/status-mobile/issues/14633
+    ;; 4. In the case of devices without a notch, both heights should be the same,
+    ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
+    (when (and (> height width)
+               (>= (+ height 5) (or window-height 0))
+               (not= height @shell.animation/screen-height))
+      (reset! shell.animation/screen-height height)
+      (async-storage/set-item! :screen-height height))))
+
 (defn f-view
   [dark-overlay?]
   (let [view-id      (rf/sub [:view-id])
@@ -46,7 +70,8 @@
      [view-id])
 
     [rn/view
-     {:style style/background-container}
+     {:style     style/background-container
+      :on-layout store-screen-height}
      [carousel/view
       {:animate?          animate?
        :progress          progress
