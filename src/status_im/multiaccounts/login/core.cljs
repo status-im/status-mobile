@@ -739,7 +739,8 @@
      (merge
       {:db (update db :keycard dissoc :application-info)}
       (when keycard-multiaccount? {:navigate-to :keycard-login-pin}))
-     (open-login (select-keys multiaccount [:key-uid :name :public-key :images])))))
+     (open-login (select-keys multiaccount
+                              [:key-uid :name :public-key :images :customization-color])))))
 
 (rf/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

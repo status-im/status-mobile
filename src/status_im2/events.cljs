@@ -43,7 +43,8 @@
         (rf/merge cofx
                   (multiaccounts.login/open-login (select-keys
                                                    multiaccount
-                                                   [:key-uid :name :public-key :images]))
+                                                   [:key-uid :name :public-key :images
+                                                    :customization-color]))
                   (keychain/get-auth-method (:key-uid multiaccount))))
       (navigation/init-root cofx :intro))))
 
