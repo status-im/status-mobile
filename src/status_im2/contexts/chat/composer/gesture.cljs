@@ -83,7 +83,7 @@
                  new-height     (- (reanimated/get-shared-value saved-height) translation)
                  bounded-height (utils/bounded-val new-height min-height max-height)]
              (when keyboard-shown
-               (if (> new-height min-height)
+               (if (>= new-height min-height)
                  (do ; expand sheet
                    (reanimated/set-shared-value height bounded-height)
                    (set-opacity (oops/oget event "velocityY")

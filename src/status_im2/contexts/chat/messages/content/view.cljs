@@ -111,7 +111,7 @@
           :on-long-press       #(on-long-press message-data context)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
-            [reply/reply-message quoted-message])
+            [reply/quoted-message quoted-message])
           [rn/view
            {:style {:padding-horizontal 12
                     :flex-direction     :row}}

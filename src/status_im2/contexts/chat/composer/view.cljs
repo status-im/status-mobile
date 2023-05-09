@@ -64,6 +64,7 @@
         show-bottom-gradient?                    (utils/show-bottom-gradient? state dimensions)
         cursor-pos                               (utils/cursor-y-position-relative-to-container props
                                                                                                 state)]
+    (effects/did-mount props)
     (effects/initialize props
                         state
                         animations
@@ -72,9 +73,9 @@
                         keyboard-height
                         (boolean (seq images))
                         reply
-                        edit
                         audio)
-    (effects/setup-selection props)
+    (effects/edit-effect props state edit)
+    (effects/reply-effect props animations reply)
     (effects/update-input-mention props state input-text)
     (effects/edit-mentions props state input-with-mentions)
     [:<>
