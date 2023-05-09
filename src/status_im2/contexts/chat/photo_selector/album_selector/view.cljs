@@ -1,0 +1,72 @@
+(ns status-im2.contexts.chat.photo-selector.album-selector.view
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
+    [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
+
+(defn album
+  [{:keys [title count uri]} index _ selected-album]
+  (let [selected? (= selected-album title)]
+    [rn/touchable-opacity
+     {:on-press            (fn []
+                             (rf/dispatch [:chat.ui/camera-roll-select-album title])
+                             (rf/dispatch [:navigate-back]))
+      :style               (style/album-container selected?)
+      :accessibility-label (str "album-" index)}
+     [rn/image
+      {:source {:uri uri}
+       :style  style/cover}]
+     [rn/view {:style {:margin-left 12}}
+      [quo/text
+       {:weight          :medium
+        :ellipsize-mode  :tail
+        :number-of-lines 1
+        :style           {:margin-right 50}}
+       title]
+      [quo/text
+       {:size  :paragraph-2
+        :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+       (str count " " (i18n/label :t/images))]]
+     (when selected?
+       [rn/view
+        {:style {:position :absolute
+                 :right    16}}
+        [quo/icon :i/check
+         {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]])]))
+
+(defn section-header
+  [{:keys [title]}]
+  (when (not= title "smart-albums")
+    [quo/divider-label
+     {:label           title
+      :container-style style/divider}]))
+
+(defn key-fn
+  [item index]
+  (str (:title item) index))
+
+(defn album-selector
+  [{:keys [on-scroll]}]
+  (rf/dispatch [:chat.ui/camera-roll-get-albums])
+  (fn [{:keys [scroll-enabled]}]
+    (let [albums         (rf/sub [:camera-roll/albums])
+          selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+      [rn/view {:style {:padding-top 20}}
+       [album-title false]
+       [gesture/section-list
+        {:data                           albums
+         :render-fn                      album
+         :render-data                    selected-album
+         :sections                       albums
+         :sticky-section-headers-enabled false
+         :render-section-header-fn       section-header
+         :style                          {:margin-top 12}
+         :content-container-style        {:padding-bottom 40}
+         :key-fn                         key-fn
+         :scroll-enabled                 @scroll-enabled
+         :on-scroll                      on-scroll}]])))
