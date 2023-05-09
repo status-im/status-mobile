@@ -513,6 +513,7 @@
                             key-uid
                             (types/clj->json multiaccount-data)
                             (types/clj->json settings)
+                            ""
                             current-password#
                             new-password
                             callback))
