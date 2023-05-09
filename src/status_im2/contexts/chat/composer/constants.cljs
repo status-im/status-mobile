@@ -11,7 +11,9 @@
 
 (def ^:const composer-default-height (+ bar-container-height input-height actions-container-height))
 
-(def ^:const multiline-minimized-height (+ input-height 18))
+(def ^:const line-height (:line-height typography/paragraph-1))
+
+(def ^:const multiline-minimized-height (+ input-height (if platform/ios? 18 line-height)))
 
 (def ^:const empty-opacity 0.7)
 
@@ -32,7 +34,5 @@
 (def ^:const velocity-threshold (if platform/ios? -1000 -500))
 
 (def ^:const background-threshold 0.75)
-
-(def ^:const line-height (:line-height typography/paragraph-1))
 
 (def ^:const max-text-size 4096)
