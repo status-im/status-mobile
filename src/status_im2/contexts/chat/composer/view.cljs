@@ -74,8 +74,8 @@
                         (boolean (seq images))
                         reply
                         audio)
-    (effects/edit-effect props state edit)
-    (effects/reply-effect props animations reply)
+    (effects/edit props state edit)
+    (effects/reply props animations reply)
     (effects/update-input-mention props state input-text)
     (effects/edit-mentions props state input-with-mentions)
     [:<>

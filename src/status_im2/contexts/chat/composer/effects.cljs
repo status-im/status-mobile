@@ -63,32 +63,6 @@
   (when-not images?
     (reset! sending-images? false)))
 
-(defn edit-effect
-  [{:keys [input-ref]}
-   {:keys [text-value saved-cursor-position]}
-   edit]
-  (rn/use-effect
-   (fn []
-     (let [edit-text (get-in edit [:content :text])]
-       (when (and edit @input-ref)
-         (.focus ^js @input-ref)
-         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
-         (reset! text-value edit-text)
-         (reset! saved-cursor-position (count edit-text)))))
-   [(:message-id edit)]))
-
-(defn reply-effect
-  [{:keys [input-ref]}
-   {:keys [container-opacity]}
-   reply]
-  (rn/use-effect
-   (fn []
-     (when reply
-       (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref)
-       (.focus ^js @input-ref)))
-   [(:message-id reply)]))
-
 (defn audio-effect
   [{:keys [recording? gesture-enabled?]}
    {:keys [container-opacity]}
@@ -130,6 +104,32 @@
      (kb/add-kb-listeners props state animations dimensions keyboard-height)
      #(component-will-unmount props))
    [max-height]))
+
+(defn edit
+  [{:keys [input-ref]}
+   {:keys [text-value saved-cursor-position]}
+   edit]
+  (rn/use-effect
+   (fn []
+     (let [edit-text (get-in edit [:content :text])]
+       (when (and edit @input-ref)
+         (.focus ^js @input-ref)
+         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
+         (reset! text-value edit-text)
+         (reset! saved-cursor-position (count edit-text)))))
+   [(:message-id edit)]))
+
+(defn reply
+  [{:keys [input-ref]}
+   {:keys [container-opacity]}
+   reply]
+  (rn/use-effect
+   (fn []
+     (when reply
+       (reanimated/animate container-opacity 1))
+     (when (and reply @input-ref)
+       (.focus ^js @input-ref)))
+   [(:message-id reply)]))
 
 (defn edit-mentions
   [{:keys [input-ref]} {:keys [text-value cursor-position]} input-with-mentions]
