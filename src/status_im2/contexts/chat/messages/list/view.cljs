@@ -112,7 +112,7 @@
         base  (if edit (- composer.constants/edit-container-height) base)
         base  (if (seq images) (- composer.constants/images-container-height) base)]
     (if (not focused?)
-      (if (> lines 1) (+ -18 base) base)
+      (if (> lines 1) (+ (- composer.constants/multiline-minimized-height) base) base)
       (if (> lines 12)
         curr-pos
         (if (> lines 1) (- (- input-content-height composer.constants/input-height base)) base)))))
