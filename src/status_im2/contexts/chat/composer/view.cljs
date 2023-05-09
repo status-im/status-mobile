@@ -140,5 +140,5 @@
         state         (utils/init-state)]
     [rn/view
      [reanimated/view {:style (style/background opacity background-y window-height)}]
-     [sub-view/blur-view blur-height]
+     [sub-view/blur-view blur-height (:focused? state)]
      [:f> sheet-component extra-params props state]]))
