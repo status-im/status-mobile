@@ -286,7 +286,7 @@
                                 :else                   (str hours-and-minutes
                                                              " "
                                                              (i18n/label
-                                                              (keyword "t" (get constants/day-index-to-day-of-the-week
+                                                              (keyword "t" (get constants/int->weekday
                                                                                 (t/day-of-week parsed-time))))
                                                              " "
                                                              (t/day parsed-time)

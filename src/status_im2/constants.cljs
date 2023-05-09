@@ -334,7 +334,7 @@
 (def ^:const auth-method-none "none")
 
 (def ^:const image-description-in-lightbox? false)
-(def ^:const day-index-to-day-of-the-week
+(def ^:const int->weekday
   "Returns the corresponding string representation of a weekday
    By it's numeric index as in cljs-time"
   {1 "mon"
