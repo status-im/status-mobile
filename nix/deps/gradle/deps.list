@@ -367,7 +367,7 @@ com.facebook.soloader:annotation:0.10.1
 com.facebook.soloader:nativeloader:0.10.1
 com.facebook.soloader:soloader:0.10.1
 com.facebook.yoga:proguard-annotations:1.19.0
-com.github.Dimezis:BlurView:version-2.0.2
+com.github.Dimezis:BlurView:version-2.0.3
 com.github.bumptech.glide:annotations:4.12.0
 com.github.bumptech.glide:compiler:4.12.0
 com.github.bumptech.glide:disklrucache:4.12.0

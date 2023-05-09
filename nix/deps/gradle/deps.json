@@ -4680,16 +4680,16 @@
   },
 
   {
-    "path": "com/github/Dimezis/BlurView/version-2.0.2",
+    "path": "com/github/Dimezis/BlurView/version-2.0.3",
     "repo": "https://jitpack.io",
     "files": {
-      "BlurView-version-2.0.2.pom": {
-        "sha1": "7b29beaf53b0e649c9598b61a2ba6432e0d9f63b",
-        "sha256": "002clz76ds41wn2dz5qy57r9xl437dl75zy2nxzrhv4cp45jiypc"
+      "BlurView-version-2.0.3.pom": {
+        "sha1": "678c8558151c1f1f37ab3e5e8baf00f1306ab6f5",
+        "sha256": "1llsi24w3zsmdvs8vgxc8hxm6lqz44a06fjhap33z4lllbyhy1ls"
       },
-      "BlurView-version-2.0.2.aar": {
-        "sha1": "519c2433da424f955c805bbc54466d3b10289466",
-        "sha256": "01rrg39davjar4hld6j0i3rjcajii66z50dpjy668431wchwxs4j"
+      "BlurView-version-2.0.3.aar": {
+        "sha1": "1a6b90b3dbd0714e0f9fd3a09196072c7da300a0",
+        "sha256": "18gbs09yj9z26ccjwzmlc4s12cp9pd4m763msc1y4hyyybizpqq6"
       }
     }
   },
@@ -7131,16 +7131,16 @@
   },
 
   {
-    "path": "com/google/errorprone/error_prone_annotations/2.18.0",
+    "path": "com/google/errorprone/error_prone_annotations/2.19.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "error_prone_annotations-2.18.0.pom": {
-        "sha1": "6d7bbfd3d7567e4c18e981a675ecda707e8a2db1",
-        "sha256": "1p5xswxnd9cjz1b2zldws560ld4dlm17c0awb9xr39fcgmwka0cj"
+      "error_prone_annotations-2.19.0.pom": {
+        "sha1": "a97fea6db80189ea6bca7722d4eea86996088f6c",
+        "sha256": "19dcjlah6rlccqq59532811jjs51b5f7rwpq6wys2mhv61g2amgq"
       },
-      "error_prone_annotations-2.18.0.jar": {
-        "sha1": "89b684257096f548fa39a7df9fdaa409d4d4df91",
-        "sha256": "1bjlxady2jg83lmicb2jil2vf6zjm29sj1qvznj8hsc1f75i8s4y"
+      "error_prone_annotations-2.19.0.jar": {
+        "sha1": "a715b4d2e99dc18b8cec61ae98ac79ebecabeb53",
+        "sha256": "1sx8w1b8b3v42027vxqmlrqyirn45w0lvmwrbf46cr641sx54p6b"
       }
     }
   },
@@ -7190,12 +7190,12 @@
   },
 
   {
-    "path": "com/google/errorprone/error_prone_parent/2.18.0",
+    "path": "com/google/errorprone/error_prone_parent/2.19.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "error_prone_parent-2.18.0.pom": {
-        "sha1": "b1779a677965027cd2a3de91e61a80102086bb30",
-        "sha256": "1bazw49mb0246s2nbkxvynk3npayk1vq6vzivs8n6imzqycjxwj7"
+      "error_prone_parent-2.19.0.pom": {
+        "sha1": "7c45180241eec291ab6b2088e588097364db7261",
+        "sha256": "0s5asyyrm05h7l85hgm5saxpx5s205ppgky155nc6h9ipq0fgf3j"
       }
     }
   },
