@@ -11,9 +11,9 @@
    [rn/view {:style (style/bar)}]])
 
 (defn f-blur-view
-  [layout-height]
-  [reanimated/view {:style (style/blur-container layout-height)}
+  [layout-height focused?]
+  [reanimated/view {:style (style/blur-container layout-height focused?)}
    [blur/view (style/blur-view)]])
 (defn blur-view
-  [layout-height]
-  [:f> f-blur-view layout-height])
+  [layout-height focused?]
+  [:f> f-blur-view layout-height focused?])

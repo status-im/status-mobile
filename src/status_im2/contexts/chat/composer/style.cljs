@@ -85,11 +85,11 @@
     :z-index          1}))
 
 (defn blur-container
-  [height]
+  [height focused?]
   (reanimated/apply-animations-to-style
    {:height height}
    {:position                :absolute
-    :elevation               10
+    :elevation               (if-not @focused? 10 0)
     :left                    0
     :right                   0
     :bottom                  0
