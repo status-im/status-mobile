@@ -39,13 +39,13 @@
    animations window-height images?
    btn-opacity z-index]
   (rn/use-effect (fn []
-                   (if (or (not-empty @text-value) images?)
-                     (when-not (= @z-index 1)
+                   (if (or (not (empty? @text-value)) images?)
+                     (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
                        (reset! z-index 1)
                        (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
-                     (when-not (= @z-index 0)
+                     (when (or (not= @z-index 0) (not= (reanimated/get-shared-value btn-opacity) 0))
                        (reanimated/animate btn-opacity 0)
-                       (js/setTimeout #(reset! z-index 0) 300))))
+                       (js/setTimeout #(when (and (empty? @text-value) (not images?)) (reset! z-index 0)) 300))))
                  [(and (empty? @text-value) (not images?))])
   [reanimated/view
    {:style (style/send-button btn-opacity @z-index)}
@@ -64,7 +64,7 @@
 
 (defn audio-button
   [{:keys [record-reset-fn]}
-   {:keys [record-permission? recording? gesture-enabled?]}
+   {:keys [record-permission? recording? gesture-enabled? focused?]}
    {:keys [container-opacity]}]
   (let [audio (rf/sub [:chats/sending-audio])]
     [rn/view
@@ -85,15 +85,17 @@
                                              (reset! recording? false)
                                              (reset! gesture-enabled? true)
                                              (rf/dispatch [:chat/send-audio file-path duration])
-                                             (reanimated/animate container-opacity
-                                                                 constants/empty-opacity)
+                                             (when-not @focused?
+                                               (reanimated/animate container-opacity
+                                                                   constants/empty-opacity))
                                              (rf/dispatch [:chat.ui/set-input-audio nil]))
        :on-cancel                          (fn []
                                              (when @recording?
                                                (reset! recording? false)
                                                (reset! gesture-enabled? true)
-                                               (reanimated/animate container-opacity
-                                                                   constants/empty-opacity)
+                                               (when-not @focused?
+                                                 (reanimated/animate container-opacity
+                                                                     constants/empty-opacity))
                                                (rf/dispatch [:chat.ui/set-input-audio nil])))
        :on-check-audio-permissions         (fn []
                                              (permissions/permission-granted?

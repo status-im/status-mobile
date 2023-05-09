@@ -27,7 +27,7 @@
   ;; use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
   ;; {:selection {:start selection-start :end selection-end}}))
   (let [manager (rn/selectable-text-input-manager)]
-    (oops/ocall manager :set-selection text-input-handle selection-start selection-end)))
+    (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
 
 (defn reset-to-first-level-menu
   [first-level? menu-items]

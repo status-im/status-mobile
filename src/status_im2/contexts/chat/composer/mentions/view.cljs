@@ -14,7 +14,7 @@
 (defn update-cursor
   [user {:keys [cursor-position input-ref]}]
   (when platform/android?
-    (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position)]
+    (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position 1)]
       (reset! cursor-position new-cursor-pos)
       (reagent/next-tick #(when @input-ref
                             (.setNativeProps ^js @input-ref

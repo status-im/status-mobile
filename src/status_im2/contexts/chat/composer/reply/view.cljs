@@ -78,7 +78,7 @@
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
 
-(defn reply-message
+(defn quoted-message
   [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?
            album-images-count]}
    in-chat-input? pin? recording-audio?]
@@ -147,7 +147,7 @@
         height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when reply [reply-message reply true false recording?])]))
+     (when reply [quoted-message reply true false recording?])]))
 
 (defn view
   [{:keys [recording?]}]

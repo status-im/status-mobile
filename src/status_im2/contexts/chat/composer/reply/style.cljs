@@ -5,8 +5,8 @@
   [pin? in-chat-input?]
   {:flex-direction :row
    :height         (when-not pin? 24)
-   :margin-left    (when-not in-chat-input? 26)
-   :margin-bottom  (when-not in-chat-input? 8)})
+   :margin-left    (when (and (not in-chat-input?) (not pin?)) 26)
+   :margin-bottom  (when (and (not in-chat-input?) (not pin?)) 8)})
 (defn reply-content
   [pin?]
   {:padding-right  (when-not pin? 10)
