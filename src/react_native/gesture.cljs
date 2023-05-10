@@ -77,6 +77,7 @@
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
 
+
 ;;; Custom gesture section-list
 (defn- flatten-sections
   [sections]
