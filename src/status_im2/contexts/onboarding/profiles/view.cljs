@@ -167,7 +167,7 @@
           :size  :default
           :icon  :i/info
           :style style/info-message}
-         (i18n/label :t/oops-wrong-password)])]
+         error])]
      [quo/button
       {:size                40
        :type                :ghost
