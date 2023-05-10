@@ -98,7 +98,7 @@
         [rn/selectable-text-input
          {:ref        #(reset! (:selectable-input-ref props) %)
           :menu-items @(:menu-items state)
-          :style      (style/input-view props state)}
+          :style      (style/input-view state)}
          [rn/text-input
           {:ref                      #(reset! (:input-ref props) %)
            :default-value            @(:text-value state)
@@ -118,7 +118,7 @@
            :multiline                true
            :placeholder              (i18n/label :t/type-something)
            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-           :style                    (style/input-text)
+           :style                    (style/input-text props state)
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
         [gradients/view props state animations show-bottom-gradient?]]
