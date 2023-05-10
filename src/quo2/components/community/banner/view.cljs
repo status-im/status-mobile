@@ -1,20 +1,15 @@
-(ns quo2.components.community.discover.view
-  (:require [quo2.components.community.discover.style :as style]
+(ns quo2.components.community.banner.view
+  (:require [quo2.components.community.banner.style :as style]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.common.resources :as resources]))
+            [react-native.core :as rn]))
 
-(defn card-title-and-description
+(defn- card-title-and-description
   [title description]
   [rn/view
-   {:flex           1
-    :padding-top    8
-    :padding-bottom 8
-    :border-radius  12}
+   {:style style/banner-content}
    [rn/view
-    {:flex               1
-     :padding-horizontal 12}
+    {:style style/banner-title}
     [text/text
      {:accessibility-label :community-name-text
       :ellipsize-mode      :tail
@@ -33,8 +28,8 @@
       :size                :paragraph-2}
      description]]])
 
-(defn discover-card
-  [{:keys [title description on-press accessibility-label screen]}]
+(defn view
+  [{:keys [title description on-press accessibility-label banner]}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
@@ -43,15 +38,9 @@
            {:background-color (colors/theme-colors
                                colors/white
                                colors/neutral-90)}
-           {:flex-direction    :row
-            :margin-horizontal 20
-            :margin-vertical   8
-            :height            56
-            :padding-right     12})
+           style/banner-card)
     [card-title-and-description title description]
     [rn/image
      {:style               style/discover-illustration
-      :source              (resources/get-image (if (= screen :communities)
-                                                  :discover
-                                                  :invite-friends))
+      :source              banner
       :accessibility-label :discover-communities-illustration}]]])
