@@ -7,8 +7,7 @@
               TouchableWithoutFeedback
               gestureHandlerRootHOC
               FlatList
-              ScrollView
-              TextInput)]
+              ScrollView)]
             [react-native.flat-list :as rn-flat-list]
             [reagent.core :as reagent]))
 
@@ -77,8 +76,6 @@
   [gesture-flat-list (rn-flat-list/base-list-props props)])
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
-
-(def text-input (reagent/adapt-react-class TextInput))
 
 ;;; Custom gesture section-list
 (defn- flatten-sections
