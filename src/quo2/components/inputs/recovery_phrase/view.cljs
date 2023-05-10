@@ -31,7 +31,8 @@
         set-default #(reset! state :default)]
     (fn [{:keys [customization-color override-theme blur? on-focus on-blur mark-errors?
                  error-pred word-limit]
-          :or   {customization-color :blue}
+          :or   {customization-color :blue
+                 error-pred          (constantly false)}
           :as   props}
          text]
       (let [extra-props (apply dissoc props custom-props)]
