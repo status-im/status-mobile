@@ -14,16 +14,16 @@
 
 (def get-name-first-char
   (memoize
-    (fn [name]
-      ;; TODO: for now we check if the first letter is a #
-      ;; which means it is most likely a public chat and
-      ;; use the second letter if that is the case
-      ;; a broader refactoring should clean up upstream params
-      ;; for default-chat-icon
-      (string/capitalize (if (and (= "#" (first name))
-                                  (< 1 (count name)))
-                           (second name)
-                           (first name))))))
+   (fn [name]
+     ;; TODO: for now we check if the first letter is a #
+     ;; which means it is most likely a public chat and
+     ;; use the second letter if that is the case
+     ;; a broader refactoring should clean up upstream params
+     ;; for default-chat-icon
+     (string/capitalize (if (and (= "#" (first name))
+                                 (< 1 (count name)))
+                          (second name)
+                          (first name))))))
 
 (defn default-chat-icon
   [name styles]
@@ -48,13 +48,13 @@
 
 (defn profile-photo-plus-dot-view
   [{:keys [public-key photo-container photo-path community?]}]
-  (let [photo-container (if (nil? photo-container)
-                          styles/container-chat-list
-                          photo-container)
-        size (:width photo-container)
-        dot-styles (visibility-status-utils/icon-visibility-status-dot
-                     public-key
-                     size)
+  (let [photo-container         (if (nil? photo-container)
+                                  styles/container-chat-list
+                                  photo-container)
+        size                    (:width photo-container)
+        dot-styles              (visibility-status-utils/icon-visibility-status-dot
+                                 public-key
+                                 size)
         dot-accessibility-label (:accessibility-label dot-styles)]
     [rn/view
      {:style               photo-container
