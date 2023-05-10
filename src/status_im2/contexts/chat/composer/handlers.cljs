@@ -37,10 +37,11 @@
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
            maximized?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
-   {:keys [lines content-height max-height window-height]}
+   {:keys [content-height max-height window-height]}
    images
    reply]
-  (let [min-height    (utils/get-min-height lines)
+  (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
+        min-height    (utils/get-min-height lines)
         reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
     (reset! focused? false)
     (rf/dispatch [:chat.ui/set-input-focused false])
@@ -61,13 +62,17 @@
 
 (defn content-size-change
   [event
-   {:keys [maximized?]}
+   {:keys [maximized? lock-layout?]}
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
-    (let [content-size (+ (oops/oget event "nativeEvent.contentSize.height")
-                          constants/extra-content-offset)
+    (let [event-size   (oops/oget event "nativeEvent.contentSize.height")
+          content-size (+ event-size constants/extra-content-offset)
+          lines        (utils/calc-lines event-size)
+          content-size (if (= lines 1)
+                         constants/input-height
+                         (if (= lines 2) constants/multiline-minimized-height content-size))
           new-height   (utils/bounded-val content-size constants/input-height max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
@@ -83,7 +88,8 @@
         (when (= (reanimated/get-shared-value opacity) 1)
           (reanimated/animate opacity 0)
           (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
-      (rf/dispatch [:chat.ui/set-input-content-height new-height]))))
+      (rf/dispatch [:chat.ui/set-input-content-height new-height])
+      (reset! lock-layout? (> lines 2)))))
 
 (defn scroll
   [event

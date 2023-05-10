@@ -192,6 +192,10 @@
   [element]
   (.toBeNull (js/expect element)))
 
+(defn is-equal
+  [element-1 element-2]
+  (.toBe (js/expect element-1) element-2))
+
 (defn was-called
   [mock]
   (.toHaveBeenCalled (js/expect mock)))

@@ -44,7 +44,8 @@
                                                                         (boolean (seq images))
                                                                         reply
                                                                         edit)
-        lines                                    (utils/calc-lines @content-height)
+        lines                                    (utils/calc-lines (- @content-height
+                                                                      constants/extra-content-offset))
         max-lines                                (utils/calc-lines max-height)
         animations                               (utils/init-animations
                                                   lines
@@ -79,6 +80,7 @@
     (effects/update-input-mention props state input-text)
     (effects/edit-mentions props state input-with-mentions)
     [:<>
+     [sub-view/shell-button insets animations state]
      [mentions/view props state animations max-height cursor-pos]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}

@@ -18,6 +18,7 @@
 
 [Working on PR together with QA team](pipeline_process.md)
 
+[Debugging](debugging.md)
 
 
 ## Testing
