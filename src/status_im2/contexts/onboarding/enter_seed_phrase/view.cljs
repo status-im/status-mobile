@@ -39,9 +39,7 @@
          (i18n/label :t/use-recovery-phrase)]
         [quo/text
          (i18n/label-pluralize (mnemonic/words-count @seed-phrase) :t/words-n)]
-        [rn/view
-         {:style {:height            120
-                  :margin-horizontal -20}}
+        [rn/view {:style style/input-container}
          [quo/recovery-phrase-input
           {:on-change-text      (fn [t]
                                   (reset! seed-phrase (clean-seed-phrase t))

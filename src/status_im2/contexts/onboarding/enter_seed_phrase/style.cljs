@@ -8,3 +8,7 @@
    :left             0
    :right            0
    :background-color colors/neutral-80-opa-80-blur})
+
+(def input-container
+  {:height            120
+   :margin-horizontal -20})
