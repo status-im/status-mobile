@@ -79,6 +79,7 @@
     (effects/update-input-mention props state input-text)
     (effects/edit-mentions props state input-with-mentions)
     [:<>
+     [sub-view/shell-button insets animations state]
      [mentions/view props state animations max-height cursor-pos]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}

@@ -107,6 +107,11 @@
         sub-text-lines-in-view (- sub-text-lines scrolled-lines)]
     (* sub-text-lines-in-view constants/line-height)))
 
+(defn calc-shell-neg-y
+  [insets maximized?]
+  (let [neg-y (if @maximized? -50 0)]
+    (- (+ constants/bar-container-height constants/actions-container-height (:bottom insets) 6 neg-y))))
+
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
