@@ -4,17 +4,14 @@
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.composer.utils :as utils]
             [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
-            [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.composer.constants :as composer.constants]))
 
@@ -105,51 +102,6 @@
           [content.deleted/deleted-message message-data context]
           [message/message-with-reactions message-data context keyboard-shown])]))])
 
-(defn calc-shell-position
-  [curr-pos input-content-height focused? reply edit images]
-  (let [lines (utils/calc-lines input-content-height)
-        base  (if reply (- composer.constants/reply-container-height) 0)
-        base  (if edit (- composer.constants/edit-container-height) base)
-        base  (if (seq images) (- composer.constants/images-container-height) base)]
-    (if (not focused?)
-      (if (> lines 1) (+ (- composer.constants/multiline-minimized-height) base) base)
-      (if (> lines 12)
-        curr-pos
-        (if (> lines 1) (- (- input-content-height composer.constants/input-height base)) base)))))
-
-(def memoized-calc-shell-position (memoize calc-shell-position))
-
-(defn shell-button
-  [insets]
-  (let [y (reanimated/use-shared-value 0)
-        {:keys [input-content-height focused?]} (rf/sub [:chats/current-chat-input])
-        reply (rf/sub [:chats/reply-message])
-        edit (rf/sub [:chats/edit-message])
-        images (rf/sub [:chats/sending-image])
-        curr-pos (reanimated/get-shared-value y)
-        shell-position
-        (memoized-calc-shell-position curr-pos input-content-height focused? reply edit images)]
-    (rn/use-effect (fn []
-                     (reanimated/animate y shell-position))
-                   [shell-position])
-    [reanimated/view
-     {:style (reanimated/apply-animations-to-style
-              {:transform [{:translate-y y}]}
-              {:bottom   (+ composer.constants/composer-default-height (:bottom insets) 6)
-               :position :absolute
-               :left     0
-               :right    0})}
-     [quo/floating-shell-button
-      (merge {:jump-to
-              {:on-press (fn []
-                           (rf/dispatch [:chat/close true])
-                           (rf/dispatch [:shell/navigate-to-jump-to]))
-               :label    (i18n/label :t/jump-to)
-               :style    {:align-self :center}}}
-             (when @show-floating-scroll-down-button
-               {:scroll-to-bottom {:on-press scroll-to-bottom}}))
-      {}]]))
-
 (defn messages-list-content
   [{:keys [chat-id] :as chat} insets keyboard-shown]
   (fn []
@@ -185,12 +137,10 @@
          ;; TODO https://github.com/facebook/react-native/issues/30034
          :inverted                     (when platform/ios? true)
          :style                        (when platform/android? {:scaleY -1})
-         :on-layout                    on-messages-view-layout}]
-       [:f> shell-button insets]])))
+         :on-layout                    on-messages-view-layout}]])))
 
 ;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown
-;; value
-;; updates in the parent component, but does not get passed to the children.
+;; value updates in the parent component, but does not get passed to the children.
 ;; When using listeners and resetting the value on an atom it works.
 (defn use-keyboard-visibility
   []

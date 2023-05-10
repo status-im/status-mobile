@@ -69,7 +69,8 @@
                               (do ; focus and end
                                 (when (< (oops/oget event "velocityY") constants/velocity-threshold)
                                   (reanimated/set-shared-value container-opacity 1)
-                                  (reanimated/set-shared-value last-height max-height))
+                                  (reanimated/set-shared-value last-height max-height)
+                                  (maximize state animations dimensions))
                                 (when @input-ref
                                   (.focus ^js @input-ref))
                                 (reset! gesture-enabled? false))
