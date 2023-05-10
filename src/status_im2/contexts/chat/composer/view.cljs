@@ -44,7 +44,8 @@
                                                                         (boolean (seq images))
                                                                         reply
                                                                         edit)
-        lines                                    (utils/calc-lines @content-height)
+        lines                                    (utils/calc-lines (- @content-height
+                                                                      constants/extra-content-offset))
         max-lines                                (utils/calc-lines max-height)
         animations                               (utils/init-animations
                                                   lines
