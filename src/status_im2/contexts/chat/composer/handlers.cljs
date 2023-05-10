@@ -62,7 +62,7 @@
 
 (defn content-size-change
   [event
-   {:keys [maximized?]}
+   {:keys [maximized? lock-layout?]}
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
@@ -88,7 +88,8 @@
         (when (= (reanimated/get-shared-value opacity) 1)
           (reanimated/animate opacity 0)
           (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
-      (rf/dispatch [:chat.ui/set-input-content-height new-height]))))
+      (rf/dispatch [:chat.ui/set-input-content-height new-height])
+      (reset! lock-layout? (> lines 2)))))
 
 (defn scroll
   [event

@@ -4,7 +4,6 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.style :as style]
     [status-im2.contexts.chat.composer.utils :as utils]
     [status-im2.contexts.chat.messages.list.view :as messages.list]
