@@ -171,7 +171,7 @@ def getVersionName = { ->
         }
         /* Necessary because Android Studio uses wrong PWD.
          * Is actually absolute directory path of this file. */
-        def configDir = project.projectDir.toString() 
+        def configDir = project.projectDir.toString()
         version = new File(configDir + '/../../VERSION').text
         return version.replaceAll("\\s","")
     }
@@ -200,6 +200,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    externalNativeBuild {
+        cmake {
+            version "3.10.2"
+        }
     }
 
     defaultConfig {
