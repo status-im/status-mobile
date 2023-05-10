@@ -33,7 +33,7 @@
                          ;; in case of an unknown error we show the
                          ;; error
                          (if (= error "file is not a database")
-                           (i18n/label :t/wrong-password)
+                           (i18n/label :t/oops-wrong-password)
                            error)))}
       (= (:view-id db) :progress)
       (assoc :dispatch [:navigate-to :login]))
