@@ -8,7 +8,7 @@
     {:label         (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 override-theme)
      :icon          (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 override-theme)
      :button-border (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
-     :password-icon (colors/theme-colors colors/neutral-100 colors/white override-theme)
+     :password-icon (colors/theme-colors colors/neutral-100 colors/white-opa-70 override-theme)
      :clear-icon    (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
      :cursor        (colors/theme-colors (colors/custom-color :blue 50)
                                          colors/white

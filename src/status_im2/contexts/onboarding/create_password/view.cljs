@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.create-password.view
   (:require
+    [oops.core :refer [ocall]]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -66,7 +67,8 @@
                         :shown  true}
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
        :on-change-text on-change-password
-       :on-focus       on-input-focus}]
+       :on-focus       on-input-focus
+       :auto-focus     true}]
      [rn/view {:style style/space-between-inputs}]
      [password-with-hint
       {:hint           {:text   hint-2-text
@@ -120,7 +122,7 @@
        (count)))
 
 (defn password-form
-  [{:keys [scroll-to-end-fn]}]
+  []
   (let [password                  (reagent/atom "")
         repeat-password           (reagent/atom "")
         accepts-disclaimer?       (reagent/atom false)
@@ -134,7 +136,7 @@
              :as   validations} (password-validations @password)
             password-strength   (calc-password-strength validations)
             empty-password?     (empty? @password)
-            same-passwords?     (= @password @repeat-password)
+            same-passwords?     (and (not empty-password?) (= @password @repeat-password))
             meet-requirements?  (and (not empty-password?)
                                      (utils.string/at-least-n-chars? @password 10)
                                      same-passwords?
@@ -147,9 +149,7 @@
             :passwords-match?          same-passwords?
             :empty-password?           empty-password?
             :show-password-validation? @show-password-validation?
-            :on-input-focus            (fn []
-                                         (scroll-to-end-fn)
-                                         (reset! focused-input :password))
+            :on-input-focus            #(reset! focused-input :password)
             :on-change-password        (fn [new-value]
                                          (reset! password new-value)
                                          (when (same-password-length?)
@@ -163,13 +163,13 @@
                                           (reset! show-password-validation? true))}]]
 
          [rn/view {:style style/bottom-part}
-          [rn/view {:style style/disclaimer-container}
-           [quo/disclaimer
-            {:blur?     true
-             :on-change #(swap! accepts-disclaimer? not)
-             :checked?  @accepts-disclaimer?}
-            (i18n/label :t/password-creation-disclaimer)]]
-
+          (when same-passwords?
+            [rn/view {:style style/disclaimer-container}
+             [quo/disclaimer
+              {:blur?     true
+               :on-change #(swap! accepts-disclaimer? not)
+               :checked?  @accepts-disclaimer?}
+              (i18n/label :t/password-creation-disclaimer)]])
           (when (= @focused-input :password)
             [help
              {:validations       validations
@@ -196,25 +196,41 @@
      (i18n/label
       :t/create-profile-password-info-box-description)]]])
 
-(defn create-password
+(defn- f-create-password
   []
-  (let [scroll-view-ref  (atom nil)
-        scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
+  (let [keyboard-shown?      (reagent/atom false)
+        {:keys [top bottom]} (safe-area/get-insets)]
     (fn []
-      (let [{:keys [top]} (safe-area/get-insets)]
-        [:<>
-         [background/view true]
-         [rn/scroll-view
-          {:ref                     #(reset! scroll-view-ref %)
-           :style                   style/overlay
-           :content-container-style style/content-style}
-          [navigation-bar/navigation-bar
-           {:top                   top
-            :right-section-buttons [{:type                :blur-bg
-                                     :icon                :i/info
-                                     :icon-override-theme :dark
-                                     :on-press            #(rf/dispatch
+      (rn/use-effect
+       (let [will-show-listener (ocall rn/keyboard
+                                       "addListener"
+                                       "keyboardWillShow"
+                                       #(reset! keyboard-shown? true))
+             will-hide-listener (ocall rn/keyboard
+                                       "addListener"
+                                       "keyboardWillHide"
+                                       #(reset! keyboard-shown? false))]
+         (fn []
+           (fn []
+             (ocall will-show-listener "remove")
+             (ocall will-hide-listener "remove"))))
+       [])
+      [:<>
+       [background/view true]
+       [rn/keyboard-avoiding-view
+        {:style {:flex 1}}
+        [navigation-bar/navigation-bar
+         {:top                   top
+          :right-section-buttons [{:type                :blur-bg
+                                   :icon                :i/info
+                                   :icon-override-theme :dark
+                                   :on-press            #(rf/dispatch
                                                             [:show-bottom-sheet
                                                              {:content create-password-doc
                                                               :shell?  true}])}]}]
-          [password-form {:scroll-to-end-fn scroll-to-end-fn}]]]))))
+        [password-form]
+        [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]])))
+
+(defn create-password
+  []
+  [:f> f-create-password])
