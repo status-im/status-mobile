@@ -56,7 +56,7 @@
 
 (defn drag-gesture
   [{:keys [input-ref] :as props}
-   {:keys [gesture-enabled? maximized?] :as state}
+   {:keys [gesture-enabled?] :as state}
    {:keys [height saved-height last-height opacity background-y container-opacity] :as animations}
    {:keys [max-height lines] :as dimensions}
    keyboard-shown]
