@@ -59,7 +59,7 @@
    audio-url
    (fn [base64-data]
      (let [player (audio/new-player
-                   (str "data:audio/acc;base64," base64-data)
+                   (str "data:audio/aac;base64," base64-data)
                    {:autoDestroy                 false
                     :continuesToPlayInBackground false}
                    (fn []
@@ -68,6 +68,7 @@
                      (when (and @progress-timer (= @current-player-key player-key))
                        (js/clearInterval @progress-timer)
                        (reset! progress-timer nil))))]
+       (audio/set-player-wake-lock player true)
        (swap! active-players assoc player-key player)
        (audio/prepare-player
         player
@@ -90,7 +91,8 @@
     (when-not playing?
       (reset! current-player-key player-key))
     (if (and player
-             (= (@audio-uris player-key) audio-uri))
+             (= (@audio-uris player-key) audio-uri)
+             (not= (audio/get-state player) audio/IDLE))
       (audio/toggle-playpause-player
        player
        (fn []
@@ -121,7 +123,7 @@
                          (reset! seeking-audio? false)
                          (if (> @progress 0)
                            (let [seek-time         (* audio-duration-ms @progress)
-                                 checked-seek-time (min audio-duration-ms seek-time)]
+                                 checked-seek-time (if (<= @progress 1) seek-time @progress)]
                              (seek-player
                               player-key
                               player-state
@@ -141,13 +143,20 @@
                     (if (or @seeking-audio? (#{:playing :seeking} @player-state))
                       (if (<= @progress 1) (* duration @progress) @progress)
                       duration)
-                    1000)]
+                    1000)
+        paused?    (= (audio/get-state player) audio/PAUSED)
+        app-state  (rf/sub [:app-state])]
     (rn/use-effect (fn [] #(destroy-player player-key)))
     (rn/use-effect
      (fn []
-       (when (and (some? @current-player-key)
-                  (not= @current-player-key player-key)
-                  (= @player-state :playing))
+       (when (or
+              (and (some? @current-player-key)
+                   (not= @current-player-key player-key)
+                   (= @player-state :playing))
+              (and platform/ios?
+                   (= @current-player-key player-key)
+                   (not= app-state "active")
+                   (= @player-state :playing)))
          (play-pause-player {:player-key        player-key
                              :player-state      player-state
                              :progress          progress
@@ -155,7 +164,7 @@
                              :audio-duration-ms duration
                              :seeking-audio?    seeking-audio?
                              :user-interaction? false})))
-     [@current-player-key])
+     [@current-player-key app-state])
     (if (= @player-state :error)
       [quo/text
        {:style               style/error-label
@@ -177,10 +186,12 @@
                                                    :user-interaction? true})
          :style               (style/play-pause-container)}
         [quo/icon
-         (case @player-state
-           :preparing :i/loading
-           :playing   :i/pause-audio
-           :i/play-audio)
+         (cond
+           (= @player-state :preparing)
+           :i/loading
+           (and (= @player-state :playing) (not paused?))
+           :i/pause-audio
+           :else :i/play-audio)
          {:size  20
           :color colors/white}]]
        [:f> quo/soundtrack
