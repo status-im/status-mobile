@@ -31,6 +31,7 @@
                      (reanimated/animate height
                                          (if (seq images) constants/images-container-height 0)))
                    [images])
+    (println "qqq" images)
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:height height} {:margin-horizontal -20})}
      [gesture/flat-list
