@@ -34,7 +34,7 @@
 
 (defn store-screen-height
   [evt]
-  (let [window-height (rf/sub [:dimensions/window-height])
+  (let [window-height (:height (rn/get-window))
         height        (or (oget evt "nativeEvent" "layout" "height") 0)
         width         (or (oget evt "nativeEvent" "layout" "width") 0)]
     ;; Layout height calculation
