@@ -30,7 +30,7 @@
    user])
 
 (defn- f-view
-  [suggestions-atom props state animations {:keys [reply edit images]} max-height cursor-pos]
+  [suggestions-atom props state animations max-height cursor-pos images reply edit]
   (let [suggestions  (rf/sub [:chat/mention-suggestions])
         opacity      (reanimated/use-shared-value (if (seq suggestions) 1 0))
         size         (count suggestions)
@@ -38,9 +38,9 @@
                       :insets          (safe-area/get-insets)
                       :curr-height     (reanimated/get-shared-value (:height animations))
                       :window-height   (:height (rn/get-window))
+                      :images          images
                       :reply           reply
-                      :edit            edit
-                      :images          images}
+                      :edit            edit}
         mentions-pos (utils/calc-suggestions-position cursor-pos max-height size state data)]
     (rn/use-effect
      (fn []
@@ -61,6 +61,6 @@
        :accessibility-label          :mentions-list}]]))
 
 (defn view
-  [props state animations subs max-height cursor-pos]
+  [props state animations max-height cursor-pos images reply edit]
   (let [suggestions-atom (reagent/atom {})]
-    [:f> f-view suggestions-atom props state animations subs max-height cursor-pos]))
+    [:f> f-view suggestions-atom props state animations max-height cursor-pos images reply edit]))
