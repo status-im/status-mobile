@@ -228,7 +228,7 @@
      [quo/button
       {:size                40
        :type                :primary
-       :customization-color (or :primary customization-color)
+       :customization-color (or customization-color :primary)
        :accessibility-label :login-button
        :override-theme      :dark
        :before              :i/unlocked
