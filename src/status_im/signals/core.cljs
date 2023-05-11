@@ -32,7 +32,7 @@
                          ;; in case of an unknown error we show the
                          ;; error
                          (if (= error "file is not a database")
-                           (i18n/label :t/oops-wrong-password)
+                           (i18n/label :t/wrong-password)
                            error)))}
       (= (:view-id db) :progress)
       (assoc :dispatch [:navigate-to :login]))
@@ -71,9 +71,8 @@
         logged-in?                      (multiaccounts.model/logged-in? db)
         ;; since `connection-success` event is received on both sender and receiver devices
         ;; we check the `logged-in?` status to identify the receiver and take the user to next screen
-        navigate-to-syncing-devices?    (or (and connection-success? (not logged-in?))
-                                            error-on-pairing?)
-        user-in-syncing-devices-screen? (= (:view-id db) :syncing-devices)]
+        navigate-to-syncing-devices?    (and connection-success? (not logged-in?))
+        user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
                   connection-success?
                   (assoc-in [:syncing :pairing-in-progress?] :connected)
@@ -83,8 +82,8 @@
 
                   completed-pairing?
                   (assoc-in [:syncing :pairing-in-progress?] :completed))}
-           (when navigate-to-syncing-devices?
-             {:dispatch [:navigate-to :syncing-devices]})
+           (when (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
+             {:dispatch [:navigate-to :syncing-progress]})
            (when completed-pairing?
              {:dispatch [:syncing/pairing-completed]}))))
 

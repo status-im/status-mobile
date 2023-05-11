@@ -1,10 +1,9 @@
 (ns status-im2.contexts.onboarding.syncing.progress.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def navigation-bar {:height 56})
-
 (def page-container
-  {:position         :absolute
+  {:flex             1
+   :position         :absolute
    :top              0
    :bottom           0
    :left             0
