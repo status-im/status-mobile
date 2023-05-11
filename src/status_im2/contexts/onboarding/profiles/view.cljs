@@ -200,7 +200,7 @@
         :disabled?         processing
         :placeholder       (i18n/label :t/type-your-password)
         :auto-focus        true
-        :error?            (when (not-empty error) error)
+        :error?            (seq error)
         :label             (i18n/label :t/profile-password)
         :on-change-text    (fn [password]
                              (rf/dispatch-sync [:set-in [:multiaccounts/login :password]
@@ -208,7 +208,7 @@
                              (rf/dispatch [:set-in [:multiaccounts/login :error] ""]))
         :value             (security/safe-unmask-data password)
         :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
-      (when (not-empty error)
+      (when (seq error)
         [quo/info-message
          {:type  :error
           :size  :default
