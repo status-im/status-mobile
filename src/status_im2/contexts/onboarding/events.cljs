@@ -140,12 +140,10 @@
      {:title               (i18n/label :t/multiaccount-exists-title)
       :content             (i18n/label :t/multiaccount-exists-content)
       :confirm-button-text (i18n/label :t/unlock)
-      :on-accept           #(do
-                              (re-frame/dispatch [:pop-to-root :profiles])
-                              ;; FIXME(rasom): obviously not cool
-                              (reset! profiles.view/show-profiles? false)
-                              (re-frame/dispatch
-                               [:multiaccounts.login.ui/multiaccount-selected key-uid]))
+      :on-accept           (fn []
+                             (re-frame/dispatch [:pop-to-root :profiles])
+                             (re-frame/dispatch
+                              [:multiaccounts.login.ui/multiaccount-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
      :dispatch [:navigate-to :create-profile]}))
