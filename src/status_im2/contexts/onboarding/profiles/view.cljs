@@ -170,10 +170,10 @@
 
 (defn login-section
   []
-  (let [{:keys [name customization-color error processing]
+  (let [{:keys [name customization-color error processing password]
          :as   multiaccount} (rf/sub [:multiaccounts/login])
-        sign-in-enabled?     (rf/sub [:sign-in-enabled?])
-        profile-picture      (:uri (first (:images multiaccount)))]
+        sign-in-enabled? (rf/sub [:sign-in-enabled?])
+        profile-picture  (:uri (first (:images multiaccount)))]
     [rn/keyboard-avoiding-view
      {:style style/login-container}
      [quo/button
@@ -198,15 +198,17 @@
        {:type              :password
         :blur?             true
         :override-theme    :dark
+        :disabled?         processing
         :placeholder       (i18n/label :t/type-your-password)
         :auto-focus        true
         :error?            (when (not-empty error) error)
         :label             (i18n/label :t/profile-password)
         :secure-text-entry true
         :on-change-text    (fn [password]
-                             (rf/dispatch [:set-in [:multiaccounts/login :password]
-                                           (security/mask-data password)])
+                             (rf/dispatch-sync [:set-in [:multiaccounts/login :password]
+                                                (security/mask-data password)])
                              (rf/dispatch [:set-in [:multiaccounts/login :error] ""]))
+        :value             (security/safe-unmask-data password)
         :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
       (when (not-empty error)
         [quo/info-message
