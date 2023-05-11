@@ -19,13 +19,12 @@
    :margin-bottom 20})
 
 (def subtitle-container
-  {:height         42
-   :padding-top    16
-   :padding-bottom 8})
+  {:height        20
+   :margin-top    16
+   :margin-bottom 4})
 
 (def subtitle
-  {:color         colors/white-opa-70
-   :margin-bottom 20})
+  {:color colors/white-opa-70})
 
 (def suboptions
   {:padding-top    4
