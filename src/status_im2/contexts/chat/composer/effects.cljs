@@ -89,19 +89,18 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} chat-input keyboard-height images? reply?
+  [props state animations {:keys [max-height] :as dimensions} chat-input images? reply?
    audio]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
      (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
-     (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (images-effect props animations images?)
      (audio-effect state animations audio)
      (empty-effect state animations images? reply? audio)
-     (kb/add-kb-listeners props state animations dimensions keyboard-height)
+     (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))
 
@@ -162,9 +161,10 @@
    [input-text]))
 
 (defn did-mount
-  [{:keys [selectable-input-ref input-ref selection-manager]}]
+  [{:keys [selectable-input-ref input-ref selection-manager]} state]
   (rn/use-effect
    (fn []
+     (kb-default-height-effect state)
      (when platform/android?
        (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
              text-input-handle            (rn/find-node-handle @input-ref)]

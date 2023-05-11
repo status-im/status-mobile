@@ -32,11 +32,10 @@
 
 (defn- f-view
   [suggestions-atom props state animations max-height cursor-pos]
-  (let [{:keys [keyboard-height]} (hooks/use-keyboard)
-        suggestions (rf/sub [:chat/mention-suggestions])
+  (let [suggestions (rf/sub [:chat/mention-suggestions])
         opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
         size (count suggestions)
-        data {:keyboard-height keyboard-height
+        data {:keyboard-height @(:kb-default-height state)
               :insets          (safe-area/get-insets)
               :curr-height     (reanimated/get-shared-value (:height animations))
               :window-height   (rf/sub [:dimensions/window-height])

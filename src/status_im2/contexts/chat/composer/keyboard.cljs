@@ -12,9 +12,10 @@
     curr-height))
 
 (defn store-kb-height
-  [{:keys [kb-default-height]} keyboard-height]
-  (when (and (not @kb-default-height) (pos? keyboard-height))
-    (async-storage/set-item! :kb-default-height (str keyboard-height))))
+  [event {:keys [kb-default-height]} {:keys [window-height]}]
+  (when (not @kb-default-height)
+    (let [kb-height (- window-height (oops/oget event "endCoordinates.screenY"))]
+      (async-storage/set-item! :kb-default-height (str kb-height)))))
 
 (defn handle-emoji-kb-ios
   [event
@@ -44,14 +45,14 @@
 
 (defn add-kb-listeners
   [{:keys [keyboard-show-listener keyboard-frame-listener keyboard-hide-listener input-ref] :as props}
-   state animations dimensions keyboard-height]
+   state animations dimensions]
   (reset! keyboard-show-listener (.addListener rn/keyboard
                                                "keyboardDidShow"
-                                               #(store-kb-height state keyboard-height)))
+                                               #(store-kb-height % state dimensions)))
   (reset! keyboard-frame-listener (.addListener
-                                   rn/keyboard
-                                   "keyboardWillChangeFrame"
-                                   #(handle-emoji-kb-ios % props state animations dimensions)))
+                                    rn/keyboard
+                                    "keyboardWillChangeFrame"
+                                    #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
                                                #(when (and platform/android? @input-ref)
