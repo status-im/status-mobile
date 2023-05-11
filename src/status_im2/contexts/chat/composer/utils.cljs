@@ -160,6 +160,7 @@
    :saved-cursor-position (reagent/atom 0)
    :gradient-z-index      (reagent/atom 0)
    :kb-default-height     (reagent/atom 0)
+   :kb-height             (reagent/atom 0)
    :gesture-enabled?      (reagent/atom true)
    :lock-selection?       (reagent/atom true)
    :focused?              (reagent/atom false)

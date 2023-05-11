@@ -36,7 +36,7 @@
                                                    constants/input-height))
         {:keys [keyboard-shown]} (hooks/use-keyboard)
         max-height               (utils/calc-max-height window-height
-                                                        @(:kb-default-height state)
+                                                        @(:kb-height state)
                                                         insets
                                                         (boolean (seq images))
                                                         reply

@@ -37,10 +37,12 @@
     (js/setTimeout #(reset! lock-layout? true) 500)))
 
 (defn kb-default-height-effect
-  [{:keys [kb-default-height]}]
+  [{:keys [kb-default-height kb-height]}]
   (when (zero? @kb-default-height)
     (async-storage/get-item :kb-default-height
-                            #(reset! kb-default-height (utils.number/parse-int % 0)))))
+                            (fn [height]
+                              (reset! kb-default-height (utils.number/parse-int height 0))
+                              (reset! kb-height (utils.number/parse-int height 0))))))
 
 (defn background-effect
   [{:keys [maximized?]}
