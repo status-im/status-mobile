@@ -84,3 +84,4 @@
 (def sub (comp deref re-frame/subscribe))
 
 (def dispatch re-frame/dispatch)
+(def dispatch-sync re-frame/dispatch-sync)
