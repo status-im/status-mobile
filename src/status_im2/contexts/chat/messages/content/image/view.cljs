@@ -15,23 +15,21 @@
 
 (defn image-message
   [index {:keys [content image-width image-height message-id] :as message} context on-long-press]
-  (let [insets     (safe-area/get-insets)
-        dimensions (calculate-dimensions (or image-width 1000) (or image-height 1000))]
-    (fn []
-      (let [shared-element-id (rf/sub [:shared-element-id])]
-        [rn/touchable-opacity
-         {:active-opacity 1
-          :key            message-id
-          :style          {:margin-top (when (pos? index) 10)}
-          :on-long-press  on-long-press
-          :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
-                                         message-id
-                                         {:messages [message]
-                                          :index    0
-                                          :insets   insets}])}
-         (when (= index 0)
-           [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
-         [fast-image/fast-image
-          {:source    {:uri (:image content)}
-           :style     (merge dimensions {:border-radius 12})
-           :native-ID (when (= shared-element-id message-id) :shared-element)}]]))))
+  (let [insets            (safe-area/get-insets)
+        dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
+        shared-element-id (rf/sub [:shared-element-id])]
+    [rn/touchable-opacity
+     {:active-opacity 1
+      :style          {:margin-top (when (pos? index) 10)}
+      :on-long-press  on-long-press
+      :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+                                     message-id
+                                     {:messages [message]
+                                      :index    0
+                                      :insets   insets}])}
+     (when (= index 0)
+       [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
+     [fast-image/fast-image
+      {:source    {:uri (:image content)}
+       :style     (merge dimensions {:border-radius 12})
+       :native-ID (when (= shared-element-id message-id) :shared-element)}]]))
