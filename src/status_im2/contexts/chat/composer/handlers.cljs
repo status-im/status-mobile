@@ -81,7 +81,7 @@
       (when (= new-height max-height)
         (reset! maximized? true)
         (rf/dispatch [:chat.ui/set-input-maximized true]))
-      (if (utils/show-background? saved-height max-height new-height)
+      (if (utils/show-background? max-height new-height maximized?)
         (do
           (reanimated/set-shared-value background-y 0)
           (reanimated/animate opacity 1))
