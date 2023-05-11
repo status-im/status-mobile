@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.composer.mentions.view
   (:require
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

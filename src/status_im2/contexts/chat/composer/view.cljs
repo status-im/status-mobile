@@ -6,7 +6,6 @@
     [react-native.hooks :as hooks]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
-    [status-im2.contexts.chat.composer.keyboard :as kb]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.composer.style :as style]
@@ -63,7 +62,7 @@
         show-bottom-gradient?    (utils/show-bottom-gradient? state dimensions)
         cursor-pos               (utils/cursor-y-position-relative-to-container props
                                                                                 state)]
-    (effects/did-mount props state)
+    (effects/did-mount props)
     (effects/initialize props
                         state
                         animations

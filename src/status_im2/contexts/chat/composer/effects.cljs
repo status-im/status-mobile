@@ -162,7 +162,7 @@
    [input-text]))
 
 (defn did-mount
-  [{:keys [selectable-input-ref input-ref selection-manager]} state]
+  [{:keys [selectable-input-ref input-ref selection-manager]}]
   (rn/use-effect
    (fn []
      (when platform/android?
