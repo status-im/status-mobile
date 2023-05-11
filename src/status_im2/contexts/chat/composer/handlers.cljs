@@ -38,8 +38,7 @@
            maximized?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
    {:keys [content-height max-height window-height]}
-   images
-   reply]
+   {:keys [images reply]}]
   (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
         min-height    (utils/get-min-height lines)
         reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]

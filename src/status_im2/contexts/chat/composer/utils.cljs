@@ -65,17 +65,22 @@
   (let [lines (Math/round (/ height constants/line-height))]
     (if platform/ios? lines (dec lines))))
 
+(defn calc-extra-content-height
+  [images? reply? edit?]
+  (let [height (if images? constants/images-container-height 0)
+        height (if reply? (+ height constants/reply-container-height) height)
+        height (if edit? (+ height constants/edit-container-height) height)]
+    height))
+
 (defn calc-max-height
-  [window-height kb-height insets images? reply? edit?]
+  [{:keys [images reply edit]} window-height kb-height insets]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
                       constants/actions-container-height)
-        max-height (if images? (- max-height constants/images-container-height) max-height)
-        max-height (if reply? (- max-height constants/reply-container-height) max-height)
-        max-height (if edit? (- max-height constants/edit-container-height) max-height)]
+        max-height (- max-height (calc-extra-content-height images reply edit))]
     max-height))
 
 (defn empty-input?
@@ -108,22 +113,23 @@
     (* sub-text-lines-in-view constants/line-height)))
 
 (defn calc-shell-neg-y
-  [insets maximized?]
-  (let [neg-y (if @maximized? -50 0)]
-    (- (+ constants/bar-container-height constants/actions-container-height (:bottom insets) 6 neg-y))))
+  [insets maximized? extra-height]
+  (let [padding 6
+        neg-y   (if @maximized? -50 0)]
+    (- (+ constants/bar-container-height
+          constants/actions-container-height
+          (:bottom insets)
+          padding
+          extra-height
+          neg-y))))
 
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
-   {:keys [insets curr-height window-height keyboard-height edit reply]}]
+   {:keys [insets curr-height window-height keyboard-height images reply edit]}]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
         base             (+ base (- curr-height constants/input-height))
-        base             (if edit
-                           (+ base constants/edit-container-height)
-                           base)
-        base             (if reply
-                           (+ base constants/reply-container-height)
-                           base)
+        base             (+ base (calc-extra-content-height images reply edit))
         view-height      (- window-height keyboard-height (:top insets))
         container-height (bounded-val
                           (* (/ constants/mentions-max-height 4) size)
@@ -170,8 +176,21 @@
    :recording?            (reagent/atom false)
    :first-level?          (reagent/atom true)
    :menu-items            (reagent/atom selection/first-level-menu-items)})
+
+(defn init-subs
+  []
+  (let [chat-input (rf/sub [:chats/current-chat-input])]
+    {:images               (seq (rf/sub [:chats/sending-image]))
+     :audio                (rf/sub [:chats/sending-audio])
+     :reply                (rf/sub [:chats/reply-message])
+     :edit                 (rf/sub [:chats/edit-message])
+     :input-with-mentions  (rf/sub [:chat/input-with-mentions])
+     :input-text           (:input-text chat-input)
+     :input-content-height (:input-content-height chat-input)}))
+
 (defn init-animations
-  [lines input-text images reply audio content-height max-height opacity background-y]
+  [{:keys [input-text images reply audio]}
+   lines content-height max-height opacity background-y]
   (let [initial-height (if (> lines 1)
                          constants/multiline-minimized-height
                          constants/input-height)]

@@ -4,6 +4,7 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [status-im2.contexts.chat.composer.style :as style]
     [status-im2.contexts.chat.composer.utils :as utils]
     [status-im2.contexts.chat.messages.list.view :as messages.list]
@@ -25,10 +26,16 @@
   [:f> f-blur-view layout-height focused?])
 
 (defn- f-shell-button
-  [insets height maximized?]
-  (let [translate-y (reanimated/use-shared-value (utils/calc-shell-neg-y insets maximized?))]
-    (rn/use-effect #(reanimated/animate translate-y (utils/calc-shell-neg-y insets maximized?))
-                   [@maximized?])
+  [{:keys [maximized?]} {:keys [height]} {:keys [images reply edit]}]
+  (let [insets       (safe-area/get-insets)
+        extra-height (utils/calc-extra-content-height images reply edit)
+        translate-y  (reanimated/use-shared-value
+                      (utils/calc-shell-neg-y insets maximized? extra-height))]
+    (rn/use-effect (fn []
+                     (let [extra-height (utils/calc-extra-content-height images reply edit)]
+                       (reanimated/animate translate-y
+                                           (utils/calc-shell-neg-y insets maximized? extra-height))))
+                   [@maximized? images reply edit])
     [reanimated/view
      {:style (reanimated/apply-animations-to-style
               {:bottom    height ; we use height of the input directly as bottom position
@@ -48,5 +55,5 @@
       {}]]))
 
 (defn shell-button
-  [insets {:keys [height]} {:keys [maximized?]}]
-  [:f> f-shell-button insets height maximized?])
+  [state animations subs]
+  [:f> f-shell-button state animations subs])
