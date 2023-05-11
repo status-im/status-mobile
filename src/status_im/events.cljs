@@ -62,7 +62,8 @@
     [status-im2.common.theme.core :as theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    status-im2.contexts.chat.home.events))
+    status-im2.contexts.chat.home.events
+    status-im2.contexts.communities.home.events))
 
 (re-frame/reg-fx
  :dismiss-keyboard
