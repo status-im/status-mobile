@@ -62,7 +62,7 @@
     (effects/edit-mentions props state subs)
     [:<>
      [sub-view/shell-button state animations subs]
-     [mentions/view props state animations subs max-height cursor-pos]
+     [mentions/view props state animations max-height cursor-pos (:images subs) (:reply subs) (:edit subs)]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
       [reanimated/view
