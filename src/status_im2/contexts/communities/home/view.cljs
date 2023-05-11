@@ -1,7 +1,6 @@
 (ns status-im2.contexts.communities.home.view
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
-            [reagent.core :as reagent]
             [react-native.core :as rn]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.communities.actions.community-options.view :as options]
