@@ -4,10 +4,9 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
+            [status-im.multiaccounts.core :as multiaccount.core]
             [status-im.multiaccounts.db :as multiaccounts.db]
-            [utils.image-server :as image-server]
-            [utils.security.core :as security]
-            [quo2.theme :as theme]))
+            [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :multiaccount/public-key
@@ -206,30 +205,12 @@
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
 
-(defn- replace-multiaccount-image-uri
-  [multiaccount port]
-  (let [public-key (:public-key multiaccount)
-        theme      (theme/get-theme)
-        images     (:images multiaccount)
-        images     (reduce (fn [acc current]
-                             (let [key-uid    (:keyUid current)
-                                   image-name (:type current)
-                                   uri        (image-server/get-account-image-uri port
-                                                                                  public-key
-                                                                                  image-name
-                                                                                  key-uid
-                                                                                  theme)]
-                               (conj acc (assoc current :uri uri))))
-                           []
-                           images)]
-    (assoc multiaccount :images images)))
-
 (re-frame/reg-sub
  :profile/multiaccount
  :<- [:multiaccount]
  :<- [:mediaserver/port]
  (fn [[multiaccount port]]
-   (replace-multiaccount-image-uri multiaccount port)))
+   (multiaccount.core/replace-multiaccount-image-uri multiaccount port)))
 
 ;; LINK PREVIEW
 ;; ========================================================================================================

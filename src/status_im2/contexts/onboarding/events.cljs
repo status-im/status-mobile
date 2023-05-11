@@ -1,17 +1,20 @@
 (ns status-im2.contexts.onboarding.events
   (:require
-    [utils.re-frame :as rf]
-    [taoensso.timbre :as log]
-    [re-frame.core :as re-frame]
-    [status-im.utils.types :as types]
-    [status-im2.config :as config]
-    [clojure.string :as string]
-    [utils.i18n :as i18n]
-    [utils.security.core :as security]
-    [native-module.core :as native-module]
-    [status-im.ethereum.core :as ethereum]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.profiles.view :as profiles.view]))
+   [clojure.string :as string]
+   [native-module.core :as native-module]
+   [quo2.theme :as theme]
+   [re-frame.core :as re-frame]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.multiaccounts.core :as multiaccounts]
+   [status-im.utils.types :as types]
+   [status-im2.config :as config]
+   [status-im2.constants :as constants]
+   [status-im2.contexts.onboarding.profiles.view :as profiles.view]
+   [taoensso.timbre :as log]
+   [utils.i18n :as i18n]
+   [utils.image-server :as image-server]
+   [utils.re-frame :as rf]
+   [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
@@ -157,6 +160,14 @@
   {:db       (dissoc db :onboarding-2/profile)
    :dispatch [:navigate-to :create-profile]})
 
+(rf/defn save-profile-picture-to-account-db
+  {:events [:onboarding-2/save-profile-picture-to-account-db]}
+  [{:keys [db]}]
+  (let [key-uid           (get-in db [:multiaccount :public-key])
+        media-server-port (get db :mediaserver/port)
+        identicon         (image-server/get-identicons-uri media-server-port key-uid (theme/get-theme))]
+    {:dispatch [::multiaccounts/save-profile-picture-from-url identicon]}))
+
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
   [{:keys [db]}]
@@ -166,7 +177,8 @@
                             constants/auth-method-biometric
                             (get-in db [:onboarding-2/profile :auth-method]))]
 
-    (cond-> {:dispatch [:navigate-to :identifiers]}
+    (cond-> {:dispatch-n [[:navigate-to :identifiers]
+                          [:onboarding-2/save-profile-picture-to-account-db]]}
       biometric-enabled?
       (assoc :biometric/enable-and-save-password
              {:key-uid         key-uid

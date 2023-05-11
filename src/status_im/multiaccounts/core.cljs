@@ -1,19 +1,21 @@
 (ns status-im.multiaccounts.core
   (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [quo.platform :as platform]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme]
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
+            [status-im.contact.db :as contact.db]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constants]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as theme]
-            [taoensso.timbre :as log]
+            [status-im2.constants :as constants]
             [status-im2.contexts.shell.animation :as shell.animation]
-            [status-im.contact.db :as contact.db]))
+            [status-im2.setup.hot-reload :as hot-reload]
+            [taoensso.timbre :as log]
+            [utils.image-server :as image-server]
+            [utils.re-frame :as rf]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
@@ -134,13 +136,13 @@
            [:dark :light colors/neutral-100]
            [:light :dark colors/white])]
      (theme/set-theme theme)
-     (re-frame/dispatch [:change-shell-status-bar-style
+     (rf/dispatch [:change-shell-status-bar-style
                          (if (shell.animation/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
        (rf/dispatch [:dissmiss-all-overlays])
        (hot-reload/reload)
        (when-not (= view-id :shell-stack)
-         (re-frame/dispatch [:change-shell-nav-bar-color nav-bar-color]))))))
+         (rf/dispatch [:change-shell-nav-bar-color nav-bar-color]))))))
 
 (rf/defn switch-appearance
   {:events [:multiaccounts.ui/appearance-switched]}
@@ -177,6 +179,25 @@
     (string/replace-first path #"file://" "")
     (log/warn "[native-module] Empty path was provided")))
 
+
+(defn replace-multiaccount-image-uri
+  [multiaccount port]
+  (let [public-key (:public-key multiaccount)
+        theme      (theme/get-theme)
+        images     (:images multiaccount)
+        images     (reduce (fn [acc current]
+                             (let [key-uid    (:keyUid current)
+                                   image-name (:type current)
+                                   uri        (image-server/get-account-image-uri port
+                                                                                  public-key
+                                                                                  image-name
+                                                                                  key-uid
+                                                                                  theme)]
+                               (conj acc (assoc current :uri uri))))
+                           []
+                           images)]
+    (assoc multiaccount :images images)))
+
 (rf/defn save-profile-picture
   {:events [::save-profile-picture]}
   [cofx path ax ay bx by]
@@ -185,7 +206,16 @@
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
                                 :params     [key-uid (clean-path path) ax ay bx by]
                                 ;; NOTE: In case of an error we can show a toast error
-                                :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+                                :on-success (fn [pics]
+                                              (rf/dispatch [::update-local-picture pics])
+                                              ;; take the same image, get the new image with ring from media server
+                                              ;; save it to account db
+                                              (let [account   (get-in cofx [:db :multiaccount])
+                                                    port      (get-in cofx [:db :mediaserver/port])
+                                                    photo-url (-> account
+                                                                  (replace-multiaccount-image-uri port)
+                                                                  displayed-photo)]
+                                                (rf/dispatch [::save-profile-picture-from-url photo-url])))}]}
               (bottom-sheet/hide-bottom-sheet-old))))
 
 (rf/defn save-profile-picture-from-url
@@ -196,11 +226,11 @@
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
                                 :params     [key-uid url]
                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
-                                :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+                                :on-success #(rf/dispatch [::update-local-picture %])}]}
               (bottom-sheet/hide-bottom-sheet-old))))
 
 (comment
-  (re-frame/dispatch
+  (rf/dispatch
    [::save-profile-picture-from-url
     "https://lh3.googleusercontent.com/XuKjNm3HydsaxbPkbpGs9YyCKhn5QQk5oDC8XF2jzmPyYXeZofxFtfUDZuQ3EVmacS_BlBKzbX2ypm37YNX3n1fDJA3WndeFcPsp7Z0=w600"]))
 
@@ -222,7 +252,7 @@
   (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
     {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
                       :params     [key-uid]
-                      :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
+                      :on-success #(rf/dispatch [::update-local-picture %])}]}))
 
 (rf/defn store-profile-picture
   {:events [::update-local-picture]}
