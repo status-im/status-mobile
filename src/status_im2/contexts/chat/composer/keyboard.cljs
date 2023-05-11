@@ -50,9 +50,9 @@
                                                "keyboardDidShow"
                                                #(store-kb-height % state dimensions)))
   (reset! keyboard-frame-listener (.addListener
-                                    rn/keyboard
-                                    "keyboardWillChangeFrame"
-                                    #(handle-emoji-kb-ios % props state animations dimensions)))
+                                   rn/keyboard
+                                   "keyboardWillChangeFrame"
+                                   #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
                                                #(when (and platform/android? @input-ref)

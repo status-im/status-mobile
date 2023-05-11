@@ -25,43 +25,44 @@
 
 (defn sheet-component
   [{:keys [insets window-height blur-height opacity background-y]} props state]
-  (let [images                (rf/sub [:chats/sending-image])
-        audio                 (rf/sub [:chats/sending-audio])
-        reply                 (rf/sub [:chats/reply-message])
-        edit                  (rf/sub [:chats/edit-message])
-        input-with-mentions   (rf/sub [:chat/input-with-mentions])
+  (let [images                   (rf/sub [:chats/sending-image])
+        audio                    (rf/sub [:chats/sending-audio])
+        reply                    (rf/sub [:chats/reply-message])
+        edit                     (rf/sub [:chats/edit-message])
+        input-with-mentions      (rf/sub [:chat/input-with-mentions])
         {:keys [input-text input-content-height]
-         :as   chat-input} (rf/sub [:chats/current-chat-input])
-        content-height        (reagent/atom (or input-content-height
-                                                constants/input-height))
-        {:keys [keyboard-shown]} (hooks/use-keyboard) ;; probably should revert changes back, and create a seperated hook
-        max-height            (utils/calc-max-height window-height
-                                                     @(:kb-default-height state)
-                                                     insets
-                                                     (boolean (seq images))
-                                                     reply
-                                                     edit)
-        lines                 (utils/calc-lines (- @content-height
-                                                   constants/extra-content-offset))
-        max-lines             (utils/calc-lines max-height)
-        animations            (utils/init-animations
-                                lines
-                                input-text
-                                images
-                                reply
-                                audio
-                                content-height
-                                max-height
-                                opacity
-                                background-y)
-        dimensions            {:content-height content-height
-                               :max-height     max-height
-                               :window-height  window-height
-                               :lines          lines
-                               :max-lines      max-lines}
-        show-bottom-gradient? (utils/show-bottom-gradient? state dimensions)
-        cursor-pos            (utils/cursor-y-position-relative-to-container props
-                                                                             state)]
+         :as   chat-input}       (rf/sub [:chats/current-chat-input])
+        content-height           (reagent/atom (or input-content-height
+                                                   constants/input-height))
+        {:keys [keyboard-shown]} (hooks/use-keyboard) ;; probably should revert changes back, and create
+                                                      ;; a seperated hook
+        max-height               (utils/calc-max-height window-height
+                                                        @(:kb-default-height state)
+                                                        insets
+                                                        (boolean (seq images))
+                                                        reply
+                                                        edit)
+        lines                    (utils/calc-lines (- @content-height
+                                                      constants/extra-content-offset))
+        max-lines                (utils/calc-lines max-height)
+        animations               (utils/init-animations
+                                  lines
+                                  input-text
+                                  images
+                                  reply
+                                  audio
+                                  content-height
+                                  max-height
+                                  opacity
+                                  background-y)
+        dimensions               {:content-height content-height
+                                  :max-height     max-height
+                                  :window-height  window-height
+                                  :lines          lines
+                                  :max-lines      max-lines}
+        show-bottom-gradient?    (utils/show-bottom-gradient? state dimensions)
+        cursor-pos               (utils/cursor-y-position-relative-to-container props
+                                                                                state)]
     (effects/did-mount props state)
     (effects/initialize props
                         state
