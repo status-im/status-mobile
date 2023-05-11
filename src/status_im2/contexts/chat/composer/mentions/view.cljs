@@ -38,9 +38,9 @@
                       :insets          (safe-area/get-insets)
                       :curr-height     (reanimated/get-shared-value (:height animations))
                       :window-height   (:height (rn/get-window))
-                      :images               images
-                      :reply                reply
-                      :edit                 edit}
+                      :images          images
+                      :reply           reply
+                      :edit            edit}
         mentions-pos (utils/calc-suggestions-position cursor-pos max-height size state data)]
     (rn/use-effect
      (fn []
