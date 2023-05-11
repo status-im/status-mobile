@@ -15,7 +15,6 @@
    :secondary-name        (.-secondaryName js-contact)
    :ens-name              (.-name js-contact)
    :nickname              (.-localNickname js-contact)
-   :identicon             (oops/oget js-contact "identicon")
    :images                (types/js->clj (oops/oget js-contact "images"))
    :ens-verified          (oops/oget js-contact "ensVerified")
    :contact-request-state (oops/oget js-contact "contactRequestState")

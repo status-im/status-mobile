@@ -22,8 +22,7 @@
   [:<>
    [quo/list-item
     {:theme               :accent
-     :icon                [chat-icon/contact-icon-contacts-tab
-                           (multiaccounts/displayed-photo member)]
+     :icon                [chat-icon/contact-icon-contacts-tab member]
      :title               primary-name
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button

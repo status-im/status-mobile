@@ -6,7 +6,6 @@
             [status-im.communities.core :as communities]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
@@ -34,8 +33,7 @@
     [quo/list-item
      {:title     primary-name
       :subtitle  secondary-name
-      :icon      [chat-icon.screen/contact-icon-contacts-tab
-                  (multiaccounts/displayed-photo contact)]
+      :icon      [chat-icon.screen/contact-icon-contacts-tab contact]
       :accessory :checkbox
       :active    active
       :on-press  (fn []

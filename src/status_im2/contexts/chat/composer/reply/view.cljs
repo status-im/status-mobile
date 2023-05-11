@@ -79,7 +79,7 @@
       (format-reply-author from contact-name current-public-key)]]))
 
 (defn quoted-message
-  [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?
+  [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
            album-images-count]}
    in-chat-input? pin? recording-audio?]
   (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
@@ -100,7 +100,6 @@
         [rn/view {:style (style/quoted-message pin?)}
          [reply-from
           {:from               from
-           :identicon          identicon
            :contact-name       contact-name
            :current-public-key current-public-key}]
          [quo/text

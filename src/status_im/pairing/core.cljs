@@ -195,10 +195,10 @@
 (rf/defn send-installation-messages
   {:events [:pairing.ui/synchronize-installation-pressed]}
   [{:keys [db]}]
-  (let [multiaccount                            (:multiaccount db)
-        {:keys [name preferred-name identicon]} multiaccount]
+  (let [multiaccount                  (:multiaccount db)
+        {:keys [name preferred-name]} multiaccount]
     {:json-rpc/call [{:method     "wakuext_syncDevices"
-                      :params     [(or preferred-name name) identicon]
+                      :params     [(or preferred-name name)]
                       :on-success #(log/debug "successfully synced devices")}]}))
 
 (defn installation<-rpc

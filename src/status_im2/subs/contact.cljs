@@ -34,7 +34,6 @@
 (defn- replace-contact-image-uri
   [contact port identity]
   (let [theme          (theme/get-theme)
-        identicon      (image-server/get-identicons-uri port identity theme)
         contact-images (:images contact)
         contact-images (reduce (fn [acc image]
                                  (let [image-name (:type image)
@@ -49,7 +48,7 @@
                                    (assoc-in acc [(keyword image-name) :uri] uri)))
                                contact-images
                                (vals contact-images))]
-    (assoc contact :identicon identicon :images contact-images)))
+    (assoc contact :images contact-images)))
 
 (defn- reduce-contacts-image-uri
   [contacts port]

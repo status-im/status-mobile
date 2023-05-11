@@ -108,11 +108,6 @@
   [_]
   {:dismiss-keyboard nil})
 
-(rf/defn identicon-generated
-  {:events [:identicon-generated]}
-  [{:keys [db]} path identicon]
-  {:db (assoc-in db path identicon)})
-
 (rf/defn gfycat-generated
   {:events [:gfycat-generated]}
   [{:keys [db]} path gfycat]

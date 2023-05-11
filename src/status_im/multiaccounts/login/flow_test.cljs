@@ -10,14 +10,13 @@
 (deftest on-password-input-submitted
   (testing
     "handling :multiaccounts.login.ui/password-input-submitted event"
-    (let [cofx {:db {:multiaccounts/login {:key-uid   "key-uid"
-                                           :password  "password"
-                                           :name      "user"
-                                           :identicon "photo"}}}
+    (let [cofx {:db {:multiaccounts/login {:key-uid  "key-uid"
+                                           :password "password"
+                                           :name     "user"}}}
           efx  (login.core/login cofx)]
       (testing "Change multiaccount."
         (is (= (::login.core/login efx)
-               ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\",\"identicon\":\"photo\"}"
+               ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\"}"
                 (ethereum/sha3 "password")])))
       (testing "start activity indicator"
         (is (= (get-in efx [:db :multiaccounts/login :processing]) true))))))

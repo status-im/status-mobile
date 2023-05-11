@@ -2,7 +2,6 @@
   (:require [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
-(def ^:const identicons-action "/messages/identicons")
 (def ^:const account-images-action "/accountImages")
 (def ^:const contact-images-action "/contactImages")
 (def ^:const generate-qr-action "/GenerateQRCode")
@@ -24,19 +23,6 @@
     :quart   3
     :highest 4
     4))
-
-(defn get-identicons-uri
-  [port public-key theme]
-  (str image-server-uri-prefix
-       port
-       identicons-action
-       "?publicKey="
-       public-key
-       "&theme="
-       (current-theme-index theme)
-       "&clock="
-       (timestamp)
-       "&addRing=1"))
 
 (defn get-account-image-uri
   [port public-key image-name key-uid theme]

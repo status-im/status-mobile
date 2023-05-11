@@ -12,12 +12,6 @@
                        (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 override-theme)
                        (colors/theme-colors colors/neutral-10 colors/neutral-90 override-theme))})
 
-(def context-tag-image
-  {:width            20
-   :border-radius    10
-   :background-color :white
-   :height           20})
-
 (defn context-tag-icon-color
   [blur?]
   (if blur?

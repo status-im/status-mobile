@@ -5,7 +5,6 @@
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
@@ -24,8 +23,7 @@
     [quo/list-item
      {:title    primary-name
       :subtitle secondary-name
-      :icon     [chat-icon/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo row)]}]))
+      :icon     [chat-icon/contact-icon-contacts-tab row]}]))
 
 (defn- on-toggle
   [allow-new-users? checked? public-key]
@@ -59,8 +57,7 @@
       [quo/list-item
        {:title     primary-name
         :subtitle  secondary-name
-        :icon      [chat-icon/contact-icon-contacts-tab
-                    (multiaccounts/displayed-photo contact)]
+        :icon      [chat-icon/contact-icon-contacts-tab contact]
         :on-press  #(on-toggle allow-new-users? contact-selected? public-key)
         :active    contact-selected?
         :accessory :checkbox}])))

@@ -168,25 +168,23 @@
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {:db     (-> db
                  (assoc-in [:multiaccounts/login :processing] true)
                  (dissoc :intro-wizard :recovered-account?)
                  (update :keycard dissoc :flow))
      ::login [key-uid
-              (types/clj->json {:name      name
-                                :key-uid   key-uid
-                                :identicon identicon})
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn export-db-submitted
   {:events [:multiaccounts.login.ui/export-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {::export-db [key-uid
-                  (types/clj->json {:name      name
-                                    :key-uid   key-uid
-                                    :identicon identicon})
+                  (types/clj->json {:name    name
+                                    :key-uid key-uid})
                   (ethereum/sha3 (security/safe-unmask-data password))
                   (fn [path]
                     (when platform/ios?
@@ -198,11 +196,10 @@
 (rf/defn import-db-submitted
   {:events [:multiaccounts.login.ui/import-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {::import-db [key-uid
-                  (types/clj->json {:name      name
-                                    :key-uid   key-uid
-                                    :identicon identicon})
+                  (types/clj->json {:name    name
+                                    :key-uid key-uid})
                   (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn finish-keycard-setup
@@ -742,7 +739,7 @@
      (merge
       {:db (update db :keycard dissoc :application-info)}
       (when keycard-multiaccount? {:navigate-to :keycard-login-pin}))
-     (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
+     (open-login (select-keys multiaccount [:key-uid :name :public-key :images])))))
 
 (rf/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

@@ -3,12 +3,10 @@
             [re-frame.core :as re-frame]
             [status-im.router.core :as router]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.universal-links.core :as links]))
 
 (deftest handle-url-test
-  (with-redefs [gfycat/generate-gfy (constantly "generated")
-                identicon/identicon (constantly "generated")]
+  (with-redefs [gfycat/generate-gfy (constantly "generated")]
     (testing "the user is not logged in"
       (testing "it stores the url for later processing"
         (is (= {:db {:universal-links/url "some-url"}}

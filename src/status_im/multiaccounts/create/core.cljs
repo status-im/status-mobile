@@ -71,11 +71,11 @@
               public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
           (native-module/gfycat-identicon-async
            public-key
-           (fn [name identicon]
+           (fn [name _]
              (let [derived-whisper       (derived-data constants/path-whisper-keyword)
                    derived-data-extended (assoc-in derived-data
                                           [constants/path-whisper-keyword]
-                                          (merge derived-whisper {:name name :identicon identicon}))]
+                                          (assoc derived-whisper :name name))]
                (re-frame/dispatch [::store-multiaccount-success key-code derived-data-extended]))))))]}))
 
 (re-frame/reg-fx
@@ -154,13 +154,12 @@
       :wallet     true
       :path       constants/path-default-wallet
       :name       (i18n/label :t/main-account)})
-   (let [{:keys [compressed-key public-key address name identicon]}
+   (let [{:keys [compressed-key public-key address name]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
      {:public-key     public-key
       :compressed-key compressed-key
       :address        (eip55/address->checksum address)
       :name           name
-      :identicon      identicon
       :path           constants/path-whisper
       :chat           true})])
 
@@ -174,13 +173,11 @@
   (let [[wallet-account
          {:keys [public-key
                  compressed-key
-                 identicon
                  name]} :as accounts-data]
         (prepare-accounts-data
          multiaccount)
         multiaccount-data {:name            name
                            :address         address
-                           :identicon       identicon
                            :key-uid         key-uid
                            :keycard-pairing keycard-pairing}
         keycard-multiaccount? (boolean keycard-pairing)
@@ -202,7 +199,6 @@
                      constants/path-wallet-root-keyword
                      :address])
             :name name
-            :identicon identicon
             ;; public key of the chat account
             :public-key public-key
             ;; compressed key of the chat account
@@ -231,7 +227,6 @@
         db (assoc db
                   :multiaccounts/login      {:key-uid    key-uid
                                              :name       name
-                                             :identicon  identicon
                                              :password   password
                                              :creating?  true
                                              :processing true}

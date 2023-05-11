@@ -1,5 +1,6 @@
 (ns quo2.components.tags.context-tag.view
-  (:require [quo2.components.avatars.group-avatar :as group-avatar]
+  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
+            [quo2.components.avatars.group-avatar :as group-avatar]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
@@ -43,9 +44,11 @@
                      :size   :paragraph-2
                      :style  (assoc text-style :justify-content :center)}]
     [base-tag (assoc-in params [:style :padding-left] 3)
-     [rn/image
-      {:style  style/context-tag-image
-       :source photo}]
+     [user-avatar/user-avatar
+      {:full-name         name
+       :profile-picture   photo
+       :size              :xxs
+       :status-indicator? false}]
      [rn/view {:style style/context-tag-text-container}
       [text/text text-params (str " " name)]
       (when channel-name
@@ -58,7 +61,7 @@
 
 (defn user-avatar-tag
   [params username photo]
-  [context-tag params {:uri photo} username])
+  [context-tag params photo username])
 
 (defn audio-tag
   [duration params]
