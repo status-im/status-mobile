@@ -206,10 +206,10 @@
         :error?            (seq error)
         :label             (i18n/label :t/profile-password)
         :on-change-text    (fn [password]
-                             (rf/dispatch-sync [:set-in [:multiaccounts/login :password]
-                                                (security/mask-data password)])
+                             (rf/dispatch [:set-in [:multiaccounts/login :password]
+                                           (security/mask-data password)])
                              (rf/dispatch [:set-in [:multiaccounts/login :error] ""]))
-        :value             (security/safe-unmask-data password)
+        :default-value     (security/safe-unmask-data password)
         :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
       (when (seq error)
         [quo/info-message
