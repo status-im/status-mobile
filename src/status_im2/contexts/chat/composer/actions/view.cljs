@@ -58,9 +58,9 @@
     :i/arrow-up]])
 
 (defn send-button
-  [state animations window-height images?]
+  [{:keys [text-value] :as state} animations window-height images?]
   (let [btn-opacity (reanimated/use-shared-value 0)
-        z-index     (reagent/atom 0)]
+        z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
     [:f> f-send-button state animations window-height images? btn-opacity z-index]))
 
 (defn audio-button
@@ -176,7 +176,7 @@
    :i/format])
 
 (defn view
-  [props state animations window-height insets edit? images?]
+  [props state animations window-height insets {:keys [edit images]}]
   [rn/view {:style style/actions-container}
    [rn/view
     {:style {:flex-direction :row
@@ -185,6 +185,6 @@
     [image-button props animations insets]
     [reaction-button]
     [format-button]]
-   [:f> send-button state animations window-height images?]
-   (when (and (not edit?) (not images?))
+   [:f> send-button state animations window-height images]
+   (when (and (not edit) (not images))
      [audio-button props state animations])])

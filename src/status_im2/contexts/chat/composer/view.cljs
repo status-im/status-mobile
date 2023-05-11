@@ -7,7 +7,6 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
     [status-im2.contexts.chat.composer.style :as style]
     [status-im2.contexts.chat.composer.images.view :as images]
     [status-im2.contexts.chat.composer.reply.view :as reply]
@@ -25,31 +24,20 @@
 
 (defn sheet-component
   [{:keys [insets window-height blur-height opacity background-y]} props state]
-  (let [images                   (rf/sub [:chats/sending-image])
-        audio                    (rf/sub [:chats/sending-audio])
-        reply                    (rf/sub [:chats/reply-message])
-        edit                     (rf/sub [:chats/edit-message])
-        input-with-mentions      (rf/sub [:chat/input-with-mentions])
-        {:keys [input-text input-content-height]
-         :as   chat-input}       (rf/sub [:chats/current-chat-input])
-        content-height           (reagent/atom (or input-content-height
+  (let [subs                     (utils/init-subs)
+        content-height           (reagent/atom (or (:input-content-height subs)
                                                    constants/input-height))
         {:keys [keyboard-shown]} (hooks/use-keyboard)
-        max-height               (utils/calc-max-height window-height
+        max-height               (utils/calc-max-height subs
+                                                        window-height
                                                         @(:kb-height state)
-                                                        insets
-                                                        (boolean (seq images))
-                                                        reply
-                                                        edit)
+                                                        insets)
         lines                    (utils/calc-lines (- @content-height
                                                       constants/extra-content-offset))
         max-lines                (utils/calc-lines max-height)
         animations               (utils/init-animations
+                                  subs
                                   lines
-                                  input-text
-                                  images
-                                  reply
-                                  audio
                                   content-height
                                   max-height
                                   opacity
@@ -67,17 +55,14 @@
                         state
                         animations
                         dimensions
-                        chat-input
-                        (boolean (seq images))
-                        reply
-                        audio)
-    (effects/edit props state edit)
-    (effects/reply props animations reply)
-    (effects/update-input-mention props state input-text)
-    (effects/edit-mentions props state input-with-mentions)
+                        subs)
+    (effects/edit props state subs)
+    (effects/reply props animations subs)
+    (effects/update-input-mention props state subs)
+    (effects/edit-mentions props state subs)
     [:<>
-     [sub-view/shell-button insets animations state]
-     [mentions/view props state animations max-height cursor-pos]
+     [sub-view/shell-button state animations subs]
+     [mentions/view props state animations subs max-height cursor-pos]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
       [reanimated/view
@@ -99,12 +84,12 @@
           {:ref                      #(reset! (:input-ref props) %)
            :default-value            @(:text-value state)
            :on-focus                 #(handler/focus props state animations dimensions)
-           :on-blur                  #(handler/blur state animations dimensions images reply)
+           :on-blur                  #(handler/blur state animations dimensions subs)
            :on-content-size-change   #(handler/content-size-change %
                                                                    state
                                                                    animations
                                                                    dimensions
-                                                                   (or keyboard-shown edit))
+                                                                   (or keyboard-shown (:edit subs)))
            :on-scroll                #(handler/scroll % props state animations dimensions)
            :on-change-text           #(handler/change-text % props state)
            :on-selection-change      #(handler/selection-change % props state)
@@ -119,8 +104,7 @@
            :accessibility-label      :chat-message-input}]]
         [gradients/view props state animations show-bottom-gradient?]]
        [images/images-list]
-       [actions/view props state animations window-height insets edit
-        (boolean (seq images))]]]]))
+       [actions/view props state animations window-height insets subs]]]]))
 
 (defn composer
   [insets]

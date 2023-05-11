@@ -91,8 +91,7 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} chat-input images? reply?
-   audio]
+  [props state animations {:keys [max-height] :as dimensions} {:keys [chat-input images reply audio]}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -100,9 +99,9 @@
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
-     (images-effect props animations images?)
+     (images-effect props animations images)
      (audio-effect state animations audio)
-     (empty-effect state animations images? reply? audio)
+     (empty-effect state animations images reply audio)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))
@@ -110,7 +109,7 @@
 (defn edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
-   edit]
+   {:keys [edit]}]
   (rn/use-effect
    (fn []
      (let [edit-text (get-in edit [:content :text])]
@@ -124,7 +123,7 @@
 (defn reply
   [{:keys [input-ref]}
    {:keys [container-opacity]}
-   reply]
+   {:keys [reply]}]
   (rn/use-effect
    (fn []
      (when reply
@@ -134,7 +133,7 @@
    [(:message-id reply)]))
 
 (defn edit-mentions
-  [{:keys [input-ref]} {:keys [text-value cursor-position]} input-with-mentions]
+  [{:keys [input-ref]} {:keys [text-value cursor-position]} {:keys [input-with-mentions]}]
   (rn/use-effect (fn []
                    (let [input-text (reduce (fn [acc item]
                                               (str acc (second item)))
@@ -153,7 +152,7 @@
 (defn update-input-mention
   [{:keys [input-ref]}
    {:keys [text-value]}
-   input-text]
+   {:keys [input-text]}]
   (rn/use-effect
    (fn []
      (when (and input-text (not= @text-value input-text))
