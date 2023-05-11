@@ -197,13 +197,11 @@
       [quo/input
        {:type              :password
         :blur?             true
-        :override-theme    :dark
         :disabled?         processing
         :placeholder       (i18n/label :t/type-your-password)
         :auto-focus        true
         :error?            (when (not-empty error) error)
         :label             (i18n/label :t/profile-password)
-        :secure-text-entry true
         :on-change-text    (fn [password]
                              (rf/dispatch-sync [:set-in [:multiaccounts/login :password]
                                                 (security/mask-data password)])
