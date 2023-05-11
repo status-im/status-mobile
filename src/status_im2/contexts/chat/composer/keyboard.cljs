@@ -13,7 +13,7 @@
 
 (defn store-kb-height
   [event {:keys [kb-default-height]} {:keys [window-height]}]
-  (when (not @kb-default-height)
+  (when (zero? @kb-default-height)
     (let [kb-height (- window-height (oops/oget event "endCoordinates.screenY"))]
       (async-storage/set-item! :kb-default-height (str kb-height)))))
 

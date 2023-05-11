@@ -50,8 +50,8 @@
   (and (not-empty @text-value) (not @focused?) (> lines 2)))
 
 (defn show-background?
-  [saved-height max-height new-height]
-  (or (= (reanimated/get-shared-value saved-height) max-height)
+  [max-height new-height maximized?]
+  (or @maximized?
       (> new-height (* constants/background-threshold max-height))))
 
 (defn update-blur-height?
@@ -159,7 +159,7 @@
    :cursor-position       (reagent/atom 0)
    :saved-cursor-position (reagent/atom 0)
    :gradient-z-index      (reagent/atom 0)
-   :kb-default-height     (reagent/atom nil)
+   :kb-default-height     (reagent/atom 0)
    :gesture-enabled?      (reagent/atom true)
    :lock-selection?       (reagent/atom true)
    :focused?              (reagent/atom false)

@@ -6,6 +6,7 @@
     [react-native.hooks :as hooks]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
+    [status-im2.contexts.chat.composer.keyboard :as kb]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.composer.style :as style]
@@ -34,8 +35,7 @@
          :as   chat-input}       (rf/sub [:chats/current-chat-input])
         content-height           (reagent/atom (or input-content-height
                                                    constants/input-height))
-        {:keys [keyboard-shown]} (hooks/use-keyboard) ;; probably should revert changes back, and create
-                                                      ;; a seperated hook
+        {:keys [keyboard-shown]} (hooks/use-keyboard)
         max-height               (utils/calc-max-height window-height
                                                         @(:kb-default-height state)
                                                         insets
@@ -125,8 +125,7 @@
 
 (defn composer
   [insets]
-  (let [window        (rn/get-window)
-        window-height (:height window)
+  (let [window-height (-> (rn/get-window) (:height))
         opacity       (reanimated/use-shared-value 0)
         background-y  (reanimated/use-shared-value (- window-height))
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height

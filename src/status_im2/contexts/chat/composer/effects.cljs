@@ -38,7 +38,7 @@
 
 (defn kb-default-height-effect
   [{:keys [kb-default-height]}]
-  (when-not @kb-default-height
+  (when (zero? @kb-default-height)
     (async-storage/get-item :kb-default-height
                             #(reset! kb-default-height (utils.number/parse-int % nil)))))
 
@@ -96,6 +96,7 @@
      (maximized-effect state animations dimensions chat-input)
      (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
+     (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (images-effect props animations images?)
      (audio-effect state animations audio)
@@ -164,7 +165,6 @@
   [{:keys [selectable-input-ref input-ref selection-manager]} state]
   (rn/use-effect
    (fn []
-     (kb-default-height-effect state)
      (when platform/android?
        (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
              text-input-handle            (rn/find-node-handle @input-ref)]
