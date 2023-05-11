@@ -11,7 +11,7 @@
 (defn neutral-border-color
   [in-blur-view? override-theme]
   (if in-blur-view?
-    (colors/theme-colors colors/white-opa-10 colors/neutral-80-opa-5 override-theme)
+    (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-10 override-theme)
     (colors/theme-colors colors/neutral-20 colors/neutral-80 override-theme)))
 
 (def active-background-color (colors/custom-color :blue 50 10))

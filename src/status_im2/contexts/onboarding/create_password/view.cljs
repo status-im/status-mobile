@@ -184,6 +184,18 @@
                                            (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
+(defn create-password-doc
+  []
+  [quo/documentation-drawers
+   {:title  (i18n/label
+             :t/create-profile-password-info-box-title)
+    :shell? true}
+   [rn/view
+    [quo/text
+     {:size :paragraph-2}
+     (i18n/label
+      :t/create-profile-password-info-box-description)]]])
+
 (defn create-password
   []
   (let [scroll-view-ref  (atom nil)
@@ -201,5 +213,8 @@
             :right-section-buttons [{:type                :blur-bg
                                      :icon                :i/info
                                      :icon-override-theme :dark
-                                     :on-press            #(js/alert "Info pressed")}]}]
+                                     :on-press            #(rf/dispatch
+                                                            [:show-bottom-sheet
+                                                             {:content create-password-doc
+                                                              :shell?  true}])}]}]
           [password-form {:scroll-to-end-fn scroll-to-end-fn}]]]))))
