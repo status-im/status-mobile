@@ -225,9 +225,9 @@
                                    :icon                :i/info
                                    :icon-override-theme :dark
                                    :on-press            #(rf/dispatch
-                                                            [:show-bottom-sheet
-                                                             {:content create-password-doc
-                                                              :shell?  true}])}]}]
+                                                          [:show-bottom-sheet
+                                                           {:content create-password-doc
+                                                            :shell?  true}])}]}]
         [password-form]
         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]])))
 
