@@ -40,7 +40,7 @@
   [{:keys [kb-default-height]}]
   (when (zero? @kb-default-height)
     (async-storage/get-item :kb-default-height
-                            #(reset! kb-default-height (utils.number/parse-int % nil)))))
+                            #(reset! kb-default-height (utils.number/parse-int % 0)))))
 
 (defn background-effect
   [{:keys [maximized?]}

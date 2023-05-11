@@ -15,6 +15,7 @@
   [event {:keys [kb-default-height]} {:keys [window-height]}]
   (when (zero? @kb-default-height)
     (let [kb-height (- window-height (oops/oget event "endCoordinates.screenY"))]
+      (reset! kb-default-height kb-height)
       (async-storage/set-item! :kb-default-height (str kb-height)))))
 
 (defn handle-emoji-kb-ios

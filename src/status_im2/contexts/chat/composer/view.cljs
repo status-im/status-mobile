@@ -124,7 +124,7 @@
 
 (defn composer
   [insets]
-  (let [window-height (-> (rn/get-window) (:height))
+  (let [window-height (:height (rn/get-window))
         opacity       (reanimated/use-shared-value 0)
         background-y  (reanimated/use-shared-value (- window-height))
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
