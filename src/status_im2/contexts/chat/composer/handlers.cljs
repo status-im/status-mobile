@@ -119,7 +119,7 @@
     (@record-reset-fn)
     (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text])
-  (debounce/debounce-and-dispatch [:mention/on-change-text text] 200))
+  (debounce/debounce-and-dispatch [:mention/on-change-text text] 400))
 
 (defn selection-change
   [event
