@@ -4,10 +4,6 @@
 (def preview-list-padding-top 12)
 (def preview-list-padding-bottom 8)
 (def preview-height 56)
-(def preview-total-height
-  (+ preview-height
-     preview-list-padding-top
-     preview-list-padding-bottom))
 
 (def preview-list
   {:padding-top       preview-list-padding-top
