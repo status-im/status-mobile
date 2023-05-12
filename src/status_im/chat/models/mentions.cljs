@@ -1,11 +1,7 @@
 (ns status-im.chat.models.mentions
   (:require [clojure.set :as set]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [re-frame.core :as re-frame]
             [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [native-module.core :as native-module]))
+            [taoensso.timbre :as log]))
 
 (defn- transfer-input-segments
   [segments]
@@ -126,47 +122,21 @@
              (assoc-in [:chats/mentions chat-id :mentions] state)
              (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
-(rf/defn recheck-at-idxs
-  [{:keys [db]} public-key]
-  (let [chat-id (:current-chat-id db)
-        text    (get-in db [:chat/inputs chat-id :input-text])
-        params  [chat-id text public-key]
-        method  "wakuext_chatMentionRecheckAtIdxs"]
-    {:json-rpc/call [{:method     method
-                      :params     params
-                      :on-success #(rf/dispatch [:mention/on-recheck-at-idxs-success %])
-                      :on-error   #(rf/dispatch [:mention/on-error
-                                                 {:method method
-                                                  :params params} %])}]}))
-
-(rf/defn on-recheck-at-idxs-success
-  {:events [:mention/on-recheck-at-idxs-success]}
-  [{:keys [db]} result]
-  (log/debug "[mentions] on-recheck-at-idxs-success" {:result result})
-  (let [{:keys [input-segments state chat-id]} (transfer-mention-result result)]
-    {:db (-> db
-             (assoc-in [:chats/mentions chat-id :mentions] state)
-             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
-
-(rf/defn reset-text-input-cursor
-  [_ ref cursor]
-  {::reset-text-input-cursor [ref cursor]})
-
-(rf/defn on-new-input-text-with-mentions-success
-  {:events [:mention/on-new-input-text-with-mentions-success]}
-  [{:keys [db] :as cofx} result primary-name text-input-ref match searched-text public-key]
-  (log/debug "[mentions] on-new-input-text-with-mentions-success"
+(rf/defn on-select-mention-success
+  {:events [:mention/on-select-mention-success]}
+  [{:keys [db] :as cofx} result primary-name match searched-text public-key]
+  (log/debug "[mentions] on-select-mention-success"
              {:result        result
               :primary-name  primary-name
               :match         match
               :searched-text searched-text
               :public-key    public-key})
-  (let [{:keys [new-text chat-id]} (transfer-mention-result result)]
-    (rf/merge
-     cofx
-     {:db       (assoc-in db [:chats/mention-suggestions chat-id] nil)
-      :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}
-     (recheck-at-idxs public-key))))
+  (let [{:keys [new-text chat-id state input-segments]} (transfer-mention-result result)]
+    {:db       (-> db
+                   (assoc-in [:chats/mentions chat-id :mentions] state)
+                   (assoc-in [:chat/inputs-with-mentions chat-id] input-segments)
+                   (assoc-in [:chats/mention-suggestions chat-id] nil))
+     :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}))
 
 (rf/defn clear-suggestions
   [{:keys [db]}]
@@ -189,38 +159,3 @@
                        :on-error   #(log/error "Error while calling wakuext_chatMentionClearMentions"
                                                {:error %})}]}
      (clear-suggestions))))
-
-(rf/defn check-selection
-  {:events [:mention/on-selection-change]}
-  [{:keys [db]}
-   {:keys [start end]}]
-  (let [chat-id (:current-chat-id db)
-        text    (get-in db [:chat/inputs chat-id :input-text])
-        params  [chat-id text start end]
-        method  "wakuext_chatMentionHandleSelectionChange"]
-    (when text
-      (log/debug "[mentions] check-selection" {:params params})
-      {:json-rpc/call [{:method     method
-                        :params     params
-                        :on-success #(rf/dispatch [:mention/on-handle-selection-change-success %])
-                        :on-error   #(rf/dispatch [:mention/on-error
-                                                   {:method method
-                                                    :params params} %])}]})))
-
-(rf/defn on-check-selection-success
-  {:events [:mention/on-handle-selection-change-success]}
-  [{:keys [db]} result]
-  (log/debug "[mentions] on-check-selection-success" {:result result})
-  (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
-    {:db (-> db
-             (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
-             (assoc-in [:chats/mentions chat-id :mentions] state)
-             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
-
-(re-frame/reg-fx
- ::reset-text-input-cursor
- (fn [[ref cursor]]
-   (when ref
-     (native-module/reset-keyboard-input
-      (rn/find-node-handle (react/current-ref ref))
-      cursor))))
