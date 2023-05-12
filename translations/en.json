@@ -1687,6 +1687,8 @@
     "database-reset-content": "Chats, contacts and settings have been deleted. You can use your account with your Keycard",
     "database-reset-warning": "Database will be reset. Chats, contacts and settings will be deleted",
     "empty-keycard-required": "Requires an empty Keycard",
+    "empty-keycard": "Empty Keycard",
+    "user-keycard": "{{name}} Card",
     "current": "Current",
     "choose-storage": "Choose storage",
     "choose-new-location-for-keystore": "Choose a new location to save your keystore file",
