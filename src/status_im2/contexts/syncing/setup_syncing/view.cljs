@@ -33,7 +33,7 @@
                               :label               (i18n/label :t/how-to-scan)
                               :icon                :i/info
                               :icon-override-theme :dark
-                              :on-press            #(js/alert "to be implemented")}]}]])
+                              :on-press            #(rf/dispatch [:open-modal :how-to-pair])}]}]])
 
 (defn valid-cs?
   [connection-string]
@@ -145,4 +145,4 @@
           [[{:icon           :i/scan
              :override-theme :dark
              :on-press       #(js/alert "to be implemented")
-             :label          (i18n/label :t/Scan-or-enter-sync-code)}]]]]]])))
+             :label          (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
