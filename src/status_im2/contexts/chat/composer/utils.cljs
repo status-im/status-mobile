@@ -7,7 +7,6 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
-    [status-im2.contexts.chat.composer.link-preview.style :as link-preview-style]
     [status-im2.contexts.chat.composer.selection :as selection]
     [utils.re-frame :as rf]))
 
