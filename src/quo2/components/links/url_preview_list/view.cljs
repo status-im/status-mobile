@@ -2,7 +2,8 @@
   (:require
     [quo2.components.links.url-preview-list.style :as style]
     [quo2.components.links.url-preview.view :as url-preview]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]))
 
 (defn- use-scroll-to-last-item
   [flat-list-ref item-count item-width]
@@ -55,7 +56,7 @@
       [rn/view
        {:style               container-style
         :accessibility-label :url-preview-list}
-       [rn/flat-list
+       [gesture/flat-list
         {:ref                               #(reset! flat-list-ref %)
          :keyboard-should-persist-taps      :always
          :key-fn                            key-fn
