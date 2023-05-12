@@ -14,6 +14,9 @@
    {:label "Body"
     :key   :body
     :type  :text}
+   {:label "With logo?"
+    :key   :with-logo?
+    :type  :boolean}
    {:label "Loading?"
     :key   :loading?
     :type  :boolean}
@@ -26,6 +29,7 @@
   (let [state (reagent/atom
                {:title           "Status - Private, Secure Communication"
                 :body            "Status.im"
+                :with-logo?      true
                 :loading?        false
                 :loading-message "Generating preview"})]
     (fn []
@@ -39,7 +43,8 @@
          [quo/url-preview
           {:title           (:title @state)
            :body            (:body @state)
-           :logo            (resources/get-mock-image :status-logo)
+           :logo            (when (:with-logo? @state)
+                              (resources/get-mock-image :status-logo))
            :loading?        (:loading? @state)
            :loading-message (:loading-message @state)
            :on-clear        #(js/alert "Clear button pressed")}]]]])))

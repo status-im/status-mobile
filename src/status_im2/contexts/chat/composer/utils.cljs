@@ -7,6 +7,7 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.link-preview.style :as link-preview-style]
     [status-im2.contexts.chat.composer.selection :as selection]
     [utils.re-frame :as rf]))
 
@@ -66,21 +67,22 @@
     (if platform/ios? lines (dec lines))))
 
 (defn calc-extra-content-height
-  [images? reply? edit?]
+  [images? link-previews? reply? edit?]
   (let [height (if images? constants/images-container-height 0)
+        height (if link-previews? (+ height link-preview-style/preview-total-height) 0)
         height (if reply? (+ height constants/reply-container-height) height)
         height (if edit? (+ height constants/edit-container-height) height)]
     height))
 
 (defn calc-max-height
-  [{:keys [images reply edit]} window-height kb-height insets]
+  [{:keys [images link-previews? reply edit]} window-height kb-height insets]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
                       constants/actions-container-height)
-        max-height (- max-height (calc-extra-content-height images reply edit))]
+        max-height (- max-height (calc-extra-content-height images link-previews? reply edit))]
     max-height))
 
 (defn empty-input?
@@ -126,10 +128,10 @@
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
-   {:keys [insets curr-height window-height keyboard-height images reply edit]}]
+   {:keys [insets curr-height window-height keyboard-height images link-previews? reply edit]}]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
         base             (+ base (- curr-height constants/input-height))
-        base             (+ base (calc-extra-content-height images reply edit))
+        base             (+ base (calc-extra-content-height images link-previews? reply edit))
         view-height      (- window-height keyboard-height (:top insets))
         container-height (bounded-val
                           (* (/ constants/mentions-max-height 4) size)
@@ -181,6 +183,7 @@
   []
   (let [chat-input (rf/sub [:chats/current-chat-input])]
     {:images               (seq (rf/sub [:chats/sending-image]))
+     :link-previews?       (rf/sub [:chat/link-previews?])
      :audio                (rf/sub [:chats/sending-audio])
      :reply                (rf/sub [:chats/reply-message])
      :edit                 (rf/sub [:chats/edit-message])

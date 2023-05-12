@@ -6,6 +6,7 @@
             [status-im2.contexts.chat.messages.list.state :as chat.state]
             [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
+            [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
             [status-im2.navigation.events :as navigation]
             [status-im2.constants :as constants]
             [status-im.chat.models.loading :as loading]
@@ -177,6 +178,7 @@
                  (when (and community-id (not navigate-to-shell?))
                    {:dispatch-n [[:shell/add-switcher-card
                                   :community-overview community-id]]})))
+              (link-preview/reset-all)
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))

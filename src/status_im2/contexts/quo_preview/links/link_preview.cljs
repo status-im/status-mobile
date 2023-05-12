@@ -21,6 +21,15 @@
    {:label "Container width"
     :key   :width
     :type  :text}
+   {:label "With logo?"
+    :key   :with-logo?
+    :type  :boolean}
+   {:label "With description?"
+    :key   :with-description?
+    :type  :boolean}
+   {:label "With thumbnail?"
+    :key   :with-thumbnail?
+    :type  :boolean}
    {:label "Disabled text"
     :key   :disabled-text
     :type  :text}
@@ -45,14 +54,17 @@
 (defn cool-preview
   []
   (let [state (reagent/atom
-               {:title          "Rarible - NFT Marketplace"
-                :description    "Turn your products or services into publicly tradeable items"
-                :link           "rarible.com"
-                :thumbnail      :collectible
-                :width          "295"
-                :enabled?       true
-                :thumbnail-size :normal
-                :disabled-text  "Enable Preview"})]
+               {:title             "Rarible - NFT Marketplace"
+                :description       "Turn your products or services into publicly tradeable items"
+                :link              "rarible.com"
+                :thumbnail         :collectible
+                :width             "295"
+                :with-logo?        true
+                :with-thumbnail?   true
+                :with-description? true
+                :enabled?          true
+                :thumbnail-size    :normal
+                :disabled-text     "Enable Preview"})]
     (fn []
       (let [width     (utils.number/parse-int (:width @state) 295)
             thumbnail (get resources/mock-images (:thumbnail @state))]
@@ -62,14 +74,17 @@
           {:style {:align-items :center
                    :margin-top  20}}
           [quo/link-preview
-           {:logo            (resources/get-mock-image :status-logo)
+           {:logo            (when (:with-logo? @state)
+                               (resources/get-mock-image :status-logo))
             :title           (:title @state)
-            :description     (:description @state)
+            :description     (when (:with-description? @state)
+                               (:description @state))
             :enabled?        (:enabled? @state)
             :on-enable       #(js/alert "Button pressed")
             :disabled-text   (:disabled-text @state)
             :link            (:link @state)
-            :thumbnail       thumbnail
+            :thumbnail       (when (:with-thumbnail? @state)
+                               thumbnail)
             :thumbnail-size  (:thumbnail-size @state)
             :container-style {:width width}}]]]))))
 

@@ -1,15 +1,15 @@
 (ns status-im2.contexts.chat.composer.handlers
   (:require
+    [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
-    [oops.core :as oops]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
-    [status-im2.contexts.chat.composer.utils :as utils]
     [status-im2.contexts.chat.composer.selection :as selection]
-    [utils.re-frame :as rf]
-    [utils.debounce :as debounce]))
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.debounce :as debounce]
+    [utils.re-frame :as rf]))
 
 (defn focus
   [{:keys [input-ref] :as props}
@@ -111,6 +111,9 @@
   [text
    {:keys [input-ref record-reset-fn]}
    {:keys [text-value cursor-position recording?]}]
+  (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
+                                  constants/unfurl-debounce-ms)
+
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref

@@ -6,11 +6,13 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]))
 
-(defn- logo-component
+(defn- logo-comp
   [{:keys [logo]}]
   [rn/image
    {:accessibility-label :logo
-    :source              logo
+    :source              (if (string? logo)
+                           {:uri logo}
+                           logo)
     :style               style/logo}])
 
 (defn- content
@@ -57,6 +59,7 @@
     [rn/view
      {:accessibility-label :url-preview
       :style               (merge (style/container) container-style)}
-     [logo-component {:logo logo}]
+     (when logo
+       [logo-comp {:logo logo}])
      [content {:title title :body body}]
      [clear-button {:on-press on-clear}]]))

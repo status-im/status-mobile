@@ -145,6 +145,12 @@
    (get messages chat-id {})))
 
 (re-frame/reg-sub
+ :chats/message-link-previews
+ :<- [:messages/messages]
+ (fn [messages [_ chat-id message-id]]
+   (get-in messages [chat-id message-id :link-previews])))
+
+(re-frame/reg-sub
  :chats/pinned
  :<- [:messages/pin-messages]
  (fn [pinned-messages [_ chat-id] _]
@@ -251,4 +257,3 @@
    (if (= mention constants/everyone-mention-id)
      (i18n/label :t/everyone-mention)
      contact-name)))
-

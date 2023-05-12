@@ -26,16 +26,17 @@
   [:f> f-blur-view layout-height focused?])
 
 (defn- f-shell-button
-  [{:keys [maximized?]} {:keys [height]} {:keys [images reply edit]}]
+  [{:keys [maximized?]} {:keys [height]} {:keys [images link-previews? reply edit]}]
   (let [insets       (safe-area/get-insets)
-        extra-height (utils/calc-extra-content-height images reply edit)
+        extra-height (utils/calc-extra-content-height images link-previews? reply edit)
         translate-y  (reanimated/use-shared-value
                       (utils/calc-shell-neg-y insets maximized? extra-height))]
-    (rn/use-effect (fn []
-                     (let [extra-height (utils/calc-extra-content-height images reply edit)]
-                       (reanimated/animate translate-y
-                                           (utils/calc-shell-neg-y insets maximized? extra-height))))
-                   [@maximized? images reply edit])
+    (rn/use-effect
+     (fn []
+       (let [extra-height (utils/calc-extra-content-height images link-previews? reply edit)]
+         (reanimated/animate translate-y
+                             (utils/calc-shell-neg-y insets maximized? extra-height))))
+     [@maximized? images link-previews? reply edit])
     [reanimated/view
      {:style (reanimated/apply-animations-to-style
               {:bottom    height ; we use height of the input directly as bottom position

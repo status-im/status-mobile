@@ -17,14 +17,17 @@
   []
   (let [state (reagent/atom {:previews-length "3"})]
     (fn []
-      (let [previews-length (min 6 (utils.number/parse-int (:previews-length @state)))]
+      (let [previews-length (min 6 (utils.number/parse-int (:previews-length @state)))
+            padding         20]
         [rn/view {:style {:padding-bottom 150}}
          [preview/customizer state descriptor]
          [rn/view
           {:style {:align-items :center
                    :margin-top  50}}
           [quo/url-preview-list
-           {:horizontal-spacing 20
+           {:horizontal-spacing padding
+            :preview-width      (- (:width (rn/get-window))
+                                   (* 2 padding))
             :on-clear           #(js/alert "Clear button pressed")
             :key-fn             :url
             :data               (for [index (range previews-length)

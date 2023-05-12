@@ -7,9 +7,13 @@
   (h/test "default render"
     (h/render [view/view])
     (h/is-truthy (h/query-by-label-text :title))
-    (h/is-truthy (h/query-by-label-text :logo))
     (h/is-truthy (h/query-by-label-text :button-clear-preview))
+    (h/is-null (h/query-by-label-text :logo))
     (h/is-null (h/query-by-label-text :url-preview-loading)))
+
+  (h/test "renders logo when prop is present"
+    (h/render [view/view {:logo "data:image/png,logo"}])
+    (h/is-truthy (h/query-by-label-text :logo)))
 
   (h/test "on-clear event"
     (let [on-clear (h/mock-fn)]

@@ -54,7 +54,9 @@
   [logo]
   [rn/image
    {:accessibility-label :logo
-    :source              logo
+    :source              (if (string? logo)
+                           {:uri logo}
+                           logo)
     :style               style/logo}])
 
 (defn view
@@ -68,9 +70,11 @@
    (if enabled?
      [:<>
       [rn/view {:style style/header-container}
-       [logo-comp logo]
+       (when logo
+         [logo-comp logo])
        [title-comp title]]
-      [description-comp description]
+      (when description
+        [description-comp description])
       [link-comp link]
       (when thumbnail
         [thumbnail-comp thumbnail thumbnail-size])]

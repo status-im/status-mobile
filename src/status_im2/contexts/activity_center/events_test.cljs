@@ -202,6 +202,7 @@
                                                       :text        nil}
                                  :outgoing           false
                                  :outgoing-status    nil
+                                 :link-previews      []
                                  :quoted-message     nil}
    :name                        "0x04d03f"
    :read                        true

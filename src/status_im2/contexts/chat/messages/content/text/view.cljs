@@ -3,11 +3,10 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
     [status-im2.contexts.chat.messages.content.text.style :as style]
-    [status-im2.contexts.chat.messages.link-preview.view :as link-preview]
-    [utils.re-frame :as rf]
-    [utils.i18n :as i18n]))
-
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn render-inline
   [units {:keys [type literal destination]} chat-id]
@@ -134,7 +133,7 @@
              add-edited-tag))])
 
 (defn text-content
-  [message-data context]
+  [message-data _]
   [rn/view
    [render-parsed-text message-data]
-   [link-preview/link-preview message-data context]])
+   [link-preview/view message-data]])

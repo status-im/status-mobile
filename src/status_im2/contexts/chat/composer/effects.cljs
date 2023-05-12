@@ -1,14 +1,16 @@
 (ns status-im2.contexts.chat.composer.effects
   (:require
-    [react-native.platform :as platform]
-    [status-im.async-storage.core :as async-storage]
+    [clojure.string :as string]
+    [oops.core :as oops]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [status-im.async-storage.core :as async-storage]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
+    [utils.debounce :as debounce]
     [utils.number :as utils.number]
-    [oops.core :as oops]
-    [utils.debounce :as debounce]))
+    [utils.re-frame :as rf]))
 
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -52,6 +54,12 @@
   (when (or @maximized? (>= input-content-height (* max-height constants/background-threshold)))
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
+
+(defn link-preview-effect
+  [{:keys [text-value]}]
+  (let [text @text-value]
+    (when-not (string/blank? text)
+      (rf/dispatch [:link-preview/unfurl-urls text]))))
 
 (defn images-effect
   [{:keys [sending-images? input-ref]}
@@ -100,6 +108,7 @@
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (images-effect props animations images)
+     (link-preview-effect state)
      (audio-effect state animations audio)
      (empty-effect state animations images reply audio)
      (kb/add-kb-listeners props state animations dimensions)
