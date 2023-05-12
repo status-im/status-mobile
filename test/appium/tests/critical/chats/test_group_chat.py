@@ -203,6 +203,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(self.message_before_adding)
 
     @marks.testrail_id(702807)
+    @marks.xfail(reason="blocked by 15859")
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]

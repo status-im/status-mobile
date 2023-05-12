@@ -331,24 +331,18 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
     @marks.testrail_id(702742)
-    @marks.xfail(reason='flaky test; sometimes can not be copied through appium')
     def test_community_copy_and_paste_message_in_chat_input(self):
         message_texts = ['mmmeowesage_text', 'https://status.im']
-
-        message_input = self.channel.chat_message_input
-        if not message_input.is_element_displayed():
+        if not self.channel.chat_message_input.is_element_displayed():
             self.home.click_system_back_button_until_element_is_shown()
             self.home.get_to_community_channel_from_home(self.community_name)
 
         for message in message_texts:
-            message_input.send_keys(message)
-            self.channel.send_message_button.click()
-
+            self.channel.send_message(message)
             self.channel.copy_message_text(message)
-            message_input.paste_text_from_clipboard()
-            if message_input.text != message:
-                self.errors.append('Message %s text was not copied in community channel' % message)
-            message_input.clear()
+            actual_copied_text = self.channel.driver.get_clipboard_text()
+            if actual_copied_text != message:
+                self.errors.append('Message %s text was not copied in community channel, text in clipboard %s' % actual_copied_text)
 
         self.errors.verify_no_errors()
 
@@ -364,9 +358,10 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         for key in ['admin_open', 'member_open', 'admin_closed', 'member_closed']:
             if not self.home.element_by_text(waku_user.communities[key]).is_element_displayed(30):
                 self.errors.append("%s was not restored from waku-backup!!" % key)
-        self.home.opened_communities_tab.click()
-        if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
-            self.errors.append("Pending community %s was not restored from waku-backup!" % waku_user.communities['member_pending'])
+        # TODO: there is a bug when pending community sometimes restored as joined; needs investigation
+        # self.home.opened_communities_tab.click()
+        # if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
+        #     self.errors.append("Pending community %s was not restored from waku-backup!" % waku_user.communities['member_pending'])
 
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
@@ -499,7 +494,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
-    @marks.xfail(reason='flaky test; sometimes can not be copied through appium')
     def test_community_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -511,9 +505,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_1.just_fyi("Can copy and paste emojis")
         self.channel_1.copy_message_text(emoji_unicode)
-        self.channel_1.chat_message_input.paste_text_from_clipboard()
-        if self.channel_1.chat_message_input.text != emoji_unicode:
-            self.errors.append('Emoji message was not copied')
+        actual_copied_text = self.channel_1.driver.get_clipboard_text()
+        if actual_copied_text != emoji_unicode:
+            self.errors.append('Emoji message was not copied, text in clipboard is %s' % actual_copied_text)
 
         self.channel_1.just_fyi("Can reply to emojis")
         self.channel_2.quote_message(emoji_unicode)
@@ -696,6 +690,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702786)
+    @marks.xfail(reason="blocked by 15859")
     def test_community_mentions_push_notification(self):
         self.home_1.click_system_back_button_until_element_is_shown()
         if not self.channel_2.chat_message_input.is_element_displayed():

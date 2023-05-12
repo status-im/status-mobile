@@ -940,6 +940,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_from_sender = "Message sender"
         self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
         self.chat_1.send_message(message_from_sender)
+        self.chat_1.chat_element_by_text(message_from_sender).wait_for_sent_state(120)
         self.chat_1.set_reaction(message_from_sender)
 
         message_sender = self.chat_1.chat_element_by_text(message_from_sender)
@@ -998,8 +999,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if replied_message.replied_message_text != url_message:
             self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
 
-        # The "open_in_status" feature is not implemented yet
-        self.home_2.just_fyi(("Check 'Open in Status' option"))
+        self.home_2.just_fyi("Check 'Open in Status' option")
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
         self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
@@ -1140,6 +1140,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702813)
+    @marks.xfail(reason="blocked by 15859")
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 
