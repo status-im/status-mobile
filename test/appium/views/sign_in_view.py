@@ -207,7 +207,7 @@ class SignInView(BaseView):
         self.profile_repeat_password_edit_box.click()
         self.profile_repeat_password_edit_box.send_keys(password)
         self.checkbox_button.scroll_to_element()
-        self.checkbox_button.double_click()
+        self.checkbox_button.click()
         self.profile_confirm_password_button.click()
 
     def set_profile(self, username: str, set_image=False):
