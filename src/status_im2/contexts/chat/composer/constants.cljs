@@ -37,6 +37,6 @@
 
 (def ^:const max-text-size 4096)
 
-(def unfurl-debounce-ms
+(def ^:const unfurl-debounce-ms
   "Use a high threshold to prevent unnecessary rendering overhead."
   400)
