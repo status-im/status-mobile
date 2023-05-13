@@ -1,9 +1,11 @@
 (ns utils.datetime-test
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as t]
-            [cljs.test :refer-macros [deftest testing is]]
-            [utils.i18n-goog :as i18n-goog]
-            [utils.datetime :as datetime]))
+            [cljs-time.format :as t.format]
+            [cljs.test :refer-macros [deftest testing is are]]
+            [clojure.string :as string]
+            [utils.datetime :as datetime]
+            [utils.i18n-goog :as i18n-goog]))
 
 (defn match
   [name symbols]
@@ -189,3 +191,47 @@
                                               "it"
                                               #'utils.datetime/medium-date-time-format)]
        (is (= (datetime/day-relative epoch) "01 gen 1970, 12:00:00 AM")))))
+
+(deftest format-mute-till-test
+  (let [remove-msecs              #(string/replace % #"\.\w*Z" "Z")
+        time-str-to-obj           #(t.format/parse (remove-msecs (time-coerce/to-string %)))
+        mock-today                "2023-05-13T11:46:08Z"
+        in-n-days?                #(-> (time-str-to-obj mock-today)
+                                       (t/plus (t/days %)))
+        in-n-minutes?             #(-> (time-str-to-obj mock-today)
+                                       (t/plus (t/minutes %)))
+        in-n-hours?               #(-> (time-str-to-obj mock-today)
+                                       (t/plus (t/hours %)))
+        mock-tomorrow             (in-n-days? 1)
+        mock-in-two-days          (in-n-days? 2)
+        mock-in-three-days        (in-n-days? 3)
+        mock-in-four-days         (in-n-days? 4)
+        mock-in-five-days         (in-n-days? 5)
+        mock-in-six-days          (in-n-days? 6)
+        mock-in-15-minutes        (in-n-minutes? 15)
+        mock-in-1-hour            (in-n-hours? 1)
+        mock-in-8-hour            (in-n-hours? 8)
+        will-unmute-in-1-hour     (remove-msecs (time-coerce/to-string mock-in-1-hour))
+        will-unmute-in-8-hours    (remove-msecs (time-coerce/to-string mock-in-8-hour))
+        will-unmute-in-15-mins    (remove-msecs (time-coerce/to-string mock-in-15-minutes))
+        will-unmute-in-two-days   (remove-msecs (time-coerce/to-string mock-in-two-days))
+        will-unmute-tomorrow      (remove-msecs (time-coerce/to-string mock-tomorrow))
+        will-unmute-in-three-days (remove-msecs (time-coerce/to-string mock-in-three-days))
+        will-unmute-in-four-days  (remove-msecs (time-coerce/to-string mock-in-four-days))
+        will-unmute-in-five-days  (remove-msecs (time-coerce/to-string mock-in-five-days))
+        will-unmute-in-six-days   (remove-msecs (time-coerce/to-string mock-in-six-days))]
+    (testing "Mute for minutes and hours"
+      (are [arg expected] (= (datetime/format-mute-till arg) expected)
+       will-unmute-in-15-mins "12:01 today"
+       will-unmute-in-1-hour  "12:46 today"
+       will-unmute-in-8-hours "19:46 today"))
+    (testing "Weekdays"
+      (are [arg expected] (= (datetime/format-mute-till arg) expected)
+       will-unmute-tomorrow      "11:46 tomorrow"
+       will-unmute-in-two-days   "11:46 Mon 15 May"
+       will-unmute-in-three-days "11:46 Tue 16 May"
+       will-unmute-in-four-days  "11:46 Wed 17 May"
+       will-unmute-in-five-days  "11:46 Thu 18 May"
+       will-unmute-in-six-days   "11:46 Fri 19 May"))
+    (testing "Until the user turns it back on"
+      (is (= "you turn it back on" (datetime/format-mute-till datetime/go-default-time))))))

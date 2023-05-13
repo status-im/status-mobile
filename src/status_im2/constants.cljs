@@ -335,7 +335,7 @@
 
 (def ^:const image-description-in-lightbox? false)
 (def ^:const int->weekday
-  "Returns the corresponding string representation of a weekday
+  "Maps the corresponding string representation of a weekday
    By it's numeric index as in cljs-time"
   {1 "mon"
    2 "tue"
@@ -346,7 +346,7 @@
    7 "sun"})
 
 (def ^:const months
-  "Returns the corresponding string representation of a weekday
+  "Maps the corresponding string representation of a weekday
    By it's numeric index as in cljs-time"
   {1  "jan"
    2  "feb"

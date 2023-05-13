@@ -303,18 +303,13 @@
   [{:keys [db]} chat-id muted-till mute-type muted? chat-type]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
   (let [time-string (fn [duration-kw unmute-time]
-                      (str (i18n/label duration-kw)
-                           \newline
-                           "("
-                           (i18n/label :until)
-                           unmute-time
-                           ")"))
+                      (i18n/label duration-kw {:duration unmute-time}))
         not-community-chat? (chat-utils/not-community-chat? chat-type)
         mute-duration-text
         (fn [unmute-time]
           (if unmute-time
             (str
-             (case mute-type
+             (condp = mute-type
                constants/mute-for-15-mins-type (time-string
                                                 (if (chat-utils/not-community-chat? chat-type)
                                                   :t/chat-muted-for-15-minutes
@@ -349,8 +344,7 @@
                  :icon-color (colors/theme-colors colors/success-60
                                                   colors/success-50)
                  :text       (mute-duration-text (when (some? muted-till)
-                                                   (datetime/format-mute-till
-                                                    muted-till)))}]}))
+                                                   (str (datetime/format-mute-till muted-till))))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}

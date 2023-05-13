@@ -106,8 +106,7 @@
 (defn tomorrow?
   [datetime]
   (= (-> (t/now)
-         (t/plus
-          (t/days 1))
+         (t/plus (t/days 1))
          t/day)
      (t/day datetime)))
 
@@ -273,12 +272,18 @@
   "Zero value for golang's time var"
   "0001-01-01T00:00:00Z")
 
+(defn- add-leading-zero
+  [input-string]
+  (if (> 10 input-string)
+    (str "0" input-string)
+    input-string))
+
 (defn format-mute-till
   [muted-till-string]
   (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
-        hours-and-minutes (str (t/hour (t/plus parsed-time time-zone-offset))
+        hours-and-minutes (str (add-leading-zero (t/hour (t/plus parsed-time time-zone-offset)))
                                ":"
-                               (t/minute parsed-time))
+                               (add-leading-zero (t/minute parsed-time)))
         when-to-unmute    (cond (= go-default-time
                                    muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
                                 (today? parsed-time)    (str hours-and-minutes " today")
@@ -297,4 +302,4 @@
                                                               (keyword "t"
                                                                        (get constants/months
                                                                             (t/month parsed-time))))))]
-    (str " " when-to-unmute)))
+    when-to-unmute))
