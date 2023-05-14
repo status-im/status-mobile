@@ -11,11 +11,15 @@
    :align-items      :flex-start
    :justify-content  :space-between
    :border-width     1
-   :border-color     (if locked? colors/white-opa-5 (colors/theme-colors colors/neutral-20 colors/neutral-80))
+   :border-color     (if locked?
+                       colors/white-opa-5
+                       (colors/theme-colors colors/neutral-20 colors/neutral-80))
    :border-style     :solid
    :border-radius    16
    :padding          16
-   :background-color (if locked? (colors/theme-colors colors/danger colors/danger-opa-40) (colors/theme-colors colors/neutral-5 colors/neutral-90))})
+   :background-color (if locked?
+                       (colors/theme-colors colors/danger colors/danger-opa-40)
+                       (colors/theme-colors colors/neutral-5 colors/neutral-90))})
 
 (defn keycard-logo
   [locked?]
@@ -27,7 +31,7 @@
    :tint-color (if locked? colors/white-opa-5 (colors/theme-colors colors/neutral-100 colors/white))
    :align-self :center
    :height     280.48
-   :transform  [{:rotate "-30deg"}, {:translateY -30}]
+   :transform  [{:rotate "-30deg"} {:translateY -30}]
    :opacity    (when (not (boolean locked?)) 0.02)
    :z-index    1})
 

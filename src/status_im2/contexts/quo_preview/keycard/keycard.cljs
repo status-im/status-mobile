@@ -13,7 +13,8 @@
     :key   :locked?
     :type  :boolean}])
 
-(defn cool-preview []
+(defn cool-preview
+  []
   (let [state (reagent/atom {:holder-name nil
                              :locked?     true})]
     (fn

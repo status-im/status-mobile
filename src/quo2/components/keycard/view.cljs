@@ -12,13 +12,16 @@
   - :locked? - Boolean to specify whether the keycard is locked or not
   "
   [{:keys [holder-name? locked?]}]
-  (let [label (if (boolean holder-name?) (i18n/label :t/user-keycard {:name holder-name?}) (i18n/label :t/empty-keycard))]
+  (let [label (if (boolean holder-name?)
+                (i18n/label :t/user-keycard {:name holder-name?})
+                (i18n/label :t/empty-keycard))]
     [rn/view {:style (style/card-container locked?)}
      [rn/image
       {:source (resources/get-image :keycard-logo)
        :style  (style/keycard-logo locked?)}]
      [rn/image
-      {:source (resources/get-image (if (or locked? (colors/dark?)) :keycard-chip-dark :keycard-chip-light))
+      {:source (resources/get-image
+                (if (or locked? (colors/dark?)) :keycard-chip-dark :keycard-chip-light))
        :style  style/keycard-chip}]
      [rn/image
       {:source (resources/get-image :keycard-watermark)
