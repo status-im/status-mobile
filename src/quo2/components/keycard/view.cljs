@@ -4,7 +4,6 @@
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
-            [quo2.theme :as theme]
             [utils.i18n :as i18n]))
 
 (defn keycard
@@ -19,11 +18,11 @@
       {:source (resources/get-image :keycard-logo)
        :style  (style/keycard-logo locked?)}]
      [rn/image
-      {:source (resources/get-image (if (or locked? (theme/dark?)) :keycard-chip-dark :keycard-chip-light))
+      {:source (resources/get-image (if (or locked? (colors/dark?)) :keycard-chip-dark :keycard-chip-light))
        :style  style/keycard-chip}]
      [rn/image
       {:source (resources/get-image :keycard-watermark)
-       :style  style/keycard-watermark}]
+       :style  (style/keycard-watermark locked?)}]
      [tag/tag
       {:size                32
        :type                (when locked? :icon)

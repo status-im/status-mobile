@@ -21,12 +21,14 @@
   [locked?]
   {:tint-color (if locked? colors/white (colors/theme-colors colors/neutral-100 colors/white))})
 
-(def keycard-watermark
+(defn keycard-watermark
+  [locked?]
   {:position   :absolute
-   :tint-color colors/danger
-   :top        0
-   :transform  [{:rotate "-30deg"}]
-   :opacity    0.2
+   :tint-color (if locked? colors/white-opa-5 (colors/theme-colors colors/neutral-100 colors/white))
+   :align-self :center
+   :height     280.48
+   :transform  [{:rotate "-30deg"}, {:translateY -30}]
+   :opacity    (when (not (boolean locked?)) 0.02)
    :z-index    1})
 
 (def keycard-chip
