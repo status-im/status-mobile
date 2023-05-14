@@ -2,7 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.components.reply.view :as components.reply]
+            [status-im2.contexts.chat.composer.reply.view :as reply]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
@@ -20,7 +20,7 @@
                     (assoc message-data :pinned message-not-pinned?)]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned outgoing-status deleted? deleted-for-me? content-type]
+  [{:keys [outgoing content pinned-by outgoing-status deleted? deleted-for-me? content-type]
     :as   message-data}
    {:keys [able-to-send-message? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
@@ -44,25 +44,25 @@
        :icon     :i/reply
        :id       :reply}])
    (when (and (not (or deleted? deleted-for-me?))
-              (not= (get content :text) "placeholder")
               (not= content-type constants/content-type-audio))
      [{:type     :main
        :on-press #(react/copy-to-clipboard
-                   (components.reply/get-quoted-text-with-mentions
+                   (reply/get-quoted-text-with-mentions
                     (get content :parsed-text)))
        :label    (i18n/label :t/copy-text)
        :icon     :i/copy
        :id       :copy}])
    ;; pinning images are temporarily disabled
-   (when (and message-pin-enabled (not= content-type constants/content-type-image))
+   (when (and message-pin-enabled
+              (not= content-type constants/content-type-image))
      [{:type     :main
        :on-press #(pin-message message-data)
-       :label    (i18n/label (if pinned
+       :label    (i18n/label (if pinned-by
                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
                                (if community? :t/pin-to-channel :t/pin-to-chat)))
        :icon     :i/pin
-       :id       (if pinned :unpin :pin)}])
-   (when-not (or pinned deleted? deleted-for-me?)
+       :id       (if pinned-by :unpin :pin)}])
+   (when-not (or deleted? deleted-for-me?)
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch
@@ -74,12 +74,11 @@
        :icon     :i/delete
        :id       :delete-for-me}])
    (when (cond
-           deleted?        false
-           deleted-for-me? false
-           outgoing        true
-           community?      can-delete-message-for-everyone?
-           group-chat      group-admin?
-           :else           false)
+           deleted?   false
+           outgoing   true
+           community? can-delete-message-for-everyone?
+           group-chat group-admin?
+           :else      false)
      [{:type     :danger
        :on-press (fn []
                    (rf/dispatch [:hide-bottom-sheet])

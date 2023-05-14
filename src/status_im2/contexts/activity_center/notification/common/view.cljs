@@ -8,16 +8,23 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(def tag-params
+  {:size           :small
+   :override-theme :dark
+   :color          colors/primary-50
+   :style          style/user-avatar-tag
+   :text-style     style/user-avatar-tag-text})
+
 (defn user-avatar-tag
   [user-id]
-  (let [contact (rf/sub [:contacts/contact-by-identity user-id])]
+  (let [{:keys [primary-name] :as contact} (rf/sub [:contacts/contact-by-identity user-id])]
     [quo/user-avatar-tag
      {:color          :purple
       :override-theme :dark
       :size           :small
       :style          style/user-avatar-tag
       :text-style     style/user-avatar-tag-text}
-     (:primary-name contact)
+     primary-name
      (multiaccounts/displayed-photo contact)]))
 
 (defn- render-swipe-action

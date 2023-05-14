@@ -692,6 +692,7 @@ RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
 RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
                   accountData:(NSString *)accountData
                   settings:(NSString *)settings
+                  keycardUID:(NSString *)keycardUID
                   currentPassword:(NSString *)currentPassword
                   newPassword:(NSString *)newPassword
                   callback:(RCTResponseSenderBlock)callback) {
@@ -700,7 +701,7 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     StatusgoInitKeystore(multiaccountKeystoreDir.path);
-    NSString *result = StatusgoConvertToKeycardAccount(accountData, settings, currentPassword, newPassword);
+    NSString *result = StatusgoConvertToKeycardAccount(accountData, settings, keycardUID, currentPassword, newPassword);
     callback(@[result]);
 }
 

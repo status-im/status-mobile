@@ -5,7 +5,6 @@
             [re-frame.core :as re-frame]
             [re-frame.db]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.accordion :as accordion]
@@ -68,8 +67,7 @@
      [local-topbar (i18n/label :t/choose-actions)]
      [accordion/section
       {:title   name
-       :icon    [chat-icon.screen/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo multiaccount)]
+       :icon    [chat-icon.screen/contact-icon-contacts-tab multiaccount]
        :content [accordion-content]}]
      [react/view
       {:flex            1

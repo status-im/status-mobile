@@ -6,7 +6,9 @@
 (def ^:const mention 3)
 (def ^:const reply 4)
 (def ^:const contact-request 5)
+(def ^:const community-request 7)
 (def ^:const admin 8)
+(def ^:const community-kicked 9)
 (def ^:const contact-verification 10)
 
 (def ^:const all-supported
@@ -15,7 +17,9 @@
     mention
     reply
     contact-request
+    community-request
     admin
+    community-kicked
     contact-verification})
 
 ;; TODO: Replace with correct enum values once status-go implements them.
@@ -26,4 +30,6 @@
   "Membership is like a logical group of notifications with different types, i.e.
   it doesn't have a corresponding type in the backend. Think of the collection
   as a composite key of actual types."
-  #{private-group-chat})
+  #{private-group-chat
+    community-request
+    community-kicked})

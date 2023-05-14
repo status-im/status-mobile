@@ -15,6 +15,7 @@ class ChatButton(Button):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+
 class ActivityTabButton(Button):
     def __init__(self, driver, **kwargs):
         super().__init__(driver, **kwargs)
@@ -196,7 +197,7 @@ class HomeView(BaseView):
         self.stop_status_service_button = Button(self.driver, accessibility_id="STOP")
         self.my_profile_on_start_new_chat_button = Button(self.driver,
                                                           xpath="//*[@content-desc='current-account-photo']")
-        self.communities_button = ChatButton(self.driver, accessibility_id="communities-button")
+        self.communities_button = ChatButton(self.driver, accessibility_id="create-community")
         self.ens_banner_close_button = Button(self.driver, accessibility_id=":ens-banner-close-button")
 
         # Notification centre
@@ -212,7 +213,8 @@ class HomeView(BaseView):
                                                           accessibility_id="accept-and-add-activity-center")
         self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
                                                                   "@content-desc='checkbox-off'])[1]")
-        # Tabs and elements on Messages view
+
+        # Tabs and elements on messages home view
         self.recent_tab = Button(self.driver, accessibility_id="tab-recent")
         self.groups_tab = Button(self.driver, accessibility_id="tab-groups")
         self.contacts_tab = Button(self.driver, accessibility_id="tab-contacts")
@@ -220,12 +222,16 @@ class HomeView(BaseView):
         self.pending_contact_request_button = Button(self.driver, accessibility_id="open-activity-center-contact-requests")
         self.pending_contact_request_text = Text(self.driver, xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
 
+        # Tabs and elements on community home view
+        self.pending_communities_tab = Button(self.driver, accessibility_id="pending-tab")
+        self.joined_communities_tab = Button(self.driver, accessibility_id="joined-tab")
+        self.opened_communities_tab = Button(self.driver, accessibility_id="opened-tab")
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
-        self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-all-read-button")
+        self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-as-read")
 
         # Connection icons
         self.mobile_connection_off_icon = Button(self.driver, accessibility_id="conn-button-mobile-sync-off")
@@ -287,6 +293,11 @@ class HomeView(BaseView):
                 chat_in_ac.click()
         return chat_element
 
+    def get_to_community_channel_from_home(self, community_name, channel_name='general'):
+        community_view = self.get_community_view()
+        self.get_chat(community_name, community=True).click()
+        return community_view.get_channel(channel_name).click()
+
     def get_chat_from_home_view(self, username):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25])
@@ -338,26 +349,13 @@ class HomeView(BaseView):
             chat.set_nickname(nickname)
         self.click_system_back_button_until_element_is_shown()
 
-    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat', new_ui=False):
+    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
         self.new_chat_button.click()
         chat = self.get_chat_view()
-        if new_ui:
-            self.start_a_new_chat_bottom_sheet_button.click()
-            [chat.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
-            self.setup_chat_button.click()
-
-        else:
-            chat = self.new_group_chat_button.click()
-            if user_names_to_add:
-                for user_name in user_names_to_add:
-                    if len(user_names_to_add) > 5:
-                        chat.search_by_keyword(user_name[:5])
-                        chat.get_username_checkbox(user_name).click()
-                        chat.search_input.clear()
-                    else:
-                        chat.get_username_checkbox(user_name).click()
-                    chat.next_button.click()
+        self.start_a_new_chat_bottom_sheet_button.click()
+        [chat.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
+        self.setup_chat_button.click()
         chat.chat_name_editbox.send_keys(group_chat_name)
         chat.create_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
@@ -381,7 +379,6 @@ class HomeView(BaseView):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_button.click()
         chat_view = self.communities_button.click()
-        chat_view.create_community_button.click()
         chat_view.community_name_edit_box.set_value(name)
         chat_view.community_description_edit_box.set_value(description)
         if set_image:
@@ -398,7 +395,7 @@ class HomeView(BaseView):
 
         chat_view.confirm_create_in_community_button.wait_and_click()
         self.driver.info("## Community is created successfully!", device=False)
-        return chat_view.get_community_by_name(name)
+        return self.get_community_view()
 
     def import_community(self, key):
         self.driver.info("## Importing community")

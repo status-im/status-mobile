@@ -6,9 +6,9 @@
   [id selected-stack-id]
   (.stackOpacity ^js shell-worklets id selected-stack-id))
 
-(defn stack-pointer
+(defn stack-z-index
   [id selected-stack-id]
-  (.stackPointer ^js shell-worklets id selected-stack-id))
+  (.stackZIndex ^js shell-worklets id selected-stack-id))
 
 (defn bottom-tabs-height
   [home-stack-state-sv container-height extended-container-height]

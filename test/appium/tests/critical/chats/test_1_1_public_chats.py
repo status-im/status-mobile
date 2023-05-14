@@ -25,7 +25,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             profile = home.profile_button.click()
             profile.profile_notifications_button.scroll_and_click()
             profile.wallet_push_notifications.click()
-        self.recipient_public_key, self.recipient_username = self.home_2.get_public_key_and_username(
+        self.recipient_public_key, self.recipient_username = self.home_2.get_public_key(
             return_username=True)
         self.wallet_1, self.wallet_2 = self.home_1.wallet_button.click(), self.home_2.wallet_button.click()
         [wallet.home_button.click() for wallet in (self.wallet_1, self.wallet_2)]
@@ -222,7 +222,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.profile_1 = self.home_1.profile_button.click()
         self.default_username_1 = self.profile_1.default_username_text.text
         self.profile_1.home_button.click()
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key()
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
         self.chat_1.send_message('hey')
         self.home_2.home_button.double_click()
@@ -369,7 +369,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.profile_2.backup_recovery_phrase_button.click()
         recovery_phrase = self.profile_2.backup_recovery_phrase()
         self.recovery_phrase = ' '.join(recovery_phrase.values())
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key()
         self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
         self.chat_1.chat_options.click()
         self.chat_1.view_profile_button.click()
@@ -907,17 +907,16 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
-                                                      (self.device_2.create_user, {'enable_notifications': True}))))
+
+        self.username_1, self.username_2 = 'sender', 'receiver'
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_1}),
+                                                      (self.device_2.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_2}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.profile_1 = self.home_1.get_profile_view()
-        self.profile_2 = self.home_2.get_profile_view()
-        users = self.loop.run_until_complete(run_in_parallel(
-            ((self.home_1.get_public_key_and_username, {'return_username': True}),
-             (self.home_2.get_public_key_and_username, {'return_username': True}))
-        ))
-        self.public_key_1, self.default_username_1 = users[0]
-        self.public_key_2, self.default_username_2 = users[1]
+        self.homes = (self.home_1, self.home_2)
+        self.profile_1,  self.profile_2 = (home.get_profile_view() for home in self.homes)
+        self.public_key_2 = self.home_2.get_public_key()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
         for home in (self.home_1, self.home_2):
@@ -926,13 +925,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
-        self.home_2.handle_contact_request(self.default_username_1)
+        self.home_2.handle_contact_request(self.username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
-        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.home_2.click_system_back_button_until_element_is_shown()
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
 
@@ -941,6 +940,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_from_sender = "Message sender"
         self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
         self.chat_1.send_message(message_from_sender)
+        self.chat_1.chat_element_by_text(message_from_sender).wait_for_sent_state(120)
         self.chat_1.set_reaction(message_from_sender)
 
         message_sender = self.chat_1.chat_element_by_text(message_from_sender)
@@ -998,18 +998,21 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         replied_message = self.chat_1.chat_element_by_text(reply)
         if replied_message.replied_message_text != url_message:
             self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
-        # The "open_in_status" feature is not implemented yet
-        # url_message = 'http://status.im'
-        # self.chat_1.send_message(url_message)
-        # self.chat_2.element_starts_with_text(url_message, 'button').click()
-        # web_view = self.chat_2.open_in_status_button.click()
-        # if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
-        #     self.errors.append('URL was not opened from 1-1 chat')
+
+        self.home_2.just_fyi("Check 'Open in Status' option")
+        url_message = 'http://status.im'
+        self.chat_1.send_message(url_message)
+        self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
+        web_view = self.chat_2.open_in_status_button.click()
+        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            self.errors.append('URL was not opened from 1-1 chat')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702731)
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
+        self.chat_2.jump_to_card_by_text(self.username_1)
         self.chat_1.send_message(self.message_1)
         self.chat_1.send_message(self.message_2)
         self.chat_1.chat_element_by_text(self.message_1).wait_for_status_to_be("Delivered")
@@ -1031,9 +1034,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 if pinned_by.is_element_displayed():
                     text = pinned_by.text.strip()
                     if chat_number == 0:
-                        expected_text = "You" if message == self.message_1 else self.default_username_2
+                        expected_text = "You" if message == self.message_1 else self.username_2
                     else:
-                        expected_text = "You" if message == self.message_2 else self.default_username_1
+                        expected_text = "You" if message == self.message_2 else self.username_1
                     if text != expected_text:
                         self.errors.append(
                             "Pinned by '%s' doesn't match expected '%s' for user %s" % (
@@ -1105,9 +1108,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.click_system_back_button_until_element_is_shown()
-            self.home_1.get_chat(self.default_username_2).click()
+        self.home_1.jump_to_card_by_text(self.username_2)
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
@@ -1115,6 +1116,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 self.errors.append("Message with test '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
+        self.chat_2.hide_keyboard_if_shown()
         timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
         sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
         if timestamp not in sent_time_variants:
@@ -1131,34 +1133,36 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.default_username_1).click()
+            self.home_2.get_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
                                                                                                    diff=5):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702813)
+    @marks.xfail(reason="blocked by 15859")
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 
-        [device.click_system_back_button_until_element_is_shown() for device in
-         (self.device_1, self.device_2)]
+        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
         self.home_2.profile_button.click()
         self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
+        self.device_2.put_app_to_background()
+        self.device_2.open_notification_bar()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.default_username_2).click()
+            self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message(message)
 
         self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
         self.device_1.click_system_back_button_until_element_is_shown()
         self.device_1.profile_button.click()
-        self.device_1.click_system_home_button()
 
         self.device_2.just_fyi("Check text push notification and tap it")
-        self.device_2.open_notification_bar()
         if not self.home_2.get_pn(message):
+            self.device_2.click_system_back_button()
+            self.device_2.status_in_background_button.click()
             self.device_2.driver.fail("Push notification with text was not received")
         chat_2 = self.device_2.click_upon_push_notification_by_text(message)
 
@@ -1168,8 +1172,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_2.send_message(emoji.emojize(emoji_message))
 
         self.device_1.just_fyi("Device 1 checks PN with emoji")
+        self.device_1.put_app_to_background()
         self.device_1.open_notification_bar()
         if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
+            self.device_1.click_system_back_button()
+            self.device_1.status_in_background_button.click()
             self.device_1.driver.fail("Push notification with emoji was not received")
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
@@ -1179,7 +1186,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.device_1.driver.fail("Failed to open chat view after tap on PN")
 
         self.device_1.just_fyi("Checks there are no PN after message was seen")
-        [device.open_notification_bar() for device in (self.device_1, self.device_2)]
+        [home.open_notification_bar() for home in self.homes]
         if (self.device_2.element_by_text_part(message).is_element_displayed()
                 or self.device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             self.errors.append("PN are keep staying after message was seen by user")
@@ -1187,12 +1194,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
-        [device.click_system_back_button_until_element_is_shown() for device in
-         (self.device_1, self.device_2)]
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.default_username_2).click()
-        if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.default_username_1).click()
+        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        self.chat_2.jump_to_card_by_text(self.username_1)
+        self.chat_1.jump_to_card_by_text(self.username_2)
 
         self.device_2.just_fyi(
             "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
@@ -1207,12 +1211,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
-        [device.click_system_back_button_until_element_is_shown() for device in
-         (self.device_1, self.device_2)]
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.default_username_2).click()
-        if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.jump_to_card_by_text(self.username_1)
+        self.chat_1.jump_to_card_by_text(self.username_2)
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         message_after_edit_1_1 = 'smth I should edit'
@@ -1248,9 +1248,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
         message_to_delete = 'DELETE ME'
+        self.home_1.put_app_to_background()
         self.chat_2.send_message(message_to_delete)
         self.home_1.open_notification_bar()
         if not self.home_1.get_pn(message_to_delete):
+            self.home_1.click_system_back_button()
+            self.home_1.status_in_background_button.click()
             self.errors.append("Push notification doesn't appear")
         self.chat_2.delete_message_in_chat(message_to_delete)
         pn_to_disappear = self.home_1.get_pn(message_to_delete)
@@ -1262,13 +1265,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.default_username_2).click()
-        if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.default_username_1).click()
-
+        self.chat_2.jump_to_card_by_text(self.username_1)
+        self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
-        [home.toggle_airplane_mode() for home in (self.home_1, self.home_2)]
+        [home.toggle_airplane_mode() for home in self.homes]
 
         # Not implemented yet
         # self.home_1.connection_offline_icon.wait_and_click(20)
@@ -1288,12 +1288,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append('Message status is not "Sending", it is "%s"!' % status)
 
         self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "delivered"')
-        for i, home in enumerate([self.home_1, self.home_2]):
+        for i, home in enumerate(self.homes):
             home.toggle_airplane_mode()
             if "im.status.ethereum" not in home.driver.current_activity:
                 home.click_system_back_button_until_element_is_shown()
                 home.chats_tab.click()
-                home.get_chat(self.default_username_2 if i == 0 else self.default_username_1).click()
+                home.get_chat(self.username_2 if i == 0 else self.username_1).click()
         try:
             chat_element.wait_for_status_to_be(expected_status='Delivered', timeout=120)
         except TimeoutException:
@@ -1311,11 +1311,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.click()
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
-        self.home_2.delete_chat_long_press(username=self.default_username_1)
-        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
-            self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.default_username_1)
+        self.home_2.delete_chat_long_press(username=self.username_1)
+        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed():
+            self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.username_1)
         self.home_2.reopen_app()
-        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed(15):
+        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed(15):
             self.errors.append(
-                'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.default_username_1)
+                'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.username_1)
         self.errors.verify_no_errors()

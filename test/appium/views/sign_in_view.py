@@ -119,6 +119,15 @@ class TermsOfUseLink(Button):
         return BaseWebView(self.driver)
 
 
+class UserProfileElement(Button):
+    def __init__(self, driver, username):
+        self.username = username
+        super().__init__(driver, xpath="//*[@text='%s']//ancestor::android.view.ViewGroup[@content-desc='profile-card']" % username)
+
+    def open_user_options(self):
+        Button(self.driver, xpath='%s//*[@content-desc="profile-card-options"]' % self.locator).click()
+
+
 class SignInView(BaseView):
 
     def __init__(self, driver):
@@ -182,11 +191,16 @@ class SignInView(BaseView):
         self.profile_repeat_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-2")
         self.profile_confirm_password_button = Button(self.driver, translation_id="password-creation-confirm")
         self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
+        self.identifiers_button = Button(self.driver, accessibility_id="skip-identifiers")
         self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
         self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
         self.use_recovery_phrase_button = Button(self.driver, translation_id="use-recovery-phrase")
-        self.passphrase_edit_box = EditBox(self.driver, accessibility_id="use-recovery-phrase")
+        self.passphrase_edit_box = EditBox(self.driver, accessibility_id="passphrase-input")
+        self.show_profiles_button = Button(self.driver,  accessibility_id="show-profiles")
+        self.plus_profiles_button = Button(self.driver,  accessibility_id="show-new-account-options")
+        self.create_new_profile_button = Button(self.driver,  accessibility_id="create-new-profile")
+        self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
 
     def set_password(self, password: str):
         self.profile_password_edit_box.set_value(password)
@@ -222,6 +236,7 @@ class SignInView(BaseView):
         #     self.create_password_input.set_value(password)
         #     self.confirm_your_password_input.set_value(password)
         #     self.next_button.click()
+        self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
@@ -231,18 +246,23 @@ class SignInView(BaseView):
         self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password+'1234', keycard=False,
+    def recover_access(self, passphrase: str, password: str = common_password, keycard=False,
                        enable_notifications=False, second_user=False, username='Restore user', set_image=False):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
 
         if not second_user:
             self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+        else:
+            self.show_profiles_button.click()
+            self.plus_profiles_button.click()
+            self.create_new_profile_button.click()
         self.use_recovery_phrase_button.click()
         self.passphrase_edit_box.set_value(passphrase)
         self.continue_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username, set_image)
         self.set_password(password)
         self.enable_biometric_maybe_later_button.wait_and_click(30)
+        self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
@@ -321,5 +341,10 @@ class SignInView(BaseView):
         except Exception as e:
             print(str(e))
         self.driver.info('## Exporting database is finished!', device=False)
+
+    def get_user(self, username):
+        self.driver.info("Getting username card by '%s'" % username)
+        expected_element = UserProfileElement(self.driver, username)
+        return expected_element if expected_element.is_element_displayed(10) else self.driver.fail("User is not found!")
 
 

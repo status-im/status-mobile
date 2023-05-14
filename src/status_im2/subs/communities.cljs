@@ -72,14 +72,9 @@
 
 (re-frame/reg-sub
  :communities/featured-communities
- :<- [:search/home-filter]
  :<- [:communities]
- (fn [[search-filter communities]]
-   (filterv
-    (fn [{:keys [name]}]
-      (or (empty? search-filter)
-          (string/includes? (string/lower-case (str name)) search-filter)))
-    (vals communities))))
+ (fn [communities]
+   (vals communities)))
 
 (re-frame/reg-sub
  :communities/sorted-communities
@@ -88,41 +83,37 @@
    (sort-by :name (vals communities))))
 
 (re-frame/reg-sub
- :communities/communities
- :<- [:search/home-filter]
- :<- [:communities]
- (fn [[search-filter communities]]
-   (filterv
-    (fn [{:keys [name]}]
-      (or (empty? search-filter)
-          (string/includes? (string/lower-case (str name)) search-filter)))
-    (vals communities))))
-
-(re-frame/reg-sub
  :communities/community-ids
- :<- [:communities/communities]
+ :<- [:communities]
  (fn [communities]
-   (map :id communities)))
+   (map :id (vals communities))))
+
+(def memo-communities-stack-items (atom nil))
 
 (re-frame/reg-sub
  :communities/grouped-by-status
- :<- [:communities/communities]
+ :<- [:view-id]
+ :<- [:communities]
  :<- [:communities/my-pending-requests-to-join]
  ;; Return communities splitted by level of user participation. Some communities user
  ;; already joined, to some of them join request sent and others were opened one day
  ;; and their data remained in app-db.
  ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
- (fn [[communities requests]]
-   (reduce (fn [acc community]
-             (let [joined?      (:joined community)
-                   community-id (:id community)
-                   pending?     (boolean (get requests community-id))]
-               (cond
-                 joined?  (update acc :joined conj community)
-                 pending? (update acc :pending conj community)
-                 :else    (update acc :opened conj community))))
-           {:joined [] :pending [] :opened []}
-           communities)))
+ (fn [[view-id communities requests]]
+   (if (= view-id :communities-stack)
+     (let [grouped-communities (reduce (fn [acc community]
+                                         (let [joined?      (:joined community)
+                                               community-id (:id community)
+                                               pending?     (boolean (get requests community-id))]
+                                           (cond
+                                             joined?  (update acc :joined conj community)
+                                             pending? (update acc :pending conj community)
+                                             :else    (update acc :opened conj community))))
+                                       {:joined [] :pending [] :opened []}
+                                       (vals communities))]
+       (reset! memo-communities-stack-items grouped-communities)
+       grouped-communities)
+     @memo-communities-stack-items)))
 
 (defn community->home-item
   [community counts]

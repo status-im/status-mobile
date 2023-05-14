@@ -1,16 +1,16 @@
 (ns status-im2.contexts.onboarding.profiles.view
-  (:require [quo2.core :as quo]
+  (:require [native-module.core :as native-module]
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
+            [status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.contexts.onboarding.profiles.style :as style]
+            [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [reagent.core :as reagent]
-            [react-native.core :as rn]
-            [utils.transforms :as types]
             [utils.security.core :as security]
-            [status-im.native-module.core :as status]
-            [status-im2.contexts.onboarding.profiles.style :as style]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
-            [status-im2.contexts.onboarding.common.background.view :as background]))
+            [utils.transforms :as types]))
 
 (def show-profiles? (reagent/atom false))
 
@@ -45,7 +45,7 @@
     :close-button-text   (i18n/label :t/cancel)
     :on-press            #(do
                             (rf/dispatch [:hide-bottom-sheet])
-                            (status/delete-multiaccount
+                            (native-module/delete-multiaccount
                              key-uid
                              (fn [result]
                                (let [{:keys [error]} (types/json->clj result)]
@@ -121,6 +121,53 @@
        :content-container-style {:padding-bottom 20}
        :render-fn               profile-card}]]))
 
+(defn forget-password-doc
+  []
+  [quo/documentation-drawers
+   {:title  (i18n/label :t/forgot-your-password-info-title)
+    :shell? true}
+   [rn/view
+    {:style style/forget-password-doc-container}
+    [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-description)]
+
+    [rn/view {:style style/forget-password-step-container}
+     [quo/step {:in-blur-view? true :override-theme :dark} 1]
+     [rn/view
+      {:style style/forget-password-step-content}
+      [quo/text {:size :paragraph-2 :weight :semi-bold}
+       (i18n/label :t/forgot-your-password-info-remove-app)]
+      [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-remove-app-description)]]]
+
+    [rn/view {:style style/forget-password-step-container}
+     [quo/step {:in-blur-view? true :override-theme :dark} 2]
+     [rn/view
+      {:style style/forget-password-step-content}
+      [quo/text {:size :paragraph-2 :weight :semi-bold}
+       (i18n/label :t/forgot-your-password-info-reinstall-app)]
+      [quo/text {:size :paragraph-2}
+       (i18n/label :t/forgot-your-password-info-reinstall-app-description)]]]
+
+    [rn/view {:style style/forget-password-step-container}
+     [quo/step {:in-blur-view? true :override-theme :dark} 3]
+     [rn/view
+      {:style style/forget-password-step-content}
+      [rn/view
+       {:style style/forget-password-step-title}
+       [quo/text {:size :paragraph-2} (str (i18n/label :t/sign-up) " ")]
+       [quo/text {:size :paragraph-2 :weight :semi-bold}
+        (i18n/label :t/forgot-your-password-info-signup-with-key)]]
+      [quo/text {:size :paragraph-2}
+       (i18n/label :t/forgot-your-password-info-signup-with-key-description)]]]
+
+    [rn/view {:style style/forget-password-step-container}
+     [quo/step {:in-blur-view? true :override-theme :dark} 4]
+     [rn/view
+      {:style style/forget-password-step-content}
+      [quo/text {:size :paragraph-2 :weight :semi-bold}
+       (i18n/label :t/forgot-your-password-info-create-new-password)]
+      [quo/text {:size :paragraph-2}
+       (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]])
+
 (defn login-section
   []
   (let [{:keys [name customization-color error processing]
@@ -167,19 +214,21 @@
           :size  :default
           :icon  :i/info
           :style style/info-message}
-         (i18n/label :t/oops-wrong-password)])]
+         error])]
      [quo/button
       {:size                40
        :type                :ghost
        :before              :i/info
        :accessibility-label :forget-password-button
        :override-theme      :dark
-       :style               style/forget-password-button}
+       :style               style/forget-password-button
+       :on-press            #(rf/dispatch [:show-bottom-sheet
+                                           {:content forget-password-doc :shell? true}])}
       (i18n/label :t/forgot-password)]
      [quo/button
       {:size                40
        :type                :primary
-       :customization-color (or :primary customization-color)
+       :customization-color (or customization-color :primary)
        :accessibility-label :login-button
        :override-theme      :dark
        :before              :i/unlocked

@@ -115,126 +115,125 @@
                                  (re-frame/dispatch [:bottom-sheet/hide-old-navigation-overlay])
                                  (reset-atoms))
                               animation-delay))]
-    [safe-area/consumer
-     (fn [insets]
-       [:f>
-        (fn []
-          (let [{height       :height
-                 window-width :width}
-                (rn/use-window-dimensions)
-                window-height (if selected-item (- height 72) height)
-                {:keys [keyboard-shown]} (hooks/use-keyboard)
-                bg-height-expanded (- window-height (:top insets))
-                bg-height (max (min @content-height bg-height-expanded) 109)
-                bottom-sheet-dy (reanimated/use-shared-value 0)
-                pan-y (reanimated/use-shared-value 0)
-                translate-y (worklets.bottom-sheet/use-translate-y window-height bottom-sheet-dy pan-y)
-                bg-opacity
-                (worklets.bottom-sheet/use-background-opacity translate-y bg-height window-height 0.7)
-                on-content-layout (fn [evt]
-                                    (let [height (oget evt "nativeEvent" "layout" "height")]
-                                      (reset! content-height height)))
-                on-expanded (fn []
-                              (reanimated/set-shared-value bottom-sheet-dy bg-height-expanded)
-                              (reanimated/set-shared-value pan-y 0))
-                on-collapsed (fn []
-                               (reanimated/set-shared-value bottom-sheet-dy bg-height)
-                               (reanimated/set-shared-value pan-y 0))
-                bottom-sheet-gesture (get-bottom-sheet-gesture
-                                      pan-y
-                                      translate-y
-                                      bg-height
-                                      bg-height-expanded
-                                      window-height
-                                      keyboard-shown
-                                      disable-drag?
-                                      expandable?
-                                      show-bottom-sheet?
-                                      expanded?
-                                      close-bottom-sheet
-                                      gesture-running?)
-                handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                             [handle-comp window-width override-theme]]]
+    [:f>
+     (fn []
+       (let [{height       :height
+              window-width :width}
+             (rn/get-window)
+             window-height (if selected-item (- height 72) height)
+             {:keys [keyboard-shown]} (hooks/use-keyboard)
+             insets (safe-area/get-insets)
+             bg-height-expanded (- window-height (:top insets))
+             bg-height (max (min @content-height bg-height-expanded) 109)
+             bottom-sheet-dy (reanimated/use-shared-value 0)
+             pan-y (reanimated/use-shared-value 0)
+             translate-y (worklets.bottom-sheet/use-translate-y window-height bottom-sheet-dy pan-y)
+             bg-opacity
+             (worklets.bottom-sheet/use-background-opacity translate-y bg-height window-height 0.7)
+             on-content-layout (fn [evt]
+                                 (let [height (oget evt "nativeEvent" "layout" "height")]
+                                   (reset! content-height height)))
+             on-expanded (fn []
+                           (reanimated/set-shared-value bottom-sheet-dy bg-height-expanded)
+                           (reanimated/set-shared-value pan-y 0))
+             on-collapsed (fn []
+                            (reanimated/set-shared-value bottom-sheet-dy bg-height)
+                            (reanimated/set-shared-value pan-y 0))
+             bottom-sheet-gesture (get-bottom-sheet-gesture
+                                   pan-y
+                                   translate-y
+                                   bg-height
+                                   bg-height-expanded
+                                   window-height
+                                   keyboard-shown
+                                   disable-drag?
+                                   expandable?
+                                   show-bottom-sheet?
+                                   expanded?
+                                   close-bottom-sheet
+                                   gesture-running?)
+             handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
+                          [handle-comp window-width override-theme]]]
 
-            (react/effect! #(do
-                              (cond
-                                (and
-                                 (nil? @show-bottom-sheet?)
-                                 visible?
-                                 (some? @content-height)
-                                 (> @content-height 0))
-                                (reset! show-bottom-sheet? true)
+         (react/effect! #(do
+                           (cond
+                             (and
+                              (nil? @show-bottom-sheet?)
+                              visible?
+                              (some? @content-height)
+                              (> @content-height 0))
+                             (reset! show-bottom-sheet? true)
 
-                                (and @show-bottom-sheet? (not visible?))
-                                (close-bottom-sheet)))
-                           [@show-bottom-sheet? @content-height visible?])
-            (react/effect! #(do
-                              (when @show-bottom-sheet?
-                                (cond
-                                  keyboard-shown
-                                  (do
-                                    (reset! keyboard-was-shown? true)
-                                    (reset! expanded? true))
-                                  (and @keyboard-was-shown? (not keyboard-shown))
-                                  (reset! expanded? false))))
-                           [@show-bottom-sheet? @keyboard-was-shown? keyboard-shown])
-            (react/effect! #(do
-                              (when-not @gesture-running?
-                                (cond
-                                  @show-bottom-sheet?
-                                  (if @expanded?
-                                    (do
-                                      (reanimated/set-shared-value
-                                       bottom-sheet-dy
-                                       (with-animation (+ bg-height-expanded (.-value pan-y))))
-                                      ;; Workaround for
-                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                      ;; withTiming/withSpring callback not working
-                                      ;; on-expanded should be called as a callback of
-                                      ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-expanded animation-delay))
-                                    (do
-                                      (reanimated/set-shared-value
-                                       bottom-sheet-dy
-                                       (with-animation (+ bg-height (.-value pan-y))))
-                                      ;; Workaround for
-                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                      ;; withTiming/withSpring callback not working
-                                      ;; on-collapsed should be called as a callback of
-                                      ;; with-animation instead, once this issue has been resolved
-                                      (timer/set-timeout on-collapsed animation-delay)))
+                             (and @show-bottom-sheet? (not visible?))
+                             (close-bottom-sheet)))
+                        [@show-bottom-sheet? @content-height visible?])
+         (react/effect! #(do
+                           (when @show-bottom-sheet?
+                             (cond
+                               keyboard-shown
+                               (do
+                                 (reset! keyboard-was-shown? true)
+                                 (reset! expanded? true))
+                               (and @keyboard-was-shown? (not keyboard-shown))
+                               (reset! expanded? false))))
+                        [@show-bottom-sheet? @keyboard-was-shown? keyboard-shown])
+         (react/effect! #(do
+                           (when-not @gesture-running?
+                             (cond
+                               @show-bottom-sheet?
+                               (if @expanded?
+                                 (do
+                                   (reanimated/set-shared-value
+                                    bottom-sheet-dy
+                                    (with-animation (+ bg-height-expanded (.-value pan-y))))
+                                   ;; Workaround for
+                                   ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                   ;; withTiming/withSpring callback not working
+                                   ;; on-expanded should be called as a callback of
+                                   ;; with-animation instead, once this issue has been resolved
+                                   (timer/set-timeout on-expanded animation-delay))
+                                 (do
+                                   (reanimated/set-shared-value
+                                    bottom-sheet-dy
+                                    (with-animation (+ bg-height (.-value pan-y))))
+                                   ;; Workaround for
+                                   ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                   ;; withTiming/withSpring callback not working
+                                   ;; on-collapsed should be called as a callback of
+                                   ;; with-animation instead, once this issue has been resolved
+                                   (timer/set-timeout on-collapsed animation-delay)))
 
-                                  (= @show-bottom-sheet? false)
-                                  (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
-                           [@show-bottom-sheet? @expanded? @gesture-running?])
+                               (= @show-bottom-sheet? false)
+                               (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
+                        [@show-bottom-sheet? @expanded? @gesture-running?])
 
-            [:<>
-             [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}
-              [reanimated/view
-               {:style (reanimated/apply-animations-to-style
-                        {:opacity bg-opacity}
-                        styles/backdrop)}]]
-             (cond->> [reanimated/view
-                       {:style (reanimated/apply-animations-to-style
-                                {:transform [{:translateY translate-y}]}
-                                {:width  window-width
-                                 :height window-height})}
-                       [rn/view {:style styles/container}
-                        (when selected-item
-                          [rn/view {:style (styles/selected-background override-theme)}
-                           [selected-item]])
-                        [rn/view {:style (styles/background override-theme)}
-                         [rn/keyboard-avoiding-view
-                          {:behaviour (if platform/ios? :padding :height)
-                           :style     {:flex 1}}
-                          [rn/view
-                           {:style     (styles/content-style insets bottom-safe-area-spacing?)
-                            :on-layout (when-not (and
-                                                  (some? @content-height)
-                                                  (> @content-height 0))
-                                         on-content-layout)}
-                           children]]
-                         (when show-handle?
-                           handle-comp)]]]
-               (not show-handle?)
-               (conj [gesture/gesture-detector {:gesture bottom-sheet-gesture}]))]))])]))
+         [:<>
+          [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}
+           [reanimated/view
+            {:style (reanimated/apply-animations-to-style
+                     {:opacity bg-opacity}
+                     styles/backdrop)}]]
+          (cond->> [reanimated/view
+                    {:style (reanimated/apply-animations-to-style
+                             {:transform [{:translateY translate-y}]}
+                             {:width  window-width
+                              :height window-height})}
+                    [rn/view {:style styles/container}
+                     (when selected-item
+                       [rn/view {:style (styles/selected-background override-theme)}
+                        [selected-item]])
+                     [rn/view {:style (styles/background override-theme)}
+                      [rn/keyboard-avoiding-view
+                       {:behaviour (if platform/ios? :padding :height)
+                        :style     {:flex 1}}
+                       [rn/view
+                        {:style     (styles/content-style insets bottom-safe-area-spacing?)
+                         :on-layout (when-not (and
+                                               (some? @content-height)
+                                               (> @content-height 0))
+                                      on-content-layout)}
+                        children]]
+                      (when show-handle?
+                        handle-comp)]]]
+            (not show-handle?)
+            (conj [gesture/gesture-detector {:gesture bottom-sheet-gesture}]))]))]))

@@ -18,7 +18,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.home = self.sign_in.recover_access(transaction_senders['C']['passphrase'])
-        self.public_key = self.home.get_public_key_and_username()
+        self.public_key = self.home.get_public_key()
         self.home.home_button.click()
 
     @marks.testrail_id(702289)

@@ -48,10 +48,6 @@
   {:text-transform :lowercase
    :color          (colors/theme-colors colors/neutral-50 colors/neutral-40)})
 
-(def clear-button
-  {:border-color colors/danger-50
-   :border-width 1})
-
 (def clear-button-container
   {:width       20
    :height      20

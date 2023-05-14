@@ -63,6 +63,11 @@
 
 (def within rtl/within)
 
+(defn wait-for
+  ([condition] (wait-for condition {}))
+  ([condition options]
+   (rtl/waitFor condition (clj->js options))))
+
 (defn fire-event
   ([event-name node]
    (fire-event event-name node nil))
@@ -186,6 +191,10 @@
 (defn is-null
   [element]
   (.toBeNull (js/expect element)))
+
+(defn is-equal
+  [element-1 element-2]
+  (.toBe (js/expect element-1) element-2))
 
 (defn was-called
   [mock]

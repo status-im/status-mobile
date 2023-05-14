@@ -151,13 +151,12 @@
                                :multiaccounts-stack
                                [:multiaccounts
                                 :keycard-login-pin])
-    (let [{:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
-          multiaccount-data        (types/clj->json {:name      name
-                                                     :key-uid   key-uid
-                                                     :identicon identicon})
-          account-data             {:key-uid               key-uid
-                                    :encryption-public-key encryption-public-key
-                                    :whisper-private-key   whisper-private-key}]
+    (let [{:keys [name]}    (get-in db [:multiaccounts/multiaccounts key-uid])
+          multiaccount-data (types/clj->json {:name    name
+                                              :key-uid key-uid})
+          account-data      {:key-uid               key-uid
+                             :encryption-public-key encryption-public-key
+                             :whisper-private-key   whisper-private-key}]
       {:db
        (-> db
            (assoc-in [:keycard :pin :status] nil)
@@ -168,7 +167,6 @@
            (update :multiaccounts/login assoc
                    :password            encryption-public-key
                    :key-uid             key-uid
-                   :identicon           identicon
                    :name                name
                    :save-password?      true))
        :keycard/login-with-keycard

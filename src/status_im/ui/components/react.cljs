@@ -8,8 +8,6 @@
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-navigation" :refer (Navigation)]
-            ["react-native-safe-area-context" :as safe-area-context :refer
-             (SafeAreaProvider SafeAreaInsetsContext)]
             [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -307,9 +305,6 @@
                         :align-items     :center})}
            [activity-indicator {:animating true}]])
       comp)))
-
-(def safe-area-provider (reagent/adapt-react-class SafeAreaProvider))
-(def safe-area-consumer (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
 
 (defn hw-back-add-listener
   [callback]

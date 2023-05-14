@@ -7,7 +7,6 @@
     status-im.bootnodes.core
     status-im.browser.core
     status-im.browser.permissions
-    status-im.chat.models
     status-im.chat.models.images
     status-im.chat.models.input
     status-im.chat.models.loading
@@ -30,7 +29,7 @@
     status-im.multiaccounts.logout.core
     [status-im.multiaccounts.model :as multiaccounts.model]
     status-im.multiaccounts.update.core
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     status-im.network.net-info
     status-im.pairing.core
     status-im.profile.core
@@ -59,7 +58,12 @@
     status-im2.contexts.shell.events
     status-im2.contexts.onboarding.events
     status-im.chat.models.gaps
-    [status-im2.navigation.events :as navigation]))
+    [status-im2.navigation.events :as navigation]
+    [status-im2.common.theme.core :as theme]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    status-im2.contexts.chat.home.events
+    status-im2.contexts.communities.home.events))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -84,12 +88,16 @@
 (re-frame/reg-fx
  :ui/close-application
  (fn [_]
-   (status/close-application)))
+   (native-module/close-application)))
 
 (re-frame/reg-fx
  ::app-state-change-fx
  (fn [state]
-   (status/app-state-change state)))
+   (when (and platform/ios? (= state "active"))
+     ;; Change the app theme if the ios device theme was updated when the app was in the background
+     ;; https://github.com/status-im/status-mobile/issues/15708
+     (theme/change-device-theme (rn/get-color-scheme)))
+   (native-module/app-state-change state)))
 
 (re-frame/reg-fx
  :ui/listen-to-window-dimensions-change
@@ -100,11 +108,6 @@
   {:events [:dismiss-keyboard]}
   [_]
   {:dismiss-keyboard nil})
-
-(rf/defn identicon-generated
-  {:events [:identicon-generated]}
-  [{:keys [db]} path identicon]
-  {:db (assoc-in db path identicon)})
 
 (rf/defn gfycat-generated
   {:events [:gfycat-generated]}
@@ -141,7 +144,8 @@
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
-  (let [app-in-background-since (get db :app-in-background-since)
+  (let [new-account?            (get db :onboarding-2/new-account?)
+        app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:multiaccount :signed-up?])
         biometric-auth?         (= (:auth-method db) "biometric")
         requires-bio-auth       (and
@@ -154,7 +158,8 @@
               {:db (dissoc db :app-in-background-since)}
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
-              (universal-links/process-stored-event)
+              (when-not new-account?
+                (universal-links/process-stored-event))
               #(when-let [chat-id (:current-chat-id db)]
                  {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth

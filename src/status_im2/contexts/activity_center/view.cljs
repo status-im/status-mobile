@@ -12,6 +12,10 @@
             [status-im2.contexts.activity-center.notification.membership.view :as membership]
             [status-im2.contexts.activity-center.notification.mentions.view :as mentions]
             [status-im2.contexts.activity-center.notification.reply.view :as reply]
+            [status-im2.contexts.activity-center.notification.community-request.view :as
+             community-request]
+            [status-im2.contexts.activity-center.notification.community-kicked.view :as
+             community-kicked]
             [status-im2.contexts.activity-center.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -196,7 +200,14 @@
            [admin/view props]
 
            (some types/membership [type])
-           [membership/view props]
+           (case type
+             types/private-group-chat [membership/view props]
+
+             types/community-request  [community-request/view props]
+
+             types/community-kicked   [community-kicked/view props]
+
+             nil)
 
            :else
            nil)]))))

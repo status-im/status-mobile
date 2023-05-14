@@ -1,7 +1,5 @@
 (ns status-im.qr-scanner.core
   (:require [re-frame.core :as re-frame]
-            [status-im.add-new.db :as new-chat.db]
-            [status-im.chat.models :as chat]
             [status-im.ethereum.core :as ethereum]
             [status-im.group-chats.core :as group-chats]
             [utils.i18n :as i18n]
@@ -43,17 +41,16 @@
             {:browser/show-browser-selection url}
             (navigation/navigate-back)))
 
+(defn own-public-key?
+  [{:keys [multiaccount]} public-key]
+  (= (:public-key multiaccount) public-key))
+
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
-  (if-not (new-chat.db/own-public-key? db chat-id)
+  (if-not (own-public-key? db chat-id)
     {:dispatch [:chat.ui/start-chat chat-id]}
     {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                         :content (i18n/label :t/can-not-add-yourself)}}))
-
-(rf/defn handle-public-chat
-  [cofx {:keys [topic]}]
-  (when (seq topic)
-    (chat/start-public-chat cofx topic)))
 
 (rf/defn handle-group-chat
   [cofx params]
@@ -61,7 +58,7 @@
 
 (rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
-  (let [own (new-chat.db/own-public-key? db public-key)]
+  (let [own (own-public-key? db public-key)]
     (cond
       (and public-key own)
       (rf/merge cofx
@@ -85,11 +82,6 @@
             (navigation/change-tab :wallet-stack)
             (navigation/pop-to-root :shell-stack)))
 
-(rf/defn handle-wallet-connect
-  {:events [::handle-wallet-connect-uri]}
-  [cofx data]
-  {:dispatch [:wallet-connect/pair data]})
-
 (rf/defn handle-local-pairing
   {:events [::handle-local-pairing-uri]}
   [_ data]
@@ -99,7 +91,6 @@
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
   (case type
-    :public-chat  (handle-public-chat cofx data)
     :group-chat   (handle-group-chat cofx data)
     :private-chat (handle-private-chat cofx data)
     :contact      (handle-view-profile cofx data)

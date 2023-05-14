@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [react-native.background-timer :as background-timer]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
 
@@ -29,7 +29,7 @@
         on-error (or on-error
                      (on-error-retry call arg)
                      #(log/warn :json-rpc/error method :error % :params params))]
-    (status/call-private-rpc
+    (native-module/call-private-rpc
      (transforms/clj->json {:jsonrpc "2.0"
                             :id      1
                             :method  method

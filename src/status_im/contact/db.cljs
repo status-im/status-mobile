@@ -3,8 +3,7 @@
             [clojure.string :as string]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.gfycat.core :as gfycat]))
 
 (defn public-key->new-contact
   [public-key]
@@ -12,7 +11,6 @@
     {:alias        alias
      :name         alias
      :primary-name alias
-     :identicon    (identicon/identicon public-key)
      :public-key   public-key}))
 
 (defn public-key-and-ens-name->new-contact
@@ -59,7 +57,7 @@
   [members admins contacts {:keys [public-key preferred-name name] :as current-account}]
   (let [current-contact (some->
                           current-account
-                          (select-keys [:name :preferred-name :public-key :identicon :images])
+                          (select-keys [:name :preferred-name :public-key :images])
                           (set/rename-keys {:name :alias :preferred-name :name})
                           (assoc :primary-name (or preferred-name name)))
         all-contacts    (cond-> contacts

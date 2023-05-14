@@ -70,7 +70,6 @@
   {:events [:hide-bottom-sheet]}
   [{:keys [db]}]
   (let [{:keys [hide? sheets]} (:bottom-sheet db)]
-    (println :hide-bottom-sheet (not hide?) (seq sheets))
     (when (and (not hide?) (seq sheets))
       {:db (assoc-in db [:bottom-sheet :hide?] true)})))
 
@@ -140,3 +139,18 @@
                                            key-uid
                                            :keycard-pairing]))]
     {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
+
+(rf/defn dismiss-all-overlays
+  {:events [:dissmiss-all-overlays]}
+  [{:keys [db]}]
+  {:dispatch-n [[:hide-popover]
+                [:hide-visibility-status-popover]
+                [:hide-bottom-sheet]
+                [:bottom-sheet-hidden]
+                [:hide-wallet-connect-sheet]
+                [:hide-wallet-connect-success-sheet]
+                [:hide-wallet-connect-app-management-sheet]
+                [:hide-signing-sheet]
+                [:hide-select-acc-sheet]
+                [:bottom-sheet/hide-old-navigation-overlay]
+                [:toasts/close-all-toasts]]})

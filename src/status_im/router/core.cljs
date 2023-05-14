@@ -2,16 +2,15 @@
   (:require [bidi.bidi :as bidi]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as public-chat.db]
             [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.utils.types :as types]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im2.utils.validators :as validators]
+            [utils.validators :as validators]
             [status-im.utils.http :as http]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
@@ -20,8 +19,6 @@
 (def ethereum-scheme "ethereum:")
 
 (def uri-schemes ["status-im://" "status-im:"])
-
-(def wallet-connect-scheme "wc:")
 
 (def web-prefixes ["https://" "http://" "https://www." "http://wwww."])
 
@@ -48,9 +45,7 @@
 
 (def routes
   [""
-   {handled-schemes {["" :chat-id]         :public-chat
-                     "chat"                {["/public/" :chat-id] :public-chat}
-                     "b/"                  browser-extractor
+   {handled-schemes {"b/"                  browser-extractor
                      "browser/"            browser-extractor
                      ["p/" :chat-id]       :private-chat
                      ["cr/" :community-id] :community-requests
@@ -83,8 +78,9 @@
                  :ens-name   ens-name})
 
       valid-compressed-key?
-      (status/compressed-key->public-key
+      (native-module/compressed-key->public-key
        user-id
+       constants/deserialization-key
        (fn [response]
          (let [{:keys [error]} (types/json->clj response)]
            (when-not error
@@ -105,14 +101,6 @@
       :else
       (callback {:type  :contact
                  :error :not-found}))))
-
-(defn match-public-chat
-  [{:keys [chat-id]}]
-  (if (public-chat.db/valid-topic? chat-id)
-    {:type  :public-chat
-     :topic chat-id}
-    {:type  :public-chat
-     :error :invalid-topic}))
 
 (defn match-group-chat
   [chats {:strs [a a1 a2]}]
@@ -224,8 +212,6 @@
   (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
-      (= handler :public-chat)
-      (cb (match-public-chat route-params))
 
       (= handler :browser)
       (cb (match-browser uri route-params))

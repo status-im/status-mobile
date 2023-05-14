@@ -30,7 +30,8 @@
            {:no-color true})))
 
 (defn left-section-view
-  [{:keys [on-press icon accessibility-label type icon-background-color] :or {type :grey}}
+  [{:keys [on-press icon accessibility-label type icon-background-color icon-override-theme]
+    :or   {type :grey}}
    put-middle-section-on-left?]
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
    [button/button
@@ -39,6 +40,7 @@
      :type                      type
      :size                      32
      :accessibility-label       accessibility-label
+     :override-theme            icon-override-theme
      :override-background-color icon-background-color}
     icon]])
 
@@ -150,7 +152,7 @@
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
      (map-indexed (fn [index
-                       {:keys [icon on-press type style icon-override-theme accessibility-label]
+                       {:keys [icon on-press type style icon-override-theme accessibility-label label]
                         :or   {type :grey}}]
                     ^{:key index}
                     [rn/view
@@ -161,11 +163,12 @@
                                                   :accessible          true))
                      [button/button
                       {:on-press       on-press
-                       :icon           true
+                       :icon           (not label)
                        :type           type
+                       :before         (when label icon)
                        :size           32
                        :override-theme icon-override-theme}
-                      icon]])
+                      (if label label icon)]])
                   right-section-buttons))])
 
 (defn page-nav

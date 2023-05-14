@@ -2,16 +2,12 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.add-new.db :as db]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.image-server :as image-server]
-            [status-im2.config :as config]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.events :as chat.events]
-            [utils.i18n :as i18n]))
+            [status-im2.contexts.chat.events :as chat.events]))
 
 (re-frame/reg-sub
  :chats/chat
@@ -284,13 +280,9 @@
  :<- [:contacts/contacts]
  :<- [:profile/multiaccount]
  :<- [:mediaserver/port]
- (fn [[contacts {:keys [public-key] :as multiaccount} port] [_ id]]
-   (let [contact (or (when (= id public-key)
-                       multiaccount)
-                     (get contacts id))]
-     (if (nil? contact)
-       (image-server/get-identicons-uri port id)
-       (multiaccounts/displayed-photo contact)))))
+ (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
+   (multiaccounts/displayed-photo (or (when (= id public-key) multiaccount)
+                                      (get contacts id)))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
@@ -327,58 +319,17 @@
    (:editing-message metadata)))
 
 (re-frame/reg-sub
- :chats/sending-contact-request
- :<- [:chats/current-chat-input]
- (fn [{:keys [metadata]}]
-   (:sending-contact-request metadata)))
+ :chats/sending-audio
+ :<- [:chats/current-chat-id]
+ :<- [:chat/inputs]
+ (fn [[chat-id inputs]]
+   (get-in inputs [chat-id :audio])))
 
 (re-frame/reg-sub
  :chats/timeline-sending-image
  :<- [:chats/timeline-chat-input]
  (fn [{:keys [metadata]}]
    (:sending-image metadata)))
-
-(re-frame/reg-sub
- :chats/chat-toolbar
- :<- [:multiaccounts/login]
- :<- [:chats/sending-image]
- :<- [:mainnet?]
- :<- [:current-chat/one-to-one-chat?]
- :<- [:current-chat/metadata]
- :<- [:chats/reply-message]
- :<- [:chats/edit-message]
- :<- [:chats/sending-contact-request]
- (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit
-       sending-contact-request]]
-   (let [sending-image (seq sending-image)]
-     {:send          (not processing)
-      :stickers      (and (or config/stickers-test-enabled? mainnet?)
-                          (not sending-image)
-                          (not sending-contact-request)
-                          (not reply))
-      :image         (and (not reply)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not public?))
-      :extensions    (and one-to-one-chat?
-                          (or config/commands-enabled? mainnet?)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not reply))
-      :audio         (and (not sending-image)
-                          (not reply)
-                          (not edit)
-                          (not sending-contact-request)
-                          (not public?))
-      :sending-image sending-image})))
-
-(re-frame/reg-sub
- :public-chat.new/topic-error-message
- :<- [:public-group-topic]
- (fn [topic]
-   (when-not (or (empty? topic)
-                 (db/valid-topic? topic))
-     (i18n/label :topic-name-error))))
 
 (defn filter-selected-contacts
   [selected-contacts contacts]

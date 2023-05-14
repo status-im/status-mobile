@@ -12,22 +12,19 @@ let
   # the default shell with most commonly used tools
   default = callPackage ./shell.nix { };
 
-  # Combines with many other shells
-  nodejs-sh = targets.mobile.ios.nodejs-sh;
-
   # An attrset for easier merging with default shell
   shells = {
     inherit default;
 
-    nodejs = nodejs-sh;
-
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
       buildInputs = with pkgs; [ clojure flock maven openjdk ];
-      inputsFrom = [ nodejs-sh ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''
         export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
+
+        # Check if node modules changed and if so install them.
+        "$STATUS_MOBILE_HOME/nix/scripts/node_modules.sh" ${pkgs.deps.nodejs-patched}
       '';
     };
 

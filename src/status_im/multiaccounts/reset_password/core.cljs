@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
@@ -59,7 +59,7 @@
 (re-frame/reg-fx
  ::change-db-password
  (fn [[key-uid {:keys [current-password new-password]}]]
-   (status/reset-password
+   (native-module/reset-password
     key-uid
     (ethereum/sha3 (security/safe-unmask-data current-password))
     (ethereum/sha3 (security/safe-unmask-data new-password))
@@ -88,9 +88,9 @@
  ::validate-current-password-and-reset
  (fn [{:keys [address current-password] :as form-vals}]
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data current-password))]
-     (status/verify address
-                    hashed-pass
-                    (partial handle-verification form-vals)))))
+     (native-module/verify address
+                           hashed-pass
+                           (partial handle-verification form-vals)))))
 
 (rf/defn reset
   {:events [::reset]}

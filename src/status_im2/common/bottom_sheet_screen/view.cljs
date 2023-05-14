@@ -2,7 +2,6 @@
   (:require
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
-    [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [oops.core :as oops]
@@ -46,38 +45,35 @@
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
     (reset! curr-scroll y)))
 
-(defn view
+(defn f-view
   [content skip-background?]
-  [:f>
-   (let [scroll-enabled (reagent/atom true)
-         curr-scroll    (atom 0)]
-     (fn []
-       (let [sb-height   (navigation/status-bar-height)
-             insets      (safe-area/use-safe-area)
-             padding-top (Math/max sb-height (:top insets))
-             padding-top (if platform/ios? padding-top (+ padding-top 10))
-             opacity     (reanimated/use-shared-value 0)
-             translate-y (reanimated/use-shared-value 0)
-             close       (fn []
-                           (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
-                           (rf/dispatch [:navigate-back]))]
-         (rn/use-effect
-          (fn []
-            (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
-         (hooks/use-back-handler close)
-         [rn/view
-          {:style {:flex        1
-                   :padding-top padding-top}}
-          (when-not skip-background?
-            [reanimated/view {:style (style/background opacity)}])
-
+  (let [scroll-enabled (reagent/atom true)
+        curr-scroll    (atom 0)]
+    (fn []
+      (let [insets      (safe-area/get-insets)
+            padding-top (:top insets)
+            padding-top (if platform/ios? padding-top (+ padding-top 10))
+            opacity     (reanimated/use-shared-value 0)
+            translate-y (reanimated/use-shared-value 0)
+            close       (fn []
+                          (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
+                          (rf/dispatch [:navigate-back]))]
+        (rn/use-effect
+         (fn []
+           (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
+        (hooks/use-back-handler close)
+        [rn/view
+         {:style {:flex        1
+                  :padding-top padding-top}}
+         (when-not skip-background?
+           [reanimated/view {:style (style/background opacity)}])
+         [gesture/gesture-detector
+          {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
           [reanimated/view {:style (style/main-view translate-y)}
-           [gesture/gesture-detector
-            {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
-            [rn/view {:style style/handle-container}
-             [rn/view {:style (style/handle)}]]]
+           [rn/view {:style style/handle-container}
+            [rn/view {:style (style/handle)}]]
            [content
             {:insets         insets
              :close          close
-             :scroll-enabled @scroll-enabled
-             :on-scroll      #(on-scroll % curr-scroll)}]]])))])
+             :scroll-enabled scroll-enabled
+             :on-scroll      #(on-scroll % curr-scroll)}]]]]))))

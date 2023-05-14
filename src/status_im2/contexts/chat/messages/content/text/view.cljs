@@ -40,14 +40,16 @@
     :mention
     (conj
      units
-     [rn/touchable-opacity
-      {:active-opacity 1
-       :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
-       :style          (merge style/block {:background-color colors/primary-50-opa-10})}
-      [quo/text
-       {:weight :medium
-        :style  {:color (colors/theme-colors colors/primary-50 colors/primary-60)}}
-       (rf/sub [:messages/resolve-mention literal])]])
+     [rn/view
+      {:style style/mention-tag-wrapper}
+      [rn/touchable-opacity
+       {:active-opacity 1
+        :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
+        :style          style/mention-tag}
+       [quo/text
+        {:weight :medium
+         :style  style/mention-tag-text}
+        (rf/sub [:messages/resolve-mention literal])]]])
 
     :edited
     (conj units
@@ -122,6 +124,7 @@
 
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
+  ^{:key (:parsed-text content)}
   [rn/view {:style style/parsed-text-block}
    (reduce (fn [acc e]
              (render-block acc e chat-id))

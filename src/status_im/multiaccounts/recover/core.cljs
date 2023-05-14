@@ -9,7 +9,7 @@
             [status-im.keycard.nfc :as nfc]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
@@ -89,14 +89,14 @@
  ::import-multiaccount
  (fn [{:keys [passphrase password success-event]}]
    (log/debug "[recover] ::import-multiaccount")
-   (status/multiaccount-import-mnemonic
+   (native-module/multiaccount-import-mnemonic
     passphrase
     password
     (fn [result]
       (let [{:keys [id] :as root-data}
             (multiaccounts.create/normalize-multiaccount-data-keys
              (types/json->clj result))]
-        (status-im.native-module.core/multiaccount-derive-addresses
+        (native-module.core/multiaccount-derive-addresses
          id
          [constants/path-wallet-root
           constants/path-eip1581
@@ -106,14 +106,11 @@
            (let [derived-data (multiaccounts.create/normalize-derived-data-keys
                                (types/json->clj result))
                  public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-             (status/gfycat-identicon-async
+             (native-module/gfycat-identicon-async
               public-key
-              (fn [name identicon]
+              (fn [name _]
                 (let [derived-data-extended
-                      (update derived-data
-                              constants/path-whisper-keyword
-                              merge
-                              {:name name :identicon identicon})]
+                      (update derived-data constants/path-whisper-keyword assoc :name name)]
                   (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
 
 (rf/defn show-existing-multiaccount-alert

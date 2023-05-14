@@ -4,8 +4,6 @@
     [utils.i18n :as i18n]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.screens.about-app.views :as about-app]
-    [status-im.ui.screens.add-new.new-chat.views :as new-chat]
-    [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
     [status-im.ui.screens.advanced-settings.views :as advanced-settings]
     [status-im.ui.screens.appearance.views :as appearance]
     [status-im.ui.screens.backup-settings.view :as backup-settings]
@@ -30,7 +28,6 @@
     [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
     [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
     [status-im.ui.screens.communities.select-category :as select-category]
-    [status-im.ui.screens.communities.views :as communities]
     [status-im.ui.screens.contacts-list.views :as contacts-list]
     [status-im.ui.screens.currency-settings.views :as currency-settings]
     [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
@@ -198,7 +195,7 @@
 
    ;;CHAT
    {:name      :start-a-new-chat
-    :options   {:sheet? true :insets {:top? true}}
+    :options   {:sheet? true}
     :component new-chat-aio/contact-selection-list}
 
    {:name      :group-chat-profile
@@ -277,13 +274,10 @@
     :options   {:insets {:top? true}}
     ;;TODO custom subtitle
     :component group-chat/new-group}
-   {:name      :communities
-    ;;TODO custom
-    :options   {:insets {:top? true}}
-    :component communities/communities}
    {:name      :community-import
     :options   {:topBar {:title {:text (i18n/label :t/import-community-title)}}
-                :insets {:top? true}}
+                :insets {:top?    true
+                         :bottom? true}}
     :component communities.import/view}
    {:name      :community-edit
     :options   {:topBar {:title {:text (i18n/label :t/community-edit-title)}}
@@ -291,11 +285,13 @@
     :component community.edit/edit}
    {:name      :community-create
     :options   {:topBar {:title {:text (i18n/label :t/new-community-title)}}
-                :insets {:top? true}}
+                :insets {:top?    true
+                         :bottom? true}}
     :component communities.create/view}
    {:name      :community-membership
     :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}
-                :insets {:top? true}}
+                :insets {:top?    true
+                         :bottom? true}}
     :component membership/membership}
 
    ;;WALLET
@@ -576,20 +572,6 @@
 
    ;;MODALS
 
-   ;[Chat] New Chat
-   {:name      :new-chat
-    :on-focus  [:contacts/new-chat-focus]
-    ;;TODO accessories
-    :options   {:insets {:top? true}}
-    :component new-chat/new-chat}
-
-   ;[Chat] New Public chat
-   {:name      :new-public-chat
-    :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component new-public-chat/new-public-chat}
-
    ;[Chat] Link preview settings
    {:name      :link-preview-settings
     :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}
@@ -609,13 +591,6 @@
     ;;TODO accessories
     :options   {:insets {:top? true}}
     :component new-chat-aio/contact-selection-list}
-
-   ;[Chat] New Public chat
-   {:name      :new-public-chat
-    :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component new-public-chat/new-public-chat}
 
    ;[Group chat] Add participants
    {:name      :add-participants-toggle-list

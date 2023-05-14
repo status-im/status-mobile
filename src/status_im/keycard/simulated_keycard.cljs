@@ -7,7 +7,7 @@
             [utils.i18n :as i18n]
             [status-im.keycard.keycard :as keycard]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.node.core :as node]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
@@ -249,14 +249,14 @@
   [{:keys [password on-success]}]
   (when (and (not @initialization)
              (not @derived-acc))
-    (status/multiaccount-import-mnemonic
+    (native-module/multiaccount-import-mnemonic
      "night fortune spider version version armed amused winner matter tonight cave flag"
      nil
      (fn [result]
        (let [{:keys [id] :as root-data}
              (multiaccounts.create/normalize-multiaccount-data-keys
               (types/json->clj result))]
-         (status-im.native-module.core/multiaccount-derive-addresses
+         (native-module.core/multiaccount-derive-addresses
           id
           [constants/path-wallet-root
            constants/path-eip1581
@@ -266,14 +266,11 @@
             (let [derived-data (multiaccounts.create/normalize-derived-data-keys
                                 (types/json->clj result))
                   public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-              (status/gfycat-identicon-async
+              (native-module/gfycat-identicon-async
                public-key
-               (fn [name photo-path]
+               (fn [name _]
                  (let [derived-data-extended
-                       (update derived-data
-                               constants/path-whisper-keyword
-                               merge
-                               {:name name :identicon photo-path})]
+                       (update derived-data constants/path-whisper-keyword assoc :name name)]
                    (reset! derived-acc
                      {:root-key root-data
                       :derived  derived-data-extended})))))))))))
@@ -294,7 +291,7 @@
             (if delete-multiaccount?
               (fn [on-deletion-success]
                 (js/alert "OH SHEET")
-                (status/delete-multiaccount
+                (native-module/delete-multiaccount
                  key-uid
                  (fn [result]
                    (let [{:keys [error]} (types/json->clj result)]
@@ -304,7 +301,7 @@
               (fn [cb] (cb)))]
         (deletion-wrapper
          (fn []
-           (status/multiaccount-store-derived
+           (native-module/multiaccount-store-derived
             id
             (:key-uid response)
             [constants/path-wallet-root
@@ -398,14 +395,14 @@
           path-num (inc (get-in @re-frame.db/app-db
                                 [:multiaccount :latest-derived-path]))
           path (str "m/" path-num)]
-      (status/multiaccount-load-account
+      (native-module/multiaccount-load-account
        wallet-root-address
        hashed-password
        (fn [value]
          (let [{:keys [id error]} (types/json->clj value)]
            (if error
              (re-frame/dispatch [::new-account-error :password-error error])
-             (status/multiaccount-derive-addresses
+             (native-module/multiaccount-derive-addresses
               id
               [path]
               (fn [derived]
@@ -413,7 +410,7 @@
                   (if (some (fn [a] (= derived-address (get a :address))) accounts)
                     (re-frame/dispatch [::new-account-error :account-error
                                         (i18n/label :t/account-exists-title)])
-                    (status/multiaccount-store-derived
+                    (native-module/multiaccount-store-derived
                      id
                      key-uid
                      [path]
@@ -436,7 +433,7 @@
                 (swap! state assoc-in
                   [:application-info :key-uid]
                   (:key-uid keys))
-                (status/multiaccount-store-derived
+                (native-module/multiaccount-store-derived
                  id
                  (:key-uid keys)
                  [constants/path-wallet-root
@@ -473,7 +470,7 @@
                                {:account  address
                                 :password password
                                 :data     (or data (str "0x" hash))})]
-                   (status/sign-message
+                   (native-module/sign-message
                     params
                     (fn [res]
                       (let [signature (-> res
@@ -481,7 +478,7 @@
                                           :result
                                           ethereum/normalized-hex)]
                         (on-success signature)))))
-                 (status/sign-typed-data
+                 (native-module/sign-typed-data
                   data
                   address
                   password
@@ -498,7 +495,7 @@
 
 (defn save-multiaccount-and-login
   [{:keys [key-uid multiaccount-data password settings node-config accounts-data]}]
-  (status/save-account-and-login
+  (native-module/save-account-and-login
    key-uid
    (types/clj->json multiaccount-data)
    password
@@ -508,11 +505,11 @@
 
 (defn login
   [{:keys [key-uid multiaccount-data password]}]
-  (status/login-with-config key-uid multiaccount-data password node/login-node-config))
+  (native-module/login-with-config key-uid multiaccount-data password node/login-node-config))
 
 (defn send-transaction-with-signature
   [{:keys [transaction on-completed]}]
-  (status/send-transaction transaction account-password on-completed))
+  (native-module/send-transaction transaction account-password on-completed))
 
 (defn delete-multiaccount-before-migration
   [{:keys [on-success]}]

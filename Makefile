@@ -282,6 +282,17 @@ else
 	npx react-native run-ios
 endif
 
+show-ios-devices: export TARGET := ios
+show-ios-devices: ##@other shows connected ios device and its name
+	xcrun xctrace list devices
+
+run-ios-device: export TARGET := ios
+run-ios-device: ##@run iOS app and start it on a connected device by its name
+ifndef DEVICE_NAME
+	$(error Usage: make run-ios-device DEVICE_NAME=your-device-name)
+endif
+	react-native run-ios --device "$(DEVICE_NAME)"
+
 #--------------
 # Tests
 #--------------

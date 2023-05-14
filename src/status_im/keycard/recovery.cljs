@@ -10,7 +10,7 @@
             status-im.keycard.fx
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
             [utils.datetime :as datetime]
@@ -160,7 +160,6 @@
   (let [{{:keys [multiaccount secrets flow]} :keycard} db
         {:keys [address
                 name
-                identicon
                 public-key
                 whisper-public-key
                 wallet-public-key
@@ -175,18 +174,17 @@
                 recovered]}
         multiaccount
         {:keys [pairing paired-on]} secrets
-        {:keys [name identicon]}
+        {:keys [name]}
         (if (nil? name)
           ;; name might have been generated during recovery via passphrase
           (get-in db [:intro-wizard :derived constants/path-whisper-keyword])
-          {:name      name
-           :identicon identicon})]
+          {:name name})]
     ;; if a name is still `nil` we have to generate it before multiaccount's
     ;; creation otherwise spec validation will fail
     (if (nil? name)
-      {:keycard/generate-name-and-photo
+      {:keycard/generate-name
        {:public-key whisper-public-key
-        :on-success ::on-name-and-photo-generated}}
+        :on-success ::on-name-generated}}
       (rf/merge cofx
                 {:db (-> db
                          (assoc-in [:keycard :setup-step] nil)
@@ -199,8 +197,7 @@
                                          constants/path-whisper-keyword
                                          {:public-key whisper-public-key
                                           :address    (eip55/address->checksum whisper-address)
-                                          :name       name
-                                          :identicon  identicon}
+                                          :name       name}
                                          constants/path-default-wallet-keyword
                                          {:public-key wallet-public-key
                                           :address    (eip55/address->checksum wallet-address)}}
@@ -250,14 +247,14 @@
 (re-frame/reg-fx
  ::finish-migration
  (fn [[account settings password encryption-pass login-params]]
-   (status/convert-to-keycard-account
+   (native-module/convert-to-keycard-account
     account
     settings
     password
     encryption-pass
     #(let [{:keys [error]} (types/json->clj %)]
        (if (string/blank? error)
-         (status/login-with-keycard login-params)
+         (native-module/login-with-keycard login-params)
          (throw
           (js/Error.
            "Please shake the phone to report this error and restart the app. Migration failed unexpectedly.")))))))
@@ -382,11 +379,11 @@
    {:on-card-connected :keycard/load-recovering-key-screen
     :handler           (common/dispatch-event :keycard/import-multiaccount)}))
 
-(rf/defn on-name-and-photo-generated
-  {:events       [::on-name-and-photo-generated]
+(rf/defn on-name-generated
+  {:events       [::on-name-generated]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
-  [{:keys [db] :as cofx} whisper-name identicon]
+  [{:keys [db] :as cofx} whisper-name]
   (rf/merge
    cofx
    {:db (update-in db
@@ -394,6 +391,5 @@
                    (fn [multiacc]
                      (assoc multiacc
                             :recovered (get db :recovered-account?)
-                            :name      whisper-name
-                            :identicon identicon)))}
+                            :name      whisper-name)))}
    (create-keycard-multiaccount)))

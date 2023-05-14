@@ -34,20 +34,16 @@
      [quo/text {:size :paragraph-2}
       "Some random description • Developer • Designer • Olympic gold winner • President • Super Hero"]]}])
 
-(defn display-picture-comp
+(defn f-display-picture-comp
   [animation]
-  [:f>
-   (fn []
-     [reanimated/fast-image
-      {:style (reanimated/apply-animations-to-style
-               {:width  animation
-                :height animation}
-               {:border-radius 72})
-       :source
-       {:uri
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])])
-
-
+  [reanimated/fast-image
+   {:style (reanimated/apply-animations-to-style
+            {:width  animation
+             :height animation}
+            {:border-radius 72})
+    :source
+    {:uri
+     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"}}])
 
 (defn header-comp
   []
@@ -78,7 +74,7 @@
   {:theme-color theme-color
    :cover-uri
    "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/kitten-playing-with-toy-mouse-royalty-free-image-590055188-1542816918.jpg?crop=1.00xw:0.758xh;0,0.132xh&resize=480:*"
-   :display-picture-comp display-picture-comp
+   :f-display-picture-comp f-display-picture-comp
    :header-comp header-comp
    :title-comp title-comp
    :main-comp main-comp

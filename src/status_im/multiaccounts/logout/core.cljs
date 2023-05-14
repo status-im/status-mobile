@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
             [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
@@ -16,7 +16,6 @@
     (rf/merge cofx
               {:set-root                             :progress
                :chat.ui/clear-inputs                 nil
-               :chat.ui/clear-inputs-old             nil
                :shell/reset-bottom-tabs              nil
                :hide-popover                         nil
                ::logout                              nil
@@ -62,4 +61,4 @@
 (re-frame/reg-fx
  ::logout
  (fn []
-   (status/logout)))
+   (native-module/logout)))

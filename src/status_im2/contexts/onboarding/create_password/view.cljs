@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
@@ -164,7 +165,8 @@
          [rn/view {:style style/bottom-part}
           [rn/view {:style style/disclaimer-container}
            [quo/disclaimer
-            {:on-change #(reset! accepts-disclaimer? %)
+            {:blur?     true
+             :on-change #(swap! accepts-disclaimer? not)
              :checked?  @accepts-disclaimer?}
             (i18n/label :t/password-creation-disclaimer)]]
 
@@ -182,16 +184,37 @@
                                            (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
+(defn create-password-doc
+  []
+  [quo/documentation-drawers
+   {:title  (i18n/label
+             :t/create-profile-password-info-box-title)
+    :shell? true}
+   [rn/view
+    [quo/text
+     {:size :paragraph-2}
+     (i18n/label
+      :t/create-profile-password-info-box-description)]]])
+
 (defn create-password
   []
   (let [scroll-view-ref  (atom nil)
         scroll-to-end-fn #(js/setTimeout ^js/Function (.-scrollToEnd @scroll-view-ref) 250)]
     (fn []
-      [:<>
-       [background/view true]
-       [rn/scroll-view
-        {:ref                     #(reset! scroll-view-ref %)
-         :style                   style/overlay
-         :content-container-style style/content-style}
-        [navigation-bar/navigation-bar {:on-press-info #(js/alert "Info pressed")}]
-        [password-form {:scroll-to-end-fn scroll-to-end-fn}]]])))
+      (let [{:keys [top]} (safe-area/get-insets)]
+        [:<>
+         [background/view true]
+         [rn/scroll-view
+          {:ref                     #(reset! scroll-view-ref %)
+           :style                   style/overlay
+           :content-container-style style/content-style}
+          [navigation-bar/navigation-bar
+           {:top                   top
+            :right-section-buttons [{:type                :blur-bg
+                                     :icon                :i/info
+                                     :icon-override-theme :dark
+                                     :on-press            #(rf/dispatch
+                                                            [:show-bottom-sheet
+                                                             {:content create-password-doc
+                                                              :shell?  true}])}]}]
+          [password-form {:scroll-to-end-fn scroll-to-end-fn}]]]))))

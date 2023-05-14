@@ -239,7 +239,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(700748)
     def test_restore_uppercase_whitespaces_seed_phrase_special_char_passw_logcat(self):
         profile = self.home.profile_button.click()
-        public_key, username = self.sign_in.get_public_key_and_username(return_username=True)
+        public_key, username = self.sign_in.get_public_key()
 
         self.sign_in.just_fyi("Check public key matches expected and no back up seed phrase is available")
         profile.privacy_and_security_button.click()
@@ -453,7 +453,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Restored address %s does not match expected' % address)
 
         self.sign_in.just_fyi('Check that after migration username and public key match expected')
-        public_key, default_username = self.sign_in.get_public_key_and_username(return_username=True)
+        public_key, default_username = self.sign_in.get_public_key()
         profile = self.sign_in.get_profile_view()
         if public_key != self.user['public_key']:
             self.errors.append('Public key %s does not match expected' % public_key)

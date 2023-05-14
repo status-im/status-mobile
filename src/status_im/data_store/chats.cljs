@@ -9,8 +9,7 @@
 (defn rpc->type
   [{:keys [chat-type name] :as chat}]
   (cond
-    (or (= constants/public-chat-type chat-type)
-        (= constants/profile-chat-type chat-type)
+    (or (= constants/profile-chat-type chat-type)
         (= constants/timeline-chat-type chat-type))
     (assoc chat
            :chat-name  (str "#" name)
@@ -39,10 +38,6 @@
 (defn- unmarshal-members
   [{:keys [members chat-type] :as chat}]
   (cond
-    (= constants/public-chat-type chat-type) (assoc chat
-                                                    :contacts       #{}
-                                                    :admins         #{}
-                                                    :members-joined #{})
     (= constants/private-group-chat-type chat-type) (merge chat
                                                            (reduce members-reducer
                                                                    {:admins         #{}
@@ -84,7 +79,6 @@
        :emoji                   (.-emoji chat)
        :timestamp               (.-timestamp chat)
        :alias                   (.-alias chat)
-       :identicon               (.-identicon chat)
        :muted                   (.-muted chat)
        :joined                  (.-joined chat)
        :muted-till              (.-mutetill chat)
@@ -96,10 +90,16 @@
        :chat-type               (.-chatType chat)
        :unviewed-messages-count (.-unviewedMessagesCount chat)
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
-       :last-message            {:content      {:text        (.-text chat)
-                                                :parsed-text (types/js->clj (.-parsedText chat))}
-                                 :content-type (.-contentType chat)
-                                 :community-id (.-contentCommunityId chat)}
+       :last-message            {:content            {:text        (.-text chat)
+                                                      :parsed-text (types/js->clj (.-parsedText chat))
+                                                      :response-to (.-responseTo chat)}
+                                 :content-type       (.-contentType chat)
+                                 :community-id       (.-contentCommunityId chat)
+                                 :outgoing           (boolean (.-outgoingStatus chat))
+                                 :album-images-count (.-albumImagesCount chat)
+                                 :from               (.-from chat)
+                                 :deleted?           (.-deleted chat)
+                                 :deleted-for-me?    (.-deletedForMe chat)}
        :last-clock-value        (.-lastClockValue chat)
        :profile-public-key      (.-profile chat)
        :highlight               (.-highlight chat)

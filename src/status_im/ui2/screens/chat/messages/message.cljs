@@ -18,7 +18,6 @@
     [status-im.ui.screens.chat.styles.message.message :as style]
     [status-im.ui.screens.chat.utils :as chat.utils]
     [status-im.ui.screens.communities.icon :as communities.icon]
-    [status-im.ui2.screens.chat.components.reply.view :as components.reply]
     [status-im.utils.utils :as utils]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
@@ -31,7 +30,9 @@
 
 (defn system-text?
   [content-type]
-  (= content-type constants/content-type-system-text))
+  (or
+   (= content-type constants/content-type-system-text)
+   (= content-type constants/content-type-system-pinned-message)))
 
 (defn mention-element
   [from]
@@ -142,11 +143,8 @@
             (:parsed-text content))))
 
 (defn quoted-message
-  [{:keys [message-id chat-id]} pin?]
-  (let [quoted-message (get @(re-frame/subscribe [:chats/chat-messages chat-id])
-                            message-id)]
-    [rn/view {:style (when-not pin? (style/quoted-message-container))}
-     [components.reply/reply-message quoted-message false pin?]]))
+  [_ pin?]
+  [rn/view {:style (when-not pin? (style/quoted-message-container))}])
 
 (defn message-not-sent-text
   [chat-id message-id]

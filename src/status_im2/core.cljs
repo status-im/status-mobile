@@ -15,7 +15,7 @@
     [status-im2.setup.global-error :as global-error]
     [status-im2.common.log :as log]
     [status-im.async-storage.core :as async-storage]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.notifications.local :as notifications]
     [status-im.utils.universal-links.core :as utils.universal-links]
     status-im.events
@@ -27,12 +27,15 @@
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
 
+(def adjust-resize 16)
+
 (defn init
   []
+  (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
+  (when platform/android?
+    (native-module/set-soft-input-mode adjust-resize))
   (log/setup config/log-level)
   (global-error/register-handler)
-  (when platform/android?
-    (status/set-soft-input-mode status/adjust-resize))
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
   (react-native-languages/add-change-listener #(fn [lang]

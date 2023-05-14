@@ -249,6 +249,7 @@
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
+(reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 
 (reg-root-key-sub :activity-center :activity-center)
 
@@ -281,3 +282,6 @@
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
 (reg-root-key-sub :information-box-states :information-box-states)
+
+; Messages home view -> tabs
+(reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)

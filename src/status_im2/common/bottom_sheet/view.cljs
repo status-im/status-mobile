@@ -6,7 +6,8 @@
             [status-im2.common.bottom-sheet.styles :as styles]
             [react-native.gesture :as gesture]
             [oops.core :as oops]
-            [react-native.hooks :as hooks]))
+            [react-native.hooks :as hooks]
+            [react-native.blur :as blur]))
 
 (def duration 450)
 (def timing-options #js {:duration duration})
@@ -49,8 +50,8 @@
            (hide translate-y bg-opacity window-height))))))
 
 (defn view
-  [{:keys [hide? insets]} {:keys [content override-theme selected-item]}]
-  (let [{window-height :height} (rn/use-window-dimensions)
+  [{:keys [hide? insets]} {:keys [content override-theme selected-item shell?]}]
+  (let [{window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)
         translate-y             (reanimated/use-shared-value window-height)
         sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height)]
@@ -69,7 +70,11 @@
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
                 {:transform [{:translateY translate-y}]}
-                (styles/sheet insets window-height override-theme))}
+                (styles/sheet insets window-height override-theme shell?))}
+
+       (when shell?
+         [blur/view
+          {:style styles/shell-bg}])
 
        (when selected-item
          [rn/view

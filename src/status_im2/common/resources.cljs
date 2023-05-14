@@ -1,15 +1,21 @@
 (ns status-im2.common.resources)
 
 (def ui
-  {:add-new-contact         (js/require "../resources/images/ui2/add-contact.png")
-   :lifestyle               (js/require "../resources/images/ui2/lifestyle.png")
-   :music                   (js/require "../resources/images/ui2/music.png")
-   :podcasts                (js/require "../resources/images/ui2/podcasts.png")
-   :sync-device             (js/require "../resources/images/ui2/sync-new-device-cover-background.png")
-   :generate-keys           (js/require "../resources/images/ui2/generate_keys.png")
-   :ethereum-address        (js/require "../resources/images/ui2/ethereum_address.png")
-   :use-keycard             (js/require "../resources/images/ui2/keycard.png")
-   :onboarding-illustration (js/require "../resources/images/ui2/onboarding_illustration.png")})
+  {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
+   :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
+   :desktop-how-to-pair-logged-in (js/require
+                                   "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
+   :mobile-how-to-pair-sign-in    (js/require "../resources/images/ui2/mobile-how-to-pair-sign-in.png")
+   :mobile-how-to-pair-logged-in  (js/require "../resources/images/ui2/mobile-how-to-pair-logged-in.png")
+   :lifestyle                     (js/require "../resources/images/ui2/lifestyle.png")
+   :music                         (js/require "../resources/images/ui2/music.png")
+   :podcasts                      (js/require "../resources/images/ui2/podcasts.png")
+   :generate-keys                 (js/require "../resources/images/ui2/generate-keys.png")
+   :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
+   :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
+   :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
+   :qr-code                       (js/require "../resources/images/ui2/qr-code.png")
+  })
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")

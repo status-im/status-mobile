@@ -1,10 +1,10 @@
-library 'status-jenkins-lib@v1.6.9'
+library 'status-jenkins-lib@v1.7.3'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'macos && arm64 && nix-2.11 && xcode-14.2' }
+  agent { label 'macos && arm64 && nix-2.11 && xcode-14.3' }
 
   parameters {
     string(

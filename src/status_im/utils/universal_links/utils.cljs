@@ -8,8 +8,7 @@
    :internal "status-im:/"})
 
 (def links
-  {:public-chat  "%s/%s"
-   :private-chat "%s/p/%s"
+  {:private-chat "%s/p/%s"
    :user         "%s/u/%s"
    :browse       "%s/b/%s"})
 

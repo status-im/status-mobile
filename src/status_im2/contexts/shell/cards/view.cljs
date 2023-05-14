@@ -7,10 +7,14 @@
             [react-native.fast-image :as fast-image]
             [status-im2.constants :as constants]
             [status-im2.contexts.shell.cards.style :as style]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn content-container
-  [type {:keys [content-type data new-notifications? color-50 community-info community-channel]}]
+  [type
+   {:keys                             [content-type data new-notifications? color-50 community-info
+                                       community-channel]
+    {:keys [text parsed-text source]} :data}]
   [rn/view {:style (style/content-container new-notifications?)}
    (case type
      shell.constants/community-card
@@ -52,7 +56,9 @@
          :number-of-lines 1
          :ellipsize-mode  :tail
          :style           style/last-message-text}
-        data]
+        (if parsed-text
+          (resolver/resolve-message parsed-text)
+          text)]
 
        constants/content-type-image
        [quo/preview-list
@@ -63,13 +69,12 @@
 
        constants/content-type-sticker
        [fast-image/fast-image
-        {:source (:source data)
+        {:source source
          :style  style/sticker}]
-
 
        constants/content-type-gif
        [fast-image/fast-image
-        {:source (:source data)
+        {:source source
          :style  style/gif}]
 
        constants/content-type-audio

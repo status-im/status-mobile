@@ -8,7 +8,7 @@
     [clojure.string :as string]
     [utils.i18n :as i18n]
     [utils.security.core :as security]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.ethereum.core :as ethereum]
     [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.profiles.view :as profiles.view]))
@@ -16,12 +16,12 @@
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
  (fn [request]
-   (status/create-account-and-login request)))
+   (native-module/create-account-and-login request)))
 
 (re-frame/reg-fx
  :multiaccount/validate-mnemonic
  (fn [[mnemonic on-success on-error]]
-   (status/validate-mnemonic
+   (native-module/validate-mnemonic
     (security/safe-unmask-data mnemonic)
     (fn [result]
       (let [{:keys [error keyUID]} (types/json->clj result)]
@@ -32,7 +32,7 @@
 (re-frame/reg-fx
  :multiaccount/restore-account-and-login
  (fn [request]
-   (status/restore-account-and-login request)))
+   (native-module/restore-account-and-login request)))
 
 (rf/defn profile-data-set
   {:events [:onboarding-2/profile-data-set]}
@@ -86,14 +86,14 @@
                                                      (security/safe-unmask-data seed-phrase))
                          :imagePath                (strip-file-prefix image-path)
                          :customizationColor       color
-                         :backupDisabledDataDir    (status/backup-disabled-data-dir)
-                         :rootKeystoreDir          (status/keystore-dir)
+                         :backupDisabledDataDir    (native-module/backup-disabled-data-dir)
+                         :rootKeystoreDir          (native-module/keystore-dir)
                          ;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is
                          ;; resolved
                          :wakuV2Nameserver         "1.1.1.1"
                          :logLevel                 (when log-enabled? config/log-level)
                          :logEnabled               log-enabled?
-                         :logFilePath              (status/log-file-directory)
+                         :logFilePath              (native-module/log-file-directory)
                          :openseaAPIKey            config/opensea-api-key
                          :verifyTransactionURL     config/verify-transaction-url
                          :verifyENSURL             config/verify-ens-url
@@ -105,7 +105,10 @@
                          :previewPrivacy           config/blank-preview?}]
     {effect    request
      :dispatch [:navigate-to :generating-keys]
-     :db       (assoc db :onboarding-2/new-account? true)}))
+     :db       (-> db
+                   (dissoc :multiaccounts/login)
+                   (dissoc :auth-method)
+                   (assoc :onboarding-2/new-account? true))}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}
@@ -163,7 +166,7 @@
                             constants/auth-method-biometric
                             (get-in db [:onboarding-2/profile :auth-method]))]
 
-    (cond-> {:dispatch [:navigate-to :enable-notifications]}
+    (cond-> {:dispatch [:navigate-to :identifiers]}
       biometric-enabled?
       (assoc :biometric/enable-and-save-password
              {:key-uid         key-uid

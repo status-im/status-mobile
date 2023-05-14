@@ -37,13 +37,7 @@
 
 (def dismiss-keyboard! #(.dismiss keyboard))
 
-(defn use-window-dimensions
-  []
-  (let [window ^js (react-native/useWindowDimensions)]
-    {:font-scale (.-fontScale window)
-     :height     (.-height window)
-     :scale      (.-scale window)
-     :width      (.-width window)}))
+(def device-event-emitter (.-DeviceEventEmitter ^js react-native))
 
 (defn hide-splash-screen
   []
@@ -63,17 +57,15 @@
   [handler]
   (.addChangeListener appearance handler))
 
-(defn get-window
-  []
-  (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
+(def get-window
+  (memoize
+   (fn []
+     (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))))
 
-(def status-bar (.-StatusBar ^js react-native))
-
-(def style-sheet (.-StyleSheet ^js react-native))
-
-(defn status-bar-height
-  []
-  (.-currentHeight ^js status-bar))
+(def get-screen
+  (memoize
+   (fn []
+     (js->clj (.get (.-Dimensions ^js react-native) "screen") :keywordize-keys true))))
 
 (defn hw-back-add-listener
   [callback]
@@ -138,6 +130,9 @@
   (when (exists? (.-NativeModules ^js react-native))
     (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
 
+;; TODO: iOS native implementation https://github.com/status-im/status-mobile/issues/14137
 (defonce selectable-text-input
-  (reagent/adapt-react-class
-   (.requireNativeComponent ^js react-native "RNSelectableTextInput")))
+  (if platform/android?
+    (reagent/adapt-react-class
+     (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
+    view))

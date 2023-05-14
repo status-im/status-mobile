@@ -72,7 +72,7 @@ public class MainApplication extends NavigationApplication {
         OkHttpClientProvider.setOkHttpClientFactory(new StatusOkHttpClientFactory());
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG_WEBVIEW == "1");
-        initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+        //initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     }
     /**
      * Loads Flipper in React Native templates. Call this in the onCreate method with something like

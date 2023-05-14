@@ -39,9 +39,22 @@ chmod 644 ${SECRETS_FILE_PATH}
 # If secrets file was created we want to remove it.
 trap "rm -vf ${SECRETS_FILE_PATH}" EXIT ERR INT QUIT
 
+# Names of variables containing secrets to save in env file.
+SECRETS_ENV_VARS=(
+    'ALCHEMY_ARBITRUM_GOERLI_TOKEN'
+    'ALCHEMY_ARBITRUM_MAINNET_TOKEN'
+    'ALCHEMY_OPTIMISM_GOERLI_TOKEN'
+    'ALCHEMY_OPTIMISM_MAINNET_TOKEN'
+    'INFURA_TOKEN'
+    'INFURA_TOKEN_SECRET'
+    'OPENSEA_API_KEY'
+    'POKT_TOKEN'
+)
+
 # Secrets like this can't be passed via args or they end up in derivation.
-if [[ -n "${POKT_TOKEN}" ]];    then append_env_export 'POKT_TOKEN';    fi
-if [[ -n "${OPENSEA_API_KEY}" ]]; then append_env_export 'OPENSEA_API_KEY'; fi
+for SECRET_VAR_NAME in "${SECRETS_ENV_VARS[@]}"; do
+    [[ -n "${!SECRET_VAR_NAME}" ]] && append_env_export "${SECRET_VAR_NAME}"
+done
 
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then

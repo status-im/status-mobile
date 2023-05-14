@@ -21,7 +21,7 @@
          (constants/content-type-text
           constants/content-type-emoji)
          {:content-type constants/content-type-text
-          :data         (get-in last-message [:content :text])}
+          :data         (get last-message :content)}
 
          ;; Currently mock image is used as placeholder,
          ;; as last-message don't have image
@@ -103,11 +103,18 @@
                  #(re-frame/dispatch [:chat/navigate-to-chat channel-id])
                  100))}))
 
+(def memo-shell-cards (atom nil))
+
 (re-frame/reg-sub
  :shell/sorted-switcher-cards
  :<- [:shell/switcher-cards]
- (fn [stacks]
-   (sort-by :clock > (map val stacks))))
+ :<- [:view-id]
+ (fn [[stacks view-id]]
+   (if (= view-id :shell)
+     (let [sorted-shell-cards (sort-by :clock > (map val stacks))]
+       (reset! memo-shell-cards sorted-shell-cards)
+       sorted-shell-cards)
+     @memo-shell-cards)))
 
 (re-frame/reg-sub
  :shell/shell-pass-through?

@@ -2,13 +2,13 @@
   (:require [cljs-bean.core :as bean]
             [quo.animated :as animated]
             [quo.components.bottom-sheet.style :as styles]
-            [quo.components.safe-area :as safe-area]
             [quo.design-system.colors :as colors]
             [quo.gesture-handler :as gesture-handler]
             [quo.platform :as platform]
             [quo.react :as react]
             [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [react-native.safe-area :as safe-area]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)
@@ -43,7 +43,7 @@
         (rn/use-keyboard)
         keyboard-height-android-delta
         (if (and platform/android? keyboard-shown) (+ keyboard-height 20) 0)
-        safe-area (safe-area/use-safe-area)
+        safe-area (safe-area/get-insets)
         window-height (- window-height
                          (if platform/android?
                            (+ 50 keyboard-height-android-delta) ;; TODO : remove 50 when

@@ -20,8 +20,8 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         self.home_1, self.home_2 = device_1.create_user(), device_2.create_user()
         self.profile_1, self.profile_2 = self.home_1.profile_button.click(), self.home_2.profile_button.click()
-        self.public_key_1, self.username_1 = self.profile_1.get_public_key_and_username(return_username=True)
-        self.public_key_2, self.username_2 = self.profile_2.get_public_key_and_username(return_username=True)
+        self.public_key_1, self.username_1 = self.profile_1.get_public_key()
+        self.public_key_2, self.username_2 = self.profile_2.get_public_key()
         self.text_message = 'hello'
         [home.home_button.click() for home in (self.home_1, self.home_2)]
         self.public_chat_name = self.home_1.get_random_chat_name()
@@ -304,8 +304,8 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user()
-        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key()
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key()
         [home.home_button.click() for home in (self.home_1, self.home_2)]
 
         self.home_1.just_fyi("Creating 1-1 chats")
@@ -687,7 +687,7 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
             self.sign_ins[key] = SignInView(self.drivers[key])
             self.homes[key] = self.sign_ins[key].create_user()
             SignInView(self.drivers[2]).put_app_to_background_and_back()
-            self.public_keys[key], self.usernames[key] = self.sign_ins[key].get_public_key_and_username(True)
+            self.public_keys[key], self.usernames[key] = self.sign_ins[key].get_public_key(True)
             self.sign_ins[key].home_button.click()
             SignInView(self.drivers[0]).put_app_to_background_and_back()
 
@@ -822,8 +822,7 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
         self.home_1 = self.device_1.create_user(keycard=True, enable_notifications=True)
         self.device_2.put_app_to_background_and_back()
-        self.recipient_public_key, self.recipient_username = self.home_1.get_public_key_and_username(
-            return_username=True)
+        self.recipient_public_key, self.recipient_username = self.home_1.get_public_key()
         self.amount = self.device_1.get_unique_amount()
         self.asset_name = 'STT'
         self.wallet_1 = self.home_1.wallet_button.click()
@@ -1024,8 +1023,8 @@ class TestMutualContactRequests(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user()
-        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key()
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key()
         [home.tap_mutual_cr_switcher() for home in (self.home_1, self.home_2)]
         [home.home_button.click() for home in (self.home_1, self.home_2)]
 

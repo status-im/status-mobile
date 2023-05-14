@@ -13,7 +13,7 @@
     [status-im.ethereum.ens :as ens]
     [utils.i18n :as i18n]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.signing.core :as signing]
     [status-im.ui.components.list-selection :as list-selection]
     [utils.re-frame :as rf]
@@ -537,7 +537,7 @@
 (re-frame/reg-fx
  :browser/call-rpc
  (fn [[payload callback]]
-   (status/call-rpc
+   (native-module/call-rpc
     (types/clj->json payload)
     (fn [response]
       (if (= "" response)
@@ -559,7 +559,7 @@
 (re-frame/reg-fx
  :browser/clear-web-data
  (fn []
-   (status/clear-web-data)))
+   (native-module/clear-web-data)))
 
 (defn share-link
   [url]

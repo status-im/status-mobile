@@ -30,19 +30,19 @@
            close-button-text]}]
   (let [extra-action-selected? (reagent/atom false)]
     (fn []
-      (let [{:keys [group-chat chat-id public-key color profile-picture
-                    name]} context
-            id             (or chat-id public-key)
-            display-name   (or
-                            name
-                            (when-not group-chat
-                              (rf/sub [:contacts/contact-name-by-identity id])))
-            contact        (when-not group-chat
-                             (rf/sub [:contacts/contact-by-address
-                                      id]))
-            photo-path     (or profile-picture
-                               (when-not (empty? (:images contact))
-                                 (rf/sub [:chats/photo-path id])))]
+      (let [{:keys [group-chat chat-id public-key color
+                    profile-picture name]} context
+            id                             (or chat-id public-key)
+            display-name                   (or
+                                            name
+                                            (when-not group-chat
+                                              (rf/sub [:contacts/contact-name-by-identity id])))
+            contact                        (when-not group-chat
+                                             (rf/sub [:contacts/contact-by-address
+                                                      id]))
+            photo-path                     (or profile-picture
+                                               (when-not (empty? (:images contact))
+                                                 (rf/sub [:chats/photo-path id])))]
         [rn/view
          {:style               {:margin-horizontal 20}
           :accessibility-label accessibility-label}

@@ -42,11 +42,15 @@
         :imageWidth               :image-width
         :imageHeight              :image-height
         :new                      :new?
-        :albumImagesCount         :album-images-count})
+        :albumImagesCount         :album-images-count
+        :displayName              :display-name})
 
       (update :quoted-message
               set/rename-keys
-              {:parsedText :parsed-text :communityId :community-id})
+              {:parsedText   :parsed-text
+               :deleted      :deleted?
+               :deletedForMe :deleted-for-me?
+               :communityId  :community-id})
       (update :outgoing-status keyword)
       (update :command-parameters
               set/rename-keys

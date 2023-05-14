@@ -4,9 +4,8 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]))
+            [native-module.core :as native-module]))
 
 (defn- transfer-input-segments
   [segments]
@@ -56,8 +55,8 @@
                                      :ensVerified   :ens-verified
                                      :added         :added?
                                      :displayName   :display-name
-                                     :searchedText  :searched-text
-                                    })))
+                                     :searchedText  :searched-text})))
+
           {}
           mentionable-users))
 (defn- transfer-mention-result
@@ -81,48 +80,51 @@
   (log/error "[mentions] on-error"
              {:context context
               :error   error}))
+
+(rf/defn to-input-field
+  {:events [:mention/to-input-field]}
+  [_ text chat-id]
+  (let [params [chat-id text]
+        method "wakuext_chatMentionToInputField"]
+    (log/debug "[mentions] to-input-field" {:params params})
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-to-input-field-success %])
+                      :on-error   #(rf/dispatch [:mention/on-error
+                                                 {:method method
+                                                  :params params} %])}]}))
 (rf/defn on-to-input-field-success
   {:events [:mention/on-to-input-field-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-to-input-field-success" {:result result})
   (let [{:keys [input-segments state chat-id new-text]} (transfer-mention-result result)]
-    {:set-text-input-value [chat-id new-text]
-     :db                   (-> db
-                               (assoc-in [:chats/mentions chat-id :mentions] state)
-                               (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+    {:db (-> db
+             (assoc-in [:chats/mentions chat-id :mentions] state)
+             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
-(rf/defn on-text-input
-  {:events [:mention/on-text-input]}
-  [{:keys [db]} {:keys [previous-text start end] :as args}]
-  (let [previous-text
-        ;; NOTE(rasom): on iOS `previous-text` contains entire input's text. To
-        ;; get only removed part of text we have cut it.
-        (if platform/android?
-          previous-text
-          (subs previous-text start end))
-        chat-id       (:current-chat-id db)
-        state         (merge args {:previous-text previous-text})
-        state         (set/rename-keys state
-                                       {:previous-text :PreviousText
-                                        :new-text      :NewText
-                                        :start         :Start
-                                        :end           :End})
-        params        [chat-id state]
-        method        "wakuext_chatMentionOnTextInput"]
-    (log/debug "[mentions] on-text-input" {:params params})
+(rf/defn on-change-text
+  {:events [:mention/on-change-text]}
+  [{:keys [db]} text]
+  (let [chat-id (:current-chat-id db)
+        params  [chat-id text]
+        method  "wakuext_chatMentionOnChangeText"]
+    (log/debug "[mentions] on-change-text" {:params params})
     {:json-rpc/call [{:method     method
-                      :params     [chat-id state]
-                      :on-success #(rf/dispatch [:mention/on-text-input-success %])
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-change-text-success %])
                       :on-error   #(rf/dispatch [:mention/on-error
                                                  {:method method
                                                   :params params} %])}]}))
 
-(rf/defn on-text-input-success
-  {:events [:mention/on-text-input-success]}
+(rf/defn on-change-text-success
+  {:events [:mention/on-change-text-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-text-input-success" {:result result})
-  (let [{:keys [state chat-id]} (transfer-mention-result result)]
-    {:db (assoc-in db [:chats/mentions chat-id :mentions] state)}))
+  (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
+    {:db (-> db
+             (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
+             (assoc-in [:chats/mentions chat-id :mentions] state)
+             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
 (rf/defn recheck-at-idxs
   [{:keys [db]} public-key]
@@ -159,32 +161,11 @@
               :match         match
               :searched-text searched-text
               :public-key    public-key})
-  (let [{:keys [new-text state chat-id]} (transfer-mention-result result)
-        {:keys [at-sign-idx]}            state
-        cursor                           (+ at-sign-idx (count primary-name) 2)]
+  (let [{:keys [new-text chat-id]} (transfer-mention-result result)]
     (rf/merge
      cofx
-     {:db                   (-> db
-                                (assoc-in [:chats/mention-suggestions chat-id] nil))
-      :set-text-input-value [chat-id new-text text-input-ref]
-      :dispatch             [:chat.ui/set-chat-input-text new-text chat-id]}
-     ;; NOTE(rasom): Some keyboards do not react on selection property passed to
-     ;; text input (specifically Samsung keyboard with predictive text set on).
-     ;; In this case, if the user continues typing after the programmatic change,
-     ;; the new text is added to the last known cursor position before
-     ;; programmatic change. By calling `reset-text-input-cursor` we force the
-     ;; keyboard's cursor position to be changed before the next input.
-     (reset-text-input-cursor text-input-ref cursor)
-     ;; NOTE(roman): on-text-input event is not dispatched when we change input
-     ;; programmatically, so we have to call `on-text-input` manually
-     (on-text-input
-      (let [match-len (count match)
-            start     (inc at-sign-idx)
-            end       (+ start match-len)]
-        {:new-text      match
-         :previous-text searched-text
-         :start         start
-         :end           end}))
+     {:db       (assoc-in db [:chats/mention-suggestions chat-id] nil)
+      :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}
      (recheck-at-idxs public-key))))
 
 (rf/defn clear-suggestions
@@ -220,7 +201,7 @@
     (when text
       (log/debug "[mentions] check-selection" {:params params})
       {:json-rpc/call [{:method     method
-                        :params     [chat-id text start end]
+                        :params     params
                         :on-success #(rf/dispatch [:mention/on-handle-selection-change-success %])
                         :on-error   #(rf/dispatch [:mention/on-error
                                                    {:method method
@@ -230,38 +211,16 @@
   {:events [:mention/on-handle-selection-change-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-check-selection-success" {:result result})
-  (let [{:keys [state chat-id]} (transfer-mention-result result)]
-    {:db (assoc-in db [:chats/mentions chat-id :mentions] (rename-state state))}))
-
-(re-frame/reg-fx
- ::reset-text-input-cursor
- (fn [[ref cursor]]
-   (when ref
-     (status/reset-keyboard-input
-      (rn/find-node-handle (react/current-ref ref))
-      cursor))))
-
-(rf/defn calculate-suggestions
-  {:events [:mention/calculate-suggestions]}
-  [{:keys [db]}]
-  (let [chat-id (:current-chat-id db)
-        text    (get-in db [:chat/inputs chat-id :input-text])
-        params  [chat-id text]
-        method  "wakuext_chatMentionCalculateSuggestions"]
-    (log/debug "[mentions] calculate-suggestions" {:params params})
-    {:json-rpc/call [{:method     method
-                      :params     [chat-id text]
-                      :on-success #(rf/dispatch [:mention/on-calculate-suggestions-success %])
-                      :on-error   #(rf/dispatch [:mention/on-error
-                                                 {:method method
-                                                  :params params} %])}]}))
-
-(rf/defn on-calculate-suggestions-success
-  {:events [:mention/on-calculate-suggestions-success]}
-  [{:keys [db]} result]
-  (log/debug "[mentions] on-calculate-suggestions-success" {:result result})
   (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
     {:db (-> db
              (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
              (assoc-in [:chats/mentions chat-id :mentions] state)
              (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+
+(re-frame/reg-fx
+ ::reset-text-input-cursor
+ (fn [[ref cursor]]
+   (when ref
+     (native-module/reset-keyboard-input
+      (rn/find-node-handle (react/current-ref ref))
+      cursor))))

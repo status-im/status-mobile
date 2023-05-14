@@ -2,7 +2,7 @@
   (:require ["react-native-keychain" :as react-native-keychain]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
@@ -63,7 +63,7 @@
 ;; Android only
 (defn- device-not-rooted?
   [callback]
-  (status/rooted-device? (fn [rooted?] (callback (not rooted?)))))
+  (native-module/rooted-device? (fn [rooted?] (callback (not rooted?)))))
 
 ;; Android only
 (defn- secure-hardware-available?

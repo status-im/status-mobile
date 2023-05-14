@@ -2,6 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [quo2.foundations.colors :as colors]
@@ -50,24 +51,22 @@
   (str (:title item) index))
 
 (defn album-selector
-  []
-  [:f>
-   (fn []
-     (let [albums         (rf/sub [:camera-roll/albums])
-           selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-       (rn/use-effect-once
-        (fn []
-          (rf/dispatch [:chat.ui/camera-roll-get-albums])
-          js/undefined))
-       [rn/view {:style {:padding-top 20}}
-        [album-title false selected-album]
-        [rn/section-list
-         {:data                           albums
-          :render-fn                      album
-          :render-data                    selected-album
-          :sections                       albums
-          :sticky-section-headers-enabled false
-          :render-section-header-fn       section-header
-          :style                          {:margin-top 12}
-          :content-container-style        {:padding-bottom 40}
-          :key-fn                         key-fn}]]))])
+  [{:keys [on-scroll]}]
+  (rf/dispatch [:chat.ui/camera-roll-get-albums])
+  (fn [{:keys [scroll-enabled]}]
+    (let [albums         (rf/sub [:camera-roll/albums])
+          selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+      [rn/view {:style {:padding-top 20}}
+       [album-title false]
+       [gesture/section-list
+        {:data                           albums
+         :render-fn                      album
+         :render-data                    selected-album
+         :sections                       albums
+         :sticky-section-headers-enabled false
+         :render-section-header-fn       section-header
+         :style                          {:margin-top 12}
+         :content-container-style        {:padding-bottom 40}
+         :key-fn                         key-fn
+         :scroll-enabled                 @scroll-enabled
+         :on-scroll                      on-scroll}]])))

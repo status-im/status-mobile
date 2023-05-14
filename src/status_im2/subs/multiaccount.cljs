@@ -5,8 +5,9 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
-            [status-im.utils.image-server :as image-server]
-            [utils.security.core :as security]))
+            [utils.image-server :as image-server]
+            [utils.security.core :as security]
+            [quo2.theme :as theme]))
 
 (re-frame/reg-sub
  :multiaccount/public-key
@@ -18,7 +19,7 @@
  :multiaccount/contact
  :<- [:multiaccount]
  (fn [current-account]
-   (select-keys current-account [:name :preferred-name :public-key :identicon :image :images])))
+   (select-keys current-account [:name :preferred-name :public-key :image :images])))
 
 (re-frame/reg-sub
  :multiaccount/preferred-name
@@ -207,20 +208,20 @@
 
 (defn- replace-multiaccount-image-uri
   [multiaccount port]
-  (let [public-key   (:public-key multiaccount)
-        identicon    (image-server/get-identicons-uri port public-key)
-        multiaccount (assoc multiaccount :identicon identicon)
-        images       (:images multiaccount)
-        images       (reduce (fn [acc current]
-                               (let [key-uid    (:keyUid current)
-                                     image-name (:type current)
-                                     uri        (image-server/get-account-image-uri port
-                                                                                    public-key
-                                                                                    image-name
-                                                                                    key-uid)]
-                                 (conj acc (assoc current :uri uri))))
-                             []
-                             images)]
+  (let [public-key (:public-key multiaccount)
+        theme      (theme/get-theme)
+        images     (:images multiaccount)
+        images     (reduce (fn [acc current]
+                             (let [key-uid    (:keyUid current)
+                                   image-name (:type current)
+                                   uri        (image-server/get-account-image-uri port
+                                                                                  public-key
+                                                                                  image-name
+                                                                                  key-uid
+                                                                                  theme)]
+                               (conj acc (assoc current :uri uri))))
+                           []
+                           images)]
     (assoc multiaccount :images images)))
 
 (re-frame/reg-sub

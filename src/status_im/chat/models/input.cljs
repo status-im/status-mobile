@@ -10,8 +10,7 @@
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [status-im.ui.screens.chat.components.input :as input]))
+            [taoensso.timbre :as log]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -35,9 +34,36 @@
   "Set input text for current-chat. Takes db and input text and cofx
          as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
-  [{db :db} new-input chat-id]
+  [{:keys [db] :as cofx} new-input chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
+    (rf/merge cofx
+              {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}
+              (when (empty? new-input)
+                (mentions/clear-mentions)))))
+
+(rf/defn set-input-content-height
+  {:events [:chat.ui/set-input-content-height]}
+  [{db :db} content-height chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-content-height] content-height)}))
+
+(rf/defn set-input-maximized
+  {:events [:chat.ui/set-input-maximized]}
+  [{db :db} maximized? chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-maximized?] maximized?)}))
+
+(rf/defn set-input-focused
+  {:events [:chat.ui/set-input-focused]}
+  [{db :db} focused? chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
+
+(rf/defn set-input-audio
+  {:events [:chat.ui/set-input-audio]}
+  [{db :db} audio chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :audio] audio)}))
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
@@ -80,15 +106,14 @@
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)
         text            (get-in message [:content :text])]
-    (rf/merge cofx
-              {:db (-> db
-                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                                 message)
-                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                       (update-in [:chat/inputs current-chat-id :metadata]
-                                  dissoc
-                                  :sending-image))}
-              (input/set-input-text text current-chat-id))))
+    {:db       (-> db
+                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                             message)
+                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                   (update-in [:chat/inputs current-chat-id :metadata]
+                              dissoc
+                              :sending-image))
+     :dispatch [:mention/to-input-field text current-chat-id]}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -140,10 +165,7 @@
              :image-path   (utils/safe-replace resized-uri #"file://" "")
              :image-width  width
              :image-height height
-             ;; TODO: message not received if text field is
-             ;; nil or empty, issue:
-             ;; https://github.com/status-im/status-mobile/issues/14754
-             :text         (or input-text "placeholder")
+             :text         input-text
              :response-to  message-id})
           images)))
 
@@ -163,7 +185,6 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
-              {:set-text-input-value [current-chat-id ""]}
               (clean-input current-chat-id)
               (mentions/clear-mentions))))
 
@@ -207,25 +228,21 @@
 
 (rf/defn send-edited-message
   [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
-  (let [pinned-message (get-in db [:pin-messages chat-id message-id])]
-    (rf/merge
-     cofx
-     {:json-rpc/call [{:method      "wakuext_editMessage"
-                       :params      [{:id           message-id
-                                      :text         text
-                                      :content-type (if (message-content/emoji-only-content?
-                                                         {:text text :response-to quoted-message})
-                                                      constants/content-type-emoji
-                                                      constants/content-type-text)}]
-                       :js-response true
-                       :on-error    #(log/error "failed to edit message " %)
-                       :on-success  (fn [result]
-                                      (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                          result])
-                                      (when pinned-message
-                                        (re-frame/dispatch [:pin-message/load-pin-messages
-                                                            chat-id])))}]}
-     (cancel-message-edit))))
+  (rf/merge
+   cofx
+   {:json-rpc/call [{:method      "wakuext_editMessage"
+                     :params      [{:id           message-id
+                                    :text         text
+                                    :content-type (if (message-content/emoji-only-content?
+                                                       {:text text :response-to quoted-message})
+                                                    constants/content-type-emoji
+                                                    constants/content-type-text)}]
+                     :js-response true
+                     :on-error    #(log/error "failed to edit message " %)
+                     :on-success  (fn [result]
+                                    (re-frame/dispatch [:sanitize-messages-and-process-response
+                                                        result]))}]}
+   (cancel-message-edit)))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
@@ -261,13 +278,12 @@
   {:events [:contacts/send-contact-request]}
   [{:keys [db] :as cofx} public-key message]
   (rf/merge cofx
-            {:chat.ui/clear-inputs     nil
-             :chat.ui/clear-inputs-old nil
-             :json-rpc/call            [{:method      "wakuext_sendContactRequest"
-                                         :js-response true
-                                         :params      [{:id public-key :message message}]
-                                         :on-error    #(log/warn "failed to send a contact request" %)
-                                         :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
+            {:chat.ui/clear-inputs nil
+             :json-rpc/call        [{:method      "wakuext_sendContactRequest"
+                                     :js-response true
+                                     :params      [{:id public-key :message message}]
+                                     :on-error    #(log/warn "failed to send a contact request" %)
+                                     :on-success  #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (clean-input (:current-chat-id db))))
 

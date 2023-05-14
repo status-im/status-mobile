@@ -17,8 +17,7 @@
   (letsubs [{:keys [pubkey
                     processing?
                     compressed-key
-                    name
-                    identicon]}
+                    name]}
             [:intro-wizard/recovery-success]
             existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view
@@ -44,14 +43,7 @@
          [react/view
           {:justify-content :center
            :align-items     :center
-           :margin-bottom   11}
-          [react/image
-           {:source {:uri identicon}
-            :style  {:width         61
-                     :height        61
-                     :border-radius 30
-                     :border-width  1
-                     :border-color  colors/black-transparent}}]]
+           :margin-bottom   11}]
          [react/text
           {:style           {:text-align  :center
                              :color       colors/black

@@ -46,8 +46,7 @@
                              {:flex-basis 120})
       :accessory           (when can-manage-users?
                              [request-actions community-id id])
-      :icon                [chat-icon/contact-icon-contacts-tab
-                            (multiaccounts/displayed-photo member)]
+      :icon                [chat-icon/contact-icon-contacts-tab member]
       :on-press            #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 
 (defn requests-to-join

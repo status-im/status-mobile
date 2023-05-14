@@ -1921,9 +1921,9 @@
     eventemitter3 "^1.2.0"
     lodash "^4.17.15"
 
-"@react-native-community/blur@git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.2-status":
-  version "4.3.2"
-  resolved "git+https://github.com/status-im/react-native-blur#722940e19c7ac8f90d3fccc5e9d34e0fd2342d51"
+"@react-native-community/blur@git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.3-status":
+  version "4.3.3"
+  resolved "git+https://github.com/status-im/react-native-blur#c140cc8e7d54e3318af0a7c149b5d64b54de3419"
 
 "@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
   version "4.0.4"
@@ -8835,11 +8835,6 @@ react-native-redash@^16.0.11:
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
 
-react-native-safe-area-context@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-2.0.0.tgz#7ef48e5a83a1e2f7fe9d5321493822b6765fd1ab"
-  integrity sha512-5VtCI3Nluzm7QfTcB/3j4YeWqt25QO1u5KTA1jEg1ckJzV19qCZFyHIpCCkS5+VEX+2JEHfdczhCdwE5sPgyEw==
-
 react-native-safe-modules@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/react-native-safe-modules/-/react-native-safe-modules-1.0.3.tgz#f5f29bb9d09d17581193843d4173ad3054f74890"
@@ -8866,6 +8861,11 @@ react-native-share@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.0.1.tgz#1deef27afcd8275222ba0efeac337e7cea99bc4b"
   integrity sha512-hq7nOirgih/zIF9UU9FuYKZ3NGvasu2c/eJesvyPKYiykTtgQZM+mvDwFk/ogEsGwRtTPJBtj8/6IyIFcGa7lw==
+
+react-native-static-safe-area-insets@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-static-safe-area-insets/-/react-native-static-safe-area-insets-2.2.0.tgz#dd86b6a38f43964fac8df8c0e6bc8e062527786c"
+  integrity sha512-TLTW2e2kRK3COSK8gMZzwp4wHguFCtcO18itDLn5av/xQblXt9ylu84o+qD9aKJCBfvtNzGOvqqTKqC5GJRZ/g==
 
 "react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39":
   version "2.5.39"

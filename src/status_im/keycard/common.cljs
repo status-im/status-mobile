@@ -339,11 +339,10 @@
   (let [{:keys [key-uid encryption-public-key whisper-private-key]
          :as   account-data}
         (js->clj data :keywordize-keys true)
-        {:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
+        {:keys [name]} (get-in db [:multiaccounts/multiaccounts key-uid])
         key-uid (get-in db [:keycard :application-info :key-uid])
-        multiaccount-data (types/clj->json {:name      name
-                                            :key-uid   key-uid
-                                            :identicon identicon})
+        multiaccount-data (types/clj->json {:name    name
+                                            :key-uid key-uid})
         save-keys? (get-in db [:multiaccounts/login :save-password?])]
     (rf/merge cofx
               {:db
@@ -360,7 +359,6 @@
                    (update :multiaccounts/login assoc
                            :password            encryption-public-key
                            :key-uid             key-uid
-                           :identicon           identicon
                            :name                name))
 
                :keycard/login-with-keycard {:multiaccount-data multiaccount-data

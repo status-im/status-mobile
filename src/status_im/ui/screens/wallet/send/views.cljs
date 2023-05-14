@@ -83,8 +83,7 @@
                  {:monospace true
                   :color     :secondary}
                  (utils/get-shortened-checksum-address (:address contact))]
-      :icon     [chat-icon/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo contact)]}]
+      :icon     [chat-icon/contact-icon-contacts-tab contact]}]
     [quo/list-item
      (merge {:title               (if-not contact
                                     (i18n/label :t/wallet-choose-recipient)

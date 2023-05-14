@@ -1,6 +1,6 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as utils.platform]
@@ -221,4 +221,4 @@ app-db"
 (re-frame/reg-fx
  ::prepare-new-config
  (fn [[key-uid config callback]]
-   (status/prepare-dir-and-update-config key-uid config callback)))
+   (native-module/prepare-dir-and-update-config key-uid config callback)))

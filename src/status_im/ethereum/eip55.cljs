@@ -5,7 +5,7 @@
 
    e.g. 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
   (:require [clojure.string :as string]
-            [status-im.native-module.core :as status]))
+            [native-module.core :as native-module]))
 
 (def hex-prefix "0x")
 
@@ -13,7 +13,7 @@
   "Converts an arbitrary case address to one with correct checksum case."
   [address]
   (when address
-    (status/to-checksum-address
+    (native-module/to-checksum-address
      (if (string/starts-with? address hex-prefix)
        address
        (str hex-prefix address)))))
@@ -21,4 +21,4 @@
 (defn valid-address-checksum?
   "Checks address checksum validity."
   [address]
-  (status/check-address-checksum address))
+  (native-module/check-address-checksum address))

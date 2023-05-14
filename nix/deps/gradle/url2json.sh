@@ -14,12 +14,12 @@ declare -a REPOS=(
   "https://jitpack.io"
 )
 
-function nix_fetch() {
-    nix-prefetch-url --print-path --type sha256 "${1}" 2>/dev/null
+function nix_prefetch() {
+    nix store prefetch-file --json "${1}" 2>/dev/null
 }
 
-function get_nix_path() { echo "${1}" | tail -n1; }
-function get_nix_sha() { echo "${1}" | head -n1; }
+function get_nix_path() { echo "${1}" | jq -r .storePath; }
+function get_nix_sha() { echo "${1}" | jq -r .hash; }
 function get_sha1() { sha1sum "${1}" | cut -d' ' -f1; }
 
 # Assumes REPOS from repos.sh is available
@@ -44,9 +44,9 @@ function fetch_and_template_file() {
     local OBJ_URL OBJ_NIX_FETCH_OUT OBJ_NAME OBJ_PATH
 
     OBJ_URL="${REPO_URL}/${PKG_PATH}/${FILENAME}"
-    if ! OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_URL}"); then
+    if ! OBJ_NIX_FETCH_OUT=$(nix_prefetch "${OBJ_URL}"); then
         echo " ! Failed to fetch: ${OBJ_URL}" >&2
-        exit 1
+        return 1
     fi
 
     OBJ_NAME="${FILENAME}"
@@ -56,6 +56,10 @@ function fetch_and_template_file() {
         \"sha1\": \"$(get_sha1 "${OBJ_PATH}")\",
         \"sha256\": \"$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")\"
       }"
+}
+
+function fetch_and_template_file_no_fail() {
+    fetch_and_template_file "${1}" 2>/dev/null || true
 }
 
 if [[ -z "${1}" ]]; then
@@ -81,7 +85,7 @@ PKG_PATH="${PKG_URL_NO_EXT#"${REPO_URL}/"}"
 PKG_PATH="$(dirname "${PKG_PATH}")"
 
 # Both JARs and AARs have a POM
-POM_NIX_FETCH_OUT=$(nix_fetch "${PKG_URL_NO_EXT}.pom")
+POM_NIX_FETCH_OUT=$(nix_prefetch "${PKG_URL_NO_EXT}.pom")
 POM_PATH=$(get_nix_path "${POM_NIX_FETCH_OUT}")
 POM_NAME=$(basename "${PKG_URL_NO_EXT}.pom")
 if [[ -z "${POM_PATH}" ]]; then
@@ -111,7 +115,7 @@ echo -ne "
       }"
 
 # Some deps are just POMs, in which case there is no JAR to fetch.
-[[ "${OBJ_TYPE}" == "" ]]        && fetch_and_template_file "${PKG_NAME}.jar"
+[[ "${OBJ_TYPE}" == "" ]]        && fetch_and_template_file_no_fail "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" == "jar" ]]     && fetch_and_template_file "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" == "bundle" ]]  && fetch_and_template_file "${PKG_NAME}.jar"
 [[ "${OBJ_TYPE}" =~ aar* ]]      && fetch_and_template_file "${PKG_NAME}.aar"

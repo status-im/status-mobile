@@ -125,7 +125,7 @@
        (rf-test/wait-for ; wait for login
          [::transport/messenger-started]
          (assert-messenger-started)
-         (rf/dispatch-sync [:status-im.communities.core/open-create-community])
+         (rf/dispatch-sync [:legacy-only-for-e2e/open-create-community])
          (doseq [[k v] (dissoc community :membership)]
            (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
          (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])

@@ -18,9 +18,6 @@
                           :query-params (when (= 3 (count expected)) (last expected))
                           :uri          uri})
 
-   "status-im://status"
-    [:public-chat {:chat-id "status"}]
-
    "status-im://u/statuse2e"
     [:user {:user-id "statuse2e"}]
 
@@ -35,9 +32,6 @@
 
    (str "https://join.status.im/g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
     [:group-chat {:params "arg"} {"a" public-key "a1" chat-name "a2" chat-id}]
-
-   "https://join.status.im/status"
-    [:public-chat {:chat-id "status"}]
 
    "https://join.status.im/u/statuse2e"
     [:user {:user-id "statuse2e"}]

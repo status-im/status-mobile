@@ -4,10 +4,12 @@
             [react-native.gesture :as gesture]
             [react-native.navigation :as navigation]
             [status-im.multiaccounts.login.core :as login-core]
+            [status-im2.contexts.shell.animation :as shell.animation]
             [status-im2.navigation.roots :as roots]
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
+            [status-im2.common.theme.core :as theme]
             [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
@@ -26,15 +28,19 @@
    (if (= @state/root-id :multiaccounts-stack)
      (re-frame/dispatch-sync [:set-multiaccount-root])
      (when @state/root-id
-       (navigation/set-root (get (roots/roots) @state/root-id))
+       (reset! theme/device-theme (rn/get-color-scheme))
+       (re-frame/dispatch [:init-root @state/root-id])
        (re-frame/dispatch [::login-core/check-last-chat])))
    (rn/hide-splash-screen)))
 
 (defn set-view-id
   [view-id]
   (when-let [{:keys [on-focus]} (get views/screens view-id)]
-    (re-frame/dispatch [:set-view-id view-id])
     (re-frame/dispatch [:screens/on-will-focus view-id])
+    (re-frame/dispatch [:set-view-id
+                        (if (= view-id :shell-stack)
+                          (or @shell.animation/selected-stack-id :shell)
+                          view-id)])
     (when on-focus
       (re-frame/dispatch on-focus))))
 

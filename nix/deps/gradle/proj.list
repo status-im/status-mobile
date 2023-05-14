@@ -30,9 +30,9 @@ react-native-orientation-locker
 react-native-permissions
 react-native-randombytes
 react-native-reanimated
-react-native-safe-area-context
 react-native-shake
 react-native-share
+react-native-static-safe-area-insets
 react-native-status
 react-native-status-keycard
 react-native-svg

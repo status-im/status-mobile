@@ -1,14 +1,12 @@
 (ns status-im2.contexts.shell.view
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
-            [oops.core :refer [oget]]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.blur :as blur]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.safe-area :as safe-area]
             [status-im2.common.home.view :as common.home]
-            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
             [status-im2.contexts.shell.cards.view :as switcher-cards]
@@ -23,7 +21,7 @@
    {:colors [colors/neutral-100-opa-0 colors/neutral-100-opa-100]
     :start  {:x 0 :y 0}
     :end    {:x 0 :y 1}
-    :style  (style/placeholder-container (rn/status-bar-height))}
+    :style  (style/placeholder-container (safe-area/get-top))}
    [rn/image
     {:source nil ;; TODO(parvesh) - add placeholder image
      :style  style/placeholder-image}]
@@ -44,7 +42,7 @@
   [quo/text
    {:size   :heading-1
     :weight :semi-bold
-    :style  (style/jump-to-text (rn/status-bar-height))}
+    :style  (style/jump-to-text (safe-area/get-top))}
    (i18n/label :t/jump-to)])
 
 (defn render-card
@@ -96,58 +94,38 @@
   []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
+        top            (safe-area/get-top)
         shell-margin   (/ (- width 320) 3)] ;; 320 - two cards width
-    [safe-area/consumer
-     (fn [insets]
-       [rn/view
-        {:style {:top              0
-                 :left             0
-                 :right            0
-                 :bottom           -1
-                 :position         :absolute
-                 :background-color colors/neutral-100}}
-        [jump-to-list switcher-cards shell-margin]
-        [top-nav-blur-overlay (:top insets)]
-        [common.home/top-nav
-         {:type  :shell
-          :style {:margin-top (:top insets)
-                  :z-index    2}}]])]))
+    [rn/view
+     {:style {:top              0
+              :left             0
+              :right            0
+              :bottom           -1
+              :position         :absolute
+              :background-color colors/neutral-100}}
+     [jump-to-list switcher-cards shell-margin]
+     [top-nav-blur-overlay top]
+     [common.home/top-nav
+      {:type  :shell
+       :style {:margin-top top
+               :z-index    2}}]]))
 
-(defn on-layout
-  [evt]
-  (let [dimensions (rf/sub [:dimensions/window])
-        height     (or (oget evt "nativeEvent" "layout" "height") 0)
-        width      (or (oget evt "nativeEvent" "layout" "width") 0)]
-    ;; Layout height calculation
-    ;; 1. Make sure height is more than width, and on-layout is not fired while the
-    ;; screen is horizontal
-    ;; 2. Initialize values with 0 in case of nil
-    ;; 3. In the case of notch devices, the dimensions height will be smaller than
-    ;; on-layout,
-    ;; (without status bar height included)
-    ;; https://github.com/status-im/status-mobile/issues/14633
-    ;; 4. In the case of devices without a notch, both heights should be the same,
-    ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
-    (when (and (> height width)
-               (>= (+ height 5) (or (:height dimensions) 0)))
-      (reset! animation/screen-height height)
-      (async-storage/set-item! :screen-height height))))
+(defn f-shell-stack
+  []
+  (let [shared-values (animation/calculate-shared-values)]
+    [rn/view
+     {:style {:flex 1}}
+     [shell]
+     [bottom-tabs/bottom-tabs]
+     [:f> home-stack/f-home-stack]
+     [quo/floating-shell-button
+      {:jump-to {:on-press #(animation/close-home-stack true)
+                 :label    (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
+                                                                       ;; 5(padding on button)
+      (:home-stack-opacity shared-values)]]))
 
 (defn shell-stack
   []
-  [:f>
-   (fn []
-     (let [shared-values (animation/calculate-shared-values)]
-       [rn/view
-        {:style     {:flex 1}
-         :on-layout on-layout}
-        [shell]
-        [bottom-tabs/bottom-tabs]
-        [home-stack/home-stack]
-        [quo/floating-shell-button
-         {:jump-to {:on-press #(animation/close-home-stack true)
-                    :label    (i18n/label :t/jump-to)}}
-         {:position :absolute
-          :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
-                                                                          ;; 5(padding on button)
-         (:home-stack-opacity shared-values)]]))])
+  [:f> f-shell-stack])

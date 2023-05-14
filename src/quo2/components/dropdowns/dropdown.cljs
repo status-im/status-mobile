@@ -43,7 +43,7 @@
   (colors/alpha color 0.6))
 
 (defn dropdown-comp
-  [{:keys [icon open? dd-height size disabled? dd-color use-border? border-color]}]
+  [{:keys [icon dd-height size disabled? dd-color use-border? border-color]}]
   (let [dark?                                                         (colors/dark?)
         {:keys [width height width-with-icon padding font icon-size]} (size sizes)
         {:keys [padding-with-icon padding-with-no-icon]}              padding
@@ -51,74 +51,75 @@
         spacing                                                       (case size
                                                                         :big    4
                                                                         :medium 2
-                                                                        :small  2)]
-    [rn/touchable-opacity
-     (cond->
-       {:on-press (fn []
-                    (if (swap! open? not)
-                      (apply-anim dd-height 120)
-                      (apply-anim dd-height 0)))
-        :style    (cond->
-                    (merge
-                     (if icon
-                       padding-with-icon
-                       padding-with-no-icon)
-                     {:width            (if icon
-                                          width-with-icon
-                                          width)
-                      :height           height
-                      :border-radius    (case size
-                                          :big    12
-                                          :medium 10
-                                          :small  8)
-                      :flex-direction   :row
-                      :align-items      :center
-                      :background-color (if @open?
-                                          dd-color
-                                          (color-by-10 dd-color))})
-                    use-border? (assoc :border-width 1
-                                       :border-color (if @open?
-                                                       border-color
-                                                       (color-by-10 border-color))))}
-       disabled? (assoc-in [:style :opacity] 0.3)
-       disabled? (assoc :disabled true))
-     (when icon
-       [icons/icon icon
-        {:no-color        true
-         :size            20
-         :container-style {:margin-right spacing
-                           :margin-top   1
-                           :width        icon-size
-                           :height       icon-size}}])
-     [text/text
-      {:size   font-size
-       :weight :medium
-       :font   :font-medium
-       :color  :main} "Dropdown"]
-     [icons/icon
-      (if @open?
-        (if dark?
-          :main-icons/pullup-dark
-          :main-icons/pullup)
-        (if dark?
-          :main-icons/dropdown-dark
-          :main-icons/dropdown))
-      {:size            20
-       :no-color        true
-       :container-style {:width         (+ icon-size 3)
-                         :border-radius 20
-                         :margin-left   (if (= :small size)
-                                          2
-                                          4)
-                         :margin-top    1
-                         :height        (+ icon-size 4)}}]]))
+                                                                        :small  2)
+        open?                                                         (reagent/atom false)]
+    (fn []
+      [rn/touchable-opacity
+       (cond->
+         {:on-press (fn []
+                      (if (swap! open? not)
+                        (apply-anim dd-height 120)
+                        (apply-anim dd-height 0)))
+          :style    (cond->
+                      (merge
+                       (if icon
+                         padding-with-icon
+                         padding-with-no-icon)
+                       {:width            (if icon
+                                            width-with-icon
+                                            width)
+                        :height           height
+                        :border-radius    (case size
+                                            :big    12
+                                            :medium 10
+                                            :small  8)
+                        :flex-direction   :row
+                        :align-items      :center
+                        :background-color (if @open?
+                                            dd-color
+                                            (color-by-10 dd-color))})
+                      use-border? (assoc :border-width 1
+                                         :border-color (if @open?
+                                                         border-color
+                                                         (color-by-10 border-color))))}
+         disabled? (assoc-in [:style :opacity] 0.3)
+         disabled? (assoc :disabled true))
+       (when icon
+         [icons/icon icon
+          {:no-color        true
+           :size            20
+           :container-style {:margin-right spacing
+                             :margin-top   1
+                             :width        icon-size
+                             :height       icon-size}}])
+       [text/text
+        {:size   font-size
+         :weight :medium
+         :font   :font-medium
+         :color  :main} "Dropdown"]
+       [icons/icon
+        (if @open?
+          (if dark?
+            :main-icons/pullup-dark
+            :main-icons/pullup)
+          (if dark?
+            :main-icons/dropdown-dark
+            :main-icons/dropdown))
+        {:size            20
+         :no-color        true
+         :container-style {:width         (+ icon-size 3)
+                           :border-radius 20
+                           :margin-left   (if (= :small size)
+                                            2
+                                            4)
+                           :margin-top    1
+                           :height        (+ icon-size 4)}}]])))
 
 (defn items-comp
   [{:keys [items on-select]}]
   (let [items-count (count items)]
     [rn/scroll-view
-     {:style               {:height "100%"}
-      :horizontal          false
+     {:horizontal          false
       :nestedScrollEnabled true}
      (doall
       (map-indexed (fn [index item]
@@ -136,29 +137,29 @@
                       [text/text {:style {:text-align :center}} item]])
                    items))]))
 
-(defn dropdown
+(defn- f-dropdown
   [{:keys [items icon text default-item on-select size disabled? border-color use-border? dd-color]}]
-  [:f>
-   (fn []
-     (let [open?     (reagent/atom false)
-           dd-height (reanimated/use-shared-value 0)]
-       [rn/view {:style {:flex-grow 1}}
-        [dropdown-comp
-         {:items        items
-          :icon         icon
-          :disabled?    disabled?
-          :size         size
-          :dd-color     dd-color
-          :text         text
-          :border-color (colors/custom-color-by-theme border-color 50 60)
-          :use-border?  use-border?
-          :default-item default-item
-          :open?        open?
-          :dd-height    dd-height}]
-        [reanimated/view
-         {:style (reanimated/apply-animations-to-style
-                  {:height dd-height}
-                  {:height dd-height})}
-         [items-comp
-          {:items     items
-           :on-select on-select}]]]))])
+  (let [dd-height (reanimated/use-shared-value 0)]
+    [rn/view {:style {:flex-grow 1}}
+     [dropdown-comp
+      {:items        items
+       :icon         icon
+       :disabled?    disabled?
+       :size         size
+       :dd-color     dd-color
+       :text         text
+       :border-color (colors/custom-color-by-theme border-color 50 60)
+       :use-border?  use-border?
+       :default-item default-item
+       :dd-height    dd-height}]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:height dd-height}
+               {})}
+      [items-comp
+       {:items     items
+        :on-select on-select}]]]))
+
+(defn dropdown
+  [params]
+  [:f> f-dropdown params])

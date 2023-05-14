@@ -1,12 +1,8 @@
 (ns status-im2.contexts.onboarding.syncing.syncing-devices.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
-
-(def navigation-bar {:height 56})
+  (:require [quo2.foundations.colors :as colors]))
 
 (def page-container
-  {:padding-top      (if platform/ios? 44 0)
-   :position         :absolute
+  {:position         :absolute
    :top              0
    :bottom           0
    :left             0

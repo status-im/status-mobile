@@ -141,6 +141,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
    {:ClipPath #js {:render identity}
     :Circle   #js {:render identity}
     :Defs     #js {:render identity}
+    :G        #js {:render identity}
     :Path     #js {:render identity}
     :Rect     #js {:render identity}
     :SvgUri   #js {:render identity}
@@ -154,10 +155,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def net-info #js {})
 (def touchid #js {})
 (def react-native-image-viewing #js {:default {}})
-(def safe-area-context
-  (clj->js {:SafeAreaProvider      {:_reactNativeIphoneXHelper {:getStatusBarHeight (fn [])}}
-            :SafeAreaInsetsContext {:Consumer (fn [])}
-            :SafeAreaView          {}}))
+(def react-native-static-safe-area-insets #js {:default {}})
 
 (def back-handler
   #js
@@ -366,7 +364,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-background-timer"                 background-timer
     "react-native-image-crop-picker"                image-crop-picker
     "react-native-gesture-handler"                  react-native-gesture-handler
-    "react-native-safe-area-context"                safe-area-context
+    "react-native-static-safe-area-insets"          react-native-static-safe-area-insets
     "react-native-config"                           config
     "react-native-iphone-x-helper"                  (clj->js {:getStatusBarHeight (fn [])
                                                               :getBottomSpace     (fn [])})

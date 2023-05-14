@@ -4,7 +4,7 @@
     [react-native.reanimated :as reanimated]))
 
 (defn header-container
-  [status-bar-height content-width index]
+  [status-bar-height content-width index header-background]
   {:position         :absolute
    :top              0
    :left             (* content-width index)
@@ -12,7 +12,7 @@
    :width            content-width
    :height           (+ 96 status-bar-height)
    :flex-direction   :row
-   :background-color colors/onboarding-header-black})
+   :background-color (when header-background colors/onboarding-header-black)})
 
 (defn header-text-view
   [window-width]
@@ -26,11 +26,6 @@
 (def carousel-sub-text
   {:color      colors/white
    :margin-top 2})
-
-(defn background-image
-  [content-width]
-  {:resize-mode :stretch
-   :width       content-width})
 
 (defn progress-bar-item
   [static? end?]
@@ -48,12 +43,16 @@
    :flex-direction :row})
 
 (defn dynamic-progress-bar
-  [width]
-  (reanimated/apply-animations-to-style
-   {:width width}
-   {:height        2
-    :border-radius 4
-    :overflow      :hidden}))
+  [width animate?]
+  (let [normal-style {:height        2
+                      :border-radius 4
+                      :overflow      :hidden
+                      :width         width}]
+    (if animate?
+      (reanimated/apply-animations-to-style
+       {:width width}
+       normal-style)
+      normal-style)))
 
 (defn progress-bar-container
   [progress-bar-width status-bar-height]
@@ -63,11 +62,15 @@
    :top         (+ 12 status-bar-height)})
 
 (defn carousel-container
-  [left]
-  (reanimated/apply-animations-to-style
-   {:left left}
-   {:position       :absolute
-    :right          0
-    :top            0
-    :bottom         0
-    :flex-direction :row}))
+  [left animate?]
+  (let [normal-style {:position       :absolute
+                      :right          0
+                      :top            0
+                      :bottom         0
+                      :flex-direction :row
+                      :left           left}]
+    (if animate?
+      (reanimated/apply-animations-to-style
+       {:left left}
+       normal-style)
+      normal-style)))

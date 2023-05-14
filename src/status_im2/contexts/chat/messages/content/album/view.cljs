@@ -20,61 +20,58 @@
 
 (defn album-message
   [{:keys [albumize?] :as message} context on-long-press]
-  [:f>
-   (fn []
-     (let [insets            (safe-area/use-safe-area)
-           shared-element-id (rf/sub [:shared-element-id])
-           first-image       (first (:album message))
-           album-style       (if (> (:image-width first-image) (:image-height first-image))
-                               :landscape
-                               :portrait)
-           images-count      (count (:album message))
-           ;; album images are always square, except when we have 3 images, then they must be rectangular
-           ;; (portrait or landscape)
-           portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))
-           text              (:text (:content first-image))]
-       (if (and albumize? (> images-count 1))
-         [:<>
-          (when (not= text "placeholder")
-            [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]])
-          [rn/view
-           {:style (style/album-container portrait?)}
-           (map-indexed
-            (fn [index item]
-              (let [images-size-key (if (< images-count constants/max-album-photos)
-                                      images-count
-                                      :default)
-                    size            (get-in constants/album-image-sizes [images-size-key index])
-                    dimensions      (if (not= images-count rectangular-style-count)
-                                      {:width size :height size}
-                                      (find-size size album-style))]
-                [rn/touchable-opacity
-                 {:key            (:message-id item)
-                  :active-opacity 1
-                  :on-long-press  #(on-long-press message context)
-                  :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
-                                                 (:message-id item)
-                                                 {:messages (:album message)
-                                                  :index    index
-                                                  :insets   insets}])}
-                 [fast-image/fast-image
-                  {:style     (style/image dimensions index portrait? images-count)
-                   :source    {:uri (:image (:content item))}
-                   :native-ID (when (and (= shared-element-id (:message-id item))
-                                         (< index constants/max-album-photos))
-                                :shared-element)}]
-                 (when (and (> images-count constants/max-album-photos)
-                            (= index (- constants/max-album-photos 1)))
-                   [rn/view
-                    {:style style/overlay}
-                    [quo/text
-                     {:weight :bold
-                      :size   :heading-2
-                      :style  {:color colors/white}}
-                     (str "+" (- images-count (dec constants/max-album-photos)))]])]))
-            (:album message))]]
-         [:<>
-          (map-indexed
-           (fn [index item]
-             [image/image-message index item context #(on-long-press message context)])
-           (:album message))])))])
+  (let [insets            (safe-area/get-insets)
+        shared-element-id (rf/sub [:shared-element-id])
+        first-image       (first (:album message))
+        album-style       (if (> (:image-width first-image) (:image-height first-image))
+                            :landscape
+                            :portrait)
+        images-count      (count (:album message))
+        ;; album images are always square, except when we have 3 images, then they must be rectangular
+        ;; (portrait or landscape)
+        portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
+    (if (and albumize? (> images-count 1))
+      [:<>
+       [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]]
+       [rn/view
+        {:style (style/album-container portrait?)}
+        (map-indexed
+         (fn [index item]
+           (let [images-size-key (if (< images-count constants/max-album-photos)
+                                   images-count
+                                   :default)
+                 size            (get-in constants/album-image-sizes [images-size-key index])
+                 dimensions      (if (not= images-count rectangular-style-count)
+                                   {:width size :height size}
+                                   (find-size size album-style))]
+             [rn/touchable-opacity
+              {:key            (:message-id item)
+               :active-opacity 1
+               :on-long-press  #(on-long-press message context)
+               :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+                                              (:message-id item)
+                                              {:messages (:album message)
+                                               :index    index
+                                               :insets   insets}])}
+              [fast-image/fast-image
+               {:style     (style/image dimensions index portrait? images-count)
+                :source    {:uri (:image (:content item))}
+                :native-ID (when (and (= shared-element-id (:message-id item))
+                                      (< index constants/max-album-photos))
+                             :shared-element)}]
+              (when (and (> images-count constants/max-album-photos)
+                         (= index (- constants/max-album-photos 1)))
+                [rn/view
+                 {:style style/overlay}
+                 [quo/text
+                  {:weight :bold
+                   :size   :heading-2
+                   :style  {:color colors/white}}
+                  (str "+" (- images-count (dec constants/max-album-photos)))]])]))
+         (:album message))]]
+      [:<>
+       (map-indexed
+        (fn [index item]
+          [:<> {:key (:message-id item)}
+           [image/image-message index item context #(on-long-press message context)]])
+        (:album message))])))

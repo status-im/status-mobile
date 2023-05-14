@@ -20,7 +20,7 @@
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
-    [status-im.native-module.core :as status]
+    [native-module.core :as native-module]
     [status-im.node.core :as node]
     [status-im.notifications.core :as notifications]
     [status-im.popover.core :as popover]
@@ -58,22 +58,22 @@
 (re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
-   (status/login-with-config key-uid account-data hashed-password node/login-node-config)))
+   (native-module/login-with-config key-uid account-data hashed-password node/login-node-config)))
 
 (re-frame/reg-fx
  ::export-db
  (fn [[key-uid account-data hashed-password callback]]
-   (status/export-db key-uid account-data hashed-password callback)))
+   (native-module/export-db key-uid account-data hashed-password callback)))
 
 (re-frame/reg-fx
  ::import-db
  (fn [[key-uid account-data hashed-password]]
-   (status/import-db key-uid account-data hashed-password)))
+   (native-module/import-db key-uid account-data hashed-password)))
 
 (re-frame/reg-fx
  ::enable-local-notifications
  (fn []
-   (status/start-local-notifications)))
+   (native-module/start-local-notifications)))
 
 (re-frame/reg-fx
  ::initialize-wallet-connect
@@ -168,25 +168,23 @@
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {:db     (-> db
                  (assoc-in [:multiaccounts/login :processing] true)
                  (dissoc :intro-wizard :recovered-account?)
                  (update :keycard dissoc :flow))
      ::login [key-uid
-              (types/clj->json {:name      name
-                                :key-uid   key-uid
-                                :identicon identicon})
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn export-db-submitted
   {:events [:multiaccounts.login.ui/export-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {::export-db [key-uid
-                  (types/clj->json {:name      name
-                                    :key-uid   key-uid
-                                    :identicon identicon})
+                  (types/clj->json {:name    name
+                                    :key-uid key-uid})
                   (ethereum/sha3 (security/safe-unmask-data password))
                   (fn [path]
                     (when platform/ios?
@@ -198,11 +196,10 @@
 (rf/defn import-db-submitted
   {:events [:multiaccounts.login.ui/import-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
     {::import-db [key-uid
-                  (types/clj->json {:name      name
-                                    :key-uid   key-uid
-                                    :identicon identicon})
+                  (types/clj->json {:name    name
+                                    :key-uid key-uid})
                   (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn finish-keycard-setup
@@ -363,7 +360,7 @@
 
 (rf/defn get-node-config
   [_]
-  (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
+  (native-module/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
 
 (rf/defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
@@ -410,6 +407,7 @@
               (get-node-config)
               (communities/fetch)
               (communities/fetch-collapsed-community-categories)
+              (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level multiaccount))
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
@@ -741,7 +739,8 @@
      (merge
       {:db (update db :keycard dissoc :application-info)}
       (when keycard-multiaccount? {:navigate-to :keycard-login-pin}))
-     (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
+     (open-login (select-keys multiaccount
+                              [:key-uid :name :public-key :images :customization-color])))))
 
 (rf/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

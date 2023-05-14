@@ -1,10 +1,11 @@
 (ns status-im2.contexts.contacts.events
   (:require
-    [utils.re-frame :as rf]
-    [taoensso.timbre :as log]
-    [status-im.utils.types :as types]
     [oops.core :as oops]
-    [status-im2.constants :as constants]))
+    [status-im.utils.types :as types]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn <-rpc-js
   [^js js-contact]
@@ -14,7 +15,6 @@
    :secondary-name        (.-secondaryName js-contact)
    :ens-name              (.-name js-contact)
    :nickname              (.-localNickname js-contact)
-   :identicon             (oops/oget js-contact "identicon")
    :images                (types/js->clj (oops/oget js-contact "images"))
    :ens-verified          (oops/oget js-contact "ensVerified")
    :contact-request-state (oops/oget js-contact "contactRequestState")
@@ -75,16 +75,20 @@
   [{:keys [db]} contacts]
   {:db (assoc db :contacts/contacts (into {} (map #(vector (:public-key %) %) contacts)))})
 
-(rf/defn add-contact
-  "Add a contact and set pending to false"
-  {:events [:contact.ui/add-contact-pressed]}
-  [{:keys [db]} public-key nickname ens-name]
-  (when (not= (get-in db [:multiaccount :public-key]) public-key)
-    {:json-rpc/call [{:method      "wakuext_addContact"
-                      :params      [{:id public-key :nickname nickname :ensName ens-name}]
-                      :js-response true
-                      :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-                      :on-error    #(log/error "failed to add contact" public-key %)}]}))
+(rf/defn send-contact-request
+  {:events [:contact.ui/send-contact-request]}
+  [{:keys [db]} id]
+  (when (not= id (get-in db [:multiaccount :public-key]))
+    {:json-rpc/call
+     [{:method      "wakuext_sendContactRequest"
+       :js-response true
+       :params      [{:id id :message (i18n/label :t/add-me-to-your-contacts)}]
+       :on-error    (fn [error]
+                      (log/error "Failed to send contact request"
+                                 {:error error
+                                  :event :contact.ui/send-contact-request
+                                  :id    id}))
+       :on-success  #(rf/dispatch [:transport/message-sent %])}]}))
 
 (rf/defn remove-contact
   "Remove a contact from current account's contact list"

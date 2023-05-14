@@ -9,7 +9,7 @@
             [utils.i18n :as i18n]
             [status-im.keycard.card :as keycard.card]
             [status-im.keycard.common :as keycard.common]
-            [status-im.native-module.core :as status]
+            [native-module.core :as native-module]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.signing.keycard :as signing.keycard]
             [utils.re-frame :as rf]
@@ -26,9 +26,9 @@
 (re-frame/reg-fx
  :signing/send-transaction-fx
  (fn [{:keys [tx-obj hashed-password cb]}]
-   (status/send-transaction (types/clj->json tx-obj)
-                            hashed-password
-                            cb)))
+   (native-module/send-transaction (types/clj->json tx-obj)
+                                   hashed-password
+                                   cb)))
 
 (re-frame/reg-fx
  :signing/show-transaction-error
@@ -43,21 +43,21 @@
 (re-frame/reg-fx
  :signing.fx/sign-message
  (fn [{:keys [params on-completed]}]
-   (status/sign-message (types/clj->json params)
-                        on-completed)))
+   (native-module/sign-message (types/clj->json params)
+                               on-completed)))
 
 (re-frame/reg-fx
  :signing.fx/recover-message
  (fn [{:keys [params on-completed]}]
-   (status/recover-message (types/clj->json params)
-                           on-completed)))
+   (native-module/recover-message (types/clj->json params)
+                                  on-completed)))
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
  (fn [{:keys [v4 data account on-completed hashed-password]}]
    (if v4
-     (status/sign-typed-data-v4 data account hashed-password on-completed)
-     (status/sign-typed-data data account hashed-password on-completed))))
+     (native-module/sign-typed-data-v4 data account hashed-password on-completed)
+     (native-module/sign-typed-data data account hashed-password on-completed))))
 
 (defn get-contact
   [db to]
@@ -109,18 +109,18 @@
       (sign-message cofx)
       (let [tx-obj-to-send (merge tx-obj
                                   (when gas
-                                    {:gas (str "0x" (status/number-to-hex gas))})
+                                    {:gas (str "0x" (native-module/number-to-hex gas))})
                                   (when gasPrice
-                                    {:gasPrice (str "0x" (status/number-to-hex gasPrice))})
+                                    {:gasPrice (str "0x" (native-module/number-to-hex gasPrice))})
                                   (when nonce
-                                    {:nonce (str "0x" (status/number-to-hex nonce))})
+                                    {:nonce (str "0x" (native-module/number-to-hex nonce))})
                                   (when maxPriorityFeePerGas
                                     {:maxPriorityFeePerGas (str "0x"
-                                                                (status/number-to-hex
+                                                                (native-module/number-to-hex
                                                                  (js/parseInt maxPriorityFeePerGas)))})
                                   (when maxFeePerGas
                                     {:maxFeePerGas (str "0x"
-                                                        (status/number-to-hex
+                                                        (native-module/number-to-hex
                                                          (js/parseInt maxFeePerGas)))}))]
         (when-not in-progress?
           {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
@@ -184,7 +184,7 @@
   (let [{:keys [symbol decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
-        (let [[address value _] (status/decode-parameters
+        (let [[address value _] (native-module/decode-parameters
                                  (str "0x" (subs data 10))
                                  (if (= type :approve-and-call)
                                    ["address" "uint256" "bytes"]
@@ -476,7 +476,7 @@
   {:events [:wallet.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
-        amount-hex               (str "0x" (status/number-to-hex amount))
+        amount-hex               (str "0x" (native-module/number-to-hex amount))
         to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)
         identity                 (:current-chat-id db)
@@ -495,7 +495,7 @@
                          :from     from-address
                          :chat-id  identity
                          :command? true
-                         :data     (status/encode-transfer to-norm amount-hex)})}))
+                         :data     (native-module/encode-transfer to-norm amount-hex)})}))
       {:db db
        :json-rpc/call
        [{:method      "wakuext_requestAddressForTransaction"
@@ -512,7 +512,7 @@
   [{:keys [db] :as cofx} {:keys [amount from token]}]
   (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
         {:keys [symbol address]}             token
-        amount-hex                           (str "0x" (status/number-to-hex amount))
+        amount-hex                           (str "0x" (native-module/number-to-hex amount))
         to-norm                              (:address request-parameters)
         from-address                         (:address from)]
     (rf/merge cofx
@@ -532,13 +532,13 @@
                              :command?   true
                              :message-id (:id request-parameters)
                              :chat-id    chat-id
-                             :data       (status/encode-transfer to-norm amount-hex)})})))))
+                             :data       (native-module/encode-transfer to-norm amount-hex)})})))))
 
 (rf/defn sign-transaction-button-clicked
   {:events [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice maxFeePerGas maxPriorityFeePerGas]}]
   (let [{:keys [symbol address]} token
-        amount-hex               (str "0x" (status/number-to-hex amount))
+        amount-hex               (str "0x" (native-module/number-to-hex amount))
         to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)]
     (rf/merge cofx
@@ -558,7 +558,7 @@
                                  {:to    to-norm
                                   :value amount-hex}
                                  {:to   (ethereum/normalized-hex address)
-                                  :data (status/encode-transfer to-norm amount-hex)}))}))))
+                                  :data (native-module/encode-transfer to-norm amount-hex)}))}))))
 
 (re-frame/reg-fx
  :signing/get-transaction-by-hash-fx

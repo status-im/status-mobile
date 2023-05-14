@@ -1,12 +1,14 @@
 (ns status-im2.contexts.chat.home.chat-list-item.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [utils.datetime :as datetime]
-            [status-im2.common.home.actions.view :as actions] ;;TODO move to status-im2
+            [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.constants :as constants]
+            [clojure.string :as string]
+            [utils.i18n :as i18n]))
 
 (def max-subheader-length 50)
 
@@ -14,64 +16,151 @@
   [chat-id]
   (fn []
     (rf/dispatch [:dismiss-keyboard])
-    (rf/dispatch [:chat/navigate-to-chat chat-id])
-    (rf/dispatch [:search/home-filter-changed nil])))
+    (rf/dispatch [:chat/navigate-to-chat chat-id])))
 
-(defn truncate-literal
-  [literal]
-  (when literal
-    (let [size (min max-subheader-length (.-length literal))]
-      {:components (.substring literal 0 size)
-       :length     size})))
-
-(defn add-parsed-to-subheader
-  [acc {:keys [type destination literal children]}]
-  (let [result (case type
-                 "paragraph"
-                 (reduce
-                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
-                    (if (>= length max-subheader-length)
-                      (reduced acc-paragraph)
-                      (add-parsed-to-subheader acc-paragraph parsed-child)))
-                  {:components [quo/text]
-                   :length     0}
-                  children)
-
-                 "mention"
-                 {:components [quo/text (rf/sub [:messages/resolve-mention literal])]
-                  :length     4} ;; we can't predict name length so take the
-                                 ;; smallest possible
-
-                 "status-tag"
-                 (truncate-literal (str "#" literal))
-
-                 "link"
-                 (truncate-literal destination)
-
-                 (truncate-literal literal))]
-    {:components (conj (:components acc) (:components result))
-     :length     (+ (:length acc) (:length result))}))
-
-(defn render-subheader
-  "Render the preview of a last message to a maximum of max-subheader-length characters"
+(defn parsed-text-to-one-line
   [parsed-text]
-  (let [result
-        (reduce
-         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
-           (if (>= length max-subheader-length)
-             (reduced acc-text)
-             (add-parsed-to-subheader acc-text new-text-chunk)))
-         {:components [quo/text
-                       {:size                :paragraph-2
-                        :style               {:color (colors/theme-colors colors/neutral-50
-                                                                          colors/neutral-40)
-                                              :width "90%"}
-                        :number-of-lines     1
-                        :ellipsize-mode      :tail
-                        :accessibility-label :chat-message-text}]
-          :length     0}
-         parsed-text)]
-    (:components result)))
+  (reduce
+   (fn [acc {:keys [type literal children destination]}]
+     (case type
+       "paragraph"
+       (str acc (parsed-text-to-one-line children) " ")
+
+       "mention"
+       (str acc "@" (rf/sub [:messages/resolve-mention literal]))
+
+       "status-tag"
+       (str acc literal)
+
+       "link"
+       (str acc destination)
+
+       (str acc (string/replace literal #"\n" " "))))
+   ""
+   parsed-text))
+
+(defn extract-text-from-message
+  [{:keys [content]}]
+  (let [{:keys [parsed-text text]} content]
+    (if parsed-text
+      (parsed-text-to-one-line parsed-text)
+      (if text
+        (string/replace text #"\n" " ")
+        text))))
+
+(defn preview-text-from-content
+  [group-chat primary-name {:keys [content-type album-images-count content outgoing] :as message}]
+  (let [content-text (extract-text-from-message message)
+        reply? (not (string/blank? (:response-to content)))
+        author (if outgoing
+                 :you
+                 (if group-chat
+                   :other-person
+                   :dont-show))
+        preview-text
+        (case content-type
+          constants/content-type-text
+          (if reply?
+            (case author
+              :you          (str (i18n/label :t/you-replied) ": " content-text)
+              :other-person (str (i18n/label :t/user-replied {:user primary-name}) ": " content-text)
+              :dont-show    (str (i18n/label :t/replied) ": " content-text)
+              (str (i18n/label :t/replied) ": " content-text))
+            (case author
+              :you          (str (i18n/label :t/You) ": " content-text)
+              :other-person (str primary-name ": " content-text)
+              :dont-show    content-text
+              content-text))
+
+          constants/content-type-emoji
+          (case author
+            :you          (str (i18n/label :t/You) ": " content-text)
+            :other-person (str primary-name ": " content-text)
+            :dont-show    content-text
+            content-text)
+
+          constants/content-type-system-text
+          (case author
+            :you          (i18n/label :t/you-pinned-a-message)
+            :other-person (i18n/label :t/user-pinned-a-message {:user primary-name})
+            :dont-show    (i18n/label :t/Pinned-a-message)
+            (i18n/label :t/Pinned-a-message))
+
+          constants/content-type-sticker
+          (case author
+            :you          (i18n/label :t/you-sent-a-sticker)
+            :other-person (i18n/label :t/user-sent-a-sticker {:user primary-name})
+            :dont-show    (i18n/label :t/sent-a-sticker)
+            (i18n/label :t/sent-a-sticker))
+
+          constants/content-type-image
+          (let [sent-photos (if album-images-count
+                              (case author
+                                :you          (i18n/label :t/you-sent-n-photos
+                                                          {:number album-images-count})
+                                :other-person (i18n/label :t/user-sent-n-photos
+                                                          {:number album-images-count
+                                                           :user   primary-name})
+                                :dont-show    (i18n/label :t/sent-n-photos {:number album-images-count})
+                                (i18n/label :t/sent-n-photos {:number album-images-count}))
+                              (case author
+                                :you          (i18n/label :t/you-sent-a-photo)
+                                :other-person (i18n/label :t/user-sent-a-photo {:user primary-name})
+                                :dont-show    (i18n/label :t/sent-a-photo)
+                                (i18n/label :t/sent-a-photo)))]
+            (if (not (string/blank? content-text))
+              (str sent-photos ": " content-text)
+              sent-photos))
+
+          constants/content-type-audio
+          (case author
+            :you          (i18n/label :t/you-sent-audio-message)
+            :other-person (i18n/label :t/user-sent-audio-message {:user primary-name})
+            :dont-show    (i18n/label :t/sent-audio-message)
+            (i18n/label :t/sent-audio-message))
+
+          constants/content-type-gif
+          (case author
+            :you          (i18n/label :t/you-sent-a-gif)
+            :other-person (i18n/label :t/user-sent-audio-message {:user primary-name})
+            :dont-show    (i18n/label :t/sent-a-gif)
+            (i18n/label :t/sent-a-gif))
+
+          constants/content-type-community
+          (case author
+            :you          (i18n/label :t/you-shared-a-community)
+            :other-person (i18n/label :t/user-shared-a-community {:user primary-name})
+            :dont-show    (i18n/label :t/shared-a-community)
+            (i18n/label :t/shared-a-community))
+
+          "")]
+    (subs preview-text 0 (min (count preview-text) max-subheader-length))))
+
+
+(defn last-message-preview
+  "Render the preview of a last message to a maximum of max-subheader-length characters"
+  [group-chat {:keys [deleted? outgoing from deleted-for-me?] :as message}]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
+        preview-text     (if deleted-for-me?
+                           (i18n/label :t/you-deleted-a-message)
+                           (if deleted?
+                             (if outgoing
+                               (i18n/label :t/you-deleted-a-message)
+                               (if group-chat
+                                 (i18n/label :t/user-deleted-a-message {:user primary-name})
+                                 (i18n/label :t/this-message-was-deleted)))
+                             (preview-text-from-content group-chat primary-name message)))]
+    [quo/text
+     {:size                :paragraph-2
+      :style               {:color        (colors/theme-colors colors/neutral-50
+                                                               colors/neutral-40)
+                            :flex         1
+                            :margin-right 20}
+      :number-of-lines     1
+      :ellipsize-mode      :tail
+      :accessibility-label :chat-message-text}
+     preview-text]))
+
 
 (defn verified-or-contact-icon
   [{:keys [ens-verified added?]}]
@@ -137,12 +226,7 @@
        :color     color}]
      [rn/view {:style {:margin-left 8}}
       [name-view display-name contact timestamp]
-      (if (string/blank? (get-in last-message [:content :parsed-text]))
-        [quo/text
-         {:size  :paragraph-2
-          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-         (get-in last-message [:content :text])]
-        [render-subheader (get-in last-message [:content :parsed-text])])]
+      [last-message-preview group-chat last-message]]
      (when-not muted
        (if (> unviewed-mentions-count 0)
          [quo/info-count {:style {:top 16}}

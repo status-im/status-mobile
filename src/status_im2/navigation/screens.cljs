@@ -1,6 +1,5 @@
 (ns status-im2.navigation.screens
   (:require
-    [react-native.platform :as platform]
     [status-im2.config :as config]
     [status-im2.contexts.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -15,6 +14,7 @@
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.identifiers.view :as identifiers]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
@@ -24,12 +24,13 @@
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
-    [status-im2.contexts.syncing.view :as settings-syncing]
+    [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
-
     [status-im.ui.screens.screens :as old-screens]
-    [status-im2.contexts.communities.menus.request-to-join.view :as join-menu]))
+    [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
+    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]))
 
 (defn screens
   []
@@ -67,11 +68,16 @@
      :component photo-selector/photo-selector}
 
     {:name      :album-selector
-     :options   {:modalPresentationStyle (if platform/ios? :overCurrentContext :none)}
+     :options   {:sheet? true}
      :component album-selector/album-selector}
 
     {:name      :new-contact
+     :options   {:sheet? true}
      :component add-new-contact/new-contact}
+
+    {:name      :how-to-pair
+     :options   {:sheet? true}
+     :component how-to-pair/instructions}
 
     {:name      :discover-communities
      :component communities.discover/discover}
@@ -80,10 +86,15 @@
      :component communities.overview/overview}
 
     {:name      :settings-syncing
-     :options   {:statusBar {:style :light}
-                 :insets    {:top false}}
+     :options   (options/statusbar true)
      :component settings-syncing/view}
 
+    {:name      :settings-setup-syncing
+     :options   (options/statusbar true)
+
+     :component settings-setup-syncing/view}
+
+    ;; Onboarding
     {:name      :profiles
      :component profiles/views}
 
@@ -114,6 +125,12 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
+
+    {:name      :identifiers
+     :component identifiers/view
+     :options   {:popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}}
 
     {:name      :sign-in
      :component sign-in/view}
