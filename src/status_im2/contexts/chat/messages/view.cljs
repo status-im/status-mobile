@@ -2,14 +2,13 @@
   (:require [quo2.core :as quo]
             [re-frame.db]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.view :as composer]
-            [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
-             contact-requests.bottom-drawer]
+            [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
+            [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
-            [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
+            [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
             [status-im2.navigation.state :as navigation.state]
             [utils.debounce :as debounce]
             [utils.re-frame :as rf]))
@@ -24,7 +23,7 @@
     ;; and will call system back button action
     true))
 
-(defn page-nav
+(defn old-page-nav
   []
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]} (rf/sub [:chats/current-chat])
@@ -66,20 +65,21 @@
 
 (defn chat-render
   []
-  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id contact-request-state group-chat able-to-send-message?] :as chat}
-        (rf/sub [:chats/current-chat-chat-view])
-        insets (safe-area/get-insets)]
-    [rn/keyboard-avoiding-view
-     {:style                  {:position :relative :flex 1}
-      :keyboardVerticalOffset (- (:bottom insets))}
-     [page-nav]
-     [pin.banner/banner chat-id]
-     [messages.list/messages-list chat insets]
-     (if-not able-to-send-message?
-       [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-       [:f> composer/composer insets])]))
-
+  (let [{:keys [chat-id
+                contact-request-state
+                group-chat
+                able-to-send-message?]
+         :as   chat} (rf/sub [:chats/current-chat-chat-view])]
+    [messages.list/messages-list
+     {:cover-bg-color style/cover-bg-color
+      :chat           chat
+      :header-comp    (fn [{:keys [scroll-y]}]
+                        [messages.navigation/navigation-view {:scroll-y scroll-y}])
+      :footer-comp    (fn [{:keys [insets]}]
+                        [rn/view {:style style/footer}
+                         (if-not able-to-send-message?
+                           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
+                           [:f> composer/composer insets])])}]))
 
 (defn chat
   []
