@@ -8,7 +8,8 @@
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
     [status-im2.contexts.chat.composer.selection :as selection]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.debounce :as debounce]))
 
 (defn focus
   [{:keys [input-ref] :as props}
@@ -118,7 +119,7 @@
     (@record-reset-fn)
     (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text])
-  (rf/dispatch [:mention/on-change-text text]))
+  (debounce/debounce-and-dispatch [:mention/on-change-text text] 300))
 
 (defn selection-change
   [event
