@@ -3,11 +3,13 @@
     [quo2.core :as quo]
     [utils.re-frame :as rf]))
 
-(defn- nearly-square?
+(defn nearly-square?
   [{:keys [width height]}]
-  (let [ratio (/ (max width height)
-                 (min width height))]
-    (< (Math/abs (- ratio 1)) 0.1)))
+  (if (or (zero? width) (zero? height))
+    false
+    (let [ratio (/ (max width height)
+                   (min width height))]
+      (< (Math/abs (dec ratio)) 0.1))))
 
 (defn view
   [{:keys [chat-id message-id]}]
