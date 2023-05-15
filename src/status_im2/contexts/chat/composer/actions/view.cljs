@@ -149,11 +149,12 @@
 (defn image-button
   [props animations insets]
   [quo/button
-   {:on-press #(open-photo-selector props animations insets)
-    :icon     true
-    :type     :outline
-    :size     32
-    :style    {:margin-right 12}}
+   {:on-press            #(open-photo-selector props animations insets)
+    :accessibility-label :open-images-button
+    :icon                true
+    :type                :outline
+    :size                32
+    :style               {:margin-right 12}}
    :i/image])
 
 (defn reaction-button

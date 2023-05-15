@@ -493,6 +493,59 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Deleted for me message is deleted all channel members")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702859)
+    def test_1_1_chat_image_send_reply(self):
+
+        self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
+        image_description = 'description'
+        self.channel_1.show_images_button.click()
+        self.channel_1.allow_button.click_if_shown()
+        self.channel_1.first_image_from_gallery.click()
+        self.channel_1.images_confirm_selection_button.click()
+        self.channel_1.chat_message_input.set_value(image_description)
+        self.channel_1.send_message_button.click()
+        self.channel_1.chat_message_input.click()
+        self.channel_1.chat_element_by_text(image_description).image_in_message.click()
+        self.channel_1.click_system_back_button()
+
+        # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
+        # self.home_2.just_fyi('check image, description and options for receiver')
+        # self.channel_2.chat_element_by_text(image_description).image_in_message.click()
+        # self.home_1.just_fyi('save image')
+        # self.chat_1.save_image_button.click_until_presence_of_element(self.chat_1.show_images_button)
+        # self.chat_1.show_images_button.click_until_presence_of_element(self.chat_1.image_from_gallery_button)
+        # self.chat_1.image_from_gallery_button.click_until_presence_of_element(self.chat_1.recent_image_in_gallery)
+        # if not self.chat_1.recent_image_in_gallery.is_element_displayed():
+        #     self.errors.append('Saved image is not shown in Recent')
+        # self.home_1.click_system_back_button(2)
+        # self.home_2.just_fyi('check share and save options on opened image')
+        # self.chat_2.image_message_in_chat.scroll_to_element(direction='up')
+        # self.chat_2.image_message_in_chat.click_until_presence_of_element(self.chat_2.share_image_icon_button)
+        # self.chat_2.share_image_icon_button.click()
+        # self.chat_2.share_via_messenger()
+        # if not self.chat_2.image_in_android_messenger.is_element_displayed():
+        #     self.errors.append("Can't share image")
+        # self.chat_2.click_system_back_button_until_element_is_shown(element=self.chat_2.save_image_icon_button)
+        # self.chat_2.save_image_icon_button.click()
+        # self.chat_2.show_images_button.click()
+        # self.chat_2.allow_button.wait_and_click()
+        #
+        # if not self.chat_2.first_image_from_gallery.is_element_image_similar_to_template('saved.png'):
+        #     self.errors.append("New picture was not saved!")
+        #
+        # self.channel_2.chat_element_by_text(image_description).image_in_message.save_new_screenshot_of_element('images_test.png')
+
+        self.channel_2.just_fyi("Can reply to images")
+        self.channel_2.quote_message(image_description)
+        message_text = 'reply to image'
+        self.channel_2.chat_message_input.send_keys(message_text)
+        self.channel_2.send_message_button.click()
+        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
+            self.errors.append('Reply message was not received by the sender')
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702840)
     def test_community_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
