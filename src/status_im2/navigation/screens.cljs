@@ -24,6 +24,7 @@
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im2.navigation.options :as options]
@@ -140,6 +141,8 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+    {:name      :scan-sync-code-page
+     :component scan-sync-code-page/view}
 
     {:name      :sign-in
      :options   {:layout options/onboarding-layout}

@@ -1,20 +1,19 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
   (:require [utils.i18n :as i18n]
-            [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [utils.datetime :as datetime]
             [status-im2.contexts.syncing.setup-syncing.style :as style]
             [utils.re-frame :as rf]
-            [status-im2.constants :as constants]
             [react-native.clipboard :as clipboard]
             [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
             [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [react-native.hooks :as hooks]
-            [react-native.safe-area :as safe-area]))
+            [react-native.safe-area :as safe-area]
+            [status-im2.contexts.syncing.utils :as sync-utils]))
 
 (def code-valid-for-ms 120000)
 (def one-min-ms 60000)
@@ -35,13 +34,6 @@
                               :icon-override-theme :dark
                               :on-press            #(rf/dispatch [:open-modal :how-to-pair])}]}]])
 
-(defn valid-cs?
-  [connection-string]
-  (when connection-string
-    (string/starts-with?
-     connection-string
-     constants/local-pairing-connection-string-identifier)))
-
 (defn f-use-interval
   [clock cleanup-clock delay]
   (hooks/use-interval clock cleanup-clock delay))
@@ -53,7 +45,7 @@
         delay         (reagent/atom nil)
         timestamp     (reagent/atom nil)
         set-code      (fn [connection-string]
-                        (when (valid-cs? connection-string)
+                        (when (sync-utils/valid-connection-string? connection-string)
                           (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
                           (reset! delay 1000)
                           (reset! code connection-string)))
@@ -84,14 +76,14 @@
             :weight :semi-bold
             :style  {:color colors/white}}
            (i18n/label :t/setup-syncing)]]
-         [rn/view {:style (style/qr-container (valid-cs? @code))}
-          (if (valid-cs? @code)
+         [rn/view {:style (style/qr-container (sync-utils/valid-connection-string? @code))}
+          (if (sync-utils/valid-connection-string? @code)
             [qr-code-viewer/qr-code-view 331 @code]
             [quo/qr-code
              {:source (resources/get-image :qr-code)
               :height 220
               :width  "100%"}])
-          (when-not (valid-cs? @code)
+          (when-not (sync-utils/valid-connection-string? @code)
             [quo/button
              {:on-press (fn []
                           ;TODO https://github.com/status-im/status-mobile/issues/15570
@@ -103,7 +95,7 @@
               :size     40
               :style    style/generate-button
               :before   :i/reveal} (i18n/label :t/reveal-sync-code)])
-          (when (valid-cs? @code)
+          (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
              [rn/view
@@ -144,5 +136,5 @@
          [quo/action-drawer
           [[{:icon           :i/scan
              :override-theme :dark
-             :on-press       #(js/alert "to be implemented")
+             :on-press       #(rf/dispatch [:navigate-to :scan-sync-code-page])
              :label          (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
