@@ -9,7 +9,7 @@
 
 (defn message-draft-link-previews
   []
-  (let [previews (rf/sub [:chat/link-previews-unfurled])]
+  (let [previews (rf/sub [:chats/link-previews-unfurled])]
     [quo/url-preview-list
      {:key-fn               :url
       :preview-width        (- (:width (rn/get-window))
