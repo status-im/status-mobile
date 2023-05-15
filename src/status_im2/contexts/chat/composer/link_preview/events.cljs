@@ -58,12 +58,13 @@
 
 (defn- failed-previews
   [curr-previews new-previews]
-  (map (fn [url]
-         {:url url :failed? true})
-       (set/difference (set (->> curr-previews
-                                 (filter :loading?)
-                                 (map :url)))
-                       (set (map :url new-previews)))))
+  (let [curr-urls (set (->> curr-previews
+                            (filter :loading?)
+                            (map :url)))
+        new-urls  (set (map :url new-previews))]
+    (map (fn [url]
+           {:url url :failed? true})
+         (set/difference curr-urls new-urls))))
 
 (defn- reconcile-unfurled
   [curr-previews new-previews]
