@@ -37,10 +37,10 @@
 
 (defn on-scroll
   [evt]
-  (let [y (oops/oget evt "nativeEvent.contentOffset.y")
-        layout-height (oops/oget evt "nativeEvent.layoutMeasurement.height")
-        threshold-height (* (/ layout-height 100)
-                            threshold-percentage-to-show-floating-scroll-down-button)
+  (let [y                  (oops/oget evt "nativeEvent.contentOffset.y")
+        layout-height      (oops/oget evt "nativeEvent.layoutMeasurement.height")
+        threshold-height   (* (/ layout-height 100)
+                              threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
     (when (not= reached-threshold? @show-floating-scroll-down-button)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
@@ -50,17 +50,17 @@
   [evt]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                                  (dec (oops/oget evt "viewableItems.length")))]
-              (let [index (oops/oget last-visible-element "index")
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
+                                            (dec (oops/oget evt "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 ;;TODO this is not really working in pair with inserting new messages because we stop inserting new
 ;;messages
@@ -100,32 +100,32 @@
   [{:keys [chat insets scroll-y cover-bg-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
-        status-bar-height (:top insets)
-        display-name (if (= chat-type constants/one-to-one-chat-type)
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                       (str emoji " " chat-name))
-        {:keys [bio]} (rf/sub [:contacts/contact-by-identity chat-id])
-        loading-messages? (rf/sub [:chats/loading-messages? chat-id])
-        all-loaded? (rf/sub [:chats/all-loaded? chat-id])
-        online? (rf/sub [:visibility-status-updates/online? chat-id])
-        contact (when-not group-chat
-                  (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path (when-not (empty? (:images contact))
-                     (rf/sub [:chats/photo-path chat-id]))]
+        status-bar-height    (:top insets)
+        display-name         (if (= chat-type constants/one-to-one-chat-type)
+                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                               (str emoji " " chat-name))
+        {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
+        loading-messages?    (rf/sub [:chats/loading-messages? chat-id])
+        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
+        online?              (rf/sub [:visibility-status-updates/online? chat-id])
+        contact              (when-not group-chat
+                               (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path           (when-not (empty? (:images contact))
+                               (rf/sub [:chats/photo-path chat-id]))]
     [:f>
      (fn []
-       (let [border-animation (reanimated/interpolate scroll-y
-                                                      [30 125]
-                                                      [14 0]
-                                                      header-extrapolation-option)
-             image-scale-animation (reanimated/interpolate scroll-y
-                                                           [50 125]
-                                                           [1 0.5]
-                                                           header-extrapolation-option)
-             image-top-margin-animation (reanimated/interpolate scroll-y
-                                                                [50 125]
-                                                                [0 40]
-                                                                header-extrapolation-option)
+       (let [border-animation            (reanimated/interpolate scroll-y
+                                                                 [30 125]
+                                                                 [14 0]
+                                                                 header-extrapolation-option)
+             image-scale-animation       (reanimated/interpolate scroll-y
+                                                                 [50 125]
+                                                                 [1 0.5]
+                                                                 header-extrapolation-option)
+             image-top-margin-animation  (reanimated/interpolate scroll-y
+                                                                 [50 125]
+                                                                 [0 40]
+                                                                 header-extrapolation-option)
              image-side-margin-animation (reanimated/interpolate scroll-y
                                                                  [50 125]
                                                                  [0 -20]
@@ -185,13 +185,13 @@
   [event initial-y scroll-y]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y (+ (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
+        current-y      (+ (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn messages-list-content
   [{:keys [chat insets initial-y scroll-y cover-bg-color keyboard-shown?]}]
-  (let [context (rf/sub [:chats/current-chat-message-list-view-context])
-        messages (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+  (let [context    (rf/sub [:chats/current-chat-message-list-view-context])
+        messages   (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording? (rf/sub [:chats/recording?])]
     [rn/view {:style {:flex 1}}
      [reanimated/flat-list
@@ -251,44 +251,44 @@
   []
   (let [show-listener (atom nil)
         hide-listener (atom nil)
-        shown? (atom nil)]
+        shown?        (atom nil)]
     (rn/use-effect
-      (fn []
-        (reset! show-listener
-                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-        (reset! hide-listener
-                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-        (fn []
-          (.remove ^js @show-listener)
-          (.remove ^js @hide-listener))))
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [window-height (:height (rn/get-window))
-        insets (safe-area/get-insets)
+        insets        (safe-area/get-insets)
         ;; view height calculation is different because
         ;; window height is different on iOS and Android:
-        view-height (if platform/ios?
-                      window-height
-                      (+ window-height (:top insets)))
-        initial-y (if platform/ios? (- (:top insets)) 0)]
+        view-height   (if platform/ios?
+                        window-height
+                        (+ window-height (:top insets)))
+        initial-y     (if platform/ios? (- (:top insets)) 0)]
     [:f>
      (fn []
-       (let [scroll-y (reanimated/use-shared-value initial-y)
+       (let [scroll-y                  (reanimated/use-shared-value initial-y)
              {:keys [keyboard-height]} (hooks/use-keyboard)
              {keyboard-shown? :shown?} (use-keyboard-visibility)]
          (rn/use-effect
-           (fn []
-             (when keyboard-shown?
-               (reanimated/set-shared-value scroll-y
-                                            (+ (reanimated/get-shared-value scroll-y)
-                                               keyboard-height))))
-           [keyboard-shown? keyboard-height])
+          (fn []
+            (when keyboard-shown?
+              (reanimated/set-shared-value scroll-y
+                                           (+ (reanimated/get-shared-value scroll-y)
+                                              keyboard-height))))
+          [keyboard-shown? keyboard-height])
          [rn/keyboard-avoiding-view
           {:style (style/keyboard-avoiding-container
-                    view-height
-                    (if (and keyboard-shown? platform/android?) keyboard-height 0))}
+                   view-height
+                   (if (and keyboard-shown? platform/android?) keyboard-height 0))}
 
           (when header-comp
             [header-comp {:scroll-y scroll-y}])

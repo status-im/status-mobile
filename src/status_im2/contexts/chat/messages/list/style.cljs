@@ -53,10 +53,6 @@
     :margin-bottom    -16
     :padding-bottom   24
     :background-color (colors/theme-colors colors/white colors/neutral-100)
-    ;;:shadow-radius    16
-    ;;:shadow-opacity   1
-    ;;:shadow-color     "rgba(9, 16, 28, 0.06)"
-    ;;:shadow-offset    {:width 0 :height -24}
     :display          :flex}))
 
 (def header-avatar

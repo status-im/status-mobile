@@ -5,7 +5,8 @@
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.view :as composer]
-            [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
+            [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
+             contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
@@ -22,46 +23,6 @@
     ;; If true is not returned back button event will bubble up,
     ;; and will call system back button action
     true))
-
-(defn old-page-nav
-  []
-  (let [{:keys [group-chat chat-id chat-name emoji
-                chat-type]} (rf/sub [:chats/current-chat])
-        display-name        (if (= chat-type constants/one-to-one-chat-type)
-                              (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                              (str emoji " " chat-name))
-        online?             (rf/sub [:visibility-status-updates/online? chat-id])
-        contact             (when-not group-chat
-                              (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path          (rf/sub [:chats/photo-path chat-id])
-        avatar-image-key    (if (seq (:images contact))
-                              :profile-picture
-                              :ring-background)]
-    [quo/page-nav
-     {:align-mid?            true
-      :mid-section           (if group-chat
-                               {:type      :text-only
-                                :main-text display-name}
-                               {:type      :user-avatar
-                                :avatar    {:full-name       display-name
-                                            :online?         online?
-                                            :size            :medium
-                                            avatar-image-key photo-path}
-                                :main-text display-name
-                                :on-press  #(debounce/dispatch-and-chill [:chat.ui/show-profile chat-id]
-                                                                         1000)})
-
-      :left-section          {:on-press            #(do
-                                                      (rf/dispatch [:chat/close])
-                                                      (rf/dispatch [:navigate-back]))
-                              :icon                :i/arrow-left
-                              :accessibility-label :back-button}
-
-      :right-section-buttons [{:on-press            #()
-                               :style               {:border-width 1
-                                                     :border-color :red}
-                               :icon                :i/options
-                               :accessibility-label :options-button}]}]))
 
 (defn chat-render
   []
