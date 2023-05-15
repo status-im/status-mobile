@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [quo2.components.keycard.view :as quo2]))
+            [quo2.core :as quo]))
 
 (def descriptor
   [{:label "Holder"
@@ -21,7 +21,7 @@
       []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view [preview/customizer state descriptor]
-        [quo2/keycard
+        [quo/keycard
          {:holder-name? (:holder-name @state)
           :locked?      (:locked? @state)}]]])))
 

@@ -32,7 +32,7 @@
    :align-self :center
    :height     280.48
    :transform  [{:rotate "-30deg"} {:translateY -30}]
-   :opacity    (when (not (boolean locked?)) 0.02)
+   :opacity    (when-not locked? 0.02)
    :z-index    1})
 
 (def keycard-chip

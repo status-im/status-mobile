@@ -3,7 +3,7 @@
             [quo2.components.keycard.style :as style]
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
-            [status-im2.common.resources :as resources]
+            [quo2.foundations.resources :as resources]
             [utils.i18n :as i18n]))
 
 (defn keycard
@@ -11,9 +11,9 @@
   - :holder-name - Can be owner's name. Default is Empty
   - :locked? - Boolean to specify whether the keycard is locked or not
   "
-  [{:keys [holder-name? locked?]}]
-  (let [label (if (boolean holder-name?)
-                (i18n/label :t/user-keycard {:name holder-name?})
+  [{:keys [holder-name locked?]}]
+  (let [label (if (boolean holder-name)
+                (i18n/label :t/user-keycard {:name holder-name})
                 (i18n/label :t/empty-keycard))]
     [rn/view {:style (style/card-container locked?)}
      [rn/image
