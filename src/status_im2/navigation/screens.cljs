@@ -117,7 +117,7 @@
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:layout options/onboarding-layout
+     :options   {:layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
@@ -128,7 +128,7 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:layout options/onboarding-layout
+     :options   {:layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
@@ -136,7 +136,7 @@
 
     {:name      :identifiers
      :component identifiers/view
-     :options   {:layout options/onboarding-layout
+     :options   {:layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
