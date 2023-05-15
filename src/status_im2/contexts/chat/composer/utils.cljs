@@ -68,7 +68,7 @@
 (defn calc-extra-content-height
   [images? link-previews? reply? edit?]
   (let [height (if images? constants/images-container-height 0)
-        height (if link-previews? (+ height constants/link-preview-height) 0)
+        height (if link-previews? (+ height constants/links-container-height) 0)
         height (if reply? (+ height constants/reply-container-height) height)
         height (if edit? (+ height constants/edit-container-height) height)]
     height))

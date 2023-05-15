@@ -19,7 +19,7 @@
 
 (def ^:const images-container-height 76)
 
-(def ^:const link-preview-height 76)
+(def ^:const links-container-height 76)
 
 (def ^:const reply-container-height 32)
 
