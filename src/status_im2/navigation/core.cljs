@@ -75,9 +75,7 @@
                          (get roots/themes root-id)
                          root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))
-     (if root
-       (navigation/set-root root)
-       (println "root" root-id root)))))
+     (navigation/set-root root))))
 
 ;; NAVIGATE-TO
 (defn navigate
