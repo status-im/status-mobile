@@ -31,8 +31,8 @@
   {:events [:link-preview/unfurl-parsed-urls]}
   [{:keys [db]} urls]
   (let [cleared (set (get-in db [:chat/link-previews :cleared]))]
-    (when (or (not= (set urls) cleared)
-              (empty? urls))
+    (when (or (empty? urls)
+              (not= (set urls) cleared))
       (let [cache      (get-in db [:chat/link-previews :cache])
             previews   (urls->previews cache urls)
             new-urls   (->> previews
