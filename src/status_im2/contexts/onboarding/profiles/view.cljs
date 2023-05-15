@@ -184,6 +184,7 @@
        :type                :blur-bg
        :icon                true
        :on-press            set-show-profiles
+       :disabled            processing
        :override-theme      :dark
        :width               32
        :accessibility-label :show-profiles
@@ -222,6 +223,7 @@
       {:size                40
        :type                :ghost
        :before              :i/info
+       :disabled            processing
        :accessibility-label :forget-password-button
        :override-theme      :dark
        :style               style/forget-password-button
