@@ -1,6 +1,5 @@
 (ns status-im2.contexts.activity-center.notification.admin.view
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.style :as common-style]
             [status-im2.contexts.activity-center.notification.common.view :as common]
@@ -69,12 +68,8 @@
        :context   [[common/user-avatar-tag author]
                    (i18n/label :t/wants-to-join)
                    [quo/context-tag
-                    {:size           :small
-                     :override-theme :dark
-                     :color          colors/primary-50
-                     :style          common-style/user-avatar-tag
-                     :text-style     common-style/user-avatar-tag-text}
-                    {:uri community-image} community-name]]
+                    common/tag-params
+                    community-image community-name]]
        :items     (case membership-status
                     constants/activity-center-membership-status-accepted
                     [{:type    :status
