@@ -67,33 +67,33 @@
          (set/difference curr-urls new-urls))))
 
 (defn- reconcile-unfurled
-  [curr-previews new-previews]
-  (let [indexed-new-previews (utils.collection/index-by :url new-previews)]
-    (reduce (fn [acc preview]
-              (if (:loading? preview)
-                (if-let [loaded-preview (get indexed-new-previews
-                                             (:url preview))]
-                  (conj acc loaded-preview)
-                  acc)
-                (conj acc preview)))
-            []
-            curr-previews)))
+  [curr-previews indexed-new-previews]
+  (reduce (fn [acc preview]
+            (if (:loading? preview)
+              (if-let [loaded-preview (get indexed-new-previews
+                                           (:url preview))]
+                (conj acc loaded-preview)
+                acc)
+              (conj acc preview)))
+          []
+          curr-previews))
 
 (rf/defn unfurl-parsed-urls-success
   {:events [:link-preview/unfurl-parsed-urls-success]}
   [{:keys [db]} request-id new-previews]
   (when (= request-id (get-in db [:chat/link-previews :request-id]))
-    (let [new-previews  (map data-store.messages/<-link-preview-rpc new-previews)
-          curr-previews (get-in db [:chat/link-previews :unfurled])]
+    (let [new-previews         (map data-store.messages/<-link-preview-rpc new-previews)
+          curr-previews        (get-in db [:chat/link-previews :unfurled])
+          indexed-new-previews (utils.collection/index-by :url new-previews)]
       (log/debug "URLs unfurled"
                  {:event      :link-preview/unfurl-parsed-urls-success
                   :previews   (map #(update % :thumbnail dissoc :data-uri) new-previews)
                   :request-id request-id})
       {:db (-> db
-               (update-in [:chat/link-previews :unfurled] reconcile-unfurled new-previews)
+               (update-in [:chat/link-previews :unfurled] reconcile-unfurled indexed-new-previews)
                (update-in [:chat/link-previews :cache]
                           merge
-                          (utils.collection/index-by :url new-previews)
+                          indexed-new-previews
                           (utils.collection/index-by :url
                                                      (failed-previews curr-previews new-previews))))})))
 
