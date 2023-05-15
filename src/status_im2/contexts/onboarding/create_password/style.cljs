@@ -1,6 +1,8 @@
 (ns status-im2.contexts.onboarding.create-password.style
   (:require [quo2.foundations.colors :as colors]))
 
+(def flex-fill {:flex 1})
+
 (def heading {:margin-bottom 20})
 (def heading-subtitle {:color colors/white})
 (def heading-title (assoc heading-subtitle :margin-bottom 8))

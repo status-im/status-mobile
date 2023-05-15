@@ -170,7 +170,7 @@
                :on-change #(swap! accepts-disclaimer? not)
                :checked?  @accepts-disclaimer?}
               (i18n/label :t/password-creation-disclaimer)]])
-          (when (= @focused-input :password)
+          (when (and (= @focused-input :password) (not same-passwords?))
             [help
              {:validations       validations
               :password-strength password-strength}])
@@ -215,22 +215,25 @@
              (ocall will-show-listener "remove")
              (ocall will-hide-listener "remove"))))
        [])
-      [:<>
-       [background/view true]
-       [rn/keyboard-avoiding-view
-        {:style {:flex 1}}
-        [navigation-bar/navigation-bar
-         {:top                   top
-          :right-section-buttons [{:type                :blur-bg
-                                   :icon                :i/info
-                                   :icon-override-theme :dark
-                                   :on-press            #(rf/dispatch
-                                                          [:show-bottom-sheet
-                                                           {:content create-password-doc
-                                                            :shell?  true}])}]}]
-        [password-form]
-        [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]])))
+      [rn/touchable-without-feedback
+       {:on-press   rn/dismiss-keyboard!
+        :accessible false}
+       [rn/view {:style style/flex-fill}
+        [rn/keyboard-avoiding-view {:style style/flex-fill}
+         [navigation-bar/navigation-bar
+          {:top                   top
+           :right-section-buttons [{:type                :blur-bg
+                                    :icon                :i/info
+                                    :icon-override-theme :dark
+                                    :on-press            #(rf/dispatch
+                                                           [:show-bottom-sheet
+                                                            {:content create-password-doc
+                                                             :shell?  true}])}]}]
+         [password-form]
+         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]])))
 
 (defn create-password
   []
-  [:f> f-create-password])
+  [:<>
+   [background/view true]
+   [:f> f-create-password]])
