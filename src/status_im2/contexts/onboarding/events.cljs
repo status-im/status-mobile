@@ -1,17 +1,16 @@
 (ns status-im2.contexts.onboarding.events
   (:require
-    [utils.re-frame :as rf]
-    [taoensso.timbre :as log]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.ethereum.core :as ethereum]
     [status-im.utils.types :as types]
     [status-im2.config :as config]
-    [clojure.string :as string]
-    [utils.i18n :as i18n]
-    [utils.security.core :as security]
-    [native-module.core :as native-module]
-    [status-im.ethereum.core :as ethereum]
     [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.profiles.view :as profiles.view]))
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
