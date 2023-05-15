@@ -96,7 +96,7 @@
            {:stack {:id       :intro
                     :children [{:component {:name    :intro
                                             :id      :intro
-                                            :options (options/default-root)}}]}}}
+                                            :options (options/default-root nil colors/neutral-100)}}]}}}
           :shell-stack
           {:root
            {:stack {:id       :shell-stack
