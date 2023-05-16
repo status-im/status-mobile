@@ -105,7 +105,10 @@
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
           selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
           {:keys [key-uid]}        (rf/sub [:multiaccount])
-          customization-color      (rf/sub [:profile/customization-color key-uid])
+          profile-color            (:color (rf/sub [:onboarding-2/profile]))
+          customization-color      (if profile-color
+                                     profile-color
+                                     (rf/sub [:profile/customization-color key-uid]))
           top                      (safe-area/get-top)]
       [:<>
        (if (= selected-tab :tab/contacts)

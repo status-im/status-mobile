@@ -4,8 +4,10 @@
     [quo2.foundations.colors :as colors]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
+    [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.welcome.style :as style]
     [status-im2.contexts.onboarding.common.background.view :as background]))
 
@@ -33,11 +35,19 @@
                               :type                  :shell
                               :on-press              #(rf/dispatch [:init-root root])}}])
 
+(defn dispatch-visibility-status-update
+  [status-type]
+  (re-frame/dispatch
+   [:visibility-status-updates/delayed-visibility-status-update status-type]))
+
 (defn view
   []
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))
-        insets        (safe-area/get-insets)]
+  (let [profile-color         (:color (rf/sub [:onboarding-2/profile]))
+        {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
+        insets                (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
+     (when (nil? status-type)
+       (dispatch-visibility-status-update constants/visibility-status-automatic))
      [background/view true]
      [navigation-bar :enable-notifications]
      [page-title]

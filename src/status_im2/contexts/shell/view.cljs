@@ -91,7 +91,7 @@
        [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
 (defn shell
-  []
+  [customization-color]
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
@@ -106,18 +106,22 @@
      [jump-to-list switcher-cards shell-margin]
      [top-nav-blur-overlay top]
      [common.home/top-nav
-      {:type  :shell
-       :style {:margin-top top
-               :z-index    2}}]]))
+      {:type   :shell
+       :avatar {:customization-color customization-color}
+       :style  {:margin-top top
+                :z-index    2}}]]))
 
 (defn f-shell-stack
   []
   (let [shared-values       (animation/calculate-shared-values)
         {:keys [key-uid]}   (rf/sub [:multiaccount])
-        customization-color (rf/sub [:profile/customization-color key-uid])]
+        profile-color       (:color (rf/sub [:onboarding-2/profile]))
+        customization-color (if profile-color
+                              profile-color
+                              (rf/sub [:profile/customization-color key-uid]))]
     [rn/view
      {:style {:flex 1}}
-     [shell]
+     [shell customization-color]
      [bottom-tabs/bottom-tabs]
      [:f> home-stack/f-home-stack]
      [quo/floating-shell-button

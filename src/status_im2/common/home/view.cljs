@@ -50,14 +50,17 @@
 
 (defn- left-section
   [{:keys [avatar]}]
-  [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
-   [rn/view
-    {:accessibility-label :open-profile
-     :style               style/left-section}
-    [quo/user-avatar
-     (merge {:status-indicator? true
-             :size              :small}
-            avatar)]]])
+  (let [{:keys [public-key]} (rf/sub [:multiaccount])
+        online?              (rf/sub [:visibility-status-updates/online? public-key])]
+    [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
+     [rn/view
+      {:accessibility-label :open-profile
+       :style               style/left-section}
+      [quo/user-avatar
+       (merge {:status-indicator? true
+               :size              :small
+               :online?           online?}
+              avatar)]]]))
 
 (defn connectivity-sheet
   []

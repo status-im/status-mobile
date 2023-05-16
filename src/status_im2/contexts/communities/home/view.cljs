@@ -54,7 +54,10 @@
     (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
           {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
           {:keys [key-uid]}               (rf/sub [:multiaccount])
-          customization-color             (rf/sub [:profile/customization-color key-uid])
+          profile-color                   (:color (rf/sub [:onboarding-2/profile]))
+          customization-color             (if profile-color
+                                            profile-color
+                                            (rf/sub [:profile/customization-color key-uid]))
           selected-items                  (case selected-tab
                                             :joined  joined
                                             :pending pending
@@ -87,7 +90,7 @@
          {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
           :title               (i18n/label :t/discover)
           :description         (i18n/label :t/favorite-communities)
-          :banner              (resources/get-image :invite-friends)
+          :banner              (resources/get-image :discover)
           :accessibility-label :communities-home-discover-card}]
         ^{:key (str "tabs-" selected-tab)}
         [quo/tabs
