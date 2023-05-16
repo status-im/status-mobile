@@ -309,7 +309,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.username = 'first user'
 
         self.home = self.sign_in.create_user(username=self.username)
-        self.home.communities_tab.click_until_presence_of_element(self.home.plus_button)
+        self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
         self.community_name = self.home.get_random_chat_name()
         self.channel_name = 'general'
         self.community = self.home.create_community(name=self.community_name, description='test description')
