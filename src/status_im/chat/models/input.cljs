@@ -70,13 +70,12 @@
   [{:keys [db] :as cofx} text-input-ref {:keys [primary-name searched-text match public-key] :as user}]
   (let [chat-id (:current-chat-id db)
         text    (get-in db [:chat/inputs chat-id :input-text])
-        method  "wakuext_chatMentionNewInputTextWithMention"
-        params  [chat-id text primary-name]]
+        method  "wakuext_chatMentionSelectMention"
+        params  [chat-id text primary-name public-key]]
     {:json-rpc/call [{:method     method
                       :params     params
-                      :on-success #(rf/dispatch [:mention/on-new-input-text-with-mentions-success %
-                                                 primary-name text-input-ref match searched-text
-                                                 public-key])
+                      :on-success #(rf/dispatch [:mention/on-select-mention-success %
+                                                 primary-name match searched-text public-key])
                       :on-error   #(rf/dispatch [:mention/on-error
                                                  {:method method
                                                   :params params} %])}]}))
@@ -250,21 +249,21 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
         editing-message               (:editing-message metadata)
-        method                        "wakuext_chatMentionCheckMentions"
+        method                        "wakuext_chatMentionReplaceWithPublicKey"
         params                        [current-chat-id input-text]]
     {:json-rpc/call [{:method     method
                       :params     params
                       :on-error   #(rf/dispatch [:mention/on-error {:method method :params params} %])
-                      :on-success #(rf/dispatch [:mention/on-check-mentions-success
+                      :on-success #(rf/dispatch [:mention/on-replace-with-public-key-success
                                                  current-chat-id
                                                  editing-message
                                                  input-text
                                                  %])}]}))
 
-(rf/defn on-check-mentions-success
-  {:events [:mention/on-check-mentions-success]}
+(rf/defn on-replace-with-public-key-success
+  {:events [:mention/on-replace-with-public-key-success]}
   [{:keys [db] :as cofx} current-chat-id editing-message input-text new-text]
-  (log/debug "[mentions] on-check-mentions-success"
+  (log/debug "[mentions] on-replace-with-public-key-success"
              {:chat-id         current-chat-id
               :editing-message editing-message
               :input-text      input-text

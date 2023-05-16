@@ -4,7 +4,7 @@
 
 (defn default-options
   []
-  {:layout {:orientation :portrait}
+  {:layout {:orientation ["portrait"]}
    :topBar {:visible false}})
 
 ;; Note: Currently, the status bar style provided while setting the root has a high preference,
@@ -22,12 +22,20 @@
     {:statusBar {:style (or status-bar-theme :light)}}))
 
 (defn default-root
-  [& [status-bar-theme]]
+  [& [status-bar-theme background-color]]
   (merge (statusbar-and-navbar-root status-bar-theme)
          {:topBar {:visible false}
-          :layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
-                   :orientation              :portrait
-                   :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}}))
+          :layout {:componentBackgroundColor (or background-color
+                                                 (colors/theme-colors colors/white colors/neutral-100))
+                   :orientation              ["portrait"]
+                   :backgroundColor          (or background-color
+                                                 (colors/theme-colors colors/white
+                                                                      colors/neutral-100))}}))
+
+(def onboarding-layout
+  {:componentBackgroundColor colors/neutral-80-opa-80-blur
+   :orientation              ["portrait"]
+   :backgroundColor          colors/neutral-80-opa-80-blur})
 
 (defn navbar
   ([dark?]
@@ -67,7 +75,7 @@
   (merge
    {:modalPresentationStyle :overCurrentContext
     :layout                 {:componentBackgroundColor :transparent
-                             :orientation              :portrait
+                             :orientation              ["portrait"]
                              :backgroundColor          :transparent}}
    (if platform/android?
      {:statusBar {:backgroundColor :transparent
@@ -77,6 +85,7 @@
 
 (def sheet-options
   {:layout                 {:componentBackgroundColor :transparent
+                            :orientation              ["portrait"]
                             :backgroundColor          :transparent}
    :modalPresentationStyle :overCurrentContext})
 

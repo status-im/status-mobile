@@ -8,7 +8,7 @@
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [utils.number :as utils.number]
     [oops.core :as oops]
-    [utils.re-frame :as rf]))
+    [utils.debounce :as debounce]))
 
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -159,7 +159,7 @@
        (when @input-ref
          (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
        (reset! text-value input-text)
-       (rf/dispatch [:mention/on-change-text input-text])))
+       (debounce/debounce-and-dispatch [:mention/on-change-text input-text] 300)))
    [input-text]))
 
 (defn did-mount

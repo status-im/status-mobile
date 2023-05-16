@@ -173,6 +173,7 @@
            reached-max-duration? (atom false)
            touch-timestamp (atom nil)
            disabled? (atom false)
+           app-state-listener (atom nil)
            rec-options
            (merge
             audio/default-recorder-options
@@ -512,7 +513,13 @@
                          (on-init reset-recorder))
                        (when audio-file
                          (let [filename (last (string/split audio-file "/"))]
-                           (reload-player filename)))))
+                           (reload-player filename)))
+                       (reset! app-state-listener
+                         (.addEventListener rn/app-state
+                                            "change"
+                                            #(when (= % "background")
+                                               (reset! playing-audio? false))))
+                       #(.remove @app-state-listener)))
          [rn/view
           {:style          style/bar-container
            :pointer-events :box-none}

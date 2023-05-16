@@ -90,7 +90,8 @@
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]))
+    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -344,7 +345,10 @@
                             :component network-breakdown/preview-network-breakdown}
                            {:name      :network-amount
                             :options   {:topBar {:visible true}}
-                            :component network-amount/preview}]})
+                            :component network-amount/preview}]
+   :keycard               [{:name      :keycard-component
+                            :options   {:topBar {:visible true}}
+                            :component keycard/preview-keycard}]})
 
 (def screens (flatten (map val screens-categories)))
 

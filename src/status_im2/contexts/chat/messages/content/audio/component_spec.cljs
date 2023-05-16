@@ -20,7 +20,8 @@
 
 (h/describe "audio message"
   (h/before-each
-   #(setup-subs {:mediaserver/port 1000}))
+   #(setup-subs {:mediaserver/port 1000
+                 :app-state        "active"}))
 
   (h/test "renders correctly"
     (h/render [audio-message/audio-message message context])

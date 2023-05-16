@@ -75,9 +75,7 @@
                          (get roots/themes root-id)
                          root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))
-     (if root
-       (navigation/set-root root)
-       (println "root" root-id root)))))
+     (navigation/set-root root))))
 
 ;; NAVIGATE-TO
 (defn navigate
@@ -89,7 +87,6 @@
      {:component {:id      comp
                   :name    comp
                   :options (merge (options/statusbar-and-navbar)
-                                  {:layout {:orientation :portrait}}
                                   options
                                   (if (:topBar options)
                                     (options/merge-top-bar (options/topbar-options) options)
@@ -169,7 +166,7 @@
                  :id      comp
                  :options (merge (options/statusbar)
                                  {:layout  {:componentBackgroundColor :transparent
-                                            :orientation              :portrait}
+                                            :orientation              ["portrait"]}
                                   :overlay {:interceptTouchOutside true}}
                                  opts)}})))
 
@@ -180,7 +177,8 @@
                  (fn []
                    (show-overlay "toasts"
                                  {:overlay {:interceptTouchOutside false}
-                                  :layout  {:componentBackgroundColor :transparent}})))
+                                  :layout  {:componentBackgroundColor :transparent
+                                            :orientation              ["portrait"]}})))
 (re-frame/reg-fx :hide-toasts (fn [] (dissmiss-overlay "toasts")))
 
 ;; bottom sheet

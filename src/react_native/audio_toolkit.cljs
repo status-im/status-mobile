@@ -130,6 +130,11 @@
   (when (and player (.-canPlay ^js player))
     (.-currentTime ^js player)))
 
+(defn set-player-wake-lock
+  [player wake-lock?]
+  (when player
+    (set! (.-wakeLock player) wake-lock?)))
+
 (defn toggle-playpause-player
   [player on-play on-pause on-error]
   (when (and player (.-canPlay ^js player))

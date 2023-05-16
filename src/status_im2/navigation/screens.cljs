@@ -24,25 +24,28 @@
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
-    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]))
+    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
+    [status-im2.contexts.share.view :as share]))
 
 (defn screens
   []
   (concat
    (old-screens/screens)
 
-   [{:name      :intro
-     :component intro/view}
-
-    {:name      :activity-center
+   [{:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
+
+    {:name      :share-shell
+     :options   options/transparent-screen-options
+     :component share/view}
 
     {:name      :shell-stack
      :component shell/shell-stack}
@@ -95,50 +98,67 @@
      :component settings-setup-syncing/view}
 
     ;; Onboarding
+    {:name      :intro
+     :component intro/view}
+
     {:name      :profiles
+     :options   {:layout options/onboarding-layout}
      :component profiles/views}
 
     {:name      :new-to-status
+     :options   {:layout options/onboarding-layout}
      :component new-to-status/new-to-status}
 
     {:name      :create-profile
+     :options   {:layout options/onboarding-layout}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
-     :options   {:insets {:top false}}
+     :options   {:insets {:top false}
+                 :layout options/onboarding-layout}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
+     :options   {:layout options/onboarding-layout}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:popGesture         false
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component generating-keys/generating-keys}
 
     {:name      :enter-seed-phrase
+     :options   {:layout options/onboarding-layout}
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:popGesture         false
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers
      :component identifiers/view
-     :options   {:popGesture         false
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+    {:name      :scan-sync-code-page
+     :component scan-sync-code-page/view}
 
     {:name      :sign-in
+     :options   {:layout options/onboarding-layout}
      :component sign-in/view}
 
     {:name      :syncing-devices
+     :options   {:layout options/onboarding-layout}
      :component syncing-devices/syncing-devices}
 
     {:name      :welcome
+     :options   {:layout options/onboarding-layout}
      :component welcome/view}]
 
    (when config/quo-preview-enabled?

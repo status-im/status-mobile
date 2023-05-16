@@ -186,7 +186,6 @@ class ChatElementByText(Text):
         return BaseElement(self.driver, prefix=self.locator,
                            xpath="//*[@content-desc='message-sent']").is_element_displayed(wait_time)
 
-
     @property
     def uncollapse(self) -> bool:
         class Collapse(Button):
@@ -273,6 +272,15 @@ class ChatElementByText(Text):
                     return 0
 
         return EmojisNumber(self.driver, self.locator)
+
+    @property
+    def image_in_message(self):
+        try:
+            self.driver.info("Trying to access image inside message with text '%s'" % self.message_text)
+            ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
+            return Button(self.driver, xpath='%s//android.view.ViewGroup/android.widget.ImageView' % self.locator)
+        except NoSuchElementException:
+            self.driver.fail("No image is found in message!")
 
     @property
     def pinned_by_label(self):
@@ -728,11 +736,11 @@ class ChatView(BaseView):
         self.sticker_message = Button(self.driver, accessibility_id="sticker-message")
 
         # Images
-        self.show_images_button = Button(self.driver, accessibility_id="show-photo-icon")
+        self.show_images_button = Button(self.driver, accessibility_id="open-images-button")
         self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
-        self.first_image_from_gallery = Button(self.driver,
-                                               xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
+        self.first_image_from_gallery = Button(self.driver, accessibility_id="image-0")
+        self.images_confirm_selection_button = Button(self.driver, accessibility_id="confirm-selection")
         self.images_area_in_gallery = Button(self.driver,
                                              xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
         self.image_message_in_chat = Button(self.driver, accessibility_id="image-message")
