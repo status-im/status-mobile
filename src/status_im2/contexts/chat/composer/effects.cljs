@@ -86,10 +86,17 @@
   [{:keys [text-value maximized? focused?]}
    {:keys [container-opacity]}
    images?
+   link-previews?
    reply?
    audio]
   (when
-    (and (empty? @text-value) (not images?) (not reply?) (not @maximized?) (not @focused?) (not audio))
+    (and (empty? @text-value)
+         (not images?)
+         (not link-previews?)
+         (not reply?)
+         (not @maximized?)
+         (not @focused?)
+         (not audio))
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -99,7 +106,8 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} {:keys [chat-input images reply audio]}]
+  [props state animations {:keys [max-height] :as dimensions}
+   {:keys [chat-input images link-previews? reply audio]}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -110,7 +118,7 @@
      (images-effect props animations images)
      (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect state animations images reply audio)
+     (empty-effect state animations images link-previews? reply audio)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))

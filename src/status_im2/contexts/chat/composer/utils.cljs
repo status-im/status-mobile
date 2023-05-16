@@ -68,7 +68,7 @@
 (defn calc-extra-content-height
   [images? link-previews? reply? edit?]
   (let [height (if images? constants/images-container-height 0)
-        height (if link-previews? (+ height constants/links-container-height) 0)
+        height (if link-previews? (+ height constants/links-container-height) height)
         height (if reply? (+ height constants/reply-container-height) height)
         height (if edit? (+ height constants/edit-container-height) height)]
     height))
@@ -85,12 +85,12 @@
     max-height))
 
 (defn empty-input?
-  [text images reply? audio?]
-  (and (empty? text) (empty? images) (not reply?) (not audio?)))
-
-(defn android-elevation?
-  [lines images reply? edit?]
-  (or (> lines 1) (seq images) reply? edit?))
+  [text images link-previews? reply? audio?]
+  (and (empty? text)
+       (empty? images)
+       (not link-previews?)
+       (not reply?)
+       (not audio?)))
 
 (defn cancel-edit-message
   [{:keys [text-value]}]
@@ -191,7 +191,7 @@
      :input-content-height (:input-content-height chat-input)}))
 
 (defn init-animations
-  [{:keys [input-text images reply audio]}
+  [{:keys [input-text images link-previews? reply audio]}
    lines content-height max-height opacity background-y]
   (let [initial-height (if (> lines 1)
                          constants/multiline-minimized-height
@@ -201,6 +201,7 @@
                          (if (empty-input?
                               input-text
                               images
+                              link-previews?
                               reply
                               audio)
                            0.7
