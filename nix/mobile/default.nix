@@ -3,7 +3,10 @@
 let
   fastlane = callPackage ./fastlane { };
 
+  jsbundle = callPackage ./jsbundle { };
+
   android = callPackage ./android {
+    inherit jsbundle;
     status-go = status-go.mobile.android;
   };
 
@@ -26,5 +29,5 @@ in {
   };
 
   # TARGETS
-  inherit android ios fastlane;
+  inherit android ios fastlane jsbundle;
 }

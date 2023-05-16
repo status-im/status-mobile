@@ -8,9 +8,9 @@
 { secretsFile ? "" }:
 
 stdenv.mkDerivation {
-  name = "status-mobile-build-jsbundle-android";
+  name = "status-mobile-jsbundle";
   src =
-    let path = ./../../../..;
+    let path = ./../../..;
     # We use builtins.path so that we can name the resulting derivation,
     # otherwise the name would be taken from the checkout directory,
     # which is outside of our control inherit path;
@@ -25,7 +25,7 @@ stdenv.mkDerivation {
           ignoreVCS = false;
           include = [ 
             "VERSION" "BUILD_NUMBER" "scripts/version/.*"
-            "src/.*" "shadow-cljs.edn" "index.js"
+            "src/.*" "shadow-cljs.edn"
             # I want to avoid including the whole .git directory
             ".git/HEAD" ".git/objects" ".git/refs/heads/.*"
             # shadow-cljs expects these for deps resolution
@@ -77,6 +77,6 @@ stdenv.mkDerivation {
   '';
   installPhase = ''
     mkdir -p $out
-    cp -r index.js app $out/
+    cp -r result/* $out/
   '';
 }

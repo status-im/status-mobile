@@ -1,14 +1,10 @@
 { pkgs, deps, callPackage, mkShell
-, status-go, androidPkgs, androidShell }:
+, jsbundle, status-go, androidPkgs, androidShell }:
 
-let
-  # Import a jsbundle compiled out of clojure codebase
-  jsbundle = callPackage ./jsbundle { };
-
-  release = callPackage ./release.nix { inherit jsbundle status-go; };
-in {
-  # TARGETS
-  inherit release jsbundle;
+rec {
+  release = callPackage ./release.nix {
+    inherit jsbundle status-go;
+  };
 
   shell = mkShell {
     buildInputs = with pkgs; [

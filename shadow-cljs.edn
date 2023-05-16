@@ -37,7 +37,8 @@
  :builds
  {:mobile
   {:target :react-native
-   :output-dir "app"
+   ;; To match the folder created by Nix build of JSBundle.
+   :output-dir "result"
    :init-fn status-im2.core/init
    ;; When false, the Shadow-CLJS watcher won't automatically refresh
    ;; the target files (a.k.a hot reload). When false, you can manually

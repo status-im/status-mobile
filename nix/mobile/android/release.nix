@@ -46,7 +46,7 @@ in stdenv.mkDerivation rec {
       root = path;
       include = [
         "package.json" "yarn.lock" "metro.config.js" "babel.config.js"
-        "resources/.*" "translations/.*" "src/js/.*"
+        "resources/.*" "translations/.*" "src/js/.*" "index.js"
         "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" "status-go-version.json" "react-native.config.js"
       ];
@@ -94,8 +94,10 @@ in stdenv.mkDerivation rec {
     # Export all vars from .env file
     export $(cut -d= -f1 .env)
 
-    # Copy index.js and app/ input files
-    cp -ra --no-preserve=ownership ${builtJsBundle}/* ./
+    # Symlink React Native entrypoint.
+    cp -Lr ${builtJsBundle} ./result
+    pwd
+    find -L result
 
     # Copy android/ directory
     mkdir -p ./android/build

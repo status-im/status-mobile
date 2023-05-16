@@ -55,12 +55,12 @@ The [`nix/scripts/shell.sh`](./scripts/shell.sh) script is essentially a wrapper
 
 # Building
 
-We will use the `make jsbundle-android` target as an example of a derivation you can build using Nix:
+We will use the `make jsbundle` target as an example of a derivation you can build using Nix:
 
-1. `make jsbundle-android` is called by developer
-2. `make` calls `nix/scripts/build.sh targets.mobile.android.jsbundle`
-3. [`build.sh`](/nix/scripts/build.sh) calls `nix-build --attr targets.mobile.android.jsbundle` with extra arguments
-4. `nix-build` builds the derivation from [`nix/mobile/android/jsbundle/default.nix`](/nix/mobile/android/jsbundle/default.nix)
+1. `make jsbundle` is called by developer
+2. `make` calls `nix/scripts/build.sh targets.mobile.jsbundle`
+3. [`build.sh`](/nix/scripts/build.sh) calls `nix-build --attr targets.mobile.jsbundle` with extra arguments
+4. `nix-build` builds the derivation from [`nix/mobile/jsbundle/default.nix`](/nix/mobile/jsbundle/default.nix)
 
 The same can be done for other targets like `targets.mobile.android.release`.
 Except in that case extra arguments are required which is why the [`scripts/release-android.sh`](/scripts/release-android.sh) is used in the `make release-android` target.

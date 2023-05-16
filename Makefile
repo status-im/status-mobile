@@ -218,23 +218,18 @@ release-android: keystore build-android ##@build Build signed Android APK
 
 release-ios: export TARGET := ios
 release-ios: export BUILD_ENV ?= prod
-release-ios: watchman-clean ##@build Build release for iOS release
-	@git clean -dxf -f target/ios && \
-	$(MAKE) jsbundle-ios && \
-	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
+release-ios: watchman-clean ios-clean jsbundle ##@build Build release for iOS release
+	xcodebuild \
+		-scheme StatusIm \
+		-configuration Release \
+		-workspace ios/StatusIm.xcworkspace \
+		-destination 'generic/platform=iOS' \
+		-UseModernBuildSystem=N clean archive
 
-jsbundle-android: SHELL := /bin/sh
-jsbundle-android: export TARGET := android
-jsbundle-android: export BUILD_ENV ?= prod
-jsbundle-android: ##@jsbundle Compile JavaScript and Clojurescript into app directory
-	# Call nix-build to build the 'targets.mobile.android.jsbundle' attribute and copy the.js files to the project root
-	nix/scripts/build.sh targets.mobile.android.jsbundle && \
-	mv result/*.js ./
-
-jsbundle-ios: export TARGET := ios
-jsbundle-ios: export BUILD_ENV ?= prod
-jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
-	yarn shadow-cljs release mobile
+jsbundle: SHELL := /bin/sh
+jsbundle: export BUILD_ENV ?= prod
+jsbundle: ##@build Build JavaScript and Clojurescript bundle for iOS and Android
+	nix/scripts/build.sh targets.mobile.jsbundle
 
 #--------------
 # status-go lib
@@ -365,6 +360,7 @@ component-test: ##@test Run component tests once in NodeJS
 	yarn shadow-cljs compile component-test && \
 	jest --config=test/jest/jest.config.js
 
+#--------------
 # Other
 #--------------
 
@@ -372,6 +368,10 @@ geth-connect: export TARGET := android-sdk
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
+
+ios-clean: SHELL := /bin/sh
+ios-clean: ##@prepare Clean iOS build artifacts
+	git clean -dxf -f target/ios
 
 android-clean: export TARGET := gradle
 android-clean: ##@prepare Clean Gradle state
