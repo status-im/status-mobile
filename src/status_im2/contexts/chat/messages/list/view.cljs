@@ -96,10 +96,9 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
-(defn list-footer
+(defn f-list-footer
   [{:keys [chat insets scroll-y cover-bg-color]}]
-  (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat]} chat
+  (let [{:keys [chat-id chat-name emoji chat-type group-chat]} chat
         status-bar-height    (:top insets)
         display-name         (if (= chat-type constants/one-to-one-chat-type)
                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -111,56 +110,57 @@
         contact              (when-not group-chat
                                (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path           (when-not (empty? (:images contact))
-                               (rf/sub [:chats/photo-path chat-id]))]
-    [:f>
-     (fn []
-       (let [border-animation            (reanimated/interpolate scroll-y
-                                                                 [30 125]
-                                                                 [14 0]
-                                                                 header-extrapolation-option)
-             image-scale-animation       (reanimated/interpolate scroll-y
-                                                                 [50 125]
-                                                                 [1 0.5]
-                                                                 header-extrapolation-option)
-             image-top-margin-animation  (reanimated/interpolate scroll-y
-                                                                 [50 125]
-                                                                 [0 40]
-                                                                 header-extrapolation-option)
-             image-side-margin-animation (reanimated/interpolate scroll-y
-                                                                 [50 125]
-                                                                 [0 -20]
-                                                                 header-extrapolation-option)]
-         [:<>
-          [rn/view {:style (style/header-container insets)}
-           (when cover-bg-color
-             [rn/view {:style (style/header-cover cover-bg-color status-bar-height)}])
-           [reanimated/view {:style (style/header-bottom-part border-animation)}
-            [rn/view {:style style/header-avatar}
-             (when-not group-chat
-               [rn/view {:style {:align-items :flex-start}}
-                [reanimated/view
-                 {:style (style/header-image image-scale-animation
-                                             image-top-margin-animation
-                                             image-side-margin-animation)}
-                 [quo/user-avatar
-                  {:full-name       display-name
-                   :online?         online?
-                   :profile-picture photo-path
-                   :size            :big}]]])
-             [rn/view {:style style/name-container}
-              [quo/text
-               {:weight          :semi-bold
-                :size            :heading-1
-                :style           {:margin-top (if group-chat 54 12)}
-                :number-of-lines 1}
-               display-name
-               [contact-icon contact]]]
-             (when bio
-               [quo/text {:style style/bio}
-                bio])]]]
-          (when (or loading-messages? (not chat-id) (not all-loaded?))
-            [rn/view {:style (when platform/android? {:scaleY -1})}
-             [quo/skeleton @messages-view-height]])]))]))
+                               (rf/sub [:chats/photo-path chat-id]))
+        border-animation (reanimated/interpolate scroll-y
+                                                 [30 125]
+                                                 [14 0]
+                                                 header-extrapolation-option)
+        image-scale-animation (reanimated/interpolate scroll-y
+                                                      [50 125]
+                                                      [1 0.5]
+                                                      header-extrapolation-option)
+        image-top-margin-animation (reanimated/interpolate scroll-y
+                                                           [50 125]
+                                                           [0 40]
+                                                           header-extrapolation-option)
+        image-side-margin-animation (reanimated/interpolate scroll-y
+                                                            [50 125]
+                                                            [0 -20]
+                                                            header-extrapolation-option)]
+    [:<>
+     [rn/view {:style (style/header-container insets)}
+      (when cover-bg-color
+        [rn/view {:style (style/header-cover cover-bg-color status-bar-height)}])
+      [reanimated/view {:style (style/header-bottom-part border-animation)}
+       [rn/view {:style style/header-avatar}
+        (when-not group-chat
+          [rn/view {:style {:align-items :flex-start}}
+           [reanimated/view
+            {:style (style/header-image image-scale-animation
+                                        image-top-margin-animation
+                                        image-side-margin-animation)}
+            [quo/user-avatar
+             {:full-name       display-name
+              :online?         online?
+              :profile-picture photo-path
+              :size            :big}]]])
+        [rn/view {:style style/name-container}
+         [quo/text
+          {:weight          :semi-bold
+           :size            :heading-1
+           :style           {:margin-top (if group-chat 54 12)}
+           :number-of-lines 1}
+          display-name
+          [contact-icon contact]]]
+        (when bio
+          [quo/text {:style style/bio}
+           bio])]]]
+     (when (or loading-messages? (not chat-id) (not all-loaded?))
+       [rn/view {:style (when platform/android? {:scale-y -1})}
+        [quo/skeleton @messages-view-height]])]))
+
+(defn list-footer [props]
+  [:f> f-list-footer props])
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
@@ -170,7 +170,7 @@
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  [rn/view {:style (when platform/android? {:scaleY -1})}
+  [rn/view {:style (when platform/android? {:scale-y -1})}
    (if (= type :datemark)
      [quo/divider-date value]
      (if (= content-type constants/content-type-gap)

@@ -26,7 +26,7 @@
 
 (defn header-container
   [insets]
-  {:scaleY           (if platform/android? -1 0)
+  {:scale-y          (if platform/android? -1 0)
    :background-color (colors/theme-colors colors/white colors/neutral-95)
    :top              (if platform/ios?
                        (- 0 overscroll-cover-height)
@@ -72,7 +72,7 @@
 
 (def list-chat-group-header-style
   (when platform/android?
-    {:scaleY -1}))
+    {:scale-y -1}))
 
 (def name-container
   {:flex-direction :row

@@ -26,7 +26,6 @@
     :right          0
     :height         (- navigation-bar-height
                        (if platform/ios? 0 status-bar-height))
-    :width          "100%"
     :display        :flex
     :flex-direction :row
     :overflow       :hidden}))
@@ -42,7 +41,6 @@
    :left           0
    :right          0
    :padding-bottom 8
-   :width          "100%"
    :display        :flex
    :flex-direction :row
    :overflow       :hidden})
@@ -50,7 +48,7 @@
 (defn animated-header
   [y-animation opacity-animation]
   (reanimated/apply-animations-to-style
-   ;; here using `left` won't work on Android, so we are using `translateX`
+   ;; here using `top` won't work on Android, so we are using `translateY`
    {:transform [{:translateY y-animation}]
     :opacity   opacity-animation}
    {:flex 1}))
