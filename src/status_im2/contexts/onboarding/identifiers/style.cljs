@@ -10,10 +10,6 @@
    :left     0
    :right    0})
 
-(def card-style
-  {:margin-horizontal 20
-   :margin-bottom     :auto})
-
 (def button
   {:justify-self      :flex-end
    :margin-bottom     46
