@@ -27,6 +27,8 @@
        (map #(get preview-cache % {:url % :loading? true}))
        (remove :failed?)))
 
+(def new-request-id (comp str random-uuid))
+
 (rf/defn unfurl-parsed-urls
   {:events [:link-preview/unfurl-parsed-urls]}
   [{:keys [db]} urls]
@@ -42,7 +44,7 @@
             ;; unfurling event, as well as avoid needlessly updating the app db
             ;; if the user changes the URLs in the input text when there are
             ;; in-flight RPC requests.
-            request-id (str (random-uuid))]
+            request-id (new-request-id)]
         (merge {:db (-> db
                         (assoc-in [:chat/link-previews :unfurled] previews)
                         (assoc-in [:chat/link-previews :request-id] request-id)
