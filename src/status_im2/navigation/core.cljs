@@ -166,7 +166,7 @@
                  :id      comp
                  :options (merge (options/statusbar)
                                  {:layout  {:componentBackgroundColor :transparent
-                                            :orientation ["portrait"]}
+                                            :orientation              ["portrait"]}
                                   :overlay {:interceptTouchOutside true}}
                                  opts)}})))
 
@@ -178,7 +178,7 @@
                    (show-overlay "toasts"
                                  {:overlay {:interceptTouchOutside false}
                                   :layout  {:componentBackgroundColor :transparent
-                                            :orientation ["portrait"]}})))
+                                            :orientation              ["portrait"]}})))
 (re-frame/reg-fx :hide-toasts (fn [] (dissmiss-overlay "toasts")))
 
 ;; bottom sheet
