@@ -98,31 +98,32 @@
 
 (defn f-list-footer
   [{:keys [chat insets scroll-y cover-bg-color]}]
-  (let [{:keys [chat-id chat-name emoji chat-type group-chat]} chat
-        status-bar-height    (:top insets)
-        display-name         (if (= chat-type constants/one-to-one-chat-type)
-                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                               (str emoji " " chat-name))
-        {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
-        loading-messages?    (rf/sub [:chats/loading-messages? chat-id])
-        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
-        online?              (rf/sub [:visibility-status-updates/online? chat-id])
-        contact              (when-not group-chat
-                               (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (when-not (empty? (:images contact))
-                               (rf/sub [:chats/photo-path chat-id]))
-        border-animation (reanimated/interpolate scroll-y
-                                                 [30 125]
-                                                 [14 0]
-                                                 header-extrapolation-option)
-        image-scale-animation (reanimated/interpolate scroll-y
-                                                      [50 125]
-                                                      [1 0.5]
-                                                      header-extrapolation-option)
-        image-top-margin-animation (reanimated/interpolate scroll-y
-                                                           [50 125]
-                                                           [0 40]
-                                                           header-extrapolation-option)
+  (let [{:keys [chat-id chat-name emoji chat-type
+                group-chat]}        chat
+        status-bar-height           (:top insets)
+        display-name                (if (= chat-type constants/one-to-one-chat-type)
+                                      (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                                      (str emoji " " chat-name))
+        {:keys [bio]}               (rf/sub [:contacts/contact-by-identity chat-id])
+        loading-messages?           (rf/sub [:chats/loading-messages? chat-id])
+        all-loaded?                 (rf/sub [:chats/all-loaded? chat-id])
+        online?                     (rf/sub [:visibility-status-updates/online? chat-id])
+        contact                     (when-not group-chat
+                                      (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path                  (when-not (empty? (:images contact))
+                                      (rf/sub [:chats/photo-path chat-id]))
+        border-animation            (reanimated/interpolate scroll-y
+                                                            [30 125]
+                                                            [14 0]
+                                                            header-extrapolation-option)
+        image-scale-animation       (reanimated/interpolate scroll-y
+                                                            [50 125]
+                                                            [1 0.5]
+                                                            header-extrapolation-option)
+        image-top-margin-animation  (reanimated/interpolate scroll-y
+                                                            [50 125]
+                                                            [0 40]
+                                                            header-extrapolation-option)
         image-side-margin-animation (reanimated/interpolate scroll-y
                                                             [50 125]
                                                             [0 -20]
@@ -159,7 +160,8 @@
        [rn/view {:style (when platform/android? {:scale-y -1})}
         [quo/skeleton @messages-view-height]])]))
 
-(defn list-footer [props]
+(defn list-footer
+  [props]
   [:f> f-list-footer props])
 
 (defn list-group-chat-header
@@ -265,28 +267,28 @@
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [window-height (:height (rn/get-window))
-        insets        (safe-area/get-insets)
+  (let [window-height             (:height (rn/get-window))
+        insets                    (safe-area/get-insets)
         ;; view height calculation is different because
         ;; window height is different on iOS and Android:
-        view-height   (if platform/ios?
-                        window-height
-                        (+ window-height (:top insets)))
-        initial-y     (if platform/ios? (- (:top insets)) 0)
-        scroll-y (reanimated/use-shared-value initial-y)
+        view-height               (if platform/ios?
+                                    window-height
+                                    (+ window-height (:top insets)))
+        initial-y                 (if platform/ios? (- (:top insets)) 0)
+        scroll-y                  (reanimated/use-shared-value initial-y)
         {:keys [keyboard-height]} (hooks/use-keyboard)
         {keyboard-shown? :shown?} (use-keyboard-visibility)]
     (rn/use-effect
-      (fn []
-        (when keyboard-shown?
-          (reanimated/set-shared-value scroll-y
-                                       (+ (reanimated/get-shared-value scroll-y)
-                                          keyboard-height))))
-      [keyboard-shown? keyboard-height])
+     (fn []
+       (when keyboard-shown?
+         (reanimated/set-shared-value scroll-y
+                                      (+ (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))))
+     [keyboard-shown? keyboard-height])
     [rn/keyboard-avoiding-view
      {:style (style/keyboard-avoiding-container
-               view-height
-               (if (and keyboard-shown? platform/android?) keyboard-height 0))}
+              view-height
+              (if (and keyboard-shown? platform/android?) keyboard-height 0))}
 
      (when header-comp
        [header-comp {:scroll-y scroll-y}])

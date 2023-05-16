@@ -1,9 +1,7 @@
 (ns status-im2.contexts.chat.messages.view
-  (:require [quo2.core :as quo]
-            [re-frame.db]
+  (:require [re-frame.db]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
@@ -11,7 +9,6 @@
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
             [status-im2.navigation.state :as navigation.state]
-            [utils.debounce :as debounce]
             [utils.re-frame :as rf]))
 
 (defn navigate-back-handler
