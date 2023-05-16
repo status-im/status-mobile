@@ -5,7 +5,7 @@
             [react-native.core :as rn]
             [utils.re-frame :as rf]
             [status-im2.contexts.onboarding.syncing.results.style :as style]
-            [status-im2.contexts.onboarding.common.syncing.view :as device]
+            [status-im2.common.syncing.view :as device]
             [status-im2.contexts.onboarding.common.background.view :as background]))
 
 (defn page-title
@@ -31,7 +31,7 @@
 
 (defn devices-list
   []
-  (let [installations (rf/sub [:pairing/installations])]
+  (let [installations (rf/sub [:pairing/enabled-installations])]
     [rn/view {:style style/device-list}
      [rn/flat-list
       {:data                            (rest installations)

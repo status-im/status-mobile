@@ -12,6 +12,12 @@
         (pairing/sort-installations installation-id))))
 
 (re-frame/reg-sub
+ :pairing/enabled-installations
+ :<- [:pairing/installations]
+ (fn [installations]
+   (filter :enabled? installations)))
+
+(re-frame/reg-sub
  :pairing/installation-id
  :<- [:multiaccount]
  (fn [multiaccount] (:installation-id multiaccount)))

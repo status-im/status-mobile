@@ -39,16 +39,16 @@
 
 (defn view
   []
-  (let [local-pairing-status (rf/sub [:pairing/pairing-in-progress])
-        profile-color        (:color (rf/sub [:onboarding-2/profile]))]
+  (let [pairing-status (rf/sub [:pairing/pairing-in-progress])
+        profile-color  (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style style/page-container}
      [background/view true]
      [quo/page-nav]
-     [page-title (pairing-progress local-pairing-status)]
-     (if (pairing-progress local-pairing-status)
+     [page-title (pairing-progress pairing-status)]
+     (if (pairing-progress pairing-status)
        [rn/view {:style style/page-illustration}
         [quo/text "[Success here]"]]
        [rn/view {:style style/page-illustration}
         [quo/text "[Error here]"]])
-     (when-not (pairing-progress local-pairing-status)
+     (when-not (pairing-progress pairing-status)
        [try-again-button profile-color])]))

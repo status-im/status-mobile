@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.common.syncing.style
+(ns status-im2.common.syncing.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def device-container

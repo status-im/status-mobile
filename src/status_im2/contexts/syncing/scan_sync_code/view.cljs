@@ -181,8 +181,7 @@
         :blur-amount      10
         :blur-type        :transparent
         :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]
-     ]]))
+        :background-color colors/neutral-80-opa-80}]]]))
 
 (defn f-view
   [{:keys [title show-bottom-view? background]}]
@@ -231,8 +230,7 @@
             2 [enter-sync-code-tab]
             nil)
           [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets])
-         ]]))))
+          (when show-bottom-view? [bottom-view insets])]]))))
 
 (defn view
   [props]

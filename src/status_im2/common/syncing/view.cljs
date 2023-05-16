@@ -1,11 +1,11 @@
-(ns status-im2.contexts.onboarding.common.syncing.view
+(ns status-im2.common.syncing.view
   [:require
    [quo2.core :as quo]
    [utils.i18n :as i18n]
    [quo2.foundations.colors :as colors]
    [react-native.core :as rn]
    [status-im2.common.not-implemented :as not-implemented]
-   [status-im2.contexts.onboarding.common.syncing.style :as style]])
+   [status-im2.common.syncing.style :as style]])
 
 ;; TODO replace with section list component
 ;; https://github.com/status-im/status-mobile/issues/15665
