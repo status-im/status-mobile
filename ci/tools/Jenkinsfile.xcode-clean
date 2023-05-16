@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.7.4'
+library 'status-jenkins-lib@v1.7.5'
 
 pipeline {
   agent {
