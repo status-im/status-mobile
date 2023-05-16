@@ -15,6 +15,7 @@
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
    :qr-code                       (js/require "../resources/images/ui2/qr-code.png")
+   :identicon-ring                (js/require "../resources/images/ui2/identicon-ring.png")
   })
 
 (def mock-images

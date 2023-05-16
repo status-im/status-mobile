@@ -5,6 +5,7 @@
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
             [status-im2.contexts.onboarding.identifiers.style :as style]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
@@ -42,15 +43,14 @@
         :progress    progress
         :header-text header-text}]
       [rn/view {:style style/content-container}
-       [quo/profile-card
+       [profile-card/profile-card
         {:profile-picture     photo-path
          :name                display-name
          :hash                compressed-key
          :customization-color color
          :emoji-hash          emoji-string
-         :show-emoji-hash?    true
-         :show-user-hash?     true
-         :card-style          style/card-style}]
+         :card-style          style/card-style
+         :progress            progress}]
        [quo/button
         {:accessibility-label       :skip-identifiers
          :on-press                  #(rf/dispatch [:navigate-to :enable-notifications])
