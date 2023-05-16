@@ -8,4 +8,5 @@
 (def preview-list
   {:padding-top       preview-list-padding-top
    :padding-bottom    preview-list-padding-bottom
-   :margin-horizontal (- padding-horizontal)})
+   :margin-horizontal (- padding-horizontal)
+   :z-index           9999})
