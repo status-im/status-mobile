@@ -9,4 +9,6 @@
   {:padding-top       preview-list-padding-top
    :padding-bottom    preview-list-padding-bottom
    :margin-horizontal (- padding-horizontal)
+   ;; Keep a high index, otherwise the parent gesture detector used by the
+   ;; composer grabs the initiating gesture event.
    :z-index           9999})
