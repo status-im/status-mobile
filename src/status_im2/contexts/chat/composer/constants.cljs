@@ -9,7 +9,9 @@
 
 (def ^:const actions-container-height 56)
 
-(def ^:const composer-default-height (+ bar-container-height input-height actions-container-height))
+(def ^:const bottom-padding (if platform/android? 15 0))
+
+(def ^:const composer-default-height (+ bar-container-height input-height actions-container-height bottom-padding))
 
 (def ^:const line-height (:line-height typography/paragraph-1))
 

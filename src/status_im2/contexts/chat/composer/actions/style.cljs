@@ -31,4 +31,4 @@
    :left             -20
    :right            -20
    :bottom           0
-   :height           constants/composer-default-height})
+   :height           (- constants/composer-default-height constants/bottom-padding)})

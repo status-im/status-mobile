@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
@@ -105,7 +106,11 @@
            :accessibility-label      :chat-message-input}]]
         [gradients/view props state animations show-bottom-gradient?]]
        [images/images-list]
-       [actions/view props state animations window-height insets subs]]]]))
+       [actions/view props state animations window-height insets subs]
+       (when (and platform/android? (not @(:focused? state)))
+         [rn/view {:style {:height constants/bottom-padding
+                           :background-color :transparent}}])
+       ]]]))
 
 (defn composer
   [insets]

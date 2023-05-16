@@ -118,6 +118,7 @@
         neg-y   (if @maximized? -50 0)]
     (- (+ constants/bar-container-height
           constants/actions-container-height
+          constants/bottom-padding
           (:bottom insets)
           padding
           extra-height
