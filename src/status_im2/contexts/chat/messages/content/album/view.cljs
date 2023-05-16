@@ -34,7 +34,9 @@
       [:<>
        [rn/view {:style {:margin-bottom 10}} [text/text-content first-image context]]
        [rn/view
-        {:style (style/album-container portrait?)}
+        {:style               (style/album-container portrait?)
+         :accessible          true
+         :accessibility-label :image-container}
         (map-indexed
          (fn [index item]
            (let [images-size-key (if (< images-count constants/max-album-photos)
