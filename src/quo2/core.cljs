@@ -38,6 +38,7 @@
     quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
+    quo2.components.keycard.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
     quo2.components.links.link-preview.view
@@ -126,6 +127,7 @@
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
+(def keycard quo2.components.keycard.view/keycard)
 
 ;;;; COLORS
 (def color-picker quo2.components.colors.color-picker.view/view)

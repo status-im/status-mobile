@@ -992,7 +992,9 @@
     :your-data-belongs-to-you
     :your-data-belongs-to-you-description
     :your-recovery-phrase
-    :your-recovery-phrase-description})
+    :your-recovery-phrase-description
+    :empty-keycard
+    :user-keycard})
 
 ;; NOTE: the rest checkpoints are based on the previous one, defined
 ;;       like this:
