@@ -263,7 +263,7 @@
          (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
-(defn messages-list
+(defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [window-height (:height (rn/get-window))
         insets        (safe-area/get-insets)
@@ -272,34 +272,36 @@
         view-height   (if platform/ios?
                         window-height
                         (+ window-height (:top insets)))
-        initial-y     (if platform/ios? (- (:top insets)) 0)]
-    [:f>
-     (fn []
-       (let [scroll-y                  (reanimated/use-shared-value initial-y)
-             {:keys [keyboard-height]} (hooks/use-keyboard)
-             {keyboard-shown? :shown?} (use-keyboard-visibility)]
-         (rn/use-effect
-          (fn []
-            (when keyboard-shown?
-              (reanimated/set-shared-value scroll-y
-                                           (+ (reanimated/get-shared-value scroll-y)
-                                              keyboard-height))))
-          [keyboard-shown? keyboard-height])
-         [rn/keyboard-avoiding-view
-          {:style (style/keyboard-avoiding-container
-                   view-height
-                   (if (and keyboard-shown? platform/android?) keyboard-height 0))}
+        initial-y     (if platform/ios? (- (:top insets)) 0)
+        scroll-y (reanimated/use-shared-value initial-y)
+        {:keys [keyboard-height]} (hooks/use-keyboard)
+        {keyboard-shown? :shown?} (use-keyboard-visibility)]
+    (rn/use-effect
+      (fn []
+        (when keyboard-shown?
+          (reanimated/set-shared-value scroll-y
+                                       (+ (reanimated/get-shared-value scroll-y)
+                                          keyboard-height))))
+      [keyboard-shown? keyboard-height])
+    [rn/keyboard-avoiding-view
+     {:style (style/keyboard-avoiding-container
+               view-height
+               (if (and keyboard-shown? platform/android?) keyboard-height 0))}
 
-          (when header-comp
-            [header-comp {:scroll-y scroll-y}])
+     (when header-comp
+       [header-comp {:scroll-y scroll-y}])
 
-          [messages-list-content
-           {:chat            chat
-            :insets          insets
-            :initial-y       initial-y
-            :scroll-y        scroll-y
-            :cover-bg-color  cover-bg-color
-            :keyboard-shown? keyboard-shown?}]
+     [messages-list-content
+      {:chat            chat
+       :insets          insets
+       :initial-y       initial-y
+       :scroll-y        scroll-y
+       :cover-bg-color  cover-bg-color
+       :keyboard-shown? keyboard-shown?}]
 
-          (when footer-comp
-            (footer-comp))]))]))
+     (when footer-comp
+       (footer-comp))]))
+
+(defn messages-list
+  [props]
+  [:f> f-messages-list props])
