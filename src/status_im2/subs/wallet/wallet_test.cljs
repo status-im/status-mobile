@@ -32,12 +32,8 @@
                :max-block    10}}})
 
 (def prices
-  {:ETH {:USD {:from  "ETH"
-               :to    "USD"
-               :price 1282.23}}
-   :SNT {:USD {:from  "SNT"
-               :to    "USD"
-               :price 0.0232}}})
+  {:ETH {:USD 1282.23}
+   :SNT {:USD 0.0232}})
 
 (def tokens
   {"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
@@ -76,9 +72,9 @@
           {:ETH (money/bignumber 1000000000000000000)
            :SNT (money/bignumber 100000000000000000000)
            :AST (money/bignumber 10000)}
-          {:ETH {:USD {:from "ETH" :to "USD" :price 677.91 :last-day 658.688}}
-           :SNT {:USD {:from "SNT" :to "USD" :price 0.1562 :last-day 0.15}}
-           :AST {:USD {:from "AST" :to "USD" :price 4 :last-day 3}}}
+          {:ETH {:USD 677.91}
+           :SNT {:USD 0.1562}
+           :AST {:USD 4}}
           :USD
           {:ETH 18
            :SNT 18

@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.accounts.styles
-  (:require [quo.animated :as animated]
+  (:require [clojure.string :as string]
+            [quo.animated :as animated]
             [quo.design-system.colors :as colors]))
 
 (def dot-size 6)
@@ -68,7 +69,9 @@
 (defn card
   [color card-width]
   (merge (card-common card-width)
-         {:background-color   color
+         {:background-color   (if (string/blank? color)
+                                colors/blue
+                                color)
           :justify-content    :space-between
           :padding-horizontal 12
           :padding-top        12

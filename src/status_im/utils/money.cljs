@@ -199,7 +199,7 @@
   (-> amount-str
       (js/parseFloat)
       bignumber
-      (crypto->fiat (get-in prices [from to :price] ^js (bignumber 0)))
+      (crypto->fiat (get-in prices [from to] ^js (bignumber 0)))
       (with-precision 2)
       str))
 
