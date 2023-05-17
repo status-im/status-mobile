@@ -52,8 +52,10 @@
    :flex-wrap :wrap})
 
 (def plain-text
-  {:flex  1
-   :color (colors/alpha colors/white 0.7)})
+  {:font-size   13
+   :line-height 18
+   :font-weight :normal
+   :color       (colors/alpha colors/white 0.7)})
 
 (def highlighted-text
   {:flex  1

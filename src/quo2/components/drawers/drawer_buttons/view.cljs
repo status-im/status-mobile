@@ -80,5 +80,5 @@
            top-card) child-1]
    [card
     (merge {:style style/bottom-card
-            :gap   20}
+            :gap   16}
            bottom-card) child-2]])

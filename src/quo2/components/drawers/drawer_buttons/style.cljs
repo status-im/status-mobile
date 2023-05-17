@@ -12,6 +12,7 @@
    :padding-horizontal      20
    :border-top-left-radius  20
    :border-top-right-radius 20
+   :backdrop-filter         "blur(20px)"
    :background-color        (if platform/ios?
                               colors/neutral-80-opa-80-blur
                               colors/neutral-80)})
@@ -26,6 +27,7 @@
    :padding-horizontal      20
    :border-top-left-radius  20
    :border-top-right-radius 20
+   :backdrop-filter         "blur(20px)"
    :background-color        colors/white-opa-5})
 
 (def bottom-container
@@ -33,11 +35,11 @@
    :justify-content :space-between})
 
 (def bottom-icon
-  {:border-radius   40
+  {:border-radius   32
    :border-width    1
    :margin-left     24
-   :height          28
-   :width           28
+   :height          32
+   :width           32
    :justify-content :center
    :align-items     :center
    :border-color    colors/white-opa-5})
