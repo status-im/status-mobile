@@ -1,17 +1,16 @@
 (ns status-im2.contexts.onboarding.events
   (:require
-    [utils.re-frame :as rf]
-    [taoensso.timbre :as log]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.ethereum.core :as ethereum]
     [status-im.utils.types :as types]
     [status-im2.config :as config]
-    [clojure.string :as string]
-    [utils.i18n :as i18n]
-    [utils.security.core :as security]
-    [native-module.core :as native-module]
-    [status-im.ethereum.core :as ethereum]
     [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.profiles.view :as profiles.view]))
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :multiaccount/create-account-and-login
@@ -140,12 +139,10 @@
      {:title               (i18n/label :t/multiaccount-exists-title)
       :content             (i18n/label :t/multiaccount-exists-content)
       :confirm-button-text (i18n/label :t/unlock)
-      :on-accept           #(do
-                              (re-frame/dispatch [:pop-to-root :profiles])
-                              ;; FIXME(rasom): obviously not cool
-                              (reset! profiles.view/show-profiles? false)
-                              (re-frame/dispatch
-                               [:multiaccounts.login.ui/multiaccount-selected key-uid]))
+      :on-accept           (fn []
+                             (re-frame/dispatch [:pop-to-root :profiles])
+                             (re-frame/dispatch
+                              [:multiaccounts.login.ui/multiaccount-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
      :dispatch [:navigate-to :create-profile]}))
