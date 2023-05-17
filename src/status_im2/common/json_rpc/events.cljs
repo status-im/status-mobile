@@ -1,12 +1,13 @@
 (ns status-im2.common.json-rpc.events
   (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [re-frame.core :as re-frame]
             [react-native.background-timer :as background-timer]
-            [native-module.core :as native-module]
             [taoensso.timbre :as log]
+            [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
-(defn on-error-retry
+(defn- on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]
   (if (pos? number-of-retries)
     (fn [error]
@@ -24,6 +25,31 @@
     on-error))
 
 (defn call
+  "Call private RPC endpoint.
+
+  method: string - The name of an endpoint function in status-go, with the first
+  character lowercased and prefixed by wakuext_. For example, the BackupData
+  function should be represented as the string wakuext_backupData.
+
+  params: sequence - A positional sequence of zero or more arguments.
+
+  on-success/on-error: function/vector (optional) - When a function, it will be
+  called with the transformed response as the sole argument. When a vector, it
+  is expected to be a valid re-frame event vector, and the event will be
+  dispatched with the transformed response conj'ed at the end.
+
+  js-response: boolean - When non-nil, the successful response will not be
+  recursively converted to Clojure data structures. Default: nil.
+
+  number-of-retries: integer - The maximum number of retries in case of failure.
+  Default: nil.
+
+  delay: integer - The number of milliseconds to wait between retries. Default:
+  nil.
+
+  Note that on-error is optional, but if not provided, a default implementation
+  will be used.
+  "
   [{:keys [method params on-success on-error js-response] :as arg}]
   (let [params   (or params [])
         on-error (or on-error
@@ -34,15 +60,25 @@
                             :id      1
                             :method  method
                             :params  params})
-     (fn [response]
-       (if (string/blank? response)
-         (on-error {:message "Blank response"})
-         (let [response-js (transforms/json->js response)]
-           (if (.-error response-js)
-             (on-error (transforms/js->clj (.-error response-js)))
-             (on-success (if js-response
-                           (.-result response-js)
-                           (transforms/js->clj (.-result response-js)))))))))))
+     (fn [raw-response]
+       (if (string/blank? raw-response)
+         (let [error {:message "Blank response"}]
+           (if (vector? on-error)
+             (rf/dispatch (conj on-error error))
+             (on-error error)))
+         (let [^js response-js (transforms/json->js raw-response)]
+           (if-let [error (.-error response-js)]
+             (let [error (transforms/js->clj error)]
+               (if (vector? on-error)
+                 (rf/dispatch (conj on-error error))
+                 (on-error error)))
+             (when on-success
+               (let [result (if js-response
+                              (.-result response-js)
+                              (transforms/js->clj (.-result response-js)))]
+                 (if (vector? on-success)
+                   (rf/dispatch (conj on-success result))
+                   (on-success result)))))))))))
 
 (re-frame/reg-fx
  :json-rpc/call
