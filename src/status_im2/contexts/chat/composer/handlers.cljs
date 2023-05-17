@@ -36,29 +36,30 @@
 
 (defn blur
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
-           maximized?]}
+           maximized? recording?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
    {:keys [content-height max-height window-height]}
    {:keys [images reply]}]
-  (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
-        min-height    (utils/get-min-height lines)
-        reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
-    (reset! focused? false)
-    (rf/dispatch [:chat.ui/set-input-focused false])
-    (reanimated/set-shared-value last-height reopen-height)
-    (reanimated/animate height min-height)
-    (reanimated/set-shared-value saved-height min-height)
-    (reanimated/animate opacity 0)
-    (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
-    (when (utils/empty-input? @text-value images reply nil)
-      (reanimated/animate container-opacity constants/empty-opacity))
-    (reanimated/animate gradient-opacity 0)
-    (reset! lock-selection? true)
-    (reset! saved-cursor-position @cursor-position)
-    (reset! gradient-z-index (if (= (reanimated/get-shared-value gradient-opacity) 1) -1 0))
-    (when (not= reopen-height max-height)
-      (reset! maximized? false)
-      (rf/dispatch [:chat.ui/set-input-maximized false]))))
+  (when-not @recording?
+    (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
+          min-height    (utils/get-min-height lines)
+          reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
+      (reset! focused? false)
+      (rf/dispatch [:chat.ui/set-input-focused false])
+      (reanimated/set-shared-value last-height reopen-height)
+      (reanimated/animate height min-height)
+      (reanimated/set-shared-value saved-height min-height)
+      (reanimated/animate opacity 0)
+      (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
+      (when (utils/empty-input? @text-value images reply nil)
+        (reanimated/animate container-opacity constants/empty-opacity))
+      (reanimated/animate gradient-opacity 0)
+      (reset! lock-selection? true)
+      (reset! saved-cursor-position @cursor-position)
+      (reset! gradient-z-index (if (= (reanimated/get-shared-value gradient-opacity) 1) -1 0))
+      (when (not= reopen-height max-height)
+        (reset! maximized? false)
+        (rf/dispatch [:chat.ui/set-input-maximized false])))))
 
 (defn content-size-change
   [event
