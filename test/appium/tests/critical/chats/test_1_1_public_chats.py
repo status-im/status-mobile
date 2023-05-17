@@ -1065,7 +1065,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702813)
-    @marks.xfail(reason="blocked by 15859")
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 

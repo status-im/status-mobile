@@ -743,7 +743,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702786)
-    @marks.xfail(reason="blocked by 15859")
     def test_community_mentions_push_notification(self):
         self.home_1.click_system_back_button_until_element_is_shown()
         if not self.channel_2.chat_message_input.is_element_displayed():
