@@ -188,6 +188,7 @@
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
               (clean-input current-chat-id)
+              (link-preview/reset-unfurled)
               (mentions/clear-mentions))))
 
 (rf/defn send-messages
@@ -245,6 +246,7 @@
                      :on-success  (fn [result]
                                     (re-frame/dispatch [:sanitize-messages-and-process-response
                                                         result]))}]}
+   (link-preview/reset-unfurled)
    (cancel-message-edit)))
 
 (rf/defn send-current-message
