@@ -28,8 +28,9 @@
   (h/describe "Error text"
     (h/test "Marked when words doesn't satisfy a predicate"
       (h/render [recovery-phrase/recovery-phrase-input
-                 {:mark-errors? true
-                  :error-pred   #(>= (count %) 5)}
+                 {:mark-errors?             true
+                  :error-pred-current-word  #(>= (count %) 5)
+                  :error-pred-written-words #(>= (count %) 5)}
                  "Text with some error words that don't satisfy the predicate"])
       (let [children-text-nodes            (-> (h/get-by-label-text :recovery-phrase-input)
                                                (oops/oget "props" "children" "props" "children")
