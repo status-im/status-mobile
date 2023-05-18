@@ -26,7 +26,7 @@
     4))
 
 (defn get-account-image-uri
-  [port public-key image-name key-uid theme]
+  [{:keys [port public-key image-name key-uid theme ring?]}]
   (str image-server-uri-prefix
        port
        account-images-action
@@ -40,7 +40,8 @@
        (current-theme-index theme)
        "&clock="
        (timestamp)
-       "&addRing=1"))
+       "&addRing="
+       (if ring? 1 0)))
 
 (defn get-contact-image-uri
   [port public-key image-name clock theme]

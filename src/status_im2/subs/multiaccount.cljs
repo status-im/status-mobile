@@ -1,13 +1,13 @@
 (ns status-im2.subs.multiaccount
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
+            [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [utils.image-server :as image-server]
-            [utils.security.core :as security]
-            [quo2.theme :as theme]))
+            [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :multiaccount/public-key
@@ -214,11 +214,12 @@
         images     (reduce (fn [acc current]
                              (let [key-uid    (:keyUid current)
                                    image-name (:type current)
-                                   uri        (image-server/get-account-image-uri port
-                                                                                  public-key
-                                                                                  image-name
-                                                                                  key-uid
-                                                                                  theme)]
+                                   uri        (image-server/get-account-image-uri {:port       port
+                                                                                   :public-key public-key
+                                                                                   :image-name image-name
+                                                                                   :key-uid    key-uid
+                                                                                   :theme      theme
+                                                                                   :ring?      true})]
                                (conj acc (assoc current :uri uri))))
                            []
                            images)]
