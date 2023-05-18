@@ -140,8 +140,8 @@
       [quo/button
        (merge button-common-props
               {:accessibility-label :open-activity-center-button
-               :on-press            #(rf/dispatch [:activity-center/open])
-               ;:on-press            open-ac
+               ;:on-press            #(rf/dispatch [:activity-center/open])
+               :on-press            open-ac
                })
        :i/activity-center]]]))
 
