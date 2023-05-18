@@ -443,7 +443,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702838)
-    @marks.xfail(reason="blocked by 14797")
+    # @marks.xfail(reason="blocked by 14797")
     def test_community_message_send_check_timestamps_sender_username(self):
         message = self.text_message
         sent_time_variants = self.channel_1.convert_device_time_to_chat_timestamp()
