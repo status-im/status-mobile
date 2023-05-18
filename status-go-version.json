@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "fix/mobile-issue-15899",
-    "commit-sha1": "4938ab2c74e69737d274cf8a419afd3e0c35b5b2",
-    "src-sha256": "0msl4q9w4bd7fw8xpif734z0hq9ljf793jwl60d2x5k16spimpfz"
+    "version": "v0.151.11",
+    "commit-sha1": "c7aebfeed36754e03d002cda03ff3339d3d1d2f7",
+    "src-sha256": "162v2r5af8m9ia1pd4wxip9a472cg65z8k25rrip3dc31pb5gw8d"
 }
