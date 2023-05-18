@@ -112,12 +112,9 @@
   (when-let [notification (get-notification db notification-id)]
     {:json-rpc/call [{:method     "wakuext_markActivityCenterNotificationsRead"
                       :params     [[notification-id]]
-                      :on-success #(rf/dispatch [:activity-center.notifications/mark-as-read-success
-                                                 notification])
-                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                                 notification-id
-                                                 :notification/mark-as-read
-                                                 %])}]}))
+                      :on-success [:activity-center.notifications/mark-as-read-success notification]
+                      :on-error   [:activity-center/process-notification-failure notification-id
+                                   :notification/mark-as-read]}]}))
 
 (rf/defn mark-as-read-success
   {:events [:activity-center.notifications/mark-as-read-success]}
@@ -130,12 +127,9 @@
   (when-let [notification (get-notification db notification-id)]
     {:json-rpc/call [{:method     "wakuext_markActivityCenterNotificationsUnread"
                       :params     [[notification-id]]
-                      :on-success #(rf/dispatch [:activity-center.notifications/mark-as-unread-success
-                                                 notification])
-                      :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                                 notification-id
-                                                 :notification/mark-as-unread
-                                                 %])}]}))
+                      :on-success [:activity-center.notifications/mark-as-unread-success notification]
+                      :on-error   [:activity-center/process-notification-failure notification-id
+                                   :notification/mark-as-unread]}]}))
 
 (rf/defn mark-as-unread-success
   {:events [:activity-center.notifications/mark-as-unread-success]}
@@ -149,12 +143,9 @@
     (when (>= now undoable-till)
       {:json-rpc/call [{:method     "wakuext_markAllActivityCenterNotificationsRead"
                         :params     []
-                        :on-success #(rf/dispatch
-                                      [:activity-center.notifications/mark-all-as-read-success])
-                        :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                                   nil
-                                                   :notification/mark-all-as-read
-                                                   %])}]})))
+                        :on-success [:activity-center.notifications/mark-all-as-read-success]
+                        :on-error   [:activity-center/process-notification-failure nil
+                                     :notification/mark-all-as-read]}]})))
 
 (rf/defn mark-all-as-read-success
   {:events [:activity-center.notifications/mark-all-as-read-success]}
@@ -210,17 +201,14 @@
   [{:keys [db]} notification-id]
   {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
                     :params     [[notification-id]]
-                    :on-success #(rf/dispatch [:activity-center.notifications/accept-success
-                                               notification-id %])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :notification/accept
-                                               %])}]})
+                    :on-success [:activity-center.notifications/accept-success notification-id]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :notification/accept]}]})
 
 (rf/defn accept-notification-success
   {:events [:activity-center.notifications/accept-success]}
   [{:keys [db] :as cofx} notification-id {:keys [chats]}]
-  (let [notification (get-notification db notification-id)]
+  (when-let [notification (get-notification db notification-id)]
     (rf/merge cofx
               (chat.events/ensure-chats (map data-store.chats/<-rpc chats))
               (notifications-reconcile [(assoc notification :read true :accepted true)]))))
@@ -230,17 +218,14 @@
   [{:keys [db]} notification-id]
   {:json-rpc/call [{:method     "wakuext_dismissActivityCenterNotifications"
                     :params     [[notification-id]]
-                    :on-success #(rf/dispatch [:activity-center.notifications/dismiss-success
-                                               notification-id])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :notification/dismiss
-                                               %])}]})
+                    :on-success [:activity-center.notifications/dismiss-success notification-id]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :notification/dismiss]}]})
 
 (rf/defn dismiss-notification-success
   {:events [:activity-center.notifications/dismiss-success]}
   [{:keys [db] :as cofx} notification-id]
-  (let [notification (get-notification db notification-id)]
+  (when-let [notification (get-notification db notification-id)]
     (notifications-reconcile cofx [(assoc notification :read true :dismissed true)])))
 
 (rf/defn delete-notification
@@ -248,12 +233,9 @@
   [{:keys [db]} notification-id]
   {:json-rpc/call [{:method     "wakuext_deleteActivityCenterNotifications"
                     :params     [[notification-id]]
-                    :on-success #(rf/dispatch [:activity-center.notifications/delete-success
-                                               notification-id])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :notification/delete
-                                               %])}]})
+                    :on-success [:activity-center.notifications/delete-success notification-id]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :notification/delete]}]})
 
 (rf/defn delete-notification-success
   {:events [:activity-center.notifications/delete-success]}
@@ -268,48 +250,36 @@
   [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
                     :params     [notification-id]
-                    :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                               %])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :contact-verification/decline
-                                               %])}]})
+                    :on-success [:activity-center/reconcile-notifications-from-response]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :contact-verification/decline]}]})
 
 (rf/defn contact-verification-reply
   {:events [:activity-center.contact-verification/reply]}
   [_ notification-id reply]
   {:json-rpc/call [{:method     "wakuext_acceptContactVerificationRequest"
                     :params     [notification-id reply]
-                    :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                               %])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :contact-verification/reply
-                                               %])}]})
+                    :on-success [:activity-center/reconcile-notifications-from-response]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :contact-verification/reply]}]})
 
 (rf/defn contact-verification-mark-as-trusted
   {:events [:activity-center.contact-verification/mark-as-trusted]}
   [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_verifiedTrusted"
                     :params     [{:id notification-id}]
-                    :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                               %])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :contact-verification/mark-as-trusted
-                                               %])}]})
+                    :on-success [:activity-center/reconcile-notifications-from-response]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :contact-verification/mark-as-trusted]}]})
 
 (rf/defn contact-verification-mark-as-untrustworthy
   {:events [:activity-center.contact-verification/mark-as-untrustworthy]}
   [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_verifiedUntrustworthy"
                     :params     [{:id notification-id}]
-                    :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response
-                                               %])
-                    :on-error   #(rf/dispatch [:activity-center/process-notification-failure
-                                               notification-id
-                                               :contact-verification/mark-as-untrustworthy
-                                               %])}]})
+                    :on-success [:activity-center/reconcile-notifications-from-response]
+                    :on-error   [:activity-center/process-notification-failure notification-id
+                                 :contact-verification/mark-as-untrustworthy]}]})
 
 ;;;; Notifications fetching and pagination
 
@@ -368,10 +338,9 @@
                                       :limit         per-page
                                       :activityTypes (filter-type->rpc-param filter-type)
                                       :readType      (->rpc-read-type filter-status)}]
-                        :on-success #(rf/dispatch [:activity-center.notifications/fetch-success
-                                                   reset-data? %])
-                        :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error
-                                                   filter-type filter-status %])}]})))
+                        :on-success [:activity-center.notifications/fetch-success reset-data?]
+                        :on-error   [:activity-center.notifications/fetch-error filter-type
+                                     filter-status]}]})))
 
 (rf/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
@@ -434,9 +403,8 @@
                    :limit         20
                    :activityTypes [types/contact-request]
                    :readType      (->rpc-read-type :unread)}]
-     :on-success #(rf/dispatch [:activity-center.notifications/fetch-pending-contact-requests-success %])
-     :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error types/contact-request :unread
-                                %])}]})
+     :on-success [:activity-center.notifications/fetch-pending-contact-requests-success]
+     :on-error   [:activity-center.notifications/fetch-error types/contact-request :unread]}]})
 
 (rf/defn notifications-fetch-pending-contact-requests-success
   {:events [:activity-center.notifications/fetch-pending-contact-requests-success]}
@@ -464,8 +432,8 @@
   {:json-rpc/call
    [{:method     "wakuext_hasUnseenActivityCenterNotifications"
      :params     []
-     :on-success #(rf/dispatch [:activity-center/update-seen-state-success %])
-     :on-error   #(rf/dispatch [:activity-center/update-seen-state-error %])}]})
+     :on-success [:activity-center/update-seen-state-success]
+     :on-error   [:activity-center/update-seen-state-error]}]})
 
 (rf/defn update-seen-state-success
   {:events [:activity-center/update-seen-state-success]}
@@ -485,8 +453,8 @@
   {:json-rpc/call
    [{:method     "wakuext_markAsSeenActivityCenterNotifications"
      :params     []
-     :on-success #(rf/dispatch [:activity-center/mark-as-seen-success %])
-     :on-error   #(rf/dispatch [:activity-center/mark-as-seen-error %])}]})
+     :on-success [:activity-center/mark-as-seen-success]
+     :on-error   [:activity-center/mark-as-seen-error]}]})
 
 (rf/defn mark-as-seen-success
   {:events [:activity-center/mark-as-seen-success]}
@@ -509,8 +477,8 @@
    [{:method     "wakuext_activityCenterNotificationsCount"
      :params     [{:activityTypes types/all-supported
                    :readType      (->rpc-read-type :unread)}]
-     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success %])
-     :on-error   #(rf/dispatch [:activity-center.notifications/fetch-unread-count-error %])}]})
+     :on-success [:activity-center.notifications/fetch-unread-count-success]
+     :on-error   [:activity-center.notifications/fetch-unread-count-error]}]})
 
 (rf/defn notifications-fetch-unread-count-success
   {:events [:activity-center.notifications/fetch-unread-count-success]}

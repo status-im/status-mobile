@@ -365,6 +365,43 @@ dispatch.
     (str "Hello " username)]])
 ```
 
+### Registering effects
+
+When registering re-frame effects (`reg-fx`), prefer to expose a data-only
+interface because that will allow event handlers to stay pure.
+
+For instance, if an effect needs a `on-success` callback, allow it to receive a
+*re-frame event vector*. This approach is used by us in the [json-rpc/call
+effect](src/status_im2/common/json_rpc/events.cljs), but also by third-party
+effects, such as https://github.com/Day8/re-frame-http-fx. For the complete
+rationale, see [PR #15936](https://github.com/status-im/status-mobile/pull/15936).
+
+### Using the effect `:json-rpc/call`
+
+Prefer the pure version of `:json-rpc/call` (no callbacks).
+
+```clojure
+;; not as good
+(rf/defn accept-contact-request
+  {:events [:activity-center.contact-requests/accept]}
+  [_ contact-id]
+  {:json-rpc/call
+   [{:method     "wakuext_acceptContactRequest"
+     :params     [{:id contact-id}]
+     :on-success #(rf/dispatch [:sanitize-messages-and-process-response %])
+     :on-error   #(rf/dispatch [:activity-center.contact-requests/accept-error contact-id %])}]})
+
+;; better
+(rf/defn accept-contact-request
+  {:events [:activity-center.contact-requests/accept]}
+  [_ contact-id]
+  {:json-rpc/call
+   [{:method     "wakuext_acceptContactRequest"
+     :params     [{:id contact-id}]
+     :on-success [:sanitize-messages-and-process-response]
+     :on-error   [:activity-center.contact-requests/accept-error contact-id]}]})
+```
+
 ### Registering event handlers
 
 Events must always be declared with the `utils.fx/defn` macro. Also, don't use
