@@ -3,9 +3,13 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.navigation :as navigation]
+    [reagent.core :as reagent]
     [status-im2.common.home.style :as style]
     [status-im2.common.plus-button.view :as plus-button]
     [status-im2.constants :as constants]
+    [status-im2.contexts.activity-center.view :as ac]
+    [status-im2.contexts.shell.animation :as shell]
     [utils.re-frame :as rf]))
 
 (defn title-column
@@ -66,11 +70,43 @@
      [quo/text {:accessibility-label :peers-network-type-text} (str "NETWORK TYPE: " network-type)]
      [quo/text {:accessibility-label :peers-count-text} (str "PEERS COUNT: " peers-count)]]))
 
+(defn ac-modal
+  [visible? view-id]
+  (let [status-bar-style (if (or (colors/dark?)
+                                 (not (shell/home-stack-open?)))
+                           :light
+                           :dark)
+        close-modal      (fn []
+                           (reset! visible? false)
+                           (navigation/merge-options (clj->js view-id)
+                                                     (clj->js {:statusBar {:style status-bar-style}})))]
+    [rn/modal
+     {:visible             @visible?
+      :cover-screen           true
+      :transparent            true
+      :status-bar-translucent true
+      :hardware-accelerated   true
+      :animation-type         :slide
+      :style                  {:margin 0
+                               :width  "100%"}
+      :on-back-button-press   close-modal}
+     [ac/view close-modal]]))
+
 (defn- right-section
   [{:keys [button-type search?]}]
   (let [button-common-props (get-button-common-props button-type)
-        network-type        (rf/sub [:network/type])]
+        network-type        (rf/sub [:network/type])
+        visible?               (reagent/atom false)
+        view-id                (rf/sub [:view-id])
+        open-ac                (fn []
+                                 ;; delaying status-bar style update looks nicer
+                                 (js/setTimeout
+                                   #(navigation/merge-options (clj->js view-id)
+                                                              (clj->js {:statusBar {:style :light}}))
+                                   20)
+                                 (reset! visible? (not @visible?)))]
     [rn/view {:style style/right-section}
+     [ac-modal visible? view-id]
      (when (= network-type "cellular")
        [quo/button
         (merge button-common-props
@@ -104,7 +140,9 @@
       [quo/button
        (merge button-common-props
               {:accessibility-label :open-activity-center-button
-               :on-press            #(rf/dispatch [:activity-center/open])})
+               :on-press            #(rf/dispatch [:activity-center/open])
+               ;:on-press            open-ac
+               })
        :i/activity-center]]]))
 
 (defn top-nav

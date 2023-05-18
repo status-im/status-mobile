@@ -140,7 +140,7 @@
                                                     (contains? types-with-unread types/system))}]}]))
 
 (defn header
-  []
+  [close]
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
@@ -149,7 +149,8 @@
       :size                32
       :accessibility-label :close-activity-center
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:navigate-back])}
+      :on-press            (fn []
+                             (if close (close) (rf/dispatch [:navigate-back])))}
      :i/close]
     [quo/button
      {:icon                true
@@ -213,14 +214,14 @@
            nil)]))))
 
 (defn view
-  []
+  [close]
   (let [active-swipeable (atom nil)]
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
       (let [notifications (rf/sub [:activity-center/notifications])]
         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
          [blur/view style/blur]
-         [header]
+         [header close]
          [rn/flat-list
           {:data                      notifications
            :render-data               active-swipeable
