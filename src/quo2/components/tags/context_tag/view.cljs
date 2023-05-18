@@ -4,6 +4,7 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
+            [quo2.components.avatars.user-avatar.style :as user-avatar-style]
             [react-native.core :as rn]))
 
 (defn trim-public-key
@@ -39,16 +40,21 @@
     (trim-public-key public-key)]])
 
 (defn context-tag
-  [{:keys [text-style blur?] :as params} photo name channel-name]
-  (let [text-params {:weight :medium
-                     :size   :paragraph-2
-                     :style  (assoc text-style :justify-content :center)}]
+  [{:keys [text-style blur? no-avatar-placeholder?] :as params} photo name channel-name]
+  (let [text-params       {:weight :medium
+                           :size   :paragraph-2
+                           :style  (assoc text-style :justify-content :center)}
+        empty-photo?      (empty? photo)
+        avatar-size       :xxs
+        avatar-outer-size (get-in user-avatar-style/sizes [avatar-size :outer])]
     [base-tag (assoc-in params [:style :padding-left] 3)
-     [user-avatar/user-avatar
-      {:full-name         name
-       :profile-picture   photo
-       :size              :xxs
-       :status-indicator? false}]
+     (if (and empty-photo? no-avatar-placeholder?)
+       [rn/view {:style {:width avatar-outer-size}}]
+       [user-avatar/user-avatar
+        {:full-name         name
+         :profile-picture   photo
+         :size              avatar-size
+         :status-indicator? false}])
      [rn/view {:style style/context-tag-text-container}
       [text/text text-params (str " " name)]
       (when channel-name

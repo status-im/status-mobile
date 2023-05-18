@@ -33,5 +33,5 @@
        :unread?   (not read)
        :context   [[quo/text {:style common-style/user-avatar-tag-text}
                     (i18n/label :t/community-kicked-body)]
-                   [quo/context-tag common/tag-params {:uri community-image}
+                   [quo/context-tag common/tag-params community-image
                     community-name]]}]]))

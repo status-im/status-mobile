@@ -17,7 +17,7 @@
         :style  {:width  40
                  :height 40}}]
       (seq thumbnail-image)
-      [photos/photo thumbnail-image {:size 40}]
+      [photos/photo {:uri thumbnail-image} {:size 40}]
 
       :else
       [chat-icon.screen/chat-icon-view-chat-list

@@ -9,11 +9,12 @@
             [utils.re-frame :as rf]))
 
 (def tag-params
-  {:size           :small
-   :override-theme :dark
-   :color          colors/primary-50
-   :style          style/user-avatar-tag
-   :text-style     style/user-avatar-tag-text})
+  {:size                   :small
+   :override-theme         :dark
+   :color                  colors/primary-50
+   :style                  style/user-avatar-tag
+   :text-style             style/user-avatar-tag-text
+   :no-avatar-placeholder? true})
 
 (defn user-avatar-tag
   [user-id]

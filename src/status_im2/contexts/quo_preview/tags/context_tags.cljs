@@ -43,19 +43,27 @@
     :type  :boolean}])
 
 (def context-tag-descriptor
-  [{:label "Label"
+  [{:label "Show avatar"
+    :key   :show-avatar?
+    :type  :boolean}
+   {:label "Label"
     :key   :label
     :type  :text}
-   {:label "Channel Name"
+   {:label "Channel name"
     :key   :channel-name
-    :type  :text}])
+    :type  :text}
+   {:label "Avatar placeholder"
+    :key   :no-avatar-placeholder?
+    :type  :boolean}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:label        "Name"
-                             :channel-name "Channel"
-                             :type         :group-avatar
-                             :duration     "00:32"})]
+  (let [state (reagent/atom {:label                  "Name"
+                             :channel-name           "Channel"
+                             :type                   :group-avatar
+                             :duration               "00:32"
+                             :show-avatar?           true
+                             :no-avatar-placeholder? false})]
     (fn []
       (let [contacts             {example-pk  {:public-key   example-pk
                                                :primary-name "Automatic incompatible Coati"
@@ -122,10 +130,12 @@
              :show-blur-background? (:blur? @state)}
             (case (:type @state)
               :context-tag  [quo2/context-tag
-                             {:blur? (:blur? @state)
-                              :size  :small
-                              :color :purple}
-                             {:uri example-photo2}
+                             {:blur?                  (:blur? @state)
+                              :size                   :small
+                              :color                  :purple
+                              :no-avatar-placeholder? (:no-avatar-placeholder? @state)}
+                             (when (:show-avatar? @state)
+                               example-photo2)
                              (:label @state)
                              (:channel-name @state)]
 

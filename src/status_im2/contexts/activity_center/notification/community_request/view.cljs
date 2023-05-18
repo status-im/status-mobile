@@ -22,7 +22,7 @@
   [community membership-status]
   (let [community-name        (:name community)
         community-image       (get-in community [:images :thumbnail :uri])
-        community-context-tag [quo/context-tag common/tag-params {:uri community-image}
+        community-context-tag [quo/context-tag common/tag-params community-image
                                community-name]]
     (cond
       (= membership-status constants/activity-center-membership-status-idle)
