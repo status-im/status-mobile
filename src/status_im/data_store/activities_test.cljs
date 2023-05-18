@@ -31,6 +31,7 @@
      (= {:last-message  {:quoted-message     nil
                          :outgoing-status    nil
                          :command-parameters nil
+                         :link-previews      []
                          :content            {:sticker     nil
                                               :rtl?        nil
                                               :ens-name    nil
@@ -46,6 +47,7 @@
          :reply-message {:quoted-message     nil
                          :outgoing-status    nil
                          :command-parameters nil
+                         :link-previews      []
                          :content            {:sticker     nil
                                               :rtl?        nil
                                               :ens-name    nil

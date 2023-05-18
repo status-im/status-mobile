@@ -66,30 +66,31 @@
     (if platform/ios? lines (dec lines))))
 
 (defn calc-extra-content-height
-  [images? reply? edit?]
+  [images? link-previews? reply? edit?]
   (let [height (if images? constants/images-container-height 0)
+        height (if link-previews? (+ height constants/links-container-height) height)
         height (if reply? (+ height constants/reply-container-height) height)
         height (if edit? (+ height constants/edit-container-height) height)]
     height))
 
 (defn calc-max-height
-  [{:keys [images reply edit]} window-height kb-height insets]
+  [{:keys [images link-previews? reply edit]} window-height kb-height insets]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
                       constants/actions-container-height)
-        max-height (- max-height (calc-extra-content-height images reply edit))]
+        max-height (- max-height (calc-extra-content-height images link-previews? reply edit))]
     max-height))
 
 (defn empty-input?
-  [text images reply? audio?]
-  (and (empty? text) (empty? images) (not reply?) (not audio?)))
-
-(defn android-elevation?
-  [lines images reply? edit?]
-  (or (> lines 1) (seq images) reply? edit?))
+  [text images link-previews? reply? audio?]
+  (and (empty? text)
+       (empty? images)
+       (not link-previews?)
+       (not reply?)
+       (not audio?)))
 
 (defn cancel-edit-message
   [{:keys [text-value]}]
@@ -126,10 +127,10 @@
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
-   {:keys [insets curr-height window-height keyboard-height images reply edit]}]
+   {:keys [insets curr-height window-height keyboard-height images link-previews? reply edit]}]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
         base             (+ base (- curr-height constants/input-height))
-        base             (+ base (calc-extra-content-height images reply edit))
+        base             (+ base (calc-extra-content-height images link-previews? reply edit))
         view-height      (- window-height keyboard-height (:top insets))
         container-height (bounded-val
                           (* (/ constants/mentions-max-height 4) size)
@@ -181,6 +182,7 @@
   []
   (let [chat-input (rf/sub [:chats/current-chat-input])]
     {:images               (seq (rf/sub [:chats/sending-image]))
+     :link-previews?       (rf/sub [:chats/link-previews?])
      :audio                (rf/sub [:chats/sending-audio])
      :reply                (rf/sub [:chats/reply-message])
      :edit                 (rf/sub [:chats/edit-message])
@@ -189,7 +191,7 @@
      :input-content-height (:input-content-height chat-input)}))
 
 (defn init-animations
-  [{:keys [input-text images reply audio]}
+  [{:keys [input-text images link-previews? reply audio]}
    lines content-height max-height opacity background-y]
   (let [initial-height (if (> lines 1)
                          constants/multiline-minimized-height
@@ -199,6 +201,7 @@
                          (if (empty-input?
                               input-text
                               images
+                              link-previews?
                               reply
                               audio)
                            0.7

@@ -6,11 +6,12 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [status-im2.constants :as constants]
+            [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -144,13 +145,15 @@
           preferred-name (get-in db [:multiaccount :preferred-name])
           emoji? (message-content/emoji-only-content? {:text        input-text
                                                        :response-to message-id})]
-      {:chat-id      current-chat-id
-       :content-type (if emoji?
-                       constants/content-type-emoji
-                       constants/content-type-text)
-       :text         input-text
-       :response-to  message-id
-       :ens-name     preferred-name})))
+      {:chat-id       current-chat-id
+       :content-type  (if emoji?
+                        constants/content-type-emoji
+                        constants/content-type-text)
+       :text          input-text
+       :response-to   message-id
+       :ens-name      preferred-name
+       :link-previews (map #(select-keys % [:url :title :description :thumbnail])
+                           (get-in db [:chat/link-previews :unfurled]))})))
 
 (defn build-image-messages
   [{db :db} chat-id input-text]
@@ -185,6 +188,7 @@
   (let [current-chat-id (:current-chat-id db)]
     (rf/merge cofx
               (clean-input current-chat-id)
+              (link-preview/reset-unfurled)
               (mentions/clear-mentions))))
 
 (rf/defn send-messages
@@ -196,6 +200,7 @@
     (when (seq messages)
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
+                (link-preview/reset-unfurled)
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message
@@ -241,6 +246,7 @@
                      :on-success  (fn [result]
                                     (re-frame/dispatch [:sanitize-messages-and-process-response
                                                         result]))}]}
+   (link-preview/reset-unfurled)
    (cancel-message-edit)))
 
 (rf/defn send-current-message

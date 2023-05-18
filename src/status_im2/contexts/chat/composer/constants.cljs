@@ -19,6 +19,8 @@
 
 (def ^:const images-container-height 76)
 
+(def ^:const links-container-height 76)
+
 (def ^:const reply-container-height 32)
 
 (def ^:const edit-container-height 32)
@@ -36,3 +38,7 @@
 (def ^:const background-threshold 0.75)
 
 (def ^:const max-text-size 4096)
+
+(def ^:const unfurl-debounce-ms
+  "Use a high threshold to prevent unnecessary rendering overhead."
+  400)

@@ -401,3 +401,15 @@
  :<- [:chat/inputs-with-mentions]
  (fn [[chat-id cursor]]
    (get cursor chat-id)))
+
+(re-frame/reg-sub
+ :chats/link-previews-unfurled
+ :<- [:chat/link-previews]
+ (fn [previews]
+   (get previews :unfurled)))
+
+(re-frame/reg-sub
+ :chats/link-previews?
+ :<- [:chats/link-previews-unfurled]
+ (fn [previews]
+   (boolean (seq previews))))

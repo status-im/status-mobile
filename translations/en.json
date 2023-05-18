@@ -2083,6 +2083,7 @@
     "scan-sync-qr-code": "Scan QR code",
     "enter-sync-code": "Enter sync code",
     "enable-access-to-camera": "Enable access to camera",
+    "link-preview-loading-message": "Generating preview",
     "to-scan-a-qr-enable-your-camera": "To scan a QR, enable your camera",
     "enable-camera": "Enable camera",
     "ensure-qr-code-in-focus-to-scan": "Ensure that the QR code is in focus to scan",

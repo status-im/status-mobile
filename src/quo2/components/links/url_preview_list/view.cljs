@@ -1,10 +1,9 @@
 (ns quo2.components.links.url-preview-list.view
   (:require
-    [oops.core :as oops]
     [quo2.components.links.url-preview-list.style :as style]
     [quo2.components.links.url-preview.view :as url-preview]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.gesture :as gesture]))
 
 (defn- use-scroll-to-last-item
   [flat-list-ref item-count item-width]
@@ -44,39 +43,33 @@
     :on-clear        on-clear
     :container-style (merge container-style {:width width})}])
 
-(defn- calculate-width
-  [preview-width horizontal-spacing ^js e]
-  (reset! preview-width
-    (- (oops/oget e "nativeEvent.layout.width")
-       (* 2 horizontal-spacing))))
-
 (defn- f-view
   []
-  (let [preview-width (reagent/atom 0)
-        flat-list-ref (atom nil)]
+  (let [flat-list-ref (atom nil)]
     (fn [{:keys [data key-fn horizontal-spacing on-clear loading-message
-                 container-style container-style-item]}]
-      (use-scroll-to-last-item flat-list-ref (count data) @preview-width)
+                 container-style container-style-item
+                 preview-width]}]
+      (use-scroll-to-last-item flat-list-ref (count data) preview-width)
       ;; We need to use a wrapping view expanded to 100% instead of "flex 1",
       ;; otherwise `on-layout` will be triggered multiple times as the flat list
       ;; renders its children.
       [rn/view
-       {:style               (merge container-style {:width "100%"})
+       {:style               container-style
         :accessibility-label :url-preview-list}
-       [rn/flat-list
+       [gesture/flat-list
         {:ref                               #(reset! flat-list-ref %)
+         :keyboard-should-persist-taps      :always
          :key-fn                            key-fn
-         :on-layout                         #(calculate-width preview-width horizontal-spacing %)
          :horizontal                        true
          :deceleration-rate                 :fast
          :on-scroll-to-index-failed         identity
          :content-container-style           {:padding-horizontal horizontal-spacing}
          :separator                         [separator]
-         :snap-to-interval                  (+ @preview-width style/url-preview-gap)
+         :snap-to-interval                  (+ preview-width style/url-preview-gap)
          :shows-horizontal-scroll-indicator false
          :data                              data
          :render-fn                         item-component
-         :render-data                       {:width           @preview-width
+         :render-data                       {:width           preview-width
                                              :on-clear        on-clear
                                              :loading-message loading-message
                                              :container-style container-style-item}}]])))

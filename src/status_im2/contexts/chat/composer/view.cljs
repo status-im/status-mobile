@@ -8,6 +8,7 @@
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [status-im2.contexts.chat.composer.style :as style]
+    [status-im2.contexts.chat.composer.link-preview.view :as link-preview]
     [status-im2.contexts.chat.composer.images.view :as images]
     [status-im2.contexts.chat.composer.reply.view :as reply]
     [status-im2.contexts.chat.composer.edit.view :as edit]
@@ -62,7 +63,10 @@
     (effects/edit-mentions props state subs)
     [:<>
      [sub-view/shell-button state animations subs]
-     [mentions/view props state animations max-height cursor-pos (:images subs) (:reply subs)
+     [mentions/view props state animations max-height cursor-pos
+      (:images subs)
+      (:link-previews? subs)
+      (:reply subs)
       (:edit subs)]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
@@ -104,6 +108,7 @@
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
         [gradients/view props state animations show-bottom-gradient?]]
+       [link-preview/message-draft-link-previews]
        [images/images-list]
        [actions/view props state animations window-height insets subs]]]]))
 

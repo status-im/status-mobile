@@ -1,14 +1,16 @@
 (ns status-im2.contexts.chat.composer.effects
   (:require
-    [react-native.platform :as platform]
-    [status-im.async-storage.core :as async-storage]
+    [clojure.string :as string]
+    [oops.core :as oops]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [status-im.async-storage.core :as async-storage]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
+    [utils.debounce :as debounce]
     [utils.number :as utils.number]
-    [oops.core :as oops]
-    [utils.debounce :as debounce]))
+    [utils.re-frame :as rf]))
 
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
@@ -53,6 +55,12 @@
     (reanimated/set-shared-value background-y 0)
     (reanimated/animate opacity 1)))
 
+(defn link-preview-effect
+  [{:keys [text-value]}]
+  (let [text @text-value]
+    (when-not (string/blank? text)
+      (rf/dispatch [:link-preview/unfurl-urls text]))))
+
 (defn images-effect
   [{:keys [sending-images? input-ref]}
    {:keys [container-opacity]}
@@ -78,10 +86,17 @@
   [{:keys [text-value maximized? focused?]}
    {:keys [container-opacity]}
    images?
+   link-previews?
    reply?
    audio]
   (when
-    (and (empty? @text-value) (not images?) (not reply?) (not @maximized?) (not @focused?) (not audio))
+    (and (empty? @text-value)
+         (not images?)
+         (not link-previews?)
+         (not reply?)
+         (not @maximized?)
+         (not @focused?)
+         (not audio))
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -91,7 +106,8 @@
   (.remove ^js @keyboard-frame-listener))
 
 (defn initialize
-  [props state animations {:keys [max-height] :as dimensions} {:keys [chat-input images reply audio]}]
+  [props state animations {:keys [max-height] :as dimensions}
+   {:keys [chat-input images link-previews? reply audio]}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -100,8 +116,9 @@
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (images-effect props animations images)
+     (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect state animations images reply audio)
+     (empty-effect state animations images link-previews? reply audio)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))

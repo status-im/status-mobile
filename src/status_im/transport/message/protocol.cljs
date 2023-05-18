@@ -1,35 +1,35 @@
 (ns ^{:doc "Protocol API and protocol utils"} status-im.transport.message.protocol
-  (:require [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require [clojure.set :as set]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
+
+(defn- link-preview->rpc
+  [preview]
+  (update preview
+          :thumbnail
+          (fn [thumbnail]
+            (set/rename-keys thumbnail {:data-uri :dataUri}))))
 
 (defn build-message
-  [{:keys [chat-id
-           album-id
-           image-width
-           image-height
-           text
-           response-to
-           ens-name
-           community-id
-           image-path
-           audio-path
-           audio-duration-ms
-           sticker
-           content-type]}]
-  {:chatId          chat-id
-   :albumId         album-id
-   :imageWidth      image-width
-   :imageHeight     image-height
-   :text            text
-   :responseTo      response-to
-   :ensName         ens-name
-   :imagePath       image-path
-   :audioPath       audio-path
-   :audioDurationMs audio-duration-ms
-   :communityId     community-id
-   :sticker         sticker
-   :contentType     content-type})
+  [msg]
+  (-> msg
+      (update :link-previews #(map link-preview->rpc %))
+      (set/rename-keys
+       {:album-id          :albumId
+        :audio-duration-ms :audioDurationMs
+        :audio-path        :audioPath
+        :chat-id           :chatId
+        :community-id      :communityId
+        :content-type      :contentType
+        :ens-name          :ensName
+        :image-height      :imageHeight
+        :image-path        :imagePath
+        :image-width       :imageWidth
+        :link-previews     :linkPreviews
+        :response-to       :responseTo
+        :sticker           :sticker
+        :text              :text})))
 
 (rf/defn send-chat-messages
   [_ messages]

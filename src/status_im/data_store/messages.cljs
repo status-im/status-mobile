@@ -15,6 +15,13 @@
                       :community-id      :communityId
                       :clock-value       :clock})))
 
+(defn- <-link-preview-rpc
+  [preview]
+  (update preview
+          :thumbnail
+          (fn [thumbnail]
+            (set/rename-keys thumbnail {:dataUri :data-uri}))))
+
 (defn <-rpc
   [message]
   (-> message
@@ -43,8 +50,9 @@
         :imageHeight              :image-height
         :new                      :new?
         :albumImagesCount         :album-images-count
-        :displayName              :display-name})
-
+        :displayName              :display-name
+        :linkPreviews             :link-previews})
+      (update :link-previews #(map <-link-preview-rpc %))
       (update :quoted-message
               set/rename-keys
               {:parsedText   :parsed-text
