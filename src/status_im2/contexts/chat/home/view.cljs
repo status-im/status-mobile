@@ -22,11 +22,12 @@
   [_ index]
   #js {:length 56 :offset (* 56 index) :index index})
 
-(defn filter-items-by-tab
+(defn filter-and-sort-items-by-tab
   [tab items]
-  (if (= tab :tab/groups)
-    (filter :group-chat items)
-    (filter :chat-id items)))
+  (let [key (if (= tab :tab/groups) :group-chat :chat-id)]
+    (->> items
+         (filter key)
+         (sort-by :timestamp >))))
 
 (defn welcome-blank-chats
   []
@@ -38,7 +39,7 @@
 (defn chats
   [selected-tab top]
   (let [unfiltered-items (rf/sub [:chats-stack-items])
-        items            (filter-items-by-tab selected-tab unfiltered-items)]
+        items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
     (if (empty? items)
       [welcome-blank-chats]
       [rn/flat-list
