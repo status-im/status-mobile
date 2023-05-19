@@ -31,6 +31,7 @@
                                        :index    0
                                        :insets   insets}])}
       [fast-image/fast-image
-       {:source    {:uri (:image content)}
-        :style     (merge dimensions {:border-radius 12})
-        :native-ID (when (= shared-element-id message-id) :shared-element)}]]]))
+       {:source              {:uri (:image content)}
+        :style               (merge dimensions {:border-radius 12})
+        :native-ID           (when (= shared-element-id message-id) :shared-element)
+        :accessibility-label :image-message}]]]))
