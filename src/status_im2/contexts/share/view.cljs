@@ -74,10 +74,12 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast profile-url
-                                           (i18n/label :t/link-to-profile-copied)])
-          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast profile-url
-                                           (i18n/label :t/link-to-profile-copied)])}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast
+                                           {:text-to-copy      profile-url
+                                            :post-copy-message (i18n/label :t/link-to-profile-copied)}])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
+                                           {:text-to-copy      profile-url
+                                            :post-copy-message (i18n/label :t/link-to-profile-copied)}])}
          [quo/text
           {:style           style/profile-address-content
            :size            :paragraph-1
@@ -107,10 +109,12 @@
          {:active-opacity   1
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
-          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
-                                           (i18n/label :t/emoji-hash-copied)])
-          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
-                                           (i18n/label :t/emoji-hash-copied)])}
+          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast
+                                           {:text-to-copy      emoji-hash
+                                            :post-copy-message (i18n/label :t/emoji-hash-copied)}])
+          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
+                                           {:text-to-copy      emoji-hash
+                                            :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
          [rn/text {:style style/emoji-hash-content} emoji-hash]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
@@ -120,10 +124,12 @@
          :accessibility-label :link-to-profile
          :override-theme      :dark
          :style               {:margin-right 12}
-         :on-press            #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
-                                             (i18n/label :t/emoji-hash-copied)])
-         :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast emoji-hash
-                                             (i18n/label :t/emoji-hash-copied)])}
+         :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
+                                             {:text-to-copy      emoji-hash
+                                              :post-copy-message (i18n/label :t/emoji-hash-copied)}])
+         :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast
+                                             {:text-to-copy      emoji-hash
+                                              :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
         :i/copy]]]]))
 
 (defn wallet-tab

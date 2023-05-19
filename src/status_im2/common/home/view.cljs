@@ -6,7 +6,8 @@
     [status-im2.common.home.style :as style]
     [status-im2.common.plus-button.view :as plus-button]
     [status-im2.constants :as constants]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.debounce :refer [dispatch-and-chill]]))
 
 (defn title-column
   [{:keys [label handler accessibility-label customization-color]}]
@@ -101,7 +102,7 @@
      [quo/button
       (merge button-common-props
              {:accessibility-label :show-qr-button
-              :on-press            #(rf/dispatch [:open-modal :share-shell])})
+              :on-press            #(dispatch-and-chill [:open-modal :share-shell] 1000)})
       :i/qr-code]
      [rn/view
       [unread-indicator]

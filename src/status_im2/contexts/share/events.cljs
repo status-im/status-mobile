@@ -5,11 +5,12 @@
 
 (rf/defn copy-text-and-show-toast
   {:events [:share/copy-text-and-show-toast]}
-  [cofx text-to-copy post-copy-message]
+  [{:keys [db] :as cofx} {:keys [text-to-copy post-copy-message]}]
   (rf/merge cofx
             {:copy-to-clipboard text-to-copy}
             (toasts/upsert
              {:icon           :correct
+              :id             :successful-copy-toast-message
               :icon-color     colors/success-50
               :override-theme :dark
               :text           post-copy-message})))
