@@ -59,22 +59,22 @@
              {:opacity tab-background-opacity}))))
 
 (def themes
-  {:light {:default  {:background-color colors/neutral-20
+  {:light {:default  {:background-color colors/neutral-10
                       :icon-color       colors/neutral-50
                       :label            {:style {:color colors/neutral-100}}}
            :active   {:background-color colors/neutral-50
                       :icon-color       colors/white
                       :label            {:style {:color colors/white}}}
-           :disabled {:background-color colors/neutral-20
+           :disabled {:background-color colors/neutral-10
                       :icon-color       colors/neutral-50
                       :label            {:style {:color colors/neutral-100}}}}
-   :dark  {:default  {:background-color colors/neutral-80
+   :dark  {:default  {:background-color colors/neutral-90
                       :icon-color       colors/neutral-40
                       :label            {:style {:color colors/white}}}
            :active   {:background-color colors/neutral-60
                       :icon-color       colors/white
                       :label            {:style {:color colors/white}}}
-           :disabled {:background-color colors/neutral-80
+           :disabled {:background-color colors/neutral-90
                       :icon-color       colors/neutral-40
                       :label            {:style {:color colors/white}}}}})
 

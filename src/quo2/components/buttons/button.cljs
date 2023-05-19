@@ -92,9 +92,9 @@
     :grey            {:icon-color           colors/white
                       :icon-secondary-color colors/neutral-40
                       :label-color          colors/white
-                      :background-color     {:default  colors/neutral-80
+                      :background-color     {:default  colors/neutral-90
                                              :pressed  colors/neutral-60
-                                             :disabled colors/neutral-80}}
+                                             :disabled colors/neutral-90}}
     :dark-grey       {:icon-color           colors/white
                       :icon-secondary-color colors/neutral-40
                       :label-color          colors/white

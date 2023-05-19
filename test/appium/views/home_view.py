@@ -188,6 +188,7 @@ class HomeView(BaseView):
         super().__init__(driver)
 
         self.plus_button = Button(self.driver, accessibility_id="new-chat-button")
+        self.plus_community_button = Button(self.driver, accessibility_id="new-communities-button")
         self.chat_name_text = Text(self.driver, accessibility_id="chat-name-text")
         self.start_new_chat_button = ChatButton(self.driver, accessibility_id="start-1-1-chat-button")
         self.new_group_chat_button = ChatButton(self.driver, accessibility_id="start-group-chat-button")
@@ -377,7 +378,7 @@ class HomeView(BaseView):
     def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
                          require_approval=True):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
-        self.plus_button.click()
+        self.plus_community_button.click()
         chat_view = self.communities_button.click()
         chat_view.community_name_edit_box.set_value(name)
         chat_view.community_description_edit_box.set_value(description)

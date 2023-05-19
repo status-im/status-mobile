@@ -1,20 +1,21 @@
 (ns status-im2.contexts.chat.home.view
   (:require [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
             [quo2.core :as quo]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
+            [quo2.foundations.colors :as colors]
+            [react-native.blur :as blur]
+            [react-native.platform :as platform]
+            [status-im2.contexts.chat.home.style :as style]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
-            [utils.re-frame :as rf]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
-            [react-native.safe-area :as safe-area]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [status-im2.contexts.chat.home.style :as style]
-            [react-native.platform :as platform]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.chat.actions.view :as home.sheet]))
 
 (defn get-item-layout
@@ -102,8 +103,12 @@
   []
   (fn []
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-          selected-tab             (or (rf/sub [:messages-home/selected-tab])
-                                       :tab/recent)
+          selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+          {:keys [key-uid]}        (rf/sub [:multiaccount])
+          profile-color            (:color (rf/sub [:onboarding-2/profile]))
+          customization-color      (if profile-color
+                                     profile-color
+                                     (rf/sub [:profile/customization-color key-uid]))
           top                      (safe-area/get-top)]
       [:<>
        (if (= selected-tab :tab/contacts)
@@ -115,13 +120,17 @@
          {:blur-amount (if platform/ios? 20 10)
           :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
           :style       style/blur}]
-        [common.home/top-nav]
+        [common.home/top-nav
+         {:type   :grey
+          :avatar {:customization-color customization-color}}]
         [common.home/title-column
          {:label               (i18n/label :t/messages)
           :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])
-          :accessibility-label :new-chat-button}]
+          :accessibility-label :new-chat-button
+          :customization-color customization-color}]
         [quo/discover-card
-         {:title       (i18n/label :t/invite-friends-to-status)
+         {:banner      (resources/get-image :invite-friends)
+          :title       (i18n/label :t/invite-friends-to-status)
           :description (i18n/label :t/share-invite-link)}]
         ^{:key (str "tabs-" selected-tab)}
         [quo/tabs

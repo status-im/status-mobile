@@ -10,8 +10,8 @@
    :dark  {:background-color colors/white-opa-5}})
 
 (def themes
-  {:light {:background-color colors/neutral-20}
-   :dark  {:background-color colors/neutral-80}})
+  {:light {:background-color colors/neutral-10}
+   :dark  {:background-color colors/neutral-90}})
 
 (defn segmented-control
   [{:keys [default-active on-change]}]
