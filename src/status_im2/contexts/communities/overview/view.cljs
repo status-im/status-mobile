@@ -12,24 +12,8 @@
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [quo2.components.navigation.floating-shell-button :as floating-shell-button]
-            [status-im2.contexts.communities.overview.utils :as utils]
             [status-im2.common.password-authentication.view :as password-authentication]
             [utils.re-frame :as rf]))
-
-(defn preview-user-list
-  [user-list]
-  (when (seq user-list)
-    [rn/view style/preview-user
-     [quo/preview-list
-      {:type      :user
-       :list-size (count user-list)
-       :size      24}
-      user-list]
-     [quo/text
-      {:accessibility-label :communities-screen-title
-       :style               {:margin-left 8}
-       :size                :label}
-      (utils/join-existing-users-string user-list)]]))
 
 (defn add-category-height
   [categories-heights category height]
@@ -257,7 +241,6 @@
       ;; [quo/community-stats-column :card-view] not implemented
       [rn/view {:margin-top 12}]
       [quo/community-tags tags]
-      ;;[preview-user-list users] not implemented
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout
