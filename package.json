@@ -19,7 +19,7 @@
     "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.3-status",
     "@react-native-community/cameraroll": "git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0",
     "@react-native-community/clipboard": "^1.2.2",
-    "@react-native-community/hooks": "^2.5.1",
+    "@react-native-community/hooks": "^3.0.0",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
     "@react-native-community/push-notification-ios": "^1.4.1",
