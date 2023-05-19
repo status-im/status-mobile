@@ -83,7 +83,8 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view))
+    quo2.components.text-combinations.title.view
+    quo2.components.settings.settings-list.view))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
@@ -198,6 +199,7 @@
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
+(def settings-list quo2.components.settings.settings-list.view/settings-list)
 
 ;;;; SHARE
 (def qr-code quo2.components.share.qr-code.view/qr-code)
