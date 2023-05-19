@@ -188,6 +188,10 @@
   [element]
   (.toBeTruthy (js/expect element)))
 
+(defn is-falsy
+  [element]
+  (.toBeFalsy (js/expect element)))
+
 (defn is-null
   [element]
   (.toBeNull (js/expect element)))
