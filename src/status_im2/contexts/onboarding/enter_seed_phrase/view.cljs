@@ -17,6 +17,7 @@
 (def ^:private max-seed-phrase-length
   (apply max constants/seed-phrase-valid-length))
 
+
 (defn- partial-word-in-dictionary?
   [partial-word]
   (some #(string/starts-with? % partial-word) mnemonic/dictionary))
@@ -145,6 +146,6 @@
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
     [rn/view {:style style/full-layout}
      [background/view true]
-     [rn/view {:style style/page-container}
+     [rn/keyboard-avoiding-view {:style style/page-container}
       [navigation-bar/navigation-bar {:top navigation-bar-top}]
       [screen]]]))
