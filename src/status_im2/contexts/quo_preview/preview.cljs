@@ -4,7 +4,8 @@
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.common.resources :as resources])
+            [status-im2.common.resources :as resources]
+            [quo2.theme :as theme])
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (def container
@@ -106,17 +107,18 @@
      [rn/view {:style {:flex 0.6}}
       [rn/text-input
        (merge
-        {:value          @state*
-         :show-cancel    false
-         :style          {:border-radius 4
-                          :border-width  1
-                          :color         (colors/theme-colors colors/neutral-100 colors/white)
-                          :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
-         :on-change-text #(do
-                            (reset! state* (if (and suffix (> (count %) (count @state*)))
-                                             (str (string/replace % suffix "") suffix)
-                                             %))
-                            (reagent/flush))}
+        {:value               @state*
+         :show-cancel         false
+         :style               {:border-radius 4
+                               :border-width  1
+                               :color         (colors/theme-colors colors/neutral-100 colors/white)
+                               :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
+         :keyboard-appearance (theme/theme-value :light :dark)
+         :on-change-text      #(do
+                                 (reset! state* (if (and suffix (> (count %) (count @state*)))
+                                                  (str (string/replace % suffix "") suffix)
+                                                  %))
+                                 (reagent/flush))}
         (when limit
           {:max-length limit}))]]]))
 

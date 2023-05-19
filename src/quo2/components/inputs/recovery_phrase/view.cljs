@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [quo2.components.inputs.recovery-phrase.style :as style]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.theme :as theme]))
 
 (def ^:private custom-props
   [:customization-color :override-theme :blur? :cursor-color :multiline :on-focus :on-blur
@@ -42,6 +43,7 @@
                   :style                  (style/input)
                   :placeholder-text-color (style/placeholder-color @state override-theme blur?)
                   :cursor-color           (style/cursor-color customization-color override-theme)
+                  :keyboard-appearance    (theme/theme-value :light :dark override-theme)
                   :multiline              true
                   :on-focus               (fn []
                                             (set-focused)

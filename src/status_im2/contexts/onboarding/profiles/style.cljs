@@ -1,6 +1,5 @@
 (ns status-im2.contexts.onboarding.profiles.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 ;; Profiles Section
 
@@ -48,15 +47,10 @@
 (def login-profile-card
   {:margin-bottom 20})
 
-(def info-message
-  {:margin-top 8})
-
-(def forget-password-button
-  {:margin-vertical 8})
-
-(defn login-button
-  []
-  {:margin-bottom (if platform/android? 20 46)})
+(def error-message
+  {:margin-top     8
+   :flex-direction :row
+   :align-items    :center})
 
 (def forget-password-doc-container {:margin-right 16})
 (def forget-password-step-container {:flex-direction :row :margin-top 14})

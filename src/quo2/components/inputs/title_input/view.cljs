@@ -3,7 +3,8 @@
     [quo2.components.inputs.title-input.style :as style]
     [quo2.components.markdown.text :as text]
     [reagent.core :as reagent]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [quo2.theme :as theme]))
 
 (defn- pad-0
   [value]
@@ -38,6 +39,7 @@
             :style  (style/title-text disabled? blur? override-theme)})
           :default-value default-value
           :accessibility-label :profile-title-input
+          :keyboard-appearance (theme/theme-value :light :dark override-theme)
           :on-focus #(swap! focused? (fn [] true))
           :on-blur #(swap! focused? (fn [] false))
           :input-mode :text

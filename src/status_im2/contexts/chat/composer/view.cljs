@@ -21,7 +21,8 @@
     [status-im2.contexts.chat.composer.gesture :as drag-gesture]
     [status-im2.contexts.chat.composer.handlers :as handler]
     [status-im2.contexts.chat.composer.gradients.view :as gradients]
-    [status-im2.contexts.chat.composer.selection :as selection]))
+    [status-im2.contexts.chat.composer.selection :as selection]
+    [quo2.theme :as theme]))
 
 (defn sheet-component
   [{:keys [insets window-height blur-height opacity background-y]} props state]
@@ -99,6 +100,7 @@
            :on-change-text           #(handler/change-text % props state)
            :on-selection-change      #(handler/selection-change % props state)
            :on-selection             #(selection/on-selection % props state)
+           :keyboard-appearance      (theme/theme-value :light :dark)
            :max-height               max-height
            :max-font-size-multiplier 1
            :multiline                true
