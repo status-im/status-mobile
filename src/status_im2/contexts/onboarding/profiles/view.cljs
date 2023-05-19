@@ -69,7 +69,8 @@
 (defn show-profile-options
   [key-uid context]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [profile-options key-uid context])}]))
+                {:content (fn [] [profile-options key-uid context])
+                 :shell?  true}]))
 
 (defn profile-card
   [{:keys [name key-uid customization-color keycard-pairing last-index set-hide-profiles]
