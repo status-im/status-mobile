@@ -132,7 +132,7 @@
 
 (defn tag
   [_ _]
-  (fn [{:keys [locked tokens size background-color on-press]
+  (fn [{:keys [locked? tokens size background-color on-press]
         :or   {size 24}}]
     [base-tag/base-tag
      {:background-color background-color
@@ -151,7 +151,7 @@
                          32 16
                          24 12)}
        [icons/icon
-        (if locked
+        (if locked?
           :i/locked
           :i/unlocked)
         {:resize-mode :center

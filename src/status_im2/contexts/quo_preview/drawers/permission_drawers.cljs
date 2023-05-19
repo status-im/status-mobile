@@ -10,7 +10,7 @@
    [quo/text {:style {:margin-right 4}} "Hold"]
    [quo/permission-tag
     {:size             24
-     :locked           false
+     :locked?          false
      :tokens           [{:id    1
                          :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
                                  {:id 2 :token-icon (resources/get-mock-image :status-logo)}
@@ -25,7 +25,7 @@
              :margin-right 4}} "Or"]
    [quo/permission-tag
     {:size             24
-     :locked           false
+     :locked?          false
      :tokens           [{:id    1
                          :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}
                                  {:id 2 :token-icon (resources/get-mock-image :status-logo)}
