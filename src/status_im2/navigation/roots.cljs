@@ -119,4 +119,8 @@
           :welcome
           {:root {:stack {:children [{:component {:name    :welcome
                                                   :id      :welcome
+                                                  :options (options/default-root)}}]}}}
+          :syncing-results
+          {:root {:stack {:children [{:component {:name    :syncing-results
+                                                  :id      :syncing-results
                                                   :options (options/default-root)}}]}}}}))

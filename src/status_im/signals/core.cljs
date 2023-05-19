@@ -11,7 +11,6 @@
             [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
             [status-im2.constants :as constants]
-            [quo2.foundations.colors :as colors]
             [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (rf/defn status-node-started
@@ -33,7 +32,7 @@
                          ;; in case of an unknown error we show the
                          ;; error
                          (if (= error "file is not a database")
-                           (i18n/label :t/oops-wrong-password)
+                           (i18n/label :t/wrong-password)
                            error)))}
       (= (:view-id db) :progress)
       (assoc :dispatch [:navigate-to :login]))
@@ -73,25 +72,18 @@
         ;; since `connection-success` event is received on both sender and receiver devices
         ;; we check the `logged-in?` status to identify the receiver and take the user to next screen
         navigate-to-syncing-devices?    (and connection-success? (not logged-in?))
-        user-in-syncing-devices-screen? (= (:view-id db) :syncing-devices)]
+        user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
                   connection-success?
-                  (assoc-in [:syncing :pairing-in-progress?] true)
+                  (assoc-in [:syncing :pairing-in-progress?] :connected)
 
                   error-on-pairing?
-                  (update-in [:syncing :pairing-in-progress?] dissoc)
+                  (assoc-in [:syncing :pairing-in-progress?] :error)
 
                   completed-pairing?
-                  (assoc-in [:syncing :pairing-in-progress?] false))}
-           (when navigate-to-syncing-devices?
-             {:dispatch [:navigate-to :syncing-devices]})
-           (when (and error-on-pairing? user-in-syncing-devices-screen?)
-             {:dispatch-n [[:toasts/upsert
-                            {:icon           :i/info
-                             :icon-color     colors/danger-50
-                             :override-theme :light
-                             :text           (i18n/label :t/error-syncing-connection-failed)}]
-                           [:navigate-back]]})
+                  (assoc-in [:syncing :pairing-in-progress?] :completed))}
+           (when (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
+             {:dispatch [:navigate-to :syncing-progress]})
            (when completed-pairing?
              {:dispatch [:syncing/pairing-completed]}))))
 

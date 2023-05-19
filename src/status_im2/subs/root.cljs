@@ -44,6 +44,7 @@
 (reg-root-key-sub :bottom-sheet :bottom-sheet)
 
 ;;general
+(reg-root-key-sub :syncing :syncing)
 (reg-root-key-sub :sync-state :sync-state)
 (reg-root-key-sub :network-status :network-status)
 (reg-root-key-sub :peers-count :peers-count)
