@@ -44,7 +44,8 @@
      (i18n/label-pluralize seed-phrase-count :t/words-n)]]])
 
 (defn- recovery-form
-  [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase]}]
+  [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
+           on-invalid-seed-phrase]}]
   (let [button-disabled? (or error-state?
                              (not (constants/seed-phrase-valid-length word-count))
                              (not all-words-valid?))]
@@ -68,7 +69,7 @@
        :disabled button-disabled?
        :on-press #(rf/dispatch [:onboarding-2/seed-phrase-entered
                                 (security/mask-data seed-phrase)
-                                (fn [] (js/alert "Invalid seed phrase"))])}
+                                on-invalid-seed-phrase])}
       (i18n/label :t/continue)]]))
 
 (defn keyboard-suggestions
@@ -79,15 +80,20 @@
 
 (defn screen
   []
-  (reagent/with-let [keyboard-shown?        (reagent/atom false)
-                     keyboard-show-listener (.addListener rn/keyboard
-                                                          "keyboardDidShow"
-                                                          #(reset! keyboard-shown? true))
-                     keyboard-hide-listener (.addListener rn/keyboard
-                                                          "keyboardDidHide"
-                                                          #(reset! keyboard-shown? false))
-                     seed-phrase            (reagent/atom "")
-                     on-change-seed-phrase  #(reset! seed-phrase (string/lower-case %))]
+  (reagent/with-let [keyboard-shown?         (reagent/atom false)
+                     keyboard-show-listener  (.addListener rn/keyboard
+                                                           "keyboardDidShow"
+                                                           #(reset! keyboard-shown? true))
+                     keyboard-hide-listener  (.addListener rn/keyboard
+                                                           "keyboardDidHide"
+                                                           #(reset! keyboard-shown? false))
+                     invalid-seed-phrase?    (reagent/atom false)
+                     set-invalid-seed-phrase #(reset! invalid-seed-phrase? true)
+                     seed-phrase             (reagent/atom "")
+                     on-change-seed-phrase   (fn [new-phrase]
+                                               (when @invalid-seed-phrase?
+                                                 (reset! invalid-seed-phrase? false))
+                                               (reset! seed-phrase (string/lower-case new-phrase)))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -103,21 +109,25 @@
           error-in-words?          (or (not last-partial-word-valid?)
                                        (not butlast-words-valid?))
           suggestions-state        (cond
-                                     (or error-in-words? words-exceeded?) :error
+                                     (or error-in-words?
+                                         words-exceeded?
+                                         @invalid-seed-phrase?)           :error
                                      (string/blank? @seed-phrase)         :info
                                      (string/ends-with? @seed-phrase " ") :empty
                                      :else                                :words)
           suggestions-text         (cond
-                                     words-exceeded? (i18n/label :t/seed-phrase-words-exceeded)
-                                     error-in-words? (i18n/label :t/seed-phrase-error)
-                                     :else           (i18n/label :t/seed-phrase-info))]
+                                     words-exceeded?       (i18n/label :t/seed-phrase-words-exceeded)
+                                     error-in-words?       (i18n/label :t/seed-phrase-error)
+                                     @invalid-seed-phrase? (i18n/label :t/seed-phrase-invalid)
+                                     :else                 (i18n/label :t/seed-phrase-info))]
       [:<>
        [recovery-form
-        {:seed-phrase           @seed-phrase
-         :error-state?          (= suggestions-state :error)
-         :all-words-valid?      all-words-valid?
-         :on-change-seed-phrase on-change-seed-phrase
-         :word-count            word-count}]
+        {:seed-phrase            @seed-phrase
+         :error-state?           (= suggestions-state :error)
+         :all-words-valid?       all-words-valid?
+         :on-change-seed-phrase  on-change-seed-phrase
+         :word-count             word-count
+         :on-invalid-seed-phrase set-invalid-seed-phrase}]
        (when @keyboard-shown?
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard

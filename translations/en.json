@@ -1492,6 +1492,7 @@
     "seed-phrase-placeholder": "Type or paste your recovery phrase",
     "seed-phrase-words-exceeded": "Recovery phrase cannot exceed 24 words",
     "seed-phrase-error": "Recovery phrase contains invalid words",
+    "seed-phrase-invalid": "Invalid recovery phrase",
     "seed-phrase-info": "Enter 12, 18 or 24 words separated by spaces",
     "word-count": "Word count",
     "word-n": "Word #{{number}}",
@@ -2180,3 +2181,4 @@
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
     "dont-yell-at-me": "Don’t yell at me"
 }
+
