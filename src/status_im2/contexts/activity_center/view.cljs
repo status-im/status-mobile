@@ -20,7 +20,9 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [react-native.blur :as blur]
-            [react-native.navigation :as navigation]))
+            [react-native.navigation :as navigation]
+            [status-im.ui.components.webview :as webview]
+            [reagent.core :as reagent]))
 
 (defn filter-selector-read-toggle
   []
@@ -218,8 +220,31 @@
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
       (let [notifications (rf/sub [:activity-center/notifications])]
-        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
-         [blur/view style/blur]
+        [rn/view {:flex 1  :padding-top (navigation/status-bar-height)}
+         ;;[blur/view style/blur]
+         [rn/view {:style {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}}
+          [webview/webview
+           {:style  {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}
+            :source {:html "<html>
+            <head>
+              <meta name=\"viewport\" content=\"initial-scale=1.0 maximum-scale=1.0\" />
+              <style>
+                .blur {
+                  position: absolute;
+                  top: 0;
+                  right:0;
+                  bottom: 0;
+                  left: 0;
+                  background-color: rgba(27,39,61,0.8);
+                  -webkit-backdrop-filter: blur(20px);
+                  backdrop-filter: blur(20px);
+                }
+              </style>
+            </head>
+            <body>
+              <div class=\"blur\" />
+            </body>
+          </html>"}}]]
          [header]
          [rn/flat-list
           {:data                      notifications
