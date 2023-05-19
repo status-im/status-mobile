@@ -73,7 +73,7 @@
                 (styles/sheet insets window-height override-theme shell?))}
 
        (when shell?
-         [blur/view
+         [blur/webview-blur
           {:style styles/shell-bg}])
 
        (when selected-item

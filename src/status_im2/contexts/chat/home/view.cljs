@@ -116,10 +116,13 @@
          [chats selected-tab top])
        [rn/view
         {:style (style/blur-container top)}
-        [blur/view
-         {:blur-amount (if platform/ios? 20 10)
-          :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-          :style       style/blur}]
+        [blur/webview-blur
+         {:style style/blur
+          :blur-radius (if platform/ios? 20 10)}]
+        ;[blur/view
+        ; {:blur-amount (if platform/ios? 20 10)
+        ;  :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+        ;  :style       style/blur}]
         [common.home/top-nav
          {:type   :grey
           :avatar {:customization-color customization-color}}]

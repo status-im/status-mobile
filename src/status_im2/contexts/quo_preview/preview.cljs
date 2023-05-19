@@ -231,17 +231,28 @@
        {:source (or image (resources/get-mock-image :community-cover))
         :style  {:height "100%"
                  :width  "100%"}}]
-      [blur/view
-       (merge {:style         {:position :absolute
-                               :top      0
-                               :bottom   0
-                               :left     0
-                               :right    0}
-               :blur-amount   10
-               :overlay-color (colors/theme-colors
-                               colors/white-opa-70
-                               colors/neutral-80-opa-80)}
-              blur-view-props)]])
+      [blur/webview-blur
+       {:style       {:position :absolute
+                      :top      0
+                      :bottom   0
+                      :left     0
+                      :right    0}
+        :blur-amount 10
+        :overlay-color (colors/theme-colors
+                        colors/white-opa-70
+                        colors/neutral-80-opa-80)}]
+      ;[blur/view
+      ; (merge {:style         {:position :absolute
+      ;                         :top      0
+      ;                         :bottom   0
+      ;                         :left     0
+      ;                         :right    0}
+      ;         :blur-amount   10
+      ;         :overlay-color (colors/theme-colors
+      ;                         colors/white-opa-70
+      ;                         colors/neutral-80-opa-80)}
+      ;        blur-view-props)]
+      ])
    [rn/view
     {:style (merge {:position           :absolute
                     :top                32

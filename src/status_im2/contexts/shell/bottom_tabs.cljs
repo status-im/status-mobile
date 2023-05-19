@@ -52,7 +52,7 @@
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
     [reanimated/view {:style animated-style}
      (when pass-through?
-       [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
+       [blur/webview-blur (blur-overlay-params style/bottom-tabs-blur-overlay)])
      [rn/view {:style (style/bottom-tabs)}
       [gesture/gesture-detector {:gesture communities-double-tab-gesture}
        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]

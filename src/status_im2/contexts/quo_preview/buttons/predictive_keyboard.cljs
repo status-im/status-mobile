@@ -31,7 +31,7 @@
         [preview/customizer state descriptor]
         [rn/view
          (when @blur?
-           [blur/view
+           [blur/webview-blur
             {:style         {:position         :absolute
                              :left             0
                              :right            0

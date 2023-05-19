@@ -10,7 +10,8 @@
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.background.style :as style]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]))
+            [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]
+            [status-im.ui.components.webview :as webview]))
 
 (def header-text
   [{:text     (i18n/label :t/join-decentralised-communities)
@@ -79,12 +80,16 @@
        :header-background true
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
-       [blur/view
-        {:style         style/background-blur-overlay
-         :blur-amount   30
-         :blur-radius   25
-         :blur-type     :transparent
-         :overlay-color :transparent}])]))
+       [blur/webview-blur
+        {:style style/background-blur-overlay
+         :blur-radius 25}]
+       ;[blur/view
+       ; {:style         style/background-blur-overlay
+       ;  :blur-amount   30
+       ;  :blur-radius   25
+       ;  :blur-type     :transparent
+       ;  :overlay-color :transparent}]
+       )]))
 
 (defn view [dark-overlay?] [:f> f-view dark-overlay?])
 

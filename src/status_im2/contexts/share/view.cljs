@@ -164,5 +164,5 @@
       [rn/view
        {:flex        1
         :padding-top (navigation/status-bar-height)}
-       [blur/view style/blur]
+       [blur/webview-blur style/blur]
        [tab-content window-width]])))

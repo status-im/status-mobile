@@ -11,7 +11,8 @@
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.home.style :as style]
             [status-im2.common.resources :as resources]
-            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]))
+            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
+            [status-im.ui.components.webview :as webview]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -74,10 +75,13 @@
            :data                              selected-items}])
        [rn/view
         {:style (style/blur-container top)}
-        [blur/view
-         {:blur-amount (if platform/ios? 20 10)
-          :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-          :style       style/blur}]
+        [blur/webview-blur
+         {:style style/blur
+          :blur-radius (if platform/ios? 20 10)}]
+        ;[blur/view
+        ; {:blur-amount (if platform/ios? 20 10)
+        ;  :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+        ;  :style       style/blur}]
         [common.home/top-nav
          {:type   :grey
           :avatar {:customization-color customization-color}}]

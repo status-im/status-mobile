@@ -269,11 +269,15 @@
   [_]
   (fn [{:keys [enabled label]}]
     (when enabled
-      [blur/view
-       {:style         style/blur-channel-header
-        :blur-amount   20
-        :blur-type     :transparent
-        :overlay-color :transparent}
+      [rn/view
+       [blur/webview-blur
+        {:style style/blur-channel-header
+         :blur-radius (if platform/ios? 20 10)}]
+      ;[blur/view
+      ; {:style         style/blur-channel-header
+      ;  :blur-amount   20
+      ;  :blur-type     :transparent
+      ;  :overlay-color :transparent}
        [quo/divider-label
         {:label            label
          :chevron-position :left}]])))

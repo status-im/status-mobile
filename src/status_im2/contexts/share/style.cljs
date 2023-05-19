@@ -11,7 +11,8 @@
                    :right    0
                    :bottom   0}
    :overlay-color colors/neutral-80-opa-80
-   :blur-amount   20})
+   :blur-amount   20
+   :blur-radius   20})
 
 (def header-button
   {:margin-bottom 12

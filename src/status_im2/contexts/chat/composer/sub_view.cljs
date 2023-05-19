@@ -19,7 +19,7 @@
 (defn f-blur-view
   [layout-height focused?]
   [reanimated/view {:style (style/blur-container layout-height focused?)}
-   [blur/view (style/blur-view)]])
+   [blur/webview-blur (style/blur-view)]])
 
 (defn blur-view
   [layout-height focused?]

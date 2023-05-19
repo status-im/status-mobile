@@ -88,7 +88,7 @@
   (let [pass-through? (rf/sub [:shell/shell-pass-through?])]
     [rn/view {:style (style/top-nav-blur-overlay-container (+ 56 top) pass-through?)}
      (when pass-through?
-       [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
+       [blur/webview-blur (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
 (defn shell
   [customization-color]

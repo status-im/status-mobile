@@ -33,12 +33,15 @@
   [{:keys [left title text right container-style override-theme]}]
   [rn/view
    {:style (merge style/box-container container-style)}
-   [blur/view
-    {:style         style/blur-container
-     :blur-amount   13
-     :blur-radius   10
-     :blur-type     :transparent
-     :overlay-color :transparent}]
+   [blur/webview-blur
+    {:style style/blur-container
+     :blur-radius 10}]
+   ;[blur/view
+   ; {:style         style/blur-container
+   ;  :blur-amount   13
+   ;  :blur-radius   10
+   ;  :blur-type     :transparent
+   ;  :overlay-color :transparent}]
    [rn/view
     {:style (style/content-container override-theme)}
     [rn/view {:style style/left-side-container} left]

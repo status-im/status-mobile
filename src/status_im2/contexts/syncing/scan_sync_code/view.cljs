@@ -176,7 +176,7 @@
                 [(merge qr-view-finder
                         {:borderRadius 16})]
                 [])}
-      [blur/view
+      [blur/webview-blur
        {:style            style/absolute-fill
         :blur-amount      10
         :blur-type        :transparent
