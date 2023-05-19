@@ -283,6 +283,15 @@ class ChatElementByText(Text):
             self.driver.fail("No image is found in message!")
 
     @property
+    def image_container_in_message(self):
+        try:
+            self.driver.info("Trying to access images (image container) inside message with text '%s'" % self.message_text)
+            ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
+            return Button(self.driver, xpath='%s//*[@content-desc="image-container"]' % self.locator)
+        except NoSuchElementException:
+            self.driver.fail("No image container is found in message!")
+
+    @property
     def pinned_by_label(self):
         class PinnedByLabelText(Text):
             def __init__(self, driver, parent_locator: str):
@@ -478,8 +487,7 @@ class PreviewMessage(ChatElementByText):
     def preview_title(self):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator,
-                                 xpath="//*[@content-desc='member-photo']/ancestor::android.view.ViewGroup[1]/preceding-sibling::android.widget.TextView[2]")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='title']")
 
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
@@ -487,10 +495,17 @@ class PreviewMessage(ChatElementByText):
     def preview_subtitle(self):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator,
-                                 xpath="//*[@content-desc='member-photo']/ancestor::android.view.ViewGroup[1]/preceding-sibling::android.widget.TextView[3]")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='description']")
 
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
+
+    @property
+    def preview_link(self):
+        class PreviewLink(SilentButton):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='link']")
+
+        return PreviewMessage.return_element_or_empty(PreviewLink(self.driver, self.locator))
 
 
 class CommunityLinkPreviewMessage(ChatElementByText):
@@ -716,6 +731,8 @@ class ChatView(BaseView):
         # Chat input
         self.chat_message_input = ChatMessageInput(self.driver)
         self.cancel_reply_button = Button(self.driver, accessibility_id="reply-cancel-button")
+        self.url_preview_composer = Button(self.driver, accessibility_id="url-preview")
+        self.url_preview_composer_text = Text(self.driver, xpath='//*[@content-desc="url-preview"]//*[@content-desc="title"]')
         self.quote_username_in_message_input = EditBox(self.driver,
                                                        xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
         self.chat_item = Button(self.driver, xpath="(//*[@content-desc='chat-item'])[1]")
@@ -739,7 +756,6 @@ class ChatView(BaseView):
         self.show_images_button = Button(self.driver, accessibility_id="open-images-button")
         self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
-        self.first_image_from_gallery = Button(self.driver, accessibility_id="image-0")
         self.images_confirm_selection_button = Button(self.driver, accessibility_id="confirm-selection")
         self.images_area_in_gallery = Button(self.driver,
                                              xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
@@ -806,13 +822,6 @@ class ChatView(BaseView):
         self.pinned_messages_button = PinnedMessagesOnProfileButton(self.driver)
         self.nickname_input_field = EditBox(self.driver, accessibility_id="nickname-input")
         self.remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
-
-        # Timeline (My Status tab)
-        self.timeline_add_new_status_button = Button(self.driver, accessibility_id="plus-button")
-        self.timeline_my_status_editbox = EditBox(self.driver, accessibility_id="my-status-input")
-        self.timeline_open_images_panel_button = Button(self.driver, accessibility_id="open-images-panel-button")
-        self.timeline_send_my_status_button = Button(self.driver, accessibility_id="send-my-status-button")
-        self.timeline_own_account_photo = Button(self.driver, accessibility_id="own-account-photo")
 
         # Communities
         self.create_community_button = Button(self.driver, translation_id="create-community")
@@ -1115,20 +1124,6 @@ class ChatView(BaseView):
         final_timestamps = [t[1:] if t[0] == '0' else t for t in timestamps]
         return final_timestamps
 
-    def set_new_status(self, status='something is happening', image=False):
-        self.driver.info("## Setting new status:'%s', image set is: '%s'" %
-                         (BaseElement(self.driver).exclude_emoji(status), str(image)), device=False)
-        self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
-        self.timeline_my_status_editbox.set_value(status)
-
-        if image:
-            self.timeline_open_images_panel_button.click()
-            if self.allow_button.is_element_displayed():
-                self.allow_button.click()
-            self.first_image_from_gallery.click()
-        self.timeline_send_my_status_button.click()
-        self.driver.info("## New status is set successfully!", device=False)
-
     def get_transaction_message_by_asset(self, transaction_value, incoming=True) -> object:
         if incoming:
             transaction_message = self.get_incoming_transaction(account=None, transaction_value=transaction_value)
@@ -1155,6 +1150,19 @@ class ChatView(BaseView):
             self.driver.find_element(MobileBy.XPATH, "//*[@content-desc='user-list']//*[@text='%s']" % user_name).click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
+
+    def get_image_by_index(self, index=0):
+        return Button(self.driver, accessibility_id="image-%s" % index)
+
+    def send_images_with_description(self, description, indexes=None):
+        if indexes is None:
+            indexes = [0]
+        self.show_images_button.click()
+        self.allow_button.click_if_shown()
+        [self.get_image_by_index(i).click() for i in indexes]
+        self.images_confirm_selection_button.click()
+        self.chat_message_input.set_value(description)
+        self.send_message_button.click()
 
     @staticmethod
     def get_resolved_chat_key(username, chat_key):

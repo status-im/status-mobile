@@ -494,19 +494,15 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702859)
-    def test_1_1_chat_image_send_reply(self):
+    def test_community_one_image_send_reply(self):
 
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
         image_description = 'description'
-        self.channel_1.show_images_button.click()
-        self.channel_1.allow_button.click_if_shown()
-        self.channel_1.first_image_from_gallery.click()
-        self.channel_1.images_confirm_selection_button.click()
-        self.channel_1.chat_message_input.set_value(image_description)
-        self.channel_1.send_message_button.click()
-        self.channel_1.chat_message_input.click()
-        self.channel_1.chat_element_by_text(image_description).image_in_message.click()
-        self.channel_1.click_system_back_button()
+        self.channel_1.send_images_with_description(image_description)
+        # TODO: possible after adding proper accessibility-id to 1 image in chat
+        # self.channel_1.chat_message_input.click()
+        # self.channel_1.chat_element_by_text(image_description).image_in_message.click()
+        # self.channel_1.click_system_back_button()
 
         # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
         # self.home_2.just_fyi('check image, description and options for receiver')
@@ -546,6 +542,28 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(703194)
+    def test_community_several_images_send_reply(self):
+        self.home_1.just_fyi('Send several images in 1-1 chat from Gallery')
+        image_description, file_name = 'gallery', 'gallery_1.png'
+        self.channel_1.send_images_with_description(image_description, [0, 1])
+
+        self.channel_2.just_fyi("Check gallery on second device")
+        self.channel_2.jump_to_communities_home()
+        self.home_2.get_to_community_channel_from_home(self.community_name)
+        if self.channel_2.chat_element_by_text(image_description).image_container_in_message.is_element_differs_from_template(file_name, 5):
+            self.errors.append("Gallery message do not match the template!")
+
+        self.channel_2.just_fyi("Can reply to gallery")
+        self.channel_2.quote_message(image_description)
+        message_text = 'reply to gallery'
+        self.channel_2.chat_message_input.send_keys(message_text)
+        self.channel_2.send_message_button.click()
+        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
+            self.errors.append('Reply message was not received by the sender')
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702840)
     def test_community_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
@@ -574,22 +592,35 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702844)
     def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
-                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
-                                      'subtitle': 'GitHub'},
+        preview_urls = {
+                        # TODO: disabled because of the bug in 15891
+                        # 'giphy':{'url': 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO',
+                        #               'title': 'This Is Fine GIF - Find & Share on GIPHY',
+                        #               'description': 'Discover & share this Meme GIF with everyone you know. GIPHY is how you search, share, discover, and create GIFs.',
+                        #               'link': 'giphy.com'},
+                        'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
+                                      'title': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
+                                      'description': 'Update translation json files of 19 languages.',
+                                      'link': 'github.com'},
                         'yotube_short': {
                             'url': 'https://youtu.be/Je7yErjEVt4',
-                            'txt': 'Status, your gateway to Ethereum',
-                            'subtitle': 'YouTube'},
+                            'title': 'Status, your gateway to Ethereum',
+                            'description': 'Learn more at https://status.im. This video aims to provide an explanation '
+                                           'and brief preview of the utility that will be supported by the Status App - provid...',
+                            'link': 'youtu.be'},
                         'yotube_full': {
                             'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                            'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'},
+                            'title': 'Status & Keycard – Hardware-Enforced Security',
+                            'description': 'With Status and Keycard, you can enable hardware enforced authorizations to '
+                                           'your Status account and transactions. Two-factor authentication to access your ac...',
+                            'link': 'www.youtube.com'},
                         'yotube_mobile': {
                             'url': 'https://m.youtube.com/watch?v=Je7yErjEVt4',
-                            'txt': 'Status, your gateway to Ethereum',
-                            'subtitle': 'YouTube'},
+                            'title': 'Status, your gateway to Ethereum',
+                            'description': 'Learn more at https://status.im. This video aims to provide an explanation '
+                                           'and brief preview of the utility that will be supported by the Status App - provid...',
+                            'link': 'm.youtube.com',
+                        },
 
                         # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
                         # 'twitter': {
@@ -599,36 +630,31 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         # }
                         }
 
-        self.home_1.just_fyi("Check enabling and sending first gif")
-        self.channel_2.send_message(giphy_url)
-        self.channel_2.element_by_translation_id("dont-ask").click()
-        self.channel_1.element_by_text("Enable").wait_and_click()
 
-        self.channel_1.element_by_translation_id("enable-all").wait_and_click()
-        self.channel_1.click_system_back_button()
-        if not self.channel_1.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("No preview is shown for %s" % giphy_url)
         for key in preview_urls:
             self.home_2.just_fyi("Checking %s preview case" % key)
             data = preview_urls[key]
-            self.channel_2.send_message(data['url'])
-            message = self.channel_1.get_preview_message_by_text(data['url'])
-            if message.preview_title:
-                if data['txt'] not in message.preview_title.text:
-                    self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
-            else:
-                self.drivers[0].fail("No preview is shown!")
-            if message.preview_subtitle:
-                if message.preview_subtitle.text != data['subtitle']:
-                    self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
-            else:
-                self.drivers[0].fail("No preview title is shown!")
+            url = data['url']
+            self.channel_2.chat_message_input.set_value(url)
+            self.channel_2.url_preview_composer.wait_for_element(20)
+            if self.channel_2.url_preview_composer_text.text != data['title']:
+                self.errors.append(
+                    "Preview text is not expected, it is '%s'" % self.channel_2.url_preview_composer_text.text)
+            self.channel_2.send_message_button.click()
+            self.channel_1.get_preview_message_by_text(url).wait_for_element(60)
+            message = self.channel_1.get_preview_message_by_text(url)
+            # if not message.preview_image:
+            #     self.errors.append("No preview is shown for %s" % link_data['url'])
+            if message.preview_title.text != data['title']:
+                self.errors.append("Title is not equal expected for '%s', actual is '%s'" % (url, message.preview_title.text))
 
-        self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
-        if self.channel_2.element_by_translation_id("enable").is_element_displayed():
-            self.errors.append("Enable button is still shown after clicking on 'Don't ask again'")
-        if self.channel_2.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("Preview is shown for sender without permission")
+            if message.preview_subtitle.text != data['description']:
+                self.errors.append(
+                    "Description is not equal expected for '%s', actual is '%s'" % (url, message.preview_subtitle.text))
+
+            if message.preview_link.text != data['link']:
+                self.errors.append("Link is not equal expected for '%s', actual is '%s'" % (url, message.preview_link.text))
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702841)
