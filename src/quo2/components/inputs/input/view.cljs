@@ -4,7 +4,8 @@
             [quo2.components.inputs.input.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.theme :as theme]))
 
 (defn- label-&-counter
   [{:keys [label current-chars char-limit variant-colors]}]
@@ -100,6 +101,7 @@
            (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
                     :accessibility-label    :input
                     :placeholder-text-color (:placeholder colors-by-status)
+                    :keyboard-appearance    (theme/theme-value :light :dark override-theme)
                     :cursor-color           (:cursor variant-colors)
                     :editable               (not disabled?)
                     :on-focus               (fn []

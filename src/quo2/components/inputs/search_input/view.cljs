@@ -3,7 +3,8 @@
             [quo2.components.icon :as icon]
             [quo2.components.inputs.search-input.style :as style]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.foundations.colors :as colors]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
 
@@ -68,6 +69,7 @@
                      :placeholder-text-color (style/placeholder-color @state blur? override-theme)
                      :editable               (not disabled?)
                      :on-key-press           #(handle-backspace % @scroll-view-ref)
+                     :keyboard-appearance    (colors/theme-colors :light :dark override-theme)
                      :on-change-text         (fn [new-text]
                                                (when on-change-text
                                                  (on-change-text new-text))

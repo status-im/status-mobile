@@ -10,7 +10,9 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
-            [utils.transforms :as types]))
+            [utils.transforms :as types]
+            [quo2.foundations.colors :as colors]
+            [react-native.safe-area :as safe-area]))
 
 (defn login-multiaccount
   []
@@ -178,7 +180,8 @@
         sign-in-enabled?     (rf/sub [:sign-in-enabled?])
         profile-picture      (:uri (first (:images multiaccount)))]
     [rn/keyboard-avoiding-view
-     {:style style/login-container}
+     {:style                  style/login-container
+      :keyboardVerticalOffset (- (safe-area/get-bottom))}
      [quo/button
       {:size                32
        :type                :blur-bg
@@ -213,23 +216,25 @@
         :default-value     (security/safe-unmask-data password)
         :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
       (when (seq error)
-        [quo/info-message
-         {:type  :error
-          :size  :default
-          :icon  :i/info
-          :style style/info-message}
-         error])]
-     [quo/button
-      {:size                40
-       :type                :ghost
-       :before              :i/info
-       :disabled            processing
-       :accessibility-label :forget-password-button
-       :override-theme      :dark
-       :style               style/forget-password-button
-       :on-press            #(rf/dispatch [:show-bottom-sheet
-                                           {:content forget-password-doc :shell? true}])}
-      (i18n/label :t/forgot-password)]
+        [rn/view {:style style/error-message}
+         [quo/info-message
+          {:type :error
+           :size :default
+           :icon :i/info}
+          error]
+         [rn/touchable-opacity
+          {:hit-slop       {:top 6 :bottom 20 :left 0 :right 0}
+           :style          {:margin-left -4}
+           :disabled       processing
+           :active-opacity 1
+           :on-press       #(rf/dispatch [:show-bottom-sheet
+                                          {:content forget-password-doc :shell? true}])}
+          [rn/text
+           {:style                 {:text-decoration-line :underline
+                                    :color                colors/danger-60}
+            :size                  :paragraph-2
+            :suppress-highlighting true}
+           (i18n/label :t/forgot-password)]]])]
      [quo/button
       {:size                40
        :type                :primary
@@ -239,7 +244,7 @@
        :before              :i/unlocked
        :disabled            (or (not sign-in-enabled?) processing)
        :on-press            login-multiaccount
-       :style               (style/login-button)}
+       :style               {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
 (defn views
