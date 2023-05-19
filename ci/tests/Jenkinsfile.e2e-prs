@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.5'
+library 'status-jenkins-lib@v1.7.9'
 
 pipeline {
 
@@ -10,19 +10,13 @@ pipeline {
       description: 'Name of the branch to checkout and build.',
       defaultValue: 'develop',
     )
-/* Commented to use TEST_MARKERS values from job params
-    string(
-      name: 'TEST_MARKERS',
-      description: 'Marker expression for matching tests to run.',
-      defaultValue: 'critical',
-    ) */
-    string(
-      name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs, path, or URL.',
-    )
     string(
       name: 'PR_ID',
       description: 'ID of the Pull Request triggering this build.',
+    )
+    string(
+      name: 'APK_URL',
+      description: 'Optional, set if job require APK to be downloaded from URL.',
     )
     string(
       name: 'KEYWORD_EXPRESSION',
@@ -34,6 +28,19 @@ pipeline {
       description: 'IDs of the TestRail case, separated by a comma (Optional)',
       defaultValue: '',
     )
+    /* FIXME: Remove this no longer relevant argument */
+    string(
+      name: 'APK_NAME',
+      description: 'OBSOLETE ARGUMENT TO BE REMOVED',
+      defaultValue: 'DUMMY',
+    )
+    /* Commented to use TEST_MARKERS values from job params
+    string(
+      name: 'TEST_MARKERS',
+      description: 'Marker expression for matching tests to run.',
+      defaultValue: 'new_ui_critical',
+    )
+    */
   }
 
   options {
@@ -41,12 +48,27 @@ pipeline {
   }
 
   stages {
-    stage('Checks') {
+    stage('Prep') {
       steps { script {
-        if (params.APK_NAME == null) { error("APK_NAME parameter not set!") }
-        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
+        currentBuild.displayName = "PR-${params.PR_ID}"
+        if (params.PR_ID == null) {
+          error("PR_ID parameter not set!")
+        }
       } }
     }
+
+    stage('Fetch') {
+      when { expression { !params.APK_URL } }
+      steps { script {
+        copyArtifacts(
+          projectName: "status-mobile/prs/android-e2e/PR-${params.PR_ID}",
+          /* WARNING: This copies the latest available artifact. */
+          selector: lastWithArtifacts(),
+        )
+        apk_path = "${env.WORKSPACE}/${utils.findFile('result/*.apk')}"
+      } }
+    }
+
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -54,9 +76,9 @@ pipeline {
         }
       } }
     }
+
     stage('Test') {
       steps { script {
-        currentBuild.displayName = "PR-${params.PR_ID}"
         /* for managing optional arguments */
         def extraPytestOpts = ''
         if (params.TR_CASE_IDS != '') {
@@ -99,11 +121,11 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 9 \
+                --numprocesses 4 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --apk=${params.APK_NAME} \
+                --apk=${params.APK_URL ?: apk_path} \
                 --build=PR-${params.PR_ID}-${utils.timestamp()} \
                 --pr_number=${params.PR_ID} \
                 ${extraPytestOpts}
@@ -111,6 +133,11 @@ pipeline {
           }
         }
       } }
+    }
+  }
+  post {
+    cleanup {
+      sh 'make purge'
     }
   }
 }

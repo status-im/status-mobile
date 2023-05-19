@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.6.6'
+library 'status-jenkins-lib@v1.7.9'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -49,7 +49,6 @@ pipeline {
     stage('Prep') {
       steps {
         script {
-          utils.doGitRebasePR()
           utils.symlinkEnv()
           println("Build Number: ${utils.genBuildNumber()}")
         }

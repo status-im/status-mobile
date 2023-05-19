@@ -199,17 +199,6 @@ def build_ios_e2e
   )
 end
 
-def upload_to_diawi(source)
-  diawi(
-    file: source,
-    timeout: 120,
-    check_status_delay: 5,
-    token: ENV['DIAWI_TOKEN']
-  )
-  # save the URL to a file for use in CI
-  File.write('diawi.out', lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
-end
-
 platform :ios do
   desc '`fastlane ios adhoc` - ad-hoc lane for iOS.'
   desc 'This lane is used for PRs, Releases, etc.'
@@ -279,18 +268,6 @@ platform :ios do
       days_of_inactivity: 30
     )
     # In the future we can try using 'oldest_build_allowed'
-  end
-
-  desc '`fastlane ios upload-diawi` - upload .ipa to diawi'
-  desc 'expects to have an .ipa prepared: `status-ios/StatusIm.ipa`'
-  desc 'expects to have a diawi token as DIAWI_TOKEN env variable'
-  desc 'expects to have a github token as GITHUB_TOKEN env variable'
-  desc "will fails if file isn't there"
-  desc '---'
-  desc 'Output: writes `fastlane/diawi.out` file url of the uploded file'
-  lane :upload_diawi do
-    ipa = ENV['DIAWI_IPA'] || 'status-ios/StatusIm.ipa'
-    upload_to_diawi(ipa)
   end
 
   desc '`fastlane ios saucelabs` - upload .app to sauce labs'

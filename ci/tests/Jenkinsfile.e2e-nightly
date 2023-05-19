@@ -1,11 +1,13 @@
+library 'status-jenkins-lib@v1.7.9'
+
 pipeline {
 
   agent { label 'linux' }
 
   parameters {
     string(
-      name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs.',
+      name: 'APK_URL',
+      description: 'URL of APK uploaded to SauceLabs.',
     )
     string(
       name: 'KEYWORD_EXPRESSION',
@@ -18,8 +20,20 @@ pipeline {
     disableConcurrentBuilds()
   }
 
-
   stages {
+    stage('Fetch') {
+      when { expression { !params.APK_URL } }
+      steps { script {
+        copyArtifacts(
+          projectName: "status-mobile/nightly",
+          filter: '*-x86.apk',
+          /* WARNING: This copies the latest available artifact. */
+          selector: lastWithArtifacts(),
+        )
+        apk_path = "${env.WORKSPACE}/${utils.findFile('*-x86.apk')}"
+      } }
+    }
+
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -27,6 +41,7 @@ pipeline {
         }
       } }
     }
+
     stage('Test') {
       steps {
         withCredentials([
@@ -58,13 +73,13 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 9 \
+                --numprocesses 4 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \
-                -m \"not upgrade\" \
+                -m \"new_ui_critical or new_ui_medium\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
-                --apk=${params.APK_NAME}
+                --apk=${params.APK_URL ?: apk_path}
             """
           }
         }
@@ -87,6 +102,9 @@ pipeline {
           testResults: 'test/appium/tests/*.xml'
         )
       }
+    }
+    cleanup {
+      sh 'make purge'
     }
   }
 }

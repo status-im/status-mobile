@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.6.6'
+library 'status-jenkins-lib@v1.7.9'
 
 pipeline {
   agent { label 'linux' }
@@ -19,7 +19,7 @@ pipeline {
   }
 
   /* WARNING: Defining parameters here with the ?: trick causes them to remember last value. */
-  parameters { 
+  parameters {
     choice(
       name: 'BUILD_TYPE',
       description: 'Makefile target to build. Optional Parameter.',
