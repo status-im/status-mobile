@@ -14,17 +14,18 @@
   [{:keys [style blur-radius overlay-color]
     :or   {style {}
            blur-radius 10
-           overlay-color "#00000000"}}]
+           overlay-color "#00000000"}}
+   children]
   (let [html (str "<html>
             <head>
               <meta name=\"viewport\" content=\"initial-scale=1.0 maximum-scale=1.0\" />
               <style>
                 .blur {
                   position: absolute;
-                  top: -1000;
-                  right:-1000;
-                  bottom: -1000;
-                  left: -1000;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
                   background-color: " overlay-color ";
                   -webkit-backdrop-filter: blur(" blur-radius "px);
                   backdrop-filter: blur(" blur-radius "px);
@@ -42,7 +43,10 @@
      [rn/view {:style style}
       [webview-class
        {:style  {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}
-        :source {:html html}}]])))
+        :source {:html html}
+        :showsHorizontalScrollIndicator false
+        :pointer-events :none}]
+      children])))
 
 ;; blur view is currently not working correctly on Android.
 (def ios-view (if platform/ios? view rn/view))
