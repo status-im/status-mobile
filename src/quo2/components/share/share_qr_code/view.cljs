@@ -10,9 +10,13 @@
 (defn view
   [{:keys [source link-title
            url-on-press url-on-long-press qr-url share-on-press]}]
-  [blur/ios-view
+  [rn/view
    {:style     style/qr-code-container
     :blur-type :light}
+   [blur/webview-blur
+    {:style         {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
+     :border-radius 16
+     :overlay-color colors/white-opa-5}]
    [qr-code/qr-code
     {:source source
      :width  "100%"

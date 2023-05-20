@@ -18,7 +18,7 @@
 
 (def blur-button-container
   (merge button-container
-         {:background-color colors/neutral-80-opa-1-blur}))
+         {:padding-bottom (if platform/android? 12 0)}))
 
 (def view-button-container
   (merge button-container {:margin-bottom 24}))

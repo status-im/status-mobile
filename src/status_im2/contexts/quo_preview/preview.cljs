@@ -224,23 +224,27 @@
             :padding-vertical 16}}
    (when show-blur-background?
      [rn/view
-      {:style {:height        (or height 100)
-               :border-radius 16
-               :overflow      :hidden}}
+      {:style {:height (or height 100)}}
       [rn/image
        {:source (or image (resources/get-mock-image :community-cover))
-        :style  {:height "100%"
-                 :width  "100%"}}]
-      [blur/webview-blur
-       {:style         {:position :absolute
-                        :top      0
-                        :bottom   0
-                        :left     0
-                        :right    0}
-        :blur-amount   10
-        :overlay-color (colors/theme-colors
-                        colors/white-opa-70
-                        colors/neutral-80-opa-80)}]
+        :style  {:height        "100%"
+                 :width         "100%"
+                 :border-radius 16}}]
+      [rn/view
+       {:style {:position :absolute
+                :top      0
+                :bottom   0
+                :left     0
+                :right    0}}
+       [blur/webview-blur
+        {:style         {:position :absolute
+                         :top      0
+                         :bottom   0
+                         :left     0
+                         :right    0}
+         :blur-radius   10
+         :border-radius 16
+         :overlay-color colors/neutral-80-opa-80}]]
       ;[blur/view
       ; (merge {:style         {:position :absolute
       ;                         :top      0

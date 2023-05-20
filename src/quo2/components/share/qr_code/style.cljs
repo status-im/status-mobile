@@ -2,13 +2,14 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container
-  {:flex-direction  :row
-   :justify-content :center})
+  {:flex-direction   :row
+   :justify-content  :center
+   :background-color colors/white
+   :border-radius    12
+   :overflow         :hidden})
 
 (defn image
   [width height]
-  {:width            width
-   :height           height
-   :background-color colors/white-opa-70
-   :border-radius    12
-   :aspect-ratio     1})
+  {:width        width
+   :height       height
+   :aspect-ratio 1})

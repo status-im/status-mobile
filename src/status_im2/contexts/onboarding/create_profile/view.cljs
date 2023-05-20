@@ -49,8 +49,9 @@
 (defn button-container
   [keyboard-shown? children]
   (if keyboard-shown?
-    [blur/ios-view
-     {:style style/blur-button-container}
+    [blur/webview-blur
+     {:style         style/blur-button-container
+      :overlay-color colors/neutral-80-opa-1-blur}
      children]
     [rn/view {:style style/view-button-container}
      children]))
@@ -132,7 +133,7 @@
              :selected          @custom-color
              :on-change         on-change}]]]]]
        [rn/keyboard-avoiding-view {}
-        [button-container @keyboard-shown?
+        [button-container true
          [quo/button
           {:accessibility-label       :submit-create-profile-button
            :type                      :primary

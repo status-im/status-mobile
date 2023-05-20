@@ -11,10 +11,16 @@
   (reagent/adapt-react-class rn-webview))
 
 (defn webview-blur
-  [{:keys [style blur-radius overlay-color]
-    :or   {style         {}
-           blur-radius   10
-           overlay-color "#00000000"}}
+  [{:keys [style blur-radius overlay-color border-radius border-top-left-radius border-top-right-radius
+           border-bottom-left-radius border-bottom-right-radius]
+    :or   {style                      {}
+           blur-radius                10
+           overlay-color              "#00000000"
+           border-radius              0
+           border-top-left-radius     border-radius
+           border-top-right-radius    border-radius
+           border-bottom-left-radius  border-radius
+           border-bottom-right-radius border-radius}}
    children]
   (let
     [html
@@ -29,6 +35,19 @@
                   right: 0;
                   bottom: 0;
                   left: 0;
+                  overflow: hidden;
+                        border-top-left-radius: "
+      border-top-left-radius
+      "px;
+                        border-top-right-radius: "
+      border-top-right-radius
+      "px;
+                        border-bottom-left-radius: "
+      border-bottom-left-radius
+      "px;
+                        border-bottom-right-radius: "
+      border-bottom-right-radius
+      "px;
                   background-color: "
       overlay-color
       ";
@@ -40,9 +59,6 @@
       "px);
                 }
               </style>
-              <script type=\"text/javascript\">  
-                  //alert (\"This is an alert dialog box\");  
-              </script>  
             </head>
             <body>
               <div class=\"blur\" />
