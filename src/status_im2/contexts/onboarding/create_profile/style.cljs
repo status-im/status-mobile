@@ -20,6 +20,13 @@
   (merge button-container
          {:padding-bottom (if platform/android? 12 0)}))
 
+(def blur-button-background
+  {:position :absolute
+   :top      0
+   :bottom   0
+   :left     0
+   :right    0})
+
 (def view-button-container
   (merge button-container {:margin-bottom 24}))
 
