@@ -218,7 +218,7 @@
               {:key :secondary :value "Secondary"}]}])
 
 (defn blur-view
-  [{:keys [show-blur-background? image height blur-view-props style]} children]
+  [{:keys [show-blur-background? image height style]} children]
   [rn/view
    {:style {:flex             1
             :padding-vertical 16}}
@@ -232,12 +232,12 @@
         :style  {:height "100%"
                  :width  "100%"}}]
       [blur/webview-blur
-       {:style       {:position :absolute
-                      :top      0
-                      :bottom   0
-                      :left     0
-                      :right    0}
-        :blur-amount 10
+       {:style         {:position :absolute
+                        :top      0
+                        :bottom   0
+                        :left     0
+                        :right    0}
+        :blur-amount   10
         :overlay-color (colors/theme-colors
                         colors/white-opa-70
                         colors/neutral-80-opa-80)}]
@@ -252,7 +252,7 @@
       ;                         colors/white-opa-70
       ;                         colors/neutral-80-opa-80)}
       ;        blur-view-props)]
-      ])
+     ])
    [rn/view
     {:style (merge {:position           :absolute
                     :top                32

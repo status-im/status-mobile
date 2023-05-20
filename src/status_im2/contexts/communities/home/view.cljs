@@ -2,7 +2,6 @@
   (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [react-native.blur :as blur]
@@ -11,8 +10,7 @@
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.home.style :as style]
             [status-im2.common.resources :as resources]
-            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
-            [status-im.ui.components.webview :as webview]))
+            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -76,7 +74,7 @@
        [rn/view
         {:style (style/blur-container top)}
         [blur/webview-blur
-         {:style style/blur
+         {:style       style/blur
           :blur-radius (if platform/ios? 20 10)}]
         ;[blur/view
         ; {:blur-amount (if platform/ios? 20 10)

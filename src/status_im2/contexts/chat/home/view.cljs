@@ -5,7 +5,6 @@
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.platform :as platform]
             [status-im2.contexts.chat.home.style :as style]
@@ -117,7 +116,7 @@
        [rn/view
         {:style (style/blur-container top)}
         [blur/webview-blur
-         {:style style/blur
+         {:style       style/blur
           :blur-radius (if platform/ios? 20 10)}]
         ;[blur/view
         ; {:blur-amount (if platform/ios? 20 10)

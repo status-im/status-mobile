@@ -20,9 +20,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [react-native.blur :as blur]
-            [react-native.navigation :as navigation]
-            [status-im.ui.components.webview :as webview]
-            [reagent.core :as reagent]))
+            [react-native.navigation :as navigation]))
 
 (defn filter-selector-read-toggle
   []
@@ -220,11 +218,8 @@
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
       (let [notifications (rf/sub [:activity-center/notifications])]
-        [rn/view {:flex 1  :padding-top (navigation/status-bar-height)}
-         [blur/webview-blur
-          {:style {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}
-           :overlay-color colors/neutral-80-opa-80
-           :blur-radius 20}]
+        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
+         [blur/webview-blur style/blur]
          [header]
          [rn/flat-list
           {:data                      notifications

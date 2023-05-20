@@ -44,7 +44,7 @@
   [rn/view
    {:style (merge style/box-container container-style)}
    [blur/webview-blur
-    {:style style/blur-container
+    {:style       style/blur-container
      :blur-radius 10}]
    ;[blur/view
    ; {:style         style/blur-container

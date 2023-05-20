@@ -12,11 +12,14 @@
 
 (defn webview-blur
   [{:keys [style blur-radius overlay-color]
-    :or   {style {}
-           blur-radius 10
+    :or   {style         {}
+           blur-radius   10
            overlay-color "#00000000"}}
    children]
-  (let [html (str "<html>
+  (let
+    [html
+     (str
+      "<html>
             <head>
               <meta name=\"viewport\" content=\"initial-scale=1.0 maximum-scale=1.0\" />
               <style>
@@ -26,9 +29,15 @@
                   right: 0;
                   bottom: 0;
                   left: 0;
-                  background-color: " overlay-color ";
-                  -webkit-backdrop-filter: blur(" blur-radius "px);
-                  backdrop-filter: blur(" blur-radius "px);
+                  background-color: "
+      overlay-color
+      ";
+                  -webkit-backdrop-filter: blur("
+      blur-radius
+      "px);
+                  backdrop-filter: blur("
+      blur-radius
+      "px);
                 }
               </style>
               <script type=\"text/javascript\">  
@@ -42,7 +51,7 @@
     (reagent/as-element
      [rn/view {:style style}
       [webview-class
-       {:style  {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}
+       {:style {:position :absolute :top 0 :left 0 :right 0 :bottom 0 :background-color :transparent}
         :source {:html html}
         :showsHorizontalScrollIndicator false
         :pointer-events :none}]
