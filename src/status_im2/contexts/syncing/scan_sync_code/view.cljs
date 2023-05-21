@@ -177,11 +177,10 @@
                         {:borderRadius 16})]
                 [])}
       [blur/webview-blur
-       {:style            style/absolute-fill
-        :blur-amount      10
-        :blur-type        :transparent
-        :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]]]))
+       {:style         style/absolute-fill
+        :blur-radius   10
+        :blur-type     :transparent
+        :overlay-color colors/neutral-80}]]]))
 
 (defn f-view
   [{:keys [title show-bottom-view? background]}]
