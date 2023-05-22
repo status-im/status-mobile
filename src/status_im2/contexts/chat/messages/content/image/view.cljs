@@ -18,8 +18,6 @@
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
         shared-element-id (rf/sub [:shared-element-id])]
-
-    (println "(:image content)" (:image content))
     [:<>
      (when (= index 0)
        [rn/view {:style {:margin-bottom 10}} [text/text-content message]])
