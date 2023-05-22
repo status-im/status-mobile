@@ -26,9 +26,10 @@
       (h/fire-event
        :on-start-should-set-responder
        (h/get-by-test-id "record-audio")
-       {:nativeEvent {:locationX 70
-                      :locationY 70
-                      :timestamp 0}})
+       {:nativeEvent {:locationX  70
+                      :locationY  70
+                      :timestamp  0
+                      :identifier 0}})
       (-> (h/expect event)
           (.toHaveBeenCalledTimes 1))))
 
@@ -43,16 +44,18 @@
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  200
+                        :identifier 0}})
         (h/advance-timers-by-time 250)
         (-> (h/expect event)
             (.toHaveBeenCalledTimes 1)))))
@@ -69,29 +72,33 @@
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  200
+                        :identifier 0}})
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 80
-                        :locationY 80
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  80
+                        :locationY  80
+                        :timestamp  200
+                        :identifier 0}})
         (h/advance-timers-by-time 250)
         (-> (js/expect event)
             (.toHaveBeenCalledTimes 1))
@@ -112,23 +119,26 @@
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-move
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 80
-                        :locationY -30
-                        :pageX     80
-                        :pageY     -30}})
+         {:nativeEvent {:locationX  80
+                        :locationY  -30
+                        :pageX      80
+                        :pageY      -30
+                        :identifier 0}})
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 40
-                        :locationY 80
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  40
+                        :locationY  80
+                        :timestamp  200
+                        :identifier 0}})
         (h/advance-timers-by-time 250)
         (-> (js/expect event)
             (.toHaveBeenCalledTimes 1))
@@ -146,22 +156,25 @@
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  200
+                        :identifier 0}})
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 40
-                        :locationY 80
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  40
+                        :locationY  80
+                        :timestamp  200
+                        :identifier 0}})
         (h/advance-timers-by-time 250)
         (-> (js/expect event)
             (.toHaveBeenCalledTimes 1)))))
@@ -178,23 +191,26 @@
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX 70
-                        :locationY 70
-                        :timestamp 0}})
+         {:nativeEvent {:locationX  70
+                        :locationY  70
+                        :timestamp  0
+                        :identifier 0}})
         (h/advance-timers-by-time 500)
         (h/fire-event
          :on-responder-move
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX -30
-                        :locationY 80
-                        :pageX     -30
-                        :pageY     80}})
+         {:nativeEvent {:locationX  -30
+                        :locationY  80
+                        :pageX      -30
+                        :pageY      80
+                        :identifier 0}})
         (h/fire-event
          :on-responder-release
          (h/get-by-test-id "record-audio")
-         {:nativeEvent {:locationX -10
-                        :locationY 70
-                        :timestamp 200}})
+         {:nativeEvent {:locationX  -10
+                        :locationY  70
+                        :timestamp  200
+                        :identifier 0}})
         (h/advance-timers-by-time 250)
         (-> (js/expect event)
             (.toHaveBeenCalledTimes 1))))))

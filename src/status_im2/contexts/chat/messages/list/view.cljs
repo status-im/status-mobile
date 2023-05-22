@@ -105,8 +105,9 @@
 (defn messages-list-content
   [{:keys [chat-id] :as chat} insets keyboard-shown]
   (fn []
-    (let [context  (rf/sub [:chats/current-chat-message-list-view-context])
-          messages (rf/sub [:chats/raw-chat-messages-stream chat-id])]
+    (let [context    (rf/sub [:chats/current-chat-message-list-view-context])
+          messages   (rf/sub [:chats/raw-chat-messages-stream chat-id])
+          recording? (rf/sub [:chats/recording?])]
       [rn/view
        {:style {:flex 1}}
        ;; NOTE: DO NOT use anonymous functions for handlers
@@ -137,7 +138,8 @@
          ;; TODO https://github.com/facebook/react-native/issues/30034
          :inverted                     (when platform/ios? true)
          :style                        (when platform/android? {:scaleY -1})
-         :on-layout                    on-messages-view-layout}]])))
+         :on-layout                    on-messages-view-layout
+         :scroll-enabled               (not recording?)}]])))
 
 ;; This should be replaced with keyboard hook. It has to do with flat-list probably. The keyboard-shown
 ;; value updates in the parent component, but does not get passed to the children.

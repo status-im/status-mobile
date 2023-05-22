@@ -143,7 +143,7 @@
   [{:keys [on-init on-start-recording on-send on-cancel on-reviewing-audio
            record-audio-permission-granted
            on-request-record-audio-permission on-check-audio-permissions
-           audio-file]}]
+           audio-file on-lock]}]
   [:f>
    ;; TODO we need to refactor this, and use :f> with defined function, currenly state is reseted each
    ;; time parent component
@@ -172,6 +172,7 @@
            output-file (atom audio-file)
            reached-max-duration? (atom false)
            touch-timestamp (atom nil)
+           touch-identifier (atom nil)
            disabled? (atom false)
            app-state-listener (atom nil)
            rec-options
@@ -260,6 +261,7 @@
                                              #(log/debug "[record-audio] new recorder - on meter")
                                              #(log/debug "[record-audio] new recorder - on ended"))]
                  (reset! touch-timestamp (oops/oget e "nativeEvent.timestamp"))
+                 (reset! touch-identifier (oops/oget e "nativeEvent.identifier"))
                  (when-not @reviewing-audio?
                    (if record-audio-permission-granted
                      (do
@@ -321,6 +323,7 @@
                      location-y              (oops/oget e "nativeEvent.locationY")
                      page-x                  (oops/oget e "nativeEvent.pageX")
                      page-y                  (oops/oget e "nativeEvent.pageY")
+                     identifier              (oops/oget e "nativeEvent.identifier")
                      moved-to-send-button?   (touch-inside-area?
                                               {:location-x    location-x
                                                :location-y    location-y
@@ -360,31 +363,32 @@
                                                record-button-area-big)
                                               (not= location-x page-x)
                                               (not= location-y page-y))]
-                 (cond
-                   (and
-                    (or
-                     (and moved-to-record-button? @ready-to-lock?)
-                     (and (not @locked?) moved-to-lock-button? @record-button-at-initial-position?))
-                    (not @ready-to-delete?)
-                    (not @ready-to-send?)
-                    @recording?)
-                   (reset! ready-to-lock? moved-to-lock-button?)
-                   (and
-                    (or
-                     (and moved-to-record-button? @ready-to-delete?)
-                     (and moved-to-delete-button? @record-button-at-initial-position?))
-                    (not @ready-to-lock?)
-                    (not @ready-to-send?)
-                    @recording?)
-                   (reset! ready-to-delete? moved-to-delete-button?)
-                   (and
-                    (or
-                     (and moved-to-record-button? @ready-to-send?)
-                     (and moved-to-send-button? @record-button-at-initial-position?))
-                    (not @ready-to-lock?)
-                    (not @ready-to-delete?)
-                    @recording?)
-                   (reset! ready-to-send? moved-to-send-button?)))))
+                 (when (= identifier @touch-identifier)
+                   (cond
+                     (and
+                      (or
+                       (and moved-to-record-button? @ready-to-lock?)
+                       (and (not @locked?) moved-to-lock-button? @record-button-at-initial-position?))
+                      (not @ready-to-delete?)
+                      (not @ready-to-send?)
+                      @recording?)
+                     (reset! ready-to-lock? moved-to-lock-button?)
+                     (and
+                      (or
+                       (and moved-to-record-button? @ready-to-delete?)
+                       (and moved-to-delete-button? @record-button-at-initial-position?))
+                      (not @ready-to-lock?)
+                      (not @ready-to-send?)
+                      @recording?)
+                     (reset! ready-to-delete? moved-to-delete-button?)
+                     (and
+                      (or
+                       (and moved-to-record-button? @ready-to-send?)
+                       (and moved-to-send-button? @record-button-at-initial-position?))
+                      (not @ready-to-lock?)
+                      (not @ready-to-delete?)
+                      @recording?)
+                     (reset! ready-to-send? moved-to-send-button?))))))
            on-responder-release
            (fn [^js e]
              (when (and
@@ -439,7 +443,9 @@
                    (and @ready-to-lock? (not @record-button-is-animating?))
                    (do
                      (reset! locked? true)
-                     (reset! ready-to-lock? false))
+                     (reset! ready-to-lock? false)
+                     (when on-lock
+                       (on-lock)))
                    (and (not @reviewing-audio?)
                         (or on-record-button?
                             (and (not @ready-to-delete?)

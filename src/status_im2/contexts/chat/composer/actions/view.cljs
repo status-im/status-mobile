@@ -76,13 +76,18 @@
        :on-init                            (fn [reset-fn]
                                              (reset! record-reset-fn reset-fn))
        :on-start-recording                 (fn []
+                                             (rf/dispatch [:chat.ui/set-recording true])
                                              (reset! recording? true)
                                              (reset! gesture-enabled? false)
                                              (reanimated/animate container-opacity 1))
        :audio-file                         audio
+       :on-lock                            (fn []
+                                             (rf/dispatch [:chat.ui/set-recording false]))
        :on-reviewing-audio                 (fn [file]
+                                             (rf/dispatch [:chat.ui/set-recording false])
                                              (rf/dispatch [:chat.ui/set-input-audio file]))
        :on-send                            (fn [{:keys [file-path duration]}]
+                                             (rf/dispatch [:chat.ui/set-recording false])
                                              (reset! recording? false)
                                              (reset! gesture-enabled? true)
                                              (rf/dispatch [:chat/send-audio file-path duration])
@@ -94,6 +99,7 @@
                                              (rf/dispatch [:chat.ui/set-input-audio nil]))
        :on-cancel                          (fn []
                                              (when @recording?
+                                               (rf/dispatch [:chat.ui/set-recording false])
                                                (reset! recording? false)
                                                (reset! gesture-enabled? true)
                                                (if-not @focused?
