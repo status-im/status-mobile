@@ -8,7 +8,7 @@
 (defn- get-icon-color
   [danger? override-theme]
   (if danger?
-    colors/danger-50
+    colors/danger-60
     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
 (def divider
