@@ -227,8 +227,10 @@
            :style          {:margin-left -4}
            :disabled       processing
            :active-opacity 1
-           :on-press       #(rf/dispatch [:show-bottom-sheet
-                                          {:content forget-password-doc :shell? true}])}
+           :on-press       (fn []
+                             (rn/dismiss-keyboard!)
+                             (rf/dispatch [:show-bottom-sheet
+                                           {:content forget-password-doc :shell? true}]))}
           [rn/text
            {:style                 {:text-decoration-line :underline
                                     :color                colors/danger-60}
