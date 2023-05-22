@@ -3,7 +3,8 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
-(def navigation-bar-height 100)
+(defonce ^:const navigation-bar-height 100)
+(defonce ^:const header-offset 56)
 
 (defn button-container
   [position]
@@ -36,7 +37,7 @@
 (defn header
   [status-bar-height]
   {:position       :absolute
-   :top            (- 56
+   :top            (- header-offset
                       (if platform/ios? 0 status-bar-height))
    :left           0
    :right          0

@@ -3,9 +3,10 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
-(def cover-height 168)
-(def overscroll-cover-height 2000)
-(def cover-bg-color "#2A799B33")
+(defonce ^:const cover-height 168)
+(defonce ^:const overscroll-cover-height 2000)
+(defonce ^:const cover-bg-color "#2A799B33")
+(defonce ^:const header-avatar-top-offset -36)
 
 (def footer
   {:z-index 5})
@@ -56,10 +57,10 @@
     :display          :flex}))
 
 (def header-avatar
-  {:top           -36
+  {:top           header-avatar-top-offset
    :margin-left   20
    :margin-right  20
-   :margin-bottom -36})
+   :margin-bottom header-avatar-top-offset})
 
 (defn header-image
   [scale-animation top-margin-animation side-margin-animation]

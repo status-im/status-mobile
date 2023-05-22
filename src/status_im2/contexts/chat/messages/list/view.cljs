@@ -96,6 +96,8 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
+(def scroll-animation-input-range [50 125])
+
 (defn f-list-footer
   [{:keys [chat insets scroll-y cover-bg-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
@@ -117,15 +119,15 @@
                                                             [14 0]
                                                             header-extrapolation-option)
         image-scale-animation       (reanimated/interpolate scroll-y
-                                                            [50 125]
+                                                            scroll-animation-input-range
                                                             [1 0.5]
                                                             header-extrapolation-option)
         image-top-margin-animation  (reanimated/interpolate scroll-y
-                                                            [50 125]
+                                                            scroll-animation-input-range
                                                             [0 40]
                                                             header-extrapolation-option)
         image-side-margin-animation (reanimated/interpolate scroll-y
-                                                            [50 125]
+                                                            scroll-animation-input-range
                                                             [0 -20]
                                                             header-extrapolation-option)]
     [:<>
