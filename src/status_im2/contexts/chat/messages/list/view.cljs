@@ -279,7 +279,8 @@
     [rn/keyboard-avoiding-view
      {:style (style/keyboard-avoiding-container
               view-height
-              (if (and keyboard-shown? platform/android?) keyboard-height 0))}
+              (if (and keyboard-shown? platform/android?) keyboard-height 0))
+      :keyboardVerticalOffset (- (:bottom insets))}
 
      (when header-comp
        [header-comp {:scroll-y scroll-y}])
@@ -293,7 +294,7 @@
        :keyboard-shown? keyboard-shown?}]
 
      (when footer-comp
-       (footer-comp))]))
+       (footer-comp {:insets insets}))]))
 
 (defn messages-list
   [props]
