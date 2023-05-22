@@ -17,12 +17,13 @@
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
-            [utils.i18n :as i18n]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
             [utils.re-frame :as rf]))
 
 (defonce messages-list-ref (atom nil))
 (defonce messages-view-height (reagent/atom 0))
+(defonce messages-view-header-height (reagent/atom 0))
+(defonce show-floating-scroll-down-button (reagent/atom false))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! messages-list-ref ref))
@@ -33,7 +34,9 @@
           (.scrollToOffset #js {:y 0 :animated true})))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
-(defonce show-floating-scroll-down-button (reagent/atom false))
+(defonce ^:const loading-indicator-extra-spacing 250)
+(defonce ^:const loading-indicator-page-loading-height 100)
+(defonce ^:const scroll-animation-input-range [50 125])
 
 (defn on-scroll
   [evt]
@@ -96,10 +99,22 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
-(def scroll-animation-input-range [50 125])
+(defn loading-indicator
+  [chat-id]
+  (let [loading-messages? (rf/sub [:chats/loading-messages? chat-id])
+        messages          (rf/sub [:chats/raw-chat-messages-stream chat-id])]
+    (when loading-messages?
+      [rn/view {:style (when platform/android? {:scale-y -1})}
+       [quo/skeleton
+        (if (> (count messages) 0)
+          loading-indicator-page-loading-height
+          (- @messages-view-height
+             @messages-view-header-height
+             composer.constants/composer-default-height
+             loading-indicator-extra-spacing))]])))
 
 (defn f-list-footer
-  [{:keys [chat insets scroll-y cover-bg-color]}]
+  [{:keys [chat insets scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]}        chat
         status-bar-height           (:top insets)
@@ -107,8 +122,6 @@
                                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                       (str emoji " " chat-name))
         {:keys [bio]}               (rf/sub [:contacts/contact-by-identity chat-id])
-        loading-messages?           (rf/sub [:chats/loading-messages? chat-id])
-        all-loaded?                 (rf/sub [:chats/all-loaded? chat-id])
         online?                     (rf/sub [:visibility-status-updates/online? chat-id])
         contact                     (when-not group-chat
                                       (rf/sub [:contacts/contact-by-address chat-id]))
@@ -130,8 +143,10 @@
                                                             scroll-animation-input-range
                                                             [0 -20]
                                                             header-extrapolation-option)]
-    [:<>
-     [rn/view {:style (style/header-container insets)}
+    [rn/view {:flex 1}
+     [rn/view
+      {:style     (style/header-container insets)
+       :on-layout on-layout}
       (when cover-bg-color
         [rn/view {:style (style/header-cover cover-bg-color status-bar-height)}])
       [reanimated/view {:style (style/header-bottom-part border-animation)}
@@ -158,9 +173,7 @@
         (when bio
           [quo/text {:style style/bio}
            bio])]]]
-     (when (or loading-messages? (not chat-id) (not all-loaded?))
-       [rn/view {:style (when platform/android? {:scale-y -1})}
-        [quo/skeleton @messages-view-height]])]))
+     [loading-indicator chat-id]]))
 
 (defn list-footer
   [props]
@@ -207,7 +220,15 @@
                                       {:chat           chat
                                        :insets         insets
                                        :scroll-y       scroll-y
-                                       :cover-bg-color cover-bg-color}]
+                                       :cover-bg-color cover-bg-color
+                                       :on-layout      (fn [e]
+                                                         (let [height (oops/oget
+                                                                       e
+                                                                       "nativeEvent.layout.height")
+                                                               y      (oops/oget e
+                                                                                 "nativeEvent.layout.y")]
+                                                           (reset! messages-view-header-height (+ height
+                                                                                                  y))))}]
        :data                         messages
        :render-data                  {:context         context
                                       :keyboard-shown? keyboard-shown?}
@@ -277,9 +298,9 @@
                                          keyboard-height))))
      [keyboard-shown? keyboard-height])
     [rn/keyboard-avoiding-view
-     {:style (style/keyboard-avoiding-container
-              view-height
-              (if (and keyboard-shown? platform/android?) keyboard-height 0))
+     {:style                  (style/keyboard-avoiding-container
+                               view-height
+                               (if (and keyboard-shown? platform/android?) keyboard-height 0))
       :keyboardVerticalOffset (- (:bottom insets))}
 
      (when header-comp
