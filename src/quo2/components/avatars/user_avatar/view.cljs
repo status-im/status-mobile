@@ -38,18 +38,22 @@
   uses `ring-background` to display the ring behind the initials when given. Otherwise,
   shows the `profile-picture` which already comes with the ring drawn."
   [{:keys [full-name status-indicator? online? size profile-picture ring-background
-           customization-color]
+           customization-color static?]
     :or   {status-indicator?   true
            online?             true
            size                :big
            customization-color :turquoise}}]
   (let [full-name    (or full-name "empty name")
         draw-ring?   (and ring-background (valid-ring-sizes size))
-        outer-styles (style/outer size)]
+        outer-styles (style/outer size)
+        ;; Once image is loaded, fast image rerenders view with the help of reagent atom,
+        ;; But dynamic updates don't work when user-avatar is used inside hole-view
+        ;; https://github.com/status-im/status-mobile/issues/15553
+        image-view   (if static? rn/image fast-image/fast-image)]
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
      ;; The `profile-picture` already has the ring in it
      (when-let [image (or profile-picture ring-background)]
-       [fast-image/fast-image
+       [image-view
         {:accessibility-label (if draw-ring? :ring-background :profile-picture)
          :style               outer-styles
          :source              image}])

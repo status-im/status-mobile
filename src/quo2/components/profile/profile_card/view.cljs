@@ -57,7 +57,8 @@
           :override-theme      :dark
           :size                :medium
           :status-indicator?   false
-          :customization-color customization-color}]
+          :customization-color customization-color
+          :static?             true}]
         [rn/view {:flex-direction :row}
          (when show-logged-in?
            [tag/tag
