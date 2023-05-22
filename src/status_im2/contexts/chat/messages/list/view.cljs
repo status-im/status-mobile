@@ -238,18 +238,7 @@
                                          (when platform/android?
                                            (reanimated/set-shared-value scroll-y layout-height))
                                          (reset! messages-view-height layout-height)))
-       :scroll-enabled               (not recording?)}]
-
-     [quo/floating-shell-button
-      (merge {:jump-to
-              {:on-press #(do
-                            (rf/dispatch [:chat/close true])
-                            (rf/dispatch [:shell/navigate-to-jump-to]))
-               :label    (i18n/label :t/jump-to)}}
-             (when @show-floating-scroll-down-button
-               {:scroll-to-bottom {:on-press scroll-to-bottom}}))
-      {:position :absolute
-       :bottom   6}]]))
+       :scroll-enabled               (not recording?)}]]))
 
 (defn use-keyboard-visibility
   []
