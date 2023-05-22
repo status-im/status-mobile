@@ -110,7 +110,7 @@
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
         [gradients/view props state animations show-bottom-gradient?]]
-       [link-preview/message-draft-link-previews]
+       [link-preview/view]
        [images/images-list]
        [actions/view props state animations window-height insets subs]]]]))
 
