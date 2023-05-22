@@ -6,7 +6,7 @@
             [quo2.foundations.colors :as colors]
             [utils.re-frame :as rf]
             [utils.i18n :as i18n]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
             [status-im.ui.screens.chat.styles.message.message :as old-style]))
 
 (defn pinned-by-view

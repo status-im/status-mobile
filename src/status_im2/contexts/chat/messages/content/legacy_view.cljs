@@ -1,31 +1,22 @@
-(ns status-im.ui2.screens.chat.messages.message
+(ns status-im2.contexts.chat.messages.content.legacy-view
   (:require
     [quo.design-system.colors :as quo.colors]
     [quo.react-native :as rn]
-    [quo2.components.icon :as icons]
-    [quo2.components.markdown.text :as text]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.fast-image :as fast-image]
-    [status-im.ui.screens.chat.image.preview.views :as preview]
-    [status-im.ui.screens.chat.message.audio :as message.audio]
     [status-im.ui.screens.chat.message.gap :as message.gap]
-    [status-im.ui.screens.chat.sheets :as sheets]
     [status-im.ui.screens.chat.styles.message.message :as style]
     [status-im.ui.screens.chat.utils :as chat.utils]
     [status-im.ui.screens.communities.icon :as communities.icon]
-    [status-im.utils.utils :as utils]
     [status-im2.constants :as constants]
-    [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]
-    [utils.datetime :as datetime]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf])
+    [utils.re-frame :as rf]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.typography :as typography])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn system-text?
@@ -142,88 +133,16 @@
             [:<>]
             (:parsed-text content))))
 
-(defn quoted-message
-  [_ pin?]
-  [rn/view {:style (when-not pin? (style/quoted-message-container))}])
-
-(defn message-not-sent-text
-  [chat-id message-id]
-  [rn/touchable-opacity
-   {:on-press
-    (fn []
-      (re-frame/dispatch
-       [:bottom-sheet/show-sheet-old
-        {:content        (sheets/options chat-id message-id)
-         :content-height 200}])
-      (rn/dismiss-keyboard!))}
-   [rn/view style/not-sent-view
-    [rn/text {:style style/not-sent-text}
-     (i18n/label :t/status-not-sent-tap)]
-    [rn/view style/not-sent-icon
-     [icons/icon :i/warning {:color quo.colors/red}]]]])
-
-;; TODO (Omar): a reminder to clean these defviews
 (defview message-author-name
   [from opts max-length]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
     (chat.utils/format-author contact-with-names opts max-length)))
-
-(defn display-name-view
-  [display-name contact timestamp show-key?]
-  [rn/view {:style {:flex-direction :row}}
-   [text/text
-    {:weight          :semi-bold
-     :size            :paragraph-2
-     :number-of-lines 1
-     :style           {:width "45%"}}
-    display-name]
-   [home.chat-list-item/verified-or-contact-icon contact]
-   (when show-key?
-     (let [props {:size  :label
-                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
-       [rn/view
-        {:style {:margin-left    8
-                 :margin-top     2
-                 :flex-direction :row}}
-        [text/text
-         (assoc props :accessibility-label :message-chat-key)
-         (utils/get-shortened-address
-          (or (:compressed-key contact)
-              (:public-key contact)))]
-        [text/text props " • "]
-        [text/text
-         (assoc props :accessibility-label :message-timestamp)
-         (datetime/to-short-str timestamp)]]))])
-
-(def image-max-width 260)
-(def image-max-height 192)
-
-(defn image-set-size
-  [dimensions]
-  (fn [^js evt]
-    (let [width  (.-width (.-nativeEvent evt))
-          height (.-height (.-nativeEvent evt))]
-      (if (< width height)
-        ;; if width less than the height we reduce width proportionally to height
-        (let [k (/ height image-max-height)]
-          (when (not= (/ width k) (first @dimensions))
-            (reset! dimensions {:width (/ width k) :height image-max-height :loaded true})))
-        (swap! dimensions assoc :loaded true)))))
 
 (defmulti ->message :content-type)
 
 (defmethod ->message constants/content-type-gap
   [message]
   [message.gap/gap message])
-
-(defn pin-message
-  [{:keys [chat-id pinned] :as message}]
-  (let [pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])]
-    (if (and (not pinned) (> (count pinned-messages) 2))
-      (do
-        (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [:pin-message/show-pin-limit-modal chat-id]))
-      (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
@@ -251,47 +170,6 @@
   [fast-image/fast-image
    {:style  {:margin 10 :width 140 :height 140}
     :source {:uri (str (-> content :sticker :url) "&download=true")}}])
-
-;;IMAGE
-(defn message-content-image
-  [{:keys [content]}]
-  (let [dimensions (reagent/atom {:width image-max-width :height image-max-height :loaded false})
-        visible    (reagent/atom false)
-        uri        (:image content)]
-    (fn [message]
-      (let [style-opts {:outgoing false
-                        :opacity  (if (:loaded @dimensions) 1 0)
-                        :width    (:width @dimensions)
-                        :height   (:height @dimensions)}]
-        [:<>
-         [preview/preview-image
-          {:message  message
-           :visible  @visible
-           :on-close #(do (reset! visible false)
-                          (reagent/flush))}]
-         [rn/view
-          {:style               (style/image-message style-opts)
-           :accessibility-label :image-message}
-          (when (or (:error @dimensions) (not (:loaded @dimensions)))
-            [rn/view
-             (merge (dissoc style-opts :opacity)
-                    {:flex 1 :align-items :center :justify-content :center :position :absolute})
-             (if (:error @dimensions)
-               [icons/icon :i/cancel]
-               [rn/activity-indicator {:animating true}])])
-          [fast-image/fast-image
-           {:style    (dissoc style-opts :outgoing)
-            :on-load  (image-set-size dimensions)
-            :on-error #(swap! dimensions assoc :error true)
-            :source   {:uri uri}}]
-          [rn/view {:style (style/image-message-border style-opts)}]]]))))
-
-;; AUDIO
-(defn audio
-  [message]
-  [rn/view {:style (style/message-view message) :accessibility-label :audio-message}
-   [rn/view {:style (style/message-view-content)}
-    [message.audio/message-content message]]])
 
 (defn contact-request-status-pending
   []

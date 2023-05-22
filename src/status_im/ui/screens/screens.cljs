@@ -95,8 +95,7 @@
     [status-im.ui.screens.wallet.settings.views :as wallet-settings]
     [status-im.ui.screens.wallet.swap.views :as wallet.swap]
     [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-    [status-im2.contexts.chat.group-details.view :as group-details]
-    [status-im.ui2.screens.chat.components.new-chat.view :as new-chat-aio]))
+    [status-im2.contexts.chat.group-details.view :as group-details]))
 
 (defn right-button-options
   [id icon]
@@ -193,9 +192,6 @@
     :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
-   {:name      :start-a-new-chat
-    :options   {:sheet? true}
-    :component new-chat-aio/contact-selection-list}
 
    {:name      :group-chat-profile
     ;;TODO animated-header
@@ -580,12 +576,6 @@
                 :insets {:bottom? true
                          :top?    true}}
     :component contact/nickname-view}
-
-   {:name      :new-chat-aio
-    :on-focus  [:contacts/new-chat-focus]
-    ;;TODO accessories
-    :options   {:insets {:top? true}}
-    :component new-chat-aio/contact-selection-list}
 
    ;[Group chat] Add participants
    {:name      :add-participants-toggle-list

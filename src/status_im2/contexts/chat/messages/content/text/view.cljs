@@ -133,7 +133,7 @@
              add-edited-tag))])
 
 (defn text-content
-  [message-data _]
+  [message-data]
   [rn/view
    [render-parsed-text message-data]
    [link-preview/view message-data]])

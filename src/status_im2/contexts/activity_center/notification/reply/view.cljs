@@ -2,14 +2,15 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [react-native.gesture :as gesture]
-            [status-im.ui2.screens.chat.messages.message :as old-message]
+            [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.reply.style :as style]
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.content.image.view :as image]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
@@ -18,7 +19,7 @@
     constants/content-type-text [quo/text {:style style/tag-text}
                                  (get-in message [:content :text])]
 
-    constants/content-type-image [old-message/message-content-image message]
+    constants/content-type-image [image/image-message 0 message nil]
 
     constants/content-type-sticker [old-message/sticker message]
 
