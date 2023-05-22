@@ -5,7 +5,6 @@ project-board:
   min-reviewers: 1
   tested-pr-label-name: 'Tested - Issues'
   contributor-column-name: 'CONTRIBUTOR'
-  to-rebase-column-name: 'TO REBASE'
   review-column-name: 'REVIEW'
   test-column-name: 'E2E Tests'
 
