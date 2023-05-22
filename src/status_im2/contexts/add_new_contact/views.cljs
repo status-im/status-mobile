@@ -51,8 +51,8 @@
             show-paste-button? (and (not (string/blank? @clipboard))
                                     (string/blank? @default-value)
                                     (string/blank? input))]
-        [rn/touchable-without-feedback
-         {:on-press rn/dismiss-keyboard!}
+        [rn/keyboard-avoiding-view
+         {:style {:flex 1}}
          [rn/view (style/container-outer)
           [rn/view style/container-inner
            [quo/button
@@ -102,14 +102,13 @@
                (i18n/label (or msg :t/invalid-ens-or-key))]])
            (when (= state :valid)
              [found-contact public-key])]
-          [rn/view
-           [quo/button
-            (merge (style/button-view-profile state)
-                   {:on-press
-                    (fn []
-                      (reset! clipboard nil)
-                      (reset! default-value nil)
-                      (rf/dispatch [:contacts/clear-new-identity])
-                      (rf/dispatch [:navigate-back])
-                      (rf/dispatch [:chat.ui/show-profile public-key ens]))})
-            (i18n/label :t/view-profile)]]]]))))
+          [quo/button
+           (merge (style/button-view-profile state)
+                  {:on-press
+                   (fn []
+                     (reset! clipboard nil)
+                     (reset! default-value nil)
+                     (rf/dispatch [:contacts/clear-new-identity])
+                     (rf/dispatch [:navigate-back])
+                     (rf/dispatch [:chat.ui/show-profile public-key ens]))})
+           (i18n/label :t/view-profile)]]]))))
