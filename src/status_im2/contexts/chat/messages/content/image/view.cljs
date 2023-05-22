@@ -14,13 +14,15 @@
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} context on-long-press]
+  [index {:keys [content image-width image-height message-id] :as message} on-long-press]
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
         shared-element-id (rf/sub [:shared-element-id])]
+
+    (println "(:image content)" (:image content))
     [:<>
      (when (= index 0)
-       [rn/view {:style {:margin-bottom 10}} [text/text-content message context]])
+       [rn/view {:style {:margin-bottom 10}} [text/text-content message]])
      [rn/touchable-opacity
       {:active-opacity 1
        :style          {:margin-top (when (pos? index) 10)}

@@ -18,7 +18,7 @@
     [status-im2.contexts.chat.messages.content.audio.view :as audio]
     [quo2.core :as quo]
     [utils.re-frame :as rf]
-    [status-im.ui2.screens.chat.messages.message :as old-message]
+    [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
     [status-im2.contexts.chat.composer.reply.view :as reply]
     [status-im2.common.not-implemented :as not-implemented]
     [utils.datetime :as datetime]
@@ -122,7 +122,7 @@
             [author message-data]
             (case content-type
 
-              constants/content-type-text [content.text/text-content message-data context]
+              constants/content-type-text [content.text/text-content message-data]
 
               constants/content-type-emoji
               [not-implemented/not-implemented [old-message/emoji message-data]]
@@ -134,7 +134,7 @@
               [audio/audio-message message-data context]
 
               constants/content-type-image
-              [image/image-message 0 message-data context on-long-press]
+              [image/image-message 0 message-data on-long-press]
 
               constants/content-type-album
               [album/album-message message-data context on-long-press]

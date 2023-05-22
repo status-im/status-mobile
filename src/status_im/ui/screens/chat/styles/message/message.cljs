@@ -3,7 +3,6 @@
             [quo2.foundations.colors :as quo2.colors]
             [status-im2.constants :as constants]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.photos :as photos]
             [quo2.foundations.typography :as typography]))
 
 (defn style-message-text
@@ -33,13 +32,6 @@
 (defn message-status-placeholder
   []
   (merge message-timestamp {:opacity 0 :color "rgba(0,0,0,0)"}))
-
-(defn message-timestamp-wrapper
-  []
-  {:justify-content :center
-   :margin-left     12 ;; horizontal margin is only required at the adjust side of the message.
-   :margin-top      0
-   :opacity         0})
 
 (defn message-timestamp-text
   []
@@ -75,11 +67,6 @@
    :align-items    :flex-start
    :margin-left    4})
 
-(defn delivery-status
-  []
-  {:align-self   :flex-start
-   :padding-left 8})
-
 (defn pin-indicator
   []
   (merge {:flex-direction :row}))
@@ -114,13 +101,6 @@
   {:margin-left    0
    :flex-direction :row})
 
-(defn message-author-userpic
-  []
-  (merge
-   {:width (+ 16 photos/default-size)} ;; 16 is for the padding
-   {:padding-left  0
-    :padding-right 8}))
-
 (def delivery-text
   {:color      colors/gray
    :margin-top 2
@@ -147,20 +127,6 @@
    :line-height  34 ;TODO: Smaller crops the icon on the top
    :margin-right 0 ;; Margin to display outgoing message status
    :margin-top   (if incoming-group 4 0)})
-
-(defn collapse-button
-  []
-  {:height           24
-   :width            24
-   :background-color colors/blue
-   :border-radius    12
-   :align-items      :center
-   :justify-content  :center
-   :elevation        4
-   :shadow-opacity   1
-   :shadow-radius    16
-   :shadow-color     (:shadow-01 @colors/theme)
-   :shadow-offset    {:width 0 :height 4}})
 
 (def message-view-wrapper
   {:align-self     :flex-end
@@ -269,13 +235,6 @@
           assoc
           :font-style :italic))
 
-(defn outgoing-emph-text-style
-  []
-  (update (emph-text-style)
-          :style
-          assoc
-          :color colors/white-persist))
-
 (defn emph-style
   []
   (emph-text-style))
@@ -344,13 +303,6 @@
   {:style {:border-left-width 2
            :padding-left      3
            :border-left-color colors/gray-transparent-40}})
-
-(defn outgoing-blockquote-style
-  []
-  (update (default-blockquote-style)
-          :style
-          assoc
-          :border-left-color colors/white-transparent-70-persist))
 
 (defn blockquote-style
   []

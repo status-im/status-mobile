@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.system.text.view
   (:require [react-native.core :as rn]
-            [status-im.ui2.screens.chat.messages.message :as old-message]))
+            [status-im2.contexts.chat.messages.content.legacy-view :as old-message]))
 
 (defn text-content
   [message-data]
