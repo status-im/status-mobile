@@ -45,10 +45,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0x7v4v8hj0pbzw3x1iv07x8v93fcs74svlhzv7vl6laxm4mc6858";
+      sha256 = "1256rf6zjh3canwr636w7yczbvhh72cpz2fw5ixljbh4fcfkrvlm";
       type = "gem";
     };
-    version = "1.766.0";
+    version = "1.768.0";
   };
   aws-sdk-core = {
     dependencies = ["aws-eventstream" "aws-partitions" "aws-sigv4" "jmespath"];
@@ -357,10 +357,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0nnggg20za5vamdpkgrxxa32z33d8hf0g2bciswkhqnc6amb3yjr";
+      sha256 = "1pd7pamzhdz2w0fbcvsfn2nyslznvphnwj16zw35g2b28zd2xyzx";
       type = "gem";
     };
-    version = "2.2.6";
+    version = "2.2.7";
   };
   fastlane = {
     dependencies = ["CFPropertyList" "addressable" "artifactory" "aws-sdk-s3" "babosa" "colored" "commander" "dotenv" "emoji_regex" "excon" "faraday" "faraday-cookie_jar" "faraday_middleware" "fastimage" "gh_inspector" "google-apis-androidpublisher_v3" "google-apis-playcustomapp_v1" "google-cloud-storage" "highline" "json" "jwt" "mini_magick" "multipart-post" "naturally" "optparse" "plist" "rubyzip" "security" "simctl" "terminal-notifier" "terminal-table" "tty-screen" "tty-spinner" "word_wrap" "xcodeproj" "xcpretty" "xcpretty-travis-formatter"];
@@ -372,16 +372,6 @@
       type = "gem";
     };
     version = "2.212.2";
-  };
-  fastlane-plugin-clean_testflight_testers = {
-    groups = ["default"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "0qkcjf7xrnki4v94mcgcm3v2f89vq8clwxx1d5ipv0wwm5ri26c9";
-      type = "gem";
-    };
-    version = "0.3.0";
   };
   gh_inspector = {
     groups = ["default"];

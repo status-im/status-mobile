@@ -245,15 +245,6 @@ platform :ios do
     )
   end
 
-  desc '`fastlane ios clean` - remove inactive TestFlight users'
-  lane :clean do
-    clean_testflight_testers(
-      username: ENV['FASTLANE_APPLE_ID'],
-      days_of_inactivity: 30
-    )
-    # In the future we can try using 'oldest_build_allowed'
-  end
-
   desc '`fastlane ios saucelabs` - upload .app to sauce labs'
   desc 'also notifies in a GitHub comments'
   desc 'expects to have an .apk prepared: `result/app.apk`'
