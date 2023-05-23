@@ -57,10 +57,10 @@ in {
   });
 
   # Package version adjustments
-  gradle = super.gradle_6;
+  gradle = super.gradle_7;
   nodejs = super.nodejs-18_x;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
-  openjdk = super.openjdk8_headless;
+  openjdk = super.openjdk11_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "14.0";
     allowHigher = true;

@@ -3,6 +3,7 @@ apply plugin: "com.android.application"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
+import org.apache.tools.ant.taskdefs.condition.Os
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 
 /**
@@ -173,7 +174,7 @@ def getVersionName = { ->
         }
         /* Necessary because Android Studio uses wrong PWD.
          * Is actually absolute directory path of this file. */
-        def configDir = project.projectDir.toString() 
+        def configDir = project.projectDir.toString()
         version = new File(configDir + '/../../VERSION').text
         return version.replaceAll("\\s","")
     }
@@ -196,12 +197,12 @@ def getEnvOrConfig = { varName ->
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-    
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     defaultConfig {
@@ -239,7 +240,7 @@ android {
                     targets "rndiffapp_appmodules"
                 }
             }
-        }	
+        }
     }
 
        if (isNewArchitectureEnabled()) {
@@ -281,7 +282,7 @@ android {
                    }
                }
            }
-       }		
+       }
     /**
      * Arbitrary project metadata
      * https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html
