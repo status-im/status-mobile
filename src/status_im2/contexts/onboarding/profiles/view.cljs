@@ -73,11 +73,10 @@
                  :shell?  true}]))
 
 (defn profile-card
-  [{:keys [name key-uid customization-color keycard-pairing last-index set-hide-profiles]
-    :as   multiaccount}
+  [{:keys [name key-uid customization-color keycard-pairing last-index set-hide-profiles]}
    index]
   (let [last-item?      (= last-index index)
-        profile-picture (:uri (first (:images multiaccount)))]
+        profile-picture (rf/sub [:multiaccounts/login-profiles-picture key-uid])]
     [quo/profile-card
      {:name                 name
       :login-card?          true
@@ -176,10 +175,10 @@
 
 (defn login-section
   [{:keys [set-show-profiles]}]
-  (let [{:keys [name customization-color error processing password]
-         :as   multiaccount} (rf/sub [:multiaccounts/login])
-        sign-in-enabled?     (rf/sub [:sign-in-enabled?])
-        profile-picture      (:uri (first (:images multiaccount)))]
+  (let [{:keys [key-uid name customization-color error
+                processing password]} (rf/sub [:multiaccounts/login])
+        sign-in-enabled?              (rf/sub [:sign-in-enabled?])
+        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}

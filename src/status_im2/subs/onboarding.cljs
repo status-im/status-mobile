@@ -1,7 +1,9 @@
 (ns status-im2.subs.onboarding
-  (:require [re-frame.core :as re-frame]
+  (:require [quo2.theme :as theme]
+            [re-frame.core :as re-frame]
             [status-im.multiaccounts.recover.core :as recover]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [utils.image-server :as image-server]))
 
 (re-frame/reg-sub
  :intro-wizard
@@ -47,6 +49,22 @@
  :<- [:multiaccounts/multiaccounts]
  (fn [[intro-wizard multiaccounts]]
    (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
+
+(re-frame/reg-sub
+ :multiaccounts/login-profiles-picture
+ :<- [:multiaccounts/multiaccounts]
+ :<- [:mediaserver/port]
+ (fn [[multiaccounts port] [_ target-key-uid]]
+   (let [image-name (-> multiaccounts
+                        (get-in [target-key-uid :images])
+                        first
+                        :type)]
+     (when image-name
+       (image-server/get-account-image-uri {:port       port
+                                            :image-name image-name
+                                            :key-uid    target-key-uid
+                                            :theme      (theme/get-theme)
+                                            :ring?      true})))))
 
 (defn login-ma-keycard-pairing
   "Compute the keycard-pairing value of the multiaccount selected for login"
