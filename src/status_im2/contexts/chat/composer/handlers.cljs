@@ -14,13 +14,10 @@
 (defn focus
   [{:keys [input-ref] :as props}
    {:keys [text-value focused? lock-selection? saved-cursor-position gradient-z-index]}
-   {:keys [height saved-height last-height opacity background-y gradient-opacity container-opacity]
-    :as   animations}
+   {:keys [last-height opacity background-y gradient-opacity container-opacity] :as animations}
    {:keys [max-height] :as dimensions}]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
-  (reanimated/animate height (reanimated/get-shared-value last-height))
-  (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
   (reanimated/animate container-opacity 1)
   (when (> (reanimated/get-shared-value last-height) (* constants/background-threshold max-height))
     (reanimated/animate opacity 1)

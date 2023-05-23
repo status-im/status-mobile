@@ -105,9 +105,26 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
+(defn max-height-effect
+  [{:keys [focused?]}
+   {:keys [max-height]}
+   {:keys [height saved-height last-height]}]
+  (rn/use-effect
+   (fn []
+     ;; Some subscriptions can arrive after the composer if focused (esp. link
+     ;; previews), so we need to react to changes in `max-height` outside of the
+     ;; `on-focus` handler.
+     (when @focused?
+       (let [new-height (min max-height (reanimated/get-shared-value last-height))]
+         (reanimated/set-shared-value last-height new-height)
+         (reanimated/animate height new-height)
+         (reanimated/set-shared-value saved-height new-height))))
+   [max-height @focused?]))
+
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
    {:keys [chat-input images link-previews? reply audio]}]
+  (max-height-effect state dimensions animations)
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
