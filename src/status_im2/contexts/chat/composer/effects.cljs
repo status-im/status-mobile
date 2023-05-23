@@ -105,9 +105,23 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
+(defn max-height-effect
+  [{:keys [focused?]}
+   {:keys [max-height]}
+   {:keys [height saved-height last-height]}]
+  (rn/use-effect
+   (fn []
+     (when @focused?
+       (let [new-last-height (min max-height (reanimated/get-shared-value last-height))]
+         (reanimated/set-shared-value last-height new-last-height)
+         (reanimated/animate height new-last-height)
+         (reanimated/set-shared-value saved-height new-last-height))))
+   [max-height @focused?]))
+
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
    {:keys [chat-input images link-previews? reply audio]}]
+  (max-height-effect state dimensions animations)
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
