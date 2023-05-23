@@ -87,8 +87,8 @@
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
    :modalPresentationStyle :overCurrentContext
-   :animations             {:showModal    {:alpha {:from 0 :to 1 :duration 300}}
-                            :dismissModal {:alpha {:from 1 :to 0 :duration 300}}}})
+   :animations             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
+                            :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}})
 
 (def lightbox
   {:topBar        {:visible false}
