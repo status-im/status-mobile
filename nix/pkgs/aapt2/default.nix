@@ -5,7 +5,7 @@
 { lib, stdenv, pkgs, fetchurl }:
 
 let
-  inherit (lib) getAttr optionals;
+  inherit (lib) getAttr optionalString;
   inherit (stdenv) isLinux isDarwin;
 
   pname = "aapt2";
@@ -50,8 +50,8 @@ in stdenv.mkDerivation {
   inherit pname version;
 
   srcs = with urls; [ jar sha pom ];
-  phases = [ "unpackPhase" ]
-    ++ optionals isLinux [ "patchPhase" ]; # OSX binaries don't need patchelf
+  # patchPhase and installPhase are not neede on osx platform
+  phases = ["unpackPhase" "patchPhase" "installPhase"];
   buildInputs = with pkgs; [ zip unzip patchelf ];
 
   unpackPhase = ''
@@ -60,27 +60,23 @@ in stdenv.mkDerivation {
       filename=$(stripHash $src)
       cp $src $out/$filename
     done
+    tmpDir=$(mktemp -d)
+    unzip $out/${filenames.jar} -d $tmpDir
   '';
 
   # On Linux, we need to patch the interpreter in Java packages
   # that contain native executables to use Nix's interpreter instead.
-  patchPhase = ''
-    # We need an stdenv with a compiler
-    [[ -n "$NIX_CC" ]] || exit 1
-
+  patchPhase = optionalString isLinux ''
     # Patch executables from maven dependency to use Nix's interpreter
-    tmpDir=$(mktemp -d)
-    unzip $out/${filenames.jar} -d $tmpDir
-    for exe in `find $tmpDir/ -type f -executable`; do
-      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe
-    done
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $tmpDir/aapt2
+  '';
 
-    # Rebuild the .jar file with patched binaries
+  # Rebuild the .jar file with patched binaries
+  installPhase = optionalString isLinux ''
     pushd $tmpDir > /dev/null
     chmod u+w $out/${filenames.jar}
     zip -fr $out/${filenames.jar}
     chmod $out/${filenames.jar} --reference=$out/${filenames.jar}.sha1
     popd > /dev/null
-    rm -rf $tmpDir
   '';
 }
