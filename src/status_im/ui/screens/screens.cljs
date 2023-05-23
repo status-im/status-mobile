@@ -11,22 +11,11 @@
     [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [status-im.ui.screens.bug-report :as bug-report]
-    [status-im.ui.screens.communities.channel-details :as communities.channel-details]
-    [status-im.ui.screens.communities.community :as community]
-    [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as
-     community-emoji-thumbnail-picker]
     [status-im.ui.screens.communities.create :as communities.create]
-    [status-im.ui.screens.communities.create-category :as create-category]
-    [status-im.ui.screens.communities.create-channel :as create-channel]
-    [status-im.ui.screens.communities.edit :as community.edit]
-    [status-im.ui.screens.communities.edit-channel :as edit-channel]
     [status-im.ui.screens.communities.import :as communities.import]
     [status-im.ui.screens.communities.invite :as communities.invite]
     [status-im.ui.screens.communities.members :as members]
     [status-im.ui.screens.communities.membership :as membership]
-    [status-im.ui.screens.communities.profile :as community.profile]
-    [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
-    [status-im.ui.screens.communities.select-category :as select-category]
     [status-im.ui.screens.contacts-list.views :as contacts-list]
     [status-im.ui.screens.currency-settings.views :as currency-settings]
     [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
@@ -46,9 +35,6 @@
     [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
     [status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-    [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
-    [status-im.ui.screens.multiaccounts.login.views :as login]
-    [status-im.ui.screens.multiaccounts.views :as multiaccounts]
     [status-im.ui.screens.network-info.views :as network-info]
     [status-im.ui.screens.network.edit-network.views :as edit-network]
     [status-im.ui.screens.network.network-details.views :as network-details]
@@ -56,12 +42,6 @@
     [status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
-    [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
-    [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
-    [status-im.ui.screens.onboarding.password.views :as onboarding.password]
-    [status-im.ui.screens.onboarding.phrase.view :as onboarding.phrase]
-    [status-im.ui.screens.onboarding.storage.views :as onboarding.storage]
-    [status-im.ui.screens.onboarding.welcome.views :as onboarding.welcome]
     [status-im.ui.screens.pairing.views :as pairing]
     [status-im.ui.screens.peers-stats :as peers-stats]
     [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
@@ -106,90 +86,9 @@
   []
   [;;INTRO, ONBOARDING, LOGIN
 
-   ;Multiaccounts
-   {:name          :multiaccounts
-    :options       {:insets {:bottom? true
-                             :top?    true}
-                    :topBar {:title        {:text (i18n/label :t/your-keys)}
-                             :rightButtons (right-button-options :multiaccounts :more)}}
-    :right-handler multiaccounts/topbar-button
-    :component     multiaccounts/multiaccounts}
-
-   ;Login
-   {:name          :login
-    :options       {:insets {:bottom? true
-                             :top?    true}
-                    :topBar {:rightButtons (right-button-options :login :more)}}
-    :right-handler login/topbar-button
-    :component     login/login}
-
    {:name      :progress
     :options   {:insets {:top? true}}
     :component progress/progress}
-
-   ;[Onboarding]
-   {:name      :get-your-keys
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component onboarding.keys/get-your-keys}
-
-   ;[Onboarding]
-   {:name      :choose-name
-    :options   {:topBar             {:visible false}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.keys/choose-a-chat-name}
-
-   ;[Onboarding]
-   {:name      :select-key-storage
-    :options   {:popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.storage/select-key-storage}
-
-   ;[Onboarding] Create Password
-   {:name      :create-password
-    :options   {:popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.password/screen}
-
-   ;[Onboarding] Welcome
-   {:name      :welcome
-    :options   {:popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.welcome/welcome}
-
-   ;[Onboarding] Notification
-   {:name      :onboarding-notification
-    :options   {:popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.notifications/notifications-onboarding}
-
-   ;[Onboarding] Recovery
-   {:name      :recover-multiaccount-enter-phrase
-    :options   {:insets {:top? true :bottom? true}}
-    :component onboarding.phrase/enter-phrase}
-   {:name      :recover-multiaccount-success
-    :options   {:popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
 
@@ -211,52 +110,12 @@
     :options   {:insets {:top? true}}
     :component stickers/pack}
 
-   ;; Community
-   {:name      :community
-    ;;TODO custom
-    :options   {:insets {:top? true}}
-    :component community/community}
-   {:name      :community-management
-    ;;TODO animated-header
-    :options   {:topBar {:visible false}}
-    :component community.profile/management-container}
+   ;; Community (legacy only for e2e needed)
+
    {:name      :community-members
     ;;TODO custom subtitle
     :options   {:insets {:top? true}}
     :component members/members-container}
-   {:name      :create-community-channel
-    :options   {:topBar {:title {:text (i18n/label :t/create-channel-title)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component create-channel/view}
-   {:name      :community-emoji-thumbnail-picker
-    :options   {:topBar {:title {:text (i18n/label :t/community-emoji-thumbnail-title)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component community-emoji-thumbnail-picker/view}
-   {:name      :create-community-category
-    :options   {:topBar {:title {:text (i18n/label :t/new-category)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component create-category/view}
-   {:name      :select-category
-    ;;TODO custom
-    :options   {:topBar {:visible false}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component select-category/view}
-   {:name      :community-reorder-categories
-    :options   {:topBar {:visible false}}
-    :component reorder-categories/view}
-   {:name      :community-channel-details
-    ;;TODO custom
-    :options   {:topBar {:visible false}}
-    :component communities.channel-details/view}
-   {:name      :edit-community-channel
-    :options   {:topBar {:title {:text (i18n/label :t/edit-channel-title)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component edit-channel/view}
    {:name      :contact-toggle-list
     ;;TODO custom subtitle
     :options   {:insets {:top? true}}
@@ -270,10 +129,6 @@
                 :insets {:top?    true
                          :bottom? true}}
     :component communities.import/view}
-   {:name      :community-edit
-    :options   {:topBar {:title {:text (i18n/label :t/community-edit-title)}}
-                :insets {:top? true}}
-    :component community.edit/edit}
    {:name      :community-create
     :options   {:topBar {:title {:text (i18n/label :t/new-community-title)}}
                 :insets {:top?    true
@@ -434,10 +289,6 @@
     :options   {:topBar {:title {:text (i18n/label :t/dapps-permissions)}}
                 :insets {:top? true}}
     :component dapps-permissions/dapps-permissions}
-   {:name      :link-previews-settings
-    :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}
-                :insets {:top? true}}
-    :component link-previews-settings/link-previews-settings}
    {:name      :privacy-and-security
     :options   {:topBar {:title {:text (i18n/label :t/privacy-and-security)}}
                 :insets {:top? true}}
@@ -564,7 +415,8 @@
    ;;MODALS
 
    ;[Chat] Link preview settings
-   {:name      :link-preview-settings
+
+   {:name      :link-previews-settings
     :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}
                 :insets {:top? true}}
     :component link-previews-settings/link-previews-settings}
@@ -722,11 +574,7 @@
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
     :component keycard.recovery/pair}
-   {:name      :seed-phrase
-    ;;TODO subtitle
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component key-storage.views/seed-phrase}
+
    {:name      :keycard-recovery-pin
     ;;TODO dynamic
     :options   {:insets {:bottom? true
@@ -817,26 +665,6 @@
    {:name      :change-pairing-code
     :insets    {:bottom? true}
     :component keycard.pairing/change-pairing-code}
-
-   ;;KEYSTORAGE
-   {:name      :actions-not-logged-in
-    ;;TODO: topbar
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    ;;TODO move to popover?
-    :component key-storage.views/actions-not-logged-in}
-   {:name      :actions-logged-in
-    ;;TODO: topbar
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    ;;TODO move to popover?
-    :component key-storage.views/actions-logged-in}
-   {:name      :storage
-    ;;TODO: topbar
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    ;;TODO move to popover?
-    :component key-storage.views/storage}
 
    {:name      :show-all-connections
     :options   {:topBar {:title {:text (i18n/label :all-connections)}}

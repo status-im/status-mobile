@@ -53,12 +53,7 @@
                                {(str community-id id) {:categoryID categoryID
                                                        :position   position}})
                              (vals comm-chats)))]
-     (group-by :categoryID
-               (sort-by :position
-                        (map #(cond-> (merge % (chat-cat (:chat-id %)))
-                                (= community-id constants/status-community-id)
-                                (assoc :color colors/blue))
-                             chats))))))
+     (group-by :categoryID (sort-by :position (map #(merge % (chat-cat (:chat-id %))) chats))))))
 
 (re-frame/reg-sub
  :chats/category-by-chat-id

@@ -6,11 +6,10 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im2.common.resources :as resources]
-            [status-im2.constants :as constants]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def community-data
-  {:id constants/status-community-id
+  {:id "id"
    :name "Status"
    :description
    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"

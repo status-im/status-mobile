@@ -8,7 +8,6 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.screens.communities.membership :as memberships]
             [utils.re-frame :as rf]
             [status-im.utils.image :as utils.image]
             [utils.debounce :as debounce]))
@@ -190,16 +189,10 @@
         [quo/separator {:style {:margin-vertical 10}}]
         [quo/list-item
          {:title          (i18n/label :t/membership-button)
-          :accessory-text (i18n/label (get-in memberships/options
-                                              [membership :title]
-                                              :t/membership-none))
           :accessory      :text
           :on-press       #(rf/dispatch [:navigate-to :community-membership])
           :chevron        true
-          :size           :small}]
-        [quo/list-footer
-         (i18n/label
-          (get-in memberships/options [membership :description] :t/membership-none-placeholder))]])]))
+          :size           :small}]])]))
 
 (defn view
   []

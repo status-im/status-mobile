@@ -23,14 +23,7 @@
      (fn [acc
           {:keys [chat-id message-id emoji-id emoji-reaction-id retracted]
            :as   reaction}]
-       (cond-> (update-reaction acc retracted chat-id message-id emoji-id emoji-reaction-id reaction)
-         (get-in chats [chat-id :profile-public-key])
-         (update-reaction retracted
-                          constants/timeline-chat-id
-                          message-id
-                          emoji-id
-                          emoji-reaction-id
-                          reaction)))
+       (update-reaction acc retracted chat-id message-id emoji-id emoji-reaction-id reaction))
      reactions
      new-reactions)))
 
@@ -84,10 +77,6 @@
   (message.protocol/send-retract-reaction cofx
                                           (update reaction :chat-id #(or % current-chat-id))))
 
-(rf/defn receive-one
-  {:events [::receive-one]}
-  [{:keys [db]} reaction]
-  {:db (update db :reactions (process-reactions (:chats db)) [reaction])})
 
 (defn message-reactions
   [current-public-key reactions]

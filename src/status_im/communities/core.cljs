@@ -26,10 +26,6 @@
        "/c/"
        community-id))
 
-(def featured
-  [{:name "Status"
-    :id   constants/status-community-id}])
-
 (defn <-request-to-join-community-rpc
   [r]
   (set/rename-keys r

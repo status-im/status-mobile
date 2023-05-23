@@ -121,29 +121,5 @@
 
     :else [one-to-one-chat-accents chat-id]))
 
-(defn current-chat-actions
-  []
-  [actions @(re-frame/subscribe [:chats/current-chat])])
 
-(defn chat-actions
-  [chat-id]
-  [actions @(re-frame/subscribe [:chat-by-id chat-id])])
 
-(defn options
-  [chat-id message-id]
-  (fn []
-    [react/view
-     [react/i18n-text {:style sheets.styles/sheet-text :key :message-not-sent}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/resend-message)
-       :icon                :main-icons/refresh
-       :accessibility-label :resend-message-button
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/resend-message chat-id message-id])}]
-     [quo/list-item
-      {:theme               :negative
-       :title               (i18n/label :t/delete-message)
-       :icon                :main-icons/delete
-       :accessibility-label :delete-transaccent-button
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message-not-used-any-more chat-id
-                                                       message-id])}]]))

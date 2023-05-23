@@ -10,7 +10,6 @@
     status-im.chat.models.images
     status-im.chat.models.input
     status-im.chat.models.loading
-    status-im.chat.models.transport
     [status-im2.constants :as constants]
     status-im.contact.block
     status-im.contact.chat

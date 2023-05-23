@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.discover.view
   (:require [utils.i18n :as i18n]
-            [oops.core :as oops] ;; TODO move to status-im2
+            [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -8,7 +8,6 @@
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im.ui.screens.communities.community :as community]
             [status-im.ui.components.react :as react]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.discover.style :as style]
@@ -149,10 +148,7 @@
                               (rf/dispatch [:communities/load-category-states (:id community)])
                               (rf/dispatch [:dismiss-keyboard])
                               (rf/dispatch [:navigate-to :community-overview (:id community)]))
-             :on-long-press #(rf/dispatch [:show-bottom-sheet
-                                           {:content (fn []
-                                                       ;; TODO implement with quo2
-                                                       [community/community-actions community])}])}
+             :on-long-press #(js/alert "TODO: to be implemented")}
             (merge community
                    (get mock-community-item-data :data))])]))
     (if communities communities communities-ids))])
