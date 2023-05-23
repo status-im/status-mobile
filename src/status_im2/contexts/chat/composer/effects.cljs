@@ -111,11 +111,14 @@
    {:keys [height saved-height last-height]}]
   (rn/use-effect
    (fn []
+     ;; Some subscriptions can arrive after the composer if focused (esp. link
+     ;; previews), so we need to react to changes in `max-height` outside of the
+     ;; `on-focus` handler.
      (when @focused?
-       (let [new-last-height (min max-height (reanimated/get-shared-value last-height))]
-         (reanimated/set-shared-value last-height new-last-height)
-         (reanimated/animate height new-last-height)
-         (reanimated/set-shared-value saved-height new-last-height))))
+       (let [new-height (min max-height (reanimated/get-shared-value last-height))]
+         (reanimated/set-shared-value last-height new-height)
+         (reanimated/animate height new-height)
+         (reanimated/set-shared-value saved-height new-height))))
    [max-height @focused?]))
 
 (defn initialize
