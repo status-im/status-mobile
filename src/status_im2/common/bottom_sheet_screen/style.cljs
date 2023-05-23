@@ -22,7 +22,8 @@
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
-    :overflow                :hidden}))
+    :overflow                :hidden
+    :padding-top             20}))
 
 (def handle-container
   {:left            0

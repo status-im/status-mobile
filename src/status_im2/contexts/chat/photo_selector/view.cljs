@@ -80,7 +80,7 @@
       (inc (utils/first-index #(= (:uri item) (:uri %)) @selected))])])
 
 (defn album-title
-  [photos? selected temporary-selected insets]
+  [photos? selected temporary-selected insets close]
   (fn []
     (let [selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
       [rn/touchable-opacity
@@ -94,9 +94,7 @@
                                  (do
                                    (reset! temporary-selected @selected)
                                    (rf/dispatch [:open-modal :album-selector {:insets insets}]))
-                                 (rf/dispatch [:navigate-back])))}
-
-
+                                 (close)))}
        [quo/text
         {:weight          :medium
          :ellipsize-mode  :tail
@@ -108,7 +106,7 @@
          {:color (colors/theme-colors colors/neutral-100 colors/white)}]]])))
 
 (defn photo-selector
-  [{:keys [scroll-enabled on-scroll]}]
+  [{:keys [scroll-enabled on-scroll close]}]
   [:f>
    (let [temporary-selected (reagent/atom [])
          {:keys [insets]}   (rf/sub [:get-screen-params])] ; used when switching albums
@@ -133,7 +131,7 @@
               [rn/view {:style {:flex 1}}
                [rn/view
                 {:style style/buttons-container}
-                [album-title true selected temporary-selected insets]
+                [album-title true selected temporary-selected insets close]
                 [clear-button selected]]
                [gesture/flat-list
                 {:key-fn                  identity

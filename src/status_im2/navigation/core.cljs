@@ -110,7 +110,8 @@
 ;; MODAL
 (defn open-modal
   [comp]
-  (let [{:keys [options]} (get views/screens comp)]
+  (let [{:keys [options]} (get views/screens comp)
+        sheet?            (:sheet? options)]
     (if @state/dissmissing
       (reset! state/dissmissing comp)
       (do
@@ -120,10 +121,10 @@
          {:component
           {:name    comp
            :id      comp
-           :options (merge (options/statusbar-and-navbar)
-                           (options/default-root)
+           :options (merge (options/default-root)
+                           (options/statusbar-and-navbar)
                            options
-                           (when (:sheet? options)
+                           (when sheet?
                              options/sheet-options))}})))))
 
 (re-frame/reg-fx :open-modal-fx open-modal)

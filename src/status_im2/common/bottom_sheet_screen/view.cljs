@@ -11,10 +11,10 @@
     [reagent.core :as reagent]
     [utils.re-frame :as rf]))
 
-(def ^:const drag-threshold 100)
+(def ^:const drag-threshold 200)
 
 (defn drag-gesture
-  [translate-y opacity scroll-enabled curr-scroll]
+  [translate-y opacity scroll-enabled curr-scroll close]
   (->
     (gesture/gesture-pan)
     (gesture/on-start (fn [e]
@@ -28,12 +28,10 @@
                              (reanimated/set-shared-value opacity (- 1 (/ progress 5)))))))
     (gesture/on-end (fn [e]
                       (if (> (oops/oget e "translationY") drag-threshold)
+                        (close)
                         (do
-                          (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
-                          (rf/dispatch [:navigate-back]))
-                        (do
-                          (reanimated/set-shared-value opacity (reanimated/with-timing 1))
-                          (reanimated/set-shared-value translate-y (reanimated/with-timing 0))
+                          (reanimated/animate translate-y 0 300)
+                          (reanimated/animate opacity 1 300)
                           (reset! scroll-enabled true)))))
     (gesture/on-finalize (fn [e]
                            (when (and (>= (oops/oget e "velocityY") 0)
@@ -50,17 +48,20 @@
   (let [scroll-enabled (reagent/atom true)
         curr-scroll    (atom 0)]
     (fn []
-      (let [insets      (safe-area/get-insets)
-            padding-top (:top insets)
-            padding-top (if platform/ios? padding-top (+ padding-top 10))
-            opacity     (reanimated/use-shared-value 0)
-            translate-y (reanimated/use-shared-value 0)
-            close       (fn []
-                          (reanimated/set-shared-value opacity (reanimated/with-timing-duration 0 100))
-                          (rf/dispatch [:navigate-back]))]
+      (let [insets           (safe-area/get-insets)
+            {:keys [height]} (rn/get-window)
+            padding-top      (:top insets)
+            padding-top      (if platform/ios? padding-top (+ padding-top 10))
+            opacity          (reanimated/use-shared-value 0)
+            translate-y      (reanimated/use-shared-value height)
+            close            (fn []
+                               (reanimated/animate translate-y height 300)
+                               (reanimated/animate opacity 0 300)
+                               (rf/dispatch [:navigate-back]))]
         (rn/use-effect
          (fn []
-           (reanimated/animate-delay opacity 1 (if platform/ios? 300 100))))
+           (reanimated/animate translate-y 0 300)
+           (reanimated/animate opacity 1 300)))
         (hooks/use-back-handler close)
         [rn/view
          {:style {:flex        1
@@ -68,7 +69,7 @@
          (when-not skip-background?
            [reanimated/view {:style (style/background opacity)}])
          [gesture/gesture-detector
-          {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll)}
+          {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll close)}
           [reanimated/view {:style (style/main-view translate-y)}
            [rn/view {:style style/handle-container}
             [rn/view {:style (style/handle)}]]

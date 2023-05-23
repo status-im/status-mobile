@@ -1,11 +1,10 @@
 (ns quo2.components.drawers.action-drawers.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def divider
+(defn divider
+  []
   {:border-top-width 1
-   :border-top-color (colors/theme-colors
-                      colors/neutral-10
-                      colors/neutral-90)
+   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-90)
    :margin-top       8
    :margin-bottom    7
    :align-items      :center

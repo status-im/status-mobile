@@ -53,7 +53,6 @@
        {:statusBar {:style style}})))
   ([] (statusbar nil)))
 
-
 (defn statusbar-and-navbar
   ([dark?]
    (merge (navbar dark?) (statusbar dark?)))
@@ -87,7 +86,9 @@
   {:layout                 {:componentBackgroundColor :transparent
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
-   :modalPresentationStyle :overCurrentContext})
+   :modalPresentationStyle :overCurrentContext
+   :animations             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
+                            :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}})
 
 (def lightbox
   {:topBar        {:visible false}

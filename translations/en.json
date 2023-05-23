@@ -2174,5 +2174,6 @@
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
     "token-gated-communities": "Token gated communities",
     "read-more": "Read more",
-    "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it."
+    "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
+    "dont-yell-at-me": "Don’t yell at me"
 }

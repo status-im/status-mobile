@@ -1,13 +1,12 @@
 (ns status-im.ui.components.invite.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.invite.events :as invite.events]))
+            [utils.i18n :as i18n]))
 
 (defn button
   []
   [quo/button
-   {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
+   {:on-press            #(re-frame/dispatch [:invite.events/share-link nil])
     :accessibility-label :invite-friends-button}
    (i18n/label :t/invite-friends)])
 
@@ -21,7 +20,7 @@
     :on-press            (fn []
                            (re-frame/dispatch [:bottom-sheet/hide-old])
                            (js/setTimeout
-                            #(re-frame/dispatch [::invite.events/share-link nil])
+                            #(re-frame/dispatch [:invite.events/share-link nil])
                             250))}])
 
 
