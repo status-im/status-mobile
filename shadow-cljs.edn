@@ -2,7 +2,7 @@
 {:source-paths ["src" "test/cljs"]
 
  :dependencies [[reagent "1.0.0"]
-                [re-frame "0.12.0"]
+                [re-frame "1.3.0"]
                 [binaryage/oops "0.7.0"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [status-im/timbre "4.10.0-2-status"]
