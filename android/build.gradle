@@ -5,13 +5,15 @@ import org.apache.tools.ant.taskdefs.condition.Os
 * Project-wide gradle configuration properties for use by all modules
 */
 ext {
-    RNNKotlinVersion    = "1.4.31"
+    RNNKotlinVersion    = "1.6.20"
+    RNGH_kotlinVersion  = "1.6.20"
     buildToolsVersion   = project.buildToolsVersion
     minSdkVersion       = Integer.valueOf(project.minSdkVersion)
     compileSdkVersion   = Integer.valueOf(project.compileSdkVersion)
     targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
     supportLibVersion   = project.supportLibVersion
     gradlePluginVersion = project.gradlePluginVersion
+    kotlinPluginVersion = project.kotlinPluginVersion
 
     if (System.properties['os.arch'] == "aarch64") {
         // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -30,7 +32,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinPluginVersion}"
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:4.1.2")

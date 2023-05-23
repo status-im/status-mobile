@@ -46,7 +46,7 @@
     "react-native-fast-image": "^8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",
-    "react-native-gesture-handler": "^2.5.0",
+    "react-native-gesture-handler": "2.9.0",
     "react-native-haptic-feedback": "^1.9.0",
     "react-native-hole-view": "git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.1-status",
     "react-native-image-crop-picker": "git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0",
