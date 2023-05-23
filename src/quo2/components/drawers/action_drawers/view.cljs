@@ -11,9 +11,10 @@
     colors/danger-60
     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
-(def divider
+(defn divider
+  []
   [rn/view
-   {:style               style/divider
+   {:style               (style/divider)
     :accessible          true
     :accessibility-label :divider}])
 
@@ -30,7 +31,8 @@
     :as   action-props}]
   (when action-props
     [:<> {:key label}
-     (when add-divider? divider)
+     (when add-divider?
+       [divider])
      [rn/touchable-highlight
       {:accessibility-label accessibility-label
        :style               (style/container sub-label)

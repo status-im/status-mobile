@@ -45,6 +45,7 @@
 (defn statusbar
   ([dark?]
    (let [style (if (or dark? (colors/dark?)) :light :dark)]
+     (println "style" dark? style)
      (if platform/android?
        {:statusBar {:translucent     true
                     :backgroundColor :transparent
@@ -52,7 +53,6 @@
                     :style           style}}
        {:statusBar {:style style}})))
   ([] (statusbar nil)))
-
 
 (defn statusbar-and-navbar
   ([dark?]
@@ -87,7 +87,9 @@
   {:layout                 {:componentBackgroundColor :transparent
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
-   :modalPresentationStyle :overCurrentContext})
+   :modalPresentationStyle :overCurrentContext
+   :animations             {:showModal    {:alpha {:from 0 :to 1 :duration 300}}
+                            :dismissModal {:alpha {:from 1 :to 0 :duration 300}}}})
 
 (def lightbox
   {:topBar        {:visible false}

@@ -33,7 +33,8 @@
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im2.contexts.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
-    [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]))
+    [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
+    [status-im2.contexts.chat.new-chat.view :as new-chat]))
 
 (defn screens
   []
@@ -54,6 +55,10 @@
     {:name      :chat
      :options   {:insets {:top? true}}
      :component chat/chat}
+
+    {:name      :start-a-new-chat
+     :options   {:sheet? true}
+     :component new-chat/view}
 
     {:name      :group-add-manage-members
      :options   {:sheet? true}

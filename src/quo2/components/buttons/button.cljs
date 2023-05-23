@@ -204,17 +204,13 @@
          (when disabled
            {:opacity 0.3})))
 
-(defn community-themed?
-  [type community-color]
-  (and (= type :community) (string? community-color)))
-
 (defn button
   "with label
    [button opts \"label\"]
    opts
    {:type   :primary/:secondary/:grey/:dark-grey/:outline/:ghost/
             :danger/:photo-bg/:blur-bg/:blur-bg-outline/:shell/:community
-    :size   40/32/24
+    :size   40 [default] /32/24
     :icon   true/false
     :community-color '#FFFFFF'
     :community-text-color '#000000'

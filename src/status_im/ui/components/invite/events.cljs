@@ -11,7 +11,7 @@
    (.share ^js react/sharing (clj->js content))))
 
 (rf/defn share-link
-  {:events [::share-link]}
+  {:events [:invite.events/share-link]}
   [{:keys [db]}]
   (let [{:keys [public-key preferred-name]} (get db :multiaccount)
         profile-link                        (universal-links/generate-link :user

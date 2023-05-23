@@ -1,4 +1,5 @@
-(ns status-im2.common.resources)
+(ns status-im2.common.resources
+  (:require [quo2.foundations.colors :as colors]))
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
@@ -20,7 +21,9 @@
    :keycard-chip-dark             (js/require "../resources/images/ui2/keycard-chip-dark.png")
    :keycard-watermark             (js/require "../resources/images/ui2/keycard-watermark.png")
    :discover                      (js/require "../resources/images/ui2/discover.png")
-   :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")})
+   :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")
+   :no-contacts-light             (js/require "../resources/images/ui2/no-contacts-light.png")
+   :no-contacts-dark              (js/require "../resources/images/ui2/no-contacts-dark.png")})
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")
@@ -61,6 +64,10 @@
 (defn get-image
   [k]
   (get ui k))
+
+(defn get-themed-image
+  [k k2]
+  (get ui (if (colors/dark?) k k2)))
 
 (defn get-token
   [k]

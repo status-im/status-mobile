@@ -3,16 +3,13 @@
     [quo2.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]))
 
-(defn background
-  [opacity]
-  (reanimated/apply-animations-to-style
-   {:opacity opacity}
-   {:background-color colors/neutral-100-opa-70
-    :position         :absolute
-    :top              0
-    :bottom           0
-    :left             0
-    :right            0}))
+(def background
+  {:background-color colors/neutral-100-opa-70
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})
 
 (defn main-view
   [translate-y]
@@ -22,7 +19,8 @@
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
-    :overflow                :hidden}))
+    :overflow                :hidden
+    :padding-top             20}))
 
 (def handle-container
   {:left            0
