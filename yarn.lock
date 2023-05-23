@@ -9041,9 +9041,9 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.1-status":
+"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.3-status":
   version "2.1.1"
-  resolved "git+https://github.com/status-im/react-native-hole-view.git#c706a3264bfffa8e55a009bed411504dfcb3f7cb"
+  resolved "git+https://github.com/status-im/react-native-hole-view.git#f056393e06f18b3af54c736d470f9e29d23120a4"
 
 "react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
   version "0.36.2"
@@ -9080,10 +9080,9 @@ react-native-lottie-splash-screen@^1.0.1:
     lottie-ios "3.2.3"
     lottie-react-native "^5.1.3"
 
-react-native-mail@^6.1.1:
+"react-native-mail@git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status":
   version "6.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.1.tgz#f1b1f8034c84d2510a93e4a2a795f0db5a13595e"
-  integrity sha512-pTs180wwyh7hN/iyTC9SfOX579U4YhDlHOLxi47IGvhPJENqO/QFdBq+wWKxyhNqdQuVSy+LoeIxLreWnIeYmg==
+  resolved "git+https://github.com/status-im/react-native-mail.git#6d28780dfe156dfed87d8a4ceba520cc7db019c5"
 
 react-native-navigation@^7.27.1:
   version "7.27.1"
