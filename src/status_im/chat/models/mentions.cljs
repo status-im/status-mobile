@@ -115,7 +115,7 @@
 (rf/defn on-change-text-success
   {:events [:mention/on-change-text-success]}
   [{:keys [db]} result]
-  (log/debug "[mentions] on-text-input-success" {:result result})
+  (log/debug "[mentions] on-change-text-success" {:result result})
   (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
     {:db (-> db
              (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
