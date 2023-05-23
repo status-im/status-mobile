@@ -3,7 +3,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.chat.messages.content.album.style :as style]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.image.view :as image]
