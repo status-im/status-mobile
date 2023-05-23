@@ -17,7 +17,6 @@
 (def ^:private max-seed-phrase-length
   (apply max constants/seed-phrase-valid-length))
 
-
 (defn- partial-word-in-dictionary?
   [partial-word]
   (some #(string/starts-with? % partial-word) mnemonic/dictionary))
