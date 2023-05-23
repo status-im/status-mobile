@@ -16,13 +16,13 @@
     :index  index})
 
 (defn small-image
-  [item index _ {:keys [scroll-index atoms]}]
+  [item index _ {:keys [scroll-index props]}]
   [:f>
    (fn []
      (let [size                    (if (= @scroll-index index) c/focused-image-size c/small-image-size)
            size-value              (anim/use-val size)
            {:keys [scroll-index-lock? small-list-ref
-                   flat-list-ref]} atoms]
+                   flat-list-ref]} props]
        (anim/animate size-value size)
        [rn/touchable-opacity
         {:active-opacity 1
@@ -46,29 +46,27 @@
                                                         {:border-radius 10})}]]))])
 
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width atoms]
-  [:f>
-   (fn []
-     (let [text               (get-in (first messages) [:content :text])
-           padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
-       [reanimated/linear-gradient
-        {:colors [:black :transparent]
-         :start  {:x 0 :y 1}
-         :end    {:x 0 :y 0}
-         :style  (style/gradient-container insets animations derived)}
-        [rn/text {:style style/text-style} text]
-        [rn/flat-list
-         {:ref                               #(reset! (:small-list-ref atoms) %)
-          :key-fn                            :message-id
-          :style                             {:height c/small-list-height}
-          :data                              messages
-          :render-fn                         small-image
-          :render-data                       {:scroll-index scroll-index
-                                              :atoms        atoms}
-          :horizontal                        true
-          :shows-horizontal-scroll-indicator false
-          :get-item-layout                   get-small-item-layout
-          :separator                         [rn/view {:style {:width 8}}]
-          :initial-scroll-index              index
-          :content-container-style           (style/content-container padding-horizontal)}]]))])
+  [messages index scroll-index insets animations derived item-width props]
+  (let [text               (get-in (first messages) [:content :text])
+        padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
+    [reanimated/linear-gradient
+     {:colors [:black :transparent]
+      :start  {:x 0 :y 1}
+      :end    {:x 0 :y 0}
+      :style  (style/gradient-container insets animations derived)}
+     [rn/text {:style style/text-style} text]
+     [rn/flat-list
+      {:ref                               #(reset! (:small-list-ref props) %)
+       :key-fn                            :message-id
+       :style                             {:height c/small-list-height}
+       :data                              messages
+       :render-fn                         small-image
+       :render-data                       {:scroll-index scroll-index
+                                           :props        props}
+       :horizontal                        true
+       :shows-horizontal-scroll-indicator false
+       :get-item-layout                   get-small-item-layout
+       :separator                         [rn/view {:style {:width 8}}]
+       :initial-scroll-index              index
+       :content-container-style           (style/content-container padding-horizontal)}]]))
 

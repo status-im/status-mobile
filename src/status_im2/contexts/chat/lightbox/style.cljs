@@ -67,9 +67,7 @@
     :opacity   opacity}
    {:position       :absolute
     :bottom         0
-    :padding-bottom (if platform/ios?
-                      (:bottom insets)
-                      (+ (:bottom insets) c/small-list-padding-vertical c/focused-extra-size))
+    :padding-bottom (:bottom insets)
     :z-index        3}))
 
 (defn content-container
