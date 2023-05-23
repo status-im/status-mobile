@@ -211,7 +211,7 @@
         messages   (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording? (rf/sub [:chats/recording?])]
     [rn/view {:style {:flex 1}}
-     [reanimated/flat-list
+     [rn/flat-list
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       (when (= (:chat-type chat) constants/private-group-chat-type)

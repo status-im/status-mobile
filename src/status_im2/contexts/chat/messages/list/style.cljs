@@ -22,8 +22,7 @@
    :right    0})
 
 (def list-container
-  {:padding-top    16
-   :padding-bottom 16})
+  {:padding-vertical 16})
 
 (defn header-container
   [insets]
@@ -49,18 +48,16 @@
   (reanimated/apply-animations-to-style
    {:border-top-right-radius animation
     :border-top-left-radius  animation}
-   {:position         :relative
-    :top              -16
+   {:top              -16
     :margin-bottom    -16
     :padding-bottom   24
     :background-color (colors/theme-colors colors/white colors/neutral-100)
     :display          :flex}))
 
 (def header-avatar
-  {:top           header-avatar-top-offset
-   :margin-left   20
-   :margin-right  20
-   :margin-bottom header-avatar-top-offset})
+  {:top               header-avatar-top-offset
+   :margin-horizontal 20
+   :margin-bottom     header-avatar-top-offset})
 
 (defn header-image
   [scale-animation top-margin-animation side-margin-animation]
