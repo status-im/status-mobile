@@ -150,7 +150,7 @@
 
 (defn form
   []
-  (let [{:keys [name description membership editing?]} (rf/sub [:communities/create])]
+  (let [{:keys [name description editing?]} (rf/sub [:communities/create])]
     [rn/scroll-view
      {:keyboard-should-persist-taps :handled
       :style                        {:flex 1}
@@ -188,11 +188,11 @@
        [:<>
         [quo/separator {:style {:margin-vertical 10}}]
         [quo/list-item
-         {:title          (i18n/label :t/membership-button)
-          :accessory      :text
-          :on-press       #(rf/dispatch [:navigate-to :community-membership])
-          :chevron        true
-          :size           :small}]])]))
+         {:title     (i18n/label :t/membership-button)
+          :accessory :text
+          :on-press  #(rf/dispatch [:navigate-to :community-membership])
+          :chevron   true
+          :size      :small}]])]))
 
 (defn view
   []

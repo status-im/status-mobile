@@ -15,7 +15,7 @@
     (assoc-in acc [chat-id message-id emoji-id emoji-reaction-id] reaction)))
 
 (defn process-reactions
-  [chats]
+  [_]
   (fn [reactions new-reactions]
     ;; TODO(Ferossgp): handling own reaction in subscription could be expensive,
     ;; for better performance we can here separate own reaction into 2 maps

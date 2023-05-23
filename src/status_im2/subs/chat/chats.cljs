@@ -1,6 +1,5 @@
 (ns status-im2.subs.chat.chats
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]

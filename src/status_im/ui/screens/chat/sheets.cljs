@@ -4,8 +4,7 @@
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]))
+            [status-im.ui.components.react :as react]))
 
 (defn hide-sheet-and-dispatch
   [event]
