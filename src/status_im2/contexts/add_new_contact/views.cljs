@@ -73,13 +73,13 @@
             [rn/view (style/text-input-container invalid?)
              [rn/text-input
               (merge (style/text-input)
-                     {:default-value  (or scanned @default-value input)
-                      :placeholder    (i18n/label :t/type-some-chat-key)
-                      :on-change-text (fn [v]
-                                        (reset! default-value v)
-                                        (debounce/debounce-and-dispatch
-                                         [:contacts/set-new-identity v nil]
-                                         600))
+                     {:default-value   (or scanned @default-value input)
+                      :placeholder     (i18n/label :t/type-some-chat-key)
+                      :on-change-text  (fn [v]
+                                         (reset! default-value v)
+                                         (debounce/debounce-and-dispatch
+                                          [:contacts/set-new-identity v nil]
+                                          600))
                       :blur-on-submit  true
                       :return-key-type :done})]
              (when show-paste-button?
