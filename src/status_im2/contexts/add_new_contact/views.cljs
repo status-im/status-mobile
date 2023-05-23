@@ -79,7 +79,9 @@
                                         (reset! default-value v)
                                         (debounce/debounce-and-dispatch
                                          [:contacts/set-new-identity v nil]
-                                         600))})]
+                                         600))
+                      :blur-on-submit  true
+                      :return-key-type :done})]
              (when show-paste-button?
                [quo/button
                 (merge style/button-paste
