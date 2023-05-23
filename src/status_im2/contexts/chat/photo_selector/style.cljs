@@ -15,7 +15,7 @@
    :flex-direction  :row
    :left            0
    :right           0
-   :top             20
+   :top             0
    :justify-content :center
    :z-index         1})
 
