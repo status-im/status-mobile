@@ -206,7 +206,7 @@
       :size  :medium}]))
 
 (defn chat-list-item
-  [{:keys [chat-id group-chat color name unviewed-messages-count unviewed-mentions-count
+  [{:keys [chat-id group-chat color name unviewed-messages-count
            timestamp last-message muted]
     :as   item}]
   (let [display-name (if group-chat
@@ -228,8 +228,6 @@
       [name-view display-name contact timestamp]
       [last-message-preview group-chat last-message]]
      (when-not muted
-       (if (> unviewed-mentions-count 0)
+       (when (> unviewed-messages-count 0)
          [quo/info-count {:style {:top 16}}
-          unviewed-mentions-count]
-         (when (> unviewed-messages-count 0)
-           [rn/view {:style (style/count-container)}])))]))
+          unviewed-messages-count]))]))
