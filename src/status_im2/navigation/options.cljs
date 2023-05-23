@@ -45,7 +45,6 @@
 (defn statusbar
   ([dark?]
    (let [style (if (or dark? (colors/dark?)) :light :dark)]
-     (println "style" dark? style)
      (if platform/android?
        {:statusBar {:translucent     true
                     :backgroundColor :transparent
