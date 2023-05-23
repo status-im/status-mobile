@@ -113,6 +113,7 @@
               :image-picker-props  {:profile-picture @profile-pic
                                     :full-name       @full-name}
               :title-input-props   {:default-value  @full-name
+                                    :auto-focus     true
                                     :max-length     c/profile-name-max-length
                                     :on-change-text on-change-text}}]]
            (when @validation-msg
@@ -123,8 +124,9 @@
                :style style/info-message}
               @validation-msg])
            [quo/text
-            {:size  :paragraph-2
-             :style style/color-title}
+            {:size   :paragraph-2
+             :weight :medium
+             :style  style/color-title}
             (i18n/label :t/accent-colour)]
            [quo/color-picker
             {:blur?             true

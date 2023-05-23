@@ -1527,7 +1527,7 @@
     "your-data-belongs-to-you": "If you lose your seed phrase you lose your data and funds",
     "your-data-belongs-to-you-description": "If you lose access, for example by losing your phone, you can only access your keys with your seed phrase. No one, but you has your seed phrase. Write it down. Keep it safe",
     "your-identifiers": "Your identicon ring, chat key and emojihash will help others tell you from impersonators",
-    "your-name": "Your Name",
+    "your-name": "Your name",
     "your-recovery-phrase": "Your seed phrase",
     "your-recovery-phrase-description": "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet.",
     "custom-seed-phrase": "Invalid seed phrase",
