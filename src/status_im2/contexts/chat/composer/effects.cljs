@@ -8,6 +8,7 @@
     [status-im.async-storage.core :as async-storage]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
+    [status-im2.contexts.chat.composer.utils :as utils]
     [utils.debounce :as debounce]
     [utils.number :as utils.number]
     [utils.re-frame :as rf]))
@@ -83,20 +84,9 @@
     (reanimated/animate container-opacity 1)))
 
 (defn empty-effect
-  [{:keys [text-value maximized? focused?]}
-   {:keys [container-opacity]}
-   images?
-   link-previews?
-   reply?
-   audio]
-  (when
-    (and (empty? @text-value)
-         (not images?)
-         (not link-previews?)
-         (not reply?)
-         (not @maximized?)
-         (not @focused?)
-         (not audio))
+  [{:keys [container-opacity]}
+   {:keys [input-text images link-previews? reply audio]}]
+  (when (utils/empty-input? input-text images link-previews? reply audio)
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -123,7 +113,7 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input images link-previews? reply audio]}]
+   {:keys [chat-input images link-previews? reply audio] :as subs}]
   (max-height-effect state dimensions animations)
   (rn/use-effect
    (fn []
@@ -135,7 +125,7 @@
      (images-effect props animations images)
      (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect state animations images link-previews? reply audio)
+     (empty-effect animations subs)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))
