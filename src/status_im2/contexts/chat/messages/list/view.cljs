@@ -117,7 +117,6 @@
   [{:keys [chat insets scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]}        chat
-        status-bar-height           (:top insets)
         display-name                (if (= chat-type constants/one-to-one-chat-type)
                                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                       (str emoji " " chat-name))
@@ -148,7 +147,7 @@
       {:style     (style/header-container insets)
        :on-layout on-layout}
       (when cover-bg-color
-        [rn/view {:style (style/header-cover cover-bg-color status-bar-height)}])
+        [rn/view {:style (style/header-cover cover-bg-color insets)}])
       [reanimated/view {:style (style/header-bottom-part border-animation)}
        [rn/view {:style style/header-avatar}
         (when-not group-chat
