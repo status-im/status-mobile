@@ -148,12 +148,12 @@
              rn/flat-list)
            (merge
             (dissoc props
-                    :default-active
-                    :fade-end-percentage
-                    :fade-end?
-                    :on-change
-                    :scroll-on-press?
-                    :size)
+             :default-active
+             :fade-end-percentage
+             :fade-end?
+             :on-change
+             :scroll-on-press?
+             :size)
             (when scroll-on-press?
               {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
             {:ref                               #(reset! flat-list-ref %)

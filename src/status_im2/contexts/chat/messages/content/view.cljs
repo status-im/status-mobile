@@ -1,30 +1,30 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require
-   [react-native.core :as rn]
-   [quo2.foundations.colors :as colors]
-   [react-native.platform :as platform]
-   [status-im2.contexts.chat.messages.content.style :as style]
-   [status-im2.contexts.chat.messages.content.pin.view :as pin]
-   [status-im2.constants :as constants]
-   [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-   [status-im2.contexts.chat.messages.content.text.view :as content.text]
-   [status-im2.contexts.chat.messages.drawers.view :as drawers]
-   [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
-   [status-im2.contexts.chat.messages.content.status.view :as status]
-   [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-   [status-im2.contexts.chat.messages.content.album.view :as album]
-   [status-im2.contexts.chat.messages.avatar.view :as avatar]
-   [status-im2.contexts.chat.messages.content.image.view :as image]
-   [status-im2.contexts.chat.messages.content.audio.view :as audio]
-   [quo2.core :as quo]
-   [utils.re-frame :as rf]
-   [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
-   [status-im2.contexts.chat.composer.reply.view :as reply]
-   [status-im2.common.not-implemented :as not-implemented]
-   [utils.datetime :as datetime]
-   [reagent.core :as reagent]
-   [utils.address :as address]
-   [quo.gesture-handler :as gesture-handler]))
+    [react-native.core :as rn]
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [status-im2.contexts.chat.messages.content.style :as style]
+    [status-im2.contexts.chat.messages.content.pin.view :as pin]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+    [status-im2.contexts.chat.messages.content.text.view :as content.text]
+    [status-im2.contexts.chat.messages.drawers.view :as drawers]
+    [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
+    [status-im2.contexts.chat.messages.content.status.view :as status]
+    [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
+    [status-im2.contexts.chat.messages.content.album.view :as album]
+    [status-im2.contexts.chat.messages.avatar.view :as avatar]
+    [status-im2.contexts.chat.messages.content.image.view :as image]
+    [status-im2.contexts.chat.messages.content.audio.view :as audio]
+    [quo2.core :as quo]
+    [utils.re-frame :as rf]
+    [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.common.not-implemented :as not-implemented]
+    [utils.datetime :as datetime]
+    [reagent.core :as reagent]
+    [utils.address :as address]
+    [quo.gesture-handler :as gesture-handler]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -45,7 +45,7 @@
            pinned-by
            quoted-message
            from
-            timestamp]}
+           timestamp]}
    message-reaction-view?]
   (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by message-reaction-view?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])

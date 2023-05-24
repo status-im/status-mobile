@@ -128,7 +128,7 @@
   {:events [:chat.ui/emoji-reactions-by-message-id]}
   [{:keys [db]} {:keys [message-id long-pressed-emoji]}]
   {:json-rpc/call [{:method      "wakuext_emojiReactionsByChatIDMessageID"
-                                        :params      [(:current-chat-id db) message-id]
+                    :params      [(:current-chat-id db) message-id]
                     :js-response true
                     :on-error    #(log/error "failed to fetch emoji reaction by message-id: "
                                              {:message-id message-id :error %})
