@@ -35,7 +35,7 @@
   [y lines max-lines gradient-opacity focused?]
   (and
    (> y constants/line-height)
-   (>= lines max-lines)
+   (>= lines (dec max-lines))
    (= (reanimated/get-shared-value gradient-opacity) 0)
    @focused?))
 
