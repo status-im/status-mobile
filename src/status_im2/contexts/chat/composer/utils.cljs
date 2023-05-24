@@ -62,8 +62,7 @@
 
 (defn calc-lines
   [height]
-  (let [lines (Math/round (/ height constants/line-height))]
-    (if platform/ios? lines (dec lines))))
+  (Math/floor (/ height constants/line-height)))
 
 (defn calc-extra-content-height
   [images? link-previews? reply? edit?]
