@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.view
-  (:require [re-frame.db]
+  (:require [quo2.foundations.colors :as colors]
+            [re-frame.db]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.chat.composer.view :as composer]
@@ -29,7 +30,7 @@
                 able-to-send-message?]
          :as   chat} (rf/sub [:chats/current-chat-chat-view])]
     [messages.list/messages-list
-     {:cover-bg-color style/cover-bg-color
+     {:cover-bg-color (colors/custom-color :turquoise 50 20)
       :chat           chat
       :header-comp    (fn [{:keys [scroll-y]}]
                         [messages.navigation/navigation-view {:scroll-y scroll-y}])

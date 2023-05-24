@@ -5,7 +5,6 @@
 
 (defonce ^:const cover-height 168)
 (defonce ^:const overscroll-cover-height 2000)
-(defonce ^:const cover-bg-color "#2A799B33")
 (defonce ^:const header-avatar-top-offset -36)
 
 (def footer
@@ -14,7 +13,6 @@
 (defn keyboard-avoiding-container
   [view-height keyboard-height]
   {:position :absolute
-   :display  :flex
    :flex     1
    :top      0
    :left     0
@@ -37,7 +35,7 @@
 
 (defn header-cover
   [cover-bg-color status-bar-height]
-  {:width            "100%"
+  {:flex             1
    :height           (if platform/ios?
                        (+ overscroll-cover-height cover-height)
                        (+ status-bar-height cover-height))
