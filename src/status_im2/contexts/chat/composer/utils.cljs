@@ -35,7 +35,7 @@
   [y lines max-lines gradient-opacity focused?]
   (and
    (> y constants/line-height)
-   (>= lines (dec max-lines))
+   (>= lines max-lines)
    (= (reanimated/get-shared-value gradient-opacity) 0)
    @focused?))
 
@@ -61,9 +61,12 @@
       (> (reanimated/get-shared-value layout-height) (oops/oget event "nativeEvent.layout.height"))))
 
 (defn calc-lines
-  [height]
-  (let [lines (Math/round (/ height constants/line-height))]
-    (if platform/ios? lines (dec lines))))
+  ([height]
+   (calc-lines height false))
+  ([height floor?]
+   (let [lines (/ height constants/line-height)
+         lines (if floor? (Math/floor lines) (Math/round lines))]
+     (if platform/ios? lines (dec lines)))))
 
 (defn calc-extra-content-height
   [images? link-previews? reply? edit?]

@@ -36,7 +36,7 @@
                                                         insets)
         lines                    (utils/calc-lines (- @content-height
                                                       constants/extra-content-offset))
-        max-lines                (utils/calc-lines max-height)
+        max-lines                (utils/calc-lines max-height true)
         animations               (utils/init-animations
                                   subs
                                   lines
