@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.list.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (defonce ^:const cover-height 168)
@@ -24,12 +23,11 @@
 
 (def header-container
   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-   :top              (- 0 overscroll-cover-height)
-   :margin-bottom    (- 0 overscroll-cover-height)})
+   :top              (- overscroll-cover-height)
+   :margin-bottom    (- overscroll-cover-height)})
 
 (defn header-cover
   [cover-bg-color insets]
-  (js/console.log "ALWX OCH" (+ overscroll-cover-height cover-height))
   {:flex             1
    :height           (+ overscroll-cover-height cover-height)
    :background-color cover-bg-color})
