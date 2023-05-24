@@ -45,7 +45,7 @@
 
 (defn- recovery-form
   [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
-           on-invalid-seed-phrase]}]
+           on-invalid-seed-phrase keyboard-shown?]}]
   (let [button-disabled? (or error-state?
                              (not (constants/seed-phrase-valid-length word-count))
                              (not all-words-valid?))]
@@ -65,7 +65,7 @@
         :on-change-text           on-change-seed-phrase}
        seed-phrase]]
      [quo/button
-      {:style    style/continue-button
+      {:style    (style/continue-button keyboard-shown?)
        :disabled button-disabled?
        :on-press #(rf/dispatch [:onboarding-2/seed-phrase-entered
                                 (security/mask-data seed-phrase)
@@ -127,7 +127,8 @@
          :all-words-valid?       all-words-valid?
          :on-change-seed-phrase  on-change-seed-phrase
          :word-count             word-count
-         :on-invalid-seed-phrase set-invalid-seed-phrase}]
+         :on-invalid-seed-phrase set-invalid-seed-phrase
+         :keyboard-shown?        @keyboard-shown?}]
        (when @keyboard-shown?
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
