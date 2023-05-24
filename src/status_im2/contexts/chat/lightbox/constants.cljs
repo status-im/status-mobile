@@ -11,3 +11,7 @@
 (def ^:const small-list-padding-vertical 12)
 
 (def ^:const top-view-height 56)
+
+(def ^:const separator-width 16)
+
+(def ^:const drag-threshold 100)
