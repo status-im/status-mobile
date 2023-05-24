@@ -150,7 +150,7 @@ in stdenv.mkDerivation rec {
   checkPhase = ''
     ls ${apksPath}/*.apk \
       | xargs -n1 ${pkgs.unzip}/bin/unzip -qql \
-      | grep 'assets/index.android.bundle'
+      | grep 'index.android.bundle'
   '';
   installPhase = ''
     mkdir -p $out
