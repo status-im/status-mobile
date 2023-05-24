@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.enter-seed-phrase.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.safe-area :as safe-area]))
 
 (def full-layout {:flex 1})
 
@@ -29,6 +30,9 @@
    :margin-top        12
    :margin-horizontal -20})
 
-(def continue-button {:margin-top :auto})
+(defn continue-button
+  [keyboard-shown?]
+  {:margin-top    :auto
+   :margin-bottom (when-not keyboard-shown? (safe-area/get-bottom))})
 
 (def keyboard-container {:margin-top :auto})
