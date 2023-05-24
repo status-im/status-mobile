@@ -12,6 +12,6 @@
 
 (def ^:const top-view-height 56)
 
-(def ^:const seperator-width 16)
+(def ^:const separator-width 16)
 
 (def ^:const drag-threshold 100)

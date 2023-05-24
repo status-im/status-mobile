@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
+    [quo.design-system.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
@@ -19,7 +20,10 @@
 
 (defn get-item-layout
   [_ index item-width]
-  #js {:length item-width :offset (* (+ item-width constants/seperator-width) index) :index index})
+  #js
+   {:length item-width
+    :offset (* (+ item-width constants/separator-width) index)
+    :index  index})
 
 (defn on-viewable-items-changed
   [e {:keys [scroll-index-lock? small-list-ref]} {:keys [scroll-index]}]
@@ -34,10 +38,10 @@
 (defn image
   [message index _ {:keys [screen-width screen-height] :as args}]
   [rn/view
-   {:style (style/image (+ screen-width constants/seperator-width) screen-height)}
+   {:style (style/image (+ screen-width constants/separator-width) screen-height)}
    [zoomable-image/zoomable-image message index args
     #(utils/toggle-opacity index args %)]
-   [rn/view {:style {:width constants/seperator-width}}]])
+   [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
   [props {:keys [data transparent? scroll-index set-full-height?]} animations derived messages index
@@ -45,10 +49,9 @@
   (let [insets           (safe-area/get-insets)
         window           (rn/get-window)
         window-width     (:width window)
-        window-height    (:height window)
         window-height    (if platform/android?
-                           (+ window-height (:top insets))
-                           window-height)
+                           (+ (:height window) (:top insets))
+                           (:height window))
         curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
         landscape?       (string/includes? curr-orientation orientation/landscape)
         horizontal?      (or platform/android? (not landscape?))
@@ -76,7 +79,7 @@
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
-         :style                             {:width (+ screen-width constants/seperator-width)}
+         :style                             {:width (+ screen-width constants/separator-width)}
          :data                              @data
          :render-fn                         image
          :render-data                       {:opacity-value    (:opacity animations)
@@ -110,7 +113,7 @@
         derived                  (utils/init-derived-animations animations)
         callback                 (fn [e]
                                    (on-viewable-items-changed e props state))]
-    (anim/animate (:background-color animations) "rgba(0,0,0,1)")
+    (anim/animate (:background-color animations) colors/black)
     (reset! (:data state) messages)
     (utils/orientation-change props state animations)
     (utils/effect props animations index)

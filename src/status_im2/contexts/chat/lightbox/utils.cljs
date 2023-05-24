@@ -65,7 +65,7 @@
        (when @flat-list-ref
          (.scrollToOffset
           ^js @flat-list-ref
-          #js {:animated false :offset (* (+ item-width constants/seperator-width) @scroll-index)})))
+          #js {:animated false :offset (* (+ item-width constants/separator-width) @scroll-index)})))
      100)
     (when platform/ios?
       (top-view/animate-rotation result screen-width screen-height insets animations))))
@@ -138,6 +138,9 @@
 
 (defn init-state
   [messages index]
+  ;; The initial value of data is the image that was pressed (and not the whole album) in order
+  ;; for the transition animation to execute properly, otherwise it would animate towards
+  ;; outside the screen (even if we have `initialScrollIndex` set).
   {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
    :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
@@ -145,7 +148,7 @@
 
 (defn init-animations
   []
-  {:background-color (anim/use-val "rgba(0,0,0,0)")
+  {:background-color (anim/use-val colors/black-opa-0)
    :border           (anim/use-val (if platform/ios? 0 12))
    :opacity          (anim/use-val 0)
    :rotate           (anim/use-val "0deg")
@@ -161,4 +164,3 @@
   [{:keys [layout]}]
   {:top-layout    (worklet/info-layout layout true)
    :bottom-layout (worklet/info-layout layout false)})
-
