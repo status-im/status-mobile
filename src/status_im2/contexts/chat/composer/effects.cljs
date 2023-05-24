@@ -103,7 +103,7 @@
    (fn []
      ;; Some subscriptions can arrive after the composer if focused (esp. link
      ;; previews), so we need to react to changes in `max-height` outside of the
-     ;; `on-focus` handler.
+     ;; `on-focus` handler
      (when @focused?
        (let [new-height (min max-height (reanimated/get-shared-value last-height))]
          (reanimated/set-shared-value last-height new-height)
