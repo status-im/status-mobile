@@ -109,10 +109,10 @@
   (let [props (utils/init-props)
         state (utils/init-state messages index)]
     (fn [{:keys [messages index]}]
-      (let [animations               (utils/init-animations)
-            derived                  (utils/init-derived-animations animations)
-            callback                 (fn [e]
-                                       (on-viewable-items-changed e props state))]
+      (let [animations (utils/init-animations)
+            derived    (utils/init-derived-animations animations)
+            callback   (fn [e]
+                         (on-viewable-items-changed e props state))]
         (anim/animate (:background-color animations) "rgba(0,0,0,1)")
         (reset! (:data state) messages)
         (utils/orientation-change props state animations)
