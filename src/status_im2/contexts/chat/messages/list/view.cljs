@@ -104,7 +104,7 @@
   (let [loading-messages? (rf/sub [:chats/loading-messages? chat-id])
         messages          (rf/sub [:chats/raw-chat-messages-stream chat-id])]
     (when loading-messages?
-      [rn/view {:style (when platform/android? {:scale-y -1})}
+      [rn/view
        [quo/skeleton
         (if (> (count messages) 0)
           loading-indicator-page-loading-height
@@ -144,7 +144,7 @@
                                                             header-extrapolation-option)]
     [rn/view {:flex 1}
      [rn/view
-      {:style     (style/header-container insets)
+      {:style     style/header-container
        :on-layout on-layout}
       (when cover-bg-color
         [rn/view {:style (style/header-cover cover-bg-color insets)}])
@@ -180,22 +180,22 @@
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
-  [rn/view {:style style/list-chat-group-header-style}
+  [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
 
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  [rn/view {:style (when platform/android? {:scale-y -1})}
-   (if (= type :datemark)
-     [quo/divider-date value]
-     (if (= content-type constants/content-type-gap)
-       [not-implemented/not-implemented
-        [message.gap/gap message-data]]
-       [rn/view {:padding-horizontal 8}
-        (if (or deleted? deleted-for-me?)
-          [content.deleted/deleted-message message-data context]
-          [message/message-with-reactions message-data context keyboard-shown?])]))])
+  [rn/view
+   #_(if (= type :datemark)
+       [quo/divider-date value]
+       (if (= content-type constants/content-type-gap)
+         [not-implemented/not-implemented
+          [message.gap/gap message-data]]
+         [rn/view {:padding-horizontal 8}
+          (if (or deleted? deleted-for-me?)
+            [content.deleted/deleted-message message-data context]
+            [message/message-with-reactions message-data context keyboard-shown?])]))])
 
 (defn scroll-handler
   [event initial-y scroll-y]
@@ -249,9 +249,7 @@
                                        (scroll-handler event initial-y scroll-y)
                                        (when on-scroll
                                          (on-scroll event)))
-       ;;TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})
+       :inverted                     true
        :on-layout                    (fn [e]
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (when platform/android?
@@ -278,7 +276,7 @@
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [{:keys [top bottom] :as insets} (safe-area/get-insets)
-        initial-y                       (if platform/ios? (- (:top insets)) 0)
+        initial-y                       (- (:top insets))
         scroll-y                        (reanimated/use-shared-value initial-y)
         {:keys [keyboard-height]}       (hooks/use-keyboard)
         {keyboard-shown? :shown?}       (use-keyboard-visibility)]

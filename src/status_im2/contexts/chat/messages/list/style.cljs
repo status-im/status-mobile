@@ -22,23 +22,16 @@
 (def list-container
   {:padding-vertical 16})
 
-(defn header-container
-  [insets]
-  {:scale-y          (if platform/android? -1 0)
-   :background-color (colors/theme-colors colors/white colors/neutral-95)
-   :top              (if platform/ios?
-                       (- 0 overscroll-cover-height)
-                       (:top insets))
-   :margin-bottom    (if platform/ios?
-                       (- 0 overscroll-cover-height)
-                       0)})
+(def header-container
+  {:background-color (colors/theme-colors colors/white colors/neutral-95)
+   :top              (- 0 overscroll-cover-height)
+   :margin-bottom    (- 0 overscroll-cover-height)})
 
 (defn header-cover
   [cover-bg-color insets]
+  (js/console.log "ALWX OCH" (+ overscroll-cover-height cover-height))
   {:flex             1
-   :height           (if platform/ios?
-                       (+ overscroll-cover-height cover-height)
-                       (+ (:top insets) cover-height))
+   :height           (+ overscroll-cover-height cover-height)
    :background-color cover-bg-color})
 
 (defn header-bottom-part
@@ -65,10 +58,6 @@
     :margin-left   side-margin-animation
     :margin-bottom side-margin-animation}
    {:align-items :flex-start}))
-
-(def list-chat-group-header-style
-  (when platform/android?
-    {:scale-y -1}))
 
 (def name-container
   {:flex-direction :row
