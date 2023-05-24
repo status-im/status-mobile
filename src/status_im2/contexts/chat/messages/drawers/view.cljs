@@ -9,7 +9,8 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
             [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.messages.drawers.style :as style]))
+            [status-im2.contexts.chat.messages.drawers.style :as style]
+            [react-native.gesture :as gesture]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
@@ -56,7 +57,7 @@
       :on-change       #(reset! selected-tab %)
       :default-active  @selected-tab
       :data            (get-tabs-data reaction-authors selected-tab reactions-order)}]]
-   [rn/gesture-handler-flat-list
+   [gesture/flat-list
     {:data      (for [contact (get reaction-authors @selected-tab)]
                   contact)
      :render-fn contact-list-item-fn
@@ -67,7 +68,7 @@
   [reaction-authors selected-reaction reactions-order]
   (let [selected-tab (reagent/atom (or selected-reaction (first (keys reaction-authors))))]
     (fn []
-      [:f> reaction-authors-comp selected-tab reaction-authors reactions-order])))
+      [reaction-authors-comp selected-tab reaction-authors reactions-order])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]

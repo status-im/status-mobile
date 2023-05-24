@@ -27,8 +27,6 @@
 
 (def flat-list flat-list/flat-list)
 
-(def gesture-handler-flat-list flat-list/gesture-handler-flat-list)
-
 (def section-list section-list/section-list)
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))

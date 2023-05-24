@@ -6,7 +6,8 @@
             [react-native.masked-view :as masked-view]
             [reagent.core :as reagent]
             [utils.collection :as utils.collection]
-            [utils.number :as utils.number]))
+            [utils.number :as utils.number]
+            [react-native.gesture :as gesture]))
 
 (def default-tab-size 32)
 (def unread-count-offset 3)
@@ -144,7 +145,7 @@
          [masked-view-wrapper
           {:fade-end-percentage (get @fading :fade-end-percentage) :fade-end? fade-end?}
           [(if in-scroll-view?
-             rn/gesture-handler-flat-list
+             gesture/flat-list
              rn/flat-list)
            (merge
             (dissoc props

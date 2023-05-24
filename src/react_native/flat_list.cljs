@@ -1,7 +1,6 @@
 (ns react-native.flat-list
   (:require ["react-native" :as react-native]
-            [reagent.core :as reagent]
-            [quo.gesture-handler :as gesture-handler]))
+            [reagent.core :as reagent]))
 
 (def react-native-flat-list (reagent/adapt-react-class (.-FlatList ^js react-native)))
 
@@ -40,7 +39,3 @@
 (defn flat-list
   [props]
   [react-native-flat-list (base-list-props props)])
-
-(defn gesture-handler-flat-list
-  [props]
-  [gesture-handler/flat-list (base-list-props props)])

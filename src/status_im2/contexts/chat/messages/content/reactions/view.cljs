@@ -44,7 +44,7 @@
                         user-message-content)
        :padding-bottom-override 0}])))
 
-(defn message-reactions-row-comp
+(defn message-reactions-row
   [{:keys [message-id chat-id]} user-message-content show-reaction-authors-sheet?]
   (let [reactions                   (rf/sub [:chats/message-reactions message-id chat-id])
         {:keys [reaction-authors-list
@@ -83,7 +83,3 @@
                                                  :message-id message-id}])
                          :selected-item (fn []
                                           user-message-content)}]))}]])]))
-
-(defn message-reactions-row
-  [message-data user-message-content show-reaction-authors-sheet?]
-  [:f> message-reactions-row-comp message-data user-message-content show-reaction-authors-sheet?])

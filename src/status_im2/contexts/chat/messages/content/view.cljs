@@ -24,7 +24,7 @@
     [utils.datetime :as datetime]
     [reagent.core :as reagent]
     [utils.address :as address]
-    [quo.gesture-handler :as gesture-handler]))
+    [react-native.gesture :as gesture]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -123,7 +123,7 @@
            [avatar-container message-data message-reaction-view?]
            (into
             (if message-reaction-view?
-              [gesture-handler/scroll-view]
+              [gesture/scroll-view]
               [rn/view])
             [{:style {:margin-left 8
                       :flex        1
