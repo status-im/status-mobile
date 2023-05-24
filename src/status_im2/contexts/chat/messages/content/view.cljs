@@ -156,7 +156,6 @@
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group?] :as message-data}
    context
    keyboard-shown]
-  (let [show-reaction-authors-sheet? (reagent/atom false)]
     [rn/view
      {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
       :accessibility-label :chat-item}
@@ -169,5 +168,4 @@
        [system-message-content message-data]
        [user-message-content message-data context keyboard-shown false])
      [reactions/message-reactions-row message-data
-      [user-message-content message-data context keyboard-shown true]
-      show-reaction-authors-sheet?]]))
+      [user-message-content message-data context keyboard-shown true]]])
