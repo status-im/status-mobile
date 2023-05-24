@@ -185,7 +185,8 @@
 
 (defn f-view
   [{:keys [title show-bottom-view? background]}]
-  (let [insets                    (safe-area/get-insets)
+  (let [view-id                   (rf/sub [:view-id])
+        insets                    (safe-area/get-insets)
         active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
         request-camera-permission (fn []
@@ -201,19 +202,21 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [camera-ref        (atom nil)
-            read-qr-once?     (atom false)
-            on-read-code      (fn [data]
-                                (when-not @read-qr-once?
-                                  (reset! read-qr-once? true)
-                                  (js/setTimeout (fn []
-                                                   (reset! read-qr-once? false))
-                                                 3000)
-                                  (check-qr-code-data data)))
-            scan-qr-code-tab? (= @active-tab 1)
-            show-camera?      (and scan-qr-code-tab? @camera-permission-granted?)
-            show-holes?       (and show-camera?
-                                   (boolean (not-empty @qr-view-finder)))]
+      (let [camera-ref                       (atom nil)
+            read-qr-once?                    (atom false)
+            user-in-syncing-progress-screen? (= view-id :syncing-progress)
+            on-read-code                     (fn [data]
+                                               (when (and (not @read-qr-once?)
+                                                          (not user-in-syncing-progress-screen?))
+                                                 (reset! read-qr-once? true)
+                                                 (js/setTimeout (fn []
+                                                                  (reset! read-qr-once? false))
+                                                                3000)
+                                                 (check-qr-code-data data)))
+            scan-qr-code-tab?                (= @active-tab 1)
+            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
+            show-holes?                      (and show-camera?
+                                                  (boolean (not-empty @qr-view-finder)))]
         (rn/use-effect
          (fn []
            (when-not @camera-permission-granted?
