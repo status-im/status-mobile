@@ -37,6 +37,7 @@
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [50 125])
+(defonce ^:const spacing-between-composer-and-content 64)
 
 (defn on-scroll
   [evt]
@@ -186,8 +187,8 @@
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  [rn/view
-   #_(if (= type :datemark)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)}
+   (if (= type :datemark)
        [quo/divider-date value]
        (if (= content-type constants/content-type-gap)
          [not-implemented/not-implemented
@@ -219,8 +220,14 @@
      [rn/flat-list
       {:key-fn                       list-key-fn
        :ref                          list-ref
-       :header                       (when (= (:chat-type chat) constants/private-group-chat-type)
-                                       [list-group-chat-header chat])
+       :header                       [:<>
+                                      (when (= (:chat-type chat) constants/private-group-chat-type)
+                                        [list-group-chat-header chat])
+                                      [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)
+                                                :margin-bottom    (- (:top insets))
+                                                :height           (+ composer.constants/composer-default-height
+                                                                     (:bottom insets)
+                                                                     spacing-between-composer-and-content)}]]
        :footer                       [list-footer
                                       {:chat           chat
                                        :insets         insets
@@ -234,10 +241,7 @@
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
        :on-scroll-to-index-failed    identity
-       :content-container-style      {:padding-top    (+ composer.constants/composer-default-height
-                                                         (:bottom insets)
-                                                         32)
-                                      :padding-bottom 16}
+       :content-container-style      {:padding-bottom 16}
        :scroll-indicator-insets      {:top (+ composer.constants/composer-default-height
                                               (:bottom insets))}
        :keyboard-dismiss-mode        :interactive
@@ -249,6 +253,7 @@
                                        (scroll-handler event initial-y scroll-y)
                                        (when on-scroll
                                          (on-scroll event)))
+       :style                        {:background-color cover-bg-color}
        :inverted                     true
        :on-layout                    (fn [e]
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
@@ -261,32 +266,32 @@
   []
   (let [show-listener (atom nil)
         hide-listener (atom nil)
-        shown?        (atom nil)]
+        shown? (atom nil)]
     (rn/use-effect
-     (fn []
-       (reset! show-listener
-         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-       (reset! hide-listener
-         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-       (fn []
-         (.remove ^js @show-listener)
-         (.remove ^js @hide-listener))))
+      (fn []
+        (reset! show-listener
+                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+        (reset! hide-listener
+                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+        (fn []
+          (.remove ^js @show-listener)
+          (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [{:keys [top bottom] :as insets} (safe-area/get-insets)
-        initial-y                       (- (:top insets))
-        scroll-y                        (reanimated/use-shared-value initial-y)
-        {:keys [keyboard-height]}       (hooks/use-keyboard)
-        {keyboard-shown? :shown?}       (use-keyboard-visibility)]
+        initial-y (- (:top insets))
+        scroll-y (reanimated/use-shared-value initial-y)
+        {:keys [keyboard-height]} (hooks/use-keyboard)
+        {keyboard-shown? :shown?} (use-keyboard-visibility)]
     (rn/use-effect
-     (fn []
-       (when keyboard-shown?
-         (reanimated/set-shared-value scroll-y
-                                      (+ (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))))
-     [keyboard-shown? keyboard-height])
+      (fn []
+        (when keyboard-shown?
+          (reanimated/set-shared-value scroll-y
+                                       (+ (reanimated/get-shared-value scroll-y)
+                                          keyboard-height))))
+      [keyboard-shown? keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                  {:position      :relative
                                :flex          1
