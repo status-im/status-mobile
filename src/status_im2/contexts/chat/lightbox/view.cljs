@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
-    [quo.design-system.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
