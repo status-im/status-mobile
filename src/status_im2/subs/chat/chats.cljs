@@ -1,6 +1,5 @@
 (ns status-im2.subs.chat.chats
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
@@ -53,12 +52,7 @@
                                {(str community-id id) {:categoryID categoryID
                                                        :position   position}})
                              (vals comm-chats)))]
-     (group-by :categoryID
-               (sort-by :position
-                        (map #(cond-> (merge % (chat-cat (:chat-id %)))
-                                (= community-id constants/status-community-id)
-                                (assoc :color colors/blue))
-                             chats))))))
+     (group-by :categoryID (sort-by :position (map #(merge % (chat-cat (:chat-id %))) chats))))))
 
 (re-frame/reg-sub
  :chats/category-by-chat-id

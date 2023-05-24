@@ -8,7 +8,6 @@
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im.ui.screens.chat.styles.message.message :as style]
     [status-im.ui.screens.chat.utils :as chat.utils]
-    [status-im.ui.screens.communities.icon :as communities.icon]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]
@@ -245,13 +244,7 @@
        [rn/view (style/community-message verified)
         [rn/view
          {:width        62
-          :padding-left 14}
-         (if (= community-id constants/status-community-id)
-           [rn/image
-            {:source (resources/get-image :status-logo)
-             :style  {:width  40
-                      :height 40}}]
-           [communities.icon/community-icon community])]
+          :padding-left 14}]
         [rn/view {:padding-right 14 :flex 1}
          [rn/text {:style {:font-weight "700" :font-size 17 :color quo.colors/black}}
           name]

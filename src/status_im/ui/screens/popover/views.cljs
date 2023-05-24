@@ -9,16 +9,13 @@
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.ui.screens.multiaccounts.key-storage.views :as multiaccounts.key-storage]
-            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.reset-password.views :as reset-password.views]
             [status-im.ui.screens.signing.sheets :as signing-sheets]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
-            [status-im.utils.platform :as platform]
-            [status-im2.contexts.activity-center.view :as activity-center]))
+            [status-im.utils.platform :as platform]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -145,9 +142,6 @@
                   (= :share-chat-key view)
                   [profile.user/share-chat-key]
 
-                  (= :custom-seed-phrase view)
-                  [multiaccounts.recover/custom-seed-phrase]
-
                   (= :enable-biometric view)
                   [biometric/enable-biometric-popover]
 
@@ -166,23 +160,11 @@
                   (= :blocked-card view)
                   [keycard.views/blocked-card-popover]
 
-                  (= :seed-key-uid-mismatch view)
-                  [multiaccounts.key-storage/seed-key-uid-mismatch-popover]
-
-                  (= :transfer-multiaccount-to-keycard-warning view)
-                  [multiaccounts.key-storage/transfer-multiaccount-warning-popover]
-
-                  (= :transfer-multiaccount-unknown-error view)
-                  [multiaccounts.key-storage/unknown-error-popover]
-
                   (= :password-reset-popover view)
                   [reset-password.views/reset-password-popover]
 
                   (= :fees-warning view)
                   [signing-sheets/fees-warning]
-
-                  (= :activity-center view)
-                  [activity-center/view request-close]
 
                   :else
                   [view])]]]])))})))

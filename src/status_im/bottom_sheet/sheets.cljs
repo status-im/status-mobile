@@ -3,8 +3,6 @@
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
-            [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.bottom-sheet.view :as bottom-sheet]
             [react-native.core :as rn]))
 
@@ -30,13 +28,7 @@
           (merge keycard/more-sheet)
 
           (= view :learn-more)
-          (merge about-app/learn-more)
-
-          (= view :recover-sheet)
-          (merge recover.views/bottom-sheet)
-
-          (= view :migrate-account-password)
-          (merge key-storage/migrate-account-password))]
+          (merge about-app/learn-more))]
 
     [:f>
      (fn []
