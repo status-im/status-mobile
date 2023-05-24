@@ -34,11 +34,11 @@
                        0)})
 
 (defn header-cover
-  [cover-bg-color status-bar-height]
+  [cover-bg-color insets]
   {:flex             1
    :height           (if platform/ios?
                        (+ overscroll-cover-height cover-height)
-                       (+ status-bar-height cover-height))
+                       (+ (:top insets) cover-height))
    :background-color cover-bg-color})
 
 (defn header-bottom-part
