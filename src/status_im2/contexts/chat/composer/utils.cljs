@@ -143,6 +143,9 @@
         base
         (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
 
+(defn get-last-char
+  [s]
+  (subs s (dec (count s))))
 
 (defn init-props
   []

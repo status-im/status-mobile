@@ -60,7 +60,7 @@
 
 (defn content-size-change
   [event
-   {:keys [maximized? lock-layout?]}
+   {:keys [maximized? lock-layout? text-value]}
    {:keys [height saved-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
@@ -68,7 +68,7 @@
     (let [event-size   (oops/oget event "nativeEvent.contentSize.height")
           content-size (+ event-size constants/extra-content-offset)
           lines        (utils/calc-lines event-size)
-          content-size (if (= lines 1)
+          content-size (if (or (= lines 1) (empty? @text-value))
                          constants/input-height
                          (if (= lines 2) constants/multiline-minimized-height content-size))
           new-height   (utils/bounded-val content-size constants/input-height max-height)]
@@ -120,7 +120,9 @@
     (@record-reset-fn)
     (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text])
-  (debounce/debounce-and-dispatch [:mention/on-change-text text] 300))
+  (if (= "@" (utils/get-last-char text))
+    (rf/dispatch [:mention/on-change-text text])
+    (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))
 
 (defn selection-change
   [event
