@@ -36,7 +36,8 @@
 
 (defn f-use-interval
   [clock cleanup-clock delay]
-  (hooks/use-interval clock cleanup-clock delay))
+  (hooks/use-interval clock cleanup-clock delay)
+  nil)
 
 (defn view
   []
@@ -65,8 +66,8 @@
                         (reset! valid-for-ms code-valid-for-ms))]
 
     (fn []
-      [:f> f-use-interval clock cleanup-clock @delay]
       [rn/view {:style (style/container-main (safe-area/get-top))}
+       [:f> f-use-interval clock cleanup-clock @delay]
        [rn/scroll-view {}
         [navigation-bar]
         [rn/view {:style style/page-container}
