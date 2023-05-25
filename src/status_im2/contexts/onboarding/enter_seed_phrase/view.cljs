@@ -78,6 +78,13 @@
        (filter #(string/starts-with? % current-word))
        (take 7)))
 
+(defn- clean-seed-phrase [seed-phrase]
+  (-> seed-phrase
+      (string/lower-case)
+      (string/replace #", " " ")
+      (string/replace #"," " ")
+      (string/replace #"\s+" " ")))
+
 (defn screen
   []
   (reagent/with-let [keyboard-shown?         (reagent/atom false)
@@ -93,7 +100,7 @@
                      on-change-seed-phrase   (fn [new-phrase]
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase (string/lower-case new-phrase)))]
+                                               (reset! seed-phrase (clean-seed-phrase new-phrase)))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
