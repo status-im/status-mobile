@@ -9,7 +9,6 @@
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.debounce :as debounce]
     [utils.number :as utils.number]
     [utils.re-frame :as rf]))
 
@@ -183,7 +182,7 @@
        (when @input-ref
          (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
        (reset! text-value input-text)
-       (debounce/debounce-and-dispatch [:mention/on-change-text input-text] 300)))
+       (rf/dispatch [:mention/on-change-text input-text])))
    [input-text]))
 
 (defn did-mount

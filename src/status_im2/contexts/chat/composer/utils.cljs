@@ -143,7 +143,6 @@
         base
         (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
 
-
 (defn init-props
   []
   {:input-ref                   (atom nil)
