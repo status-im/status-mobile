@@ -86,7 +86,7 @@
       (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
       (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
                                                    on-loaded])
-                                    (if platform/low-device? 7000 5000)))))
+                                    (if platform/low-device? 700 100)))))
 
 (defn contact-icon
   [{:keys [ens-verified added?]}]
