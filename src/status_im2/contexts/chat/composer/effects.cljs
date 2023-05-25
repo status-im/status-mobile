@@ -183,7 +183,7 @@
        (when @input-ref
          (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
        (reset! text-value input-text)
-       (debounce/debounce-and-dispatch [:mention/on-change-text input-text] 300)))
+       (rf/dispatch [:mention/on-change-text input-text])))
    [input-text]))
 
 (defn did-mount
