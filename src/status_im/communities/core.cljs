@@ -72,7 +72,8 @@
                         :isMember                    :is-member?
                         :adminSettings               :admin-settings
                         :tokenPermissions            :token-permissions
-                        :communityTokensMetadata     :tokens-metadata})
+                        :communityTokensMetadata     :tokens-metadata
+                        :muteTill                    :muted-till})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
@@ -938,3 +939,28 @@
                                    {:error %
                                     :event
                                     :communities/check-and-delete-pending-request-to-join-community})}]})
+
+(rf/defn mute-chat-failed
+  {:events [:community/mute-community-failed]}
+  [{:keys [db]} community-id muted? error]
+  (log/error "mute community failed" community-id error)
+  {:db (update-in db [:communities community-id :muted] (not muted?))})
+
+(rf/defn mute-community-successfully
+  {:events [:community/mute-community-successful]}
+  [{:keys [db]} community-id muted-till]
+  (log/debug "muted community successfully" community-id muted-till)
+  (js/console.log (str "muted community successfully " muted-till))
+  {:db (assoc-in db [:communities community-id :muted-till] muted-till)})
+
+(rf/defn set-community-muted
+  {:events [:community/set-muted]}
+  [{:keys [db]} community-id muted? muted-type]
+  (let [params [community-id muted? muted-type]]
+    {:db            (assoc-in db [:communities community-id :muted] muted?)
+     :json-rpc/call [{:method     "wakuext_muteCommunityChats"
+                      :params     params
+                      :on-error   #(rf/dispatch [:community/mute-community-failed community-id
+                                                 muted? %])
+                      :on-success #(rf/dispatch [:community/mute-community-successful community-id
+                                                 %])}]}))
