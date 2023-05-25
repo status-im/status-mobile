@@ -9,7 +9,6 @@
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.debounce :as debounce]
     [utils.number :as utils.number]
     [utils.re-frame :as rf]))
 
