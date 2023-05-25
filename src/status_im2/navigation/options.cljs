@@ -90,6 +90,12 @@
    :animations             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
                             :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}})
 
+(def dark-screen
+  (merge (statusbar true)
+         {:layout {:componentBackgroundColor colors/neutral-95
+                   :orientation              ["portrait"]
+                   :backgroundColor          colors/neutral-95}}))
+
 (def lightbox
   {:topBar        {:visible false}
    :statusBar     {:backgroundColor :transparent
