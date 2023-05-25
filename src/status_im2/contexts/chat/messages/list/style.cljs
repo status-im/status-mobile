@@ -28,7 +28,7 @@
    :margin-bottom    (- overscroll-cover-height)})
 
 (defn header-cover
-  [cover-bg-color insets]
+  [cover-bg-color]
   {:flex             1
    :height           (+ overscroll-cover-height cover-height)
    :background-color cover-bg-color})

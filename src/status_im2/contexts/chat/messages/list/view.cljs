@@ -110,7 +110,7 @@
    :extrapolateRight "clamp"})
 
 (defn loading-view
-  [chat-id insets]
+  [chat-id]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
@@ -139,7 +139,7 @@
                          (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer
-  [{:keys [chat insets scroll-y cover-bg-color on-layout]}]
+  [{:keys [chat scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]}        chat
         all-loaded?                 (rf/sub [:chats/all-loaded? chat-id])
@@ -173,7 +173,7 @@
       {:style     (style/header-container all-loaded?)
        :on-layout on-layout}
       (when cover-bg-color
-        [rn/view {:style (style/header-cover cover-bg-color insets)}])
+        [rn/view {:style (style/header-cover cover-bg-color)}])
       [reanimated/view {:style (style/header-bottom-part border-animation)}
        [rn/view {:style style/header-avatar}
         (when-not group-chat
@@ -198,7 +198,7 @@
         (when bio
           [quo/text {:style style/bio}
            bio])]]]
-     [loading-view chat-id insets]]))
+     [loading-view chat-id]]))
 
 (defn list-footer
   [props]
@@ -252,7 +252,6 @@
                                       [list-header insets]]
        :footer                       [list-footer
                                       {:chat           chat
-                                       :insets         insets
                                        :scroll-y       scroll-y
                                        :cover-bg-color cover-bg-color
                                        :on-layout      footer-on-layout}]
