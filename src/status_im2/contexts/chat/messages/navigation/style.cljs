@@ -18,23 +18,28 @@
    position))
 
 (defn blur-view
-  [animation status-bar-height]
+  [status-bar-height]
+  {:position       :absolute
+   :top            0
+   :left           0
+   :right          0
+   :height         (- navigation-bar-height
+                      (if platform/ios? 0 status-bar-height))
+   :display        :flex
+   :flex-direction :row
+   :overflow       :hidden})
+
+(defn animated-blur-view
+  [enabled? animation status-bar-height]
   (reanimated/apply-animations-to-style
-   {:opacity animation}
-   {:position       :absolute
-    :top            0
-    :left           0
-    :right          0
-    :height         (- navigation-bar-height
-                       (if platform/ios? 0 status-bar-height))
-    :display        :flex
-    :flex-direction :row
-    :overflow       :hidden}))
+   (when enabled?
+     {:opacity animation})
+   (blur-view status-bar-height)))
 
 (def navigation-view
   {:z-index 4})
 
-(defn header
+(defn header-container
   [status-bar-height]
   {:position       :absolute
    :top            (- header-offset
@@ -46,24 +51,33 @@
    :flex-direction :row
    :overflow       :hidden})
 
+(def header
+  {:flex 1})
+
 (defn animated-header
-  [y-animation opacity-animation]
+  [enabled? y-animation opacity-animation]
   (reanimated/apply-animations-to-style
    ;; here using `top` won't work on Android, so we are using `translateY`
-   {:transform [{:translateY y-animation}]
-    :opacity   opacity-animation}
-   {:flex 1}))
+   (when enabled?
+     {:transform [{:translateY y-animation}]
+      :opacity   opacity-animation})
+   header))
 
 (defn pinned-banner
-  [animation status-bar-height]
-  (reanimated/apply-animations-to-style
-   {:opacity animation}
-   {:position :absolute
-    :width    "100%"
-    :top      (- navigation-bar-height
-                 (if platform/ios? 0 status-bar-height))}))
+  [status-bar-height]
+  {:position :absolute
+   :width    "100%"
+   :top      (- navigation-bar-height
+                (if platform/ios? 0 status-bar-height))})
 
-(def header-container
+(defn animated-pinned-banner
+  [enabled? animation status-bar-height]
+  (reanimated/apply-animations-to-style
+   (when enabled?
+     {:opacity animation})
+   (pinned-banner status-bar-height)))
+
+(def header-content-container
   {:flex-direction :row
    :align-items    :center
    :margin-left    8

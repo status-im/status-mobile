@@ -5,24 +5,25 @@
 (defonce ^:const cover-height 168)
 (defonce ^:const overscroll-cover-height 2000)
 (defonce ^:const header-avatar-top-offset -36)
+(defonce ^:const messages-list-bottom-offset 16)
 
 (def footer
   {:z-index 5})
 
 (defn keyboard-avoiding-container
-  [view-height keyboard-height]
-  {:position :absolute
-   :flex     1
-   :top      0
-   :left     0
-   :height   (- view-height keyboard-height)
-   :right    0})
+  [{:keys [top]}]
+  {:position      :relative
+   :flex          1
+   :top           (- top)
+   :margin-bottom (- top)})
 
 (def list-container
   {:padding-vertical 16})
 
-(def header-container
-  {:background-color (colors/theme-colors colors/white colors/neutral-95)
+(defn header-container
+  [show?]
+  {:display          (if show? :flex :none)
+   :background-color (colors/theme-colors colors/white colors/neutral-95)
    :top              (- overscroll-cover-height)
    :margin-bottom    (- overscroll-cover-height)})
 

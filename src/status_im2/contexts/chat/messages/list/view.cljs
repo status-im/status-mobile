@@ -17,8 +17,15 @@
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
+            [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
             [utils.re-frame :as rf]))
+
+(defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
+(defonce ^:const loading-indicator-extra-spacing 250)
+(defonce ^:const loading-indicator-page-loading-height 100)
+(defonce ^:const scroll-animation-input-range [50 125])
+(defonce ^:const spacing-between-composer-and-content 64)
 
 (defonce messages-list-ref (atom nil))
 (defonce messages-view-height (reagent/atom 0))
@@ -28,16 +35,16 @@
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! messages-list-ref ref))
 
+(defn scroll-to-offset
+  [position]
+  (some-> ^js @messages-list-ref
+          (.scrollToOffset #js
+                            {:offset   position
+                             :animated true})))
+
 (defn scroll-to-bottom
   []
-  (some-> ^js @messages-list-ref
-          (.scrollToOffset #js {:y 0 :animated true})))
-
-(defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
-(defonce ^:const loading-indicator-extra-spacing 250)
-(defonce ^:const loading-indicator-page-loading-height 100)
-(defonce ^:const scroll-animation-input-range [50 125])
-(defonce ^:const spacing-between-composer-and-content 64)
+  (scroll-to-offset (- 0 style/messages-list-bottom-offset)))
 
 (defn on-scroll
   [evt]
@@ -51,11 +58,11 @@
       (reset! show-floating-scroll-down-button reached-threshold?))))
 
 (defn on-viewable-items-changed
-  [evt]
+  [e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-      (when-let [last-visible-element (aget (oops/oget evt "viewableItems")
-                                            (dec (oops/oget evt "viewableItems.length")))]
+      (when-let [last-visible-element (aget (oops/oget e "viewableItems")
+                                            (dec (oops/oget e "viewableItems.length")))]
         (let [index             (oops/oget last-visible-element "index")
               ;; Get first not visible element, if it's a datemark/gap
               ;; we might unnecessarely add messages on receiving as
@@ -66,18 +73,20 @@
                      (= :message (:type first-not-visible)))
             first-not-visible))))))
 
-;;TODO this is not really working in pair with inserting new messages because we stop inserting new
-;;messages
-;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because
-;;we
-;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will
-;;work wrong
+
 (defn list-on-end-reached
-  []
-  (if @state/scrolling
-    (rf/dispatch [:chat.ui/load-more-messages-for-current-chat])
-    (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat])
-                                  (if platform/low-device? 700 200))))
+  [scroll-y]
+  ;; FIXME: that's a bit of a hack but we need to update `scroll-y` once the new messages
+  ;; are fetched in order for the header to work properly
+  (let [on-loaded (fn [n]
+                    (reanimated/set-shared-value scroll-y
+                                                 (+ (reanimated/get-shared-value scroll-y)
+                                                    (* n 200))))]
+    (if @state/scrolling
+      (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
+      (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
+                                                   on-loaded])
+                                    (if platform/low-device? 7000 5000)))))
 
 (defn contact-icon
   [{:keys [ens-verified added?]}]
@@ -100,24 +109,40 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
-(defn loading-indicator
-  [chat-id]
-  (let [loading-messages? (rf/sub [:chats/loading-messages? chat-id])
-        messages          (rf/sub [:chats/raw-chat-messages-stream chat-id])]
-    (when loading-messages?
-      [rn/view
+(defn loading-view
+  [chat-id insets]
+  (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
+        all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
+        messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
+        loading-first-page? (= (count messages) 0)
+        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)]
+    (when (or loading-messages? (not all-loaded?))
+      [rn/view {:padding-top top-spacing}
        [quo/skeleton
-        (if (> (count messages) 0)
-          loading-indicator-page-loading-height
+        (if loading-first-page?
           (- @messages-view-height
              @messages-view-header-height
              composer.constants/composer-default-height
-             loading-indicator-extra-spacing))]])))
+             loading-indicator-extra-spacing)
+          loading-indicator-page-loading-height)]])))
+
+(defn list-header
+  [insets]
+  [rn/view
+   {:background-color (colors/theme-colors colors/white colors/neutral-95)
+    :margin-bottom    (- 0
+                         (:top insets)
+                         (when platform/ios? style/overscroll-cover-height))
+    :height           (+ composer.constants/composer-default-height
+                         (:bottom insets)
+                         spacing-between-composer-and-content
+                         (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer
   [{:keys [chat insets scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]}        chat
+        all-loaded?                 (rf/sub [:chats/all-loaded? chat-id])
         display-name                (if (= chat-type constants/one-to-one-chat-type)
                                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                       (str emoji " " chat-name))
@@ -145,7 +170,7 @@
                                                             header-extrapolation-option)]
     [rn/view {:flex 1}
      [rn/view
-      {:style     style/header-container
+      {:style     (style/header-container all-loaded?)
        :on-layout on-layout}
       (when cover-bg-color
         [rn/view {:style (style/header-cover cover-bg-color insets)}])
@@ -173,7 +198,7 @@
         (when bio
           [quo/text {:style style/bio}
            bio])]]]
-     [loading-indicator chat-id]]))
+     [loading-view chat-id insets]]))
 
 (defn list-footer
   [props]
@@ -184,38 +209,39 @@
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
 
-(defn render-fn
-  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
-   {:keys [context keyboard-shown?]}]
-  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)}
-   (if (= type :datemark)
-       [quo/divider-date value]
-       (if (= content-type constants/content-type-gap)
-         [not-implemented/not-implemented
-          [message.gap/gap message-data]]
-         [rn/view {:padding-horizontal 8}
-          (if (or deleted? deleted-for-me?)
-            [content.deleted/deleted-message message-data context]
-            [message/message-with-reactions message-data context keyboard-shown?])]))])
-
-(defn scroll-handler
-  [event initial-y scroll-y]
-  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
-                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y      (+ (oops/oget event "nativeEvent.contentOffset.y") initial-y)]
-    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
-
 (defn footer-on-layout
   [e]
   (let [height (oops/oget e "nativeEvent.layout.height")
         y      (oops/oget e "nativeEvent.layout.y")]
     (reset! messages-view-header-height (+ height y))))
 
+(defn render-fn
+  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
+   {:keys [context keyboard-shown?]}]
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)}
+   (if (= type :datemark)
+     [quo/divider-date value]
+     (if (= content-type constants/content-type-gap)
+       [not-implemented/not-implemented
+        [message.gap/gap message-data]]
+       [rn/view {:padding-horizontal 8}
+        (if (or deleted? deleted-for-me?)
+          [content.deleted/deleted-message message-data context]
+          [message/message-with-reactions message-data context keyboard-shown?])]))])
+
+(defn scroll-handler
+  [event scroll-y]
+  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
+                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
+        current-y      (oops/oget event "nativeEvent.contentOffset.y")]
+    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
+
 (defn messages-list-content
-  [{:keys [chat insets initial-y scroll-y cover-bg-color keyboard-shown?]}]
-  (let [context    (rf/sub [:chats/current-chat-message-list-view-context])
-        messages   (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording? (rf/sub [:chats/recording?])]
+  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown?]}]
+  (let [context     (rf/sub [:chats/current-chat-message-list-view-context])
+        messages    (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?  (rf/sub [:chats/recording?])
+        all-loaded? (rf/sub [:chats/all-loaded? (:chat-id chat)])]
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -223,11 +249,7 @@
        :header                       [:<>
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
                                         [list-group-chat-header chat])
-                                      [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)
-                                                :margin-bottom    (- (:top insets))
-                                                :height           (+ composer.constants/composer-default-height
-                                                                     (:bottom insets)
-                                                                     spacing-between-composer-and-content)}]]
+                                      [list-header insets]]
        :footer                       [list-footer
                                       {:chat           chat
                                        :insets         insets
@@ -239,9 +261,9 @@
                                       :keyboard-shown? keyboard-shown?}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               list-on-end-reached
+       :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :content-container-style      {:padding-bottom 16}
+       :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
        :scroll-indicator-insets      {:top (+ composer.constants/composer-default-height
                                               (:bottom insets))}
        :keyboard-dismiss-mode        :interactive
@@ -250,15 +272,20 @@
        :on-momentum-scroll-end       state/stop-scrolling
        :scroll-event-throttle        16
        :on-scroll                    (fn [event]
-                                       (scroll-handler event initial-y scroll-y)
+                                       (scroll-handler event scroll-y)
                                        (when on-scroll
                                          (on-scroll event)))
-       :style                        {:background-color cover-bg-color}
+       :style                        {:background-color (if all-loaded?
+                                                          cover-bg-color
+                                                          (colors/theme-colors colors/white
+                                                                               colors/neutral-95))}
        :inverted                     true
        :on-layout                    (fn [e]
+                                       (when platform/android?
+                                         ;; FIXME: this is due to Android not triggering the initial
+                                         ;; scrollTo event
+                                         (scroll-to-offset 1))
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
-                                         (when platform/android?
-                                           (reanimated/set-shared-value scroll-y layout-height))
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
 
@@ -266,38 +293,34 @@
   []
   (let [show-listener (atom nil)
         hide-listener (atom nil)
-        shown? (atom nil)]
+        shown?        (atom nil)]
     (rn/use-effect
-      (fn []
-        (reset! show-listener
-                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-        (reset! hide-listener
-                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-        (fn []
-          (.remove ^js @show-listener)
-          (.remove ^js @hide-listener))))
+     (fn []
+       (reset! show-listener
+         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+       (reset! hide-listener
+         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+       (fn []
+         (.remove ^js @show-listener)
+         (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [{:keys [top bottom] :as insets} (safe-area/get-insets)
-        initial-y (- (:top insets))
-        scroll-y (reanimated/use-shared-value initial-y)
+  (let [insets                    (safe-area/get-insets)
+        scroll-y                  (reanimated/use-shared-value 0)
         {:keys [keyboard-height]} (hooks/use-keyboard)
         {keyboard-shown? :shown?} (use-keyboard-visibility)]
     (rn/use-effect
-      (fn []
-        (when keyboard-shown?
-          (reanimated/set-shared-value scroll-y
-                                       (+ (reanimated/get-shared-value scroll-y)
-                                          keyboard-height))))
-      [keyboard-shown? keyboard-height])
+     (fn []
+       (when keyboard-shown?
+         (reanimated/set-shared-value scroll-y
+                                      (+ (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))))
+     [keyboard-shown? keyboard-height])
     [rn/keyboard-avoiding-view
-     {:style                  {:position      :relative
-                               :flex          1
-                               :top           (- top)
-                               :margin-bottom (- top)}
-      :keyboardVerticalOffset (- bottom)}
+     {:style                    (style/keyboard-avoiding-container insets)
+      :keyboard-vertical-offset (- (:bottom insets))}
 
      (when header-comp
        [header-comp {:scroll-y scroll-y}])
@@ -305,7 +328,6 @@
      [messages-list-content
       {:chat            chat
        :insets          insets
-       :initial-y       initial-y
        :scroll-y        scroll-y
        :cover-bg-color  cover-bg-color
        :keyboard-shown? keyboard-shown?}]

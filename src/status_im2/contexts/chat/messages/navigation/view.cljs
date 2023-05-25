@@ -17,6 +17,7 @@
         status-bar-height        (:top insets)
         {:keys [group-chat chat-id chat-name emoji
                 chat-type]}      (rf/sub [:chats/current-chat-chat-view])
+        all-loaded?              (rf/sub [:chats/all-loaded? chat-id])
         display-name             (if (= chat-type constants/one-to-one-chat-type)
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                    (str emoji " " chat-name))
@@ -53,10 +54,10 @@
       {:blurAmount   32
        :blurType     (colors/theme-colors :xlight :dark)
        :overlayColor :transparent
-       :style        (style/blur-view opacity-animation status-bar-height)}]
+       :style        (style/animated-blur-view all-loaded? opacity-animation status-bar-height)}]
 
      [rn/view {:style {:display :flex}}
-      [rn/view {:style (style/header status-bar-height)}
+      [rn/view {:style (style/header-container status-bar-height)}
        [rn/touchable-opacity
         {:active-opacity 1
          :on-press       #(rf/dispatch [:navigate-back])
@@ -64,8 +65,8 @@
         [quo/icon :i/arrow-left
          {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
        [reanimated/view
-        {:style (style/animated-header translate-animation title-opacity-animation)}
-        [rn/view {:style style/header-container}
+        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
+        [rn/view {:style style/header-content-container}
          (when-not group-chat
            [rn/view {:style style/header-avatar-container}
             [quo/user-avatar
@@ -93,7 +94,8 @@
          :style          (style/button-container {:margin-right 20})}
         [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
 
-      [reanimated/view {:style (style/pinned-banner banner-opacity-animation status-bar-height)}
+      [reanimated/view
+       {:style (style/animated-pinned-banner all-loaded? banner-opacity-animation status-bar-height)}
        [pin.banner/banner chat-id]]]]))
 
 (defn navigation-view
