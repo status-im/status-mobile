@@ -37,6 +37,8 @@
                   :right-text "@sheralito"
                   :title "Pinterest"}
                  {:id 6
+                  :label "Label"}
+                 {:id 7
                   :label "Label"}]))
 
 (defn render-fn
