@@ -86,3 +86,11 @@
            colors/neutral-40
            colors/neutral-50)
    :font-size 13})
+
+(def skeleton-container
+  {:background-color (colors/theme-colors
+                      colors/neutral-5
+                      colors/neutral-95)
+   :border-radius 16
+   :margin-bottom 24
+   :height 48})
