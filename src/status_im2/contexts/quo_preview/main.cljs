@@ -7,6 +7,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [status-im2.common.theme.core :as theme]
+    [status-im2.contexts.quo-preview.list.sortable-list :as sortable-list]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
@@ -320,6 +321,9 @@
                            {:name      :share-qr-code
                             :options   {:topBar {:visible true}}
                             :component share-qr-code/preview-share-qr-code}]
+   :aasortable-list          [{:name      :sortable-list
+                            :options   {:topBar {:visible true}} 
+                            :component sortable-list/preview-sortable-list}]
    :tabs                  [{:name      :segmented
                             :options   {:topBar {:visible true}}
                             :component segmented/preview-segmented}
