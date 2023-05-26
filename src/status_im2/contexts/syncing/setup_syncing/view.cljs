@@ -31,7 +31,8 @@
                               :label               (i18n/label :t/how-to-scan)
                               :icon                :i/info
                               :icon-override-theme :dark
-                              :on-press            #(rf/dispatch [:open-modal :how-to-pair])}]}]])
+                              :on-press            #(rf/dispatch [:open-modal :how-to-pair
+                                                                  {:override-theme :dark}])}]}]])
 
 (defn f-use-interval
   [clock cleanup-clock delay]
