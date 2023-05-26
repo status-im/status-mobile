@@ -63,8 +63,7 @@
       :style  style/list-icon-text} i]]
    (map-indexed (fn [idx item]
                   ^{:key idx}
-                  [:<>
-                   (render-element item)])
+                  [render-element item])
                 list-item)])
 
 (defn render-list
