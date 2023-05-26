@@ -5,6 +5,7 @@
             [reagent.core :as reagent]
             [quo2.components.list.sortable-list.style :as style]
             [quo2.components.icon :as quo2-icons]
+            [quo2.components.list.sortable-list.item-placeholder :as placeholder]
             [status-im2.common.resources :as resources]))
 
 (def data (reagent/atom
@@ -34,12 +35,16 @@
                   :image (resources/get-mock-image :pinterest)
                   :image-size 24
                   :right-text "@sheralito"
-                  :title "Pinterest"}]))
+                  :title "Pinterest"}
+                 {:id 6
+                  :label "Label"}]))
 
 (defn render-fn
   [item _ _ _ _ drag] 
-  [item/view item drag]
-  )
+  (let [label-value (:label item)]
+    (if label-value
+      [placeholder/view label-value drag]
+      [item/view item drag])))
 
 (defn on-drag-end-fn
   [_ _ data-js]

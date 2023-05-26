@@ -4,7 +4,7 @@
 (def container 
   {:padding 20 
    :background-color (colors/theme-colors
-                      colors/neutral-20 
+                      colors/neutral-10 
                       colors/neutral-100)})
 
 (def item-container 
@@ -14,7 +14,6 @@
    :padding 12 
    :border-radius 16
    :margin-bottom 24
-   :z-index 20
    :background-color (colors/theme-colors 
                       colors/custom-color :white 
                       colors/neutral-90)})
@@ -68,3 +67,22 @@
 
 (def right-icon-container
   {:justify-content :center})
+
+(def placeholder-container 
+  {:background-color :transparent
+   :border-width 1
+   :border-color (colors/theme-colors
+                  colors/neutral-30
+                  colors/neutral-80)
+   :padding 12
+   :justify-content :center
+   :align-items :center
+   :border-radius 16
+   :margin-bottom 24
+   :border-style :dashed})
+
+(def placeholder-text 
+  {:color (colors/theme-colors
+           colors/neutral-40
+           colors/neutral-50)
+   :font-size 13})
