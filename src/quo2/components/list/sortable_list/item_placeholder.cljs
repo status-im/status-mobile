@@ -5,7 +5,7 @@
 
 (defn view
   [label drag]
-  [rn/touchable-opacity
+  [rn/view
    {:on-long-press       drag
     :delay-long-press    100
     :accessibility-label :chat-drag-handle
