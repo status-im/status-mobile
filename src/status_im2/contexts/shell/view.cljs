@@ -129,8 +129,7 @@
                  :label               (i18n/label :t/jump-to)
                  :customization-color customization-color}}
       {:position :absolute
-       :bottom   (+ (shell.constants/bottom-tabs-container-height) 7)} ;; bottom offset is 12 = 7 +
-                                                                       ;; 5(padding on button)
+       :bottom   (+ (shell.constants/bottom-tabs-container-height) 12)}
       (:home-stack-opacity shared-values)]]))
 
 (defn shell-stack

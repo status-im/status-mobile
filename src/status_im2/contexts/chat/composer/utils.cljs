@@ -114,7 +114,7 @@
 
 (defn calc-shell-neg-y
   [insets maximized? extra-height]
-  (let [padding 6
+  (let [padding 12
         neg-y   (if @maximized? -50 0)]
     (- (+ constants/bar-container-height
           constants/actions-container-height

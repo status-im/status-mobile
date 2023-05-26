@@ -68,7 +68,8 @@
         :on-press-out        #(reset! pressed? false)
         :on-press            on-press
         :active-opacity      1
-        :style               {:padding 5}
+        :hit-slop            {:top 5 :bottom 5 :left 5 :right 5}
+        :pointer-events      :auto
         :accessibility-label type}
        [rn/view
         {:style (merge
