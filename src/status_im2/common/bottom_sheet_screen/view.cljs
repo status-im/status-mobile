@@ -45,8 +45,9 @@
 
 (defn f-view
   [content skip-background?]
-  (let [scroll-enabled (reagent/atom true)
-        curr-scroll    (atom 0)]
+  (let [scroll-enabled           (reagent/atom true)
+        curr-scroll              (atom 0)
+        {:keys [override-theme]} (rf/sub [:get-screen-params])]
     (fn []
       (let [insets           (safe-area/get-insets)
             {:keys [height]} (rn/get-window)
@@ -70,9 +71,9 @@
            [reanimated/view {:style (style/background opacity)}])
          [gesture/gesture-detector
           {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll close)}
-          [reanimated/view {:style (style/main-view translate-y)}
+          [reanimated/view {:style (style/main-view translate-y override-theme)}
            [rn/view {:style style/handle-container}
-            [rn/view {:style (style/handle)}]]
+            [rn/view {:style (style/handle override-theme)}]]
            [content
             {:insets         insets
              :close          close
