@@ -321,7 +321,7 @@
                            {:name      :share-qr-code
                             :options   {:topBar {:visible true}}
                             :component share-qr-code/preview-share-qr-code}]
-   :aasortable-list          [{:name      :sortable-list
+   :sortable-list          [{:name      :sortable-list
                             :options   {:topBar {:visible true}} 
                             :component sortable-list/preview-sortable-list}]
    :tabs                  [{:name      :segmented
