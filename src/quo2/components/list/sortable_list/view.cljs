@@ -7,6 +7,7 @@
             [quo2.components.icon :as quo2-icons]
             [quo2.components.list.sortable-list.item-placeholder :as placeholder]
             [quo2.components.list.sortable-list.item-skeleton :as skeleton]
+            [quo2.components.list.sortable-list.item-tabs :as tab]
             [status-im2.common.resources :as resources]))
 
 (def data (reagent/atom
@@ -50,17 +51,44 @@
                  {:id 8
                   :type "skeleton"}
                  {:id 9
-                  :type "skeleton"}]))
+                  :type "skeleton"}
+                 {:id 10
+                  :type "tab"
+                  :default-active 1
+                  :data [{:id 1
+                          :label "Everyone"
+                          :icon (quo2-icons/icon :i/world style/right-icon)}
+                         {:id 2
+                          :label "Contacts"
+                          :image (resources/get-mock-image :contact)}
+                         {:id 3
+                          :label "Verified"
+                          :image (resources/get-mock-image :verified)}]}
+                 {:id 11
+                  :type "tab"
+                  :default-active 1
+                  :data [{:id 1
+                          :label "Everyone"
+                          :icon (quo2-icons/icon :i/world style/right-icon)}
+                         {:id 2
+                          :label "Contacts"
+                          :image (resources/get-mock-image :contact)}
+                         {:id 3
+                          :label "Verified"
+                          :image (resources/get-mock-image :verified)}]}]))
 
 (defn render-fn
   [item _ _ _ _ drag] 
   (let [label-value (:label item)
-        type (:type item)]
+        type (:type item)
+        data (:data item)
+        default-active (:default-active item)]
 
     (case type 
       "item" [item/view item drag]
       "placeholder" [placeholder/view label-value drag]
-      "skeleton" [skeleton/view])))
+      "skeleton" [skeleton/view]
+      "tab" [tab/view data default-active])))
 
 (defn on-drag-end-fn
   [_ _ data-js]
@@ -77,5 +105,6 @@
      :render-fn            render-fn
      :autoscroll-threshold (if platform/android? 150 250)
      :autoscroll-speed     (if platform/android? 10 150)
-     :container-style      {:margin-bottom 10}
+     :content-container-style {:padding-vertical 20}
+     :shows-vertical-scroll-indicator false
      :on-drag-end-fn       on-drag-end-fn}]])

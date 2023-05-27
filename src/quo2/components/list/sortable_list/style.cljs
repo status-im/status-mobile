@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container 
-  {:padding 20 
+  {:padding-horizontal 20 
    :background-color (colors/theme-colors
                       colors/neutral-10 
                       colors/neutral-100)})
@@ -94,3 +94,29 @@
    :border-radius 16
    :margin-bottom 24
    :height 48})
+
+(def tab-container 
+  {:background-color (colors/theme-colors
+                      colors/neutral-5
+                      colors/neutral-95)
+   :padding 10
+   :margin-bottom 24})
+
+(def segmented-tab-item-container
+  {:height 40 
+   :border-width 1 
+   :border-style :dashed 
+   :border-color colors/neutral-30})
+
+(def tab-item-container 
+  {:flex-direction :row
+   :justify-content :center
+   :align-items :center})
+
+(def tab-item-image 
+  {:height 20 
+   :width 20 
+   :margin-right 6})
+
+(def tab-item-label 
+  {:font-size 14})

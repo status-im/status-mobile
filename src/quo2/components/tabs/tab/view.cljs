@@ -50,6 +50,8 @@
   [{:keys [accessibility-label
            active
            before
+           item-container-style
+           inactive-background-color
            blur?
            disabled
            id
@@ -79,12 +81,18 @@
         [notification-dot/notification-dot
          {:style style/notification-dot}])
       [rn/view
-       {:style (style/tab
-                {:size                   size
-                 :disabled               disabled
-                 :segmented?             segmented?
-                 :background-color       (if (and segmented? (not active)) :transparent background-color)
-                 :show-notification-dot? show-notification-dot?})}
+       {:style (merge 
+                (style/tab
+                 {:size                   size
+                  :disabled               disabled
+                  :segmented?             segmented?
+                  :show-notification-dot? show-notification-dot?})
+                item-container-style
+                {:background-color       (if (and segmented? (not active)) 
+                                           :transparent 
+                                           (if inactive-background-color 
+                                             inactive-background-color 
+                                             background-color))})}
        (when before
          [rn/view
           [icons/icon before {:color icon-color}]])
