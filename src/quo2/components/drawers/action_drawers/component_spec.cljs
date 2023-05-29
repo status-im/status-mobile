@@ -17,13 +17,32 @@
     (h/is-truthy (h/get-by-text "a sample sub label")))
 
   (h/test "on click action works on element"
-    (let [event (js/jest.fn)]
+    (let [on-press (js/jest.fn)]
       (h/render [action-drawer/action-drawer
                  [[{:icon     :i/friend
                     :label    "a sample label"
-                    :on-press event}]]])
+                    :on-press on-press}]]])
       (h/fire-event :press (h/get-by-text "a sample label"))
-      (h/was-called event)))
+      (h/was-called on-press)))
+
+  (h/test "disabled state"
+    (let [on-press-muted  (js/jest.fn)
+          on-press-friend (js/jest.fn)
+          label-mute      "Mute"
+          label-friend    "View member details"]
+      (h/render [action-drawer/action-drawer
+                 [[{:icon     :i/muted
+                    :label    label-mute
+                    :on-press on-press-muted}
+                   {:icon      :i/friend
+                    :label     label-friend
+                    :disabled? true
+                    :on-press  on-press-friend}]]])
+      (h/fire-event :press (h/get-by-text label-mute))
+      (h/was-called on-press-muted)
+
+      (h/fire-event :press (h/get-by-text label-friend))
+      (h/was-not-called on-press-friend)))
 
   (h/test "renders two icons when set"
     (h/render [action-drawer/action-drawer

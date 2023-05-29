@@ -21,7 +21,7 @@
 (defn- maybe-pressable
   [disabled? props child]
   (if disabled?
-    [rn/view props child]
+    [rn/view (dissoc props :on-press) child]
     [rn/touchable-highlight props child]))
 
 (defn- action
