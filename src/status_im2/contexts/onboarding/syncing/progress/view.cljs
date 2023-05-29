@@ -30,22 +30,23 @@
     :subtitle-accessibility-label :progress-screen-sub-title}])
 
 (defn try-again-button
-  [profile-color]
+  [profile-color in-onboarding?]
   [quo/button
    {:on-press                  (fn []
                                  (rf/dispatch [:syncing/clear-states])
-                                 (rf/dispatch [:navigate-back]))
+                                 (rf/dispatch [:navigate-back-to
+                                               (if in-onboarding? :sign-in-intro :sign-in)]))
     :accessibility-label       :try-again-later-button
     :override-background-color (colors/custom-color profile-color 60)
     :style                     style/try-again-button}
    (i18n/label :t/try-again)])
 
 (defn view
-  []
+  [in-onboarding?]
   (let [pairing-status (rf/sub [:pairing/pairing-status])
         profile-color  (:color (rf/sub [:onboarding-2/profile]))]
-    [rn/view {:style style/page-container}
-     [background/view true]
+    [rn/view {:style (style/page-container in-onboarding?)}
+     (when-not in-onboarding? [background/view true])
      [quo/page-nav]
      [page-title (pairing-progress pairing-status)]
      (if (pairing-progress pairing-status)
@@ -54,4 +55,8 @@
        [rn/view {:style style/page-illustration}
         [quo/text "[Error here]"]])
      (when-not (pairing-progress pairing-status)
-       [try-again-button profile-color])]))
+       [try-again-button profile-color in-onboarding?])]))
+
+(defn view-onboarding
+  []
+  [view true])

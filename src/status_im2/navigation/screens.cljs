@@ -34,7 +34,37 @@
     [status-im2.contexts.shell.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]))
+    [status-im2.contexts.chat.new-chat.view :as new-chat]
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]))
+
+(def sign-in-modal-animations
+  {:showModal    {:translationY {:from     (:height (rn/get-window))
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}
+                  :alpha        {:from     1
+                                 :to       1
+                                 :duration 0}}
+   :dismissModal {:translationY {:from     0
+                                 :to       (:height (rn/get-window))
+                                 :duration constants/onboarding-modal-animation-duration}
+                  :alpha        {:from     1
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}}})
+
+(def push-animations-for-transparent-background
+  {:push {:content {:enter {:translationX {:from     (:width (rn/get-window))
+                                           :to       0
+                                           :duration constants/onboarding-modal-animation-duration}}
+                    :exit  {:translationX {:from     0
+                                           :to       (- (:width (rn/get-window)))
+                                           :duration constants/onboarding-modal-animation-duration}}}}
+   :pop  {:content {:exit  {:translationX {:from     0
+                                           :to       (:width (rn/get-window))
+                                           :duration constants/onboarding-modal-animation-duration}}
+                    :enter {:translationX {:from     (- (:width (rn/get-window)))
+                                           :to       0
+                                           :duration constants/onboarding-modal-animation-duration}}}}})
 
 (defn screens
   []
@@ -164,12 +194,26 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+
     {:name      :scan-sync-code-page
      :options   options/dark-screen
      :component scan-sync-code-page/view}
 
+    {:name                         :sign-in-intro
+     :options                      {:layout                 options/onboarding-transparent-layout
+                                    :animations             (merge
+                                                             sign-in-modal-animations
+                                                             push-animations-for-transparent-background)
+                                    :modalPresentationStyle :overCurrentContext
+                                    :hardwareBackButton     {:dismissModalOnPress false
+                                                             :popStackOnPress     false}}
+     :hardware-back-button-handler sign-in/navigate-back
+     :component                    sign-in/animated-view}
+
     {:name      :sign-in
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme                  :dark
+                 :modalPresentationStyle :overCurrentContext
+                 :layout                 options/onboarding-layout}
      :component sign-in/view}
 
     {:name      :syncing-progress
@@ -177,6 +221,13 @@
                  :layout     options/onboarding-layout
                  :popGesture false}
      :component syncing-devices/view}
+
+    {:name      :syncing-progress-intro
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations push-animations-for-transparent-background
+                 :popGesture false}
+     :component syncing-devices/view-onboarding}
 
     {:name      :syncing-results
      :options   {:theme :dark}
