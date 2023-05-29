@@ -9,10 +9,10 @@
 (defn view
   []
   [rn/view {:style style/page-container}
-   [background/view false]
+   [background/view true]
    [quo/drawer-buttons
     {:top-card    {:on-press            (fn []
-                                          (rf/dispatch [:navigate-to :sign-in])
+                                          (rf/dispatch [:open-modal :sign-in])
                                           (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                    :heading             (i18n/label :t/sign-in)
                    :accessibility-label :already-use-status-button}

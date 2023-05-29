@@ -36,6 +36,19 @@
     [status-im2.contexts.chat.new-chat.view :as new-chat]
     [react-native.core :as rn]))
 
+(def new-to-status-animation
+  {:showModal {:enter              {:translationY {:from     (- (:height (rn/get-window)) 296)
+                                                   :to       0
+                                                   :duration 500}
+                                    :alpha        {:from     0
+                                                   :to       1
+                                                   :duration 500}}
+               :elementTransitions [{:id           "card-id"
+                                     :translationY {:to       (- (- (:height (rn/get-window)) 216))
+                                                    :duration 5000}
+                                     :alpha        {:to       0
+                                                    :duration 5000}}]}})
+
 (def animations
   {:push {:content {:translationX {:from     (:width (rn/get-window))
                                    :to       0
@@ -162,6 +175,7 @@
 
     {:name      :sign-in
      :options   {:layout options/onboarding-layout
+                 :animations new-to-status-animation
                  :modalPresentationStyle :overCurrentContext}
      :component sign-in/view}
 

@@ -225,8 +225,7 @@
                                               #(reset! camera-permission-granted? %)
                                               #(reset! camera-permission-granted? false)))))
         [:<>
-         background
-         [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
+         #_[render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title]
           (case @active-tab

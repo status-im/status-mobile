@@ -40,9 +40,10 @@
     children))
 
 (defn card
-  [{:keys [on-press style heading gap accessibility-label top?]} children]
+  [{:keys [on-press style heading gap accessibility-label top? nativeID]} children]
   [rn/touchable-highlight
    {:accessibility-label accessibility-label
+    :nativeID            (when top? "card-id")
     :on-press            on-press
     :border-radius       20
     :style               style
@@ -72,7 +73,7 @@
    "
   [{:keys [container-style top-card bottom-card]} child-1 child-2]
   [rn/view
-   {:style (merge container-style style/outer-container)}
+   {:style (merge container-style (style/outer-container))}
    [blur/view
     {:blur-type   :dark
      :blur-amount 10

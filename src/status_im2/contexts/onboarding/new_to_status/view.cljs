@@ -95,7 +95,7 @@
   []
   (let [{:keys [top]} (safe-area/get-insets)]
     [:<>
-     [background/view true]
+     #_[background/view true]
      [rn/view {:style style/content-container}
       [navigation-bar/navigation-bar
        {:top                   top
