@@ -23,7 +23,8 @@
               deleted-for-me? (i18n/label :t/message-deleted-for-you)
               (#{constants/content-type-text
                  constants/content-type-image
-                 constants/content-type-sticker}
+                 constants/content-type-sticker
+                 constants/content-type-emoji}
                (:content-type pinned-message))
               (resolver/resolve-message latest-pin-text)
               :else latest-pin-text)]
