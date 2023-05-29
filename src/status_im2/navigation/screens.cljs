@@ -33,7 +33,24 @@
     [status-im2.contexts.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]))
+    [status-im2.contexts.chat.new-chat.view :as new-chat]
+    [react-native.core :as rn]
+    [quo.platform :as platform]
+    [status-im2.constants :as constants]))
+
+(def sign-in-modal-animations
+  {:showModal    {:translationY {:from     (- (:height (rn/get-window)) (if platform/ios? 318 296))
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}
+                  :alpha        {:from     1
+                                 :to       1
+                                 :duration 0}}
+   :dismissModal {:translationY {:from     0
+                                 :to       (- (:height (rn/get-window)) (if platform/ios? 318 296))
+                                 :duration constants/onboarding-modal-animation-duration}
+                  :alpha        {:from     1
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}}})
 
 (defn screens
   []
@@ -147,11 +164,16 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+
     {:name      :scan-sync-code-page
      :component scan-sync-code-page/view}
 
     {:name      :sign-in
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout                 options/onboarding-layout
+                 :animations             sign-in-modal-animations
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component sign-in/view}
 
     {:name      :syncing-progress

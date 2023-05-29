@@ -1,11 +1,20 @@
 (ns quo2.components.drawers.drawer-buttons.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
-(def outer-container
-  {:height                  216
-   :border-top-left-radius  20
-   :border-top-right-radius 20
-   :overflow                :hidden})
+(defn outer-container
+  [top border-radius container-style]
+  (reanimated/apply-animations-to-style
+   {:top                     top
+    :border-top-left-radius  border-radius
+    :border-top-right-radius border-radius}
+   (merge
+    container-style
+    {:position                :absolute
+     :bottom                  0
+     :left                    0
+     :right                   0
+     :overflow                :hidden})))
 
 (def top-card
   {:flex                    1
@@ -17,7 +26,6 @@
 
 (def bottom-card
   {:position                :absolute
-   :top                     80
    :left                    0
    :right                   0
    :bottom                  0

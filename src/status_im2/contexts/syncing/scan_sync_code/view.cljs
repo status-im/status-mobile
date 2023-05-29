@@ -1,63 +1,105 @@
 (ns status-im2.contexts.syncing.scan-sync-code.view
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.camera-kit :as camera-kit]
-            [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [react-native.hole-view :as hole-view]
-            [react-native.permissions :as permissions]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.contexts.syncing.scan-sync-code.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.camera-kit :as camera-kit]
+    [react-native.core :as rn]
+    [react-native.blur :as blur]
+    [react-native.hole-view :as hole-view]
+    [react-native.permissions :as permissions]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.contexts.syncing.scan-sync-code.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [react-native.reanimated :as reanimated]
+    [status-im2.constants :as constants]))
 
 (defonce camera-permission-granted? (reagent/atom false))
+(defonce dismiss-animations (atom nil))
+
+(defn- f-header
+  [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
+  (let [subtitle-translate-x (reanimated/interpolate subtitle-opacity [0 1] [-13 0])
+        subtitle-translate-y (reanimated/interpolate subtitle-opacity [0 1] [-85 0])
+        subtitle-scale       (reanimated/interpolate subtitle-opacity [0 1] [0.9 1])
+        controls-translate-y (reanimated/interpolate subtitle-opacity [0 1] [85 0])]
+    [:<>
+     [rn/view {:style style/header-container}
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity   subtitle-opacity
+                 :transform [{:translateY controls-translate-y}]}
+                {})}
+       [quo/button
+        {:icon                true
+         :type                :blur-bg
+         :size                32
+         :accessibility-label :close-sign-in-by-syncing
+         :override-theme      :dark
+         :on-press            (fn []
+                                (rf/dispatch [:navigate-back])
+                                (when @dismiss-animations
+                                  (@dismiss-animations))
+                                (when reset-animations-fn
+                                  (reset-animations-fn)))}
+        :i/close]]
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity   subtitle-opacity
+                 :transform [{:translateY controls-translate-y}]}
+                {})}
+       [quo/button
+        {:before              :i/info
+         :type                :blur-bg
+         :size                32
+         :accessibility-label :find-sync-code
+         :override-theme      :dark
+         :on-press            #(js/alert "Yet to be implemented")}
+        (i18n/label :t/find-sync-code)]]]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity title-opacity}
+               {})}
+      [quo/text
+       {:size   :heading-1
+        :weight :semi-bold
+        :style  style/header-text}
+       title]]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity   subtitle-opacity
+                :transform [{:translateX subtitle-translate-x}
+                            {:translateY subtitle-translate-y}
+                            {:scale subtitle-scale}]}
+               {})}
+      [quo/text
+       {:size   :paragraph-1
+        :weight :regular
+        :style  style/header-sub-text}
+       (i18n/label :t/synchronise-your-data-across-your-devices)]]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity   subtitle-opacity
+                :transform [{:translateY controls-translate-y}]}
+               style/tabs-container)}
+      [quo/segmented-control
+       {:size           32
+        :override-theme :dark
+        :blur?          true
+        :default-active @active-tab
+        :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
+                         {:id 2 :label (i18n/label :t/enter-sync-code)}]
+        :on-change      (fn [id]
+                          (reset! active-tab id)
+                          (reset! read-qr-once? false))}]]]))
 
 (defn- header
-  [active-tab read-qr-once? title]
-  [:<>
-   [rn/view {:style style/header-container}
-    [quo/button
-     {:icon                true
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :close-sign-in-by-syncing
-      :override-theme      :dark
-      :on-press            #(rf/dispatch [:navigate-back])}
-     :i/close]
-    [quo/button
-     {:before              :i/info
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :find-sync-code
-      :override-theme      :dark
-      :on-press            #(js/alert "Yet to be implemented")}
-     (i18n/label :t/find-sync-code)]]
-   [quo/text
-    {:size   :heading-1
-     :weight :semi-bold
-     :style  style/header-text}
-    title]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :regular
-     :style  style/header-sub-text}
-    (i18n/label :t/synchronise-your-data-across-your-devices)]
-   [rn/view {:style style/tabs-container}
-    [quo/segmented-control
-     {:size           32
-      :override-theme :dark
-      :blur?          true
-      :default-active @active-tab
-      :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
-                       {:id 2 :label (i18n/label :t/enter-sync-code)}]
-      :on-change      (fn [id]
-                        (reset! active-tab id)
-                        (reset! read-qr-once? false))}]]])
+  [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
+  [:f> f-header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn])
 
 (defn- camera-permission-view
   [request-camera-permission]
@@ -120,8 +162,6 @@
   [qr-view-finder request-camera-permission]
   [:<>
    [rn/view {:style style/scan-qr-code-container}]
-   (when (empty? @qr-view-finder)
-     [qr-scan-hole-area qr-view-finder])
    (if (and @camera-permission-granted? (boolean (not-empty @qr-view-finder)))
      [viewfinder @qr-view-finder]
      [camera-permission-view request-camera-permission])])
@@ -135,17 +175,21 @@
      :style  {:color colors/white}}
     "Yet to be implemented"]])
 
-(defn- bottom-view
-  [insets]
+(defn- f-bottom-view
+  [insets translate-y]
   [rn/touchable-without-feedback
    {:on-press #(js/alert "Yet to be implemented")}
-   [rn/view
-    {:style (style/bottom-container (:bottom insets))}
+   [reanimated/view
+    {:style (style/bottom-container translate-y (:bottom insets))}
     [quo/text
      {:size   :paragraph-2
       :weight :regular
       :style  style/bottom-text}
      (i18n/label :t/i-dont-have-status-on-another-device)]]])
+
+(defn- bottom-view
+  [insets translate-y]
+  [:f> f-bottom-view insets translate-y])
 
 (defn- check-qr-code-data
   [event]
@@ -184,10 +228,11 @@
         :background-color colors/neutral-80-opa-80}]]]))
 
 (defn f-view
-  [{:keys [title show-bottom-view? background]}]
+  [{:keys [title show-bottom-view?]}]
   (let [insets                    (safe-area/get-insets)
         active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
+        should-render-camera?     (reagent/atom false)
         request-camera-permission (fn []
                                     (rf/dispatch
                                      [:request-permissions
@@ -201,40 +246,98 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [camera-ref                       (atom nil)
-            read-qr-once?                    (atom false)
+      (let [camera-ref (atom nil)
+            read-qr-once? (atom false)
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
             user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
-            on-read-code                     (fn [data]
-                                               (when (and (not @read-qr-once?)
-                                                          (not user-in-syncing-progress-screen?))
-                                                 (reset! read-qr-once? true)
-                                                 (js/setTimeout (fn []
-                                                                  (reset! read-qr-once? false))
-                                                                3000)
-                                                 (check-qr-code-data data)))
-            scan-qr-code-tab?                (= @active-tab 1)
-            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
-            show-holes?                      (and show-camera?
-                                                  (boolean (not-empty @qr-view-finder)))]
+            on-read-code
+            (fn [data]
+              (when (and (not @read-qr-once?)
+                         (not user-in-syncing-progress-screen?))
+                (reset! read-qr-once? true)
+                (js/setTimeout (fn []
+                                 (reset! read-qr-once? false))
+                               3000)
+                (check-qr-code-data data)))
+            scan-qr-code-tab? (= @active-tab 1)
+            show-camera? (and scan-qr-code-tab? @camera-permission-granted?)
+            show-holes?
+            (and show-camera?
+                 (boolean (not-empty @qr-view-finder)))
+            title-opacity (reanimated/use-shared-value 0)
+            subtitle-opacity (reanimated/use-shared-value 0)
+            content-opacity (reanimated/use-shared-value 0)
+            content-translate-y (reanimated/interpolate subtitle-opacity [0 1] [85 0])
+            bottom-view-translate-y (reanimated/use-shared-value (+ 42.2 (:bottom insets)))
+            reset-animations-fn (fn []
+                                  (reset! should-render-camera? false)
+                                  (reanimated/animate-shared-value-with-timing
+                                   content-opacity
+                                   0
+                                   (/ constants/onboarding-modal-animation-duration 8)
+                                   :easing4)
+                                  (reanimated/animate-shared-value-with-timing
+                                   subtitle-opacity
+                                   0
+                                   (- constants/onboarding-modal-animation-duration
+                                      constants/onboarding-modal-animation-delay)
+                                   :easing4)
+                                  (reanimated/animate-shared-value-with-timing title-opacity
+                                                                               0
+                                                                               0
+                                                                               :easing4))]
+        (reanimated/animate-shared-value-with-delay subtitle-opacity
+                                                    1 constants/onboarding-modal-animation-duration
+                                                    :easing4 (/
+                                                              constants/onboarding-modal-animation-delay
+                                                              2))
+        (reanimated/animate-shared-value-with-delay title-opacity
+                                                    1 0
+                                                    :easing4
+                                                    (+ constants/onboarding-modal-animation-duration
+                                                       constants/onboarding-modal-animation-delay))
+        (reanimated/animate-delay bottom-view-translate-y
+                                  0
+                                  (+ constants/onboarding-modal-animation-duration
+                                     constants/onboarding-modal-animation-delay)
+                                  100)
         (rn/use-effect
          (fn []
+           (reanimated/animate-shared-value-with-delay content-opacity
+                                                       1 constants/onboarding-modal-animation-duration
+                                                       :easing4
+                                                       (/
+                                                        constants/onboarding-modal-animation-delay
+                                                        2))
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
-                                              #(reset! camera-permission-granted? false)))))
+                                              #(reset! camera-permission-granted? false)))
+           (js/setTimeout #(reset! should-render-camera? true)
+                          (+ constants/onboarding-modal-animation-duration
+                             constants/onboarding-modal-animation-delay
+                             300))))
         [:<>
-         background
-         [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
+         (when @should-render-camera?
+           [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?])
          [rn/view {:style (style/root-container (:top insets))}
-          [header active-tab read-qr-once? title]
-          (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder request-camera-permission]
-            2 [enter-sync-code-tab]
-            nil)
+          [header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
+          (when (empty? @qr-view-finder)
+            [:<>
+             [rn/view {:style style/scan-qr-code-container}]
+             [qr-scan-hole-area qr-view-finder]])
+          [reanimated/view
+           {:style (reanimated/apply-animations-to-style
+                    {:opacity   content-opacity
+                     :transform [{:translateY content-translate-y}]}
+                    {})}
+           (case @active-tab
+             1 [scan-qr-code-tab qr-view-finder request-camera-permission]
+             2 [enter-sync-code-tab]
+             nil)]
           [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets])]]))))
+          (when show-bottom-view? [bottom-view insets bottom-view-translate-y])]]))))
 
 (defn view
   [props]
