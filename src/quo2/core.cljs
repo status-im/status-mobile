@@ -12,6 +12,7 @@
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
+    quo2.components.browser.browser-input.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view
     quo2.components.common.separator.view
@@ -136,6 +137,9 @@
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
+
+;;;; BROWSER
+(def browser-input quo2.components.browser.browser-input.view/browser-input)
 
 ;;;; CODE
 (def snippet quo2.components.code.snippet/snippet)

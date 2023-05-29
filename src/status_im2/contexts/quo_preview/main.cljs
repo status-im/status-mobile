@@ -19,6 +19,7 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
@@ -139,6 +140,9 @@
                        {:name      :predictive-keyboard
                         :options   {:topBar {:visible true}}
                         :component predictive-keyboard/preview-predictive-keyboard}]
+   :browser           [{:name      :browser-input
+                        :options   {:topBar {:visible false}}
+                        :component browser-input/preview-browser-input}]
    :code              [{:name      :snippet
                         :options   {:topBar {:visible true}}
                         :component code-snippet/preview-code-snippet}]
