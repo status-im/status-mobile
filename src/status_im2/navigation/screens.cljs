@@ -95,12 +95,11 @@
      :component communities.overview/overview}
 
     {:name      :settings-syncing
-     :options   (options/statusbar true)
+     :options   (merge options/dark-screen {:insets {:top? true}})
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
-     :options   (options/statusbar true)
-
+     :options   (merge options/dark-screen {:insets {:top? true}})
      :component settings-setup-syncing/view}
 
     ;; Onboarding

@@ -1,11 +1,9 @@
 (ns status-im2.contexts.syncing.setup-syncing.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn container-main
-  [top]
+(def container-main
   {:background-color colors/neutral-95
-   :flex             1
-   :padding-top      top})
+   :flex             1})
 
 (def page-container
   {:margin-horizontal 20})

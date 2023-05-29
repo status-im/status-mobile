@@ -120,7 +120,6 @@
         {:horizontal                        true
          :deceleration-rate                 "fast"
          :snap-to-interval                  page-width
-         :snap-to-alignment                 "left"
          :shows-horizontal-scroll-indicator false
          :scroll-event-throttle             64
          :on-scroll                         #(let [x (.-nativeEvent.contentOffset.x ^js %)]

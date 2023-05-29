@@ -219,9 +219,10 @@
 (rf/defn update-estimated-gas-success
   {:events [:signing/update-estimated-gas-success]}
   [{db :db} gas]
-  {:db (-> db
-           (assoc-in [:signing/tx :gas] gas)
-           (assoc-in [:signing/edit-fee :gas-loading?] false))})
+  (when (contains? db :signing/tx)
+    {:db (-> db
+             (assoc-in [:signing/tx :gas] gas)
+             (assoc-in [:signing/edit-fee :gas-loading?] false))}))
 
 (rf/defn update-gas-price-success
   {:events [:signing/update-gas-price-success]}
