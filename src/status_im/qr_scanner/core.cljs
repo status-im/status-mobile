@@ -31,7 +31,7 @@
   {:events [:qr-scanner.callback/scan-qr-code-cancel]}
   [cofx opts]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (when-let [handler (:cancel-handler opts)]
               (fn [] {:dispatch [handler opts]}))))
 
@@ -39,7 +39,7 @@
   [cofx {:keys [url]}]
   (rf/merge cofx
             {:browser/show-browser-selection url}
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (defn own-public-key?
   [{:keys [multiaccount]} public-key]
@@ -68,7 +68,7 @@
       (and public-key (not own))
       (rf/merge cofx
                 {:dispatch [:chat.ui/show-profile public-key ens-name]}
-                (navigation/navigate-back))
+                ((navigation/navigate-back nil)))
 
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)

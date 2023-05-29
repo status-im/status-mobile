@@ -85,7 +85,7 @@
   [cofx dapp]
   (rf/merge cofx
             (revoke-permissions dapp)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn clear-dapps-permissions
   [{:keys [db]}]

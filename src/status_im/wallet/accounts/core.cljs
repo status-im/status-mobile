@@ -244,7 +244,7 @@
                   (wallet/update-balances nil true))
                 (wallet/fetch-collectibles-collection)
                 (prices/update-prices)
-                (navigation/navigate-back)))))
+                ((navigation/navigate-back nil))))))
 
 (rf/defn add-watch-account
   [{:keys [db] :as cofx}]
@@ -362,7 +362,7 @@
                      (when-not address
                        {:utils/show-popup {:title   (i18n/label :t/error)
                                            :content (i18n/label :t/invalid-address-qr-code)}}))
-              (navigation/navigate-back))))
+              ((navigation/navigate-back nil)))))
 
 (re-frame/reg-fx
  :list.selection/open-share

@@ -330,5 +330,5 @@
   {:events [::cancel-pressed]}
   [cofx]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (common/cancel-sheet-confirm)))

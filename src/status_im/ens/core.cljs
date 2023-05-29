@@ -336,4 +336,4 @@
                  :preferred-name
                  (first new-names)
                  {}))
-              (navigation/navigate-back))))
+              ((navigation/navigate-back nil)))))

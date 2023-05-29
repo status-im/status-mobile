@@ -152,7 +152,7 @@
               (toasts/upsert {:icon       :correct
                               :icon-color (:positive-01 @colors/theme)
                               :text       (i18n/label :t/left-community {:community community-name})})
-              (navigation/navigate-back)
+              ((navigation/navigate-back nil))
               (activity-center/notifications-fetch-unread-count))))
 
 (rf/defn joined
@@ -510,14 +510,14 @@
   {:events [::community-created]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn community-edited
   {:events [::community-edited]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn open-create-community
@@ -548,28 +548,28 @@
   {:events [::community-imported]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn people-invited
   {:events [::people-invited]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn community-channel-created
   {:events [::community-channel-created]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn community-channel-edited
   {:events [::community-channel-edited]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (handle-response response-js)))
 
 (rf/defn create-field
@@ -762,7 +762,7 @@
                                       (re-frame/dispatch [:sanitize-messages-and-process-response %]))
                       :on-error    #(log/error "failed to change community category" %)}]}
     (rf/merge cofx
-              (navigation/navigate-back)
+              ((navigation/navigate-back nil))
               (remove-chat-from-category community-id id categoryID))))
 
 (rf/defn reorder-category-chat

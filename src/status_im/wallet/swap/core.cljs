@@ -14,13 +14,13 @@
   {:events [::set-from-token]}
   [{:keys [db]} from-symbol]
   (rf/merge {:db (assoc db :wallet/swap-from-token from-symbol)}
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn set-to-token
   {:events [::set-to-token]}
   [{:keys [db]} to-symbol]
   (rf/merge {:db (assoc db :wallet/swap-to-token to-symbol)}
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn set-from-token-amount
   [{:keys [db]} from-amount]

@@ -100,4 +100,4 @@
                :json-rpc/call [{:method     "wallet_addSavedAddress"
                                 :params     [new-favourite]
                                 :on-success #()}]}
-              (navigation/navigate-back))))
+              ((navigation/navigate-back nil)))))

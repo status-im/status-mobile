@@ -51,7 +51,7 @@
                     :from-key-storage-and-migration?
                     :creating-backup?
                     :factory-reset-card?))}
-   (navigation/navigate-back)))
+   ((navigation/navigate-back nil))))
 
 (rf/defn enter-seed-pressed
   "User is logged out and probably wants to move multiaccount to Keycard. Navigate to enter seed phrase screen"

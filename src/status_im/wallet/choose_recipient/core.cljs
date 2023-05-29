@@ -150,5 +150,5 @@
   {:events [:wallet.send/qr-scanner-result]}
   [cofx data {:keys [ignore-url]}]
   (rf/merge cofx
-            (navigation/navigate-back)
+            ((navigation/navigate-back nil))
             (parse-eip681-uri-and-resolve-ens (router/match-eip681 data) ignore-url)))

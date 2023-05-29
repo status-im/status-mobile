@@ -14,4 +14,4 @@
                  (contact/send-contact-request % public-key)
                  {:dispatch [:chat.ui/start-chat public-key ens-name]})
               #(when new-contact?
-                 (navigation/navigate-back %)))))
+                 ((navigation/navigate-back nil) %)))))

@@ -96,7 +96,7 @@
   [cofx]
   (rf/merge cofx
             (common/cancel-sheet-confirm)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn begin-setup-pressed
   {:events [:keycard.recovery.intro.ui/begin-recovery-pressed]}

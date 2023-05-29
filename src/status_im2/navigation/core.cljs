@@ -10,7 +10,8 @@
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
             [status-im2.common.theme.core :as theme]
-            [status-im2.navigation.options :as options]))
+            [status-im2.navigation.options :as options]
+            [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]))
 
 (navigation/set-lazy-component-registrator
  (fn [key]
@@ -79,11 +80,11 @@
 
 ;; NAVIGATE-TO
 (defn navigate
-  [comp]
+  [comp comp-id]
   (let [{:keys [options]} (get views/screens comp)]
-    (dismiss-all-modals)
+    (when-not "comp-id" (dismiss-all-modals))
     (navigation/push
-     (name @state/root-id)
+     (or comp-id (name @state/root-id))
      {:component {:id      comp
                   :name    comp
                   :options (merge (options/statusbar-and-navbar)
@@ -92,18 +93,21 @@
                                     (options/merge-top-bar (options/topbar-options) options)
                                     {:topBar {:visible false}}))}})))
 
-(re-frame/reg-fx :navigate-to navigate)
+(re-frame/reg-fx :navigate-to (fn [v]
+                                (if (coll? v)
+                                  (navigate (first v) (name (second v)))
+                                  (navigate v nil))))
 
 (re-frame/reg-fx :navigate-replace-fx
                  (fn [view-id]
                    (navigation/pop (name @state/root-id))
-                   (navigate view-id)))
+                   (navigate view-id nil)))
 
 (re-frame/reg-fx :navigate-back
-                 (fn []
-                   (if @state/curr-modal
-                     (dissmissModal)
-                     (navigation/pop (name @state/root-id)))))
+                 (fn [comp-id]
+                   (if (or (some? comp-id) (not @state/curr-modal))
+                     (navigation/pop (name (or comp-id @state/root-id)))
+                     (dissmissModal))))
 
 (re-frame/reg-fx :pop-to-root-fx navigation/pop-to-root)
 
@@ -118,14 +122,16 @@
         (reset! state/curr-modal true)
         (swap! state/modals conj comp)
         (navigation/show-modal
-         {:component
-          {:name    comp
-           :id      comp
-           :options (merge (options/default-root)
-                           (options/statusbar-and-navbar)
-                           options
-                           (when sheet?
-                             options/sheet-options))}})))))
+         {:stack
+          {:children
+           [{:component
+             {:name    comp
+              :id      comp
+              :options (merge (options/default-root)
+                              (options/statusbar-and-navbar)
+                              options
+                              (when sheet?
+                                options/sheet-options))}}]}})))))
 
 (re-frame/reg-fx :open-modal-fx open-modal)
 
@@ -181,6 +187,10 @@
                                   :layout  {:componentBackgroundColor :transparent
                                             :orientation              ["portrait"]}})))
 (re-frame/reg-fx :hide-toasts (fn [] (dissmiss-overlay "toasts")))
+
+(navigation/register-component "onboarding"
+                               (fn [] new-to-status/view)
+                               (fn [] ))
 
 ;; bottom sheet
 (navigation/register-component "bottom-sheet"

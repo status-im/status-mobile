@@ -84,7 +84,8 @@
              (oops/ocall will-hide-listener "remove"))))
        [])
       [rn/view {:style style/page-container}
-       [navigation-bar/navigation-bar {:top navigation-bar-top}]
+       [navigation-bar/navigation-bar {:top          navigation-bar-top
+                                       :root-comp-id :new-to-status}]
        [rn/scroll-view
         {:keyboard-should-persist-taps :always
          :content-container-style      {:flex-grow 1}}

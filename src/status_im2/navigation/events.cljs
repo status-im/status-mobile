@@ -34,8 +34,8 @@
 
 (rf/defn navigate-back
   {:events [:navigate-back]}
-  [_]
-  {:navigate-back nil})
+  [_ comp-id]
+  {:navigate-back comp-id})
 
 (rf/defn pop-to-root
   {:events [:pop-to-root]}

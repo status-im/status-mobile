@@ -129,4 +129,4 @@
   [cofx id]
   (rf/merge cofx
             (delete id)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))

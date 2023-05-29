@@ -884,7 +884,7 @@
   (rf/merge cofx
             (when on-close
               {:dispatch on-close})
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn stop-fetching-on-empty-tx-history
   [{:keys [db now] :as cofx} transfers]

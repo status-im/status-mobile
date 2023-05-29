@@ -127,4 +127,4 @@
   [cofx bootnode-id]
   (rf/merge cofx
             (delete bootnode-id)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))

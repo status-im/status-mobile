@@ -1,6 +1,7 @@
 (ns status-im2.navigation.options
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [react-native.core :as rn]))
 
 (defn default-options
   []
@@ -33,9 +34,9 @@
                                                                       colors/neutral-100))}}))
 
 (def onboarding-layout
-  {:componentBackgroundColor colors/neutral-80-opa-80-blur
+  {:componentBackgroundColor :transparent
    :orientation              ["portrait"]
-   :backgroundColor          colors/neutral-80-opa-80-blur})
+   :backgroundColor          :transparent})
 
 (defn navbar
   ([dark?]

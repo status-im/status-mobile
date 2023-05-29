@@ -219,7 +219,7 @@
          #(re-frame/dispatch [:multiaccounts.recover/cancel-pressed true]))
         (rf/merge cofx
                   dec-step
-                  navigation/navigate-back)))))
+                  (navigation/navigate-back nil))))))
 
 (rf/defn select-storage-next-pressed
   {:events       [:multiaccounts.recover/select-storage-next-pressed]

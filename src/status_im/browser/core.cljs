@@ -481,7 +481,7 @@
   (rf/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
             (browser.permissions/send-response-to-bridge permission message-id true data)
             (browser.permissions/process-next-permission dapp-name)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn handle-canceled-qr-code
   {:events [:browser.bridge.callback/qr-code-canceled]}
@@ -576,7 +576,7 @@
             (browser.permissions/clear-dapps-permissions)
             (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)
-               (merge (navigation/navigate-back %)
+               (merge ((navigation/navigate-back nil) %)
                       {:dispatch [:browser.ui/browser-item-selected
                                   (get-in db [:browser/options :browser-id])]}))))
 

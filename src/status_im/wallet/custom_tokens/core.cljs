@@ -84,7 +84,7 @@
                                 :on-success #()}]}
               (wallet/add-custom-token new-token)
               (prices/update-prices)
-              (navigation/navigate-back))))
+              ((navigation/navigate-back nil)))))
 
 (rf/defn remove-custom-token
   {:events [:wallet.custom-token.ui/remove-pressed]}
@@ -96,7 +96,7 @@
                               :on-success #()}]}
             (wallet/remove-custom-token token)
             (when navigate-back?
-              (navigation/navigate-back))))
+              ((navigation/navigate-back nil)))))
 
 (rf/defn field-is-edited
   {:events [:wallet.custom-token.ui/field-is-edited]}

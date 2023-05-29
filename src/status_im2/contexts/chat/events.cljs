@@ -80,7 +80,7 @@
     :as                                     cofx}]
   (when (and (= view-id :chat)
              (not (contains? chats current-chat-id)))
-    (navigation/navigate-back cofx)))
+    ((navigation/navigate-back nil) cofx)))
 
 (rf/defn ensure-chats
   "Add chats to db and update"

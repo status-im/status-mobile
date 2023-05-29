@@ -33,7 +33,16 @@
     [status-im2.contexts.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]))
+    [status-im2.contexts.chat.new-chat.view :as new-chat]
+    [react-native.core :as rn]))
+
+(def animations
+  {:push {:content {:translationX {:from     (:width (rn/get-window))
+                                   :to       0
+                                   :duration 300}}}
+   :pop  {:content {:translationX {:from     0
+                                   :to       (- (:width (rn/get-window)))
+                                   :duration 100}}}})
 
 (defn screens
   []
@@ -108,10 +117,10 @@
 
     {:name      :new-to-status
      :options   {:layout options/onboarding-layout}
-     :component new-to-status/new-to-status}
+     :component new-to-status/view}
 
-    {:name      :create-profile
-     :options   {:layout options/onboarding-layout}
+    {:name          :create-profile
+     :options       {:layout options/onboarding-layout}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
@@ -147,11 +156,13 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+    
     {:name      :scan-sync-code-page
      :component scan-sync-code-page/view}
 
     {:name      :sign-in
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout options/onboarding-layout
+                 :modalPresentationStyle :overCurrentContext}
      :component sign-in/view}
 
     {:name      :syncing-progress

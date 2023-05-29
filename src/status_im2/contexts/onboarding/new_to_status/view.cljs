@@ -1,15 +1,16 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.keycard.recovery :as keycard]
-    [status-im2.common.resources :as resources]
-    [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-    [status-im2.contexts.onboarding.new-to-status.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.keycard.recovery :as keycard]
+   [status-im2.common.resources :as resources]
+   [status-im2.contexts.onboarding.common.background.view :as background]
+   [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+   [status-im2.contexts.onboarding.new-to-status.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [reagent.core :as reagent]))
 
 (defn sign-in-options
   []
@@ -106,3 +107,5 @@
                                                          {:content getting-started-doc
                                                           :shell?  true}])}]}]
       [sign-in-options]]]))
+
+(def view (reagent/reactify-component new-to-status))

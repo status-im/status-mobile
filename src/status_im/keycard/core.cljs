@@ -271,7 +271,7 @@
                   (when (and (not setup?)
                              (not on-verified-failure))
                     (when exporting?
-                      (navigation/navigate-back)))
+                      ((navigation/navigate-back nil))))
                   ;(navigation/navigate-to :enter-pin-settings nil)))
                   (when (zero? pin-retries) (common/frozen-keycard-popup))
                   (when on-verified-failure

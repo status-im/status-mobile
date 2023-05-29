@@ -23,7 +23,7 @@
   [quo/action-drawer
    [[{:icon                :i/profile
       :label               (i18n/label :t/create-new-profile)
-      :on-press            #(rf/dispatch [:navigate-to :new-to-status])
+      :on-press            #(rf/dispatch [:open-modal :new-to-status])
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)

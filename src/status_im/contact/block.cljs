@@ -74,7 +74,7 @@
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 (navigation/pop-to-root :shell-stack)
-                (navigation/navigate-back)))))
+                ((navigation/navigate-back nil))))))
 
 (rf/defn contact-unblocked
   {:events [:contacts/unblocked]}

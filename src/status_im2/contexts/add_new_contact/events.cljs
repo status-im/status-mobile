@@ -190,7 +190,7 @@
   [{:keys [db] :as cofx} scanned]
   (rf/merge cofx
             (set-new-identity scanned scanned)
-            (navigation/navigate-back)))
+            ((navigation/navigate-back nil))))
 
 (rf/defn set-new-identity-reconnected
   [{:keys [db]}]

@@ -17,7 +17,7 @@
                    :heading             (i18n/label :t/sign-in)
                    :accessibility-label :already-use-status-button}
      :bottom-card {:on-press            (fn []
-                                          (rf/dispatch [:navigate-to :new-to-status])
+                                          (rf/dispatch [:open-modal :new-to-status])
                                           (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                    :heading             (i18n/label :t/new-to-status)
                    :accessibility-label :new-to-status-button}}
