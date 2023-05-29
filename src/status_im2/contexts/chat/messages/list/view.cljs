@@ -263,8 +263,7 @@
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
        :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
-       :scroll-indicator-insets      {:top (+ composer.constants/composer-default-height
-                                              (:bottom insets))}
+       :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
        :on-momentum-scroll-begin     state/start-scrolling
@@ -292,31 +291,31 @@
   []
   (let [show-listener (atom nil)
         hide-listener (atom nil)
-        shown?        (atom nil)]
+        shown? (atom nil)]
     (rn/use-effect
-     (fn []
-       (reset! show-listener
-         (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-       (reset! hide-listener
-         (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-       (fn []
-         (.remove ^js @show-listener)
-         (.remove ^js @hide-listener))))
+      (fn []
+        (reset! show-listener
+                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
+        (reset! hide-listener
+                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
+        (fn []
+          (.remove ^js @show-listener)
+          (.remove ^js @hide-listener))))
     {:shown? shown?}))
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [insets                    (safe-area/get-insets)
-        scroll-y                  (reanimated/use-shared-value 0)
+  (let [insets (safe-area/get-insets)
+        scroll-y (reanimated/use-shared-value 0)
         {:keys [keyboard-height]} (hooks/use-keyboard)
         {keyboard-shown? :shown?} (use-keyboard-visibility)]
     (rn/use-effect
-     (fn []
-       (when keyboard-shown?
-         (reanimated/set-shared-value scroll-y
-                                      (+ (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))))
-     [keyboard-shown? keyboard-height])
+      (fn []
+        (when keyboard-shown?
+          (reanimated/set-shared-value scroll-y
+                                       (+ (reanimated/get-shared-value scroll-y)
+                                          keyboard-height))))
+      [keyboard-shown? keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}
