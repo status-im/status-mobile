@@ -41,7 +41,7 @@
                                   [quo/text
                                    {:weight :medium
                                     :size   :paragraph-1
-                                    :style  (style/tab-count (= @selected-tab
+                                    :style  (style/tab-count (= selected-tab
                                                                 reaction-type-int))}
                                    (count author-details)]]}))
        reactions-order))
@@ -56,7 +56,7 @@
       :in-scroll-view? true
       :on-change       #(reset! selected-tab %)
       :default-active  @selected-tab
-      :data            (get-tabs-data reaction-authors selected-tab reactions-order)}]]
+      :data            (get-tabs-data reaction-authors @selected-tab reactions-order)}]]
    [gesture/flat-list
     {:data      (for [contact (get reaction-authors @selected-tab)]
                   contact)
@@ -65,10 +65,12 @@
      :style     style/authors-list}]])
 
 (defn reaction-authors
-  [reaction-authors selected-reaction reactions-order]
-  (let [selected-tab (reagent/atom (or selected-reaction (first (keys reaction-authors))))]
+  [reactions-order]
+  (let [{:keys [reaction-authors-list
+                selected-reaction]} (rf/sub [:chat/reactions-authors])
+        selected-tab (reagent/atom (or selected-reaction (first (keys reaction-authors-list))))]
     (fn []
-      [reaction-authors-comp selected-tab reaction-authors reactions-order])))
+      [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]

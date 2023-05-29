@@ -24,22 +24,18 @@
 
 (defn show-authors-sheet
   [user-message-content reactions]
-  (let [{:keys [reaction-authors-list
-                selected-reaction]} (rf/sub [:chat/reactions-authors])] 
-    (rf/dispatch [:dismiss-keyboard])
-    (rf/dispatch
-     [:show-bottom-sheet
-      {:on-close                (fn []
-                                  (rf/dispatch
-                                   [:chat/clear-emoji-reaction-author-details]))
-       :content                 (fn [] 
-                                  [drawers/reaction-authors
-                                   reaction-authors-list
-                                   selected-reaction
-                                   (map :emoji-id reactions)])
-       :selected-item           (fn []
-                                  user-message-content)
-       :padding-bottom-override 0}])))
+  (rf/dispatch [:dismiss-keyboard])
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:on-close                (fn []
+                                (rf/dispatch
+                                 [:chat/clear-emoji-reaction-author-details]))
+     :content                 (fn []
+                                [drawers/reaction-authors
+                                 (map :emoji-id reactions)])
+     :selected-item           (fn []
+                                user-message-content)
+     :padding-bottom-override 0}]))
 
 (defn message-reactions-row
   [{:keys [message-id chat-id]} user-message-content]
