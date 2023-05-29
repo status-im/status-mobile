@@ -41,49 +41,47 @@
 
 (defn top-view
   [{:keys [from timestamp]} insets index animations derived landscape? screen-width]
-  [:f>
-   (fn []
-     (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                              from]))
-           bg-color                           (if landscape?
-                                                colors/neutral-100-opa-70
-                                                colors/neutral-100-opa-0)
-           {:keys [background-color opacity]} animations]
-       [reanimated/view
-        {:style
-         (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
-        [reanimated/linear-gradient
-         {:colors [(colors/alpha "#000000" 0.8) :transparent]
-          :start  {:x 0 :y 0}
-          :end    {:x 0 :y 1}
-          :style  (style/top-gradient insets)}]
-        [rn/view
-         {:style {:flex-direction :row
-                  :align-items    :center}}
-         [rn/touchable-opacity
-          {:on-press (fn []
-                       (anim/animate background-color :transparent)
-                       (anim/animate opacity 0)
-                       (rf/dispatch (if platform/ios?
-                                      [:chat.ui/exit-lightbox-signal @index]
-                                      [:navigate-back])))
-           :style    style/close-container}
-          [quo/icon :close {:size 20 :color colors/white}]]
-         [rn/view {:style {:margin-left 12}}
-          [quo/text
-           {:weight :semi-bold
-            :size   :paragraph-1
-            :style  {:color colors/white}} display-name]
-          [quo/text
-           {:weight :medium
-            :size   :paragraph-2
-            :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
-        [rn/view {:style style/top-right-buttons}
-         [rn/touchable-opacity
-          {:active-opacity 1
-           :style          (merge style/close-container {:margin-right 12})}
-          [quo/icon :share {:size 20 :color colors/white}]]
-         [rn/touchable-opacity
-          {:active-opacity 1
-           :style          style/close-container}
-          [quo/icon :options {:size 20 :color colors/white}]]]]))])
+  (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                           from]))
+        bg-color                           (if landscape?
+                                             colors/neutral-100-opa-70
+                                             colors/neutral-100-opa-0)
+        {:keys [background-color opacity]} animations]
+    [reanimated/view
+     {:style
+      (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
+     [reanimated/linear-gradient
+      {:colors [(colors/alpha "#000000" 0.8) :transparent]
+       :start  {:x 0 :y 0}
+       :end    {:x 0 :y 1}
+       :style  (style/top-gradient insets)}]
+     [rn/view
+      {:style {:flex-direction :row
+               :align-items    :center}}
+      [rn/touchable-opacity
+       {:on-press (fn []
+                    (anim/animate background-color :transparent)
+                    (anim/animate opacity 0)
+                    (rf/dispatch (if platform/ios?
+                                   [:chat.ui/exit-lightbox-signal @index]
+                                   [:navigate-back])))
+        :style    style/close-container}
+       [quo/icon :close {:size 20 :color colors/white}]]
+      [rn/view {:style {:margin-left 12}}
+       [quo/text
+        {:weight :semi-bold
+         :size   :paragraph-1
+         :style  {:color colors/white}} display-name]
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
+     [rn/view {:style style/top-right-buttons}
+      [rn/touchable-opacity
+       {:active-opacity 1
+        :style          (merge style/close-container {:margin-right 12})}
+       [quo/icon :share {:size 20 :color colors/white}]]
+      [rn/touchable-opacity
+       {:active-opacity 1
+        :style          style/close-container}
+       [quo/icon :options {:size 20 :color colors/white}]]]]))

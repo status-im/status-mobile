@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [quo.core :as quo]
+            [quo2.core :as quo2]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
@@ -234,6 +235,17 @@
     (let [to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
+        [quo2/page-nav
+         {:align-mid?   true
+          :mid-section  {:type      :text-only
+                         :main-text (i18n/label :t/send-transaction)}
+
+          :left-section {:on-press            #(do
+                                                 (re-frame/dispatch [:navigate-back])
+                                                 (re-frame/dispatch
+                                                  [:wallet/cancel-transaction-command]))
+                         :icon                :i/arrow-left
+                         :accessibility-label :back-button}}]
         [react/scroll-view
          {:style                        {:flex 1}
           :keyboard-should-persist-taps :handled}

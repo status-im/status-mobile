@@ -1,11 +1,12 @@
 (ns status-im2.contexts.add-new-contact.style
   (:require [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as typography]
             [react-native.platform :as platform]
-            [quo2.foundations.typography :as typography]))
+            [react-native.safe-area :as safe-area]))
 
 (defn container-outer
   []
-  {:style {:flex             (if platform/ios? 4.5 5)
+  {:style {:flex             1
            :background-color (colors/theme-colors colors/white colors/neutral-95)
            :justify-content  :space-between
            :align-items      :center
@@ -171,7 +172,7 @@
    :size                40
    :width               335
    :style               {:margin-top    24
-                         :margin-bottom 24}
+                         :margin-bottom (+ (safe-area/get-bottom) 12)}
    :accessibility-label :new-contact-button
    :before              :i/profile
    :disabled            (not= state :valid)})

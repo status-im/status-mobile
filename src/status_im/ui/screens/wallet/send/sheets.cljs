@@ -8,16 +8,22 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.accounts.common :as common]))
 
+(defn asset
+  [currency token]
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:wallet.send/set-symbol (:symbol token)])}
+   [common/render-asset token nil nil (:code currency)]])
+
 (views/defview assets
   [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
                   currency         [:wallet/currency]]
-    [:<>
-     (for [token tokens]
-       ^{:key (str (:symbol token))}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:wallet.send/set-symbol (:symbol token)])}
-        [common/render-asset token nil nil (:code currency)]])]))
+    [react/view
+     {:style {:height 300}}
+     [list/flat-list
+      {:data      tokens
+       :key-fn    :symbol
+       :render-fn (partial asset currency)}]]))
 
 (defn render-account
   [account _ _ {:keys [field event]}]

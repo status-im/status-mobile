@@ -18,12 +18,15 @@
         latest-pin-text (message-text pinned-message)
         {:keys [deleted? deleted-for-me?]} pinned-message
         pins-count (rf/sub [:chats/pin-messages-count chat-id])
-        content-type-text? (= (:content-type pinned-message) constants/content-type-text)
         latest-pin-text
-        (cond deleted?           (i18n/label :t/message-deleted-for-everyone)
-              deleted-for-me?    (i18n/label :t/message-deleted-for-you)
-              content-type-text? (resolver/resolve-message latest-pin-text)
-              :else              latest-pin-text)]
+        (cond deleted? (i18n/label :t/message-deleted-for-everyone)
+              deleted-for-me? (i18n/label :t/message-deleted-for-you)
+              (#{constants/content-type-text
+                 constants/content-type-image
+                 constants/content-type-sticker}
+               (:content-type pinned-message))
+              (resolver/resolve-message latest-pin-text)
+              :else latest-pin-text)]
     [quo/banner
      {:latest-pin-text latest-pin-text
       :pins-count      pins-count

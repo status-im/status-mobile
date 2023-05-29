@@ -3,7 +3,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.chat.messages.content.album.style :as style]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.image.view :as image]
@@ -20,8 +19,7 @@
 
 (defn album-message
   [{:keys [albumize?] :as message} context on-long-press]
-  (let [insets            (safe-area/get-insets)
-        shared-element-id (rf/sub [:shared-element-id])
+  (let [shared-element-id (rf/sub [:shared-element-id])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
                             :landscape
@@ -53,8 +51,7 @@
                :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
                                               (:message-id item)
                                               {:messages (:album message)
-                                               :index    index
-                                               :insets   insets}])}
+                                               :index    index}])}
               [fast-image/fast-image
                {:style     (style/image dimensions index portrait? images-count)
                 :source    {:uri (:image (:content item))}

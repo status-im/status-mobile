@@ -381,30 +381,31 @@
 (rf/defn wallet-send-gas-price-success
   {:events [:wallet.send/update-gas-price-success]}
   [{db :db} tx-entry price {:keys [maxFeePerGas maxPriorityFeePerGas gasPrice]}]
-  (if (eip1559/sync-enabled?)
-    (let [{:keys [slow-base-fee normal-base-fee fast-base-fee
-                  current-base-fee max-priority-fee]}
-          price
-          max-priority-fee-bn (money/with-precision (signing.gas/get-suggested-tip max-priority-fee) 0)
-          fee-cap (-> normal-base-fee
-                      money/bignumber
-                      (money/add max-priority-fee-bn)
-                      money/to-hex)
-          tip-cap (money/to-hex max-priority-fee-bn)]
+  (when (contains? db tx-entry)
+    (if (eip1559/sync-enabled?)
+      (let [{:keys [slow-base-fee normal-base-fee fast-base-fee
+                    current-base-fee max-priority-fee]}
+            price
+            max-priority-fee-bn (money/with-precision (signing.gas/get-suggested-tip max-priority-fee) 0)
+            fee-cap (-> normal-base-fee
+                        money/bignumber
+                        (money/add max-priority-fee-bn)
+                        money/to-hex)
+            tip-cap (money/to-hex max-priority-fee-bn)]
+        {:db (-> db
+                 (update tx-entry
+                         assoc
+                         :maxFeePerGas         (or maxFeePerGas fee-cap)
+                         :maxPriorityFeePerGas (or maxPriorityFeePerGas tip-cap))
+                 (assoc :wallet/current-base-fee     current-base-fee
+                        :wallet/normal-base-fee      normal-base-fee
+                        :wallet/slow-base-fee        slow-base-fee
+                        :wallet/fast-base-fee        fast-base-fee
+                        :wallet/current-priority-fee max-priority-fee)
+                 (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
       {:db (-> db
-               (update tx-entry
-                       assoc
-                       :maxFeePerGas         (or maxFeePerGas fee-cap)
-                       :maxPriorityFeePerGas (or maxPriorityFeePerGas tip-cap))
-               (assoc :wallet/current-base-fee     current-base-fee
-                      :wallet/normal-base-fee      normal-base-fee
-                      :wallet/slow-base-fee        slow-base-fee
-                      :wallet/fast-base-fee        fast-base-fee
-                      :wallet/current-priority-fee max-priority-fee)
-               (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
-    {:db (-> db
-             (assoc-in [:wallet/prepare-transaction :gasPrice] (or gasPrice price))
-             (assoc-in [:signing/edit-fee :gas-price-loading?] false))}))
+               (assoc-in [:wallet/prepare-transaction :gasPrice] (or gasPrice price))
+               (assoc-in [:signing/edit-fee :gas-price-loading?] false))})))
 
 (rf/defn set-max-amount
   {:events [:wallet.send/set-max-amount]}
