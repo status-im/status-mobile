@@ -17,6 +17,7 @@
     [quo2.components.inputs.profile-input.component-spec]
     [quo2.components.inputs.recovery-phrase.component-spec]
     [quo2.components.inputs.title-input.component-spec]
+    [quo2.components.inputs.browser-input.component-spec]
     [quo2.components.keycard.component-spec]
     [quo2.components.links.link-preview.component-spec]
     [quo2.components.links.url-preview-list.component-spec]
