@@ -287,35 +287,18 @@
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
 
-(defn use-keyboard-visibility
-  []
-  (let [show-listener (atom nil)
-        hide-listener (atom nil)
-        shown? (atom nil)]
-    (rn/use-effect
-      (fn []
-        (reset! show-listener
-                (.addListener rn/keyboard "keyboardWillShow" #(reset! shown? true)))
-        (reset! hide-listener
-                (.addListener rn/keyboard "keyboardWillHide" #(reset! shown? false)))
-        (fn []
-          (.remove ^js @show-listener)
-          (.remove ^js @hide-listener))))
-    {:shown? shown?}))
-
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [insets (safe-area/get-insets)
-        scroll-y (reanimated/use-shared-value 0)
-        {:keys [keyboard-height]} (hooks/use-keyboard)
-        {keyboard-shown? :shown?} (use-keyboard-visibility)]
+  (let [insets                                   (safe-area/get-insets)
+        scroll-y                                 (reanimated/use-shared-value 0)
+        {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
-      (fn []
-        (when keyboard-shown?
-          (reanimated/set-shared-value scroll-y
-                                       (+ (reanimated/get-shared-value scroll-y)
-                                          keyboard-height))))
-      [keyboard-shown? keyboard-height])
+     (fn []
+       (when keyboard-shown
+         (reanimated/set-shared-value scroll-y
+                                      (+ (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))))
+     [keyboard-shown keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}
@@ -328,7 +311,7 @@
        :insets          insets
        :scroll-y        scroll-y
        :cover-bg-color  cover-bg-color
-       :keyboard-shown? keyboard-shown?}]
+       :keyboard-shown? keyboard-shown}]
 
      (when footer-comp
        (footer-comp {:insets insets}))]))
