@@ -116,7 +116,7 @@
              selected-album  (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
          (rn/use-effect
           (fn []
-            (rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
+            ;(rf/dispatch [:chat.ui/camera-roll-get-photos 20 nil selected-album])
             (if (seq selected-images)
               (reset! selected (vec (vals selected-images)))
               (reset! selected @temporary-selected)))

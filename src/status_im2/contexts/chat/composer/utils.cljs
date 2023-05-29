@@ -73,14 +73,14 @@
     height))
 
 (defn calc-max-height
-  [{:keys [images link-previews? reply edit]} window-height kb-height insets]
+  [{:keys [images reply edit]} window-height kb-height insets]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
                       constants/actions-container-height)
-        max-height (- max-height (calc-extra-content-height images link-previews? reply edit))]
+        max-height (- max-height (calc-extra-content-height nil nil reply edit))]
     max-height))
 
 (defn empty-input?
@@ -153,6 +153,7 @@
    :emoji-kb-extra-height       (atom nil)
    :saved-emoji-kb-extra-height (atom nil)
    :sending-images?             (atom false)
+   :sending-links?              (atom false)
    :record-reset-fn             (atom nil)
    :scroll-y                    (atom 0)
    :selection-event             (atom nil)

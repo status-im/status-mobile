@@ -61,18 +61,6 @@
     (when-not (string/blank? text)
       (rf/dispatch [:link-preview/unfurl-urls text]))))
 
-(defn images-effect
-  [{:keys [sending-images? input-ref]}
-   {:keys [container-opacity]}
-   images?]
-  (when images?
-    (reanimated/animate container-opacity 1))
-  (when (and (not @sending-images?) images? @input-ref)
-    (.focus ^js @input-ref)
-    (reset! sending-images? true))
-  (when-not images?
-    (reset! sending-images? false)))
-
 (defn audio-effect
   [{:keys [recording? gesture-enabled?]}
    {:keys [container-opacity]}
@@ -95,6 +83,7 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
+<<<<<<< HEAD
 (defn max-height-effect
   [{:keys [focused?]}
    {:keys [max-height]}
@@ -111,10 +100,12 @@
          (reanimated/set-shared-value saved-height new-height))))
    [max-height @focused?]))
 
+=======
+>>>>>>> 0d4305f02 (updates)
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
    {:keys [chat-input images audio] :as subs}]
-  (max-height-effect state dimensions animations)
+  ;(max-height-effect state dimensions animations)
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -122,7 +113,6 @@
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
-     (images-effect props animations images)
      (link-preview-effect state)
      (audio-effect state animations audio)
      (empty-effect state animations subs)
@@ -185,6 +175,46 @@
        (reset! text-value input-text)
        (rf/dispatch [:mention/on-change-text input-text])))
    [input-text]))
+
+(defn link-previews
+  [{:keys [sending-links?]}
+   {:keys [text-value maximized?]}
+   {:keys [height saved-height]}
+   {:keys [link-previews?]}]
+  (rn/use-effect
+    (fn []
+      (if-not @maximized?
+        (let [value (if link-previews? constants/links-container-height (if @sending-links? (- constants/links-container-height) 0))]
+          (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+          (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) value)))
+        (do
+          (let [curr-text @text-value]
+          (reset! text-value (str @text-value "\n"))
+          (js/setTimeout #(reset! text-value curr-text) 10))))
+      (reset! sending-links? link-previews?))
+    [link-previews?]))
+
+(defn images
+  [{:keys [sending-images? input-ref]}
+   {:keys [text-value maximized?]}
+   {:keys [container-opacity height saved-height]}
+   {:keys [images]}]
+  (rn/use-effect (fn []
+                   (when images
+                     (reanimated/animate container-opacity 1))
+                   (when (and (not @sending-images?) images @input-ref)
+                     (.focus ^js @input-ref))
+                   (if-not @maximized?
+                     (let [value (if (seq images) constants/images-container-height (if @sending-images? (- constants/images-container-height) 0))]
+                       (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+                       (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) value))
+                       )
+                     (do
+                       (let [curr-text @text-value]
+                         (reset! text-value (str @text-value "\n"))
+                         (js/setTimeout #(reset! text-value curr-text) 10))))
+                   (reset! sending-images? (boolean (seq images))))
+                 [(seq images)]))
 
 (defn did-mount
   [{:keys [selectable-input-ref input-ref selection-manager]}]

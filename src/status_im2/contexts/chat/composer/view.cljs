@@ -62,6 +62,8 @@
     (effects/reply props animations subs)
     (effects/update-input-mention props state subs)
     (effects/edit-mentions props state subs)
+    (effects/link-previews props state animations subs)
+    (effects/images props state animations subs)
     [:<>
      [sub-view/shell-button state animations subs]
      [mentions/view props state animations max-height cursor-pos
@@ -106,12 +108,12 @@
            :multiline                true
            :placeholder              (i18n/label :t/type-something)
            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-           :style                    (style/input-text props state)
+           :style                    (style/input-text props state subs)
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
-        [gradients/view props state animations show-bottom-gradient?]]
-       [link-preview/view]
-       [images/images-list]
+        [gradients/view props state animations show-bottom-gradient?]
+        [images/images-list]
+        [link-preview/view]]
        [actions/view props state animations window-height insets subs]]]]))
 
 (defn composer
