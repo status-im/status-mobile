@@ -1,53 +1,43 @@
 (ns quo2.components.drawers.action-drawers.component-spec
-  (:require ["@testing-library/react-native" :as rtl]
-            [quo2.components.drawers.action-drawers.view :as action-drawer]
-            [reagent.core :as reagent]))
+  (:require [quo2.components.drawers.action-drawers.view :as action-drawer]
+            [test-helpers.component :as h]))
 
-(defn render-action-drawer
-  ([options]
-   (rtl/render (reagent/as-element [action-drawer/action-drawer options]))))
+(h/describe "action drawer"
+  (h/test "default render"
+    (h/render [action-drawer/action-drawer
+               [[{:icon  :i/friend
+                  :label "a sample label"}]]])
+    (h/is-truthy (h/get-by-text "a sample label")))
 
-(js/global.test "action-drawer renders with elements label displaying"
-  (fn []
-    (render-action-drawer [[{:icon  :i/friend
-                             :label "a sample label"}]])
-    (-> (js/expect (rtl/screen.getByText "a sample label"))
-        (.toBeTruthy))))
+  (h/test "renders with elements sub-label displaying"
+    (h/render [action-drawer/action-drawer
+               [[{:icon      :i/friend
+                  :label     "a sample label"
+                  :sub-label "a sample sub label"}]]])
+    (h/is-truthy (h/get-by-text "a sample sub label")))
 
-(js/global.test "action-drawer renders with elements sub-label displaying"
-  (fn []
-    (render-action-drawer [[{:icon      :i/friend
-                             :label     "a sample label"
-                             :sub-label "a sample sub label"}]])
-    (-> (js/expect (rtl/screen.getByText "a sample sub label"))
-        (.toBeTruthy))))
+  (h/test "on click action works on element"
+    (let [event (js/jest.fn)]
+      (h/render [action-drawer/action-drawer
+                 [[{:icon     :i/friend
+                    :label    "a sample label"
+                    :on-press event}]]])
+      (h/fire-event :press (h/get-by-text "a sample label"))
+      (h/was-called event)))
 
-(js/global.test "action-drawer on click action works on element"
-  (let [event (js/jest.fn)]
-    (fn []
-      (render-action-drawer [[{:icon     :i/friend
-                               :label    "a sample label"
-                               :on-press event}]])
-      (rtl/fireEvent.press (rtl/screen.getByText "a sample label"))
-      (-> (js/expect event)
-          (.toHaveBeenCalled)))))
+  (h/test "renders two icons when set"
+    (h/render [action-drawer/action-drawer
+               [[{:icon                :i/friend
+                  :label               "a sample label"
+                  :right-icon          :i/friend
+                  :accessibility-label :first-element}]]])
+    (h/is-truthy (h/get-by-label-text "right-icon-for-action"))
+    (h/is-truthy (h/query-by-label-text "left-icon-for-action")))
 
-(js/global.test "action-drawer renders two icons when set"
-  (fn []
-    (render-action-drawer [[{:icon                :i/friend
-                             :label               "a sample label"
-                             :right-icon          :i/friend
-                             :accessibility-label :first-element}]])
-    (-> (js/expect (rtl/screen.getByLabelText "right-icon-for-action"))
-        (.toBeTruthy))
-    (-> (js/expect (rtl/screen.queryByLabelText "left-icon-for-action"))
-        (.toBeTruthy))))
-
-(js/global.test "action-drawer renders a divider when the add-divider? prop is true"
-  (fn []
-    (render-action-drawer [[{:icon                :i/friend
-                             :label               "a sample label"
-                             :add-divider?        true
-                             :accessibility-label :first-element}]])
-    (-> (js/expect (rtl/screen.getAllByLabelText "divider"))
-        (.toBeTruthy))))
+  (h/test "renders a divider when the add-divider? prop is true"
+    (h/render [action-drawer/action-drawer
+               [[{:icon                :i/friend
+                  :label               "a sample label"
+                  :add-divider?        true
+                  :accessibility-label :first-element}]]])
+    (h/is-truthy (h/get-all-by-label-text "divider"))))
