@@ -197,8 +197,8 @@
         new-accounts                  (conj accounts account)]
     (when account
       (rf/merge cofx
-                {:json-rpc/call [{:method     "accounts_saveAccounts"
-                                  :params     [[account]]
+                {:json-rpc/call [{:method     "accounts_saveAccount"
+                                  :params     [account]
                                   :on-success #(re-frame/dispatch [::wallet/restart])}]
                  :db            (-> db
                                     (assoc :multiaccount/accounts new-accounts)
@@ -293,8 +293,8 @@
                        color               (assoc :color color)
                        (not (nil? hidden)) (assoc :hidden hidden))
         new-accounts (replace {account new-account} accounts)]
-    {:json-rpc/call [{:method     "accounts_saveAccounts"
-                      :params     [[new-account]]
+    {:json-rpc/call [{:method     "accounts_saveAccount"
+                      :params     [new-account]
                       :on-success #()}]
      :db            (assoc db :multiaccount/accounts new-accounts)}))
 

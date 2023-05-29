@@ -130,6 +130,7 @@
 
 ;;Solid
 (def black "#000000")
+(def black-opa-0 (alpha black 0))
 (def onboarding-header-black "#000716")
 
 ;;;;Primary

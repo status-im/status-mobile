@@ -80,7 +80,7 @@
   [react/scroll-view
    {:horizontal true
     :deceleration-rate "fast"
-    :snap-to-alignment "left"
+    :snap-to-alignment "start"
     :shows-horizontal-scroll-indicator
     false
     :scroll-event-throttle 64

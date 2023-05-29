@@ -45,7 +45,7 @@
  :price
  :<- [:prices]
  (fn [prices [_ fsym tsym]]
-   (get-in prices [fsym tsym :price])))
+   (get-in prices [fsym tsym])))
 
 (re-frame/reg-sub
  :last-day
@@ -62,7 +62,7 @@
 (defn get-balance-total-value
   [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
-               (if-let [price (get-in prices [symbol currency :price])]
+               (if-let [price (get-in prices [symbol currency])]
                  (+ acc
                     (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
                                 ^js (money/crypto->fiat price)
@@ -194,7 +194,8 @@
 (defn update-value
   [prices currency]
   (fn [{:keys [symbol decimals amount] :as token}]
-    (let [price (get-in prices [symbol (-> currency :code keyword) :price])]
+    (let [currency-kw (-> currency :code keyword)
+          price       (get-in prices [symbol currency-kw])]
       (assoc token
              :price price
              :value (when (and amount price)

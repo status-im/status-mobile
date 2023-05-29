@@ -33,7 +33,7 @@
    (case stack-id
      :communities-stack [communities/home]
      :chats-stack       [chat/home]
-     :wallet-stack      [wallet.accounts/accounts-overview]
+     :wallet-stack      [wallet.accounts/accounts-overview-old]
      :browser-stack     [browser.stack/browser-stack])])
 
 (defn lazy-screen

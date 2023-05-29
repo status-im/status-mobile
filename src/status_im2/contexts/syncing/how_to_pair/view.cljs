@@ -49,7 +49,8 @@
      (i18n/label (:label value))]))
 
 (defn render-item
-  [i item]
+  [i list-item]
+  ^{:key i}
   [rn/view
    {:margin-vertical 6
     :style           style/numbered-list-item}
@@ -60,7 +61,10 @@
      {:size   :label
       :weight :medium
       :style  style/list-icon-text} i]]
-   (map #(render-element %) item)])
+   (map-indexed (fn [idx item]
+                  ^{:key idx}
+                  [render-element item])
+                list-item)])
 
 (defn render-list
   [{:keys [title image list]}]

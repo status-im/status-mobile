@@ -1,5 +1,6 @@
 (ns status-im2.common.bottom-sheet.styles
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [status-im.utils.platform :as platform]))
 
 (defn handle
   [override-theme]
@@ -30,7 +31,7 @@
 
 (def shell-bg
   {:position         :absolute
-   :background-color colors/white-opa-5
+   :background-color (if platform/ios? colors/white-opa-5 colors/neutral-100-opa-90)
    :left             0
    :right            0
    :top              0

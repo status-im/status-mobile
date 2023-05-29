@@ -44,7 +44,7 @@
   (let [text-params       {:weight :medium
                            :size   :paragraph-2
                            :style  (assoc text-style :justify-content :center)}
-        empty-photo?      (empty? photo)
+        empty-photo?      (nil? photo)
         avatar-size       :xxs
         avatar-outer-size (get-in user-avatar-style/sizes [avatar-size :outer])]
     [rn/view {:flex-direction :row}

@@ -12,7 +12,6 @@
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [react-native.hooks :as hooks]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.syncing.utils :as sync-utils]))
 
 (def code-valid-for-ms 120000)
@@ -32,11 +31,13 @@
                               :label               (i18n/label :t/how-to-scan)
                               :icon                :i/info
                               :icon-override-theme :dark
-                              :on-press            #(rf/dispatch [:open-modal :how-to-pair])}]}]])
+                              :on-press            #(rf/dispatch [:open-modal :how-to-pair
+                                                                  {:override-theme :dark}])}]}]])
 
 (defn f-use-interval
   [clock cleanup-clock delay]
-  (hooks/use-interval clock cleanup-clock delay))
+  (hooks/use-interval clock cleanup-clock delay)
+  nil)
 
 (defn view
   []
@@ -65,8 +66,8 @@
                         (reset! valid-for-ms code-valid-for-ms))]
 
     (fn []
-      [:f> f-use-interval clock cleanup-clock @delay]
-      [rn/view {:style (style/container-main (safe-area/get-top))}
+      [rn/view {:style style/container-main}
+       [:f> f-use-interval clock cleanup-clock @delay]
        [rn/scroll-view {}
         [navigation-bar]
         [rn/view {:style style/page-container}

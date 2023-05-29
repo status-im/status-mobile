@@ -384,8 +384,7 @@
     (fn [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
       (let [converted-value (* amount
                                (get-in prices
-                                       [(keyword display-symbol) (keyword (:code wallet-currency))
-                                        :price]))]
+                                       [(keyword display-symbol) (keyword (:code wallet-currency))]))]
         [quo/list-item
          {:size      :small
           :title     (if amount-error
@@ -412,8 +411,8 @@
                   show-error                                (reagent/atom false)]
     (let [converted-fee-value (* fee
                                  (get-in prices
-                                         [(keyword fee-display-symbol) (keyword (:code wallet-currency))
-                                          :price]))]
+                                         [(keyword fee-display-symbol)
+                                          (keyword (:code wallet-currency))]))]
       [quo/list-item
        {:size      :small
         :title     (if (and (not (or gas-price-loading? gas-loading?)) gas-error)
