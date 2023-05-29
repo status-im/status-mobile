@@ -64,7 +64,8 @@
 (defn input-text
   [{:keys [saved-emoji-kb-extra-height]}
    {:keys [focused? maximized?]}
-   {:keys [link-previews?]}]
+   {:keys [link-previews? images]}
+   max-height]
   (merge typography/paragraph-1
          {:color               (colors/theme-colors :black :white)
           :text-align-vertical :top
@@ -72,9 +73,14 @@
           :top                 0
           :left                0
           :right               (when (or focused? platform/ios?) 0)
+          :max-height          (- max-height
+                                  (if link-previews? constants/links-container-height 0)
+                                  (if (seq images) constants/images-container-height 0))
           ;:padding-bottom      (when @maximized? 0)
-          :padding-bottom   (if link-previews? constants/links-container-height (when @maximized? 0))
-          }))
+          ;:padding-bottom   (if (or link-previews? (seq images)) constants/links-container-height (when
+          ;@maximized? 0))
+          :padding-bottom      (when @maximized? 0)
+         }))
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style

@@ -14,16 +14,6 @@
   [val min-val max-val]
   (max min-val (min val max-val)))
 
-(defn get-min-height
-  [lines]
-  (if (> lines 1) constants/multiline-minimized-height constants/input-height))
-
-(defn calc-reopen-height
-  [text-value min-height content-height saved-height]
-  (if (empty? @text-value)
-    min-height
-    (Math/min @content-height (reanimated/get-shared-value saved-height))))
-
 (defn update-height?
   [content-size height max-height maximized?]
   (when-not @maximized?
@@ -64,23 +54,43 @@
   [height]
   (Math/floor (/ height constants/line-height)))
 
-(defn calc-extra-content-height
-  [images? link-previews? reply? edit?]
-  (let [height (if images? constants/images-container-height 0)
-        height (if link-previews? (+ height constants/links-container-height) height)
-        height (if reply? (+ height constants/reply-container-height) height)
+(defn calc-top-content-height
+  [reply? edit?]
+  (let [height (if reply? constants/reply-container-height 0)
         height (if edit? (+ height constants/edit-container-height) height)]
     height))
 
+(defn calc-bottom-content-height
+  [images link-previews?]
+  (let [height (if (seq images) constants/images-container-height 0)
+        height (if link-previews? (+ height constants/links-container-height) height)]
+    height))
+
+(defn calc-reopen-height
+  [text-value min-height content-height saved-height images link-previews?]
+  (if (empty? @text-value)
+    min-height
+    (let [bottom-content-height (calc-bottom-content-height images link-previews?)
+          input-height          (Math/min @content-height (reanimated/get-shared-value saved-height))]
+      (+ bottom-content-height input-height))))
+
+(defn get-min-height
+  [lines images link-previews?]
+  (let [input-height          (if (> lines 1)
+                                constants/multiline-minimized-height
+                                constants/input-height)
+        bottom-content-height (calc-bottom-content-height images link-previews?)]
+    (+ input-height bottom-content-height)))
+
 (defn calc-max-height
-  [{:keys [images reply edit]} window-height kb-height insets]
+  [{:keys [reply edit]} window-height kb-height insets]
   (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
         max-height (- window-height
                       margin-top
                       kb-height
                       constants/bar-container-height
                       constants/actions-container-height)
-        max-height (- max-height (calc-extra-content-height nil nil reply edit))]
+        max-height (- max-height (calc-top-content-height reply edit))]
     max-height))
 
 (defn empty-input?
@@ -126,10 +136,10 @@
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
-   {:keys [insets curr-height window-height keyboard-height images link-previews? reply edit]}]
+   {:keys [insets curr-height window-height keyboard-height reply edit]}]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
         base             (+ base (- curr-height constants/input-height))
-        base             (+ base (calc-extra-content-height images link-previews? reply edit))
+        base             (+ base (calc-top-content-height reply edit))
         view-height      (- window-height keyboard-height (:top insets))
         container-height (bounded-val
                           (* (/ constants/mentions-max-height 4) size)

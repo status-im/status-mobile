@@ -15,10 +15,12 @@
 (defn focus
   [{:keys [input-ref] :as props}
    {:keys [text-value focused? lock-selection? saved-cursor-position gradient-z-index]}
-   {:keys [height saved-height last-height opacity background-y gradient-opacity container-opacity] :as animations}
+   {:keys [height saved-height last-height opacity background-y gradient-opacity container-opacity]
+    :as   animations}
    {:keys [max-height] :as dimensions}]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
+  (println "h3")
   (reanimated/animate height (reanimated/get-shared-value last-height))
   (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
   (reanimated/animate container-opacity 1)
@@ -42,8 +44,14 @@
    {:keys [images link-previews? reply]}]
   (when-not @recording?
     (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
-          min-height    (utils/get-min-height lines)
-          reopen-height (utils/calc-reopen-height text-value min-height content-height saved-height)]
+          min-height    (utils/get-min-height lines images link-previews?)
+          reopen-height (utils/calc-reopen-height text-value
+                                                  min-height
+                                                  content-height
+                                                  saved-height
+                                                  images
+                                                  link-previews?)]
+      (println "mm" min-height)
       (reset! focused? false)
       (rf/dispatch [:chat.ui/set-input-focused false])
       (reanimated/set-shared-value last-height reopen-height)
@@ -65,6 +73,7 @@
   [event
    {:keys [maximized? lock-layout? text-value]}
    {:keys [height saved-height opacity background-y]}
+   {:keys [images link-previews?]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
@@ -74,9 +83,12 @@
           content-size (if (or (= lines 1) (empty? @text-value))
                          constants/input-height
                          (if (= lines 2) constants/multiline-minimized-height content-size))
-          new-height   (utils/bounded-val content-size constants/input-height max-height)]
+          new-height   (utils/bounded-val content-size constants/input-height max-height)
+          new-height   (if (seq images) (+ new-height constants/images-container-height) new-height)
+          new-height   (if link-previews? (+ new-height constants/links-container-height) new-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
+        (println "h5")
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
