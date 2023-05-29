@@ -138,7 +138,11 @@
                                                     (alert/show-popup
                                                      (i18n/label :t/audio-recorder-error)
                                                      (i18n/label
-                                                      :t/audio-recorder-permissions-error)))
+                                                      :t/audio-recorder-permissions-error)
+                                                     nil
+                                                     {:text (i18n/label :t/settings)
+                                                      :accessibility-label :settings-button
+                                                      :onPress (fn [] (permissions/open-settings))}))
                                                   50)}]))}]]))
 
 
