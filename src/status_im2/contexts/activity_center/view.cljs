@@ -38,7 +38,7 @@
   []
   (let [unread-count (rf/sub [:activity-center/unread-count])]
     [quo/action-drawer
-     [[{:icon           :i/check
+     [[{:icon           :i/mark-as-read
         :override-theme :dark
         :label          (i18n/label :t/mark-all-notifications-as-read)
         :disabled?      (zero? unread-count)
