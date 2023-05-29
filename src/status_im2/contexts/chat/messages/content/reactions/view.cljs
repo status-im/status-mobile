@@ -39,7 +39,7 @@
 
 (defn message-reactions-row
   [{:keys [message-id chat-id]} user-message-content]
-  (let [reactions                   (rf/sub [:chats/message-reactions message-id chat-id])]
+  (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
        [rn/view

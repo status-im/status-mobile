@@ -68,7 +68,8 @@
   [reactions-order]
   (let [{:keys [reaction-authors-list
                 selected-reaction]} (rf/sub [:chat/reactions-authors])
-        selected-tab (reagent/atom (or selected-reaction (first (keys reaction-authors-list))))]
+        selected-tab                (reagent/atom (or selected-reaction
+                                                      (first (keys reaction-authors-list))))]
     (fn []
       [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
 
