@@ -53,7 +53,8 @@
      :component shell/shell-stack}
 
     {:name      :chat
-     :options   {:insets {:top? true}}
+     :options   {:insets     {:top? true}
+                 :popGesture false}
      :component chat/chat}
 
     {:name      :start-a-new-chat
