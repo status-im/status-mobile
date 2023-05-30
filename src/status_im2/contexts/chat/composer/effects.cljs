@@ -83,9 +83,10 @@
     (reanimated/animate container-opacity 1)))
 
 (defn empty-effect
-  [{:keys [container-opacity]}
+  [{:keys [focused?]}
+   {:keys [container-opacity]}
    {:keys [input-text images link-previews? reply audio]}]
-  (when (utils/empty-input? input-text images link-previews? reply audio)
+  (when (and (not @focused?) (utils/empty-input? input-text images link-previews? reply audio))
     (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
 
 (defn component-will-unmount
@@ -102,7 +103,7 @@
    (fn []
      ;; Some subscriptions can arrive after the composer if focused (esp. link
      ;; previews), so we need to react to changes in `max-height` outside of the
-     ;; `on-focus` handler
+     ;; `on-focus` handler.
      (when @focused?
        (let [new-height (min max-height (reanimated/get-shared-value last-height))]
          (reanimated/set-shared-value last-height new-height)
@@ -124,7 +125,7 @@
      (images-effect props animations images)
      (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect animations subs)
+     (empty-effect state animations subs)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))
