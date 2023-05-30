@@ -34,7 +34,7 @@
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:height height}
                                                    {:margin-horizontal -20
-                                                    :z-index 1})}
+                                                    :z-index           1})}
      [gesture/flat-list
       {:key-fn                            first
        :render-fn                         image

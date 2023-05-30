@@ -61,17 +61,10 @@
     :i/arrow-up]])
 
 (defn send-button
-<<<<<<< HEAD
-  [state animations window-height images?]
-  (let [btn-opacity (reanimated/use-shared-value 0)
-        z-index     (reagent/atom 0)]
-    [:f> f-send-button state animations window-height images? btn-opacity z-index]))
-=======
   [props {:keys [text-value] :as state} animations window-height images?]
   (let [btn-opacity (reanimated/use-shared-value 0)
         z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
     [:f> f-send-button props state animations window-height images? btn-opacity z-index]))
->>>>>>> d746d72bf (updates)
 
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
