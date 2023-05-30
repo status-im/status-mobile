@@ -5,7 +5,6 @@
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
-    [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
@@ -76,10 +75,6 @@
     {:name      :photo-selector
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
-
-    {:name      :album-selector
-     :options   {:sheet? true}
-     :component album-selector/album-selector}
 
     {:name      :new-contact
      :options   {:sheet? true}
