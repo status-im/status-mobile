@@ -88,7 +88,8 @@
                                              (rf/dispatch [:chat.ui/set-recording false]))
        :on-reviewing-audio                 (fn [file]
                                              (rf/dispatch [:chat.ui/set-recording false])
-                                             (rf/dispatch [:chat.ui/set-input-audio file]))
+                                             (rf/dispatch [:chat.ui/set-input-audio file])
+                                             (rf/dispatch [:dismiss-keyboard]))
        :on-send                            (fn [{:keys [file-path duration]}]
                                              (rf/dispatch [:chat.ui/set-recording false])
                                              (reset! recording? false)

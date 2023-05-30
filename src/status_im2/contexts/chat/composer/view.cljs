@@ -81,7 +81,8 @@
        [edit/view state]
        [reanimated/touchable-opacity
         {:active-opacity      1
-         :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+         :on-press            (when (and @(:input-ref props) (not (:audio subs)))
+                                #(.focus ^js @(:input-ref props)))
          :style               (style/input-container (:height animations) max-height)
          :accessibility-label :message-input-container}
         [rn/selectable-text-input
