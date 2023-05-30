@@ -1,0 +1,70 @@
+(ns status-im2.contexts.quo-preview.settings.settings-list
+  (:require [quo2.components.settings.settings-list.view :as quo]
+            [react-native.core :as rn]
+            [status-im2.common.resources :as resources]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
+
+(def descriptor
+  [{:label "Account name:"
+    :key   :title
+    :type  :text}
+   {:label "Chevron:"
+    :key   :chevron?
+    :type  :boolean}
+   {:label "Badge:"
+    :key   :badge?
+    :type  :boolean}
+   {:label "Toggle:"
+    :key   :toggle-props
+    :type  :boolean}
+   {:label "Communities"
+    :key   :communities-props
+    :type  :boolean}
+   {:label "Button"
+    :key   :button-props
+    :type  :boolean
+   }])
+
+(defn get-mock-data
+  [data]
+  (when (:toggle-props data) (js/console.warn data))
+  (merge
+   data
+   {:toggle-props (when (:toggle-props data)
+                    {:checked?  true
+                     :on-change (fn [new-value] (js/alert new-value))})
+    :button-props (when (:button-props data)
+                    {:title "Button" :on-press (fn [] (js/alert "Button pressed"))})
+    :communities-props
+    (when (:communities-props data)
+      {:data
+       [{:source (resources/mock-images :rarible)}
+        {:source (resources/mock-images :decentraland)}
+        {:source (resources/mock-images :coinbase)}]})}))
+
+(defn cool-preview
+  []
+  (let [state (reagent/atom {:title               "Account"
+                             :accessibility-label :settings-list-item
+                             :left-icon           :browser-context
+                             :chevron?            true
+                             :on-press            (fn [] (js/alert "Settings list item pressed"))})]
+    (fn []
+      [rn/view
+       {:margin-bottom 50}
+       [preview/customizer state descriptor]
+       [rn/view
+        {:padding-vertical   100
+         :padding-horizontal 40
+         :align-items        :center}
+        [quo/settings-list (get-mock-data @state)]]])))
+
+(defn preview-settings-list
+  []
+  [rn/view {:style {:flex 1}}
+   [rn/flat-list
+    {:flex                         1
+     :keyboard-should-persist-taps :always
+     :header                       [cool-preview]
+     :key-fn                       str}]])
