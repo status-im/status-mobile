@@ -185,8 +185,7 @@
 
 (defn f-view
   [{:keys [title show-bottom-view? background]}]
-  (let [view-id                   (rf/sub [:view-id])
-        insets                    (safe-area/get-insets)
+  (let [insets                    (safe-area/get-insets)
         active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
         request-camera-permission (fn []
@@ -202,7 +201,8 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [camera-ref                       (atom nil)
+      (let [view-id                          (rf/sub [:view-id])
+            camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
             user-in-syncing-progress-screen? (= view-id :syncing-progress)
             on-read-code                     (fn [data]
