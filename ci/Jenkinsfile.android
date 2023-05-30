@@ -40,9 +40,6 @@ pipeline {
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
-    /* coverage report identification */
-    COVERALLS_SERVICE_NAME = "jenkins"
-    COVERALLS_SERVICE_JOB_ID = "${JOB_NAME}#${BUILD_NUMBER}"
   }
 
   stages {
