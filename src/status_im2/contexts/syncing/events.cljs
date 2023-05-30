@@ -24,6 +24,11 @@
   [{:keys [db]} role]
   {:db (assoc-in db [:syncing :role] role)})
 
+(rf/defn local-pairing-clear-states
+  {:events [:syncing/clear-states]}
+  [{:keys [db]} role]
+  {:db (dissoc db :syncing)})
+
 (defn- get-default-node-config
   [installation-id]
   (let [db {:networks/current-network config/default-network
