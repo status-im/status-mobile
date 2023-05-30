@@ -43,9 +43,17 @@
       :size   :paragraph-2}
      (i18n/label-pluralize seed-phrase-count :t/words-n)]]])
 
+(defn- clean-seed-phrase [seed-phrase]
+  (-> seed-phrase
+      (string/lower-case)
+      (string/replace #", " " ")
+      (string/replace #"," " ")
+      (string/replace #"\s+" " ")
+      (string/trim)))
+
 (defn- recovery-form
   [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
-           on-invalid-seed-phrase keyboard-shown?]}]
+           keyboard-shown? on-submit]}]
   (let [button-disabled? (or error-state?
                              (not (constants/seed-phrase-valid-length word-count))
                              (not all-words-valid?))]
@@ -67,9 +75,7 @@
      [quo/button
       {:style    (style/continue-button keyboard-shown?)
        :disabled button-disabled?
-       :on-press #(rf/dispatch [:onboarding-2/seed-phrase-entered
-                                (security/mask-data seed-phrase)
-                                on-invalid-seed-phrase])}
+       :on-press on-submit}
       (i18n/label :t/continue)]]))
 
 (defn keyboard-suggestions
@@ -93,7 +99,13 @@
                      on-change-seed-phrase   (fn [new-phrase]
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase (string/lower-case new-phrase)))]
+                                               (reset! seed-phrase (string/lower-case new-phrase)))
+
+                     on-submit               (fn []
+                                               (swap! seed-phrase clean-seed-phrase)
+                                               (rf/dispatch [:onboarding-2/seed-phrase-entered
+                                                             (security/mask-data @seed-phrase)
+                                                             set-invalid-seed-phrase]))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -122,13 +134,13 @@
                                      :else                 (i18n/label :t/seed-phrase-info))]
       [:<>
        [recovery-form
-        {:seed-phrase            @seed-phrase
-         :error-state?           (= suggestions-state :error)
-         :all-words-valid?       all-words-valid?
-         :on-change-seed-phrase  on-change-seed-phrase
-         :word-count             word-count
-         :on-invalid-seed-phrase set-invalid-seed-phrase
-         :keyboard-shown?        @keyboard-shown?}]
+        {:seed-phrase           @seed-phrase
+         :error-state?          (= suggestions-state :error)
+         :all-words-valid?      all-words-valid?
+         :on-change-seed-phrase on-change-seed-phrase
+         :word-count            word-count
+         :on-submit             on-submit
+         :keyboard-shown?       @keyboard-shown?}]
        (when @keyboard-shown?
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
