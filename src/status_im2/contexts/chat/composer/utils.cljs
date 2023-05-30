@@ -67,12 +67,13 @@
     height))
 
 (defn calc-reopen-height
-  [text-value min-height content-height saved-height images link-previews?]
+  [text-value min-height max-height content-height saved-height images link-previews?]
   (if (empty? @text-value)
     min-height
     (let [bottom-content-height (calc-bottom-content-height images link-previews?)
-          input-height          (Math/min @content-height (reanimated/get-shared-value saved-height))]
-      (+ bottom-content-height input-height))))
+          input-height          (min (+ @content-height bottom-content-height)
+                                     (reanimated/get-shared-value saved-height))]
+      (min max-height input-height))))
 
 (defn get-min-height
   [lines images link-previews?]
@@ -202,9 +203,10 @@
 (defn init-animations
   [{:keys [input-text images link-previews? reply audio]}
    lines content-height max-height opacity background-y]
-  (let [initial-height (if (> lines 1)
-                         constants/multiline-minimized-height
-                         constants/input-height)]
+  (let [initial-height        (if (> lines 1)
+                                constants/multiline-minimized-height
+                                constants/input-height)
+        bottom-content-height 0]
     {:gradient-opacity  (reanimated/use-shared-value 0)
      :container-opacity (reanimated/use-shared-value
                          (if (empty-input?
@@ -221,7 +223,7 @@
                          initial-height)
      :last-height       (reanimated/use-shared-value
                          (bounded-val
-                          @content-height
+                          (+ @content-height bottom-content-height)
                           constants/input-height
                           max-height))
      :opacity           opacity

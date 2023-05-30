@@ -29,7 +29,6 @@
    {:keys [max-height]}
    {:keys [input-content-height]}]
   (when (or @maximized? (>= input-content-height max-height))
-    (println "h0")
     (reanimated/animate height max-height)
     (reanimated/set-shared-value saved-height max-height)
     (reanimated/set-shared-value last-height max-height)))
@@ -180,19 +179,21 @@
 (defn link-previews
   [{:keys [sending-links?]}
    {:keys [text-value maximized?]}
-   {:keys [height saved-height]}
+   {:keys [height saved-height last-height]}
    {:keys [link-previews?]}]
   (rn/use-effect
    (fn []
      (if-not @maximized?
        (let [value (if link-previews?
                      constants/links-container-height
-                     (if @sending-links? (- constants/links-container-height) 0))]
-         (println "h1")
-         (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
-         (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) value)))
+                     (- constants/links-container-height))]
+         (when (not= @sending-links? link-previews?)
+           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value saved-height
+                                        (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value last-height
+                                        (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
-         (println "h0")
          (reset! text-value (str @text-value " "))
          (js/setTimeout #(reset! text-value curr-text) 10)))
      (reset! sending-links? link-previews?))
@@ -201,23 +202,25 @@
 (defn images
   [{:keys [sending-images? input-ref]}
    {:keys [text-value maximized?]}
-   {:keys [container-opacity height saved-height]}
+   {:keys [container-opacity height saved-height last-height]}
    {:keys [images]}]
   (rn/use-effect
    (fn []
      (when images
        (reanimated/animate container-opacity 1))
-     (when (and (not @sending-images?) images @input-ref)
+     (when (and (not @sending-images?) (seq images) @input-ref)
        (.focus ^js @input-ref))
      (if-not @maximized?
        (let [value (if (seq images)
                      constants/images-container-height
-                     (if @sending-images? (- constants/images-container-height) 0))]
-         (println "h2")
-         (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
-         (reanimated/set-shared-value saved-height (+ (reanimated/get-shared-value saved-height) value)))
+                     (- constants/images-container-height))]
+         (when (not= @sending-images? (boolean (seq images)))
+           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value saved-height
+                                        (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value last-height
+                                        (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
-         (println "h1")
          (reset! text-value (str @text-value " "))
          (js/setTimeout #(reset! text-value curr-text) 10)))
      (reset! sending-images? (boolean (seq images))))

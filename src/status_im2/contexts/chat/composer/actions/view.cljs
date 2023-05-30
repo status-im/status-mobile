@@ -14,7 +14,8 @@
     [status-im2.contexts.chat.composer.actions.style :as style]))
 
 (defn send-message
-  [{:keys [text-value focused? maximized?]}
+  [{:keys [sending-images? sending-links?]}
+   {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height]
   (reanimated/animate height constants/input-height)
@@ -32,10 +33,12 @@
   (rf/dispatch [:chat.ui/set-chat-input-text nil])
   (reset! maximized? false)
   (reset! text-value "")
+  (reset! sending-links? false)
+  (reset! sending-images? false)
   (messages.list/scroll-to-bottom))
 
 (defn f-send-button
-  [{:keys [text-value] :as state}
+  [props {:keys [text-value] :as state}
    animations window-height images?
    btn-opacity z-index]
   (rn/use-effect (fn []
@@ -54,14 +57,21 @@
     {:icon                true
      :size                32
      :accessibility-label :send-message-button
-     :on-press            #(send-message state animations window-height)}
+     :on-press            #(send-message props state animations window-height)}
     :i/arrow-up]])
 
 (defn send-button
+<<<<<<< HEAD
   [state animations window-height images?]
   (let [btn-opacity (reanimated/use-shared-value 0)
         z-index     (reagent/atom 0)]
     [:f> f-send-button state animations window-height images? btn-opacity z-index]))
+=======
+  [props {:keys [text-value] :as state} animations window-height images?]
+  (let [btn-opacity (reanimated/use-shared-value 0)
+        z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
+    [:f> f-send-button props state animations window-height images? btn-opacity z-index]))
+>>>>>>> d746d72bf (updates)
 
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
@@ -197,6 +207,6 @@
     [image-button props animations insets]
     [reaction-button]
     [format-button]]
-   [:f> send-button state animations window-height images]
+   [:f> send-button props state animations window-height images]
    (when (and (not edit) (not images))
      [audio-button props state animations])])

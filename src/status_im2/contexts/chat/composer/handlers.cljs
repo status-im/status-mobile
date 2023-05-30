@@ -20,7 +20,6 @@
    {:keys [max-height] :as dimensions}]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
-  (println "h3")
   (reanimated/animate height (reanimated/get-shared-value last-height))
   (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
   (reanimated/animate container-opacity 1)
@@ -47,11 +46,11 @@
           min-height    (utils/get-min-height lines images link-previews?)
           reopen-height (utils/calc-reopen-height text-value
                                                   min-height
+                                                  max-height
                                                   content-height
                                                   saved-height
                                                   images
                                                   link-previews?)]
-      (println "mm" min-height)
       (reset! focused? false)
       (rf/dispatch [:chat.ui/set-input-focused false])
       (reanimated/set-shared-value last-height reopen-height)
@@ -77,18 +76,17 @@
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
-    (let [event-size   (oops/oget event "nativeEvent.contentSize.height")
-          content-size (+ event-size constants/extra-content-offset)
-          lines        (utils/calc-lines event-size)
-          content-size (if (or (= lines 1) (empty? @text-value))
-                         constants/input-height
-                         (if (= lines 2) constants/multiline-minimized-height content-size))
-          new-height   (utils/bounded-val content-size constants/input-height max-height)
-          new-height   (if (seq images) (+ new-height constants/images-container-height) new-height)
-          new-height   (if link-previews? (+ new-height constants/links-container-height) new-height)]
+    (let [event-size            (oops/oget event "nativeEvent.contentSize.height")
+          content-size          (+ event-size constants/extra-content-offset)
+          lines                 (utils/calc-lines event-size)
+          content-size          (if (or (= lines 1) (empty? @text-value))
+                                  constants/input-height
+                                  (if (= lines 2) constants/multiline-minimized-height content-size))
+          new-height            (utils/bounded-val content-size constants/input-height max-height)
+          bottom-content-height (utils/calc-bottom-content-height images link-previews?)
+          new-height            (min (+ new-height bottom-content-height) max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
-        (println "h5")
         (reanimated/animate height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
@@ -101,7 +99,7 @@
         (when (= (reanimated/get-shared-value opacity) 1)
           (reanimated/animate opacity 0)
           (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)))
-      (rf/dispatch [:chat.ui/set-input-content-height new-height])
+      (rf/dispatch [:chat.ui/set-input-content-height content-size])
       (reset! lock-layout? (> lines 2)))))
 
 (defn scroll
