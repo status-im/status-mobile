@@ -76,11 +76,7 @@
           :max-height          (- max-height
                                   (if link-previews? constants/links-container-height 0)
                                   (if (seq images) constants/images-container-height 0))
-          ;:padding-bottom      (when @maximized? 0)
-          ;:padding-bottom   (if (or link-previews? (seq images)) constants/links-container-height (when
-          ;@maximized? 0))
-          :padding-bottom      (when @maximized? 0)
-         }))
+          :padding-bottom      (when @maximized? 0)}))
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style

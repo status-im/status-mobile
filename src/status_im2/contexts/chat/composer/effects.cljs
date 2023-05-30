@@ -104,8 +104,7 @@
 >>>>>>> 0d4305f02 (updates)
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input images audio] :as subs}]
-  ;(max-height-effect state dimensions animations)
+   {:keys [chat-input audio] :as subs}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
