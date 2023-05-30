@@ -201,10 +201,11 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [view-id                          (rf/sub [:view-id])
-            camera-ref                       (atom nil)
+      (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
-            user-in-syncing-progress-screen? (= view-id :syncing-progress)
+            ;; The below check is to prevent scanning of any QR code
+            ;; when the user is in syncing progress screen
+            user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
             on-read-code                     (fn [data]
                                                (when (and (not @read-qr-once?)
                                                           (not user-in-syncing-progress-screen?))
