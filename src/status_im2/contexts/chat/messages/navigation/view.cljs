@@ -59,9 +59,10 @@
      [rn/view {:style {:display :flex}}
       [rn/view {:style (style/header-container status-bar-height)}
        [rn/touchable-opacity
-        {:active-opacity 1
-         :on-press       #(rf/dispatch [:navigate-back])
-         :style          (style/button-container {:margin-left 20})}
+        {:active-opacity      1
+         :on-press            #(rf/dispatch [:navigate-back])
+         :accessibility-label :back-button
+         :style               (style/button-container {:margin-left 20})}
         [quo/icon :i/arrow-left
          {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
        [reanimated/view
@@ -90,8 +91,9 @@
               :style           (style/header-online)}
              (i18n/label :t/online)])]]]
        [rn/touchable-opacity
-        {:active-opacity 1
-         :style          (style/button-container {:margin-right 20})}
+        {:active-opacity      1
+         :style               (style/button-container {:margin-right 20})
+         :accessibility-label :options-button}
         [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
 
       [reanimated/view
