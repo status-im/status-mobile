@@ -74,31 +74,28 @@
                                                 constants/local-pairing-event-received-account)
                                              (= action
                                                 constants/local-pairing-action-pairing-account)
-                                             (boolean (:account data)))
-        updated-account-data            (when received-account?
-                                          (-> (:account data)
-                                              (assoc :password (:password data))
-                                              (assoc :hashed-password? true)))
+                                             (and (contains? data :account) (contains? data :password)))
+        multiaccount-data               (when received-account? (merge (:account data) (:password data)))
         navigate-to-syncing-devices?    (and connection-success? receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
                   connection-success?
-                  (assoc-in [:syncing :pairing-in-progress?] :connected)
+                  (assoc-in [:syncing :pairing-status] :connected)
 
                   received-account?
-                  (assoc :multiaccounts/login updated-account-data)
+                  (assoc-in [:syncing :multiaccount] multiaccount-data)
 
                   error-on-pairing?
-                  (assoc-in [:syncing :pairing-in-progress?] :error)
+                  (assoc-in [:syncing :pairing-status] :error)
 
                   completed-pairing?
-                  (assoc-in [:syncing :pairing-in-progress?] :completed))}
+                  (assoc-in [:syncing :pairing-status] :completed))}
            (when (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
              {:dispatch [:navigate-to :syncing-progress]})
            (when (and completed-pairing? sender?)
              {:dispatch [:syncing/clear-states]})
            (when (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login.ui/password-input-submitted]}))))
+             {:dispatch [:syncing/receiver-pairing-completed]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}
