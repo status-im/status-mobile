@@ -40,7 +40,8 @@
      (fn []
        (cameraroll/get-photos
         {:first      num
-         :assetType  (or end-cursor "Photos")
+         :after      end-cursor
+         :assetType  "Photos"
          :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
          :groupName  (when (not= album (i18n/label :t/recent)) album)
          :include    (clj->js ["imageSize"])}
@@ -124,8 +125,9 @@
 
 (rf/defn get-photos-for-selected-album
   {:events [:photo-selector/get-photos-for-selected-album]}
-  [{:keys [db]} num end-cursor]
-  {:camera-roll-request-permissions-and-get-photos [num end-cursor
+  [{:keys [db]} end-cursor]
+  (println "(:camera-roll/selected-album db)" (:camera-roll/selected-album db))
+  {:camera-roll-request-permissions-and-get-photos [21 end-cursor
                                                     (or (:camera-roll/selected-album db)
                                                         (i18n/label :t/recent))]})
 

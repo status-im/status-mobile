@@ -33,8 +33,8 @@
   (close))
 
 (defn confirm-button
-  [selected-images close]
-  (when (seq selected-images)
+  [selected-images sending-image close]
+  (when (not= selected-images sending-image)
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
@@ -87,10 +87,11 @@
 
 (defn photo-selector
   [{:keys [scroll-enabled on-scroll close] :as sheet}]
-  (rf/dispatch [:photo-selector/get-photos-for-selected-album 20])
+  (rf/dispatch [:photo-selector/get-photos-for-selected-album])
   (rf/dispatch [:photo-selector/camera-roll-get-albums])
   (let [album?          (reagent/atom false)
-        selected-images (reagent/atom (into [] (vals (rf/sub [:chats/sending-image]))))
+        sending-image   (into [] (vals (rf/sub [:chats/sending-image])))
+        selected-images (reagent/atom sending-image)
         window-width    (:width (rn/get-window))]
     (fn []
       (let [camera-roll-photos (rf/sub [:camera-roll/photos])
@@ -117,9 +118,10 @@
                                         :padding-top    64}
               :on-scroll               on-scroll
               :scroll-enabled          @scroll-enabled
-              :on-end-reached          #(when (and (not loading?) has-next-page?)
-                                          (rf/dispatch [:photo-selector/camera-roll-loading-more
-                                                        true])
-                                          (rf/dispatch [:photo-selector/get-photos-for-selected-album 20
-                                                        end-cursor]))}]
-            [confirm-button @selected-images close]])]))))
+              :on-end-reached          (fn []
+                                         (println "END" loading? has-next-page?)
+                                         (when (and (not loading?) has-next-page?)
+                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])
+                                           (rf/dispatch [:photo-selector/get-photos-for-selected-album
+                                                         end-cursor])))}]
+            [confirm-button @selected-images sending-image close]])]))))

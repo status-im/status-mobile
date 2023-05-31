@@ -14,7 +14,7 @@
     [rn/touchable-opacity
      {:on-press            (fn []
                              (rf/dispatch [:chat.ui/camera-roll-select-album title])
-                             (rf/dispatch [:photo-selector/get-photos-for-selected-album 20])
+                             (rf/dispatch [:photo-selector/get-photos-for-selected-album])
                              (reset! album? false))
       :style               (style/album-container selected?)
       :accessibility-label (str "album-" index)}
@@ -28,7 +28,6 @@
         :number-of-lines 1
         :style           {:margin-right 50}}
        title]
-
       [quo/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
