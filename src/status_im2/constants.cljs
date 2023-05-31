@@ -332,4 +332,5 @@
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
 
-(def ^:const onboarding-modal-animation-duration 10000)
+(def ^:const onboarding-modal-animation-duration 300)
+(def ^:const onboarding-modal-animation-delay 400)

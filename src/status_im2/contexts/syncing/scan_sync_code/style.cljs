@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)
 
@@ -85,15 +86,17 @@
    :align-items     :center})
 
 (defn bottom-container
-  [padding-bottom]
-  {:z-index                 6
-   :padding-top             12
-   :padding-bottom          padding-bottom
-   :background-color        colors/white-opa-5
-   :border-top-left-radius  20
-   :border-top-right-radius 20
-   :align-items             :center
-   :justify-content         :center})
+  [translate-y padding-bottom]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y translate-y}]}
+   {:z-index                 6
+    :padding-top             12
+    :padding-bottom          padding-bottom
+    :background-color        colors/white-opa-5
+    :border-top-left-radius  20
+    :border-top-right-radius 20
+    :align-items             :center
+    :justify-content         :center}))
 
 (def bottom-text
   {:color          colors/white

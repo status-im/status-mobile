@@ -3,7 +3,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.constants :as constants]))
 
 (def descriptor
   [{:label "Top Heading"
@@ -41,12 +42,13 @@
    {:height           300
     :background-color (colors/theme-colors colors/white colors/neutral-95)}
    [quo/drawer-buttons
-    {:container-style {:margin-left  40
-                       :margin-right 24}
-     :top-card        {:on-press #(js/alert "top card clicked")
-                       :heading  (:top-heading @state)}
-     :bottom-card     {:on-press #(js/alert "bottom card clicked")
-                       :heading  (:bottom-heading @state)}}
+    {:container-style     {:margin-left  40
+                           :margin-right 24}
+     :top-card            {:on-press #(js/alert "top card clicked")
+                           :heading  (:top-heading @state)}
+     :bottom-card         {:on-press #(js/alert "bottom card clicked")
+                           :heading  (:bottom-heading @state)}
+     :animations-duration constants/onboarding-modal-animation-duration}
     (:top-sub-heading @state) [text-with-link]]])
 
 (defn cool-preview

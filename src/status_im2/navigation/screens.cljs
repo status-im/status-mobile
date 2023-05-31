@@ -39,27 +39,18 @@
     [status-im2.constants :as constants]))
 
 (def sign-in-animations
-  {:showModal {:enter {:enabled       true
-                       :interpolation {:type "linear"}
-                       :translationY  {:from     (- (:height (rn/get-window)) (if platform/ios? 318 296))
-                                       :to       0
-                                       :duration constants/onboarding-modal-animation-duration}
-                       :alpha         {:from     1
-                                       :to       1
-                                       :duration constants/onboarding-modal-animation-duration}}
-               #_#_:exit
-                 {:translationY {:from     0
+  {:showModal    {:translationY {:from     (- (:height (rn/get-window)) (if platform/ios? 318 296))
                                  :to       0
-                                 :duration 500}
+                                 :duration constants/onboarding-modal-animation-duration}
                   :alpha        {:from     1
-                                 ;:to       0
-                                 :duration 500}}
-               ;:elementTransitions [{:id           "card-id"
-               ;                      :translationY {:to       (- (- (:height (rn/get-window)) 216))
-               ;                                     :duration 5000}
-               ;                      :alpha        {:to       0
-               ;                                     :duration 5000}}]
-              }})
+                                 :to       1
+                                 :duration 0}}
+   :dismissModal {:translationY {:from     0
+                                 :to       (- (:height (rn/get-window)) (if platform/ios? 318 296))
+                                 :duration constants/onboarding-modal-animation-duration}
+                  :alpha        {:from     1
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}}})
 
 (def animations
   {:push {:content {:translationX {:from     (:width (rn/get-window))

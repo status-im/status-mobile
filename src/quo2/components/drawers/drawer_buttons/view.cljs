@@ -53,7 +53,8 @@
   [:f> f-render-children-top children top-children-opacity])
 
 (defn- f-card
-  [{:keys [on-press style heading gap accessibility-label top? top-children-opacity]} children]
+  [{:keys [on-press style heading gap accessibility-label top? top-children-opacity animated-heading]}
+   children]
   [rn/touchable-highlight
    {:accessibility-label accessibility-label
     :nativeID            (when top? "card-id")
@@ -67,6 +68,17 @@
       :style  (style/heading-text gap)
       :weight :semi-bold}
      heading]
+    (when animated-heading
+      (let [animated-heading-opacity (reanimated/interpolate top-children-opacity [1 0] [0 1])]
+        [reanimated/view
+         {:style (reanimated/apply-animations-to-style
+                  {:opacity animated-heading-opacity}
+                  {:position :absolute})}
+         [text/text
+          {:size   :heading-1
+           :style  (style/heading-text gap)
+           :weight :semi-bold}
+          animated-heading]]))
     (if top?
       [render-children-top children top-children-opacity]
       [render-children-bottom children])]])
@@ -88,32 +100,57 @@
     child-1           string, keyword or hiccup
     child-2           string, keyword or hiccup
    "
-  [{:keys [container-style top-card bottom-card on-init animations-delay]} child-1 child-2]
+  [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay]} child-1
+   child-2]
   (let [top                  (reanimated/use-shared-value (- (:height (rn/get-window)) 216))
         top-padding          (reanimated/use-shared-value 12)
         border-radius        (reanimated/use-shared-value 20)
-        bottom-view-opacity  (reanimated/use-shared-value 1)
+        bottom-view-top      (reanimated/use-shared-value 80)
         top-children-opacity (reanimated/use-shared-value 1)
+        animations-delay     (/ animations-delay 1.5)
         start-top-animation  (fn []
-                               (reanimated/animate-shared-value-with-delay bottom-view-opacity
-                                                                           0       100
-                                                                           :linear 350)
+                               (reanimated/animate-shared-value-with-delay bottom-view-top
+                                                                           (:height (rn/get-window))
+                                                                           0
+                                                                           :linear
+                                                                           animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top
-                                0       animations-delay
-                                :linear 400)
+                                0       animations-duration
+                                :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
-                                115     animations-delay
-                                :linear 400)
-                               (reanimated/animate-shared-value-with-timing
+                                115     animations-duration
+                                :linear animations-delay)
+                               (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
                                 0
-                                animations-delay
-                                :linear))]
+                                animations-duration
+                                :linear animations-delay))
+        reset-top-animation  (fn []
+                               (reanimated/animate-shared-value-with-delay bottom-view-top
+                                                                           80      (/ animations-duration
+                                                                                      1.2)
+                                                                           :linear (/ animations-duration
+                                                                                      2))
+                               (reanimated/animate-shared-value-with-delay
+                                top
+                                (- (:height (rn/get-window)) 216)
+                                animations-duration
+                                :linear
+                                0)
+                               (reanimated/animate-shared-value-with-delay
+                                top-padding
+                                12      animations-duration
+                                :linear 0)
+                               (reanimated/animate-shared-value-with-delay
+                                top-children-opacity
+                                1
+                                animations-duration
+                                :linear 0))]
     (rn/use-effect (fn []
                      (when on-init
-                       (on-init start-top-animation))))
+                       (on-init start-top-animation reset-top-animation))))
     [reanimated/view {:style (style/outer-container top border-radius container-style)}
      [blur/view
       {:blur-type   :dark
@@ -134,7 +171,7 @@
                top-card) child-1]]
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
-                {:opacity bottom-view-opacity}
+                {:top bottom-view-top}
                 style/bottom-card)}
        [card
         (merge {:style {:flex 1}

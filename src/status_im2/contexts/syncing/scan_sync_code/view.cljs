@@ -18,16 +18,19 @@
     [status-im2.constants :as constants]))
 
 (defonce camera-permission-granted? (reagent/atom false))
+(defonce dismiss-animations (atom nil))
 
 (defn- f-header
-  [active-tab read-qr-once? title opacity]
-  (let [subtitle-translate-y (reanimated/interpolate opacity [0 1] [-85 0])
-        controls-translate-y (reanimated/interpolate opacity [0 1] [85 0])]
+  [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
+  (let [subtitle-translate-x (reanimated/interpolate subtitle-opacity [0 1] [-13 0])
+        subtitle-translate-y (reanimated/interpolate subtitle-opacity [0 1] [-85 0])
+        subtitle-scale       (reanimated/interpolate subtitle-opacity [0 1] [0.9 1])
+        controls-translate-y (reanimated/interpolate subtitle-opacity [0 1] [85 0])]
     [:<>
      [rn/view {:style style/header-container}
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
-                {:opacity   opacity
+                {:opacity   subtitle-opacity
                  :transform [{:translateY controls-translate-y}]}
                 {})}
        [quo/button
@@ -36,11 +39,16 @@
          :size                32
          :accessibility-label :close-sign-in-by-syncing
          :override-theme      :dark
-         :on-press            #(rf/dispatch [:navigate-back :sign-in])}
+         :on-press            (fn []
+                                (rf/dispatch [:navigate-back])
+                                (when @dismiss-animations
+                                  (@dismiss-animations))
+                                (when reset-animations-fn
+                                  (reset-animations-fn)))}
         :i/close]]
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
-                {:opacity   opacity
+                {:opacity   subtitle-opacity
                  :transform [{:translateY controls-translate-y}]}
                 {})}
        [quo/button
@@ -51,15 +59,22 @@
          :override-theme      :dark
          :on-press            #(js/alert "Yet to be implemented")}
         (i18n/label :t/find-sync-code)]]]
-     [quo/text
-      {:size   :heading-1
-       :weight :semi-bold
-       :style  style/header-text}
-      title]
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
-               {:opacity   opacity
-                :transform [{:translateY subtitle-translate-y}]}
+               {:opacity title-opacity}
+               {})}
+
+      [quo/text
+       {:size   :heading-1
+        :weight :semi-bold
+        :style  style/header-text}
+       title]]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity   subtitle-opacity
+                :transform [{:translateX subtitle-translate-x}
+                            {:translateY subtitle-translate-y}
+                            {:scale subtitle-scale}]}
                {})}
       [quo/text
        {:size   :paragraph-1
@@ -68,7 +83,7 @@
        (i18n/label :t/synchronise-your-data-across-your-devices)]]
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
-               {:opacity   opacity
+               {:opacity   subtitle-opacity
                 :transform [{:translateY controls-translate-y}]}
                style/tabs-container)}
       [quo/segmented-control
@@ -83,8 +98,8 @@
                           (reset! read-qr-once? false))}]]]))
 
 (defn- header
-  [active-tab read-qr-once? title subtitle-opacity]
-  [:f> f-header active-tab read-qr-once? title subtitle-opacity])
+  [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
+  [:f> f-header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn])
 
 (defn- camera-permission-view
   [request-camera-permission]
@@ -162,17 +177,27 @@
      :style  {:color colors/white}}
     "Yet to be implemented"]])
 
+(defn- f-bottom-view
+  [insets]
+  (let [translate-y (reanimated/use-shared-value (+ 12 12 18.2 (:bottom insets)))]
+    (reanimated/animate-delay translate-y
+                              0
+                              (+ constants/onboarding-modal-animation-duration
+                                 constants/onboarding-modal-animation-delay)
+                              100)
+    [rn/touchable-without-feedback
+     {:on-press #(js/alert "Yet to be implemented")}
+     [reanimated/view
+      {:style (style/bottom-container translate-y (:bottom insets))}
+      [quo/text
+       {:size   :paragraph-2
+        :weight :regular
+        :style  style/bottom-text}
+       (i18n/label :t/i-dont-have-status-on-another-device)]]]))
+
 (defn- bottom-view
   [insets]
-  [rn/touchable-without-feedback
-   {:on-press #(js/alert "Yet to be implemented")}
-   [rn/view
-    {:style (style/bottom-container (:bottom insets))}
-    [quo/text
-     {:size   :paragraph-2
-      :weight :regular
-      :style  style/bottom-text}
-     (i18n/label :t/i-dont-have-status-on-another-device)]]])
+  [:f> f-bottom-view insets])
 
 #_(defn- check-qr-code-data
     [event]
@@ -245,13 +270,29 @@
             #_#_show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
             #_#_show-holes?                      (and show-camera?
                                                       (boolean (not-empty @qr-view-finder)))
-            opacity         (reanimated/use-shared-value 0)
-            tab-translate-y (reanimated/interpolate opacity [0 1] [85 0])]
+            title-opacity       (reanimated/use-shared-value 0)
+            subtitle-opacity    (reanimated/use-shared-value 0)
+            tab-translate-y     (reanimated/interpolate subtitle-opacity [0 1] [85 0])
+            reset-animations-fn (fn []
+                                  (reanimated/animate-shared-value-with-delay
+                                   subtitle-opacity
+                                   0       constants/onboarding-modal-animation-duration
+                                   :linear 0)
+                                  (reanimated/animate-shared-value-with-delay title-opacity
+                                                                              0 0
+                                                                              :linear
+                                                                              0))]
+        (reanimated/animate-shared-value-with-delay subtitle-opacity
+                                                    1       constants/onboarding-modal-animation-duration
+                                                    :linear (/ constants/onboarding-modal-animation-delay
+                                                               2))
+        (reanimated/animate-shared-value-with-delay title-opacity
+                                                    1 0
+                                                    :linear
+                                                    (+ constants/onboarding-modal-animation-duration
+                                                       constants/onboarding-modal-animation-delay))
         (rn/use-effect
          (fn []
-           (reanimated/animate-shared-value-with-delay opacity
-                                                       1 constants/onboarding-modal-animation-duration
-                                                       :linear 0)
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
@@ -259,10 +300,10 @@
         [:<>
          #_[render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
-          [header active-tab read-qr-once? title opacity]
+          [header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
           [reanimated/view
            {:style (reanimated/apply-animations-to-style
-                    {:opacity   opacity
+                    {:opacity   subtitle-opacity
                      :transform [{:translateY tab-translate-y}]}
                     {})}
            (case @active-tab

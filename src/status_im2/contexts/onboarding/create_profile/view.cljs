@@ -8,7 +8,7 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            ;[status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
             [utils.re-frame :as rf]
             [oops.core :as oops]
@@ -85,8 +85,7 @@
        [])
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
-        {:top          navigation-bar-top
-         :root-comp-id :new-to-status}]
+        {:top navigation-bar-top}]
        [rn/scroll-view
         {:keyboard-should-persist-taps :always
          :content-container-style      {:flex-grow 1}}
@@ -153,7 +152,7 @@
   (let [{:keys [top]}           (safe-area/get-insets)
         onboarding-profile-data (rf/sub [:onboarding-2/profile])]
     [:<>
-     #_[background/view true]
+     [background/view true]
      [:f> f-page
       {:navigation-bar-top      top
        :onboarding-profile-data onboarding-profile-data}]]))

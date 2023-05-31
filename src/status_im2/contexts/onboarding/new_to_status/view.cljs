@@ -5,7 +5,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
-    ;[status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
@@ -95,7 +95,7 @@
   []
   (let [{:keys [top]} (safe-area/get-insets)]
     [:<>
-     #_[background/view true]
+     [background/view true]
      [rn/view {:style style/content-container}
       [navigation-bar/navigation-bar
        {:top                   top

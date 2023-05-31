@@ -32,6 +32,11 @@
    :dispatch      [:hide-bottom-sheet]
    :open-modal-fx comp})
 
+(rf/defn dismiss-modal
+  {:events [:dismiss-modal]}
+  [_ comp-id]
+  {:dismiss-modal comp-id})
+
 (rf/defn navigate-back
   {:events [:navigate-back]}
   [_ comp-id]

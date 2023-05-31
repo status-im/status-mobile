@@ -54,9 +54,10 @@
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal
-  []
-  (reset! state/dissmissing true)
-  (navigation/dismiss-modal (name (last @state/modals))))
+  ([] (dissmissModal nil))
+  ([comp-id]
+   (reset! state/dissmissing true)
+   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))))
 
 (defn dismiss-all-modals
   []
@@ -107,10 +108,13 @@
 
 (re-frame/reg-fx :navigate-back
                  (fn [comp-id]
-                   (println (name comp-id))
                    (if (or (some? comp-id) (not @state/curr-modal))
                      (navigation/pop (name (or comp-id @state/root-id)))
                      (dissmissModal))))
+
+(re-frame/reg-fx :dismiss-modal
+                 (fn [comp-id]
+                   (dissmissModal comp-id)))
 
 (re-frame/reg-fx :pop-to-root-fx navigation/pop-to-root)
 

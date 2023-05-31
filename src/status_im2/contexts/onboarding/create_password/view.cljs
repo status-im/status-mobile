@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    ;    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
@@ -236,5 +236,5 @@
 (defn create-password
   []
   [:<>
-   #_[background/view true]
+   [background/view true]
    [:f> f-create-password]])

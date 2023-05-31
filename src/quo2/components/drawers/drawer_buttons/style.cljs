@@ -29,7 +29,6 @@
 
 (def bottom-card
   {:position                :absolute
-   :top                     80
    :left                    0
    :right                   0
    :bottom                  0
