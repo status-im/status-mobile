@@ -5,6 +5,7 @@
 
 (defn setup
   [default-device-language translations-by-locale]
+  (println "dsdsdasda")
   (set! (.-fallbacks i18n) true)
   (set! (.-defaultSeparator i18n) "/")
   (set! (.-locale i18n) default-device-language)

@@ -253,23 +253,25 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [#_#_camera-ref                       (atom nil)
-            read-qr-once?                    (atom false)
+      (let [#_#_camera-ref (atom nil)
+            read-qr-once?       (atom false)
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
             #_#_user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
-            #_#_on-read-code                     (fn [data]
-                                                   (when (and (not @read-qr-once?)
-                                                              (not user-in-syncing-progress-screen?))
-                                                     (reset! read-qr-once? true)
-                                                     (js/setTimeout (fn []
-                                                                      (reset! read-qr-once? false))
-                                                                    3000)
-                                                     (check-qr-code-data data)))
-            #_#_scan-qr-code-tab?                (= @active-tab 1)
-            #_#_show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
-            #_#_show-holes?                      (and show-camera?
-                                                      (boolean (not-empty @qr-view-finder)))
+            #_#_on-read-code
+              (fn [data]
+                (when (and (not @read-qr-once?)
+                           (not user-in-syncing-progress-screen?))
+                  (reset! read-qr-once? true)
+                  (js/setTimeout (fn []
+                                   (reset! read-qr-once? false))
+                                 3000)
+                  (check-qr-code-data data)))
+            #_#_scan-qr-code-tab? (= @active-tab 1)
+            #_#_show-camera? (and scan-qr-code-tab? @camera-permission-granted?)
+            #_#_show-holes?
+              (and show-camera?
+                   (boolean (not-empty @qr-view-finder)))
             title-opacity       (reanimated/use-shared-value 0)
             subtitle-opacity    (reanimated/use-shared-value 0)
             tab-translate-y     (reanimated/interpolate subtitle-opacity [0 1] [85 0])
