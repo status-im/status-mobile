@@ -298,7 +298,7 @@
                            {:name      :selectors
                             :options   {:topBar {:visible true}}
                             :component selectors/preview-selectors}
-                           {:name      :reactions
+                           {:name      :select-reactions
                             :options   {:topBar {:visible true}}
                             :component selector-reactions/preview}]
    :settings              [{:name      :privacy-option

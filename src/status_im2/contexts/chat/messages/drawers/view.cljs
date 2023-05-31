@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [status-im.ui.components.react :as react]
             [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -175,29 +174,22 @@
               :padding-horizontal 30
               :padding-top        5
               :padding-bottom     15}}
-     (doall
-      (for [[id icon] constants/reactions]
-        (let [emoji-reaction-id (get own-reactions id)]
-          ^{:key id}
-          [not-implemented/not-implemented
-           [quo/button
-            (merge
-             {:size                40
-              :type                (if emoji-reaction-id :grey :ghost)
-              :icon                true
-              :icon-no-color       true
-              :accessibility-label (str "emoji-picker-" id)
-              :on-press            (fn []
-                                     (if emoji-reaction-id
-                                       (rf/dispatch [:models.reactions/send-emoji-reaction-retraction
-                                                     {:message-id        message-id
-                                                      :emoji-id          id
-                                                      :emoji-reaction-id emoji-reaction-id}])
-                                       (rf/dispatch [:models.reactions/send-emoji-reaction
-                                                     {:message-id message-id
-                                                      :emoji-id   id}]))
-                                     (rf/dispatch [:hide-bottom-sheet]))})
-            icon]])))]))
+     (for [[id reaction-name] constants/reactions
+           :let               [emoji-reaction-id (get own-reactions id)]]
+       ^{:key id}
+       [quo/reactions reaction-name
+        {:start-pressed? (boolean emoji-reaction-id)
+         :on-press
+         (fn []
+           (if emoji-reaction-id
+             (rf/dispatch [:models.reactions/send-emoji-reaction-retraction
+                           {:message-id        message-id
+                            :emoji-id          id
+                            :emoji-reaction-id emoji-reaction-id}])
+             (rf/dispatch [:models.reactions/send-emoji-reaction
+                           {:message-id message-id
+                            :emoji-id   id}]))
+           (rf/dispatch [:hide-bottom-sheet]))}])]))
 
 (defn reactions-and-actions
   [message-data
