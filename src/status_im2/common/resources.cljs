@@ -23,7 +23,9 @@
    :discover                      (js/require "../resources/images/ui2/discover.png")
    :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")
    :no-contacts-light             (js/require "../resources/images/ui2/no-contacts-light.png")
-   :no-contacts-dark              (js/require "../resources/images/ui2/no-contacts-dark.png")})
+   :no-contacts-dark              (js/require "../resources/images/ui2/no-contacts-dark.png")
+   :no-messages-light             (js/require "../resources/images/ui2/no-messages-light.png")
+   :no-messages-dark              (js/require "../resources/images/ui2/no-messages-dark.png")})
 
 (def mock-images
   {:coinbase             (js/require "../resources/images/mock2/coinbase.png")
