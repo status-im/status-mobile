@@ -34,20 +34,32 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im2.contexts.chat.new-chat.view :as new-chat]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [quo.platform :as platform]
+    [status-im2.constants :as constants]))
 
-(def new-to-status-animation
-  {:showModal {:enter              {:translationY {:from     (- (:height (rn/get-window)) 296)
-                                                   :to       0
-                                                   :duration 500}
-                                    :alpha        {:from     0
-                                                   :to       1
-                                                   :duration 500}}
-               :elementTransitions [{:id           "card-id"
-                                     :translationY {:to       (- (- (:height (rn/get-window)) 216))
-                                                    :duration 5000}
-                                     :alpha        {:to       0
-                                                    :duration 5000}}]}})
+(def sign-in-animations
+  {:showModal {:enter {:enabled       true
+                       :interpolation {:type "linear"}
+                       :translationY  {:from     (- (:height (rn/get-window)) (if platform/ios? 318 296))
+                                       :to       0
+                                       :duration constants/onboarding-modal-animation-duration}
+                       :alpha         {:from     1
+                                       :to       1
+                                       :duration constants/onboarding-modal-animation-duration}}
+               #_#_:exit
+                 {:translationY {:from     0
+                                 :to       0
+                                 :duration 500}
+                  :alpha        {:from     1
+                                 ;:to       0
+                                 :duration 500}}
+               ;:elementTransitions [{:id           "card-id"
+               ;                      :translationY {:to       (- (- (:height (rn/get-window)) 216))
+               ;                                     :duration 5000}
+               ;                      :alpha        {:to       0
+               ;                                     :duration 5000}}]
+              }})
 
 (def animations
   {:push {:content {:translationX {:from     (:width (rn/get-window))
@@ -174,8 +186,8 @@
      :component scan-sync-code-page/view}
 
     {:name      :sign-in
-     :options   {:layout options/onboarding-layout
-                 :animations new-to-status-animation
+     :options   {:layout                 options/onboarding-layout
+                 :animations             sign-in-animations
                  :modalPresentationStyle :overCurrentContext}
      :component sign-in/view}
 

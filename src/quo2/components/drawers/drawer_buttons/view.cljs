@@ -4,7 +4,8 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
-            [quo2.components.drawers.drawer-buttons.style :as style]))
+            [quo2.components.drawers.drawer-buttons.style :as style]
+            [react-native.reanimated :as reanimated]))
 
 (defn render-bottom
   [children]
@@ -29,18 +30,30 @@
       children]]
     [render-bottom children]))
 
-(defn render-children-top
-  [children]
+(defn- f-render-children-top
+  [children top-children-opacity]
   (if (label? children)
-    [text/text
-     {:size   :paragraph-2
-      :style  style/top-text
-      :weight :semi-bold}
-     children]
+    (let [scale        (reanimated/interpolate top-children-opacity [1 0] [1 1.1])
+          padding-left (reanimated/interpolate scale [1 1.1] [0 14])]
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity   top-children-opacity
+                 :transform [{:scale scale}
+                             {:translateX padding-left}]}
+                {})}
+       [text/text
+        {:size   :paragraph-2
+         :style  style/top-text
+         :weight :semi-bold}
+        children]])
     children))
 
-(defn card
-  [{:keys [on-press style heading gap accessibility-label top? nativeID]} children]
+(defn render-children-top
+  [children top-children-opacity]
+  [:f> f-render-children-top children top-children-opacity])
+
+(defn- f-card
+  [{:keys [on-press style heading gap accessibility-label top? top-children-opacity]} children]
   [rn/touchable-highlight
    {:accessibility-label accessibility-label
     :nativeID            (when top? "card-id")
@@ -55,10 +68,14 @@
       :weight :semi-bold}
      heading]
     (if top?
-      [render-children-top children]
+      [render-children-top children top-children-opacity]
       [render-children-bottom children])]])
 
-(defn view
+(defn card
+  [props children]
+  [:f> f-card props children])
+
+(defn f-view
   "[view opts]
    opts
    {:container-style  style-object
@@ -71,29 +88,59 @@
     child-1           string, keyword or hiccup
     child-2           string, keyword or hiccup
    "
-  [{:keys [container-style top-card bottom-card]} child-1 child-2]
-  [rn/view
-   {:style (merge container-style (style/outer-container))}
-   [blur/view
-    {:blur-type   :dark
-     :blur-amount 10
-     :style       {:flex                    1
-                   :border-top-left-radius  20
-                   :border-top-right-radius 20}}]
-   [rn/view
-    {:style {:flex             1
-             :background-color :transparent
-             :position         :absolute
-             :top              0
-             :left             0
-             :right            0
-             :bottom           0}}
-    [card
-     (merge {:gap   4
-             :top?  true
-             :style style/top-card}
-            top-card) child-1]
-    [card
-     (merge {:style style/bottom-card
-             :gap   20}
-            bottom-card) child-2]]])
+  [{:keys [container-style top-card bottom-card on-init animations-delay]} child-1 child-2]
+  (let [top                  (reanimated/use-shared-value (- (:height (rn/get-window)) 216))
+        top-padding          (reanimated/use-shared-value 12)
+        border-radius        (reanimated/use-shared-value 20)
+        bottom-view-opacity  (reanimated/use-shared-value 1)
+        top-children-opacity (reanimated/use-shared-value 1)
+        start-top-animation  (fn []
+                               (reanimated/animate-shared-value-with-delay bottom-view-opacity
+                                                                           0       100
+                                                                           :linear 350)
+                               (reanimated/animate-shared-value-with-delay
+                                top
+                                0       animations-delay
+                                :linear 400)
+                               (reanimated/animate-shared-value-with-delay
+                                top-padding
+                                115     animations-delay
+                                :linear 400)
+                               (reanimated/animate-shared-value-with-timing
+                                top-children-opacity
+                                0
+                                animations-delay
+                                :linear))]
+    (rn/use-effect (fn []
+                     (when on-init
+                       (on-init start-top-animation))))
+    [reanimated/view {:style (style/outer-container top border-radius container-style)}
+     [blur/view
+      {:blur-type   :dark
+       :blur-amount 10
+       :style       {:flex                    1
+                     :border-top-left-radius  20
+                     :border-top-right-radius 20}}
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:padding-top top-padding}
+                style/top-card)}
+       [card
+        (merge {:gap                  4
+                :top?                 true
+                :nativeID             "card-id"
+                :style                {:flex 1}
+                :top-children-opacity top-children-opacity}
+               top-card) child-1]]
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity bottom-view-opacity}
+                style/bottom-card)}
+       [card
+        (merge {:style {:flex 1}
+                :gap   20}
+               bottom-card) child-2]]]]))
+
+(defn view
+  [props child-1 child-2]
+  [:f> f-view props child-1 child-2])

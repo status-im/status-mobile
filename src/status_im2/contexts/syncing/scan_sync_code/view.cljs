@@ -1,63 +1,90 @@
 (ns status-im2.contexts.syncing.scan-sync-code.view
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.camera-kit :as camera-kit]
-            [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [react-native.hole-view :as hole-view]
-            [react-native.permissions :as permissions]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.contexts.syncing.scan-sync-code.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+  (:require ;[clojure.string :as string]
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    ;[react-native.camera-kit :as camera-kit]
+    [react-native.core :as rn]
+    ;[react-native.blur :as blur]
+    ;[react-native.hole-view :as hole-view]
+    [react-native.permissions :as permissions]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.contexts.syncing.scan-sync-code.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    ;[status-im2.contexts.syncing.utils :as sync-utils]
+    [react-native.reanimated :as reanimated]
+    [status-im2.constants :as constants]))
 
 (defonce camera-permission-granted? (reagent/atom false))
 
+(defn- f-header
+  [active-tab read-qr-once? title opacity]
+  (let [subtitle-translate-y (reanimated/interpolate opacity [0 1] [-85 0])
+        controls-translate-y (reanimated/interpolate opacity [0 1] [85 0])]
+    [:<>
+     [rn/view {:style style/header-container}
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity   opacity
+                 :transform [{:translateY controls-translate-y}]}
+                {})}
+       [quo/button
+        {:icon                true
+         :type                :blur-bg
+         :size                32
+         :accessibility-label :close-sign-in-by-syncing
+         :override-theme      :dark
+         :on-press            #(rf/dispatch [:navigate-back :sign-in])}
+        :i/close]]
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity   opacity
+                 :transform [{:translateY controls-translate-y}]}
+                {})}
+       [quo/button
+        {:before              :i/info
+         :type                :blur-bg
+         :size                32
+         :accessibility-label :find-sync-code
+         :override-theme      :dark
+         :on-press            #(js/alert "Yet to be implemented")}
+        (i18n/label :t/find-sync-code)]]]
+     [quo/text
+      {:size   :heading-1
+       :weight :semi-bold
+       :style  style/header-text}
+      title]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity   opacity
+                :transform [{:translateY subtitle-translate-y}]}
+               {})}
+      [quo/text
+       {:size   :paragraph-1
+        :weight :regular
+        :style  style/header-sub-text}
+       (i18n/label :t/synchronise-your-data-across-your-devices)]]
+     [reanimated/view
+      {:style (reanimated/apply-animations-to-style
+               {:opacity   opacity
+                :transform [{:translateY controls-translate-y}]}
+               style/tabs-container)}
+      [quo/segmented-control
+       {:size           32
+        :override-theme :dark
+        :blur?          true
+        :default-active @active-tab
+        :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
+                         {:id 2 :label (i18n/label :t/enter-sync-code)}]
+        :on-change      (fn [id]
+                          (reset! active-tab id)
+                          (reset! read-qr-once? false))}]]]))
+
 (defn- header
-  [active-tab read-qr-once? title]
-  [:<>
-   [rn/view {:style style/header-container}
-    [quo/button
-     {:icon                true
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :close-sign-in-by-syncing
-      :override-theme      :dark
-      :on-press            #(rf/dispatch [:navigate-back])}
-     :i/close]
-    [quo/button
-     {:before              :i/info
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :find-sync-code
-      :override-theme      :dark
-      :on-press            #(js/alert "Yet to be implemented")}
-     (i18n/label :t/find-sync-code)]]
-   [quo/text
-    {:size   :heading-1
-     :weight :semi-bold
-     :style  style/header-text}
-    title]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :regular
-     :style  style/header-sub-text}
-    (i18n/label :t/synchronise-your-data-across-your-devices)]
-   [rn/view {:style style/tabs-container}
-    [quo/segmented-control
-     {:size           32
-      :override-theme :dark
-      :blur?          true
-      :default-active @active-tab
-      :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
-                       {:id 2 :label (i18n/label :t/enter-sync-code)}]
-      :on-change      (fn [id]
-                        (reset! active-tab id)
-                        (reset! read-qr-once? false))}]]])
+  [active-tab read-qr-once? title subtitle-opacity]
+  [:f> f-header active-tab read-qr-once? title subtitle-opacity])
 
 (defn- camera-permission-view
   [request-camera-permission]
@@ -147,44 +174,44 @@
       :style  style/bottom-text}
      (i18n/label :t/i-dont-have-status-on-another-device)]]])
 
-(defn- check-qr-code-data
-  [event]
-  (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
-        valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
-    (if valid-connection-string?
-      (rf/dispatch [:syncing/input-connection-string-for-bootstrapping connection-string])
-      (rf/dispatch [:toasts/upsert
-                    {:icon           :i/info
-                     :icon-color     colors/danger-50
-                     :override-theme :light
-                     :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
+#_(defn- check-qr-code-data
+    [event]
+    (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
+          valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
+      (if valid-connection-string?
+        (rf/dispatch [:syncing/input-connection-string-for-bootstrapping connection-string])
+        (rf/dispatch [:toasts/upsert
+                      {:icon           :i/info
+                       :icon-color     colors/danger-50
+                       :override-theme :light
+                       :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
-(defn render-camera
-  [show-camera? qr-view-finder camera-ref on-read-code show-holes?]
-  (when (and show-camera? (:x qr-view-finder))
-    [:<>
-     [rn/view {:style style/camera-container}
-      [camera-kit/camera
-       {:ref            #(reset! camera-ref %)
-        :style          style/camera-style
-        :camera-options {:zoomMode :off}
-        :scan-barcode   true
-        :on-read-code   on-read-code}]]
-     [hole-view/hole-view
-      {:style style/hole
-       :holes (if show-holes?
-                [(merge qr-view-finder
-                        {:borderRadius 16})]
-                [])}
-      [blur/view
-       {:style            style/absolute-fill
-        :blur-amount      10
-        :blur-type        :transparent
-        :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]]]))
+#_(defn render-camera
+    [show-camera? qr-view-finder camera-ref on-read-code show-holes?]
+    (when (and show-camera? (:x qr-view-finder))
+      [:<>
+       [rn/view {:style style/camera-container}
+        [camera-kit/camera
+         {:ref            #(reset! camera-ref %)
+          :style          style/camera-style
+          :camera-options {:zoomMode :off}
+          :scan-barcode   true
+          :on-read-code   on-read-code}]]
+       [hole-view/hole-view
+        {:style style/hole
+         :holes (if show-holes?
+                  [(merge qr-view-finder
+                          {:borderRadius 16})]
+                  [])}
+        [blur/view
+         {:style            style/absolute-fill
+          :blur-amount      10
+          :blur-type        :transparent
+          :overlay-color    colors/neutral-80-opa-80
+          :background-color colors/neutral-80-opa-80}]]]))
 
 (defn f-view
-  [{:keys [title show-bottom-view? background]}]
+  [{:keys [title show-bottom-view? #_background]}]
   (let [insets                    (safe-area/get-insets)
         active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
@@ -201,25 +228,30 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [camera-ref                       (atom nil)
+      (let [#_#_camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
-            user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
-            on-read-code                     (fn [data]
-                                               (when (and (not @read-qr-once?)
-                                                          (not user-in-syncing-progress-screen?))
-                                                 (reset! read-qr-once? true)
-                                                 (js/setTimeout (fn []
-                                                                  (reset! read-qr-once? false))
-                                                                3000)
-                                                 (check-qr-code-data data)))
-            scan-qr-code-tab?                (= @active-tab 1)
-            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
-            show-holes?                      (and show-camera?
-                                                  (boolean (not-empty @qr-view-finder)))]
+            #_#_user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
+            #_#_on-read-code                     (fn [data]
+                                                   (when (and (not @read-qr-once?)
+                                                              (not user-in-syncing-progress-screen?))
+                                                     (reset! read-qr-once? true)
+                                                     (js/setTimeout (fn []
+                                                                      (reset! read-qr-once? false))
+                                                                    3000)
+                                                     (check-qr-code-data data)))
+            #_#_scan-qr-code-tab?                (= @active-tab 1)
+            #_#_show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
+            #_#_show-holes?                      (and show-camera?
+                                                      (boolean (not-empty @qr-view-finder)))
+            opacity         (reanimated/use-shared-value 0)
+            tab-translate-y (reanimated/interpolate opacity [0 1] [85 0])]
         (rn/use-effect
          (fn []
+           (reanimated/animate-shared-value-with-delay opacity
+                                                       1 constants/onboarding-modal-animation-duration
+                                                       :linear 0)
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
@@ -227,11 +259,16 @@
         [:<>
          #_[render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
-          [header active-tab read-qr-once? title]
-          (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder request-camera-permission]
-            2 [enter-sync-code-tab]
-            nil)
+          [header active-tab read-qr-once? title opacity]
+          [reanimated/view
+           {:style (reanimated/apply-animations-to-style
+                    {:opacity   opacity
+                     :transform [{:translateY tab-translate-y}]}
+                    {})}
+           (case @active-tab
+             1 [scan-qr-code-tab qr-view-finder request-camera-permission]
+             2 [enter-sync-code-tab]
+             nil)]
           [rn/view {:style style/flex-spacer}]
           (when show-bottom-view? [bottom-view insets])]]))))
 

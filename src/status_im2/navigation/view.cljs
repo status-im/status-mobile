@@ -14,8 +14,7 @@
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.hot-reload :as reloader]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
-            [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]))
+            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]))
 
 (defn get-screens
   []

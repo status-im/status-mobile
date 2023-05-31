@@ -8,7 +8,7 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [status-im2.contexts.onboarding.common.background.view :as background]
+            ;[status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
             [utils.re-frame :as rf]
             [oops.core :as oops]
@@ -84,8 +84,9 @@
              (oops/ocall will-hide-listener "remove"))))
        [])
       [rn/view {:style style/page-container}
-       [navigation-bar/navigation-bar {:top          navigation-bar-top
-                                       :root-comp-id :new-to-status}]
+       [navigation-bar/navigation-bar
+        {:top          navigation-bar-top
+         :root-comp-id :new-to-status}]
        [rn/scroll-view
         {:keyboard-should-persist-taps :always
          :content-container-style      {:flex-grow 1}}
