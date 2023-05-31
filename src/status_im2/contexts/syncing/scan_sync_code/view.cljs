@@ -201,19 +201,23 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))]
     (fn []
-      (let [camera-ref        (atom nil)
-            read-qr-once?     (atom false)
-            on-read-code      (fn [data]
-                                (when-not @read-qr-once?
-                                  (reset! read-qr-once? true)
-                                  (js/setTimeout (fn []
-                                                   (reset! read-qr-once? false))
-                                                 3000)
-                                  (check-qr-code-data data)))
-            scan-qr-code-tab? (= @active-tab 1)
-            show-camera?      (and scan-qr-code-tab? @camera-permission-granted?)
-            show-holes?       (and show-camera?
-                                   (boolean (not-empty @qr-view-finder)))]
+      (let [camera-ref                       (atom nil)
+            read-qr-once?                    (atom false)
+            ;; The below check is to prevent scanning of any QR code
+            ;; when the user is in syncing progress screen
+            user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
+            on-read-code                     (fn [data]
+                                               (when (and (not @read-qr-once?)
+                                                          (not user-in-syncing-progress-screen?))
+                                                 (reset! read-qr-once? true)
+                                                 (js/setTimeout (fn []
+                                                                  (reset! read-qr-once? false))
+                                                                3000)
+                                                 (check-qr-code-data data)))
+            scan-qr-code-tab?                (= @active-tab 1)
+            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
+            show-holes?                      (and show-camera?
+                                                  (boolean (not-empty @qr-view-finder)))]
         (rn/use-effect
          (fn []
            (when-not @camera-permission-granted?

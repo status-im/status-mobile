@@ -38,8 +38,7 @@
   [message index _ {:keys [screen-width screen-height] :as args}]
   [rn/view
    {:style (style/image (+ screen-width constants/separator-width) screen-height)}
-   [zoomable-image/zoomable-image message index args
-    #(utils/toggle-opacity index args %)]
+   [:f> zoomable-image/zoomable-image message index args]
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
