@@ -4,10 +4,8 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.animations :as anim]
@@ -82,27 +80,6 @@
           ;; RNN does not support landscape-right
           (when (and enabled? (not= result orientation/landscape-right))
             (handle-orientation result props state animations))))))))
-
-(defn toggle-opacity
-  [index {:keys [opacity-value border-value transparent? props]} portrait?]
-  (let [{:keys [small-list-ref]} props
-        opacity                  (reanimated/get-shared-value opacity-value)]
-    (if (= opacity 1)
-      (do
-        (when platform/ios?
-          ;; status-bar issue: https://github.com/status-im/status-mobile/issues/15343
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}}) 75))
-        (anim/animate opacity-value 0)
-        (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
-      (do
-        (reset! transparent? (not @transparent?))
-        (js/setTimeout #(anim/animate opacity-value 1) 50)
-        (js/setTimeout #(when @small-list-ref
-                          (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
-                       100)
-        (when (and platform/ios? portrait?)
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}}) 150))))
-    (anim/animate border-value (if (= opacity 1) 0 12))))
 
 (defn drag-gesture
   [{:keys [pan-x pan-y background-color opacity layout]} x? set-full-height?]

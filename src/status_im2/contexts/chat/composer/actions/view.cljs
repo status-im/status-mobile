@@ -58,9 +58,9 @@
     :i/arrow-up]])
 
 (defn send-button
-  [{:keys [text-value] :as state} animations window-height images?]
+  [state animations window-height images?]
   (let [btn-opacity (reanimated/use-shared-value 0)
-        z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
+        z-index     (reagent/atom 0)]
     [:f> f-send-button state animations window-height images? btn-opacity z-index]))
 
 (defn audio-button

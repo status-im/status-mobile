@@ -61,10 +61,9 @@ pipeline {
     }
     stage('Build android jsbundle') {
       steps { script {
-        /* build/fetch things required to produce a js-bundle for android
-         * (e.g. maven and node repos) */
+        /* Build/fetch deps required for jsbundle build. */
         nix.build(
-          attr: 'targets.mobile.android.jsbundle',
+          attr: 'targets.mobile.jsbundle',
           sandbox: false,
           pure: false,
           link: false
@@ -73,7 +72,7 @@ pipeline {
     }
     stage('Build android deps') {
       steps { script {
-        /* build/fetch things required to build jsbundle and android */
+        /* Build/fetch deps required to build android release. */
         nix.build(
           attr: 'targets.mobile.android.release.buildInputs',
           sandbox: false,
@@ -84,7 +83,7 @@ pipeline {
     }
     stage('Build nix shell deps') {
       steps { script {
-        /* build/fetch things required to instantiate shell.nix for TARGET=all */
+        /* Build/fetch deps required to start default Nix shell. */
         nix.build(
           attr: 'shells.default.buildInputs',
           sandbox: false,
