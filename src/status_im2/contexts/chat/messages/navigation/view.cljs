@@ -56,7 +56,7 @@
        :overlayColor :transparent
        :style        (style/animated-blur-view all-loaded? opacity-animation status-bar-height)}]
 
-     [rn/view {:style {:display :flex}}
+     [rn/view
       [rn/view {:style (style/header-container status-bar-height)}
        [rn/touchable-opacity
         {:active-opacity      1

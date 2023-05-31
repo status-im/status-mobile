@@ -66,7 +66,8 @@
 (defn pinned-banner
   [status-bar-height]
   {:position :absolute
-   :width    "100%"
+   :left     0
+   :right    0
    :top      (- navigation-bar-height
                 (if platform/ios? 0 status-bar-height))})
 

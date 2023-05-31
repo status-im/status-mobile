@@ -41,8 +41,7 @@
    {:top              -16
     :margin-bottom    -16
     :padding-bottom   24
-    :background-color (colors/theme-colors colors/white colors/neutral-100)
-    :display          :flex}))
+    :background-color (colors/theme-colors colors/white colors/neutral-100)}))
 
 (def header-avatar
   {:top               header-avatar-top-offset
