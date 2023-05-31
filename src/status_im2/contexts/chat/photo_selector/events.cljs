@@ -126,7 +126,6 @@
 (rf/defn get-photos-for-selected-album
   {:events [:photo-selector/get-photos-for-selected-album]}
   [{:keys [db]} end-cursor]
-  (println "(:camera-roll/selected-album db)" (:camera-roll/selected-album db))
   {:camera-roll-request-permissions-and-get-photos [21 end-cursor
                                                     (or (:camera-roll/selected-album db)
                                                         (i18n/label :t/recent))]})

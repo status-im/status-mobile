@@ -119,7 +119,6 @@
               :on-scroll               on-scroll
               :scroll-enabled          @scroll-enabled
               :on-end-reached          (fn []
-                                         (println "END" loading? has-next-page?)
                                          (when (and (not loading?) has-next-page?)
                                            (rf/dispatch [:photo-selector/camera-roll-loading-more true])
                                            (rf/dispatch [:photo-selector/get-photos-for-selected-album
