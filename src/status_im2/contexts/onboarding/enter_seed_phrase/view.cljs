@@ -43,7 +43,8 @@
       :size   :paragraph-2}
      (i18n/label-pluralize seed-phrase-count :t/words-n)]]])
 
-(defn- clean-seed-phrase [seed-phrase]
+(defn- clean-seed-phrase
+  [seed-phrase]
   (-> seed-phrase
       (string/lower-case)
       (string/replace #", " " ")
