@@ -28,12 +28,12 @@
 (defn- f-shell-button
   [{:keys [maximized?]} {:keys [height]} {:keys [images link-previews? reply edit]}]
   (let [insets       (safe-area/get-insets)
-        extra-height (utils/calc-extra-content-height images link-previews? reply edit)
+        extra-height (utils/calc-top-content-height reply edit)
         translate-y  (reanimated/use-shared-value
                       (utils/calc-shell-neg-y insets maximized? extra-height))]
     (rn/use-effect
      (fn []
-       (let [extra-height (utils/calc-extra-content-height images link-previews? reply edit)]
+       (let [extra-height (utils/calc-top-content-height reply edit)]
          (reanimated/animate translate-y
                              (utils/calc-shell-neg-y insets maximized? extra-height))))
      [@maximized? images link-previews? reply edit])
