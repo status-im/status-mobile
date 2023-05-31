@@ -58,7 +58,8 @@
   [{:keys [db] :as cofx} {:keys [type action data] :as event}]
   (log/info "local pairing signal received"
             {:event event})
-  (let [role                            (get-in db [:syncing :role])
+  (let [{:keys [account password]}      data
+        role                            (get-in db [:syncing :role])
         receiver?                       (= role constants/local-pairing-role-receiver)
         sender?                         (= role constants/local-pairing-role-sender)
         connection-success?             (and (= type
@@ -74,9 +75,9 @@
                                                 constants/local-pairing-event-received-account)
                                              (= action
                                                 constants/local-pairing-action-pairing-account)
-                                             (and (contains? data :account) (contains? data :password)))
+                                             (and (some? account) (some? password)))
         multiaccount-data               (when received-account?
-                                          (merge (:account data) {:password (:password data)}))
+                                          (merge account {:password password}))
         navigate-to-syncing-devices?    (and connection-success? receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
