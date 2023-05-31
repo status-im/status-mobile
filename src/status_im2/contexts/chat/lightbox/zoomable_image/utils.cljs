@@ -1,8 +1,11 @@
 (ns status-im2.contexts.chat.lightbox.zoomable-image.utils
   (:require
     [clojure.string :as string]
+    [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [utils.re-frame :as rf]))
@@ -36,9 +39,9 @@
    exit?
    {:keys [x-threshold-scale y-threshold-scale]}
    {:keys [scale saved-scale] :as animations}
-   {:keys [pan-x-enabled? pan-y-enabled?] :as props}]
+   {:keys [pan-x-enabled? pan-y-enabled?] :as state}]
   (when (= value c/min-scale)
-    (reset-values exit? animations props))
+    (reset-values exit? animations state))
   (anim/animate scale value (if exit? 100 c/default-duration))
   (anim/set-val saved-scale value)
   (reset! pan-x-enabled? (> value x-threshold-scale))
@@ -102,6 +105,27 @@
   (when (and (= zoom-out-signal index) (> scale c/min-scale))
     (rescale c/min-scale true)))
 
+(defn toggle-opacity
+  [index {:keys [opacity-value border-value transparent? props]} portrait?]
+  (let [{:keys [small-list-ref]} props
+        opacity                  (reanimated/get-shared-value opacity-value)]
+    (if (= opacity 1)
+      (do
+        (when platform/ios?
+          ;; status-bar issue: https://github.com/status-im/status-mobile/issues/15343
+          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}}) 75))
+        (anim/animate opacity-value 0)
+        (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
+      (do
+        (reset! transparent? (not @transparent?))
+        (js/setTimeout #(anim/animate opacity-value 1) 50)
+        (js/setTimeout #(when @small-list-ref
+                          (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
+                       100)
+        (when (and platform/ios? portrait?)
+          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}}) 150))))
+    (anim/animate border-value (if (= opacity 1) 0 12))))
+
 ;;; Dimensions
 (defn get-dimensions
   "Calculates all required dimensions. Dimensions calculations are different on iOS and Android because landscape
@@ -162,3 +186,28 @@
     (if (or (> focal max) (< focal min))
       (/ screen-size 2)
       focal)))
+
+;;; INITIALIZATIONS
+(defn init-animations
+  []
+  {:scale         (anim/use-val c/min-scale)
+   :saved-scale   (anim/use-val c/min-scale)
+   :pan-x-start   (anim/use-val c/init-offset)
+   :pan-x         (anim/use-val c/init-offset)
+   :pan-y-start   (anim/use-val c/init-offset)
+   :pan-y         (anim/use-val c/init-offset)
+   :pinch-x-start (anim/use-val c/init-offset)
+   :pinch-x       (anim/use-val c/init-offset)
+   :pinch-y-start (anim/use-val c/init-offset)
+   :pinch-y       (anim/use-val c/init-offset)
+   :pinch-x-max   (anim/use-val js/Infinity)
+   :pinch-y-max   (anim/use-val js/Infinity)
+   :rotate        (anim/use-val c/init-rotation)
+   :rotate-scale  (anim/use-val c/min-scale)})
+
+(defn init-state
+  []
+  {:pan-x-enabled? (reagent/atom false)
+   :pan-y-enabled? (reagent/atom false)
+   :focal-x        (reagent/atom nil)
+   :focal-y        (reagent/atom nil)})

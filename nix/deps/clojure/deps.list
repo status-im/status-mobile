@@ -6,9 +6,6 @@ camel-snake-kebab/camel-snake-kebab/0.4.3/camel-snake-kebab-0.4.3.jar
 cider/cider-nrepl/0.25.3/cider-nrepl-0.25.3.jar
 cider/piggieback/0.4.1/piggieback-0.4.1.jar
 cljs-bean/cljs-bean/1.3.0/cljs-bean-1.3.0.jar
-cljsjs/react-dom-server/17.0.1-0/react-dom-server-17.0.1-0.jar
-cljsjs/react-dom/17.0.1-0/react-dom-17.0.1-0.jar
-cljsjs/react/17.0.1-0/react-17.0.1-0.jar
 clout/clout/2.1.2/clout-2.1.2.jar
 com/andrewmcveigh/cljs-time/0.5.2/cljs-time-0.5.2.jar
 com/bhauman/cljs-test-display/0.1.1/cljs-test-display-0.1.1.jar
@@ -76,7 +73,7 @@ org/clojure/test.check/1.1.0/test.check-1.1.0.jar
 org/clojure/tools.analyzer.jvm/1.1.0/tools.analyzer.jvm-1.1.0.jar
 org/clojure/tools.analyzer/1.0.0/tools.analyzer-1.0.0.jar
 org/clojure/tools.cli/1.0.194/tools.cli-1.0.194.jar
-org/clojure/tools.logging/0.4.1/tools.logging-0.4.1.jar
+org/clojure/tools.logging/1.1.0/tools.logging-1.1.0.jar
 org/clojure/tools.macro/0.1.5/tools.macro-0.1.5.jar
 org/clojure/tools.reader/1.3.3/tools.reader-1.3.3.jar
 org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar
@@ -102,10 +99,10 @@ org/wildfly/common/wildfly-common/1.5.2.Final/wildfly-common-1.5.2.Final.jar
 prismatic/schema/1.1.7/schema-1.1.7.jar
 quoin/quoin/0.1.2/quoin-0.1.2.jar
 re-com/re-com/2.8.0/re-com-2.8.0.jar
-re-frame/re-frame/0.12.0/re-frame-0.12.0.jar
+re-frame/re-frame/1.3.0/re-frame-1.3.0.jar
 re-frisk-remote/re-frisk-remote/1.6.0/re-frisk-remote-1.6.0.jar
 re-frisk/sente/1.15.0/sente-1.15.0.jar
-reagent/reagent/1.0.0/reagent-1.0.0.jar
+reagent/reagent/1.2.0/reagent-1.2.0.jar
 refactor-nrepl/refactor-nrepl/2.5.0/refactor-nrepl-2.5.0.jar
 ring-cors/ring-cors/0.1.8/ring-cors-0.1.8.jar
 ring/ring-codec/1.1.2/ring-codec-1.1.2.jar

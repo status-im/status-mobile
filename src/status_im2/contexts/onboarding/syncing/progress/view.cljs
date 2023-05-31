@@ -31,7 +31,9 @@
 (defn try-again-button
   [profile-color]
   [quo/button
-   {:on-press                  #(rf/dispatch [:navigate-back])
+   {:on-press                  (fn []
+                                 (rf/dispatch [:syncing/clear-states])
+                                 (rf/dispatch [:navigate-back]))
     :accessibility-label       :try-again-later-button
     :override-background-color (colors/custom-color profile-color 60)
     :style                     style/try-again-button}

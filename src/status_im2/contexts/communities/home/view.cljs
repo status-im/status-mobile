@@ -7,6 +7,7 @@
             [react-native.safe-area :as safe-area]
             [react-native.blur :as blur]
             [react-native.platform :as platform]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.home.style :as style]
@@ -54,6 +55,7 @@
     (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
           {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
           {:keys [key-uid]}               (rf/sub [:multiaccount])
+          account                         (rf/sub [:profile/multiaccount])
           profile-color                   (:color (rf/sub [:onboarding-2/profile]))
           customization-color             (if profile-color
                                             profile-color
@@ -80,7 +82,9 @@
           :style       style/blur}]
         [common.home/top-nav
          {:type   :grey
-          :avatar {:customization-color customization-color}}]
+          :avatar {:customization-color customization-color
+                   :full-name           (multiaccounts/displayed-name account)
+                   :profile-picture     (multiaccounts/displayed-photo account)}}]
         [common.home/title-column
          {:label               (i18n/label :t/communities)
           :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
