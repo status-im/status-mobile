@@ -88,7 +88,8 @@
                                              :screen-width     screen-width
                                              :window-height    window-height
                                              :window-width     window-width
-                                             :props            props}
+                                             :props            props
+                                             :curr-orientation curr-orientation}
          :horizontal                        horizontal?
          :inverted                          inverted?
          :paging-enabled                    true
@@ -113,7 +114,8 @@
                          (on-viewable-items-changed e props state))]
         (anim/animate (:background-color animations) "rgba(0,0,0,1)")
         (reset! (:data state) messages)
-        (utils/orientation-change props state animations)
+        (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
+          (utils/orientation-change props state animations))
         (utils/effect props animations index)
         [:f> lightbox-content props state animations derived messages index callback]))))
 

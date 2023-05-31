@@ -228,36 +228,35 @@
         :style     (style/image dimensions animations (:border-value render-data))}]]]))
 
 (defn zoomable-image
-  [{:keys [image-width image-height content message-id]} index render-data]
-  (let [state                      (utils/init-state)
-        shared-element-id          (rf/sub [:shared-element-id])
-        exit-lightbox-signal       (rf/sub [:lightbox/exit-signal])
-        zoom-out-signal            (rf/sub [:lightbox/zoom-out-signal])
-        curr-orientation           (or (rf/sub [:lightbox/orientation])
-                                       orientation/portrait)
-        {:keys [set-full-height?]} render-data
-        focused?                   (= shared-element-id message-id)
-        dimensions                 (utils/get-dimensions
-                                    (or image-width c/default-dimension)
-                                    (or image-height c/default-duration)
-                                    curr-orientation
-                                    render-data)
-        animations                 (utils/init-animations)
-        rescale                    (fn [value exit?]
-                                     (utils/rescale-image value
-                                                          exit?
-                                                          dimensions
-                                                          animations
-                                                          state))]
-    (rn/use-effect (fn []
-                     (js/setTimeout #(reset! set-full-height? true) 500)))
-    (when platform/ios?
-      (utils/handle-orientation-change curr-orientation focused? dimensions animations state)
-      (utils/handle-exit-lightbox-signal exit-lightbox-signal
-                                         index
-                                         (anim/get-val (:scale animations))
-                                         rescale
-                                         set-full-height?))
-    (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
-    [:f> f-zoomable-image dimensions animations state rescale curr-orientation content focused?
-     index render-data]))
+  []
+  (let [state (utils/init-state)]
+    (fn [{:keys [image-width image-height content message-id]} index render-data]
+      (let [shared-element-id                           (rf/sub [:shared-element-id])
+            exit-lightbox-signal                        (rf/sub [:lightbox/exit-signal])
+            zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
+            {:keys [set-full-height? curr-orientation]} render-data
+            focused?                                    (= shared-element-id message-id)
+            dimensions                                  (utils/get-dimensions
+                                                         (or image-width c/default-dimension)
+                                                         (or image-height c/default-duration)
+                                                         curr-orientation
+                                                         render-data)
+            animations                                  (utils/init-animations)
+            rescale                                     (fn [value exit?]
+                                                          (utils/rescale-image value
+                                                                               exit?
+                                                                               dimensions
+                                                                               animations
+                                                                               state))]
+        (rn/use-effect (fn []
+                         (js/setTimeout (fn [] (reset! set-full-height? true)) 500)))
+        (when platform/ios?
+          (utils/handle-orientation-change curr-orientation focused? dimensions animations state)
+          (utils/handle-exit-lightbox-signal exit-lightbox-signal
+                                             index
+                                             (anim/get-val (:scale animations))
+                                             rescale
+                                             set-full-height?))
+        (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
+        [:f> f-zoomable-image dimensions animations state rescale curr-orientation content focused?
+         index render-data]))))
