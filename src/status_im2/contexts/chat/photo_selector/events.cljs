@@ -39,12 +39,13 @@
      :on-allowed
      (fn []
        (cameraroll/get-photos
-        {:first      num
-         :after      end-cursor
-         :assetType  "Photos"
-         :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
-         :groupName  (when (not= album (i18n/label :t/recent)) album)
-         :include    (clj->js ["imageSize"])}
+        (merge {:first      num
+                :assetType  "Photos"
+                :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
+                :groupName  (when (not= album (i18n/label :t/recent)) album)
+                :include    ["imageSize"]}
+               (when end-cursor
+                 {:after end-cursor}))
         #(re-frame/dispatch [:on-camera-roll-get-photos (:edges %) (:page_info %) end-cursor])))})))
 
 (re-frame/reg-fx
