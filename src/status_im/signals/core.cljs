@@ -75,7 +75,8 @@
                                              (= action
                                                 constants/local-pairing-action-pairing-account)
                                              (and (contains? data :account) (contains? data :password)))
-        multiaccount-data               (when received-account? (merge (:account data) (:password data)))
+        multiaccount-data               (when received-account?
+                                          (merge (:account data) {:password (:password data)}))
         navigate-to-syncing-devices?    (and connection-success? receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
