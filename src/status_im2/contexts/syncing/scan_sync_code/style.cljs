@@ -16,7 +16,7 @@
 
 (def hole
   (merge absolute-fill
-         {:z-index 2 :opacity 0.95}))
+         {:top 0 :z-index 2 :opacity 0.95}))
 
 (defn root-container
   [padding-top]
