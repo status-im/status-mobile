@@ -165,6 +165,15 @@
      (wallet/request-current-block-update))
    (prices/update-prices)))
 
+(rf/defn login-local-paired-user
+  {:events [:multiaccounts.login/local-paired-user]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :multiaccount])]
+    {::login [key-uid
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
+              password]}))
+
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]

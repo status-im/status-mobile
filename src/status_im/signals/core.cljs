@@ -96,7 +96,7 @@
            (when (and completed-pairing? sender?)
              {:dispatch [:syncing/clear-states]})
            (when (and completed-pairing? receiver?)
-             {:dispatch [:syncing/receiver-pairing-completed]}))))
+             {:dispatch [:multiaccounts.login/local-paired-user]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}
