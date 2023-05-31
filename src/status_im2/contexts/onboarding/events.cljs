@@ -154,14 +154,14 @@
                               [:multiaccounts.login.ui/multiaccount-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
-     :dispatch [:navigate-to [:create-profile :new-to-status]]}))
+     :dispatch [:navigate-to :create-profile]}))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding-2/navigate-to-create-profile]}
   [{:keys [db]}]
   ;; Restart the flow
   {:db       (dissoc db :onboarding-2/profile)
-   :dispatch [:navigate-to [:create-profile :new-to-status]]})
+   :dispatch [:navigate-to :create-profile]})
 
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
