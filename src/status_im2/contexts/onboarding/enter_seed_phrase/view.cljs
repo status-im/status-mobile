@@ -71,7 +71,11 @@
         :word-limit               max-seed-phrase-length
         :error-pred-current-word  partial-word-not-in-dictionary?
         :error-pred-written-words word-not-in-dictionary?
-        :on-change-text           on-change-seed-phrase}
+        :on-change-text           on-change-seed-phrase
+        ;; NOTE: Workaround to avoid text duplication on some devices, taken from
+        ;; https://github.com/facebook/react-native/issues/11068#issuecomment-1531450643
+        :secure-text-entry        true
+        :keyboard-type            :visible-password}
        seed-phrase]]
      [quo/button
       {:style    (style/continue-button keyboard-shown?)
@@ -101,7 +105,6 @@
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
                                                (reset! seed-phrase (string/lower-case new-phrase)))
-
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (rf/dispatch [:onboarding-2/seed-phrase-entered
