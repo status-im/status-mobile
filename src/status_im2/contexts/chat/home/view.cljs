@@ -8,6 +8,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.platform :as platform]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.contexts.chat.home.style :as style]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.view :as common.home]
@@ -106,6 +107,7 @@
     (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
           selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
           {:keys [key-uid]}        (rf/sub [:multiaccount])
+          account                  (rf/sub [:profile/multiaccount])
           profile-color            (:color (rf/sub [:onboarding-2/profile]))
           customization-color      (if profile-color
                                      profile-color
@@ -123,7 +125,9 @@
           :style       style/blur}]
         [common.home/top-nav
          {:type   :grey
-          :avatar {:customization-color customization-color}}]
+          :avatar {:customization-color customization-color
+                   :full-name           (multiaccounts/displayed-name account)
+                   :profile-picture     (multiaccounts/displayed-photo account)}}]
         [common.home/title-column
          {:label               (i18n/label :t/messages)
           :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])
