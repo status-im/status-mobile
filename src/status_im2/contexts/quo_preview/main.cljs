@@ -83,6 +83,7 @@
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
     [status-im2.contexts.quo-preview.tabs.tabs :as tabs]
+    [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.tags.context-tags :as context-tags]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
@@ -187,6 +188,9 @@
    :dropdowns             [{:name      :dropdown
                             :options   {:topBar {:visible true}}
                             :component dropdown/preview-dropdown}]
+   :empty-state           [{:name      :empty-state
+                            :options   {:topBar {:visible true}}
+                            :component empty-state/preview-empty-state}]
    :info                  [{:name      :info-message
                             :options   {:topBar {:visible true}}
                             :component info-message/preview-info-message}
