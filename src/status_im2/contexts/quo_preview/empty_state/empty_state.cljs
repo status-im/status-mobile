@@ -79,7 +79,6 @@
             :background-color (colors/theme-colors colors/white colors/neutral-95)}}
    [rn/flat-list
     {:style                        {:flex 1}
-     :nestedScrollEnabled          true
      :keyboard-should-persist-taps :always
      :header                       [cool-preview]
-     :key-fn                       :id}]])
+     :key-fn                       str}]])
