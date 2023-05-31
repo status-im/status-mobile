@@ -16,9 +16,28 @@
 
 (defn- mark-error-words
   [pred-last-word pred-previous-words text word-limit]
+  (prn "--------------" text)
   (let [last-index (dec (count (string/split text #"\s+")))
         words      (map #(apply str %)
                         (partition-by #(= " " %) text))]
+
+    (prn (->> words
+              (reduce (fn [{:keys [idx] :as acc} word]
+                        (let [error-pred        (if (= last-index idx) pred-last-word pred-previous-words)
+                              invalid-word?     (and (or (error-pred word)
+                                                         (>= idx word-limit))
+                                                     (not (string/blank? word)))
+                              not-blank-spaces? (not (string/blank? word))]
+                          (cond-> acc
+                            not-blank-spaces? (update :idx inc)
+                            :always           (update :result
+                                                      conj
+                                                      (if invalid-word?
+                                                        [error-word word]
+                                                        word)))))
+                      {:result [:<>]
+                       :idx    0})
+              :result))
     (->> words
          (reduce (fn [{:keys [idx] :as acc} word]
                    (let [error-pred        (if (= last-index idx) pred-last-word pred-previous-words)
@@ -66,6 +85,7 @@
                                             (set-default)
                                             (when on-blur (on-blur)))}
                  extra-props)
+          (prn text)
           (if mark-errors?
             (mark-error-words error-pred-current-word error-pred-written-words text word-limit)
             text)]]))))

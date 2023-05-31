@@ -104,7 +104,8 @@
                      on-change-seed-phrase   (fn [new-phrase]
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase (string/lower-case new-phrase)))
+                                               (reset! seed-phrase (string/lower-case new-phrase))
+                                               (reagent/flush))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (rf/dispatch [:onboarding-2/seed-phrase-entered
