@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feature/lp-release-messenger-update",
-    "commit-sha1": "fbfb95e98257330eb65d4698eb74667eb9992d9d",
-    "src-sha256": "0hjc690cxnxs10wbmdkkcl0sy2r8kxn40b0kd52y07wp479hcjnh"
+    "version": "v0.154.0",
+    "commit-sha1": "a7df4ed388e4d78653326ed7a35e72221e23a5d9",
+    "src-sha256": "1mh7kb0s49c16z0h72v8nz9c6z6vd78db6wc1wdlzizc75xb0pw2"
 }
