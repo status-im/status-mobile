@@ -10,7 +10,8 @@
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [quo2.foundations.colors :as colors]))
 
 (rf/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]
@@ -55,7 +56,7 @@
                 :peers-count (count (:peers peer-stats)))}))
 
 (rf/defn handle-local-pairing-signals
-  [{:keys [db] :as cofx} {:keys [type action data] :as event}]
+  [{:keys [db] :as cofx} {:keys [type action data error] :as event}]
   (log/info "local pairing signal received"
             {:event event})
   (let [{:keys [account password]}      data
@@ -97,7 +98,12 @@
            (when (and completed-pairing? sender?)
              {:dispatch [:syncing/clear-states]})
            (when (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]}))))
+             {:dispatch [:multiaccounts.login/local-paired-user]})
+           (when error-on-pairing?
+             {:dispatch [:toasts/upsert
+                         {:icon       :i/alert
+                          :icon-color colors/danger-50
+                          :text       error}]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}
