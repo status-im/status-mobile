@@ -78,7 +78,7 @@
                                              (and (some? account) (some? password)))
         multiaccount-data               (when received-account?
                                           (merge account {:password password}))
-        navigate-to-syncing-devices?    (and connection-success? receiver?)
+        navigate-to-syncing-devices?    (and (or connection-success? error-on-pairing?) receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
                   connection-success?
