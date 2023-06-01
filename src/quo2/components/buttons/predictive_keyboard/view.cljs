@@ -42,7 +42,8 @@
     (case type
       :words
       [rn/flat-list
-       {:data                              words
+       {:keyboard-should-persist-taps      :always
+        :data                              words
         :content-container-style           style/word-list
         :render-fn                         word-component
         :render-data                       {:blur?    blur?
