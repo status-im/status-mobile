@@ -6,7 +6,8 @@
             [react-native.blur :as blur]
             [quo2.components.drawers.drawer-buttons.style :as style]
             [react-native.reanimated :as reanimated]
-            [quo.platform :as platform]))
+            [quo.platform :as platform]
+            [react-native.safe-area :as safe-area]))
 
 (defn render-bottom
   [children]
@@ -103,8 +104,7 @@
   [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay insets]} child-1
    child-2]
   ;914.3
-  (println (:top insets) "dsa")
-  (let [top                  (reanimated/use-shared-value (- (:height (rn/get-screen)) 216))
+  (let [top                  (reanimated/use-shared-value (- (:height (if platform/ios? (rn/get-window) (rn/get-screen))) (when platform/android? (safe-area/get-top)) 216))
         top-padding          (reanimated/use-shared-value 12)
         border-radius        (reanimated/use-shared-value 20)
         bottom-view-top      (reanimated/use-shared-value 80)
@@ -122,7 +122,7 @@
                                 :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
-                                (if platform/ios? 115 68)     animations-duration
+                                (+ 68 (safe-area/get-top))     animations-duration
                                 :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
@@ -137,7 +137,7 @@
                                                                                       2))
                                (reanimated/animate-shared-value-with-delay
                                 top
-                                (- (:height (rn/get-screen)) 216)
+                                (- (:height (if platform/ios? (rn/get-window) (rn/get-screen))) (when platform/android? (safe-area/get-top)) 216)
                                 animations-duration
                                 :linear
                                 0)
