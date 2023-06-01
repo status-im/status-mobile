@@ -133,7 +133,6 @@
                                             :keywordize-keys
                                             true)
                        view-finder (assoc layout :height (:width layout))]
-                   (println layout view-finder "ddasasdasdads")
                    (reset! qr-view-finder view-finder)))}])
 
 (defn- border
@@ -180,26 +179,20 @@
     "Yet to be implemented"]])
 
 (defn- f-bottom-view
-  [insets]
-  (let [translate-y (reanimated/use-shared-value (+ 12 12 18.2 (:bottom insets)))]
-    (reanimated/animate-delay translate-y
-                              0
-                              (+ constants/onboarding-modal-animation-duration
-                                 constants/onboarding-modal-animation-delay)
-                              100)
-    [rn/touchable-without-feedback
-     {:on-press #(js/alert "Yet to be implemented")}
-     [reanimated/view
-      {:style (style/bottom-container translate-y (:bottom insets))}
-      [quo/text
-       {:size   :paragraph-2
-        :weight :regular
-        :style  style/bottom-text}
-       (i18n/label :t/i-dont-have-status-on-another-device)]]]))
+  [insets translate-y]
+  [rn/touchable-without-feedback
+   {:on-press #(js/alert "Yet to be implemented")}
+   [reanimated/view
+    {:style (style/bottom-container translate-y (:bottom insets))}
+    [quo/text
+     {:size   :paragraph-2
+      :weight :regular
+      :style  style/bottom-text}
+     (i18n/label :t/i-dont-have-status-on-another-device)]]])
 
 (defn- bottom-view
-  [insets]
-  [:f> f-bottom-view insets])
+  [insets translate-y]
+  [:f> f-bottom-view insets translate-y])
 
 (defn- check-qr-code-data
   [event]
@@ -243,6 +236,7 @@
   (let [insets                    (safe-area/get-insets)
         active-tab                (reagent/atom 1)
         qr-view-finder            (reagent/atom {})
+        should-render-camera?     (reagent/atom false)
         request-camera-permission (fn []
                                     (rf/dispatch
                                      [:request-permissions
@@ -278,7 +272,9 @@
             title-opacity (reanimated/use-shared-value 0)
             subtitle-opacity (reanimated/use-shared-value 0)
             tab-translate-y (reanimated/interpolate subtitle-opacity [0 1] [85 0])
+            bottom-view-translate-y (reanimated/use-shared-value (+ 12 12 18.2 (:bottom insets)))
             reset-animations-fn (fn []
+                                  (reset! should-render-camera? false)
                                   (reanimated/animate-shared-value-with-delay
                                    subtitle-opacity
                                    0       constants/onboarding-modal-animation-duration
@@ -296,14 +292,24 @@
                                                     :linear
                                                     (+ constants/onboarding-modal-animation-duration
                                                        constants/onboarding-modal-animation-delay))
+        (reanimated/animate-delay bottom-view-translate-y
+                                  0
+                                  (+ constants/onboarding-modal-animation-duration
+                                     constants/onboarding-modal-animation-delay)
+                                  100)
         (rn/use-effect
          (fn []
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
-                                              #(reset! camera-permission-granted? false)))))
+                                              #(reset! camera-permission-granted? false)))
+           (js/setTimeout #(reset! should-render-camera? true)
+                          (+ constants/onboarding-modal-animation-duration
+                             constants/onboarding-modal-animation-delay
+                             300))))
         [:<>
-         [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
+         (when @should-render-camera?
+           [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?])
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
           [reanimated/view
@@ -316,7 +322,7 @@
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets])]]))))
+          (when show-bottom-view? [bottom-view insets bottom-view-translate-y])]]))))
 
 (defn view
   [props]
