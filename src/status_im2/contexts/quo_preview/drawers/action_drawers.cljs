@@ -10,6 +10,9 @@
   [{:label "Muted?"
     :key   :muted?
     :type  :boolean}
+   {:label "Mark as read disabled?"
+    :key   :mark-as-read-disabled?
+    :type  :boolean}
    {:label "Show red options?"
     :key   :show-red-options?
     :type  :boolean}])
@@ -31,9 +34,10 @@
       [[{:icon     :i/friend
          :label    "View channel members and details"
          :on-press #(js/alert "View channel members and details")}
-        {:icon     :i/communities
-         :label    "Mark as read"
-         :on-press #(js/alert "Mark as read")}
+        {:icon      :i/communities
+         :label     "Mark as read"
+         :disabled? (:mark-as-read-disabled? @state)
+         :on-press  #(js/alert "Mark as read")}
         {:icon       :i/muted
          :label      (if (:muted? @state) "Unmute channel" "Mute channel")
          :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
