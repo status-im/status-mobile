@@ -160,7 +160,8 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout     options/onboarding-layout
+                 :popGesture false}
      :component syncing-devices/view}
 
     {:name      :syncing-results
