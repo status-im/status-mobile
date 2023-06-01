@@ -64,6 +64,7 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
+    quo2.components.selectors.reactions.view
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
@@ -109,6 +110,9 @@
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
+
+;;;; SELECTORS
+(def reactions quo2.components.selectors.reactions.view/view)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
