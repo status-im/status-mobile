@@ -165,6 +165,15 @@
      (wallet/request-current-block-update))
    (prices/update-prices)))
 
+(rf/defn login-local-paired-user
+  {:events [:multiaccounts.login/local-paired-user]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :multiaccount])]
+    {::login [key-uid
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
+              password]}))
+
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
@@ -384,22 +393,27 @@
 (rf/defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [{:keys [db] :as cofx}]
-  (cond
-    (get db :onboarding-2/new-account?)
-    {:dispatch [:onboarding-2/finalize-setup]}
+  (let [pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
+    (cond
+      pairing-completed?
+      {:db       (dissoc db :syncing)
+       :dispatch [:init-root :syncing-results]}
 
-    (get db :tos/accepted?)
-    (rf/merge
-     cofx
-     (multiaccounts/switch-theme nil :shell-stack)
-     (navigation/init-root :shell-stack))
+      (get db :onboarding-2/new-account?)
+      {:dispatch [:onboarding-2/finalize-setup]}
 
-    :else
-    {:dispatch [:init-root :tos]}))
+      (get db :tos/accepted?)
+      (rf/merge
+       cofx
+       (multiaccounts/switch-theme nil :shell-stack)
+       (navigation/init-root :shell-stack))
+
+      :else
+      {:dispatch [:init-root :tos]})))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
-  [{:keys [db] :as cofx} settings pairing-in-progress?]
+  [{:keys [db] :as cofx} settings]
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
@@ -431,8 +445,7 @@
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count)
-              (when-not pairing-in-progress?
-                (redirect-to-root)))))
+              (redirect-to-root))))
 
 (re-frame/reg-fx
  ::open-last-chat
@@ -511,9 +524,8 @@
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
-  (let [auth-method          (:auth-method db)
-        new-auth-method      (get-new-auth-method auth-method save-password?)
-        pairing-in-progress? (get-in db [:syncing :pairing-in-progress?])]
+  (let [auth-method     (:auth-method db)
+        new-auth-method (get-new-auth-method auth-method save-password?)]
     (log/debug "[login] login-only-events"
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
@@ -521,7 +533,7 @@
               {:db (assoc db :chats/loading? true)
                :json-rpc/call
                [{:method     "settings_getSettings"
-                 :on-success #(re-frame/dispatch [::get-settings-callback % pairing-in-progress?])}]}
+                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
