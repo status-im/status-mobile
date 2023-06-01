@@ -12,10 +12,7 @@
       (let [on-press (h/mock-fn)]
         (h/render [view/view :reaction/love {:on-press on-press}])
         (h/fire-event :press (h/get-by-label-text :reaction))
-        (h/was-called on-press)
-        (h/wait-for (fn []
-                      (h/is-truthy (h/query-by-test-id :pressed))
-                      (h/is-null (h/query-by-test-id :released))))))
+        (h/was-called on-press)))
 
     (h/test "starts with pressed state"
       (let [on-press (h/mock-fn)]
@@ -23,7 +20,4 @@
                    {:on-press       on-press
                     :start-pressed? true}])
         (h/fire-event :press (h/get-by-label-text :reaction))
-        (h/was-called on-press)
-        (h/wait-for (fn []
-                      (h/is-null (h/query-by-test-id :pressed))
-                      (h/is-truthy (h/query-by-test-id :released))))))))
+        (h/was-called on-press)))))

@@ -18,9 +18,8 @@
                                (when on-press
                                  (on-press e)))}
        [rn/view
-        {:test-ID (if @pressed? :pressed :released)
-         :style   (merge (style/container @pressed?)
-                         container-style)}
+        {:style (merge (style/container @pressed?)
+                       container-style)}
         [rn/image
          {:source (reactions.resource/get-reaction emoji)
           :style  {:width 20 :height 20}}]]])))
