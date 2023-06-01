@@ -23,16 +23,18 @@
     [status-im2.common.not-implemented :as not-implemented]
     [utils.datetime :as datetime]
     [reagent.core :as reagent]
-    [utils.address :as address]))
+    [utils.address :as address]
+    [react-native.gesture :as gesture]))
 
 (def delivery-state-showing-time-ms 3000)
 
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]}]
+  [{:keys [content last-in-group? pinned-by quoted-message from]} message-reaction-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
-          pinned-by)
+          pinned-by
+          message-reaction-view?)
     [avatar/avatar from :small]
     [rn/view {:padding-top 2 :width 32}]))
 
@@ -43,8 +45,9 @@
            pinned-by
            quoted-message
            from
-           timestamp]}]
-  (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by)
+           timestamp]}
+   message-reaction-view?]
+  (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by message-reaction-view?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
@@ -82,7 +85,8 @@
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [content-type quoted-message content outgoing outgoing-status] :as message-data}
          context
-         keyboard-shown?]
+         keyboard-shown?
+         message-reaction-view?]
       (let [first-image     (first (:album message-data))
             outgoing-status (if (= content-type constants/content-type-album)
                               (:outgoing-status first-image)
@@ -91,7 +95,8 @@
                               (:outgoing first-image)
                               outgoing)
             context         (assoc context :on-long-press #(on-long-press message-data context))
-            response-to     (:response-to content)]
+            response-to     (:response-to content)
+            height          (rf/sub [:dimensions/window-height])]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -115,37 +120,41 @@
           [rn/view
            {:style {:padding-horizontal 12
                     :flex-direction     :row}}
-           [avatar-container message-data]
-           [rn/view
-            {:style {:margin-left 8
-                     :flex        1}}
-            [author message-data]
-            (case content-type
+           [avatar-container message-data message-reaction-view?]
+           (into
+            (if message-reaction-view?
+              [gesture/scroll-view]
+              [rn/view])
+            [{:style {:margin-left 8
+                      :flex        1
+                      :max-height  (when message-reaction-view? (* 0.4 height))}}
+             [author message-data message-reaction-view?]
+             (case content-type
 
-              constants/content-type-text [content.text/text-content message-data]
+               constants/content-type-text [content.text/text-content message-data context]
 
-              constants/content-type-emoji
-              [not-implemented/not-implemented [old-message/emoji message-data]]
+               constants/content-type-emoji
+               [not-implemented/not-implemented [old-message/emoji message-data]]
 
-              constants/content-type-sticker
-              [not-implemented/not-implemented [old-message/sticker message-data]]
+               constants/content-type-sticker
+               [not-implemented/not-implemented [old-message/sticker message-data]]
 
-              constants/content-type-audio
-              [audio/audio-message message-data context]
+               constants/content-type-audio
+               [audio/audio-message message-data context]
 
-              constants/content-type-image
-              [image/image-message 0 message-data on-long-press]
+               constants/content-type-image
+               [image/image-message 0 message-data context on-long-press]
 
-              constants/content-type-album
-              [album/album-message message-data context on-long-press]
+               constants/content-type-album
+               [album/album-message message-data context on-long-press]
 
-              [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
-            (when @show-delivery-state?
-              [status/status outgoing-status])]]]]))))
+               [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
+             (when @show-delivery-state?
+               [status/status outgoing-status])])]]]))))
 
 (defn message-with-reactions
-  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? message-id] :as message-data}
-   {:keys [chat-id] :as context}
+  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group?] :as message-data}
+   context
    keyboard-shown]
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
@@ -153,9 +162,10 @@
    (when pinned-by
      [pin/pinned-by-view pinned-by])
    (if (#{constants/content-type-system-text constants/content-type-community
-          constants/content-type-system-pinned-message
-          constants/content-type-contact-request}
+          constants/content-type-contact-request
+          constants/content-type-system-pinned-message}
         content-type)
      [system-message-content message-data]
-     [user-message-content message-data context keyboard-shown])
-   [reactions/message-reactions-row chat-id message-id]])
+     [user-message-content message-data context keyboard-shown false])
+   [reactions/message-reactions-row message-data
+    [user-message-content message-data context keyboard-shown true]]])

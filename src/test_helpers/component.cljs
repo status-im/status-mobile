@@ -207,3 +207,7 @@
 (defn was-called-times
   [^js mock number-of-times]
   (.toHaveBeenCalledTimes (js/expect mock) number-of-times))
+
+(defn was-not-called
+  [mock]
+  (was-called-times mock 0))

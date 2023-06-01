@@ -23,7 +23,7 @@
   (let [previews (rf/sub [:chats/link-previews-unfurled])
         height   (use-animated-height (boolean (seq previews)))]
     [reanimated/view
-     {:style (reanimated/apply-animations-to-style {:height height} {})}
+     {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
      [quo/url-preview-list
       {:key-fn               :url
        :preview-width        (- (:width (rn/get-window))

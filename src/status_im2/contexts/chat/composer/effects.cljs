@@ -61,18 +61,6 @@
     (when-not (string/blank? text)
       (rf/dispatch [:link-preview/unfurl-urls text]))))
 
-(defn images-effect
-  [{:keys [sending-images? input-ref]}
-   {:keys [container-opacity]}
-   images?]
-  (when images?
-    (reanimated/animate container-opacity 1))
-  (when (and (not @sending-images?) images? @input-ref)
-    (.focus ^js @input-ref)
-    (reset! sending-images? true))
-  (when-not images?
-    (reset! sending-images? false)))
-
 (defn audio-effect
   [{:keys [recording? gesture-enabled?]}
    {:keys [container-opacity]}
@@ -95,26 +83,9 @@
   (.remove ^js @keyboard-hide-listener)
   (.remove ^js @keyboard-frame-listener))
 
-(defn max-height-effect
-  [{:keys [focused?]}
-   {:keys [max-height]}
-   {:keys [height saved-height last-height]}]
-  (rn/use-effect
-   (fn []
-     ;; Some subscriptions can arrive after the composer if focused (esp. link
-     ;; previews), so we need to react to changes in `max-height` outside of the
-     ;; `on-focus` handler.
-     (when @focused?
-       (let [new-height (min max-height (reanimated/get-shared-value last-height))]
-         (reanimated/set-shared-value last-height new-height)
-         (reanimated/animate height new-height)
-         (reanimated/set-shared-value saved-height new-height))))
-   [max-height @focused?]))
-
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input images audio] :as subs}]
-  (max-height-effect state dimensions animations)
+   {:keys [chat-input audio] :as subs}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -122,7 +93,6 @@
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
-     (images-effect props animations images)
      (link-preview-effect state)
      (audio-effect state animations audio)
      (empty-effect state animations subs)
@@ -185,6 +155,56 @@
        (reset! text-value input-text)
        (rf/dispatch [:mention/on-change-text input-text])))
    [input-text]))
+
+(defn link-previews
+  [{:keys [sending-links?]}
+   {:keys [text-value maximized?]}
+   {:keys [height saved-height last-height]}
+   {:keys [link-previews?]}]
+  (rn/use-effect
+   (fn []
+     (if-not @maximized?
+       (let [value (if link-previews?
+                     constants/links-container-height
+                     (- constants/links-container-height))]
+         (when (not= @sending-links? link-previews?)
+           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value saved-height
+                                        (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value last-height
+                                        (+ (reanimated/get-shared-value last-height) value))))
+       (let [curr-text @text-value]
+         (reset! text-value (str @text-value " "))
+         (js/setTimeout #(reset! text-value curr-text) 10)))
+     (reset! sending-links? link-previews?))
+   [link-previews?]))
+
+(defn images
+  [{:keys [sending-images? input-ref]}
+   {:keys [text-value maximized?]}
+   {:keys [container-opacity height saved-height last-height]}
+   {:keys [images]}]
+  (rn/use-effect
+   (fn []
+     (when images
+       (reanimated/animate container-opacity 1))
+     (when (and (not @sending-images?) (seq images) @input-ref)
+       (.focus ^js @input-ref))
+     (if-not @maximized?
+       (let [value (if (seq images)
+                     constants/images-container-height
+                     (- constants/images-container-height))]
+         (when (not= @sending-images? (boolean (seq images)))
+           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value saved-height
+                                        (+ (reanimated/get-shared-value saved-height) value))
+           (reanimated/set-shared-value last-height
+                                        (+ (reanimated/get-shared-value last-height) value))))
+       (let [curr-text @text-value]
+         (reset! text-value (str @text-value " "))
+         (js/setTimeout #(reset! text-value curr-text) 10)))
+     (reset! sending-images? (boolean (seq images))))
+   [(boolean (seq images))]))
 
 (defn did-mount
   [{:keys [selectable-input-ref input-ref selection-manager]}]

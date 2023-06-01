@@ -38,22 +38,18 @@
   []
   (let [unread-count (rf/sub [:activity-center/unread-count])]
     [quo/action-drawer
-     [[{:icon           :i/check
+     [[{:icon           :i/mark-as-read
         :override-theme :dark
         :label          (i18n/label :t/mark-all-notifications-as-read)
+        :disabled?      (zero? unread-count)
         :on-press       (fn []
-                          (if (pos? unread-count)
-                            (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
-                                          (fn []
-                                            {:icon           :up-to-date
-                                             :icon-color     colors/success-50
-                                             :text           (i18n/label :t/notifications-marked-as-read
-                                                                         {:count unread-count})
-                                             :override-theme :dark})])
-                            ;; Need design improvements if there is NO unread
-                            ;; notifications to mark as read
-                            ;; https://github.com/status-im/status-mobile/issues/14983
-                            (js/alert "No unread notifications to mark as read"))
+                          (rf/dispatch [:activity-center.notifications/mark-all-as-read-locally
+                                        (fn []
+                                          {:icon           :up-to-date
+                                           :icon-color     colors/success-50
+                                           :text           (i18n/label :t/notifications-marked-as-read
+                                                                       {:count unread-count})
+                                           :override-theme :dark})])
                           (rf/dispatch [:hide-bottom-sheet]))}]]]))
 
 (defn empty-tab

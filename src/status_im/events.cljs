@@ -36,7 +36,7 @@
     status-im.signals.core
     status-im.stickers.core
     status-im.transport.core
-    [status-im.ui.components.permissions :as permissions]
+    [react-native.permissions :as permissions]
     [status-im.ui.components.react :as react]
     status-im.ui.screens.privacy-and-security-settings.events
     [status-im.utils.dimensions :as dimensions]
