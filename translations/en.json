@@ -1491,6 +1491,7 @@
     "fetching-community": "Fetching community...",
     "seed-phrase-placeholder": "Type or paste your recovery phrase",
     "seed-phrase-words-exceeded": "Recovery phrase cannot exceed 24 words",
+    "seed-phrase-words-uppercase": "Recovery phrase cannot contain uppercase characters",
     "seed-phrase-error": "Recovery phrase contains invalid words",
     "seed-phrase-invalid": "Invalid recovery phrase",
     "seed-phrase-info": "Enter 12, 18 or 24 words separated by spaces",

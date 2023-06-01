@@ -52,6 +52,9 @@
       (string/replace #"\s+" " ")
       (string/trim)))
 
+(defn- upper-case? []
+  )
+
 (defn- recovery-form
   [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
            keyboard-shown? on-submit]}]
@@ -71,11 +74,7 @@
         :word-limit               max-seed-phrase-length
         :error-pred-current-word  partial-word-not-in-dictionary?
         :error-pred-written-words word-not-in-dictionary?
-        :on-change-text           on-change-seed-phrase
-        ;; NOTE: Workaround to avoid text duplication on some devices, taken from
-        ;; https://github.com/facebook/react-native/issues/11068#issuecomment-1531450643
-        :secure-text-entry        true
-        :keyboard-type            :visible-password}
+        :on-change-text           on-change-seed-phrase}
        seed-phrase]]
      [quo/button
       {:style    (style/continue-button keyboard-shown?)
@@ -104,8 +103,7 @@
                      on-change-seed-phrase   (fn [new-phrase]
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase (string/lower-case new-phrase))
-                                               (reagent/flush))
+                                               (reset! seed-phrase new-phrase))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (rf/dispatch [:onboarding-2/seed-phrase-entered
@@ -125,6 +123,7 @@
           words-exceeded?          (> word-count max-seed-phrase-length)
           error-in-words?          (or (not last-partial-word-valid?)
                                        (not butlast-words-valid?))
+          upper-case?              (boolean (re-find #"[A-Z]" @seed-phrase))
           suggestions-state        (cond
                                      (or error-in-words?
                                          words-exceeded?
@@ -133,6 +132,7 @@
                                      (string/ends-with? @seed-phrase " ") :empty
                                      :else                                :words)
           suggestions-text         (cond
+                                     upper-case?           (i18n/label :t/seed-phrase-words-uppercase)
                                      words-exceeded?       (i18n/label :t/seed-phrase-words-exceeded)
                                      error-in-words?       (i18n/label :t/seed-phrase-error)
                                      @invalid-seed-phrase? (i18n/label :t/seed-phrase-invalid)
