@@ -52,9 +52,6 @@
       (string/replace #"\s+" " ")
       (string/trim)))
 
-(defn- upper-case? []
-  )
-
 (defn- recovery-form
   [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
            keyboard-shown? on-submit]}]
