@@ -33,6 +33,7 @@
      [rn/view {:style styles/button-container}
       [button/button
        (cond-> {:type                      :primary
+                :size                      32
                 :override-background-color (styles/upper-button-color customization-color)
                 :on-press                  upper-button-on-press}
          blur? (assoc :override-theme :dark))
@@ -42,6 +43,7 @@
                   lower-button-on-press :on-press} lower-button]
         [button/button
          (cond-> {:style    {:margin-top 12}
+                  :size     32
                   :type     :blur-bg
                   :on-press lower-button-on-press}
            blur? (assoc :override-theme :dark))
