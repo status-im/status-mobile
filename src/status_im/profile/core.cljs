@@ -89,8 +89,9 @@
   {:events [:chat.ui/show-profile]}
   [{:keys [db]} identity ens-name]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
-    (when (not= my-public-key identity)
+    (if (not= my-public-key identity)
       {:db       (-> db
                      (assoc :contacts/identity identity)
                      (assoc :contacts/ens-name ens-name))
-       :dispatch [:contacts/build-contact identity ens-name true]})))
+       :dispatch [:contacts/build-contact identity ens-name true]}
+      {:dispatch [:navigate-to :my-profile]})))

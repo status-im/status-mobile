@@ -6,7 +6,72 @@
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [reagent.core :as reagent]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
+            [status-im2.contexts.chat.messages.drawers.style :as style]
+            [react-native.gesture :as gesture]))
+
+(defn contact-list-item-fn
+  [{:keys [from compressed-key]}]
+  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity
+                                               from])
+        {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
+    ^{:key compressed-key}
+    [contact-list-item/contact-list-item
+     {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
+     {:primary-name   primary-name
+      :secondary-name secondary-name
+      :public-key     from
+      :compressed-key compressed-key
+      :ens-verified   ens-verified
+      :added?         added?}]))
+
+(defn get-tabs-data
+  [reaction-authors selected-tab reactions-order]
+  (map (fn [reaction-type-int]
+         (let [author-details (get reaction-authors reaction-type-int)]
+           {:id                  reaction-type-int
+            :accessibility-label (keyword (str "authors-for-reaction-" reaction-type-int))
+            :label               [rn/view {:style style/tab}
+                                  [quo/icon
+                                   (get constants/reactions reaction-type-int)
+                                   {:no-color        true
+                                    :container-style style/tab-icon}]
+                                  [quo/text
+                                   {:weight :medium
+                                    :size   :paragraph-1
+                                    :style  (style/tab-count (= selected-tab
+                                                                reaction-type-int))}
+                                   (count author-details)]]}))
+       reactions-order))
+
+(defn reaction-authors-comp
+  [selected-tab reaction-authors reactions-order]
+  [:<>
+   [rn/view style/tabs-container
+    [quo/tabs
+     {:size            32
+      :scrollable?     true
+      :in-scroll-view? true
+      :on-change       #(reset! selected-tab %)
+      :default-active  @selected-tab
+      :data            (get-tabs-data reaction-authors @selected-tab reactions-order)}]]
+   [gesture/flat-list
+    {:data      (for [contact (get reaction-authors @selected-tab)]
+                  contact)
+     :render-fn contact-list-item-fn
+     :key-fn    :from
+     :style     style/authors-list}]])
+
+(defn reaction-authors
+  [reactions-order]
+  (let [{:keys [reaction-authors-list
+                selected-reaction]} (rf/sub [:chat/reactions-authors])
+        selected-tab                (reagent/atom (or selected-reaction
+                                                      (first (keys reaction-authors-list))))]
+    (fn []
+      [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]

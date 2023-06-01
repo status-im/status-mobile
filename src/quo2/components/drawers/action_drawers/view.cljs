@@ -18,12 +18,19 @@
     :accessible          true
     :accessibility-label :divider}])
 
-(defn action
+(defn- maybe-pressable
+  [disabled? props child]
+  (if disabled?
+    [rn/view (dissoc props :on-press) child]
+    [rn/touchable-highlight props child]))
+
+(defn- action
   [{:keys [icon
            label
            sub-label
            right-icon
            danger?
+           disabled?
            on-press
            add-divider?
            override-theme
@@ -33,9 +40,9 @@
     [:<> {:key label}
      (when add-divider?
        [divider])
-     [rn/touchable-highlight
+     [maybe-pressable disabled?
       {:accessibility-label accessibility-label
-       :style               (style/container sub-label)
+       :style               (style/container sub-label disabled?)
        :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90 override-theme)
        :on-press            on-press}
       [rn/view

@@ -277,9 +277,10 @@
 (def ^:const local-pairing-event-transfer-error "transfer-error")
 
 ;; receiver events
-(def ^:const local-pairing-event-received-amount "received-account")
+(def ^:const local-pairing-event-received-account "received-account")
 (def ^:const local-pairing-event-process-success "process-success")
 (def ^:const local-pairing-event-process-error "process-error")
+(def ^:const local-pairing-event-received-installation "received-installation")
 
 (def ^:const local-pairing-event-errors
   #{local-pairing-event-connection-error

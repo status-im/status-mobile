@@ -1,76 +1,78 @@
 (ns status-im2.contexts.quo-preview.dropdowns.dropdown
-  (:require [quo2.components.dropdowns.dropdown :as quo2]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [quo2.core :as quo]))
 
 (def descriptor
-  [{:label   "Icon"
-    :key     :icon
+  [{:label   "Type:"
+    :key     :type
     :type    :select
-    :options [{:key   :main-icons/placeholder
-               :value "Placeholder"}
-              {:key   :main-icons/locked
-               :value "Wallet"}]}
-   {:label "Disabled"
-    :key   :disabled?
-    :type  :boolean}
-   {:label "Default item"
-    :key   :default-item
-    :type  :text}
-   {:label "Use border?"
-    :key   :use-border?
-    :type  :boolean}
-   {:label   "Border color"
-    :key     :border-color
-    :type    :select
-    :options (map
-              (fn [c]
-                {:key   c
-                 :value c})
-              (keys colors/customization))}
-   {:label "DD color"
-    :key   :dd-color
-    :type  :text}
-   {:label   "Size"
+    :options [{:key   :primary
+               :value "Primary"}
+              {:key   :secondary
+               :value "Secondary"}
+              {:key   :grey
+               :value "Grey"}
+              {:key   :dark-grey
+               :value "Dark Grey"}
+              {:key   :outline
+               :value "Outline"}
+              {:key   :ghost
+               :value "Ghost"}
+              {:key   :danger
+               :value "Danger"}
+              {:key   :positive
+               :value "Positive"}]}
+   {:label   "Size:"
     :key     :size
     :type    :select
-    :options [{:key   :big
-               :value "big"}
-              {:key   :medium
-               :value "medium"}
-              {:key   :small
-               :value "small"}]}])
+    :options [{:key   56
+               :value "56"}
+              {:key   40
+               :value "40"}
+              {:key   32
+               :value "32"}
+              {:key   24
+               :value "24"}]}
+   {:label "Icon:"
+    :key   :icon
+    :type  :boolean}
+   {:label "Before icon:"
+    :key   :before
+    :type  :boolean}
+   {:label "Disabled:"
+    :key   :disabled
+    :type  :boolean}
+   {:label "Label"
+    :key   :label
+    :type  :text}])
 
 (defn cool-preview
   []
-  (let [items         ["Banana"
-                       "Apple"
-                       "COVID +18"
-                       "Orange"
-                       "Kryptonite"
-                       "BMW"
-                       "Meh"]
-        state         (reagent/atom {:icon         :main-icons/placeholder
-                                     :default-item "item1"
-                                     :use-border?  false
-                                     :dd-color     (colors/custom-color :purple 50)
-                                     :size         :big})
-        selected-item (reagent/cursor state [:default-item])
-        on-select     #(reset! selected-item %)]
+  (let [state  (reagent/atom {:label "Press Me"
+                              :size  40})
+        label  (reagent/cursor state [:label])
+        before (reagent/cursor state [:before])
+        icon   (reagent/cursor state [:icon])]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
-          :align-items      :center}
-         [rn/text (str "Selected item: " @selected-item)]
-         [quo2/dropdown
-          (merge @state
-                 {:on-select on-select
-                  :items     items})]]]])))
+          :flex-direction   :row
+          :justify-content  :center}
+         [quo/dropdown
+          (merge (dissoc @state
+                  :theme
+                  :before
+                  :after)
+                 {:on-press #(println "Hello world!")}
+                 (when @before
+                   {:before :i/placeholder}))
+          (if @icon :i/placeholder @label)]]]])))
 
 (defn preview-dropdown
   []

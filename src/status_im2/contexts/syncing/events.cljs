@@ -10,15 +10,6 @@
             [status-im.utils.platform :as utils.platform]
             [status-im2.constants :as constants]))
 
-(rf/defn local-pairing-completed
-  {:events [:syncing/pairing-completed]}
-  [{:keys [db]}]
-  (let [receiver? (= (get-in db [:syncing :role]) constants/local-pairing-role-receiver)]
-    (merge
-     {:db (dissoc db :syncing)}
-     (when receiver?
-       {:dispatch [:init-root :syncing-results]}))))
-
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}
   [{:keys [db]} role]

@@ -13,7 +13,7 @@
    :margin-vertical  8})
 
 (defn sheet
-  [{:keys [top bottom]} window-height override-theme shell?]
+  [{:keys [top bottom]} window-height override-theme padding-bottom-override shell?]
   {:position                :absolute
    :max-height              (- window-height top 20)
    :z-index                 1
@@ -22,9 +22,9 @@
    :right                   0
    :border-top-left-radius  20
    :border-top-right-radius 20
-   :overflow                :hidden
+   :overflow                (when shell? :hidden)
    :flex                    1
-   :padding-bottom          (max 20 bottom)
+   :padding-bottom          (or padding-bottom-override (max 20 bottom))
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-90 override-theme))})

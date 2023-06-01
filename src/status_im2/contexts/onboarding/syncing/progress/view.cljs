@@ -41,7 +41,7 @@
 
 (defn view
   []
-  (let [pairing-status (rf/sub [:pairing/pairing-in-progress])
+  (let [pairing-status (rf/sub [:pairing/pairing-status])
         profile-color  (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style style/page-container}
      [background/view true]

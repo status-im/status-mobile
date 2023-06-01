@@ -11,9 +11,10 @@
    :flex-direction   :row})
 
 (defn container
-  [sub-label]
+  [sub-label disabled?]
   {:border-radius     12
    :height            (if sub-label 58 50)
+   :opacity           (when disabled? 0.3)
    :margin-horizontal 8})
 
 (defn row-container
