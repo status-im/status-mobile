@@ -7,9 +7,6 @@
 (defonce ^:const header-avatar-top-offset -36)
 (defonce ^:const messages-list-bottom-offset 16)
 
-(def footer
-  {:z-index 5})
-
 (defn keyboard-avoiding-container
   [{:keys [top]}]
   {:position      :relative
