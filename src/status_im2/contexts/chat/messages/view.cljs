@@ -6,7 +6,6 @@
             [status-im2.contexts.chat.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
-            [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
             [status-im2.navigation.state :as navigation.state]
