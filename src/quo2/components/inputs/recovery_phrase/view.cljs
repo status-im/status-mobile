@@ -15,15 +15,27 @@
    text])
 
 (defn- mark-error-words
-  [pred text word-limit]
-  (let [word-limit (or word-limit ##Inf)]
-    (into [:<>]
-          (comp (map-indexed (fn [idx word]
-                               (if (or (pred word) (>= idx word-limit))
-                                 [error-word word]
-                                 word)))
-                (interpose " "))
-          (string/split text #" "))))
+  [pred-last-word pred-previous-words text word-limit]
+  (let [last-index (dec (count (string/split text #"\s+")))
+        words      (map #(apply str %)
+                        (partition-by #(= " " %) text))]
+    (->> words
+         (reduce (fn [{:keys [idx] :as acc} word]
+                   (let [error-pred        (if (= last-index idx) pred-last-word pred-previous-words)
+                         invalid-word?     (and (or (error-pred word)
+                                                    (>= idx word-limit))
+                                                (not (string/blank? word)))
+                         not-blank-spaces? (not (string/blank? word))]
+                     (cond-> acc
+                       not-blank-spaces? (update :idx inc)
+                       :always           (update :result
+                                                 conj
+                                                 (if invalid-word?
+                                                   [error-word word]
+                                                   word)))))
+                 {:result [:<>]
+                  :idx    0})
+         :result)))
 
 (defn recovery-phrase-input
   [_ _]
@@ -31,9 +43,11 @@
         set-focused #(reset! state :focused)
         set-default #(reset! state :default)]
     (fn [{:keys [customization-color override-theme blur? on-focus on-blur mark-errors?
-                 error-pred word-limit]
-          :or   {customization-color :blue
-                 error-pred          (constantly false)}
+                 error-pred-current-word error-pred-written-words word-limit]
+          :or   {customization-color      :blue
+                 word-limit               ##Inf
+                 error-pred-current-word  (constantly false)
+                 error-pred-written-words (constantly false)}
           :as   props}
          text]
       (let [extra-props (apply dissoc props custom-props)]
@@ -53,5 +67,5 @@
                                             (when on-blur (on-blur)))}
                  extra-props)
           (if mark-errors?
-            (mark-error-words error-pred text word-limit)
+            (mark-error-words error-pred-current-word error-pred-written-words text word-limit)
             text)]]))))
