@@ -179,6 +179,7 @@
        ^{:key id}
        [quo/reactions reaction-name
         {:start-pressed? (boolean emoji-reaction-id)
+         :accessibility-label (str "reaction-" (name reaction-name))
          :on-press
          (fn []
            (if emoji-reaction-id
