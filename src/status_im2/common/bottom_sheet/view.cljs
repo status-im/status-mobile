@@ -13,7 +13,9 @@
 (def timing-options #js {:duration duration})
 
 (defn hide
-  [translate-y bg-opacity window-height]
+  [translate-y bg-opacity window-height on-close]
+  (when (fn? on-close)
+    (on-close))
   ;; it will be better to use animation callback, but it doesn't work
   ;; so we have to use timeout, also we add 50ms for safety
   (js/setTimeout #(rf/dispatch [:bottom-sheet-hidden]) (+ duration 50))
@@ -29,7 +31,7 @@
 (def gesture-values (atom {}))
 
 (defn get-sheet-gesture
-  [translate-y bg-opacity window-height]
+  [translate-y bg-opacity window-height on-close]
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
@@ -47,17 +49,22 @@
        (fn [_]
          (if (< (:dy @gesture-values) 0)
            (show translate-y bg-opacity)
-           (hide translate-y bg-opacity window-height))))))
+           (hide translate-y bg-opacity window-height on-close))))))
 
 (defn view
-  [{:keys [hide? insets]} {:keys [content override-theme selected-item shell?]}]
+  [{:keys [hide? insets]}
+   {:keys [content override-theme selected-item padding-bottom-override on-close shell?]}]
   (let [{window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)
         translate-y             (reanimated/use-shared-value window-height)
-        sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height)]
-    (rn/use-effect #(if hide? (hide translate-y bg-opacity window-height) (show translate-y bg-opacity))
-                   [hide?])
-    (hooks/use-back-handler #(do (rf/dispatch [:hide-bottom-sheet]) true))
+        sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)]
+    (rn/use-effect
+     #(if hide? (hide translate-y bg-opacity window-height on-close) (show translate-y bg-opacity))
+     [hide?])
+    (hooks/use-back-handler #(do (when (fn? on-close)
+                                   (on-close))
+                                 (rf/dispatch [:hide-bottom-sheet])
+                                 true))
     [rn/view {:flex 1}
      ;; backdrop
      [rn/touchable-without-feedback {:on-press #(rf/dispatch [:hide-bottom-sheet])}
@@ -70,7 +77,7 @@
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
                 {:transform [{:translateY translate-y}]}
-                (styles/sheet insets window-height override-theme shell?))}
+                (styles/sheet insets window-height override-theme padding-bottom-override shell?))}
 
        (when shell?
          [blur/ios-view
