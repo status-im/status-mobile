@@ -71,14 +71,28 @@
     child-2           string, keyword or hiccup
    "
   [{:keys [container-style top-card bottom-card]} child-1 child-2]
-  [blur/ios-view
+  [rn/view
    {:style (merge container-style style/outer-container)}
-   [card
-    (merge {:gap   4
-            :top?  true
-            :style style/top-card}
-           top-card) child-1]
-   [card
-    (merge {:style style/bottom-card
-            :gap   20}
-           bottom-card) child-2]])
+   [blur/view
+    {:blur-type   :dark
+     :blur-amount 10
+     :style       {:flex                    1
+                   :border-top-left-radius  20
+                   :border-top-right-radius 20}}]
+   [rn/view
+    {:style {:flex             1
+             :background-color :transparent
+             :position         :absolute
+             :top              0
+             :left             0
+             :right            0
+             :bottom           0}}
+    [card
+     (merge {:gap   4
+             :top?  true
+             :style style/top-card}
+            top-card) child-1]
+    [card
+     (merge {:style style/bottom-card
+             :gap   20}
+            bottom-card) child-2]]])
