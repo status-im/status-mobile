@@ -74,11 +74,7 @@
       constants/content-type-contact-request       [not-implemented/not-implemented
                                                     [old-message/system-contact-request message-data]])))
 
-(defn on-long-press
-  [message-data context]
-  (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch [:show-bottom-sheet
-                {:content (drawers/reactions-and-actions message-data context)}]))
+(declare on-long-press)
 
 (defn user-message-content
   []
@@ -94,7 +90,9 @@
             outgoing        (if (= content-type constants/content-type-album)
                               (:outgoing first-image)
                               outgoing)
-            context         (assoc context :on-long-press #(on-long-press message-data context))
+            context         (assoc context
+                                   :on-long-press
+                                   #(on-long-press message-data context keyboard-shown))
             response-to     (:response-to content)
             height          (rf/sub [:dimensions/window-height])]
         [rn/touchable-highlight
@@ -113,7 +111,7 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       #(on-long-press message-data context)}
+          :on-long-press       #(on-long-press message-data context keyboard-shown)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
             [reply/quoted-message quoted-message])
@@ -151,6 +149,14 @@
                [not-implemented/not-implemented [content.unknown/unknown-content message-data]])
              (when @show-delivery-state?
                [status/status outgoing-status])])]]]))))
+
+(defn on-long-press
+  [message-data context keyboard-shown]
+  (rf/dispatch [:dismiss-keyboard])
+  (rf/dispatch [:show-bottom-sheet
+                {:content       (drawers/reactions-and-actions message-data context)
+                 :selected-item (fn [] [user-message-content message-data context keyboard-shown
+                                        true])}]))
 
 (defn message-with-reactions
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group?] :as message-data}
