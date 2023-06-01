@@ -220,10 +220,10 @@
    only icon
    [button {:icon true} :i/close-circle]"
   [_ _]
-  (let [pressed (reagent/atom false)]
+  (let [pressed-in (reagent/atom false)]
     (fn
-      [{:keys [on-press disabled type size before after above
-               width customization-color override-theme override-background-color
+      [{:keys [on-press disabled type size before after above icon-secondary-no-color
+               width customization-color override-theme override-background-color pressed
                on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
         :or   {type                :primary
                size                40
@@ -234,17 +234,17 @@
                     [(or
                       override-theme
                       (theme/get-theme)) type])
-            state (cond disabled :disabled
-                        @pressed :pressed
-                        :else    :default)
+            state (cond disabled                 :disabled
+                        (or @pressed-in pressed) :pressed
+                        :else                    :default)
             icon-size (when (= 24 size) 12)
             icon-secondary-color (or icon-secondary-color icon-color)]
         [rn/touchable-without-feedback
          (merge {:test-ID             test-ID
                  :disabled            disabled
                  :accessibility-label accessibility-label
-                 :on-press-in         #(reset! pressed true)
-                 :on-press-out        #(reset! pressed nil)}
+                 :on-press-in         #(reset! pressed-in true)
+                 :on-press-out        #(reset! pressed-in nil)}
                 (when on-press
                   {:on-press on-press})
                 (when on-long-press
@@ -306,5 +306,6 @@
               [quo2.icons/icon after
                {:container-style {:margin-left  4
                                   :margin-right (if (= size 40) 12 8)}
+                :no-color        icon-secondary-no-color
                 :color           icon-secondary-color
                 :size            icon-size}]])]]]))))

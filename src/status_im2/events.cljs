@@ -18,7 +18,8 @@
             status-im2.contexts.syncing.events
             status-im2.contexts.chat.events
             status-im2.common.password-authentication.events
-            status-im2.contexts.communities.overview.events))
+            status-im2.contexts.communities.overview.events
+            status-im2.contexts.chat.photo-selector.events))
 
 (re-frame/reg-cofx
  :now
