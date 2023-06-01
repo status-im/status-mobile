@@ -6,17 +6,20 @@
             [status-im2.contexts.onboarding.intro.style :as style]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.constants :as constants]
-            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]))
+            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
+            [react-native.safe-area :as safe-area]))
 
 (defn view
   []
-  (let [start-top-animation (atom nil)]
+  (let [start-top-animation (atom nil)
+        insets              (safe-area/get-insets)]
     [rn/view {:style style/page-container}
      [background/view false]
      [quo/drawer-buttons
       {:on-init             (fn [start-top-animation-fn reset-top-animation-fn]
                               (reset! start-top-animation start-top-animation-fn)
                               (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
+       :insets              insets
        :animations-duration constants/onboarding-modal-animation-duration
        :animations-delay    constants/onboarding-modal-animation-delay
        :top-card            {:on-press            (fn []

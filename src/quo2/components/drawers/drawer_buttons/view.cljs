@@ -5,7 +5,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [quo2.components.drawers.drawer-buttons.style :as style]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as reanimated]
+            [quo.platform :as platform]))
 
 (defn render-bottom
   [children]
@@ -57,7 +58,6 @@
    children]
   [rn/touchable-highlight
    {:accessibility-label accessibility-label
-    :nativeID            (when top? "card-id")
     :on-press            on-press
     :border-radius       20
     :style               style
@@ -100,9 +100,11 @@
     child-1           string, keyword or hiccup
     child-2           string, keyword or hiccup
    "
-  [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay]} child-1
+  [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay insets]} child-1
    child-2]
-  (let [top                  (reanimated/use-shared-value (- (:height (rn/get-window)) 216))
+  ;914.3
+  (println (:top insets) "dsa")
+  (let [top                  (reanimated/use-shared-value (- (:height (rn/get-screen)) 216))
         top-padding          (reanimated/use-shared-value 12)
         border-radius        (reanimated/use-shared-value 20)
         bottom-view-top      (reanimated/use-shared-value 80)
@@ -110,7 +112,7 @@
         animations-delay     (/ animations-delay 1.5)
         start-top-animation  (fn []
                                (reanimated/animate-shared-value-with-delay bottom-view-top
-                                                                           (:height (rn/get-window))
+                                                                           (:height (rn/get-screen))
                                                                            0
                                                                            :linear
                                                                            animations-delay)
@@ -120,7 +122,7 @@
                                 :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
-                                115     animations-duration
+                                (if platform/ios? 115 68)     animations-duration
                                 :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
@@ -135,7 +137,7 @@
                                                                                       2))
                                (reanimated/animate-shared-value-with-delay
                                 top
-                                (- (:height (rn/get-window)) 216)
+                                (- (:height (rn/get-screen)) 216)
                                 animations-duration
                                 :linear
                                 0)
@@ -165,7 +167,6 @@
        [card
         (merge {:gap                  4
                 :top?                 true
-                :nativeID             "card-id"
                 :style                {:flex 1}
                 :top-children-opacity top-children-opacity}
                top-card) child-1]]

@@ -135,8 +135,8 @@
      :options   {:layout options/onboarding-layout}
      :component new-to-status/view}
 
-    {:name          :create-profile
-     :options       {:layout options/onboarding-layout}
+    {:name      :create-profile
+     :options   {:layout options/onboarding-layout}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
@@ -172,7 +172,7 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
-    
+
     {:name      :scan-sync-code-page
      :component scan-sync-code-page/view}
 
