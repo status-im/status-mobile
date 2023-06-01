@@ -93,13 +93,17 @@
 
                   completed-pairing?
                   (assoc-in [:syncing :pairing-status] :completed))}
-           (when (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
-             {:dispatch [:navigate-to :syncing-progress]})
-           (when (and completed-pairing? sender?)
-             {:dispatch [:syncing/clear-states]})
-           (when (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]})
-           (when error-on-pairing?
+           (cond
+             (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
+             {:dispatch [:navigate-to :syncing-progress]}
+
+             (and completed-pairing? sender?)
+             {:dispatch [:syncing/clear-states]}
+
+             (and completed-pairing? receiver?)
+             {:dispatch [:multiaccounts.login/local-paired-user]}
+
+             error-on-pairing?
              {:dispatch [:toasts/upsert
                          {:icon       :i/alert
                           :icon-color colors/danger-50
