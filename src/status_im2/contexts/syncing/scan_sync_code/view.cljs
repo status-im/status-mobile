@@ -309,7 +309,7 @@
                              300))))
         [:<>
          #_(when @should-render-camera?
-           [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?])
+             [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?])
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn]
           [reanimated/view

@@ -34,21 +34,21 @@
 
 (defn- f-render-children-top
   [children top-children-opacity]
-  (if (label? children)
-    (let [scale        (reanimated/interpolate top-children-opacity [1 0] [1 1.1])
-          padding-left (reanimated/interpolate scale [1 1.1] [0 14])]
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style
-                {:opacity   top-children-opacity
-                 :transform [{:scale scale}
-                             {:translateX padding-left}]}
-                {})}
+  (let [scale        (reanimated/interpolate top-children-opacity [1 0] [1 1.1])
+        padding-left (reanimated/interpolate scale [1 1.1] [0 14])]
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style
+              {:opacity   top-children-opacity
+               :transform [{:scale scale}
+                           {:translateX padding-left}]}
+              {})}
+     (if (label? children)
        [text/text
         {:size   :paragraph-2
          :style  style/top-text
          :weight :semi-bold}
-        children]])
-    children))
+        children]
+       children)]))
 
 (defn render-children-top
   [children top-children-opacity]
@@ -101,10 +101,13 @@
     child-1           string, keyword or hiccup
     child-2           string, keyword or hiccup
    "
-  [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay insets]} child-1
+  [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay insets]}
+   child-1
    child-2]
-  ;914.3
-  (let [top                  (reanimated/use-shared-value (- (:height (if platform/ios? (rn/get-window) (rn/get-screen))) (when platform/android? (safe-area/get-top)) 216))
+  (let [top                  (reanimated/use-shared-value
+                              (- (:height (if platform/ios? (rn/get-window) (rn/get-screen)))
+                                 (when platform/android? (safe-area/get-top))
+                                 216))
         top-padding          (reanimated/use-shared-value 12)
         border-radius        (reanimated/use-shared-value 20)
         bottom-view-top      (reanimated/use-shared-value 80)
@@ -122,8 +125,10 @@
                                 :linear animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
-                                (+ 68 (safe-area/get-top))     animations-duration
-                                :linear animations-delay)
+                                (+ 68 (safe-area/get-top))
+                                animations-duration
+                                :linear
+                                animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
                                 0
@@ -137,7 +142,9 @@
                                                                                       2))
                                (reanimated/animate-shared-value-with-delay
                                 top
-                                (- (:height (if platform/ios? (rn/get-window) (rn/get-screen))) (when platform/android? (safe-area/get-top)) 216)
+                                (- (:height (if platform/ios? (rn/get-window) (rn/get-screen)))
+                                   (when platform/android? (safe-area/get-top))
+                                   216)
                                 animations-duration
                                 :linear
                                 0)

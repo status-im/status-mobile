@@ -1,6 +1,5 @@
 (ns quo2.components.drawers.drawer-buttons.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (defn outer-container
@@ -10,14 +9,13 @@
     :border-radius border-radius}
    (merge
     container-style
-    {:position      :absolute
-     :bottom        0 ;(+ (:height (rn/get-window)) 432)
-     :left          0
-     :right         0
+    {:position                :absolute
+     :bottom                  0
+     :left                    0
+     :right                   0
      :border-top-left-radius  20
      :border-top-right-radius 20
-     :border-radius 20
-     :overflow :hidden})))
+     :overflow                :hidden})))
 
 (def top-card
   {:flex                    1

@@ -36,7 +36,6 @@
                                                      [:hide-terms-of-services-opt-in-screen]))
                              :heading             (i18n/label :t/new-to-status)
                              :accessibility-label :new-to-status-button}}
-      (i18n/label :t/you-already-use-status)
       [quo/text
        {:style style/plain-text}
        (i18n/label :t/you-already-use-status)]
