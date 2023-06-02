@@ -167,24 +167,32 @@
        :style       {:flex                    1
                      :border-top-left-radius  20
                      :border-top-right-radius 20}}
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style
-                {:padding-top top-padding}
-                style/top-card)}
-       [card
-        (merge {:gap                  4
-                :top?                 true
-                :style                {:flex 1}
-                :top-children-opacity top-children-opacity}
-               top-card) child-1]]
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style
-                {:top bottom-view-top}
-                style/bottom-card)}
-       [card
-        (merge {:style {:flex 1}
-                :gap   20}
-               bottom-card) child-2]]]]))
+      [rn/view
+       {:style {:flex             1
+                :background-color :transparent
+                :position         :absolute
+                :top              0
+                :left             0
+                :right            0
+                :bottom           0}}
+       [reanimated/view
+        {:style (reanimated/apply-animations-to-style
+                 {:padding-top top-padding}
+                 style/top-card)}
+        [card
+         (merge {:gap                  4
+                 :top?                 true
+                 :style                {:flex 1}
+                 :top-children-opacity top-children-opacity}
+                top-card) child-1]]
+       [reanimated/view
+        {:style (reanimated/apply-animations-to-style
+                 {:top bottom-view-top}
+                 style/bottom-card)}
+        [card
+         (merge {:style {:flex 1}
+                 :gap   20}
+                bottom-card) child-2]]]]]))
 
 (defn view
   [props child-1 child-2]
