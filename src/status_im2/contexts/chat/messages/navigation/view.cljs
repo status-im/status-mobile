@@ -2,10 +2,10 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [re-frame.db]
+            [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
             [status-im2.contexts.chat.messages.navigation.style :as style]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.constants :as constants]
@@ -54,11 +54,12 @@
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation)}]
 
-     [reanimated/blur-view
-      {:blur-amount 20
-       :blur-type   (colors/theme-colors :light :dark)
-       :blur-radius (if platform/ios? 20 10)
-       :style       (style/animated-blur-view all-loaded? opacity-animation)}]
+     [reanimated/view {:style (style/animated-blur-view all-loaded? opacity-animation)}
+      [blur/view
+       {:blur-amount 20
+        :blur-type   (colors/theme-colors :light :dark)
+        :blur-radius (if platform/ios? 20 10)
+        :style       {:flex 1}}]]
 
      [rn/view
       [rn/view {:style style/header-container}
