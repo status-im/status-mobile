@@ -813,11 +813,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void localPairingPreflightOutboundCheck(final Callback callback) throws JSONException {
-        executeRunnableStatusGoMethod(() -> Statusgo.localPairingPreflightOutboundCheck(), callback);
-    }
-
-    @ReactMethod
     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
          final JSONObject senderConfig = jsonConfig.getJSONObject("senderConfig");

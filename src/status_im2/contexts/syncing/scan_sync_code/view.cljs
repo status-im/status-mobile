@@ -217,6 +217,10 @@
                                                         :text (i18n/label
                                                                :t/camera-permission-denied)}])}]))
         perform-preflight-check   (fn []
+                                    ;; Performing the check for the first time
+                                    ;; will trigger local network access permission in iOS.
+                                    ;; This permission is requried for local pairing
+                                    ;; https://github.com/status-im/status-mobile/issues/16135
                                     (rf/dispatch [:syncing/preflight-outbound-check
                                                   #(reset! preflight-check-passed? %)]))]
     (fn []

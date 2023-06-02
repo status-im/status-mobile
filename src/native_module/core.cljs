@@ -4,7 +4,8 @@
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
             [react-native.core :as rn]
-            [utils.transforms :as types]))
+            [utils.transforms :as types]
+            [status-im.utils.platform :as platform]))
 
 (defn status
   []
@@ -251,9 +252,9 @@
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
   [callback]
-  (log/info "[native-module] Performing local pairing preflight check"
-            {:fn :local-pairing-preflight-outbound-check})
-  (.localPairingPreflightOutboundCheck ^js (status) callback))
+  (log/info "[native-module] Performing local pairing preflight check")
+  (when platform/ios?
+    (.localPairingPreflightOutboundCheck ^js (status) callback)))
 
 (defn get-connection-string-for-bootstrapping-another-device
   "Generates connection string form status-go for the purpose of local pairing on the sender end"
