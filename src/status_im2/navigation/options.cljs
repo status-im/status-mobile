@@ -105,7 +105,9 @@
                    :translucent     true}
    :navigationBar {:backgroundColor colors/black}
    :layout        {:componentBackgroundColor :transparent
-                   :backgroundColor          :transparent}
+                   :backgroundColor          :transparent
+                   ;; issue: https://github.com/wix/react-native-navigation/issues/7726
+                   :orientation              (if platform/ios? ["portrait" "landscape"] ["portrait"])}
    :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                       :toId          :shared-element
                                                       :interpolation {:type   :decelerate

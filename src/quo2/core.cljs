@@ -30,6 +30,7 @@
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.header
+    quo2.components.empty-state.empty-state.view
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box
@@ -167,6 +168,9 @@
 (def documentation-drawers quo2.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
+
+;;;; EMPTY STATE
+(def empty-state quo2.components.empty-state.empty-state.view/empty-state)
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
