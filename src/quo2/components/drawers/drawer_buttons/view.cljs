@@ -112,7 +112,7 @@
         border-radius        (reanimated/use-shared-value 20)
         bottom-view-top      (reanimated/use-shared-value 80)
         top-children-opacity (reanimated/use-shared-value 1)
-        animations-delay     (/ animations-delay 1.5)
+        animations-delay     (/ animations-delay 1.4)
         start-top-animation  (fn []
                                (reanimated/animate-shared-value-with-delay bottom-view-top
                                                                            (:height (rn/get-screen))
