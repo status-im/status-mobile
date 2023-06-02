@@ -117,46 +117,44 @@
                                (reanimated/animate-shared-value-with-delay bottom-view-top
                                                                            (:height (rn/get-screen))
                                                                            0
-                                                                           :linear
+                                                                           :ease-out
                                                                            animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top
                                 0       animations-duration
-                                :linear animations-delay)
+                                :ease-out animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
                                 (+ 68 (safe-area/get-top))
                                 animations-duration
-                                :linear
+                                :ease-out
                                 animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
                                 0
                                 animations-duration
-                                :linear animations-delay))
+                                :ease-out animations-delay))
         reset-top-animation  (fn []
                                (reanimated/animate-shared-value-with-delay bottom-view-top
-                                                                           80      (/ animations-duration
-                                                                                      1.2)
-                                                                           :linear (/ animations-duration
-                                                                                      2))
+                                                                           80      animations-duration
+                                                                           :ease-out 0)
                                (reanimated/animate-shared-value-with-delay
                                 top
                                 (- (:height (if platform/ios? (rn/get-window) (rn/get-screen)))
                                    (when platform/android? (safe-area/get-top))
                                    216)
                                 animations-duration
-                                :linear
+                                :ease-out
                                 0)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
                                 12      animations-duration
-                                :linear 0)
+                                :ease-out 0)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
                                 1
                                 animations-duration
-                                :linear 0))]
+                                :ease-out 0))]
     (rn/use-effect (fn []
                      (when on-init
                        (on-init start-top-animation reset-top-animation))))

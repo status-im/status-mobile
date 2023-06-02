@@ -278,18 +278,18 @@
                                   (reanimated/animate-shared-value-with-delay
                                    subtitle-opacity
                                    0       constants/onboarding-modal-animation-duration
-                                   :linear 0)
+                                   :ease-out 0)
                                   (reanimated/animate-shared-value-with-delay title-opacity
                                                                               0 0
-                                                                              :linear
+                                                                              :ease-out
                                                                               0))]
         (reanimated/animate-shared-value-with-delay subtitle-opacity
                                                     1       constants/onboarding-modal-animation-duration
-                                                    :linear (/ constants/onboarding-modal-animation-delay
+                                                    :ease-out (/ constants/onboarding-modal-animation-delay
                                                                2))
         (reanimated/animate-shared-value-with-delay title-opacity
                                                     1 0
-                                                    :linear
+                                                    :ease-out
                                                     (+ constants/onboarding-modal-animation-duration
                                                        constants/onboarding-modal-animation-delay))
         (reanimated/animate-delay bottom-view-translate-y
