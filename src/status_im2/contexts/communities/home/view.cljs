@@ -56,7 +56,8 @@
     {:title       (i18n/label :t/no-opened-communities)
      :description (i18n/label :t/no-opened-communities-description)
      :image       (resources/get-image (theme/theme-value :no-opened-communities-light
-                                                          :no-opened-communities-dark))}))
+                                                          :no-opened-communities-dark))}
+    nil))
 
 (defn empty-state
   [{:keys [selected-tab customization-color]}]
