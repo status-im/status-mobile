@@ -84,7 +84,9 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
-    quo2.components.settings.settings-list.view))
+    quo2.components.settings.settings-list.view
+    quo2.components.wallet.account-card.view
+  ))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
@@ -224,3 +226,6 @@
 (def url-preview quo2.components.links.url-preview.view/view)
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
+
+;;;; WALLET
+(def account-card quo2.components.wallet.account-card.view/view)
