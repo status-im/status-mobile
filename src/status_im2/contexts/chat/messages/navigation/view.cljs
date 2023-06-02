@@ -3,6 +3,7 @@
             [quo2.foundations.colors :as colors]
             [re-frame.db]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.chat.messages.navigation.style :as style]
@@ -53,13 +54,13 @@
                                                           :extrapolateRight "clamp"})]
     [rn/view {:style style/navigation-view}
      [reanimated/blur-view
-      {:blurAmount   32
-       :blurType     (colors/theme-colors :xlight :dark)
-       :overlayColor :transparent
-       :style        (style/animated-blur-view all-loaded? opacity-animation status-bar-height)}]
+      {:blur-amount 16
+       :blur-type   (colors/theme-colors :light :dark)
+       :blur-radius (if platform/ios? 20 10)
+       :style       (style/animated-blur-view all-loaded? opacity-animation)}]
 
      [rn/view
-      [rn/view {:style (style/header-container status-bar-height)}
+      [rn/view {:style style/header-container}
        [rn/touchable-opacity
         {:active-opacity      1
          :on-press            #(rf/dispatch [:navigate-back])
@@ -104,7 +105,7 @@
           [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
 
       [reanimated/view
-       {:style (style/animated-pinned-banner all-loaded? banner-opacity-animation status-bar-height)}
+       {:style (style/animated-pinned-banner all-loaded? banner-opacity-animation)}
        [pin.banner/banner chat-id]]]]))
 
 (defn navigation-view
