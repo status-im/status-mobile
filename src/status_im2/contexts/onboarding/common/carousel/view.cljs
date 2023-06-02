@@ -6,8 +6,7 @@
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.onboarding.common.carousel.style :as style]
             [status-im2.contexts.onboarding.common.carousel.animation :as animation]
-            [react-native.gesture :as gesture]
-            [oops.core :as oops]))
+            [react-native.gesture :as gesture]))
 
 (defn header-text-view
   [index window-width header-text]
@@ -50,38 +49,8 @@
       {:static?            false
        :progress-bar-width progress-bar-width}]]))
 
-(def ^:const drag-threshold 100)
-(def ^:const progress-threshold 25)
-
-(defn get-last-progress
-  [progress]
-  (let [current-progress (reanimated/get-shared-value @progress)]
-    (if (>= current-progress drag-threshold)
-      drag-threshold
-      (* (+ (quot current-progress progress-threshold) 1) progress-threshold))))
-
-(defn get-next-progress
-  [progress]
-  (let [current-progress (reanimated/get-shared-value @progress)]
-    (if (< current-progress progress-threshold)
-      0
-      (* (- (quot current-progress progress-threshold) 1) progress-threshold))))
-
-(defn drag-gesture
-  [progress paused]
-  (->
-    (gesture/gesture-pan)
-    (gesture/enabled true)
-    (gesture/max-pointers 1)
-    (gesture/on-finalize
-     (fn [event]
-       (when (> (oops/oget event "translationX") drag-threshold)
-         (animation/update-progress progress paused (get-next-progress progress)))
-       (when (< (oops/oget event "translationX") (- drag-threshold))
-         (animation/update-progress progress paused (get-last-progress progress)))))))
-
 (defn f-view
-  [{:keys [animate? progress paused header-text background header-background]}]
+  [{:keys [animate? progress paused? header-text background header-background swipeable?]}]
   (let [window-width       (rf/sub [:dimensions/window-width])
         status-bar-height  (:status-bar-height @navigation/constants)
         progress-bar-width (- window-width 40)
@@ -89,7 +58,7 @@
         container-view     (if animate? reanimated/view rn/view)]
     [:<>
      [gesture/gesture-detector
-      {:gesture (drag-gesture progress paused)}
+      {:gesture (when swipeable? (animation/drag-gesture progress paused?))}
       [container-view {:style (style/carousel-container carousel-left animate?)}
        (for [index (range 2)]
          ^{:key index}
