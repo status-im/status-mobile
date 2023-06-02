@@ -9,7 +9,6 @@
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
             [status-im2.navigation.state :as navigation.state]
-            [utils.debounce :as debounce]
             [utils.re-frame :as rf]))
 
 (defn navigate-back-handler

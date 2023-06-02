@@ -71,7 +71,7 @@
                   :on-press            #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}])}]))
 
 (defn delete-chat-action
-  [{:keys [chat-id] :as item}]
+  [{:keys [chat-id] :as item} inside-chat?]
   (hide-sheet-and-dispatch
    [:show-bottom-sheet
     {:content (fn []
@@ -81,7 +81,10 @@
                   :context             item
                   :accessibility-label :delete-chat-confirm
                   :button-text         (i18n/label :t/delete-chat)
-                  :on-press            #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}])}]))
+                  :on-press            (fn []
+                                         (hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])
+                                         (when inside-chat?
+                                           (rf/dispatch [:navigate-back])))}])}]))
 
 (defn leave-group-action
   [item chat-id]
@@ -94,10 +97,10 @@
                   :context             item
                   :accessibility-label :leave-group
                   :button-text         (i18n/label :t/leave-group)
-                  :on-press            #(do
-                                          (rf/dispatch [:navigate-back])
-                                          (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed
-                                                                    chat-id]))}])}]))
+                  :on-press            (fn []
+                                         (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed
+                                                                   chat-id])
+                                         (rf/dispatch [:navigate-back]))}])}]))
 
 (defn block-user-action
   [{:keys [public-key] :as item}]
@@ -152,10 +155,10 @@
           :add-divider?        true}))
 
 (defn delete-chat-entry
-  [item]
+  [item inside-chat?]
   (entry {:icon                :i/delete
           :label               (i18n/label :t/delete-chat)
-          :on-press            #(delete-chat-action item)
+          :on-press            #(delete-chat-action item inside-chat?)
           :danger?             true
           :accessibility-label :delete-chat
           :sub-label           nil
@@ -393,11 +396,11 @@
           :chevron?            false}))
 
 (defn destructive-actions
-  [{:keys [group-chat] :as item}]
+  [{:keys [group-chat] :as item} inside-chat?]
   [(clear-history-entry item)
    (if group-chat
      (leave-group-entry item nil)
-     (delete-chat-entry item))])
+     (delete-chat-entry item inside-chat?))])
 
 (defn notification-actions
   [{:keys [chat-id group-chat public?]} inside-chat?]
@@ -431,14 +434,14 @@
    [[(view-profile-entry chat-id)
      (edit-nickname-entry chat-id)]
     (notification-actions item inside-chat?)
-    (destructive-actions item)]])
+    (destructive-actions item inside-chat?)]])
 
 (defn private-group-chat-actions
   [item inside-chat?]
   [quo/action-drawer
    [(group-actions item inside-chat?)
     (notification-actions item inside-chat?)
-    (destructive-actions item)]])
+    (destructive-actions item inside-chat?)]])
 
 (defn contact-actions
   [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
@@ -471,4 +474,4 @@
     [quo/action-drawer
      [(when admin? [(edit-name-image-entry)])
       [(notifications-entry admin?)]
-      (destructive-actions group)]]))
+      (destructive-actions group false)]]))
