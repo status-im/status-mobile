@@ -15,9 +15,7 @@
 
 (defn f-navigation-view
   [{:keys [scroll-y]}]
-  (let [insets                   (safe-area/get-insets)
-        status-bar-height        (:top insets)
-        {:keys [group-chat chat-id chat-name emoji
+  (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
          :as   chat}             (rf/sub [:chats/current-chat-chat-view])
         all-loaded?              (rf/sub [:chats/all-loaded? chat-id])
@@ -53,8 +51,11 @@
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "clamp"})]
     [rn/view {:style style/navigation-view}
+     [reanimated/view
+      {:style (style/animated-background-view all-loaded? opacity-animation)}]
+
      [reanimated/blur-view
-      {:blur-amount 16
+      {:blur-amount 20
        :blur-type   (colors/theme-colors :light :dark)
        :blur-radius (if platform/ios? 20 10)
        :style       (style/animated-blur-view all-loaded? opacity-animation)}]

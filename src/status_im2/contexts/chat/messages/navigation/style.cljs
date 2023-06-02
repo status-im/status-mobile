@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.navigation.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (defonce ^:const navigation-bar-height 100)
@@ -16,6 +15,24 @@
     :align-items      :center
     :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
    position))
+
+(def background-view
+  {:position         :absolute
+   :top              0
+   :left             0
+   :right            0
+   :height           navigation-bar-height
+   :background-color (colors/theme-colors colors/white-opa-70 :transparent)
+   :display          :flex
+   :flex-direction   :row
+   :overflow         :hidden})
+
+(defn animated-background-view
+  [enabled? animation]
+  (reanimated/apply-animations-to-style
+   (when enabled?
+     {:opacity animation})
+   background-view))
 
 (def blur-view
   {:position       :absolute
