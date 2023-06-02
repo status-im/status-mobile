@@ -17,8 +17,8 @@
 
 (defn clear-timers
   [timers]
-  (js/clearTimeout (:mount-0 @timers))
-  (js/clearTimeout (:mount-1 @timers))
+  (js/clearTimeout (:mount-animation @timers))
+  (js/clearTimeout (:mount-index-lock @timers))
   (js/clearTimeout (:hide-0 @timers))
   (js/clearTimeout (:hide-1 @timers))
   (js/clearTimeout (:show-0 @timers))
@@ -34,13 +34,13 @@
                             (.scrollToIndex ^js @flat-list-ref
                                             #js {:animated false :index index}))))
      (swap! timers assoc
-       :mount-0
+       :mount-animation
        (js/setTimeout (fn []
                         (anim/animate opacity 1)
                         (anim/animate layout 0)
                         (anim/animate border 12))
                       (if platform/ios? 250 100)))
-     (swap! timers assoc :mount-1 (js/setTimeout #(reset! scroll-index-lock? false) 300))
+     (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
      (fn []
        (rf/dispatch [:chat.ui/zoom-out-signal nil])
        (when platform/android?
