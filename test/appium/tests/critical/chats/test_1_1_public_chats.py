@@ -3,7 +3,7 @@ import time
 
 import emoji
 import pytest
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, common_password, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
@@ -453,7 +453,6 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
             self.errors.append('Contact is shown in Profile after removing user from contacts')
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(702188)
     @marks.xfail(
         reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
@@ -840,7 +839,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                                                                                    'username': self.username_2}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.homes = (self.home_1, self.home_2)
-        self.profile_1,  self.profile_2 = (home.get_profile_view() for home in self.homes)
+        self.profile_1, self.profile_2 = (home.get_profile_view() for home in self.homes)
         self.public_key_2 = self.home_2.get_public_key()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
@@ -927,6 +926,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Check 'Open in Status' option")
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
+        self.chat_2.element_starts_with_text(url_message, 'button').wait_for_visibility_of_element(120)
         self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
         web_view = self.chat_2.open_in_status_button.click()
         if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
@@ -934,6 +934,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Pin feature is in development", run=False)
     @marks.testrail_id(702731)
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
@@ -1034,19 +1035,23 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
         self.home_1.jump_to_card_by_text(self.username_2)
+        self.chat_1.send_message("just a text")  # Sending a message here so the next ones will be in a separate line
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
             if not self.chat_1.chat_element_by_text(message).is_element_displayed():
-                self.errors.append("Message with test '%s' was not received" % message)
+                self.errors.append("Message with text '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
         self.chat_2.hide_keyboard_if_shown()
-        timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
-        sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
-        if timestamp not in sent_time_variants:
-            self.errors.append(
-                'Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
+        try:
+            timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
+            sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
+            if timestamp not in sent_time_variants:
+                self.errors.append(
+                    'Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
+        except NoSuchElementException:
+            self.errors.append("No timestamp on message %s" % messages[0])
         for message in [messages[1], messages[2]]:
             if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
                 self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
@@ -1187,6 +1192,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [device.click_system_back_button_until_element_is_shown() for device in (self.device_1, self.device_2)]
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Issue with messages not being sent for a long time")
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
         self.chat_2.jump_to_card_by_text(self.username_1)

@@ -4,13 +4,13 @@ from datetime import timedelta
 import emoji
 import pytest
 from dateutil import parser
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, common_password
+from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
-from views.sign_in_view import SignInView
 from views.dbs.waku_backup import user as waku_user
+from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="three_1")
@@ -342,7 +342,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.channel.copy_message_text(message)
             actual_copied_text = self.channel.driver.get_clipboard_text()
             if actual_copied_text != message:
-                self.errors.append('Message %s text was not copied in community channel, text in clipboard %s' % actual_copied_text)
+                self.errors.append(
+                    'Message %s text was not copied in community channel, text in clipboard %s' % actual_copied_text)
 
         self.errors.verify_no_errors()
 
@@ -443,7 +444,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702838)
-    @marks.xfail(reason="blocked by 14797")
     def test_community_message_send_check_timestamps_sender_username(self):
         message = self.text_message
         sent_time_variants = self.channel_1.convert_device_time_to_chat_timestamp()
@@ -499,13 +499,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
         image_description = 'description'
         self.channel_1.send_images_with_description(image_description)
-        # TODO: possible after adding proper accessibility-id to 1 image in chat
-        # self.channel_1.chat_message_input.click()
-        # self.channel_1.chat_element_by_text(image_description).image_in_message.click()
-        # self.channel_1.click_system_back_button()
+        self.channel_1.chat_message_input.click()
+        self.channel_1.chat_element_by_text(image_description).image_in_message.click()
+        self.channel_1.click_system_back_button()
 
         # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
-        # self.home_2.just_fyi('check image, description and options for receiver')
+        self.home_2.just_fyi('check image, description and options for receiver')
         # self.channel_2.chat_element_by_text(image_description).image_in_message.click()
         # self.home_1.just_fyi('save image')
         # self.chat_1.save_image_button.click_until_presence_of_element(self.chat_1.show_images_button)
@@ -531,6 +530,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         #
         # self.channel_2.chat_element_by_text(image_description).image_in_message.save_new_screenshot_of_element('images_test.png')
 
+        if not self.channel_2.chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('image_sent_in_community.png'):
+            self.errors.append("Not expected image is shown to the receiver")
+
         self.channel_2.just_fyi("Can reply to images")
         self.channel_2.quote_message(image_description)
         message_text = 'reply to image'
@@ -551,7 +554,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.just_fyi("Check gallery on second device")
         self.channel_2.jump_to_communities_home()
         self.home_2.get_to_community_channel_from_home(self.community_name)
-        if self.channel_2.chat_element_by_text(image_description).image_container_in_message.is_element_differs_from_template(file_name, 5):
+        if self.channel_2.chat_element_by_text(
+                image_description).image_container_in_message.is_element_differs_from_template(file_name, 5):
             self.errors.append("Gallery message do not match the template!")
 
         self.channel_2.just_fyi("Can reply to gallery")
@@ -593,67 +597,66 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702844)
     def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
         preview_urls = {
-                        # TODO: disabled because of the bug in 15891
-                        # 'giphy':{'url': 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO',
-                        #               'title': 'This Is Fine GIF - Find & Share on GIPHY',
-                        #               'description': 'Discover & share this Meme GIF with everyone you know. GIPHY is how you search, share, discover, and create GIFs.',
-                        #               'link': 'giphy.com'},
-                        'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
-                                      'title': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
-                                      'description': 'Update translation json files of 19 languages.',
-                                      'link': 'github.com'},
-                        'yotube_short': {
-                            'url': 'https://youtu.be/Je7yErjEVt4',
-                            'title': 'Status, your gateway to Ethereum',
-                            'description': 'Learn more at https://status.im. This video aims to provide an explanation '
-                                           'and brief preview of the utility that will be supported by the Status App - provid...',
-                            'link': 'youtu.be'},
-                        'yotube_full': {
-                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                            'title': 'Status & Keycard – Hardware-Enforced Security',
-                            'description': 'With Status and Keycard, you can enable hardware enforced authorizations to '
-                                           'your Status account and transactions. Two-factor authentication to access your ac...',
-                            'link': 'www.youtube.com'},
-                        'yotube_mobile': {
-                            'url': 'https://m.youtube.com/watch?v=Je7yErjEVt4',
-                            'title': 'Status, your gateway to Ethereum',
-                            'description': 'Learn more at https://status.im. This video aims to provide an explanation '
-                                           'and brief preview of the utility that will be supported by the Status App - provid...',
-                            'link': 'm.youtube.com',
-                        },
+            # TODO: disabled because of the bug in 15891
+            # 'giphy':{'url': 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO',
+            #               'title': 'This Is Fine GIF - Find & Share on GIPHY',
+            #               'description': 'Discover & share this Meme GIF with everyone you know. GIPHY is how you search, share, discover, and create GIFs.',
+            #               'link': 'giphy.com'},
+            'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
+                          'title': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
+                          'description': 'Update translation json files of 19 languages.',
+                          'link': 'github.com'},
+            'yotube_short': {
+                'url': 'https://youtu.be/Je7yErjEVt4',
+                'title': 'Status, your gateway to Ethereum',
+                'description': 'Learn more at https://status.im. This video aims to provide an explanation '
+                               'and brief preview of the utility that will be supported by the Status App - provid...',
+                'link': 'youtu.be'},
+            'yotube_full': {
+                'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                'title': 'Status & Keycard – Hardware-Enforced Security',
+                'description': 'With Status and Keycard, you can enable hardware enforced authorizations to '
+                               'your Status account and transactions. Two-factor authentication to access your ac...',
+                'link': 'www.youtube.com'},
+            'yotube_mobile': {
+                'url': 'https://m.youtube.com/watch?v=Je7yErjEVt4',
+                'title': 'Status, your gateway to Ethereum',
+                'description': 'Learn more at https://status.im. This video aims to provide an explanation '
+                               'and brief preview of the utility that will be supported by the Status App - provid...',
+                'link': 'm.youtube.com',
+            },
 
-                        # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
-                        # 'twitter': {
-                        #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
-                        #     'txt': "We've rethought how we translate content, allowing us to translate",
-                        #     'subtitle': 'Twitter'
-                        # }
-                        }
+            # twitter link is temporary removed from check as current xpath locator in message.preview_title is not applicable for this type of links
+            # 'twitter': {
+            #     'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
+            #     'txt': "We've rethought how we translate content, allowing us to translate",
+            #     'subtitle': 'Twitter'
+            # }
+        }
 
-
-        for key in preview_urls:
+        for key, data in preview_urls.items():
             self.home_2.just_fyi("Checking %s preview case" % key)
-            data = preview_urls[key]
             url = data['url']
             self.channel_2.chat_message_input.set_value(url)
             self.channel_2.url_preview_composer.wait_for_element(20)
-            if self.channel_2.url_preview_composer_text.text != data['title']:
-                self.errors.append(
-                    "Preview text is not expected, it is '%s'" % self.channel_2.url_preview_composer_text.text)
+            shown_title = self.channel_2.url_preview_composer_text.text
+            if shown_title != data['title']:
+                self.errors.append("Preview text is not expected, it is '%s'" % shown_title)
             self.channel_2.send_message_button.click()
             self.channel_1.get_preview_message_by_text(url).wait_for_element(60)
             message = self.channel_1.get_preview_message_by_text(url)
             # if not message.preview_image:
             #     self.errors.append("No preview is shown for %s" % link_data['url'])
-            if message.preview_title.text != data['title']:
-                self.errors.append("Title is not equal expected for '%s', actual is '%s'" % (url, message.preview_title.text))
-
-            if message.preview_subtitle.text != data['description']:
+            shown_title = message.preview_title.text
+            if shown_title != data['title']:
+                self.errors.append("Title is not equal expected for '%s', actual is '%s'" % (url, shown_title))
+            shown_description = message.preview_subtitle.text
+            if shown_description != data['description']:
                 self.errors.append(
-                    "Description is not equal expected for '%s', actual is '%s'" % (url, message.preview_subtitle.text))
-
-            if message.preview_link.text != data['link']:
-                self.errors.append("Link is not equal expected for '%s', actual is '%s'" % (url, message.preview_link.text))
+                    "Description is not equal expected for '%s', actual is '%s'" % (url, shown_description))
+            shown_link = message.preview_link.text
+            if shown_link != data['link']:
+                self.errors.append("Link is not equal expected for '%s', actual is '%s'" % (url, shown_link))
 
         self.errors.verify_no_errors()
 
@@ -743,8 +746,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Check message in 1-1 chat after unblock")
         self.home_2.get_chat(self.username_1).click()
         self.chat_2.send_message(message_unblocked)
-        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
-            self.errors.append("Message was not received in 1-1 chat after user unblock!")
+        try:
+            self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
+                                                                                      timeout=120)
+            if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+                self.errors.append("Message was not received in 1-1 chat after user unblock!")
+        except TimeoutException:
+            self.errors.append('Message was not delivered after back up online.')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703086)
@@ -759,13 +768,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
         if community_1_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('Unread messages badge is shown in community channel while there are no unread messages')
-    # TODO: there should be one more check for community channel, which is still not ready
+            self.errors.append(
+                'Unread messages badge is shown in community channel while there are no unread messages')
+        # TODO: there should be one more check for community channel, which is still not ready
 
-    #     self.community_1.click_system_back_button_until_element_is_shown()
-    #     community_1_element = self.home_1.get_chat(self.community_name, community=True)
-    #     if community_1_element.new_messages_community.is_element_displayed():
-    #         self.errors.append('New messages community badge is shown on community after marking messages as read')
+        #     self.community_1.click_system_back_button_until_element_is_shown()
+        #     community_1_element = self.home_1.get_chat(self.community_name, community=True)
+        #     if community_1_element.new_messages_community.is_element_displayed():
+        #         self.errors.append('New messages community badge is shown on community after marking messages as read')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702786)
@@ -790,7 +800,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
                 else:
-                    self.errors.append("Channel did not open by clicking on a notification with the mention for admin")
+                    self.errors.append(
+                        "Channel did not open by clicking on a notification with the mention for admin")
         else:
             self.errors.append("Push notification with the mention was not received by admin")
 

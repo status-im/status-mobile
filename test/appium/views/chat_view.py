@@ -278,7 +278,7 @@ class ChatElementByText(Text):
         try:
             self.driver.info("Trying to access image inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
-            return Button(self.driver, xpath='%s//android.view.ViewGroup/android.widget.ImageView' % self.locator)
+            return Button(self.driver, xpath="%s//*[@content-desc='image-message']" % self.locator)
         except NoSuchElementException:
             self.driver.fail("No image is found in message!")
 
@@ -996,10 +996,9 @@ class ChatView(BaseView):
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
         self.driver.info("Setting '%s' reaction" % emoji)
-        key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
         # so we tap on its below element as exception here (not the case for link/tag message!)
-        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
+        element = Button(self.driver, accessibility_id='reaction-%s' % emoji)
         if message == 'audio':
             self.audio_message_in_chat_timer.long_press_element()
         else:

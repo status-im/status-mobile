@@ -257,6 +257,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                     self.errors.append('%s if not shown for device %s' % (message, str(i)))
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Pin feature is in development", run=False)
     @marks.testrail_id(702732)
     def test_group_chat_pin_messages(self):
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
