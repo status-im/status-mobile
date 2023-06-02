@@ -138,25 +138,9 @@
                          spacing-between-composer-and-content
                          (when platform/ios? style/overscroll-cover-height))}])
 
-(defn f-list-footer
-  [{:keys [chat scroll-y cover-bg-color on-layout]}]
-  (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat]}        chat
-        all-loaded?                 (rf/sub [:chats/all-loaded? chat-id])
-        display-name                (if (= chat-type constants/one-to-one-chat-type)
-                                      (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                                      (str emoji " " chat-name))
-        {:keys [bio]}               (rf/sub [:contacts/contact-by-identity chat-id])
-        online?                     (rf/sub [:visibility-status-updates/online? chat-id])
-        contact                     (when-not group-chat
-                                      (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path                  (when-not (empty? (:images contact))
-                                      (rf/sub [:chats/photo-path chat-id]))
-        border-animation            (reanimated/interpolate scroll-y
-                                                            [30 125]
-                                                            [14 0]
-                                                            header-extrapolation-option)
-        image-scale-animation       (reanimated/interpolate scroll-y
+(defn f-list-footer-avatar
+  [{:keys [scroll-y display-name online? photo-path]}]
+  (let [image-scale-animation       (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
                                                             [1 0.5]
                                                             header-extrapolation-option)
@@ -168,6 +152,38 @@
                                                             scroll-animation-input-range
                                                             [0 -20]
                                                             header-extrapolation-option)]
+    [reanimated/view
+     {:style (style/header-image image-scale-animation
+                                 image-top-margin-animation
+                                 image-side-margin-animation)}
+     [quo/user-avatar
+      {:full-name       display-name
+       :online?         online?
+       :profile-picture photo-path
+       :size            :big}]]))
+
+(defn list-footer-avatar
+  [props]
+  [:f> f-list-footer-avatar props])
+
+(defn f-list-footer
+  [{:keys [chat scroll-y cover-bg-color on-layout]}]
+  (let [{:keys [chat-id chat-name emoji chat-type
+                group-chat]} chat
+        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
+        display-name         (if (= chat-type constants/one-to-one-chat-type)
+                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                               (str emoji " " chat-name))
+        {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
+        online?              (rf/sub [:visibility-status-updates/online? chat-id])
+        contact              (when-not group-chat
+                               (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path           (when-not (empty? (:images contact))
+                               (rf/sub [:chats/photo-path chat-id]))
+        border-animation     (reanimated/interpolate scroll-y
+                                                     [30 125]
+                                                     [14 0]
+                                                     header-extrapolation-option)]
     [rn/view {:flex 1}
      [rn/view
       {:style     (style/header-container all-loaded?)
@@ -176,17 +192,13 @@
         [rn/view {:style (style/header-cover cover-bg-color)}])
       [reanimated/view {:style (style/header-bottom-part border-animation)}
        [rn/view {:style style/header-avatar}
-        (when-not group-chat
-          [rn/view {:style {:align-items :flex-start}}
-           [reanimated/view
-            {:style (style/header-image image-scale-animation
-                                        image-top-margin-animation
-                                        image-side-margin-animation)}
-            [quo/user-avatar
-             {:full-name       display-name
-              :online?         online?
-              :profile-picture photo-path
-              :size            :big}]]])
+        [rn/view {:style {:align-items :flex-start}}
+         (when-not group-chat
+           [list-footer-avatar
+            {:scroll-y        scroll-y
+             :display-name    display-name
+             :online?         online?
+             :profile-picture photo-path}])]
         [rn/view {:style style/name-container}
          [quo/text
           {:weight          :semi-bold
