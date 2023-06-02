@@ -81,7 +81,7 @@
    :easing1  (bezier 0.25 0.1 0.25 1)
    :easing2  (bezier 0 0.3 0.6 0.9)
    :easing3  (bezier 0.3 0.3 0.3 0.9)
-   :ease-out (bezier 0 0 1 0.7)})
+   :ease-out (bezier 0.3 0.3 1 1)})
 
 ;; Helper functions
 (defn get-shared-value
