@@ -15,24 +15,37 @@
     [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
+(defn clear-timers
+  [timers]
+  (js/clearTimeout (:mount-animation @timers))
+  (js/clearTimeout (:mount-index-lock @timers))
+  (js/clearTimeout (:hide-0 @timers))
+  (js/clearTimeout (:hide-1 @timers))
+  (js/clearTimeout (:show-0 @timers))
+  (js/clearTimeout (:show-1 @timers))
+  (js/clearTimeout (:show-2 @timers)))
 
 (defn effect
-  [{:keys [flat-list-ref scroll-index-lock?]} {:keys [opacity layout border]} index]
-  (rn/use-effect (fn []
-                   (reagent/next-tick (fn []
-                                        (when @flat-list-ref
-                                          (.scrollToIndex ^js @flat-list-ref
-                                                          #js {:animated false :index index}))))
-                   (js/setTimeout (fn []
-                                    (anim/animate opacity 1)
-                                    (anim/animate layout 0)
-                                    (anim/animate border 12))
-                                  (if platform/ios? 250 100))
-                   (js/setTimeout #(reset! scroll-index-lock? false) 300)
-                   (fn []
-                     (rf/dispatch [:chat.ui/zoom-out-signal nil])
-                     (when platform/android?
-                       (rf/dispatch [:chat.ui/lightbox-scale 1]))))))
+  [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [opacity layout border]} index]
+  (rn/use-effect
+   (fn []
+     (reagent/next-tick (fn []
+                          (when @flat-list-ref
+                            (.scrollToIndex ^js @flat-list-ref
+                                            #js {:animated false :index index}))))
+     (swap! timers assoc
+       :mount-animation
+       (js/setTimeout (fn []
+                        (anim/animate opacity 1)
+                        (anim/animate layout 0)
+                        (anim/animate border 12))
+                      (if platform/ios? 250 100)))
+     (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
+     (fn []
+       (rf/dispatch [:chat.ui/zoom-out-signal nil])
+       (when platform/android?
+         (rf/dispatch [:chat.ui/lightbox-scale 1]))
+       (clear-timers timers)))))
 
 (defn handle-orientation
   [result {:keys [flat-list-ref]} {:keys [scroll-index]} animations]
@@ -102,7 +115,7 @@
                           (anim/animate opacity 0)
                           (rf/dispatch [:navigate-back]))
                         (do
-                          #(reset! set-full-height? true)
+                          (reset! set-full-height? true)
                           (anim/animate (if x? pan-x pan-y) 0)
                           (anim/animate opacity 1)
                           (anim/animate layout 0)))))))
@@ -111,7 +124,8 @@
   []
   {:flat-list-ref      (atom nil)
    :small-list-ref     (atom nil)
-   :scroll-index-lock? (atom true)})
+   :scroll-index-lock? (atom true)
+   :timers             (atom {})})
 
 (defn init-state
   [messages index]

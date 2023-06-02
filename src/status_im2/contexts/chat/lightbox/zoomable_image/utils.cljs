@@ -107,23 +107,34 @@
 
 (defn toggle-opacity
   [index {:keys [opacity-value border-value transparent? props]} portrait?]
-  (let [{:keys [small-list-ref]} props
-        opacity                  (reanimated/get-shared-value opacity-value)]
+  (let [{:keys [small-list-ref timers]} props
+        opacity                         (reanimated/get-shared-value opacity-value)]
     (if (= opacity 1)
       (do
-        (when platform/ios?
-          ;; status-bar issue: https://github.com/status-im/status-mobile/issues/15343
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}}) 75))
+        (js/clearTimeout (:show-0 @timers))
+        (js/clearTimeout (:show-1 @timers))
+        (js/clearTimeout (:show-2 @timers))
+        (swap! timers assoc
+          :hide-0
+          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}})
+                         (if platform/ios? 75 0)))
         (anim/animate opacity-value 0)
-        (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
+        (swap! timers assoc :hide-1 (js/setTimeout #(reset! transparent? (not @transparent?)) 400)))
       (do
+        (js/clearTimeout (:hide-0 @timers))
+        (js/clearTimeout (:hide-1 @timers))
         (reset! transparent? (not @transparent?))
-        (js/setTimeout #(anim/animate opacity-value 1) 50)
-        (js/setTimeout #(when @small-list-ref
-                          (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
-                       100)
-        (when (and platform/ios? portrait?)
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}}) 150))))
+        (swap! timers assoc :show-0 (js/setTimeout #(anim/animate opacity-value 1) 50))
+        (swap! timers assoc
+          :show-1
+          (js/setTimeout #(when @small-list-ref
+                            (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
+                         100))
+        (when portrait?
+          (swap! timers assoc
+            :show-2
+            (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}})
+                           (if platform/ios? 150 50))))))
     (anim/animate border-value (if (= opacity 1) 0 12))))
 
 ;;; Dimensions
