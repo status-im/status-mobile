@@ -76,19 +76,6 @@
       :opacity   opacity-animation})
    header))
 
-(def pinned-banner
-  {:position :absolute
-   :left     0
-   :right    0
-   :top      navigation-bar-height})
-
-(defn animated-pinned-banner
-  [enabled? animation]
-  (reanimated/apply-animations-to-style
-   (when enabled?
-     {:opacity animation})
-   pinned-banner))
-
 (def header-content-container
   {:flex-direction :row
    :align-items    :center
