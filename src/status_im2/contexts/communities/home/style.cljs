@@ -16,7 +16,7 @@
 
 (def empty-state-container
   {:position    :absolute
-   :top         390
+   :top         394
    :left        0
    :right       0
    :align-items :center})
