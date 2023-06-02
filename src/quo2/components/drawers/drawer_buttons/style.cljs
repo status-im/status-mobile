@@ -25,6 +25,7 @@
    :padding-horizontal      20
    :border-top-left-radius  20
    :border-top-right-radius 20
+   :backdrop-filter         "blur(20px)"
    :background-color        colors/white-opa-5})
 
 (def bottom-container
