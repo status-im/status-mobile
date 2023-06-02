@@ -4,8 +4,7 @@
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
             [react-native.core :as rn]
-            [utils.transforms :as types]
-            [status-im.utils.platform :as platform]))
+            [utils.transforms :as types]))
 
 (defn status
   []
