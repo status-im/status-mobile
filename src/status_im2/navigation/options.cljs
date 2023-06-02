@@ -87,8 +87,10 @@
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
    :modalPresentationStyle :overCurrentContext
-   :animations             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
-                            :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}})
+   :animations             (if (or platform/android? (not js/goog.DEBUG))
+                             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
+                              :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}
+                             {})})
 
 (def dark-screen
   (merge (statusbar true)
