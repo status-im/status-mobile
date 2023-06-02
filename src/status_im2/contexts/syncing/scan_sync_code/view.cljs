@@ -13,8 +13,10 @@
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im.utils.platform :as platform]))
 
+(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
 (defonce camera-permission-granted? (reagent/atom false))
 
 (defn- header
@@ -60,26 +62,37 @@
                         (reset! read-qr-once? false))}]]])
 
 (defn- camera-permission-view
-  [request-camera-permission]
-  [rn/view {:style style/camera-permission-container}
-   [quo/text
-    {:size   :paragraph-1
-     :weight :medium
-     :style  style/enable-camera-access-header}
-    (i18n/label :t/enable-access-to-camera)]
-   [quo/text
-    {:size   :paragraph-2
-     :weight :regular
-     :style  style/enable-camera-access-sub-text}
-    (i18n/label :t/to-scan-a-qr-enable-your-camera)]
-   [quo/button
-    {:before              :i/camera
-     :type                :primary
-     :size                32
-     :accessibility-label :request-camera-permission
-     :override-theme      :dark
-     :on-press            request-camera-permission}
-    (i18n/label :t/enable-camera)]])
+  [request-camera-permission perform-preflight-check]
+  (let [title-label-key       (if @camera-permission-granted?
+                                :t/enable-access-to-local-network
+                                :t/enable-access-to-camera)
+        description-label-key (if @camera-permission-granted?
+                                :t/to-pair-with-your-other-device-in-the-network
+                                :t/to-scan-a-qr-enable-your-camera)
+        button-icon           (if @camera-permission-granted? :i/world :i/camera)
+        button-label          (if @camera-permission-granted? :t/enable-network-access :t/enable-camera)
+        on-press              (if @camera-permission-granted?
+                                perform-preflight-check
+                                request-camera-permission)]
+    [rn/view {:style style/camera-permission-container}
+     [quo/text
+      {:size   :paragraph-1
+       :weight :medium
+       :style  style/enable-camera-access-header}
+      (i18n/label title-label-key)]
+     [quo/text
+      {:size   :paragraph-2
+       :weight :regular
+       :style  style/enable-camera-access-sub-text}
+      (i18n/label description-label-key)]
+     [quo/button
+      {:before              button-icon
+       :type                :primary
+       :size                32
+       :accessibility-label :request-camera-permission
+       :override-theme      :dark
+       :on-press            on-press}
+      (i18n/label button-label)]]))
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
@@ -117,14 +130,17 @@
        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]]))
 
 (defn- scan-qr-code-tab
-  [qr-view-finder request-camera-permission]
+  [qr-view-finder request-camera-permission perform-preflight-check]
   [:<>
    [rn/view {:style style/scan-qr-code-container}]
    (when (empty? @qr-view-finder)
      [qr-scan-hole-area qr-view-finder])
-   (if (and @camera-permission-granted? (boolean (not-empty @qr-view-finder)))
+   (if (and (if platform/ios?
+              (and @camera-permission-granted? @preflight-check-passed?)
+              @camera-permission-granted?)
+            (boolean (not-empty @qr-view-finder)))
      [viewfinder @qr-view-finder]
-     [camera-permission-view request-camera-permission])])
+     [camera-permission-view request-camera-permission perform-preflight-check])])
 
 (defn- enter-sync-code-tab
   []
@@ -199,7 +215,10 @@
                                                         :icon-color colors/danger-50
                                                         :override-theme :light
                                                         :text (i18n/label
-                                                               :t/camera-permission-denied)}])}]))]
+                                                               :t/camera-permission-denied)}])}]))
+        perform-preflight-check   (fn []
+                                    (rf/dispatch [:syncing/preflight-outbound-check
+                                                  #(reset! preflight-check-passed? %)]))]
     (fn []
       (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
@@ -215,7 +234,11 @@
                                                                 3000)
                                                  (check-qr-code-data data)))
             scan-qr-code-tab?                (= @active-tab 1)
-            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
+            show-camera?                     (and scan-qr-code-tab?
+                                                  (if platform/ios?
+                                                    (and @camera-permission-granted?
+                                                         @preflight-check-passed?)
+                                                    @camera-permission-granted?))
             show-holes?                      (and show-camera?
                                                   (boolean (not-empty @qr-view-finder)))]
         (rn/use-effect
@@ -230,7 +253,7 @@
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title]
           (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder request-camera-permission]
+            1 [scan-qr-code-tab qr-view-finder request-camera-permission perform-preflight-check]
             2 [enter-sync-code-tab]
             nil)
           [rn/view {:style style/flex-spacer}]
