@@ -189,7 +189,7 @@
                  style/bottom-card)}
         [card
          (merge {:style {:flex 1}
-                 :gap   20}
+                 :gap   10}
                 bottom-card) child-2]]]]]))
 
 (defn view
