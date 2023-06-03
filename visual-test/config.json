@@ -1,0 +1,14 @@
+{
+    "globalSetup": "./visual-test/global-setup.js",
+    "globalTeardown": "./visual-test/global-teardown.js",
+    "setupFilesAfterEnv": ["./visual-test/setup.js"],
+    "maxWorkers": 1,
+    "testEnvironment": "./visual-test/environment",
+    "testRunner": "jest-circus/runner",
+    "testTimeout": 120000,
+    "testRegex": "\\.e2e\\.js$",
+    "roots": ["./src/"],
+    "reporters": ["detox/runners/jest/streamlineReporter"],
+    "verbose": true,
+    "rootDir": "../"
+}
