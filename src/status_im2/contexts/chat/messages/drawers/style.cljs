@@ -6,7 +6,9 @@
    :align-items     :center
    :justify-content :center})
 
-(def tab-icon {:margin-right 4})
+(def tab-icon {:margin-right 4
+               :width 20
+               :height 20})
 
 (defn tab-count
   [active?]
