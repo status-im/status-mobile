@@ -288,6 +288,7 @@ def pytest_runtest_makereport(item, call):
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
             from support.github_report import GithubHtmlReport
+            print("Conftest, TEST SUITE DATA - %s:\n%s" % (item.instance.__class__.__name__, test_suite_data.tests))
             GithubHtmlReport().save_test(test_suite_data.current_test)
 
     if report.when == 'call':

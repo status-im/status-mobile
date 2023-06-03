@@ -15,7 +15,7 @@ from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
-from urllib3.exceptions import MaxRetryError
+from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
@@ -361,19 +361,20 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 jobs[driver.session_id] = index + 1
         self.errors = Errors()
         test_suite_data.current_test.group_name = self.__class__.__name__
+        print("STARTING %s; test suite data: %s" % (method.__name__, [i.name for i in test_suite_data.tests]))
 
     def teardown_method(self, method):
         geth_names, geth_contents = [], []
         for driver in self.drivers:
             try:
-                self.print_sauce_lab_info(self.drivers[driver])
+                # self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
                 geth_contents.append(self.pull_geth(self.drivers[driver]))
 
-            except (WebDriverException, AttributeError, RemoteDisconnected):
-                pass
+            except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
+                print("Error in teardown method of %s" % method.__name__) #pass
             finally:
                 try:
                     geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
@@ -418,6 +419,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                         continue
         if cls.loop:
             cls.loop.close()
+        print("Teardown of %s, TEST SUITE DATA:\n%s" % (cls.__name__, [i.name for i in test_suite_data.tests]))
         for test in test_suite_data.tests:
             cls.github_report.save_test(test)
 

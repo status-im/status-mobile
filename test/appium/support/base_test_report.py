@@ -61,6 +61,7 @@ class BaseTestReport:
     def get_all_tests(self):
         tests = list()
         file_list = [f for f in os.listdir(self.TEST_REPORT_DIR) if f.endswith('json')]
+        print("REPORT FILES LIST:\n%s" % "\n".join(os.listdir(self.TEST_REPORT_DIR)))
         for file_name in file_list:
             file_path = os.path.join(self.TEST_REPORT_DIR, file_name)
             test_data = json.load(open(file_path))
