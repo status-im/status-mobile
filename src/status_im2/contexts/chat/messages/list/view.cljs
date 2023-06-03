@@ -291,10 +291,6 @@
                                                                                colors/neutral-95))}
        :inverted                     true
        :on-layout                    (fn [e]
-                                       (when platform/android?
-                                         ;; FIXME: this is due to Android not triggering the initial
-                                         ;; scrollTo event
-                                         (scroll-to-offset 1))
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
