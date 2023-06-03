@@ -114,7 +114,7 @@
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
           :on-long-press       #(on-long-press message-data context)}
-         [rn/view {:style {:padding-vertical 8}}
+         [rn/view {:style {:padding-vertical 4}}
           (when (and (seq response-to) quoted-message)
             [reply/quoted-message quoted-message])
           [rn/view
