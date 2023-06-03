@@ -49,7 +49,7 @@
 
 (defn bottom-view
   [messages index scroll-index insets animations derived item-width props]
-  (let [_text               (get-in (first messages) [:content :text])
+  (let [_text              (get-in (first messages) [:content :text])
         padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors [:black :transparent]
