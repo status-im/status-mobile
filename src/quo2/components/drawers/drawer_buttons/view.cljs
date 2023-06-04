@@ -157,9 +157,8 @@
                                 1
                                 animations-duration
                                 :easing4))]
-    (rn/use-effect (fn []
-                     (when on-init
-                       (on-init start-top-animation reset-top-animation))))
+    (when on-init
+      (on-init start-top-animation reset-top-animation))
     [reanimated/view {:style (style/outer-container top border-radius container-style)}
      [blur/view
       {:blur-type   :dark

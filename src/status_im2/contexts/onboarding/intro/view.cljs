@@ -23,7 +23,6 @@
       [background/view false]
       [quo/drawer-buttons
        {:on-init             (fn [start-top-animation-fn reset-top-animation-fn]
-                               (println "sadsdasdsa")
                                (reset! start-top-animation start-top-animation-fn)
                                (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
         :animations-duration constants/onboarding-modal-animation-duration
