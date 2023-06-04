@@ -52,6 +52,14 @@
                                  :to       0
                                  :duration constants/onboarding-modal-animation-duration}}})
 
+(def new-to-status-modal-animations
+  {:showModal    {:translationX {:from     (* (:width (rn/get-window)) 1)
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}}
+   :dismissModal {:translationX {:from     0
+                                 :to       (* (:width (rn/get-window)) -1)
+                                 :duration constants/onboarding-modal-animation-duration}}})
+
 (defn screens
   []
   (concat
@@ -124,7 +132,9 @@
      :component profiles/views}
 
     {:name      :new-to-status
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout                 options/onboarding-layout
+                 :animations             new-to-status-modal-animations
+                 :modalPresentationStyle :overCurrentContext}
      :component new-to-status/new-to-status}
 
     {:name      :create-profile

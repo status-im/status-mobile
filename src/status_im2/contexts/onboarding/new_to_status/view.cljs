@@ -1,15 +1,16 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.keycard.recovery :as keycard]
-    [status-im2.common.resources :as resources]
-    [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-    [status-im2.contexts.onboarding.new-to-status.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo2.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.keycard.recovery :as keycard]
+   [status-im2.common.resources :as resources]
+   [status-im2.contexts.onboarding.common.background.view :as background]
+   [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+   [status-im2.contexts.onboarding.new-to-status.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [status-im2.contexts.onboarding.intro.view :as intro-view]))
 
 (defn sign-in-options
   []
@@ -93,10 +94,12 @@
   []
   (let [{:keys [top]} (safe-area/get-insets)]
     [:<>
-     [background/view true]
      [rn/view {:style style/content-container}
       [navigation-bar/navigation-bar
        {:top                   top
+        :left-on-press         (fn []
+                                 (reset! intro-view/show-blur-overlay? false)
+                                 (reset! intro-view/overlay-blur-amount 0))
         :right-section-buttons [{:type                :blur-bg
                                  :icon                :i/info
                                  :icon-override-theme :dark
