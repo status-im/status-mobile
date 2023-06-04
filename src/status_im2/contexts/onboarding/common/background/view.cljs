@@ -26,7 +26,6 @@
   [content-width]
   [rn/image
    {:style  {:resize-mode :stretch
-             :margin-top  32
              :width       content-width}
     :source (resources/get-image :onboarding-illustration)}])
 
