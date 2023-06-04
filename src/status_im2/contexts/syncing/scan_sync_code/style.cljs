@@ -55,8 +55,7 @@
   [viewfinder]
   {:position :absolute
    :left     (:x viewfinder)
-   :top      (:y viewfinder)
-   :overflow :hidden})
+   :top      (:y viewfinder)})
 
 (def viewfinder-text
   {:color       colors/white-opa-70

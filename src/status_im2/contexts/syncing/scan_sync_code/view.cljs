@@ -142,15 +142,19 @@
 (defn- border
   [border1 border2 corner]
   [rn/view
-   (assoc {:border-color colors/white :width 80 :height 80} border1 2 border2 2 corner 16)])
+   (assoc {:border-color colors/white
+           :width 80 :height 80} border1 2 border2 2 corner 16)])
 
 (defn- viewfinder
   [qr-view-finder]
-  (let [size (:width qr-view-finder)]
+  (let [size (+ (:width qr-view-finder) 2)]
     [:<>
      [rn/view {:style (style/viewfinder-container qr-view-finder)}
-
-      [rn/view {:width size :height size :justify-content :space-between}
+      [rn/view {:width           size  
+                :height          size 
+                :justify-content :space-between 
+                :margin-left     -1 
+                :margin-top      -1}
        [rn/view {:flex-direction :row :justify-content :space-between}
         [border :border-top-width :border-left-width :border-top-left-radius]
         [border :border-top-width :border-right-width :border-top-right-radius]]
