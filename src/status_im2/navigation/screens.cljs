@@ -53,7 +53,8 @@
 
     {:name      :chat
      :options   {:insets     {:top? true}
-                 :popGesture false}
+                 :popGesture false
+                 :layout     {:orientation ["portrait"]}}
      :component chat/chat}
 
     {:name      :start-a-new-chat
@@ -88,7 +89,8 @@
      :component communities.discover/discover}
 
     {:name      :community-overview
-     :component communities.overview/overview}
+     :component communities.overview/overview
+     :options   {:layout {:orientation ["portrait"]}}}
 
     {:name      :settings-syncing
      :options   (merge options/dark-screen {:insets {:top? true}})
