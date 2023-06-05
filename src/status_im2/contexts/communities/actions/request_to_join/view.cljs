@@ -1,13 +1,13 @@
 (ns status-im2.contexts.communities.actions.request-to-join.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [reagent.core :as reagent]
+            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
             [status-im2.contexts.communities.actions.request-to-join.style :as style]
-            [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.requests :as requests]
-            [react-native.gesture :as gesture]))
+            [utils.requests :as requests]))
 
 (defn request-to-join-text
   [is-open?]
@@ -28,11 +28,10 @@
                     requested-to-join-at]} (rf/sub [:get-screen-params])
             pending?                       (rf/sub [:communities/my-pending-request-to-join id])
             is-open?                       (not= 3 (:access permissions))]
-        [rn/view {:flex 1 :margin-top 40}
+        [rn/view {:flex 1}
          [gesture/scroll-view {:style {:flex 1}}
           [rn/view style/page-container
-           [rn/view
-            {:style style/title-container}
+           [rn/view {:style style/title-container}
             [quo/text
              {:accessibility-label :communities-join-community
               :weight              :semi-bold
@@ -77,4 +76,5 @@
                                            (rf/dispatch [:communities/request-to-join id])
                                            (rf/dispatch [:navigate-back]))))
               :disabled            (not @agreed-to-rules?)
-              :style               {:flex 1}} (request-to-join-text is-open?)]]]]]))))
+              :style               {:flex 1}}
+             (request-to-join-text is-open?)]]]]]))))
