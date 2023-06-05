@@ -8,35 +8,33 @@
 
 (def transparent-video (reagent/adapt-react-class TV))
 
-(def offset 20)
+(def offset 50)
 (def double-offset (* 2 offset))
-
 
 (defn f-sensor-animated-video
   [{:keys [order source]}]
-  (let [{window-width :width
-         window-height :height}   (rn/get-window)
+  (let [{window-width  :width
+         window-height :height} (rn/get-window)
 
-        image-style (if (pos? order)
-                     (worklets.parallax/sensor-animated-image order offset)
-                       
-                      {:top    0
-                       :left   0})]
+        image-style             (if (pos? order)
+                                  (worklets.parallax/sensor-animated-image order offset)
+                                  {:top  0
+                                   :left 0})]
     (fn []
       [reanimated/view
        {:shouldRasterizeIOS true
-        :style [{:position :absolute
-                 :width (+ window-width double-offset)
-                 :height (+ window-height double-offset)}
-                image-style]}
+        :style              {:position :absolute
+                             :z-index  order
+                             :width    window-width
+                             :height   window-height}}
        [transparent-video
         {:source source
-         :style  {;; :overflow :visible
-                  :position :absolute
+         :style  {:position :absolute
                   :top      0
                   :left     0
                   :right    0
-                  :bottom   0}}]])))
+                  :bottom   0}}]
+      ])))
 
 (defn sensor-animated-video
   [props]
@@ -44,12 +42,19 @@
 
 (defn f-video
   [{:keys [layers]}]
-  [:<>
+  [rn/view
+   {:style {:position :absolute
+            :top      0
+            :left     0
+            :right    0
+            :bottom   0
+            :z-index  2
+           }}
    (map-indexed (fn [idx layer]
                   [sensor-animated-video
                    {:key    (str layer idx)
                     :source layer
-                    :order  idx}])
+                    :order  (inc idx)}])
                 layers)])
 
 (defn video
