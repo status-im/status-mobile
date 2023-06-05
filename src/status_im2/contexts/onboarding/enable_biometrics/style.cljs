@@ -11,7 +11,7 @@
 
 (def page-illustration
   {:flex              1
-   :background-color  colors/danger-50
+  ;;  :background-color  colors/danger-50
    :align-items       :center
    :margin-horizontal default-margin
    :border-radius     20
