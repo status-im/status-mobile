@@ -104,7 +104,7 @@
 
     {:name      :profiles
      :options   {:layout options/onboarding-layout}
-     :component profiles/views}
+     :component enable-biometrics/enable-biometrics}
 
     {:name      :new-to-status
      :options   {:layout options/onboarding-layout}

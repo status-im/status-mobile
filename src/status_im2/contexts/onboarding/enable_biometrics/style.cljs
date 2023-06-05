@@ -6,14 +6,15 @@
 (defn page-container
   [insets]
   {:flex             1
+   :justify-content  :space-between
    :padding-top      (:top insets)
    :background-color colors/neutral-80-opa-80-blur})
 
 (def page-illustration
-  {:flex              1
-  ;;  :background-color  colors/danger-50
-  ;;  :margin-horizontal default-margin
-   })
+  {:flex            1
+   :align-items     :center
+   :margin-top      default-margin
+   :justify-content :center})
 
 (defn buttons
   [insets]
