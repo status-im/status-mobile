@@ -22,7 +22,7 @@
         image-local-url   (http/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
-       [rn/view {:style {:margin-bottom 10}} [text/text-content message]])
+       [rn/view [text/text-content message]])
      [rn/touchable-opacity
       {:active-opacity 1
        :style          {:margin-top (when (pos? index) 10)}

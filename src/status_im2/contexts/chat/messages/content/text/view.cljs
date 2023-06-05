@@ -79,7 +79,8 @@
   (case (keyword type)
     :paragraph
     (conj blocks
-          [rn/view {:style style/paragraph}
+          [rn/view {:size  :paragraph-2
+                    :style style/paragraph}
            (reduce
             (fn [acc e]
               (render-inline acc e chat-id))
@@ -88,7 +89,8 @@
 
     :edited-block
     (conj blocks
-          [rn/view {:style style/paragraph}
+          [rn/view {:size  :paragraph-2
+                    :style style/paragraph}
            (reduce
             (fn [acc e]
               (render-inline acc e chat-id))
@@ -134,6 +136,6 @@
 
 (defn text-content
   [message-data]
-  [rn/view
+  [:<>
    [render-parsed-text message-data]
    [link-preview/view message-data]])

@@ -33,7 +33,7 @@
 
 (defn sm-timestamp
   [timestamp-str]
-  [rn/view {:margin-left 6}
+  [rn/view {:margin-left 8}
    [text/text
     {:size  :label
      :style {:color          (get-color :time)
@@ -61,32 +61,29 @@
      :profile-picture   image
      :ring?             false}]])
 
-(defmulti sm-render :type)
+(defmulti system-message-content :type)
 
-(defmethod sm-render :deleted
+(defmethod system-message-content :deleted
   [{:keys [label timestamp-str labels child]}]
-  [rn/view
-   {:align-items     :center
-    :justify-content :space-between
-    :flex            1
-    :flex-direction  :row}
-   [rn/view
-    {:align-items    :center
-     :flex-direction :row}
-    [sm-icon
-     {:icon    :main-icons/delete
-      :color   :danger
-      :opacity 5}]
-    (if child
-      child
-      [text/text
-       {:size  :paragraph-2
-        :style {:color        (get-color :text)
-                :margin-right 5}}
-       (or (get labels label) label (:message-deleted labels))])
-    [sm-timestamp timestamp-str]]])
+  [rn/view {:align-items     :center
+            :justify-content :space-between
+            :flex            1
+            :flex-direction  :row}
+   [rn/view {:align-items    :center
+             :flex-direction :row}
+    [sm-icon {:icon    :main-icons/delete
+              :color   :danger
+              :opacity 5}]
+    [rn/view {:align-items    :baseline
+              :flex-direction :row}
+     (if child
+       child
+       [text/text {:size  :paragraph-2
+                   :style {:color (get-color :text)}}
+        (or (get labels label) label (:message-deleted labels))])
+     [sm-timestamp timestamp-str]]]])
 
-(defmethod sm-render :added
+(defmethod system-message-content :added
   [{:keys [state mentions timestamp-str labels]}]
   [rn/view
    {:align-items    :center
@@ -113,7 +110,7 @@
     (:name (second mentions))]
    [sm-timestamp timestamp-str]])
 
-(defmethod sm-render :pinned
+(defmethod system-message-content :pinned
   [{:keys [state pinned-by content timestamp-str labels]}]
   [rn/view
    {:flex-direction :row
@@ -175,29 +172,27 @@
 (defn- f-system-message
   [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
   (let [sv-color (reanimated/use-shared-value
-                  (get-color :bg (if animate-landing? :landed :default) type))]
+                   (get-color :bg (if animate-landing? :landed :default) type))]
     (when animate-landing?
       (reanimated/animate-shared-value-with-delay
-       sv-color
-       (get-color :bg :default type)
-       0
-       :linear
-       1000))
+        sv-color
+        (get-color :bg :default type)
+        0
+        :linear
+        1000))
     [reanimated/touchable-opacity
      {:on-press      #(when-not non-pressable?
                         (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
       :on-long-press on-long-press
       :style         (reanimated/apply-animations-to-style
-                      {:background-color sv-color}
-                      (merge
-                       {:flex-direction     :row
-                        :flex               1
-                        :border-radius      16
-                        :padding-vertical   9
-                        :padding-horizontal 11
-                        :background-color   sv-color}
-                       style))}
-     [sm-render message labels]]))
+                       {:background-color sv-color}
+                       (merge {:flex-direction     :row
+                               :flex               1
+                               :padding-vertical   8
+                               :padding-horizontal 12
+                               :background-color   sv-color}
+                              style))}
+     [system-message-content message labels]]))
 
 (defn system-message
   [message]

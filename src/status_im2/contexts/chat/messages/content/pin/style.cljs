@@ -5,16 +5,14 @@
 (def system-message-margin-right 8)
 
 (def pin-indicator-container
-  {:margin-top      4
-   :margin-left     54
-   :justify-content :center
-   :align-self      :flex-start
-   :align-items     :flex-start
-   :flex-direction  :row})
+  {:padding-left   42
+   :margin-bottom  2
+   :align-items    :center
+   :flex-direction :row})
 
 (def pin-author-text
-  {:color  colors/primary-50
-   :bottom 2})
+  {:color       colors/primary-50
+   :margin-left 2})
 
 (defn pinned-message-text
   []
