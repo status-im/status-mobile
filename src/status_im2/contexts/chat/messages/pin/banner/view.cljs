@@ -1,9 +1,7 @@
 (ns status-im2.contexts.chat.messages.pin.banner.view
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
             [status-im2.contexts.chat.messages.pin.banner.style :as style]
@@ -18,33 +16,14 @@
         :else
         (get-in message [:content :parsed-text])))
 
-(defn blur-container-style
-  [layout-height top-offset opacity-animation]
-  (reanimated/apply-animations-to-style
-    {:opacity opacity-animation}
-    {:position :absolute
-     :top      top-offset
-     :left     0
-     :right    0
-     :bottom   0
-     :height   layout-height
-     :overflow :hidden}))
-
-(defn blur-view-style
-  []
-  {:style       {:flex 1}
-   :blur-radius (if platform/ios? 20 10)
-   :blur-type   (colors/theme-colors :light :dark)
-   :blur-amount 20})
-
 (defn f-blur-view
-  [layout-height top-offset opacity-animation]
-  [reanimated/view {:style (blur-container-style layout-height top-offset opacity-animation)}
-   [blur/view (blur-view-style)]])
+  [top-offset opacity-animation]
+  [reanimated/view {:style (style/blur-container-style top-offset opacity-animation)}
+   [blur/view (style/blur-view-style)]])
 
 (defn blur-view
-  [layout-height top-offset opacity-animation]
-  [:f> f-blur-view layout-height top-offset opacity-animation])
+  [top-offset opacity-animation]
+  [:f> f-blur-view top-offset opacity-animation])
 
 (defn f-banner
   [{:keys [chat-id opacity-animation all-loaded? top-offset]}]
@@ -63,7 +42,7 @@
               (resolver/resolve-message latest-pin-text)
               :else latest-pin-text)]
     [rn/view
-     [blur-view 32 top-offset opacity-animation]
+     [blur-view top-offset opacity-animation]
      [reanimated/view {:style (style/animated-pinned-banner top-offset all-loaded? opacity-animation)}
       [quo/banner
        {:latest-pin-text latest-pin-text

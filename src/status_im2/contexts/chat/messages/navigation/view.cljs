@@ -106,10 +106,11 @@
                                                 {:content (fn [] [actions/chat-actions chat true])}]))}
           [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
 
-      [pin.banner/banner {:chat-id           chat-id
-                          :opacity-animation banner-opacity-animation
-                          :all-loaded?       all-loaded?
-                          :top-offset        style/navigation-bar-height}]]]))
+      [pin.banner/banner
+       {:chat-id           chat-id
+        :opacity-animation banner-opacity-animation
+        :all-loaded?       all-loaded?
+        :top-offset        style/navigation-bar-height}]]]))
 
 (defn navigation-view
   [props]
