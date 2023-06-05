@@ -16,7 +16,8 @@
    :left     0
    :bottom   0})
 
-(defn empty-state-container [top]
+(defn empty-state-container
+  [top]
   {:margin-top      (+ header-height top)
    :margin-bottom   44
    :flex            1

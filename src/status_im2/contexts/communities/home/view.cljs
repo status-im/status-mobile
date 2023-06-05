@@ -78,9 +78,9 @@
         customization-color             (or (:color (rf/sub [:onboarding-2/profile]))
                                             (rf/sub [:profile/customization-color key-uid]))
         selected-items                  (case selected-tab
-                                          :joined joined
+                                          :joined  joined
                                           :pending pending
-                                          :opened opened)
+                                          :opened  opened)
         top                             (safe-area/get-top)]
     [:<>
      (if (empty? selected-items)
