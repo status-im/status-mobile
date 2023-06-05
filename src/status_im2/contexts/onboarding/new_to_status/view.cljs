@@ -10,7 +10,8 @@
    [status-im2.contexts.onboarding.new-to-status.style :as style]
    [utils.i18n :as i18n]
    [utils.re-frame :as rf]
-   [status-im2.contexts.onboarding.intro.view :as intro-view]))
+   [status-im2.contexts.onboarding.intro.view :as intro-view]
+   [reagent.core :as reagent]))
 
 (defn sign-in-options
   []
@@ -90,6 +91,8 @@
       :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-on-keycard-description)]]])
 
+(defonce blur-timer (atom nil))
+
 (defn new-to-status
   []
   (let [{:keys [top]} (safe-area/get-insets)]
@@ -98,8 +101,15 @@
       [navigation-bar/navigation-bar
        {:top                   top
         :left-on-press         (fn []
-                                 (reset! intro-view/show-blur-overlay? false)
-                                 (reset! intro-view/overlay-blur-amount 0))
+                                 (reset! blur-timer
+                                         (js/setInterval (fn []
+                                                           (if (> @intro-view/overlay-blur-amount 0)
+                                                             (reset! intro-view/overlay-blur-amount (- @intro-view/overlay-blur-amount 1))
+                                                             (do
+                                                               (reset! intro-view/show-blur-overlay? false)
+                                                               (js/clearInterval @blur-timer)))) 1))
+                                 ;(reset! intro-view/show-blur-overlay? false)
+                                 #_(reset! intro-view/overlay-blur-amount 0))
         :right-section-buttons [{:type                :blur-bg
                                  :icon                :i/info
                                  :icon-override-theme :dark

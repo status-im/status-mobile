@@ -138,16 +138,19 @@
      :component new-to-status/new-to-status}
 
     {:name      :create-profile
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout     options/onboarding-layout
+                 :popGesture false}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
-     :options   {:insets {:top false}
-                 :layout options/onboarding-layout}
+     :options   {:insets     {:top false}
+                 :layout     options/onboarding-layout
+                 :popGesture false}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout     options/onboarding-layout
+                 :popGesture false}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
