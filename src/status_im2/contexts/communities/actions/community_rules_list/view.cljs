@@ -9,7 +9,7 @@
     :content
     "You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated."}
    {:index 2
-    :title "No Inappropriate Language"
+    :title "No inappropriate language"
     :content
     "The use of profanity should be kept to a minimum. However, any derogatory language towards any user is prohibited."}
    {:index 3
