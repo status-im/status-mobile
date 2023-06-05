@@ -61,7 +61,8 @@
              {:accessibility-label :cancel
               :on-press            #(rf/dispatch [:navigate-back])
               :type                :grey
-              :style               style/cancel-button} (i18n/label :t/cancel)]
+              :style               style/cancel-button}
+             (i18n/label :t/cancel)]
             [quo/button
              {:accessibility-label :join-community-button
               :on-press            (fn []
