@@ -69,5 +69,5 @@
           :accessibility-label :request-motion-permission
           :override-theme      :dark
           :on-press            request-motion-permission}
-         "enable motion"])]
+         "test motion"])]
      [enable-biometrics-buttons {:insets insets}]]))

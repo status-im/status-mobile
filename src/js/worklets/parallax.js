@@ -2,57 +2,40 @@ import {
     useAnimatedStyle,
     useAnimatedSensor,
     withTiming,
-    interpolate
+    interpolate,
+    SensorType
 } from 'react-native-reanimated';
 
-const OFFSET = 30;
 const PI = Math.PI;
 const HALF_PI = PI / 2;
 
-export function sensorAnimatedImage(order) {
+export function sensorAnimatedImage(zIndex, offset) {
     'worklet'
-    const sensor = useAnimatedSensor(5, { interval: 100 })
+    const sensor = useAnimatedSensor(5, { interval: 10 })
     return useAnimatedStyle(function () {
 
-        const { pitch, roll } = sensor.sensor.value;
+        const { qx, qz, qw, qy, pitch } = sensor.sensor.value;
+
+        const roll = Math.asin(-2.0 * (qx * qz - qw * qy))
 
         const top = withTiming(
             interpolate(
                 pitch,
-                [-HALF_PI, HALF_PI],
-                [-OFFSET / order - OFFSET, OFFSET / order - OFFSET]
-            ),
+                [-PI, PI],
+                [-offset / zIndex - offset, offset / zIndex - offset]),
             { duration: 10 }
         );
         const left = withTiming(
             interpolate(
                 roll,
-                [-PI, PI],
-                [(-OFFSET * 2) / order - OFFSET, (OFFSET * 2) / order - OFFSET]
-            ),
+                [-1, 1],
+                [(-offset * 2) / zIndex - offset, (offset * 2) / zIndex - offset]),
             { duration: 10 }
         );
-        const right = withTiming(
-            interpolate(
-                roll,
-                [-PI, PI],
-                [(OFFSET * 2) / order - OFFSET, (-OFFSET * 2) / order - OFFSET]
-            ),
-            { duration: 10 }
-        );
-        const bottom = withTiming(
-            interpolate(
-                pitch,
-                [-HALF_PI, HALF_PI],
-                [OFFSET / order - OFFSET, -OFFSET / order - OFFSET]
-            ),
-            { duration: 10 }
-        );
+
         return {
-            top,
-            left,
-            right,
-            bottom,
+            transform: [{ translateX: left },
+            { translateY: top }]
         }
     })
 }
