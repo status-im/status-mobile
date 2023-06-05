@@ -7,7 +7,12 @@
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im.multiaccounts.biometric.core :as biometric]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
+            [status-im2.common.parallax.view :as parallax]))
+
+(defonce motion-permission-granted (reagent/atom false))
 
 (defn page-title
   []
@@ -38,11 +43,31 @@
 
 (defn enable-biometrics
   []
-  (let [insets (safe-area/get-insets)]
+  (let [insets (safe-area/get-insets)
+        request-motion-permission (fn []
+                                    (rf/dispatch
+                                     [:request-permissions
+                                      {:permissions [:motion]
+                                       :on-allowed  #(reset! motion-permission-granted true)
+                                       :on-denied   #(rf/dispatch
+                                                      [:toasts/upsert
+                                                       {:icon           :i/info
+                                                        :icon-color     colors/danger-50
+                                                        :override-theme :light
+                                                        :text           "motion denied"}])}]))]
     [rn/view {:style (style/page-container insets)}
      [navigation-bar/navigation-bar {:disable-back-button? true}]
      [page-title]
      [rn/view {:style style/page-illustration}
-      [quo/text
-       "Illustration here"]]
+      (if @motion-permission-granted
+        [parallax/video
+         {:layers (resources/get-parallax-video :biometrics)}]
+        [quo/button
+         {:before              :i/camera
+          :type                :primary
+          :size                32
+          :accessibility-label :request-motion-permission
+          :override-theme      :dark
+          :on-press            request-motion-permission}
+         "enable motion"])]
      [enable-biometrics-buttons {:insets insets}]]))
