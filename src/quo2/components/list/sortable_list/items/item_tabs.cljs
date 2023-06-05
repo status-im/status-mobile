@@ -8,7 +8,7 @@
 (defn transform-data
   [data]
   (map #(assoc %
-               :id %
+               :id (:id %)
                :label [rn/view
                        {:style style/tab-item-container}
                        (if (contains? % :image)
