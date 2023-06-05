@@ -6,7 +6,7 @@
 
 (defn view
   [{:keys [checked? blur? accessibility-label container-style on-change]} label]
-  [rn/touchable-opacity
+  [rn/touchable-without-feedback
    {:on-press            on-change
     :accessibility-label "disclaimer-touchable-opacity"}
    [rn/view {:style (merge container-style (style/container blur?))}
