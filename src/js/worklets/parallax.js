@@ -10,30 +10,31 @@ const PI = Math.PI;
 
 export function sensorAnimatedImage(zIndex, offset) {
     'worklet'
-    const sensor = useAnimatedSensor(SensorType.ACCELEROMETER, { interval: 30 })
-    return useAnimatedStyle(() => {
-        let { x, y, z } = sensor.sensor.value;
-        const pitch = Math.abs((Math.atan2(y, z) * 180) / PI) * -1;
-        const roll = (Math.atan2(-x, Math.sqrt(y * y + z * z)) * 180) / PI;
+    const sensor = useAnimatedSensor(SensorType.ROTATION, { interval: 30 })
+    return useAnimatedStyle(function () {
+
+        const { qx, qz, qw, qy, pitch } = sensor.sensor.value;
+
+        const roll = Math.asin(-2.0 * (qx * qz - qw * qy))
 
         const top = withTiming(
-            interpolate(pitch, Platform.OS === 'ios' ? [-180, 0] : [0, -180], [
-                -offset / zIndex - offset,
-                (offset * 2) / zIndex - offset,
-            ]),
+            interpolate(
+                pitch,
+                [-PI, PI],
+                [(-offset * 3) / zIndex - offset, (offset * 3) / zIndex - offset]),
             { duration: 10 }
         );
         const left = withTiming(
-            interpolate(roll, Platform.OS === 'ios' ? [90, -90] : [-90, 90], [
-                (-offset * 2.5) / zIndex - offset,
-                (offset * 2.5) / zIndex - offset,
-            ]),
+            interpolate(
+                roll,
+                [-1, 1],
+                [(-offset * 2) / zIndex - offset, (offset * 2) / zIndex - offset]),
             { duration: 10 }
         );
 
         return {
-            top,
-            left,
-        };
+            transform: [{ translateX: left },
+            { translateY: top }]
+        }
     })
 }
