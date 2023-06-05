@@ -37,10 +37,7 @@
              {:accessibility-label :communities-join-community
               :weight              :semi-bold
               :size                :heading-1}
-             (request-to-join-text is-open?)]
-            [rn/view
-             {:style style/request-icon}
-             [quo/icon :i/info]]]
+             (request-to-join-text is-open?)]]
            [quo/context-tag
             {:style
              {:margin-right :auto
