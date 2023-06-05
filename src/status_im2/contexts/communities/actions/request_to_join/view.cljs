@@ -77,4 +77,9 @@
                                            (rf/dispatch [:navigate-back]))))
               :disabled            (not @agreed-to-rules?)
               :style               {:flex 1}}
-             (request-to-join-text is-open?)]]]]]))))
+             (request-to-join-text is-open?)]]
+           [rn/view {:style style/final-disclaimer-container}
+            [quo/text
+             {:size  :paragraph-2
+              :style style/final-disclaimer-text}
+             (i18n/label :t/request-to-join-disclaimer)]]]]]))))
