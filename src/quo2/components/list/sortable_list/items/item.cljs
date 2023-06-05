@@ -1,4 +1,4 @@
-(ns quo2.components.list.sortable-list.item 
+(ns quo2.components.list.sortable-list.items.item 
   (:require [quo.react-native :as rn]
             [status-im.ui.components.icons.icons :as icons]
             [quo2.components.list.sortable-list.style :as style]

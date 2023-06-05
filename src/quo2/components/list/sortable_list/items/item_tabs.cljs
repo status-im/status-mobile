@@ -1,4 +1,4 @@
-(ns quo2.components.list.sortable-list.item-tabs
+(ns quo2.components.list.sortable-list.items.item-tabs
   (:require [quo2.components.tabs.segmented-tab :as quo2]
             [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
@@ -24,13 +24,13 @@
        data))
 
 (defn view
-  [data default-active] 
-  [quo2/segmented-control 
-          {:default-active default-active
-           :size  32
-           :blur? false
-           :container-style style/tab-container
-           :item-container-style style/segmented-tab-item-container
-           :inactive-background-color colors/neutral-30
-           :data           (transform-data data)
-           :on-change      #(println "Active tab" %)}])
+  [data default-active]
+  [quo2/segmented-control
+   {:default-active default-active
+    :size  32
+    :blur? false
+    :container-style style/tab-container
+    :item-container-style style/segmented-tab-item-container
+    :inactive-background-color colors/neutral-30
+    :data           (transform-data data)
+    :on-change      #(println "Active tab" %)}])

@@ -1,4 +1,4 @@
-(ns quo2.components.list.sortable-list.item-placeholder 
+(ns quo2.components.list.sortable-list.items.item-placeholder 
   (:require [react-native.core :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.components.list.sortable-list.style :as style]))

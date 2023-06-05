@@ -1,13 +1,13 @@
 (ns quo2.components.list.sortable-list.view 
   (:require [quo.react-native :as rn]
             [react-native.platform :as platform]
-            [quo2.components.list.sortable-list.item :as item]
+            [quo2.components.list.sortable-list.items.item :as item]
             [reagent.core :as reagent]
             [quo2.components.list.sortable-list.style :as style]
             [quo2.components.icon :as quo2-icons]
-            [quo2.components.list.sortable-list.item-placeholder :as placeholder]
-            [quo2.components.list.sortable-list.item-skeleton :as skeleton]
-            [quo2.components.list.sortable-list.item-tabs :as tab]
+            [quo2.components.list.sortable-list.items.item-placeholder :as placeholder]
+            [quo2.components.list.sortable-list.items.item-skeleton :as skeleton]
+            [quo2.components.list.sortable-list.items.item-tabs :as tab]
             [status-im2.common.resources :as resources]))
 
 (def data (reagent/atom

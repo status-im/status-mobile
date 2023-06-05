@@ -33,4 +33,5 @@
     [quo2.components.selectors.reactions.component-spec]
     [quo2.components.selectors.selectors.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
-    [quo2.components.tags.--tests--.status-tags-component-spec]))
+    [quo2.components.tags.--tests--.status-tags-component-spec]
+    [quo2.components.list.sortable-list.--tests--.component-spec]))
