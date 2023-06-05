@@ -9,14 +9,16 @@
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im2.common.home.actions.view :as actions]))
 
 (defn f-navigation-view
   [{:keys [scroll-y]}]
   (let [insets                   (safe-area/get-insets)
         status-bar-height        (:top insets)
         {:keys [group-chat chat-id chat-name emoji
-                chat-type]}      (rf/sub [:chats/current-chat-chat-view])
+                chat-type]
+         :as   chat}             (rf/sub [:chats/current-chat-chat-view])
         all-loaded?              (rf/sub [:chats/all-loaded? chat-id])
         display-name             (if (= chat-type constants/one-to-one-chat-type)
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -90,11 +92,16 @@
               :size            :paragraph-2
               :style           (style/header-online)}
              (i18n/label :t/online)])]]]
-       [rn/touchable-opacity
-        {:active-opacity      1
-         :style               (style/button-container {:margin-right 20})
-         :accessibility-label :options-button}
-        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
+       (when (not= chat-type constants/community-chat-type)
+         [rn/touchable-opacity
+          {:active-opacity      1
+           :style               (style/button-container {:margin-right 20})
+           :accessibility-label :options-button
+           :on-press            (fn []
+                                  (rf/dispatch [:dismiss-keyboard])
+                                  (rf/dispatch [:show-bottom-sheet
+                                                {:content (fn [] [actions/chat-actions chat true])}]))}
+          [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
 
       [reanimated/view
        {:style (style/animated-pinned-banner all-loaded? banner-opacity-animation status-bar-height)}
