@@ -48,13 +48,12 @@
        :on-press #(rf/dispatch [:chat.ui/show-profile from])}
       [old-message/message-author-name from {} 20]]
      [quo/text
-      {:size  :label
+      {:size  :paragraph-2
        :style (style/pinned-message-text)}
-      (str " " (i18n/label :t/pinned-a-message))]
-     [rn/text
-      {:style               (merge
-                             style/system-message-timestamp-container
-                             (old-style/message-timestamp-text))
+      (i18n/label :t/pinned-a-message)]
+     [quo/text
+      {:size                :label
+       :style               style/system-message-timestamp-container
        :accessibility-label :message-timestamp}
       timestamp-str]]
     [reply/quoted-message quoted-message false true]]])

@@ -18,7 +18,8 @@
   [pin?]
   (merge {:flex-direction :row
           :flex           1
-          :align-items    :center}
+          :align-items    :center
+          :margin-top     2}
          (when-not pin?
            {:left         22
             :margin-right 22})))
@@ -33,7 +34,6 @@
 (def message-text
   {:text-transform :none
    :margin-left    4
-   :margin-top     2
    :flex-shrink    1})
 
 (def gradient

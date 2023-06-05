@@ -185,6 +185,7 @@
           content-type)
        [system-message-content message-data]
        [user-message-content message-data context keyboard-shown false])
+     ;; TODO(alwx): move it somewhere
      [reactions/message-reactions-row message-data
       [rn/view {:pointer-events :none}
        [user-message-content message-data context keyboard-shown true]]]]))
