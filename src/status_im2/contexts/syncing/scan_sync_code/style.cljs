@@ -44,18 +44,48 @@
    :margin-top         20})
 
 (def scan-qr-code-container
-  {:margin-top   19})
+  {:margin-top 19})
 
 (def qr-view-finder
   {:margin-horizontal screen-padding
    :height            1
    :display           :flex})
 
+(defn qr-view-finder-container
+  [size]
+  {:width           size
+   :height          size
+   :justify-content :space-between
+   :margin-left     -1
+   :margin-top      -1})
+
 (defn viewfinder-container
   [viewfinder]
   {:position :absolute
    :left     (:x viewfinder)
    :top      (:y viewfinder)})
+
+(def camera-flash-button
+  {:position :absolute
+   :right    20
+   :bottom   20})
+
+(def border
+  {:border-color colors/white
+   :width        78
+   :height       78})
+
+(defn border-tip
+  [top bottom right left]
+  {:background-color colors/white
+   :position         :absolute
+   :top              top
+   :bottom           bottom
+   :right            right
+   :left             left
+   :height           2
+   :width            2
+   :border-radius    2})
 
 (def viewfinder-text
   {:color       colors/white-opa-70

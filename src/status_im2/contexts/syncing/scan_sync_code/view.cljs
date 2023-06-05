@@ -125,6 +125,7 @@
        :size                32
        :accessibility-label accessibility-label
        :override-theme      :dark
+       :customization-color :blue
        :on-press            on-press}
       (i18n/label button-label)]]))
 
@@ -142,25 +143,47 @@
 (defn- border
   [border1 border2 corner]
   [rn/view
-   (assoc {:border-color colors/white
-           :width 80 :height 80} border1 2 border2 2 corner 16)])
+   (assoc style/border border1 2 border2 2 corner 16)])
+
+(defn- border-tip
+  [{:keys [top bottom left right]}]
+  [rn/view
+   {:style (style/border-tip top bottom right left)}])
 
 (defn- viewfinder
   [qr-view-finder]
   (let [size (+ (:width qr-view-finder) 2)]
     [:<>
      [rn/view {:style (style/viewfinder-container qr-view-finder)}
-      [rn/view {:width           size  
-                :height          size 
-                :justify-content :space-between 
-                :margin-left     -1 
-                :margin-top      -1}
+      [rn/view
+       {:style (style/qr-view-finder-container size)}
+       [rn/view
+        {:flex-direction :row :justify-content :space-between}
+        [rn/view
+         [border :border-top-width :border-left-width :border-top-left-radius]
+         [border-tip {:right -1 :top 0}]
+         [border-tip {:left 0 :bottom -1}]]
+        [rn/view
+         [border :border-top-width :border-right-width :border-top-right-radius]
+         [border-tip {:right 0 :bottom -1}]
+         [border-tip {:left -1 :top 0}]]]
        [rn/view {:flex-direction :row :justify-content :space-between}
-        [border :border-top-width :border-left-width :border-top-left-radius]
-        [border :border-top-width :border-right-width :border-top-right-radius]]
-       [rn/view {:flex-direction :row :justify-content :space-between}
-        [border :border-bottom-width :border-left-width :border-bottom-left-radius]
-        [border :border-bottom-width :border-right-width :border-bottom-right-radius]]]
+        [rn/view
+         [border :border-bottom-width :border-left-width :border-bottom-left-radius]
+         [border-tip {:right -1 :bottom 0}]
+         [border-tip {:left 0 :top -1}]]
+        [rn/view
+         [border :border-bottom-width :border-right-width :border-bottom-right-radius]
+         [border-tip {:right 0 :top -1}]
+         [border-tip {:left -1 :bottom 0}]]]
+       [quo/button
+        {:icon                true
+         :type                :blur-bg
+         :size                32
+         :accessibility-label :camera-flash
+         :on-press            #()
+         :style               style/camera-flash-button}
+        :i/flashlight-off]]
       [quo/text
        {:size   :paragraph-2
         :weight :regular
@@ -196,7 +219,7 @@
     {:style (style/bottom-container (:bottom insets))}
     [quo/text
      {:size   :paragraph-2
-      :weight :regular
+      :weight :medium
       :style  style/bottom-text}
      (i18n/label :t/i-dont-have-status-on-another-device)]]])
 
