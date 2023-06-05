@@ -2,7 +2,6 @@
   (:require [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [react-native.core :as rn]
-
             [utils.worklets.parallax :as worklets.parallax]
             ["react-native-transparent-video" :default TV]))
 
@@ -23,10 +22,14 @@
     (fn []
       [reanimated/view
        {:shouldRasterizeIOS true
-        :style              {:position :absolute
-                             :z-index  order
-                             :width    window-width
-                             :height   window-height}}
+        :style              [{:position :absolute
+                              :z-index order
+                              :width (+ window-width double-offset)
+                              :height (+ window-height double-offset)}
+                             image-style]}
+       
+
+
        [transparent-video
         {:source source
          :style  {:position :absolute
