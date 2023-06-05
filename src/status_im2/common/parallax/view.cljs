@@ -23,11 +23,11 @@
       [reanimated/view
        {:shouldRasterizeIOS true
         :style              [{:position :absolute
-                              :z-index order
-                              :width (+ window-width double-offset)
-                              :height (+ window-height double-offset)}
+                              :z-index  order
+                              :width    (+ window-width double-offset)
+                              :height   (+ window-height double-offset)}
                              image-style]}
-       
+
 
 
        [transparent-video
