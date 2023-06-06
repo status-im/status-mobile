@@ -1,11 +1,12 @@
-(ns status-im2.contexts.chat.composer.reply.style)
+(ns status-im2.contexts.chat.composer.reply.style
+  (:require [react-native.platform :as platform]))
 
 
 (defn container
   [pin? in-chat-input?]
   {:flex-direction :row
    :height         (when-not pin? 24)
-   :margin-left    (when (and (not in-chat-input?) (not pin?)) 26)
+   :margin-left    (if (and (not in-chat-input?) (not pin?)) 26 (if platform/android? 4 0))
    :margin-bottom  (when (and (not in-chat-input?) (not pin?)) 8)})
 (defn reply-content
   [pin?]
@@ -32,8 +33,7 @@
 (def message-text
   {:text-transform :none
    :margin-left    4
-   :margin-top     2
-   :flex           1})
+   :margin-top     2})
 
 (def gradient
   {:position :absolute

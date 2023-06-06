@@ -84,7 +84,8 @@
    in-chat-input? pin? recording-audio?]
   (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
-        content-type       (or content-type contentType)]
+        content-type       (or content-type contentType)
+        text               (get-quoted-text-with-mentions (or parsed-text (:parsed-text content)))]
     [rn/view
      {:style               (style/container pin? in-chat-input?)
       :accessibility-label :reply-message}
@@ -102,26 +103,29 @@
           {:from               from
            :contact-name       contact-name
            :current-public-key current-public-key}]
+         (when (not-empty text)
+           [quo/text
+            {:number-of-lines     1
+             :size                :label
+             :weight              :regular
+             :accessibility-label :quoted-message
+             :ellipsize-mode      :tail
+             :style               style/message-text}
+            text])
          [quo/text
-          {:number-of-lines     1
-           :size                :label
-           :weight              :regular
-           :accessibility-label :quoted-message
-           :ellipsize-mode      :tail
-           :style               (merge
-                                 style/message-text
-                                 (when (or (= constant/content-type-image content-type)
-                                           (= constant/content-type-sticker content-type)
-                                           (= constant/content-type-audio content-type))
-                                   {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
-          (case (or content-type contentType)
-            constant/content-type-image   (if album-images-count
-                                            (i18n/label :t/album-images-count
-                                                        {:album-images-count album-images-count})
-                                            (i18n/label :t/image))
-            constant/content-type-sticker (i18n/label :t/sticker)
-            constant/content-type-audio   (i18n/label :t/audio)
-            (get-quoted-text-with-mentions (or parsed-text (:parsed-text content))))]])]
+          {:size   :label
+           :weight :regular
+           :style  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                    :margin-top 2}}
+          (str " "
+               (case (or content-type contentType)
+                 constant/content-type-image   (if (pos? album-images-count)
+                                                 (i18n/label :t/album-images-count
+                                                             {:album-images-count album-images-count})
+                                                 (i18n/label :t/photo))
+                 constant/content-type-sticker (i18n/label :t/sticker)
+                 constant/content-type-audio   (i18n/label :t/audio)
+                 ""))]])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
         {:width               24
