@@ -2,7 +2,6 @@
   (:require
     [quo.design-system.colors :as quo.colors]
     [quo.react-native :as rn]
-    [re-frame.core :as re-frame]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.fast-image :as fast-image]
     [status-im.ui.screens.chat.message.gap :as message.gap]
@@ -251,9 +250,10 @@
          [rn/text {:style {:color quo.colors/black}} description]]]
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
-         {:on-press #(re-frame/dispatch
-                      [:communities/navigate-to-community
-                       (:id community)])}
+         {:on-press #(do (rf/dispatch
+                          [:communities/navigate-to-community
+                           (:id community)])
+                         (rf/dispatch [:chat/close]))}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
