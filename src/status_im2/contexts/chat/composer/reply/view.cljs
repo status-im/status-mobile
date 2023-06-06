@@ -80,7 +80,7 @@
 
 (defn quoted-message
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
-           album-images-count] :as m}
+           album-images-count]}
    in-chat-input? pin? recording-audio?]
   (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
