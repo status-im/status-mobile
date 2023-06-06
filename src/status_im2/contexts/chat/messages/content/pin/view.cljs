@@ -19,8 +19,9 @@
     [rn/view
      {:style               style/pin-indicator-container
       :accessibility-label :pinned-by}
-     [quo/icon :i/pin {:color colors/primary-50
-                       :size  16}]
+     [quo/icon :i/pin
+      {:color colors/primary-50
+       :size  16}]
      [quo/text
       {:size   :label
        :weight :medium

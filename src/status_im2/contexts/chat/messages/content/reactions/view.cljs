@@ -43,8 +43,8 @@
        [rn/scroll-view
         {:shows-horizontal-scroll-indicator false
          :horizontal                        true
-         :style                             {:margin-left    52
-                                             :margin-bottom  12
+         :style                             {:margin-left    44
+                                             :margin-top     8
                                              :flex-direction :row}}
         (for [{:keys [own emoji-id quantity emoji-reaction-id]
                :as   emoji-reaction} reactions]

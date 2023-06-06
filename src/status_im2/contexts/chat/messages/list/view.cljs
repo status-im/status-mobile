@@ -241,7 +241,7 @@
        [quo/divider-date value]
        (if (= content-type constants/content-type-gap)
          [message.gap/gap message-data]
-         [message/message-with-reactions message-data context keyboard-shown?]))]))
+         [message/message message-data context keyboard-shown?]))]))
 
 (defn scroll-handler
   [event scroll-y]

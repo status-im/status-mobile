@@ -1,22 +1,14 @@
 (ns status-im2.contexts.chat.messages.content.text.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def spacing-between-blocks 8)
-
-(def parsed-text-block
-  {:margin-top -8})
-
-(def paragraph
-  {:margin-top spacing-between-blocks})
+(def spacing-between-blocks 0)
 
 (def block
-  {:margin-top         spacing-between-blocks
-   :border-radius      6
+  {:border-radius      6
    :padding-horizontal 3})
 
 (def quote
-  {:margin-top        spacing-between-blocks
-   :border-left-width 1
+  {:border-left-width 1
    :padding-left      10
    :border-left-color colors/neutral-40})
 

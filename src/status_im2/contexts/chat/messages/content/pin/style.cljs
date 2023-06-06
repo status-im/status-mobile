@@ -16,7 +16,7 @@
 
 (defn pinned-message-text
   []
-  {:color (colors/theme-colors colors/neutral-100 colors/white)
+  {:color       (colors/theme-colors colors/neutral-100 colors/white)
    :margin-left 4})
 
 (def system-message-container
