@@ -8,7 +8,7 @@
   [{:keys [checked? blur? accessibility-label container-style on-change]} label]
   [rn/touchable-without-feedback
    {:on-press            on-change
-    :accessibility-label "disclaimer-touchable-opacity"}
+    :accessibility-label :disclaimer-touchable-opacity}
    [rn/view {:style (merge container-style (style/container blur?))}
     [selectors/checkbox
      {:accessibility-label accessibility-label
