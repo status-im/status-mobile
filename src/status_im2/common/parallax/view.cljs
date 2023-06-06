@@ -3,7 +3,8 @@
             [reagent.core :as reagent]
             [react-native.core :as rn]
             [utils.worklets.parallax :as worklets.parallax]
-            ["react-native-transparent-video" :default TV]))
+            ["react-native-transparent-video" :default TV]
+            [react-native.safe-area :as safe-area]))
 
 (def transparent-video (reagent/adapt-react-class TV))
 
@@ -42,7 +43,7 @@
   [{:keys [layers]}]
   [rn/view
    {:style {:position :absolute
-            :top      0
+            :top      (+ (safe-area/get-top) (safe-area/get-bottom))
             :left     0
             :right    0
             :bottom   0}}
