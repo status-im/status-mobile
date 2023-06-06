@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.enable-biometrics.view
+(ns status-im2.contexts.onboarding.enable-biometrics1.view
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -37,7 +37,7 @@
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label       :maybe-later-button
-       :on-press                  #(rf/dispatch [:navigate-to :enable-biometrics1])
+       :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
        :override-background-color colors/white-opa-5
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
@@ -48,7 +48,7 @@
     [rn/view {:style (style/page-container insets)}
      [background/view true]
      [parallax/video
-      {:layers (resources/get-parallax-video :biometrics)}]
+      {:layers (resources/get-parallax-video :biometrics1)}]
      [rn/view
       [navigation-bar/navigation-bar {:disable-back-button? true}]
       [page-title]]
