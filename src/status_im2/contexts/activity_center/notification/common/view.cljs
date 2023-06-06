@@ -51,7 +51,8 @@
        [swipe-button
         {:style {:opacity   opacity
                  :transform [{:translateX translate-x}]
-                 :height    height}}
+                 :height    height
+                 :width     style/swipe-action-width}}
         extra]])))
 
 (defn- close-active-swipeable
@@ -70,7 +71,9 @@
    [rn/view {:style style/swipe-text-wrapper}
     [quo/icon icon
      {:color colors/white}]
-    [quo/text {:style style/swipe-text}
+    [quo/text {:style  style/swipe-text
+               :size   :paragraph-2
+               :weight :medium}
      text]]])
 
 (defn swipe-button-read-or-unread

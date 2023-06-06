@@ -1,7 +1,7 @@
 (ns status-im2.contexts.activity-center.notification.common.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def swipe-action-width 72)
+(def swipe-action-width 80)
 (def swipe-button-border-radius 16)
 
 (def user-avatar-tag
