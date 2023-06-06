@@ -4,7 +4,8 @@
             [react-native.core :as rn]
             [utils.worklets.parallax :as worklets.parallax]
             ["react-native-transparent-video" :default TV]
-            [react-native.safe-area :as safe-area]))
+            [react-native.safe-area :as safe-area]
+            [react-native.platform :as platform]))
 
 (def transparent-video (reagent/adapt-react-class TV))
 
@@ -22,7 +23,7 @@
                                    :left 0})]
     (fn []
       [reanimated/view
-       {:shouldRasterizeIOS true
+       {:needsOffscreenAlphaCompositing true
         :style              [{:position :absolute
                               :width    (+ window-width double-offset)
                               :height   (+ window-height double-offset)}
@@ -43,7 +44,7 @@
   [{:keys [layers]}]
   [rn/view
    {:style {:position :absolute
-            :top      (+ (safe-area/get-top) (safe-area/get-bottom))
+            :top      (if platform/android? (+ (safe-area/get-top) (safe-area/get-bottom)) (safe-area/get-bottom))
             :left     0
             :right    0
             :bottom   0}}
