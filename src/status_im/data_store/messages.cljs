@@ -58,7 +58,8 @@
               {:parsedText   :parsed-text
                :deleted      :deleted?
                :deletedForMe :deleted-for-me?
-               :communityId  :community-id})
+               :communityId  :community-id
+               :albumImagesCount :album-images-count})
       (update :outgoing-status keyword)
       (update :command-parameters
               set/rename-keys

@@ -80,7 +80,7 @@
 
 (defn quoted-message
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
-           album-images-count]}
+           album-images-count] :as m}
    in-chat-input? pin? recording-audio?]
   (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
@@ -116,7 +116,7 @@
                                    {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
           (case (or content-type contentType)
             constant/content-type-image   (if album-images-count
-                                            (i18n/label :t/images-albums-count
+                                            (i18n/label :t/album-images-count
                                                         {:album-images-count album-images-count})
                                             (i18n/label :t/image))
             constant/content-type-sticker (i18n/label :t/sticker)
