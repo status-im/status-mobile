@@ -1,7 +1,7 @@
 (ns status-im2.common.bottom-sheet-screen.style
-  (:require
-    [quo2.foundations.colors :as colors]
-    [react-native.reanimated :as reanimated]))
+  (:require [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.reanimated :as reanimated]))
 
 (defn background
   [opacity]
@@ -40,4 +40,5 @@
   {:width            32
    :height           4
    :border-radius    100
-   :background-color (colors/theme-colors colors/neutral-100-opa-30 colors/white-opa-30 override-theme)})
+   :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
+   :opacity          (theme/theme-value 0.05 0.1)})

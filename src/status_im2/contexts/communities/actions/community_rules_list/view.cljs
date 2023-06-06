@@ -1,16 +1,15 @@
 (ns status-im2.contexts.communities.actions.community-rules-list.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.communities.actions.community-rules-list.style :as style]
-            [quo2.core :as quo]))
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
 
-;; TODO: update with real data
 (def rules
   [{:index 1
     :title "Be respectful"
     :content
     "You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated."}
    {:index 2
-    :title "No Inappropriate Language"
+    :title "No inappropriate language"
     :content
     "The use of profanity should be kept to a minimum. However, any derogatory language towards any user is prohibited."}
    {:index 3
@@ -30,28 +29,18 @@
 
 (defn community-rule-item
   [{:keys [title content index]}]
-  [rn/view
-   {:style style/community-rule-container}
-   [rn/view
-    {:style style/inner-community-rule-container}
-    [rn/view
-     {:style style/community-rule}
-     [quo/text
-      {:style               style/community-rule-text
-       :accessibility-label :communities-rule-index
-       :weight              :medium
-       :size                :label}
-      (str index)]]
-    [quo/text
-     {:accessibility-label :communities-rule-title
-      :weight              :semi-bold
-      :size                :paragraph-2}
-     title]]
+  [rn/view {:style style/community-rule}
    [quo/text
-    {:style               style/community-rule-sub-text
-     :accessibility-label :communities-rule-content
+    {:style  style/community-rule-index
+     :weight :medium
+     :size   :paragraph-2}
+    (str index ". ")]
+   [quo/text
+    {:style               style/community-rule-text
+     :accessibility-label :communities-rule-index
+     :weight              :medium
      :size                :paragraph-2}
-    content]])
+    (str title ": " content)]])
 
 (defn view
   [rules]
