@@ -60,13 +60,10 @@
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
 
 (def parallax-video
-  {:biometrics [
-                (js/require "../resources/videos2/enable_biometrics_0.mp4")
+  {:biometrics [(js/require "../resources/videos2/enable_biometrics_0.mp4")
                 (js/require "../resources/videos2/enable_biometrics_1.mp4")
                 (js/require "../resources/videos2/enable_biometrics_2.mp4")
-                (js/require "../resources/videos2/enable_biometrics_3.mp4")
-               ]
-  })
+                (js/require "../resources/videos2/enable_biometrics_3.mp4")]})
 
 (defn get-mock-image
   [k]
