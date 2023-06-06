@@ -67,10 +67,10 @@
                 (js/require "../resources/videos2/enable_biometrics_3.mp4")]})
 
 (def parallax-video-android
-  {:biometrics [{:uri "/res/raw/resources_videos2_enable_biometrics_0.mp4"}
-                {:uri "/res/raw/resources_videos2_enable_biometrics_1.mp4"}
-                {:uri "/res/raw/resources_videos2_enable_biometrics_2.mp4"}
-                {:uri "/res/raw/resources_videos2_enable_biometrics_3.mp4"}]})
+  {:biometrics [{:uri "android.resource://im.status.ethereum.pr/raw/resources_videos2_enable_biometrics_0.mp4"}
+                {:uri "android.resource://im.status.ethereum.pr/raw/resources_videos2_enable_biometrics_1.mp4"}
+                {:uri "android.resource://im.status.ethereum.pr/raw/resources_videos2_enable_biometrics_2.mp4"}
+                {:uri "android.resource://im.status.ethereum.pr/raw/resources_videos2_enable_biometrics_3.mp4"}]})
 
 (defn get-mock-image
   [k]
