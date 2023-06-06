@@ -9,12 +9,18 @@
    :margin-right :auto})
 
 (def button-container
-  {:width         "100%"
+  {;:position :absolute
+   ;:flex 1
+   :width         "100%"
    :padding-left  20
    :padding-right 20
    :padding-top   (if platform/android? 0 12)
    :align-self    :flex-end
-   :height        64})
+   :height        64
+   ;:bottom 0
+   ;:left 0
+   ;:right 0
+   })
 
 (def blur-button-container
   (merge button-container
@@ -28,7 +34,8 @@
    :top      0
    :bottom   0
    :left     0
-   :right    0})
+   :right    0
+   :z-index 100})
 
 (def info-message
   {:margin-top 8})

@@ -23,7 +23,7 @@
     :or   {max-length    0
            auto-focus    false
            default-value ""}}]
-  (let [focused?  (reagent/atom false)
+  (let [focused?  (reagent/atom auto-focus)
         value     (reagent/atom default-value)
         on-change (fn [v]
                     (reset! value v)
