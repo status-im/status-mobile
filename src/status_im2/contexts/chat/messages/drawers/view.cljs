@@ -9,7 +9,8 @@
             [reagent.core :as reagent]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.contexts.chat.messages.drawers.style :as style]
-            [react-native.gesture :as gesture]))
+            [react-native.gesture :as gesture]
+            [quo2.components.reactions.resource :as reactions.resource]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
@@ -33,10 +34,10 @@
            {:id                  reaction-type-int
             :accessibility-label (keyword (str "authors-for-reaction-" reaction-type-int))
             :label               [rn/view {:style style/tab}
-                                  [quo/icon
-                                   (get constants/reactions reaction-type-int)
-                                   {:no-color        true
-                                    :container-style style/tab-icon}]
+                                  [rn/image
+                                   {:source (reactions.resource/get-reaction
+                                             (get constants/reactions reaction-type-int))
+                                    :style  style/tab-icon}]
                                   [quo/text
                                    {:weight :medium
                                     :size   :paragraph-1
