@@ -90,7 +90,8 @@
    (merge {:underlay-color (colors/theme-colors
                             colors/neutral-5
                             colors/neutral-95)
-           :style          {:border-radius 12}}
+           :style          {:border-radius 12
+                            :margin-left   12}}
           props)
    [rn/view (merge (style/membership-info-container) style)
     [community-icon/community-icon
