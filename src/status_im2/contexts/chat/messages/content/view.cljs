@@ -92,7 +92,7 @@
                               outgoing)
             context         (assoc context
                                    :on-long-press
-                                   #(on-long-press message-data context keyboard-shown))
+                                   #(on-long-press message-data context keyboard-shown?))
             response-to     (:response-to content)
             height          (rf/sub [:dimensions/window-height])]
         [rn/touchable-highlight
@@ -111,7 +111,7 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       #(on-long-press message-data context keyboard-shown)}
+          :on-long-press       #(on-long-press message-data context keyboard-shown?)}
          [rn/view {:style {:padding-vertical 8}}
           (when (and (seq response-to) quoted-message)
             [reply/quoted-message quoted-message])
@@ -155,8 +155,9 @@
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
                 {:content       (drawers/reactions-and-actions message-data context)
-                 :selected-item (fn [] [user-message-content message-data context keyboard-shown
-                                        true])}]))
+                 :selected-item (fn []
+                                  [rn/view {:pointer-events :none}
+                                   [user-message-content message-data context keyboard-shown true]])}]))
 
 (defn message-with-reactions
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group?] :as message-data}
@@ -174,4 +175,5 @@
      [system-message-content message-data]
      [user-message-content message-data context keyboard-shown false])
    [reactions/message-reactions-row message-data
-    [user-message-content message-data context keyboard-shown true]]])
+    [rn/view {:pointer-events :none}
+     [user-message-content message-data context keyboard-shown true]]]])
