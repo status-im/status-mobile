@@ -243,6 +243,6 @@
                    :right 16}}
           unviewed-messages-count])
        [quo2.icons/icon :i/muted
-        {:size  20
-         :color colors/neutral-40
+        {:size            20
+         :color           colors/neutral-40
          :container-style style/muted-icon}])]))
