@@ -1,5 +1,6 @@
 (ns status-im2.common.bottom-sheet.styles
   (:require [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [status-im.utils.platform :as platform]))
 
 (defn handle
@@ -7,7 +8,7 @@
   {:width            32
    :height           4
    :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
-   :opacity          0.05
+   :opacity          (theme/theme-value 0.05 0.1)
    :border-radius    100
    :align-self       :center
    :margin-vertical  8})
