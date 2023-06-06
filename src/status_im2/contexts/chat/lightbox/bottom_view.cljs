@@ -1,12 +1,13 @@
 (ns status-im2.contexts.chat.lightbox.bottom-view
   (:require
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.animations :as anim]
-    [status-im2.contexts.chat.lightbox.constants :as c]))
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   [react-native.reanimated :as reanimated]
+   [status-im2.contexts.chat.lightbox.style :as style]
+   [utils.re-frame :as rf]
+   [status-im2.contexts.chat.lightbox.animations :as anim]
+   [status-im2.contexts.chat.lightbox.constants :as c]
+   [status-im2.constants :as constants]))
 
 (defn get-small-item-layout
   [_ index]
@@ -49,14 +50,15 @@
 
 (defn bottom-view
   [messages index scroll-index insets animations derived item-width props]
-  (let [_text              (get-in (first messages) [:content :text])
+  (let [text              (get-in (first messages) [:content :text])
         padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     #_[rn/text {:style style/text-style} text]
+     (when constants/image-description-in-lighthouse?
+       [rn/text {:style style/text-style} text])
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
