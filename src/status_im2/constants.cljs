@@ -332,4 +332,4 @@
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
 
-(def ^:const image-description-in-lighthouse? false)
+(def ^:const image-description-in-lightbox? false)
