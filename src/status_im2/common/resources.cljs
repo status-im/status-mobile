@@ -1,5 +1,6 @@
 (ns status-im2.common.resources
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
@@ -75,11 +76,17 @@
    :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
 
-(def parallax-video
+(def parallax-video-ios
   {:biometrics [(js/require "../resources/videos2/enable_biometrics_0.mp4")
                 (js/require "../resources/videos2/enable_biometrics_1.mp4")
                 (js/require "../resources/videos2/enable_biometrics_2.mp4")
                 (js/require "../resources/videos2/enable_biometrics_3.mp4")]})
+
+(def parallax-video-android
+  {:biometrics [{:uri "/res/raw/resources_videos2_enable_biometrics_0.mp4"}
+                {:uri "/res/raw/resources_videos2_enable_biometrics_1.mp4"}
+                {:uri "/res/raw/resources_videos2_enable_biometrics_2.mp4"}
+                {:uri "/res/raw/resources_videos2_enable_biometrics_3.mp4"}]})
 
 (defn get-mock-image
   [k]
@@ -99,4 +106,4 @@
 
 (defn get-parallax-video
   [k]
-  (get parallax-video k))
+  (get (if platform/ios? parallax-video-ios parallax-video-android) k))
