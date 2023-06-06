@@ -10,8 +10,8 @@
             [utils.requests :as requests]))
 
 (defn request-to-join-text
-  [is-open?]
-  (if is-open?
+  [open?]
+  (if open?
     (i18n/label :t/join-open-community)
     (i18n/label :t/request-to-join)))
 
@@ -27,7 +27,7 @@
                     can-request-access?
                     requested-to-join-at]} (rf/sub [:get-screen-params])
             pending?                       (rf/sub [:communities/my-pending-request-to-join id])
-            is-open?                       (not= 3 (:access permissions))]
+            open?                          (not= 3 (:access permissions))]
         [rn/view {:flex 1}
          [gesture/scroll-view {:style {:flex 1}}
           [rn/view style/page-container
@@ -36,7 +36,7 @@
              {:accessibility-label :communities-join-community
               :weight              :semi-bold
               :size                :heading-1}
-             (request-to-join-text is-open?)]]
+             (request-to-join-text open?)]]
            [quo/context-tag
             {:style
              {:margin-right :auto
@@ -77,7 +77,7 @@
                                            (rf/dispatch [:navigate-back]))))
               :disabled            (not @agreed-to-rules?)
               :style               {:flex 1}}
-             (request-to-join-text is-open?)]]
+             (request-to-join-text open?)]]
            [rn/view {:style style/final-disclaimer-container}
             [quo/text
              {:size  :paragraph-2
