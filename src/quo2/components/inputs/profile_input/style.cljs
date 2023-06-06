@@ -13,7 +13,7 @@
 
 (def button
   {:position      :absolute
-   :top           23
+   :top           24
    :bottom        0
    :left          33
    :right         0
