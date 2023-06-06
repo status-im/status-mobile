@@ -58,12 +58,20 @@
    :fxc  (js/require "../resources/images/tokens/mainnet/FXC.png")
    :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
-
 (def parallax-video
-  {:biometrics [(js/require "../resources/videos2/enable_biometrics_0.mp4")
-                (js/require "../resources/videos2/enable_biometrics_1.mp4")
-                (js/require "../resources/videos2/enable_biometrics_2.mp4")
-                (js/require "../resources/videos2/enable_biometrics_3.mp4")]})
+  {:biometrics  [(js/require "../resources/videos2/enable_biometrics_0.mp4")
+                 (js/require "../resources/videos2/enable_biometrics_1.mp4")
+                 (js/require "../resources/videos2/enable_biometrics_2.mp4")
+                 (js/require "../resources/videos2/enable_biometrics_3.mp4")]
+   :biometrics1 [(js/require "../resources/videos2/Biometrics_Layer_01.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_02.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_03.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_04.mp4")]
+   :biometrics2 [(js/require "../resources/videos2/Biometrics_Layer_01.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_02.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_03.mp4")
+                 (js/require "../resources/videos2/Biometrics_Layer_04.mp4")]
+  })
 
 (defn get-mock-image
   [k]

@@ -14,21 +14,21 @@
 
 (defn f-sensor-animated-video
   [{:keys [order source]}]
-  (let [{window-width :width
-         window-height :height}   (rn/get-window)
+  (let [{window-width  :width
+         window-height :height} (rn/get-window)
 
-        image-style (if (pos? order)
-                     (worklets.parallax/sensor-animated-image order offset)
-                       
-                      {:top    0
-                       :left   0})]
+        image-style             (if (pos? order)
+                                  (worklets.parallax/sensor-animated-image order offset)
+
+                                  {:top  0
+                                   :left 0})]
     (fn []
       [reanimated/view
        {:shouldRasterizeIOS true
-        :style [{:position :absolute
-                 :width (+ window-width double-offset)
-                 :height (+ window-height double-offset)}
-                image-style]}
+        :style              [{:position :absolute
+                              :width    (+ window-width double-offset)
+                              :height   (+ window-height double-offset)}
+                             image-style]}
        [transparent-video
         {:source source
          :style  {;; :overflow :visible

@@ -10,10 +10,10 @@
    :background-color colors/neutral-80-opa-80-blur})
 
 (def page-illustration
-  {:flex              1
-  ;;  :background-color  colors/danger-50
-  ;;  :margin-horizontal default-margin
-   })
+  {:flex 1
+   ;;  :background-color  colors/danger-50
+   ;;  :margin-horizontal default-margin
+  })
 
 (defn buttons
   [insets]

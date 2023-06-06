@@ -43,7 +43,7 @@
 
 (defn enable-biometrics
   []
-  (let [insets (safe-area/get-insets)
+  (let [insets                    (safe-area/get-insets)
         request-motion-permission (fn []
                                     (rf/dispatch
                                      [:request-permissions
@@ -61,7 +61,7 @@
      [rn/view {:style style/page-illustration}
       (if @motion-permission-granted
         [parallax/video
-         {:layers (resources/get-parallax-video :biometrics)}]
+         {:layers (resources/get-parallax-video :biometrics1)}]
         [quo/button
          {:before              :i/camera
           :type                :primary
