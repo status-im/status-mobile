@@ -40,8 +40,8 @@
           :default-value default-value
           :accessibility-label :profile-title-input
           :keyboard-appearance (theme/theme-value :light :dark override-theme)
-          :on-focus #(swap! focused? (fn [] true))
-          :on-blur #(swap! focused? (fn [] false))
+          :on-focus #(swap! focused? (constantly true))
+          :on-blur #(swap! focused? (constantly false))
           :input-mode :text
           :on-change-text on-change
           :editable (not disabled?)

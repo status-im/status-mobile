@@ -73,11 +73,11 @@
        (let [will-show-listener (oops/ocall rn/keyboard
                                             "addListener"
                                             "keyboardWillShow"
-                                            #(swap! keyboard-shown? (fn [] true)))
+                                            #(swap! keyboard-shown? (constantly true)))
              will-hide-listener (oops/ocall rn/keyboard
                                             "addListener"
                                             "keyboardWillHide"
-                                            #(swap! keyboard-shown? (fn [] false)))]
+                                            #(swap! keyboard-shown? (constantly false)))]
          (fn []
            (fn []
              (oops/ocall will-show-listener "remove")
