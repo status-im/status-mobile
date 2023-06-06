@@ -10,7 +10,8 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
-            [status-im2.common.parallax.view :as parallax]))
+            [status-im2.common.parallax.view :as parallax]
+            [status-im2.contexts.onboarding.common.background.view :as background]))
 
 (defonce motion-permission-granted (reagent/atom false))
 
@@ -45,6 +46,7 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
+     [background/view true]
      [parallax/video
       {:layers (resources/get-parallax-video :biometrics)}]
      [rn/view
