@@ -79,11 +79,15 @@
   {:biometrics [(js/require "../resources/videos2/enable_biometrics_0.mp4")
                 (js/require "../resources/videos2/enable_biometrics_1.mp4")
                 (js/require "../resources/videos2/enable_biometrics_2.mp4")
-                (js/require "../resources/videos2/enable_biometrics_3.mp4")] 
+                (js/require "../resources/videos2/enable_biometrics_3.mp4")]
    :biometrics1 [(js/require "../resources/videos2/Biometrics_Layer_01.mp4")
                  (js/require "../resources/videos2/Biometrics_Layer_02.mp4")
                  (js/require "../resources/videos2/Biometrics_Layer_03.mp4")
-                 (js/require "../resources/videos2/Biometrics_Layer_04.mp4")]})
+                 (js/require "../resources/videos2/Biometrics_Layer_04.mp4")]
+   :notifications [(js/require "../resources/videos2/notifications_layer_01.mp4")
+                   (js/require "../resources/videos2/notifications_layer_02.mp4")
+                   (js/require "../resources/videos2/notifications_layer_03.mp4")
+                   (js/require "../resources/videos2/notifications_layer_04.mp4")]})
 
 (defn get-mock-image
   [k]
