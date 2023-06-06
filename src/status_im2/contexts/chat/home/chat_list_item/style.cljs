@@ -21,6 +21,10 @@
    :top              16
    :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
 
+(def muted-icon {:position         :absolute
+                 :right            26
+                 :top              16})
+
 (defn timestamp
   []
   {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)

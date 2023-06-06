@@ -78,13 +78,16 @@
          {:style {:margin-left   8
                   :margin-top    10
                   :margin-bottom 8}}
-         (for [chat chats
-               :let [chat (assoc chat :chat-type constants/community-chat-type)]]
+         (for [{:keys [muted? id] :as chat} chats
+               :let [chat (assoc chat :chat-type constants/community-chat-type)
+                     channel-muted? (or muted? (rf/sub [:chat/check-channel-muted? community-id id]))]]
            [rn/view
             {:key   (:id chat)
              :style {:margin-top 4}}
             [quo/channel-list-item
              (assoc chat
+                    :muted?
+                    channel-muted?
                     :on-long-press
                     (fn []
                       (rf/dispatch [:show-bottom-sheet

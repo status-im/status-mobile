@@ -8,7 +8,8 @@
             [utils.re-frame :as rf]
             [status-im2.constants :as constants]
             [clojure.string :as string]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [quo2.components.icon :as quo2.icons]))
 
 (def max-subheader-length 50)
 
@@ -235,8 +236,13 @@
                :margin-right (if show-unread-badge? 36 0)}}
       [name-view display-name contact timestamp]
       [last-message-preview group-chat last-message]]
-     (when show-unread-badge?
-       [quo/info-count
-        {:style {:top   16
-                 :right 16}}
-        unviewed-messages-count])]))
+     (if-not muted
+       (when show-unread-badge?
+         [quo/info-count
+          {:style {:top   16
+                   :right 16}}
+          unviewed-messages-count])
+       [quo2.icons/icon :i/muted
+        {:size  20
+         :color colors/neutral-40
+         :container-style style/muted-icon}])]))

@@ -73,6 +73,7 @@
 
 (defn <-rpc-js
   [^js chat]
+  (prn (.-muteTill chat) "MEGA")
   (-> {:name                    (.-name chat)
        :description             (.-description chat)
        :color                   (.-color chat)
