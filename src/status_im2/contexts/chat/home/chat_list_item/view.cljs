@@ -152,10 +152,9 @@
                              (preview-text-from-content group-chat primary-name message)))]
     [quo/text
      {:size                :paragraph-2
-      :style               {:color        (colors/theme-colors colors/neutral-50
-                                                               colors/neutral-40)
-                            :flex         1
-                            :margin-right 20}
+      :style               {:color (colors/theme-colors colors/neutral-50
+                                                        colors/neutral-40)
+                            :flex  1}
       :number-of-lines     1
       :ellipsize-mode      :tail
       :accessibility-label :chat-message-text}
@@ -178,17 +177,30 @@
          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn name-view
-  [display-name contact timestamp]
-  [rn/view {:style {:flex-direction :row}}
-   [quo/text
-    {:weight              :semi-bold
-     :accessibility-label :chat-name-text}
-    display-name]
-   [verified-or-contact-icon contact]
-   [quo/text
-    {:size  :label
-     :style (style/timestamp)}
-    (datetime/to-short-str timestamp)]])
+  [display-name {:keys [ens-verified added?] :as contact} timestamp has-unread-badge?]
+  (let [show-verified-or-contact-icon? (or ens-verified added?)
+        name-text-max-width            (cond-> (if has-unread-badge? 70 71.5)
+
+                                         ;; Adding the below percent for group and
+                                         ;; not-mutual contact chats
+                                         (nil? show-verified-or-contact-icon?)
+                                         (+ (if has-unread-badge? 4.5 5.3)))]
+    [rn/view
+     {:style {:flex           1
+              :flex-direction :row}}
+     [quo/text
+      {:weight              :semi-bold
+       :accessibility-label :chat-name-text
+       :style               {:max-width (str name-text-max-width "%")}
+       :number-of-lines     1
+       :ellipsize-mode      :tail}
+      display-name]
+     (when show-verified-or-contact-icon?
+       [verified-or-contact-icon contact])
+     [quo/text
+      {:size  :label
+       :style (style/timestamp)}
+      (datetime/to-short-str timestamp)]]))
 
 (defn avatar-view
   [{:keys [contact chat-id full-name color]}]
@@ -209,11 +221,12 @@
   [{:keys [chat-id group-chat color name unviewed-messages-count
            timestamp last-message muted]
     :as   item}]
-  (let [display-name (if group-chat
-                       name
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact      (when-not group-chat
-                       (rf/sub [:contacts/contact-by-address chat-id]))]
+  (let [display-name      (if group-chat
+                            name
+                            (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact           (when-not group-chat
+                            (rf/sub [:contacts/contact-by-address chat-id]))
+        has-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -224,10 +237,15 @@
        :chat-id   chat-id
        :full-name display-name
        :color     color}]
-     [rn/view {:style {:margin-left 8}}
-      [name-view display-name contact timestamp]
+     [rn/view
+      {:style {:flex         1
+               :margin-left  8
+               :margin-right (if has-unread-badge? 36 0)}}
+      [name-view display-name contact timestamp has-unread-badge?]
       [last-message-preview group-chat last-message]]
      (when-not muted
        (when (> unviewed-messages-count 0)
-         [quo/info-count {:style {:top 16}}
+         [quo/info-count
+          {:style {:top   16
+                   :right 16}}
           unviewed-messages-count]))]))
