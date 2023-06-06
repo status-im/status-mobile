@@ -34,10 +34,9 @@
       :header-comp    (fn [{:keys [scroll-y]}]
                         [messages.navigation/navigation-view {:scroll-y scroll-y}])
       :footer-comp    (fn [{:keys [insets]}]
-                        [rn/view
-                         (if-not able-to-send-message?
-                           [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-                           [:f> composer/composer insets])])}]))
+                        (if-not able-to-send-message?
+                          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
+                          [:f> composer/composer insets]))}]))
 
 (defn chat
   []

@@ -7,10 +7,11 @@
 (defonce ^:const pinned-banner-height 40)
 
 (defn blur-container-style
-  [top-offset opacity-animation]
+  [top-offset opacity-animation enabled?]
   (reanimated/apply-animations-to-style
    {:opacity opacity-animation}
    {:position :absolute
+    :display  (if enabled? :flex :none)
     :top      top-offset
     :left     0
     :right    0

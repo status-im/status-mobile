@@ -17,13 +17,13 @@
         (get-in message [:content :parsed-text])))
 
 (defn f-blur-view
-  [top-offset opacity-animation]
-  [reanimated/view {:style (style/blur-container-style top-offset opacity-animation)}
+  [top-offset opacity-animation enabled?]
+  [reanimated/view {:style (style/blur-container-style top-offset opacity-animation enabled?)}
    [blur/view (style/blur-view-style)]])
 
 (defn blur-view
-  [top-offset opacity-animation]
-  [:f> f-blur-view top-offset opacity-animation])
+  [top-offset opacity-animation enabled?]
+  [:f> f-blur-view top-offset opacity-animation enabled?])
 
 (defn f-banner
   [{:keys [chat-id opacity-animation all-loaded? top-offset]}]
@@ -42,7 +42,7 @@
               (resolver/resolve-message latest-pin-text)
               :else latest-pin-text)]
     [rn/view
-     [blur-view top-offset opacity-animation]
+     [blur-view top-offset opacity-animation (> pins-count 0)]
      [reanimated/view {:style (style/animated-pinned-banner top-offset all-loaded? opacity-animation)}
       [quo/banner
        {:latest-pin-text latest-pin-text

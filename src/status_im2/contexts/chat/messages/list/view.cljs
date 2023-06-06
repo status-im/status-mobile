@@ -326,7 +326,7 @@
        :keyboard-shown? keyboard-shown}]
 
      (when footer-comp
-       (footer-comp {:insets insets}))]))
+       [footer-comp {:insets insets}])]))
 
 (defn messages-list
   [props]
