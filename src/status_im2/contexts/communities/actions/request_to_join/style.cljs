@@ -27,11 +27,10 @@
 
 (defn bottom-container
   []
-  {:margin-horizontal 20
-   :padding-top       32
-   :flex-direction    :row
-   :align-items       :center
-   :justify-content   :space-evenly})
+  {:padding-top     32
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-evenly})
 
 (def final-disclaimer-container
   {:margin-top         12
