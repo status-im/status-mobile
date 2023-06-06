@@ -23,21 +23,16 @@
       [reanimated/view
        {:shouldRasterizeIOS true
         :style              [{:position :absolute
-                              :z-index  order
                               :width    (+ window-width double-offset)
                               :height   (+ window-height double-offset)}
                              image-style]}
-
-
-
        [transparent-video
         {:source source
          :style  {:position :absolute
                   :top      0
                   :left     0
                   :right    0
-                  :bottom   0}}]
-      ])))
+                  :bottom   0}}]])))
 
 (defn sensor-animated-video
   [props]
@@ -50,9 +45,7 @@
             :top      0
             :left     0
             :right    0
-            :bottom   0
-            :z-index  2
-           }}
+            :bottom   0}}
    (map-indexed (fn [idx layer]
                   [sensor-animated-video
                    {:key    (str layer idx)

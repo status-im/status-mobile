@@ -5,8 +5,7 @@
             [utils.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im2.common.parallax.view :as parallax]))
+            [status-im.ui.components.react :as react]))
 
 (defn get-supported-biometric-auth
   []
