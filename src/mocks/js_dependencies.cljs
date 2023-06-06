@@ -411,6 +411,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "../src/js/worklets/scroll_view.js"             #js {}
     "../src/js/worklets/onboarding_carousel.js"     #js {}
     "../src/js/worklets/lightbox.js"                #js {}
+    "../src/js/worklets/parallax.js"                #js {}
     "./fleets.js"                                   default-fleets
     "@walletconnect/client"                         wallet-connect-client
     "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))
