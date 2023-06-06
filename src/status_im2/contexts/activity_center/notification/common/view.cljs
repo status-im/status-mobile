@@ -71,9 +71,10 @@
    [rn/view {:style style/swipe-text-wrapper}
     [quo/icon icon
      {:color colors/white}]
-    [quo/text {:style  style/swipe-text
-               :size   :paragraph-2
-               :weight :medium}
+    [quo/text
+     {:style  style/swipe-text
+      :size   :paragraph-2
+      :weight :medium}
      text]]])
 
 (defn swipe-button-read-or-unread
