@@ -10,7 +10,7 @@
 
 (defn header-text-view
   [index window-width header-text]
-  [rn/view {:style (style/header-text-view window-width)}
+  #_[rn/view {:style (style/header-text-view window-width)}
    [quo/text
     {:style  style/carousel-text
      :weight :semi-bold
@@ -19,7 +19,8 @@
    [quo/text
     {:style style/carousel-sub-text
      :size  :paragraph-1}
-    (get-in header-text [index :sub-text])]])
+    (get-in header-text [index :sub-text])]]
+  [:<>])
 
 (defn content-view
   [{:keys [window-width status-bar-height index header-text header-background]} content]
