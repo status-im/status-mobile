@@ -99,7 +99,7 @@
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
         :header                            [:<>
-                                            [rn/view (style/header-space top)]
+                                            [rn/view {:style (style/header-space top)}]
                                             (when (seq pending-contact-requests)
                                               [contact-request/contact-requests
                                                pending-contact-requests])]
