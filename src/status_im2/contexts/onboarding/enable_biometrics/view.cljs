@@ -43,23 +43,11 @@
 
 (defn enable-biometrics
   []
-  (let [insets                    (safe-area/get-insets)
-        request-motion-permission (fn []
-                                    (rf/dispatch
-                                     [:request-permissions
-                                      {:permissions [:motion]
-                                       :on-allowed  #(reset! motion-permission-granted true)
-                                       :on-denied   #(rf/dispatch
-                                                      [:toasts/upsert
-                                                       {:icon           :i/info
-                                                        :icon-color     colors/danger-50
-                                                        :override-theme :light
-                                                        :text           "motion denied"}])}]))]
-    [:<>
+  (let [insets (safe-area/get-insets)]
+    [rn/view {:style (style/page-container insets)}
      [parallax/video
       {:layers (resources/get-parallax-video :biometrics)}]
-     [rn/view {:style (style/page-container insets)}
-      [rn/view
-       [navigation-bar/navigation-bar {:disable-back-button? true}]
-       [page-title]]
-      [enable-biometrics-buttons {:style {:align-self :flex-end}}]]]))
+     [rn/view
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]]
+     [enable-biometrics-buttons {:style {:align-self :flex-end}}]]))
