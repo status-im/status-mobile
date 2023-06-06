@@ -56,7 +56,7 @@
   [quo/documentation-drawers
    {:title  (i18n/label :t/getting-started-with-status)
     :shell? true}
-   [rn/view
+   [:<>
     [quo/text
      {:size  :paragraph-2
       :style style/doc-main-content}
