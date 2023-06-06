@@ -8,7 +8,7 @@
   {:width            32
    :height           4
    :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
-   :opacity          (if theme/dark? 0.1 0.05)
+   :opacity          (theme/theme-value 0.05 0.1)
    :border-radius    100
    :align-self       :center
    :margin-vertical  8})
