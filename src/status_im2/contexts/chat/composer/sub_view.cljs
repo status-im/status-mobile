@@ -27,39 +27,27 @@
 
 (defn- f-shell-button
   [{:keys [maximized? focused?]} {:keys [height]}]
-  (let [insets         (safe-area/get-insets)
-        translate-y    (utils/calc-shell-neg-y insets maximized?)
-        translate-hide (reanimated/use-shared-value
-                        (if (or @focused? @messages.list/show-floating-scroll-down-button) 30 0))
-        opacity        (reanimated/use-shared-value
-                        (if (or @focused? @messages.list/show-floating-scroll-down-button) 0 1))]
+  (let [insets      (safe-area/get-insets)
+        y-container (utils/calc-shell-neg-y insets maximized?)
+        show-shell? (or @focused? @messages.list/show-floating-scroll-down-button)
+        y-shell     (reanimated/use-shared-value (if show-shell? 30 0))
+        opacity     (reanimated/use-shared-value (if show-shell? 0 1))]
     (rn/use-effect
      (fn []
-       (reanimated/animate opacity
-                           (if (or @focused? @messages.list/show-floating-scroll-down-button) 0 1))
-       (reanimated/animate translate-hide
-                           (if (or @focused? @messages.list/show-floating-scroll-down-button) 30 0)))
+       (reanimated/animate opacity (if show-shell? 0 1))
+       (reanimated/animate y-shell (if show-shell? 30 0)))
      [@focused? @messages.list/show-floating-scroll-down-button])
     [reanimated/view
-     {:style (reanimated/apply-animations-to-style
-              {:bottom height} ; we use height of the input directly as bottom position
-              {:position  :absolute
-               :transform [{:translate-y translate-y}]
-               :left      0
-               :right     0})}
+     {:style (style/shell-container height y-container)}
      [reanimated/view
-      {:style (reanimated/apply-animations-to-style
-               {:transform [{:translate-y translate-hide}]
-                :opacity   opacity}
-               {})}
+      {:style (style/shell-button y-shell opacity)}
       [quo/floating-shell-button
        {:jump-to
         {:on-press (fn []
                      (rf/dispatch [:chat/close true])
                      (rf/dispatch [:shell/navigate-to-jump-to]))
          :label    (i18n/label :t/jump-to)
-         :style    {:align-self :center}}}
-       {}]]
+         :style    {:align-self :center}}} {}]]
      [quo/floating-shell-button
       (when @messages.list/show-floating-scroll-down-button
         {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}})
