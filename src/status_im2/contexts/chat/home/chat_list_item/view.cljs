@@ -177,14 +177,15 @@
          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn name-view
-  [display-name {:keys [ens-verified added?] :as contact} timestamp has-unread-badge?]
+  [display-name {:keys [ens-verified added?] :as contact} timestamp show-unread-badge?]
   (let [show-verified-or-contact-icon? (or ens-verified added?)
-        name-text-max-width            (cond-> (if has-unread-badge? 70 71.5)
+        name-text-max-width            (cond-> (if show-unread-badge? 70 71.5)
 
                                          ;; Adding the below percent for group and
-                                         ;; not-mutual contact chats
+                                         ;; not-mutual contact chats to take the
+                                         ;; space of the icon
                                          (nil? show-verified-or-contact-icon?)
-                                         (+ (if has-unread-badge? 4.5 5.3)))]
+                                         (+ (if show-unread-badge? 4.5 5.3)))]
     [rn/view
      {:style {:flex           1
               :flex-direction :row}}
@@ -221,12 +222,12 @@
   [{:keys [chat-id group-chat color name unviewed-messages-count
            timestamp last-message muted]
     :as   item}]
-  (let [display-name      (if group-chat
-                            name
-                            (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact           (when-not group-chat
-                            (rf/sub [:contacts/contact-by-address chat-id]))
-        has-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
+  (let [display-name       (if group-chat
+                             name
+                             (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact            (when-not group-chat
+                             (rf/sub [:contacts/contact-by-address chat-id]))
+        show-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -240,12 +241,11 @@
      [rn/view
       {:style {:flex         1
                :margin-left  8
-               :margin-right (if has-unread-badge? 36 0)}}
-      [name-view display-name contact timestamp has-unread-badge?]
+               :margin-right (if show-unread-badge? 36 0)}}
+      [name-view display-name contact timestamp show-unread-badge?]
       [last-message-preview group-chat last-message]]
-     (when-not muted
-       (when (> unviewed-messages-count 0)
-         [quo/info-count
-          {:style {:top   16
-                   :right 16}}
-          unviewed-messages-count]))]))
+     (when show-unread-badge?
+       [quo/info-count
+        {:style {:top   16
+                 :right 16}}
+        unviewed-messages-count])]))
