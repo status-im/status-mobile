@@ -20,7 +20,6 @@
        :size   :heading-1
        :weight :semi-bold}
       (i18n/label :t/new-to-status)]
-
      [quo/small-option-card
       {:variant    :main
        :title      (i18n/label :t/generate-keys)
@@ -31,15 +30,13 @@
                       (* 2 16) ;; spacing between items
                       220)     ;; extra spacing (top bar)
        :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
-
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
         :size   :paragraph-2
         :weight :medium}
        (i18n/label :t/experienced-web3)]]
-
-     [rn/view {:style style/suboptions}
+     [rn/view
       [quo/small-option-card
        {:variant  :icon
         :title    (i18n/label :t/use-recovery-phrase)
@@ -62,32 +59,34 @@
    [rn/view
     [quo/text
      {:size  :paragraph-2
-      :style style/title}
-     (i18n/label
-      :t/getting-started-description)]
+      :style style/doc-main-content}
+     (i18n/label :t/getting-started-description)]
     [quo/text
      {:size   :paragraph-1
+      :style  style/doc-subtitle
       :weight :semi-bold}
      (i18n/label :t/generate-keys)]
     [quo/text
      {:size  :paragraph-2
-      :style style/subtitle}
+      :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-description)]
     [quo/text
      {:size   :paragraph-1
+      :style  style/doc-subtitle
       :weight :semi-bold}
      (i18n/label :t/getting-started-generate-keys-from-recovery-phrase)]
     [quo/text
      {:size  :paragraph-2
-      :style style/subtitle}
+      :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-from-recovery-phrase-description)]
     [quo/text
      {:size   :paragraph-1
+      :style  style/doc-subtitle
       :weight :semi-bold}
      (i18n/label :t/getting-started-generate-keys-on-keycard)]
     [quo/text
      {:size  :paragraph-2
-      :style style/subtitle}
+      :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-on-keycard-description)]]])
 
 (defn new-to-status
