@@ -106,7 +106,8 @@
         [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60}
          [quo/button
-          {:style    {:margin-horizontal 40}
+          {:style    {:margin-horizontal 40
+                      :margin-bottom     20}
            :on-press #(rf/dispatch [:show-bottom-sheet
                                     {:content     (constantly [render-documenation-drawer @title
                                                                @show-button?
@@ -129,4 +130,3 @@
      :keyboard-should-persist-taps :always
      :header                       [cool-preview]
      :key-fn                       str}]])
-
