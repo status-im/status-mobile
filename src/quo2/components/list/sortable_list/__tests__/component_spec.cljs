@@ -1,9 +1,13 @@
 (ns quo2.components.list.sortable-list.--tests--.component-spec
   (:require [quo2.components.list.sortable-list.view :as sortable-list]
-            [reagent.core :as reagent]
             [test-helpers.component :as h]))
 
-(h/describe "Sortable list"
-  (h/test "Default render"
-    (h/render [sortable-list/reorder-list])
-            (h/is-falsy (h/get-by-test-id "Pinterest"))))
+(def data [{:id 1 :type "item" :label "Item 1"}
+            {:id 2 :type "item" :label "Item 2"}
+            {:id 3 :type "item" :label "Item 3"}])
+
+(h/describe "sortable list"
+  (h/test "render component"
+    (h/render [sortable-list/reorder-list data])
+    (-> (h/expect (h/get-by-label-text "Item 1"))
+        (.toBeTruthy))))

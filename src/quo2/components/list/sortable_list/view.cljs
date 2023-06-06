@@ -34,11 +34,12 @@
    {:style style/container}
    [rn/draggable-flat-list
     {:key-fn               :id
+     :test-ID              "sortable-list"
      :data                 @atom-data
      :render-fn            render-fn
      :autoscroll-threshold (if platform/android? 150 250)
      :autoscroll-speed     (if platform/android? 10 150)
      :content-container-style {:padding-vertical 20}
      :shows-vertical-scroll-indicator false
-     :on-drag-end-fn       (fn [_ _ data-js] 
-                             (on-drag-end-fn data-js atom-data)) }]]))
+     :on-drag-end-fn       (fn [_ _ data-js]
+                             (on-drag-end-fn data-js atom-data))}]]))
