@@ -61,7 +61,7 @@
      [rn/view {:style style/page-illustration}
       (if @motion-permission-granted
         [parallax/video
-         {:layers (resources/get-parallax-video :biometrics1)}]
+         {:layers (resources/get-parallax-video :biometrics2)}]
         [quo/button
          {:before              :i/camera
           :type                :primary
