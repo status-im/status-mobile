@@ -734,7 +734,7 @@ class ChatView(BaseView):
         self.url_preview_composer = Button(self.driver, accessibility_id="url-preview")
         self.url_preview_composer_text = Text(self.driver, xpath='//*[@content-desc="url-preview"]//*[@content-desc="title"]')
         self.quote_username_in_message_input = EditBox(self.driver,
-                                                       xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
+                                                       xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[3]")
         self.chat_item = Button(self.driver, xpath="(//*[@content-desc='chat-item'])[1]")
         self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
         self.commands_button = CommandsButton(self.driver)
