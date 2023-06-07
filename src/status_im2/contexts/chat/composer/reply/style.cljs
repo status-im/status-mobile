@@ -34,7 +34,7 @@
   {:text-transform :none
    :margin-left    4
    :margin-top     2
-   :flex-shrink 1})
+   :flex-shrink    1})
 
 (def gradient
   {:position :absolute
