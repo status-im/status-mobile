@@ -12,7 +12,6 @@
             [reagent.core :as reagent]))
 =======
   (:require
-    [react-native.safe-area :as safe-area]
     [utils.re-frame :as rf]
     [react-native.core :as rn]
     [quo2.foundations.colors :as colors]
