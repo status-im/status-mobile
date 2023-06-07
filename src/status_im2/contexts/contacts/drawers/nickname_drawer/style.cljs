@@ -22,7 +22,7 @@
 (defn nickname-container
   [insets]
   {:margin-horizontal 20
-   :margin-bottom     (when platform/ios? (:bottom insets))})
+   :margin-bottom     (when platform/ios? (max (:bottom insets) 20))})
 
 (defn nickname-description
   []
