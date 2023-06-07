@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.navigation.bottom-nav-tab
-  (:require [quo2.components.navigation.bottom-nav-tab :as quo2]
+  (:require [quo2.components.navigation.bottom-nav-tab.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]

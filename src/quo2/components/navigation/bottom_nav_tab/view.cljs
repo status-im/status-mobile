@@ -1,4 +1,4 @@
-(ns quo2.components.navigation.bottom-nav-tab
+(ns quo2.components.navigation.bottom-nav-tab.view
   (:require [quo2.components.counter.counter :as counter]
             [quo2.components.icons.icons :as icons]
             [quo2.foundations.colors :as colors]
@@ -94,3 +94,4 @@
 (defn bottom-nav-tab
   [opts]
   [:f> f-bottom-nav-tab opts])
+
