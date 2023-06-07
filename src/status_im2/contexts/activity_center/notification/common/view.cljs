@@ -119,11 +119,11 @@
       (into
        [gesture/swipeable
         (merge
-         {:ref                    #(reset! swipeable-ref %)
-          :accessibility-label    :notification-swipeable
-          :friction               2
-          :on-swipeable-will-open (close-active-swipeable active-swipeable swipeable-ref)
-          :children-container-style  {:padding-horizontal 20}}
+         {:ref                      #(reset! swipeable-ref %)
+          :accessibility-label      :notification-swipeable
+          :friction                 2
+          :on-swipeable-will-open   (close-active-swipeable active-swipeable swipeable-ref)
+          :children-container-style {:padding-horizontal 20}}
          (when left-button
            {:overshoot-left      false
             :left-threshold      style/swipe-action-width

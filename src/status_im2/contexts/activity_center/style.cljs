@@ -16,7 +16,7 @@
 
 (defn notification-container
   [index]
-  {:margin-top         (if (zero? index) 0 4)})
+  {:margin-top (if (zero? index) 0 4)})
 
 (def tabs
   {:padding-left screen-padding})
