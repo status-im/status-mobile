@@ -35,13 +35,14 @@
            interpolation-translate-x
            on-press
            swipe-button
-           swipeable-ref]}]
+           swipeable-ref
+           style]}]
   (fn [_ ^js drag-x]
     (let [{:keys [height] :as extra} (extra-fn)
           opacity                    (.interpolate drag-x interpolation-opacity)
           translate-x                (.interpolate drag-x interpolation-translate-x)]
       [gesture/rect-button
-       {:style               {:border-radius style/swipe-button-border-radius}
+       {:style               (merge {:border-radius style/swipe-button-border-radius} style)
         :accessibility-label :notification-swipe-action-button
         :on-press            (fn []
                                (when @swipeable-ref
@@ -121,7 +122,8 @@
          {:ref                    #(reset! swipeable-ref %)
           :accessibility-label    :notification-swipeable
           :friction               2
-          :on-swipeable-will-open (close-active-swipeable active-swipeable swipeable-ref)}
+          :on-swipeable-will-open (close-active-swipeable active-swipeable swipeable-ref)
+          :children-container-style  {:padding-horizontal 20}}
          (when left-button
            {:overshoot-left      false
             :left-threshold      style/swipe-action-width
@@ -133,7 +135,8 @@
                                    style/left-swipe-translate-x-interpolation-js
                                    :on-press left-on-press
                                    :swipe-button left-button
-                                   :swipeable-ref swipeable-ref})})
+                                   :swipeable-ref swipeable-ref
+                                   :style {:left 8}})})
          (when right-button
            {:overshoot-right      false
             :right-threshold      style/swipe-action-width
@@ -145,5 +148,6 @@
                                     style/right-swipe-translate-x-interpolation-js
                                     :on-press right-on-press
                                     :swipe-button right-button
-                                    :swipeable-ref swipeable-ref})}))]
+                                    :swipeable-ref swipeable-ref
+                                    :style {:right -8}})}))]
        children))))
