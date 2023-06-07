@@ -74,7 +74,7 @@
    (fn []
      (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
            sheet                  (last sheets)
-           insets                  (safe-area/get-insets)]
+           insets                 (safe-area/get-insets)]
        ^{:key (str "sheet" @reloader/cnt)}
        [:<>
         [inactive]

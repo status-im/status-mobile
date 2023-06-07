@@ -104,7 +104,7 @@
            (when shell? [blur/ios-view {:style styles/shell-bg}])
 =======
 (defn view
-  [{:keys [hide? insets ]}
+  [{:keys [hide? insets]}
    {:keys [content override-theme selected-item on-close padding-bottom-override shell?]}]
   (let [{window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)

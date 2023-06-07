@@ -19,9 +19,10 @@
    :justify-content :space-between
    :margin-top      20})
 
-(def nickname-container
+(defn nickname-container
+  [insets]
   {:margin-horizontal 20
-   :margin-bottom     (when platform/ios? 20)})
+   :margin-bottom     (when platform/ios? (:bottom insets))})
 
 (defn nickname-description
   []
