@@ -29,6 +29,7 @@
            label
            sub-label
            right-icon
+           right-text
            danger?
            disabled?
            on-press
@@ -70,14 +71,26 @@
             :style {:color
                     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)}}
            sub-label])]
-       (when right-icon
+       (when (or right-text right-icon)
          [rn/view
-          {:style               style/right-icon
-           :accessible          true
-           :accessibility-label :right-icon-for-action}
-          [icon/icon right-icon
-           {:color (get-icon-color danger? override-theme)
-            :size  20}]])]]]))
+          {:style {:flex-direction :row
+                   :align-items    :center}}
+          (when right-text
+            [text/text
+             {:size  :paragraph-1
+              :style {:color        (colors/theme-colors colors/neutral-50
+                                                         colors/neutral-40
+                                                         override-theme)
+                      :margin-right 12}}
+             right-text])
+          (when right-icon
+            [rn/view
+             {:style               style/right-icon
+              :accessible          true
+              :accessibility-label :right-icon-for-action}
+             [icon/icon right-icon
+              {:color (get-icon-color danger? override-theme)
+               :size  20}]])])]]]))
 
 (defn action-drawer
   [sections]
