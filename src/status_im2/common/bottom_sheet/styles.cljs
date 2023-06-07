@@ -39,9 +39,11 @@
    :bottom           0})
 
 (defn selected-item
-  [override-theme]
+  [override-theme window-height sheet-height {:keys [top]}]
   {:position          :absolute
    :bottom            10
+   :max-height        (- window-height sheet-height top)
+   :overflow          :hidden
    :left              0
    :right             0
    :border-radius     12
