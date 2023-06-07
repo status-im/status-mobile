@@ -73,7 +73,8 @@
   (reagent/reactify-component
    (fn []
      (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-           sheet                  (last sheets)]
+           sheet                  (last sheets)
+           insets                  (safe-area/get-insets)]
        ^{:key (str "sheet" @reloader/cnt)}
        [:<>
         [inactive]

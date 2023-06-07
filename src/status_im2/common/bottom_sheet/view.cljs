@@ -104,10 +104,9 @@
            (when shell? [blur/ios-view {:style styles/shell-bg}])
 =======
 (defn view
-  [{:keys [hide?]}
+  [{:keys [hide? insets ]}
    {:keys [content override-theme selected-item on-close padding-bottom-override shell?]}]
-  (let [insets                  (safe-area/get-insets)
-        {window-height :height} (rn/get-window)
+  (let [{window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)
         translate-y             (reanimated/use-shared-value window-height)
         sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)]
