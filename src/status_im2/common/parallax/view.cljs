@@ -54,7 +54,7 @@
                   [sensor-animated-video
                    {:key    (str layer idx)
                     :source layer
-                    :order  idx
+                    :order    (inc idx)
                     :disable-parallax? disable-parallax?}])
                 layers)])
 
