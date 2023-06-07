@@ -15,13 +15,15 @@
 (defn title-input
   [{:keys [blur?
            on-change-text
+           auto-focus
            placeholder
            max-length
            default-value
            override-theme]
     :or   {max-length    0
+           auto-focus    false
            default-value ""}}]
-  (let [focused?  (reagent/atom false)
+  (let [focused?  (reagent/atom auto-focus)
         value     (reagent/atom default-value)
         on-change (fn [v]
                     (reset! value v)
@@ -42,6 +44,7 @@
           :keyboard-appearance (theme/theme-value :light :dark override-theme)
           :on-focus #(swap! focused? (fn [] true))
           :on-blur #(swap! focused? (fn [] false))
+          :auto-focus auto-focus
           :input-mode :text
           :on-change-text on-change
           :editable (not disabled?)

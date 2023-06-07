@@ -22,7 +22,7 @@
       (if platform/ios?
         [hole-view/hole-view
          {:holes [{:x            33
-                   :y            23
+                   :y            24
                    :width        24
                    :height       24
                    :borderRadius 12}]}
