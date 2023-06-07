@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.navigation.bottom-nav-tab
-  (:require [quo2.components.navigation.bottom-nav-tab.view :as quo2]
+  (:require [clojure.string :as string]
+            [quo2.components.navigation.bottom-nav-tab.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
@@ -36,7 +37,15 @@
                :value :unread-dot}]}
    {:label "Counter Label"
     :key   :counter-label
-    :type  :text}])
+    :type  :text}
+
+   {:label   "Customization color"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [[k _]]
+                    {:key   k
+                     :value (string/capitalize (name k))})
+                  colors/customization)}])
 
 (defn get-icon-color
   [selected? pass-through?]
@@ -61,7 +70,8 @@
                                      :new-notifications?     true
                                      :notification-indicator :counter
                                      :counter-label          8
-                                     :preview-label-color    colors/white})
+                                     :preview-label-color    colors/white
+                                     :customization-color    :turquoise})
         selected?     (reagent/cursor state [:selected?])
         pass-through? (reagent/cursor state [:pass-through?])]
     (fn []

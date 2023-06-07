@@ -1,10 +1,11 @@
 (ns quo2.components.navigation.bottom-nav-tab.view
   (:require [quo2.components.counter.counter :as counter]
             [quo2.components.icons.icons :as icons]
+            [quo2.components.navigation.bottom-nav-tab.styles :as styles]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.hole-view :as hole-view]
+            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (defn toggle-background-color
@@ -28,7 +29,9 @@
     :icon-color-anim        reanimated shared value
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
-           on-press pass-through? icon-color-anim accessibility-label test-ID]}]
+           on-press pass-through? icon-color-anim accessibility-label test-ID
+           customization-color]
+    :or   {customization-color :blue}}]
   (let [icon-animated-style       (reanimated/apply-animations-to-style
                                    {:tint-color icon-color-anim}
                                    {:width       24
@@ -77,21 +80,11 @@
         (if (= notification-indicator :counter)
           [counter/counter
            {:override-text-color colors/white
-            :override-bg-color   colors/primary-50
-            :style               {:position :absolute
-                                  :left     48
-                                  :top      2}}
+            :override-bg-color   (colors/custom-color customization-color 60)
+            :style               styles/notification-counter}
            counter-label]
-          [rn/view
-           {:style {:width            8
-                    :height           8
-                    :border-radius    4
-                    :top              6
-                    :left             51
-                    :position         :absolute
-                    :background-color colors/primary-50}}]))]]))
+          [rn/view {:style (styles/notification-dot customization-color)}]))]]))
 
 (defn bottom-nav-tab
   [opts]
   [:f> f-bottom-nav-tab opts])
-
