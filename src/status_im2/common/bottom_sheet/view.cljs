@@ -105,7 +105,7 @@
 =======
 (defn view
   [{:keys [hide?]}
-   {:keys [content override-theme selected-item on-close shell?]}]
+   {:keys [content override-theme selected-item on-close padding-bottom-override shell?]}]
   (let [insets                  (safe-area/get-insets)
         {window-height :height} (rn/get-window)
         bg-opacity              (reanimated/use-shared-value 0)
@@ -130,8 +130,12 @@
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
                 {:transform [{:translateY translate-y}]}
+<<<<<<< HEAD
                 (styles/sheet insets window-height override-theme shell?))}
 >>>>>>> 72fabd4b2 (fix: bottom sheet padding)
+=======
+                (styles/sheet insets window-height override-theme padding-bottom-override shell?))}
+>>>>>>> 78179301b (review)
 
            (when selected-item
              [rn/view
