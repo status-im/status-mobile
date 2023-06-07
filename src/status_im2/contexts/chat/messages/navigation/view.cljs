@@ -65,7 +65,9 @@
       [rn/view {:style style/header-container}
        [rn/touchable-opacity
         {:active-opacity      1
-         :on-press            #(rf/dispatch [:navigate-back])
+         :on-press            #(do
+                                 (rf/dispatch [:chat/close])
+                                 (rf/dispatch [:navigate-back]))
          :accessibility-label :back-button
          :style               (style/button-container {:margin-left 20})}
         [quo/icon :i/arrow-left
