@@ -69,17 +69,11 @@
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
-; Designs require bottom inset to be bigger than safe area, otherwise it is too close to the bottom
-(defn bottom-sheet-insets
-  []
-  (assoc (safe-area/get-insets) :bottom 55))
-
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
      (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-           sheet                  (last sheets)
-           insets                 (bottom-sheet-insets)]
+           sheet                  (last sheets)]
        ^{:key (str "sheet" @reloader/cnt)}
        [:<>
         [inactive]
@@ -88,8 +82,13 @@
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
            [:f>
+<<<<<<< HEAD
             bottom-sheet/f-view
             {:insets insets :hide? hide?}
+=======
+            bottom-sheet/view
+            {:hide? hide?}
+>>>>>>> f45ff3ddd (update)
             sheet])]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))
