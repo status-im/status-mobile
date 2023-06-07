@@ -6,7 +6,8 @@
             [status-im2.contexts.communities.actions.see-rules.view :as see-rules]
             [status-im2.contexts.communities.actions.leave.view :as leave-menu]
             [status-im2.contexts.communities.actions.token-gating.view :as token-gating]
-            [status-im2.common.mute-drawer.view :as mute-options]))
+            [status-im2.common.mute-drawer.view :as mute-options]
+            [status-im2.constants :as constants]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -73,7 +74,8 @@
                           (str (i18n/label :t/muted-until) " " (datetime/format-mute-till muted-till)))
    :right-icon          :i/chevron-right
    :on-press            (if muted?
-                          #(hide-sheet-and-dispatch [:community/set-muted id (not muted?) 0])
+                          #(hide-sheet-and-dispatch [:community/set-muted id (not muted?)
+                                                     constants/un-muted])
                           #(hide-sheet-and-dispatch
                             [:show-bottom-sheet
                              {:content (fn []

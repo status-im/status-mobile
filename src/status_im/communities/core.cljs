@@ -950,15 +950,15 @@
   {:events [:community/mute-community-successful]}
   [{:keys [db]} community-id muted-till]
   (log/debug "muted community successfully" community-id muted-till)
-  (js/console.log (str "muted community successfully " muted-till))
   {:db (assoc-in db [:communities community-id :muted-till] muted-till)})
 
 (rf/defn set-community-muted
   {:events [:community/set-muted]}
   [{:keys [db]} community-id muted? muted-type]
-  (let [params [community-id muted? muted-type]]
+  (let [params (if muted? [{:communityId community-id :mutedType muted-type}] [community-id])
+        method (if muted? "wakuext_muteCommunityChats" "wakuext_unMuteCommunityChats")]
     {:db            (assoc-in db [:communities community-id :muted] muted?)
-     :json-rpc/call [{:method     "wakuext_muteCommunityChats"
+     :json-rpc/call [{:method     method
                       :params     params
                       :on-error   #(rf/dispatch [:community/mute-community-failed community-id
                                                  muted? %])
