@@ -94,9 +94,8 @@
            style/keycard-icon))]
        (when show-user-hash?
          [text/text
-          {:weight          :monospace
-           :number-of-lines 1
-           :style           style/user-hash} hash])
+          {:weight :monospace
+           :style  style/user-hash} hash])
        (when (and show-emoji-hash? emoji-hash)
          [text/text
           {:weight          :monospace
