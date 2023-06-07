@@ -9,3 +9,15 @@
    :justify-content  :space-between
    :padding-top      (:top insets)
    :background-color colors/neutral-80-opa-80-blur})
+
+(def title-container
+  {:justify-content    :center
+   :margin-top         12
+   :padding-horizontal 20})
+
+(def title-text
+  {:color colors/white})
+
+(def subtitle-text
+  {:color         colors/white
+   :margin-bottom 8})

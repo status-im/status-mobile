@@ -281,12 +281,11 @@
 (reg-root-key-sub :mediaserver/port :mediaserver/port)
 
 ; onboarding
-
-(reg-root-key-sub :onboarding-2/profile :onboarding-2/profile)
+(reg-root-key-sub :onboarding-2/generated-keys? :onboarding-2/generated-keys?)
 (reg-root-key-sub :onboarding-2/new-account? :onboarding-2/new-account?)
+(reg-root-key-sub :onboarding-2/profile :onboarding-2/profile)
 
 ; Testing
-
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
 (reg-root-key-sub :information-box-states :information-box-states)

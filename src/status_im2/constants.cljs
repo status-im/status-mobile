@@ -331,3 +331,6 @@
 (def ^:const auth-method-biometric "biometric")
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
+
+(def ^:const onboarding-generating-keys-animation-duration-ms 7000)
+(def ^:const onboarding-generating-keys-navigation-retry-ms 3000)

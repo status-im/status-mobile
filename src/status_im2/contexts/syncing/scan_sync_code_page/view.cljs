@@ -9,4 +9,4 @@
   [scan-sync-code/view
    {:title      (i18n/label :t/scan-sync-code)
     :background [rn/view
-                 {:style style/background} true]}])
+                 {:style style/background}]}])

@@ -1,19 +1,19 @@
 (ns status-im2.contexts.onboarding.enable-notifications.view
   (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [react-native.safe-area :as safe-area]
-   [status-im.notifications.core :as notifications]
-   [status-im2.common.resources :as resources]
-   [status-im2.common.parallax.view :as parallax]
-   [status-im2.contexts.onboarding.common.background.view :as background]
-   [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-   [status-im2.contexts.onboarding.enable-notifications.style :as style]
-   [status-im2.contexts.shell.animation :as shell.animation]))
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [status-im.notifications.core :as notifications]
+    [status-im2.common.resources :as resources]
+    [status-im2.common.parallax.view :as parallax]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+    [status-im2.contexts.onboarding.enable-notifications.style :as style]
+    [status-im2.contexts.shell.animation :as shell.animation]))
 
 (defn page-title
   []
@@ -53,6 +53,7 @@
      [background/view true]
      [parallax/video
       {:layers (resources/get-parallax-video :notifications)}]
-     [navigation-bar/navigation-bar {:disable-back-button? true}]
-     [page-title]
+     [rn/view
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]]
      [enable-notification-buttons {:style {:align-self :flex-end}}]]))

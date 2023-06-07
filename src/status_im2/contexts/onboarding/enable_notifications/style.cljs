@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.enable-notifications.style
   (:require
-   [quo2.foundations.colors :as colors]))
+    [quo2.foundations.colors :as colors]))
 
 (def default-margin 20)
 
@@ -13,5 +13,5 @@
 
 (defn buttons
   [insets]
-  {:margin        default-margin
-   :margin-bottom (+ default-margin (:bottom insets))})
+  {:margin-horizontal default-margin
+   :margin-bottom     (+ 46 (:bottom insets))})

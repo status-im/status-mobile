@@ -9,27 +9,24 @@
 
 (def transparent-video (reagent/adapt-react-class TV))
 
-(def offset 50)
-(def double-offset (* 2 offset))
-
 (defn f-sensor-animated-video
-  [{:keys [order source disable-parallax?]}]
-  (let [{window-width  :width
+  [{:keys [offset order source disable-parallax?]}]
+  (let [double-offset           (* 2 offset)
+        {window-width  :width
          window-height :height} (rn/get-window)
-
         image-style             (if (not disable-parallax?)
                                   (worklets.parallax/sensor-animated-image order offset)
-                                  {:top  0
-                                   :right 0
+                                  {:top    0
+                                   :right  0
                                    :bottom 0
-                                   :left 0})]
+                                   :left   0})]
     (fn []
       [reanimated/view
        {:needsOffscreenAlphaCompositing true
-        :style              [{:position :absolute
-                              :width    (+ window-width double-offset)
-                              :height   (+ window-height double-offset)}
-                             image-style]}
+        :style                          [{:position :absolute
+                                          :width    (+ window-width double-offset)
+                                          :height   (+ window-height double-offset)}
+                                         image-style]}
        [transparent-video
         {:source source
          :style  {:position :absolute
@@ -43,18 +40,21 @@
   [:f> f-sensor-animated-video props])
 
 (defn f-video
-  [{:keys [layers disable-parallax?]}]
+  [{:keys [layers disable-parallax? offset] :or {offset 0}}]
   [rn/view
    {:style {:position :absolute
-            :top      (if platform/android? (+ (safe-area/get-top) (safe-area/get-bottom)) (safe-area/get-bottom))
+            :top      (if platform/android?
+                        (+ (safe-area/get-top) (safe-area/get-bottom))
+                        (safe-area/get-bottom))
             :left     0
             :right    0
             :bottom   0}}
    (map-indexed (fn [idx layer]
                   [sensor-animated-video
-                   {:key    (str layer idx)
-                    :source layer
-                    :order    (inc idx)
+                   {:key               (str layer idx)
+                    :source            layer
+                    :offset            offset
+                    :order             (inc idx)
                     :disable-parallax? disable-parallax?}])
                 layers)])
 

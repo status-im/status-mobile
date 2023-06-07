@@ -111,12 +111,14 @@
 
                          :currentNetwork              config/default-network
                          :previewPrivacy              config/blank-preview?}]
-    {effect    request
-     :dispatch [:navigate-to :generating-keys]
-     :db       (-> db
-                   (dissoc :multiaccounts/login)
-                   (dissoc :auth-method)
-                   (assoc :onboarding-2/new-account? true))}))
+    {effect          request
+     :dispatch       [:navigate-to :generating-keys]
+     :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
+                       :dispatch [:onboarding-2/navigate-to-identifiers]}]
+     :db             (-> db
+                         (dissoc :multiaccounts/login)
+                         (dissoc :auth-method)
+                         (assoc :onboarding-2/new-account? true))}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}
@@ -172,7 +174,7 @@
                             constants/auth-method-biometric
                             (get-in db [:onboarding-2/profile :auth-method]))]
 
-    (cond-> {:dispatch [:navigate-to :identifiers]}
+    (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
       biometric-enabled?
       (assoc :biometric/enable-and-save-password
              {:key-uid         key-uid
@@ -181,3 +183,12 @@
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))
+
+(rf/defn navigate-to-identifiers
+  {:events [:onboarding-2/navigate-to-identifiers]}
+  [{:keys [db]}]
+  (if (:onboarding-2/generated-keys? db)
+    {:dispatch [:navigate-to :identifiers]}
+    {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
+                       :dispatch [:onboarding-2/navigate-to-identifiers]}]}))
+
