@@ -12,7 +12,6 @@
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
-    [status-im2.contexts.onboarding.enable-biometrics1.view :as enable-biometrics1]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
     [status-im2.contexts.onboarding.identifiers.view :as identifiers]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
@@ -123,10 +122,6 @@
     {:name      :enable-biometrics
      :options   {:layout options/onboarding-layout}
      :component enable-biometrics/enable-biometrics}
-
-    {:name      :enable-biometrics1
-     :options   {:layout options/onboarding-layout}
-     :component enable-biometrics1/enable-biometrics}
 
     {:name      :generating-keys
      :options   {:layout             options/onboarding-layout
