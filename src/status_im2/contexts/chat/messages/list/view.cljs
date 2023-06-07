@@ -291,26 +291,24 @@
                                                                                colors/neutral-95))}
        :inverted                     true
        :on-layout                    (fn [e]
-                                       (when platform/android?
-                                         ;; FIXME: this is due to Android not triggering the initial
-                                         ;; scrollTo event
-                                         (scroll-to-offset 1))
+                                       ;; FIXME: this is due to Android not triggering the initial scrollTo event
+                                       (scroll-to-offset 1)
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [insets                                   (safe-area/get-insets)
-        scroll-y                                 (reanimated/use-shared-value 0)
+  (let [insets (safe-area/get-insets)
+        scroll-y (reanimated/use-shared-value 0)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
-     (fn []
-       (when keyboard-shown
-         (reanimated/set-shared-value scroll-y
-                                      (+ (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))))
-     [keyboard-shown keyboard-height])
+      (fn []
+        (when keyboard-shown
+          (reanimated/set-shared-value scroll-y
+                                       (+ (reanimated/get-shared-value scroll-y)
+                                          keyboard-height))))
+      [keyboard-shown keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}

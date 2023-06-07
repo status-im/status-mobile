@@ -4,7 +4,7 @@
 
 (def container
   {:height           40
-   :background-color colors/primary-50-opa-20
+   :background-color (colors/custom-color :blue 50 20)
    :flex-direction   :row
    :align-items      :center
    :padding-right    22
