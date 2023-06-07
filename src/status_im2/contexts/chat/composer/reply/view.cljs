@@ -125,7 +125,8 @@
                                                  (i18n/label :t/photo))
                  constant/content-type-sticker (i18n/label :t/sticker)
                  constant/content-type-audio   (i18n/label :t/audio)
-                 ""))]])]
+                 ""))]
+         ])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
         {:width               24
