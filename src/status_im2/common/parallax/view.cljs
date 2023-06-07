@@ -13,13 +13,15 @@
 (def double-offset (* 2 offset))
 
 (defn f-sensor-animated-video
-  [{:keys [order source]}]
+  [{:keys [order source disable-parallax?]}]
   (let [{window-width  :width
          window-height :height} (rn/get-window)
 
-        image-style             (if (pos? order)
+        image-style             (if (not disable-parallax?)
                                   (worklets.parallax/sensor-animated-image order offset)
                                   {:top  0
+                                   :right 0
+                                   :bottom 0
                                    :left 0})]
     (fn []
       [reanimated/view
@@ -41,7 +43,7 @@
   [:f> f-sensor-animated-video props])
 
 (defn f-video
-  [{:keys [layers]}]
+  [{:keys [layers disable-parallax?]}]
   [rn/view
    {:style {:position :absolute
             :top      (if platform/android? (+ (safe-area/get-top) (safe-area/get-bottom)) (safe-area/get-bottom))
@@ -52,7 +54,8 @@
                   [sensor-animated-video
                    {:key    (str layer idx)
                     :source layer
-                    :order  (inc idx)}])
+                    :order  idx
+                    :disable-parallax? disable-parallax?}])
                 layers)])
 
 (defn video
