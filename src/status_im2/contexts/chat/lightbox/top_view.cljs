@@ -10,7 +10,8 @@
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.constants :as c]))
+    [status-im2.contexts.chat.lightbox.constants :as c]
+    [react-native.share :as share]))
 
 (defn animate-rotation
   [result screen-width screen-height insets
@@ -40,8 +41,9 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn top-view
-  [{:keys [from timestamp]} insets index animations derived landscape? screen-width]
-  (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
+  [messages insets index animations derived landscape? screen-width]
+  (let [{:keys [from timestamp content]} (nth @messages @index)
+        display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
                                                            from]))
         bg-color                           (if landscape?
                                              colors/neutral-100-opa-70
@@ -79,6 +81,7 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
+        :on-press  (fn [] (share/open {:url (:image content)} #(println "success") #(println "faill")))
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
