@@ -87,7 +87,9 @@
                     :on-long-press
                     (fn []
                       (rf/dispatch [:show-bottom-sheet
-                                    {:content (fn [] [actions/chat-actions chat false])}])))]])])])])
+                                    {:content       (fn [] [actions/chat-actions chat false])
+                                     :selected-item (fn []
+                                                      [quo/channel-list-item chat])}])))]])])])])
 
 (defn request-to-join-text
   [is-open?]
