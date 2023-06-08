@@ -30,12 +30,12 @@
   (let [insets      (safe-area/get-insets)
         y-container (utils/calc-shell-neg-y insets maximized?)
         hide-shell? (or @focused? @messages.list/show-floating-scroll-down-button)
-        y-shell     (reanimated/use-shared-value (if hide-shell? 30 0))
+        y-shell     (reanimated/use-shared-value (if hide-shell? 35 0))
         opacity     (reanimated/use-shared-value (if hide-shell? 0 1))]
     (rn/use-effect
      (fn []
        (reanimated/animate opacity (if hide-shell? 0 1))
-       (reanimated/animate y-shell (if hide-shell? 30 0)))
+       (reanimated/animate y-shell (if hide-shell? 35 0)))
      [@focused? @messages.list/show-floating-scroll-down-button])
     [reanimated/view
      {:style (style/shell-container height y-container)}
