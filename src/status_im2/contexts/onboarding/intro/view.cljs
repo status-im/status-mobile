@@ -9,15 +9,18 @@
             [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]))
+            [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 (defonce show-blur-overlay? (reagent/atom false))
 (defonce overlay-blur-amount (reagent/atom 0))
+(defonce blur-anim-opacity-fn (atom nil))
 (defonce blur-timer (atom nil))
 
-(defn view
+(defn f-view
   []
-  (let [start-top-animation (atom nil)]
+  (let [start-top-animation (atom nil)
+        blur-opacity (reanimated/use-shared-value 0)]    
     [:<>
      [rn/view {:style style/page-container}
       [background/view false]
@@ -37,8 +40,10 @@
                               :animated-heading    (i18n/label :t/sign-in-by-syncing)
                               :accessibility-label :already-use-status-button}
         :bottom-card         {:on-press            (fn []
+                                                     ;(reset! show-blur-overlay? true)
+                                                     (reanimated/animate-shared-value-with-delay blur-opacity 1 300 :easing4 300)
                                                      (rf/dispatch [:open-modal :new-to-status])
-                                                     (reset! show-blur-overlay? true)
+                                                     (reset! blur-anim-opacity-fn #(reanimated/animate-shared-value-with-timing blur-opacity 0 300 :easing4))
                                                      (reset! overlay-blur-amount 0)
                                                      (reset! blur-timer
                                                              (js/setInterval (fn []
@@ -61,14 +66,20 @@
          {:on-press #(rf/dispatch [:open-modal :privacy-policy])
           :style    style/highlighted-text}
          (i18n/label :t/terms-of-service)]]]]
-     (when @show-blur-overlay?
-       [blur/view
-        {:style {:position :absolute
-                 :top      0
-                 :left     0
-                 :right    0
-                 :bottom   0
-                 :background-color colors/neutral-80-opa-80-blur}
-         :blur-radius   25
-         :blur-type     :transparent
-         :blur-amount @overlay-blur-amount}])]))
+     [reanimated/view {:style (reanimated/apply-animations-to-style
+                               {:opacity blur-opacity
+                                :z-index blur-opacity}
+                               {:position :absolute
+                                :top      0
+                                :left     0
+                                :right    0
+                                :bottom   300})}
+      [blur/view
+       {:style {:flex 1
+                :background-color colors/neutral-80-opa-80-blur}
+        :blur-radius   25
+        :blur-type   :transparent
+        :blur-amount @overlay-blur-amount}]]]))
+
+(defn view [props]
+  [:f> f-view props])

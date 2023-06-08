@@ -101,13 +101,8 @@
       [navigation-bar/navigation-bar
        {:top                   top
         :left-on-press         (fn []
-                                 (reset! blur-timer
-                                         (js/setInterval (fn []
-                                                           (if (> @intro-view/overlay-blur-amount 0)
-                                                             (reset! intro-view/overlay-blur-amount (- @intro-view/overlay-blur-amount 1))
-                                                             (do
-                                                               (reset! intro-view/show-blur-overlay? false)
-                                                               (js/clearInterval @blur-timer)))) 1))
+                                 (when @intro-view/blur-anim-opacity-fn
+                                   (@intro-view/blur-anim-opacity-fn))
                                  ;(reset! intro-view/show-blur-overlay? false)
                                  #_(reset! intro-view/overlay-blur-amount 0))
         :right-section-buttons [{:type                :blur-bg
