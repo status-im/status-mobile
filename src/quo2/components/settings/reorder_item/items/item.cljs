@@ -1,4 +1,4 @@
-(ns  quo2.components.settings.reorder-item.items.item
+(ns quo2.components.settings.reorder-item.items.item
   (:require [quo.react-native :as rn] 
             [status-im.ui.components.icons.icons :as icons]
             [quo2.components.settings.reorder-item.style :as style]
